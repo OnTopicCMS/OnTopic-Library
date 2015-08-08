@@ -62,8 +62,12 @@ namespace Ignia.Topics {
     | PROPERTY: DEFAULT CONFIGURATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the .
+    ///   Gets or sets the default configuration.
     /// </summary>
+    /// <remarks>
+    ///   When an attribute is bound to an attribute type control in the editor, the default configuration is injected into the 
+    ///   control's configuration. This allows attribute type specific properties to be set on a per-attribute basis. 
+    /// </remarks>
     public string DefaultConfiguration {
       get {
         return this.GetAttribute("DefaultConfiguration", "");
@@ -77,8 +81,15 @@ namespace Ignia.Topics {
     | PROPERTY: IS HIDDEN?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the .
+    ///   Gets or sets whether the attribute should be hidden in the editor.
     /// </summary>
+    /// <remarks>
+    ///   By default, all attributes associated with a <see cref="ContentType"/> are rendered in the editor. Optionally, 
+    ///   however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type as some
+    ///   parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can also be
+    ///   valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a timestamp or
+    ///   version).
+    /// </remarks>
     public bool IsHidden {
       get {
         return this.GetAttribute("IsHidden", "0").Equals("1");
@@ -92,8 +103,12 @@ namespace Ignia.Topics {
     | PROPERTY: IS REQUIRED?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the .
+    ///   Gets or sets whether or not the attribute is required. 
     /// </summary>
+    /// <remarks>
+    ///   This is used to establish a required field validator in the editor interface, and maps to the 
+    ///   <see cref="Ignia.Topics.Editor.IEditControl.Required"/> property.
+    /// </remarks>
     public bool IsRequired {
       get {
         return this.GetAttribute("IsRequired", "0").Equals("1");
@@ -103,9 +118,17 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | PROPERTY: DEFAULT VALUE
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*============================================================================================================================
+    | PROPERTY: DEFAULT VALUE
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the default value that should be used if an explicit value is not defined.
+    /// </summary>
+    /// <remarks>
+    ///   The default value is only used if the value is not otherwise defined. Once a topic has been saved in the editor, this 
+    ///   value (if not overwritten) is committed to the database and, thus, that version is used in the future. As such, the
+    ///   default value only affects the topic when it is first being created via the editor.
+    /// </remarks>
     public string DefaultValue {
       get {
         return this.GetAttribute("DefaultValue", "");
@@ -115,9 +138,25 @@ namespace Ignia.Topics {
         }
       }
 
-  /*============================================================================================================================
-  | PROPERTY: STORE IN BLOB?
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*============================================================================================================================
+    | PROPERTY: STORE IN BLOB?
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets whether or not the attribute is stored in the blob. 
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, all attributes are stored in the blob, which means they may not be loaded initially, and not accessible  
+    ///     to in-memory queries. This is more efficient to store, and is required for larger values. 
+    ///   </para>
+    ///   <para>
+    ///     Attributes that are needed to provide indexes, sitemaps, navigation, etc. should be indexed, so that they're always 
+    ///     available in memory without requiring an additional database query. These increase the memory requirements of the 
+    ///     application, but reduce the number of database roundtrips required for topics that are accessed outside of a single
+    ///     page. For instance, the title and description of a topic may be cross-referenced on other pages or as part of the
+    ///     navigation, and should thus be indexed.
+    ///   </para>  
+    /// </remarks>
     public bool StoreInBlob {
       get {
         return this.GetAttribute("StoreInBlob", "1").Equals("1");
