@@ -19,7 +19,7 @@ using System.Web.Routing;
 using System.Web.Compilation;
 using Ignia.Topics.Configuration;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Web {
 
   /*==============================================================================================================================
   | CLASS

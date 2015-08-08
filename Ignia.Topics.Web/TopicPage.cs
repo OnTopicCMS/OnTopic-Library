@@ -11,7 +11,7 @@ using System.Web.UI;
 using System.Web.Security;
 using System.Linq;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Web {
 
   /*===========================================================================================================================
   | CLASS
