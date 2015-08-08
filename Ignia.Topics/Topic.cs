@@ -245,9 +245,9 @@ namespace Ignia.Topics {
   | class, possibly a dirivitive of the NestedTopics class. Preferrably, this will be dynamically created based on a reference
   | back to the parent class (this), in order to ensure synchronization between NestedTopics and the parent collection.
   \--------------------------------------------------------------------------------------------------------------------------*/
-    public NestedTopicCollection NestedTopics {
+    public Topic NestedTopics {
       get {
-        return new NestedTopicCollection(this);
+        throw new NotImplementedException();
       }
     }
 
@@ -257,9 +257,9 @@ namespace Ignia.Topics {
   | Provides a reference to the values collection, filtered by Topics that are NOT of the ContentType TopicList, which
   | represent Child Topics. This provides a complement to the NestedTopics collection.
   \--------------------------------------------------------------------------------------------------------------------------*/
-    public ChildTopicCollection ChildTopics {
+    public Topic ChildTopics {
       get {
-        return new ChildTopicCollection(this);
+        throw new NotImplementedException();
       }
     }
 
