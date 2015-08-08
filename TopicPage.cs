@@ -1,38 +1,21 @@
-namespace Ignia.Topics {
-
-/*===========================================================================================================================
-| TOPICS PAGE
-|
-| Author        Jeremy Caney, Ignia LLC (Jeremy.Caney@Ignia.com)
+/*==============================================================================================================================
+| Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Editor
 |
 | Purpose       Provides a base class for Topic-related pages.
 |
->============================================================================================================================
-| Revisions     Date       Author               Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               10.16.13   Jeremy Caney         Initial version created.
-|               MM.DD.YY   FName LName          Description
-\--------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Web.UI;
+using System.Web.Security;
+using System.Linq;
 
-/*===========================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\--------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Web;
-  using System.Web.UI;
-  using System.Web.Security;
-  using System.Web.Routing;
-  using System.Web.Compilation;
-  using System.Linq;
-  using Ignia.Topics;
+namespace Ignia.Topics {
 
-/*===========================================================================================================================
-| CLASS
-\--------------------------------------------------------------------------------------------------------------------------*/
+  /*===========================================================================================================================
+  | CLASS
+  \--------------------------------------------------------------------------------------------------------------------------*/
   public class TopicPage : Page {
 
   /*=========================================================================================================================
@@ -46,8 +29,7 @@ namespace Ignia.Topics {
   /*=========================================================================================================================
   | CONSTRUCTOR
   \------------------------------------------------------------------------------------------------------------------------*/
-    public TopicPage() : base() {
-      }
+    public TopicPage() : base() { }
 
   /*=========================================================================================================================
   | PROPERTY: ENABLE VALIDATION
@@ -58,11 +40,11 @@ namespace Ignia.Topics {
     public bool EnableValidation {
       get {
         return _enableValidation;
-        }
+      }
       set {
         _enableValidation = value;
-        }
       }
+    }
 
   /*=========================================================================================================================
   | PROPERTY: TOPIC
@@ -86,12 +68,12 @@ namespace Ignia.Topics {
       //Pull from RouteData
         if (Page.RouteData.Values["directory"] != null) {
           pagePath = (string)Page.RouteData.Values["directory"];
-          }
+        }
 
       //Pull from QueryString
         if (String.IsNullOrEmpty(pagePath) && Request.QueryString["Path"] != null) {
           pagePath = Request.QueryString["Path"].ToString().Replace(":", "/");
-          }
+        }
 
       //Default to blank
         pagePath = pagePath?? "";
@@ -99,7 +81,7 @@ namespace Ignia.Topics {
       //Strip trailing colon
         if (pagePath.EndsWith(":")) {
           pagePath = pagePath.Substring(0, pagePath.Length-1);
-          }
+        }
 
       /*---------------------------------------------------------------------------------------------------------------------
       | DEFINE VARIABLES
@@ -115,24 +97,22 @@ namespace Ignia.Topics {
 
         if (rootTopic != null) {
           ValidatePageTopic(_topic);
-          }
+        }
         else {
           _topic = TopicRepository.RootTopic.FirstOrDefault();
-          }
+        }
 
       /*---------------------------------------------------------------------------------------------------------------------
       | RETURN TOPIC
       \--------------------------------------------------------------------------------------------------------------------*/
         return _topic;
 
-        }
-
+      }
       set {
         ValidatePageTopic(value);
         _topic = value;
-        }
-
       }
+    }
 
   /*=========================================================================================================================
   | METHOD: VALIDATE PAGE TOPIC
@@ -149,29 +129,26 @@ namespace Ignia.Topics {
         if (!Roles.IsUserInRole(Page.User.Identity.Name, "Administrators")) {
           if (Request.QueryString["PageID"] != null) {
             Response.Redirect("/Redirector.aspx?PageID=" + Request.QueryString["PageID"]);
-            }
+          }
           Response.StatusCode = 404;
           Response.SuppressContent = true;
           Response.End();
-          }
         }
+      }
 
     /*-----------------------------------------------------------------------------------------------------------------------
     | HANDLE REDIRECT
     \----------------------------------------------------------------------------------------------------------------------*/
       if (EnableValidation && pageTopic != null && !String.IsNullOrEmpty(pageTopic.GetAttribute("URL"))) {
-
         Response.RedirectPermanent(pageTopic.GetAttribute("URL"), true);
-
-        }
+      }
 
     /*-----------------------------------------------------------------------------------------------------------------------
     | SET TITLE
     \----------------------------------------------------------------------------------------------------------------------*/
       Page.Title = ((pageTopic != null)? pageTopic.GetAttribute("MetaTitle", pageTopic.GetAttribute("Title", pageTopic.Key)) : "");
 
-
-      }
+    }
 
   /*=========================================================================================================================
   | EDIT URL
@@ -181,9 +158,9 @@ namespace Ignia.Topics {
     public String EditUrl {
       get {
         return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;
-        }
       }
+    }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace

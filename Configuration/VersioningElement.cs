@@ -1,9 +1,5 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| VERSIONING ELEMENT
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
@@ -12,27 +8,14 @@ namespace Ignia.Topics.Configuration {
 |               specific location. Adapted from the Ignia Localization library; in the future, these libraries may (and should)
 |               share custom configuration classes.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Data;
-  using System.Configuration;
-  using System.Web;
-  using System.Web.Security;
-  using System.Globalization;
+namespace Ignia.Topics.Configuration {
 
-/*===========================================================================================================================
-| CLASS
-\--------------------------------------------------------------------------------------------------------------------------*/
+  /*===========================================================================================================================
+  | CLASS
+  \--------------------------------------------------------------------------------------------------------------------------*/
   public class VersioningElement : ConfigurationElement {
 
   /*=========================================================================================================================
@@ -42,9 +25,10 @@ namespace Ignia.Topics.Configuration {
     public SourceElement DraftMode {
       get {
         return this["draftMode"] as SourceElement;
-        }
       }
-
     }
 
-  }
+  } //Class
+
+} //Namespace
+

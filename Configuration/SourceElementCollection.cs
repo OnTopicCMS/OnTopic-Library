@@ -1,9 +1,5 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| SOURCE ELEMENT COLLECTION
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
@@ -11,27 +7,14 @@ namespace Ignia.Topics.Configuration {
 |               SourceElement elements. Adapted DIRECTLY from the Ignia Localization library; in the future, these libraries may
 |               (and should) share custom configuration classes.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Data;
-  using System.Configuration;
-  using System.Web;
-  using System.Web.Security;
-  using System.Globalization;
+namespace Ignia.Topics.Configuration {
 
-/*===========================================================================================================================
-| CLASS
-\--------------------------------------------------------------------------------------------------------------------------*/
+  /*===========================================================================================================================
+  | CLASS
+  \--------------------------------------------------------------------------------------------------------------------------*/
   public class SourceElementCollection : ConfigurationElementCollection {
 
   /*=========================================================================================================================
@@ -40,29 +23,29 @@ namespace Ignia.Topics.Configuration {
     public SourceElement this[int index] {
       get {
         return base.BaseGet(index) as SourceElement;
-        }
+      }
       set {
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
-          }
-        this.BaseAdd(index, value);
         }
+        this.BaseAdd(index, value);
       }
+    }
 
   /*=========================================================================================================================
   | METHOD: CREATE NEW ELEMENT
   \------------------------------------------------------------------------------------------------------------------------*/
     protected override ConfigurationElement CreateNewElement() {
       return new SourceElement();
-      }
+    }
 
   /*=========================================================================================================================
   | METHOD: GET ELEMENT KEY
   \------------------------------------------------------------------------------------------------------------------------*/
     protected override object GetElementKey(ConfigurationElement element) {
       return ((SourceElement)element).Source;
-      }
-
     }
 
-  }
+  } //Class
+
+} //Namespace

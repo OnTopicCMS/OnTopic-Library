@@ -1,37 +1,21 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| PAGE TYPE ELEMENT
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
 | Purpose       Provides a custom configuration element which represents a page type (default: TopicPage) as developed for the
 |               application. Permits the application to define multiple page types.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.ComponentModel;
+using System.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.ComponentModel;
-  using System.Configuration;
-  using System.Data;
-  using System.Globalization;
-  using System.Web;
-  using System.Web.Security;
+namespace Ignia.Topics.Configuration {
 
-/*===========================================================================================================================
-| CLASS
-\--------------------------------------------------------------------------------------------------------------------------*/
+  /*===========================================================================================================================
+  | CLASS
+  \--------------------------------------------------------------------------------------------------------------------------*/
   public class PageTypeElement : ConfigurationElement {
 
   /*=========================================================================================================================
@@ -41,8 +25,8 @@ namespace Ignia.Topics.Configuration {
     public string Name {
       get {
         return this["name"] as string;
-        }
       }
+    }
 
   /*=========================================================================================================================
   | ATTRIBUTE: TYPE
@@ -52,8 +36,10 @@ namespace Ignia.Topics.Configuration {
     public Type Type {
       get {
         return this["type"] as Type;
-        }
       }
-
     }
-  }
+
+  } //Class
+
+} //Namepsace
+

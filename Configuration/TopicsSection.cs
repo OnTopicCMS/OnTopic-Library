@@ -1,37 +1,19 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| TOPICS [CONFIGURATION] SECTION
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
 | Purpose       Provides a customized version of the ConfigurationSection class in order to permit configuration of the Topics
 |               data management classes via the application's web.config.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Configuration;
-  using System.Data;
-  using System.Globalization;
-  using System.Web;
-  using System.Web.Security;
-  using System.Xml;
+namespace Ignia.Topics.Configuration {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class TopicsSection : ConfigurationSection {
 
   /*============================================================================================================================
@@ -39,7 +21,7 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
     public static TopicsSection GetConfig() {
       return ConfigurationManager.GetSection("topics") as TopicsSection;
-      }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: ROOT TOPIC NAMESPACE
@@ -50,11 +32,11 @@ namespace Ignia.Topics.Configuration {
     public string RootTopicNamespace {
       get {
         return (string)this["rootTopicNamespace"];
-        }
+      }
       set {
         this["rootTopicNamespace"] = value;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: TOPIC DELIMITER
@@ -65,11 +47,11 @@ namespace Ignia.Topics.Configuration {
     public string TopicDelimiter {
       get {
         return (string)this["topicDelimiter"];
-        }
+      }
       set {
         this["topicDelimiter"] = value;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: DEFAULT DATA PROVIDER
@@ -80,11 +62,11 @@ namespace Ignia.Topics.Configuration {
     public string DefaultDataProvider {
       get {
         return (string)this["defaultDataProvider"];
-        }
+      }
       set {
         this["defaultDataProvider"] = value;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: DEFAULT MAPPING PROVIDER
@@ -95,11 +77,11 @@ namespace Ignia.Topics.Configuration {
     public string DefaultMappingProvider {
       get {
         return (string)this["defaultMappingProvider"];
-        }
+      }
       set {
         this["defaultMappingProvider"] = value;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ELEMENT: VERSIONING
@@ -108,8 +90,8 @@ namespace Ignia.Topics.Configuration {
     public VersioningElement Versioning {
       get {
         return this["versioning"] as VersioningElement;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ELEMENT: EDITOR
@@ -118,8 +100,8 @@ namespace Ignia.Topics.Configuration {
     public EditorElement Editor {
       get {
         return this["editor"] as EditorElement;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ELEMENT: VIEWS
@@ -128,16 +110,16 @@ namespace Ignia.Topics.Configuration {
     public ViewsElement Views {
       get {
         return this["views"] as ViewsElement;
-        }
       }
+    }
 
   /*============================================================================================================================
   | COLLECTION: PAGE TYPES
   \---------------------------------------------------------------------------------------------------------------------------*/
   [ ConfigurationProperty("pageTypes") ]
-  public PageTypeElementCollection PageTypes {
-    get {
-      return this["pageTypes"] as PageTypeElementCollection;
+    public PageTypeElementCollection PageTypes {
+      get {
+        return this["pageTypes"] as PageTypeElementCollection;
       }
     }
 
@@ -147,8 +129,8 @@ namespace Ignia.Topics.Configuration {
     public ProviderSettingsCollection Providers {
       get {
         return (ProviderSettingsCollection)base["providers"];
-        }
       }
+    }
   \---------------------------------------------------------------------------------------------------------------------------*/
 
   /*============================================================================================================================
@@ -158,8 +140,8 @@ namespace Ignia.Topics.Configuration {
     public ProviderSettingsCollection DataProviders {
       get {
         return (ProviderSettingsCollection)base["dataProviders"];
-        }
       }
+    }
 
   /*============================================================================================================================
   | COLLECTION: MAPPING PROVIDERS
@@ -168,9 +150,10 @@ namespace Ignia.Topics.Configuration {
     public ProviderSettingsCollection MappingProviders {
       get {
         return (ProviderSettingsCollection)base["mappingProviders"];
-        }
       }
-
     }
 
-  }
+  } //Class
+
+} //Namespace
+

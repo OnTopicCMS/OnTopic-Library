@@ -3,10 +3,6 @@
 | Client        Ignia
 | Project       Topics Editor
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 
 namespace Ignia.Topics {
 
@@ -128,12 +124,12 @@ namespace Ignia.Topics {
     public bool StoreInBlob {
       get {
         return this.GetAttribute("StoreInBlob", "1").Equals("1");
-        }
+      }
       set {
         this.Attributes["StoreInBlob"].Value = value.ToString();
-        }
       }
+    }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace

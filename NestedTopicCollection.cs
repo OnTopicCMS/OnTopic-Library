@@ -1,35 +1,20 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| CLASS: NESTED TOPIC COLLECTION
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@Ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
-| Project       Topics Library
+| Project       Topics Editor
 |
 | Purpose       Provides a base class by which to associate NestedTopic objects with specific memebers and methods.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.15.14        Katherine Trunkey       Created initial version.
-|               MM.DD.YY        FName LName             Description
-\-----------------------------------------------------------------------------------------------------------------------------*/
+>=============================================================================================================================*/
+using System;
+using System.Linq;
+using System.Collections.ObjectModel;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Linq;
-  using System.Xml;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+namespace Ignia.Topics {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class NestedTopicCollection : KeyedCollection<string, NestedTopic> {
 
   /*============================================================================================================================
@@ -44,8 +29,8 @@ namespace Ignia.Topics {
         string          key             = topic.Key;
         NestedTopic     nestedTopic     = new NestedTopic(key);
         this.Add(nestedTopic);
-        }
       }
+    }
 
 
   /*============================================================================================================================
@@ -56,8 +41,8 @@ namespace Ignia.Topics {
     protected override string GetKeyForItem(NestedTopic item) {
       string            key             = item.Key;
       return key;
-      }
-
     }
 
-  }
+  } //Class
+
+} //Namespace

@@ -1,8 +1,4 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| SQL TOPIC DATA PROVIDER
-|
 | Author        Casey Margell, Ignia LLC (casey.margell@ignia.com)
 | Client        Ignia
 | Project       Topics Editor
@@ -18,7 +14,8 @@ namespace Ignia.Topics {
 |               08.25.13        Jeremy Caney            Updated Save() to correctly recurse, including setting of ParentID.
 |               08.25.13        Jeremy Caney            Modified behavior of attribute lookup to handle arbitrary blob values.
 |               09.28.13        Jeremy Caney            Added basic dependency injection (DI) to support Topic derivations.
-|               09.30.13        Jeremy Caney            Updated to use TopicRepository.ContentTypes to lookup StoreInBlob on Save().
+|               09.30.13        Jeremy Caney            Updated to use TopicRepository.ContentTypes to lookup StoreInBlob on
+                                                        Save().
 |               08.06.14        Katherine Trunkey       Updated references to TopicAttribute to Attribute.
 |               08.06.14        Katherine Trunkey       Updated all instances of Attributes[key] to Attributes[key].Value.
 |               08.07.14        Katherine Trunkey       Updated Save() method correspondent to Versioning feature; added
@@ -28,27 +25,22 @@ namespace Ignia.Topics {
 |                                                       than a colon and semicolon in the creation of the Attributes string in
 |                                                       order to provide better escaping safety for the @Attributes parameter.
 \-----------------------------------------------------------------------------------------------------------------------------*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Globalization;
+using System.Xml;
+using Ignia.Web.Tools;
 
-/*==============================================================================================================================
-| NAMESPACE REFERENCES
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Data;
-  using System.Data.Sql;
-  using System.Data.SqlClient;
-  using System.Configuration;
-  using System.Globalization;
-  using System.Xml;
-  using Ignia.Web.Tools;
+namespace Ignia.Topics {
 
-  using System.Web;
-
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class SqlTopicDataProvider : TopicDataProviderBase {
 
   /*============================================================================================================================
@@ -84,7 +76,7 @@ namespace Ignia.Topics {
 
         if (version != null) {
           Utility.AddSqlParameter(command, "Version",   version.ToString(),                             SqlDbType.DateTime);
-          }
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | EXECUTE QUERY/READER
@@ -113,11 +105,11 @@ namespace Ignia.Topics {
         //Validate type
           if (targetType == null) {
             targetType          = baseType;
-            }
+          }
           else if (!targetType.IsSubclassOf(baseType)) {
             targetType          = baseType;
             throw new Exception("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-            }
+          }
 
         //Identify the appropriate topic
           dynamic               current         = Activator.CreateInstance(targetType);
@@ -127,46 +119,45 @@ namespace Ignia.Topics {
             current.Key         = key;
             current.Id          = id;
             topics.Add(current.Id, current);
-            }
+          }
 
         //Reference existing topic, if topic exists
           else {
             current             = topics[id];
-            }
+          }
 
         //Assign sort order, based on database order
           if (current.SortOrder < 0) {
             current.SortOrder   = sortOrder++;
-            }
+          }
 
         //Set Content Type
           if (!current.Attributes.Contains("ContentType")) {
             current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-            }
+          }
 
         //Provide special handling for ParentId
           if (parentId == -1) {
             continue;
-            }
+          }
 
           if (topics.Keys.Contains(parentId)) {
             current.Parent      = topics[parentId];
-            }
+          }
 
         //Add Key, ContentType, and ParentID to Attributes (AttributesCollection) if not available
         //to ensure Attributes is populated
           if (!current.Attributes.Contains("Key")) {
             current.Attributes.Add(new AttributeValue("Key", key, false));
-            }
+          }
           if (!current.Attributes.Contains("ContentType")) {
             current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-            }
+          }
           if (!current.Attributes.Contains("ParentID")) {
             current.Attributes.Add(new AttributeValue("ParentID", parentId.ToString(), false));
-            }
-
-
           }
+
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | READ ATTRIBUTES
@@ -190,9 +181,9 @@ namespace Ignia.Topics {
         //Set attribute value
           if (!current.Attributes.Contains(name)) {
             current.Attributes.Add(new AttributeValue(name, value, false));
-            }
-
           }
+
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | READ BLOB
@@ -231,14 +222,14 @@ namespace Ignia.Topics {
 
             if (!current.Attributes.Contains(name)) {
               current.Attributes.Add(new AttributeValue(name, value, false));
-              }
+            }
             else {
             //System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
-              }
-
             }
 
           }
+
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | READ RELATED ITEMS
@@ -263,15 +254,15 @@ namespace Ignia.Topics {
         //Fetch the source topic
           if (topics.Keys.Contains(sourceTopicId)) {
             current             = topics[sourceTopicId];
-            }
+          }
           else {
             current             = TopicRepository.RootTopic.GetTopic(sourceTopicId);
-            }
+          }
 
         //Fetch the related topic
           if (topics.Keys.Contains(targetTopicId)) {
             related             = topics[targetTopicId];
-            }
+          }
 
         //Bypass if either of the objects are missing
           if (current == null || related == null) continue;
@@ -279,7 +270,7 @@ namespace Ignia.Topics {
         //Set relationships on object
           current.SetRelationship(relationshipTypeId, related);
 
-          }
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | READ VERSION HISTORY
@@ -303,23 +294,23 @@ namespace Ignia.Topics {
         //Fetch the target topic
           if (topics.Keys.Contains(sourceTopicId)) {
             current                                     = topics[sourceTopicId];
-            }
+          }
 
         //Set history
           if (!current.VersionHistory.Contains(dateTime)) {
             current.VersionHistory.Add(dateTime);
-            }
-
           }
 
         }
+
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CATCH EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Topics failed to load: " + ex.Message);
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CLOSE CONNECTION
@@ -329,7 +320,7 @@ namespace Ignia.Topics {
         command.Dispose();
         connection.Dispose();
         connection.Close();
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | RETURN OBJECTS
@@ -337,7 +328,7 @@ namespace Ignia.Topics {
       if (topics.Count == 0) return null;
       return topics[topics.Keys.ElementAt(0)];
 
-      }
+    }
 
   /*============================================================================================================================
   | METHOD: SAVE
@@ -361,7 +352,7 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
       if (!TopicRepository.ContentTypes.Contains(topic.GetAttribute("ContentType"))) {
         throw new Exception("The Content Type \"" + topic.GetAttribute("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + TopicRepository.ContentTypes.Count + " ContentTypes in the Repository.");
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | ESTABLISH ATTRIBUTE STRINGS
@@ -385,20 +376,20 @@ namespace Ignia.Topics {
 
         if (contentType.SupportedAttributes.Keys.Contains(key)) {
           attribute                             = contentType.SupportedAttributes[key];
-          }
+        }
 
       //For attributes not stored in the Blob, only add the AttributeValue item to store if it has changed
         if (attribute != null && !attribute.StoreInBlob && attributeValue.IsDirty) {
           attributes.Append(key + "~~" + topic.Attributes[key].Value + "``");
-          }
+        }
         else if (attribute != null && attribute.StoreInBlob) {
           blob.Append("<attribute key=\"" + key + "\"><![CDATA[" + topic.Attributes[key].Value + "]]></attribute>");
-          }
+        }
 
       //Reset IsDirty (changed) state
         attributeValue.IsDirty                  = false;
 
-        }
+      }
 
       blob.Append("</attributes>");
 
@@ -417,9 +408,9 @@ namespace Ignia.Topics {
 
         if (conditionsMet) {
           nullAttributes.Append(attributeKey + ",");
-          }
-
         }
+
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | ESTABLISH DATABASE CONNECTION
@@ -440,10 +431,10 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
           command               = new SqlCommand("topics_UpdateTopic", connection);
-          }
+        }
         else {
           command               = new SqlCommand("topics_CreateTopic", connection);
-          }
+        }
 
         command.CommandType     = CommandType.StoredProcedure;
 
@@ -464,16 +455,16 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
           Utility.AddSqlParameter(command,      "TopicID",              topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-          }
+        }
         if (topic.Parent != null) {
           Utility.AddSqlParameter(command,      "ParentID",             topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-          }
+        }
         Utility.AddSqlParameter(command,        "Version",              version.ToString("yyyy-MM-dd HH:mm:ss.fff"), SqlDbType.DateTime);
         Utility.AddSqlParameter(command,        "Attributes",           attributes.ToString(),                  SqlDbType.VarChar);
         if (topic.Id != -1) {
           Utility.AddSqlParameter(command,      "NullAttributes",       nullAttributes.ToString(),              SqlDbType.VarChar);
           Utility.AddSqlParameter(command,      "DeleteRelationships",  "1",                                    SqlDbType.Bit);
-          }
+        }
         Utility.AddSqlParameter(command,        "Blob",                 blob.ToString(),                        SqlDbType.Xml);
         Utility.AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
 
@@ -498,14 +489,14 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
         PersistRelations(topic, connection, true);
 
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CATCH EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Failed to save Topic " + topic.Key + " (" + topic.Id + ") via " + ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString + ": " + ex.Message);
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CLOSE CONNECTION
@@ -513,7 +504,7 @@ namespace Ignia.Topics {
       finally {
         if (command != null) command.Dispose();
         if (connection != null) connection.Dispose();
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | RECURSE
@@ -522,15 +513,15 @@ namespace Ignia.Topics {
         foreach (Topic childTopic in topic) {
           childTopic.Attributes["ParentID"].Value = returnVal.ToString();
           childTopic.Save(isRecursive, isDraft);
-          }
         }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | RETURN VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
       return returnVal;
 
-      }
+    }
 
   /*----------------------------------------------------------------------------------------------------------------------------
   | METHOD: MOVE
@@ -539,7 +530,7 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     public override bool Move(Topic topic, Topic target) {
       return this.Move(topic, target, null);
-      }
+    }
 
     public override bool Move(Topic topic, Topic target, Topic sibling) {
 
@@ -572,21 +563,21 @@ namespace Ignia.Topics {
       //Append sibling ID if set
         if (sibling != null) {
           Utility.AddSqlParameter(command, "SiblingID", sibling.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-          }
+        }
 
       //Execute Query
         connection.Open();
 
         command.ExecuteNonQuery();
 
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CATCH EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Failed to move Topic " + topic.Key + " (" + topic.Id + ") to " + target.Key + " (" + target.Id + "): " + ex.Message);
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CLOSE CONNECTION
@@ -594,10 +585,10 @@ namespace Ignia.Topics {
       finally {
         if (command != null) command.Dispose();
         if (connection != null) connection.Dispose();
-        }
+      }
 
       return true;
-      }
+    }
 
   /*============================================================================================================================
   | METHOD: DELETE
@@ -635,14 +626,14 @@ namespace Ignia.Topics {
 
         command.ExecuteNonQuery();
 
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CATCH EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Failed to delete Topic " + topic.Key + " (" + topic.Id + "): " + ex.Message);
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CLOSE CONNECTION
@@ -650,9 +641,9 @@ namespace Ignia.Topics {
       finally {
         if (command != null) command.Dispose();
         if (connection != null) connection.Dispose();
-        }
-
       }
+
+    }
 
   /*============================================================================================================================
   | METHOD: PERSIST RELATIONS
@@ -662,14 +653,14 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     private static string PersistRelations(Topic topic, SqlConnection connection) {
       return PersistRelations(topic, connection, false);
-      }
+    }
 
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipBlob) {
 
       // return "" if the topic has no relations
       if (topic.Relationships.Count <= 0) {
         return "";
-        }
+      }
       SqlCommand                command         = null;
 
       try {
@@ -689,7 +680,7 @@ namespace Ignia.Topics {
           foreach (Topic relTopic in topic.Relationships[scope.Key]) {
             targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
             count++;
-            }
+          }
 
         //Add Parameters:
           Utility.AddSqlParameter(command, "RelationshipTypeID",  scope.Key,                            SqlDbType.VarChar);
@@ -698,15 +689,16 @@ namespace Ignia.Topics {
 
           command.ExecuteNonQuery();
 
-          }
         }
+
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CATCH EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Failed to persist relationships for Topic " + topic.Key + " (" + topic.Id + "): " + ex.Message);
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CLOSE CONNECTION
@@ -715,7 +707,7 @@ namespace Ignia.Topics {
       //if (command != null) command.Dispose();
       //Since the connection string is being passed in, do not close connection.
       //if (connection != null) connection.Dispose();
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | RETURN THE RELATIONSHIP ATTRIBUTES TO APPEND TO THE XML BLOB (unless bool skipBlob)
@@ -723,7 +715,7 @@ namespace Ignia.Topics {
       if (skipBlob) return "";
       else return CreateRelationshipsBlob(topic);
 
-      }
+    }
 
   /*============================================================================================================================
   | METHOD: CREATE RELATIONSHIPS BLOB
@@ -744,13 +736,13 @@ namespace Ignia.Topics {
         foreach (Topic relTopic in topic.Relationships[scope.Key]) {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
           count++;
-          }
+        }
         blob.Append(String.Join(",", targetIds));
         blob.Append("</related>");
-        }
-      return blob.ToString();
       }
+      return blob.ToString();
+    }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace

@@ -1,9 +1,5 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| SOURCE ELEMENT
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
@@ -12,27 +8,18 @@ namespace Ignia.Topics.Configuration {
 |               DIRECTLY from the Ignia Localization library; in the future, these libraries may (and should) share custom
 |               configuration classes.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Configuration;
+using System.Globalization;
+using System.Web;
+using System.Web.Security;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Configuration;
-  using System.Data;
-  using System.Globalization;
-  using System.Web;
-  using System.Web.Security;
+namespace Ignia.Topics.Configuration {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class SourceElement : ConfigurationElement {
 
   /*============================================================================================================================
@@ -42,8 +29,8 @@ namespace Ignia.Topics.Configuration {
     public string Source {
       get {
         return this["source"] as string;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: ENABLED
@@ -52,8 +39,8 @@ namespace Ignia.Topics.Configuration {
     public bool Enabled {
       get {
         return Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: LOCATION
@@ -62,8 +49,8 @@ namespace Ignia.Topics.Configuration {
     public string Location {
       get {
         return this["location"] as string;
-        }
       }
+    }
 
   /*============================================================================================================================
   | ATTRIBUTE: TRUSTED
@@ -72,8 +59,8 @@ namespace Ignia.Topics.Configuration {
     public bool Trusted {
       get {
         return Convert.ToBoolean(this["trusted"], CultureInfo.InvariantCulture);
-        }
       }
+    }
 
   /*============================================================================================================================
   | METHOD: GET ELEMENT
@@ -83,17 +70,17 @@ namespace Ignia.Topics.Configuration {
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
       return (SourceElement)parent.ElementInformation.Properties[key].Value;
-      }
+    }
 
     public static SourceElement GetElement(ConfigurationElementCollection parent, string key) {
       if (parent == null) return null;
       foreach (SourceElement source in parent) {
         if (source.Source.Equals(key)) {
           return source;
-          }
         }
-      return null;
       }
+      return null;
+    }
 
   /*============================================================================================================================
   | METHOD: GET VALUE
@@ -103,11 +90,11 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
     public static string GetValue(ConfigurationElement parent, string key) {
       return GetValue(GetElement(parent, key));
-      }
+    }
 
     public static string GetValue(ConfigurationElementCollection parent, string key) {
       return GetValue(GetElement(parent, key));
-      }
+    }
 
     public static string GetValue(SourceElement element) {
 
@@ -150,11 +137,11 @@ namespace Ignia.Topics.Configuration {
           break;
         default :
           throw new ConfigurationErrorsException("The source '" + element.Source + "' in the web.config is invalid.");
-        }
+      }
 
       return value;
 
-      }
+    }
 
   /*=========================================================================================================================
   | METHOD: IS ENABLED
@@ -164,30 +151,31 @@ namespace Ignia.Topics.Configuration {
   \------------------------------------------------------------------------------------------------------------------------*/
     public static bool IsEnabled(ConfigurationElement parent, string key) {
       return IsEnabled(parent, key, true);
-      }
+    }
 
     public static bool IsEnabled(ConfigurationElement parent, string key, bool evaluateValue) {
       return IsEnabled(GetElement(parent, key), evaluateValue);
-      }
+    }
 
     public static bool IsEnabled(ConfigurationElementCollection parent, string key) {
       return IsEnabled(parent, key, false);
-      }
+    }
 
     public static bool IsEnabled(ConfigurationElementCollection parent, string key, bool evaluateValue) {
       return IsEnabled(GetElement(parent, key), evaluateValue);
-      }
+    }
 
     public static bool IsEnabled(SourceElement element, bool evaluateValue) {
+
       if (element == null) {
         return false;
-        }
+      }
       if (!element.Enabled) {
         return false;
-        }
+      }
       else if (!evaluateValue || element.Location == null) {
         return true;
-        }
+      }
 
       string value = GetValue(element);
 
@@ -195,7 +183,7 @@ namespace Ignia.Topics.Configuration {
 
       return Convert.ToBoolean(value, CultureInfo.InvariantCulture);
 
-      }
+    }
 
   /*=========================================================================================================================
   | METHOD: IS TRUSTED
@@ -205,16 +193,17 @@ namespace Ignia.Topics.Configuration {
   \------------------------------------------------------------------------------------------------------------------------*/
     public static bool IsTrusted(ConfigurationElement parent, string key) {
       return IsTrusted(GetElement(parent, key));
-      }
+    }
 
     public static bool IsTrusted(ConfigurationElementCollection parent, string key) {
       return IsTrusted(GetElement(parent, key));
-      }
+    }
 
     public static bool IsTrusted(SourceElement element) {
       return (element == null)? false : element.Trusted;
-      }
-
     }
 
-  }
+  } //Class
+
+} //Namespace
+

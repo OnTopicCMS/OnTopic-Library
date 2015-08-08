@@ -1,36 +1,21 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| TOPIC mapping PROVIDER MANAGER
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
 | Purpose       Provides initialization of the specified Topic MAPPING provider based on retrieving the appropriate data from
 |               the custom configuration.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Configuration;
+using System.Web.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Configuration;
-  using System.Linq;
-  using System.Text;
-  using System.Web.Configuration;
+namespace Ignia.Topics.Configuration {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class TopicMappingProviderManager {
 
   /*============================================================================================================================
@@ -46,7 +31,7 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
     static TopicMappingProviderManager() {
       Initialize();
-      }
+    }
 
   /*============================================================================================================================
   | METHOD: INITIALIZE
@@ -63,7 +48,7 @@ namespace Ignia.Topics.Configuration {
 
       if (topicsConfiguration == null) {
         throw new ConfigurationErrorsException("The Topics configuration section (<topics />) is not set correctly.");
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | INSTANTIATE MAPPING PROVIDERS
@@ -84,9 +69,9 @@ namespace Ignia.Topics.Configuration {
 
       if (_defaultMappingProvider == null) {
         throw new Exception("The defaultDataProvider value is not available from the Topics configuration section (<topics />)");
-        }
-
       }
+
+    }
 
   /*============================================================================================================================
   | PROPERTY: MAPPING PROVIDER
@@ -96,8 +81,8 @@ namespace Ignia.Topics.Configuration {
     public static TopicMappingProviderBase MappingProvider {
       get {
         return _defaultMappingProvider;
-        }
       }
+    }
 
   /*============================================================================================================================
   | PROPERTY: MAPPING PROVIDERS
@@ -108,8 +93,9 @@ namespace Ignia.Topics.Configuration {
     public static TopicMappingProviderCollection MappingProviders {
       get {
         return _mappingProviders;
-        }
       }
-
     }
-  }
+
+  } //Class
+
+} //Namespace

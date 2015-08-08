@@ -1,35 +1,20 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| CLASS: CHILD TOPIC COLLECTION
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@Ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
 | Purpose       Provides a base class by which to associate ChildTopic objects with specific memebers and methods.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.15.14        Katherine Trunkey       Created initial version.
-|               MM.DD.YY        FName LName             Description
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Linq;
+using System.Collections.ObjectModel;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Linq;
-  using System.Xml;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+namespace Ignia.Topics {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class ChildTopicCollection : KeyedCollection<string, ChildTopic> {
 
   /*============================================================================================================================
@@ -43,8 +28,8 @@ namespace Ignia.Topics {
       foreach (Topic topic in source.Where(t => t.ContentType.Key != "List")) {
         ChildTopic      childTopic      = new ChildTopic(topic.Key);
         this.Add(childTopic);
-        }
       }
+    }
 
 
   /*============================================================================================================================
@@ -54,8 +39,8 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     protected override string GetKeyForItem(ChildTopic item) {
       return item.Key;
-      }
-
     }
 
-  }
+  } //Class
+
+} //Namespace

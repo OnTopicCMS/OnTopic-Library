@@ -1,8 +1,4 @@
-namespace Ignia.Topics.Configuration {
-
 /*==============================================================================================================================
-| TOPIC DATA PROVIDER MANAGER
-|
 | Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
 | Client        Ignia
 | Project       Topics Library
@@ -10,27 +6,16 @@ namespace Ignia.Topics.Configuration {
 | Purpose       Provides initialization of the specified Topic data provider based on retrieving the appropriate data from the
 |               custom configuration.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.14.14        Katherine Trunkey       Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Configuration;
+using System.Web.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used in the compiling of the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Configuration;
-  using System.Linq;
-  using System.Text;
-  using System.Web.Configuration;
+namespace Ignia.Topics.Configuration {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class TopicDataProviderManager {
 
   /*============================================================================================================================
@@ -46,7 +31,7 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
     static TopicDataProviderManager() {
       Initialize();
-      }
+    }
 
   /*============================================================================================================================
   | METHOD: INITIALIZE
@@ -63,7 +48,7 @@ namespace Ignia.Topics.Configuration {
 
       if (topicsConfiguration == null) {
         throw new ConfigurationErrorsException("The Topics configuration section (<topics />) is not set correctly.");
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | INSTANTIATE DATA PROVIDERS
@@ -84,9 +69,9 @@ namespace Ignia.Topics.Configuration {
 
       if (_defaultDataProvider == null) {
         throw new Exception("The defaultDataProvider value is not available from the Topics configuration section (<topics />)");
-        }
-
       }
+
+    }
 
   /*============================================================================================================================
   | PROPERTY: DATA PROVIDER
@@ -96,8 +81,8 @@ namespace Ignia.Topics.Configuration {
     public static TopicDataProviderBase DataProvider {
       get {
         return _defaultDataProvider;
-        }
       }
+    }
 
   /*============================================================================================================================
   | PROPERTY: DATA PROVIDERS
@@ -108,8 +93,9 @@ namespace Ignia.Topics.Configuration {
     public static TopicDataProviderCollection DataProviders {
       get {
         return _dataProviders;
-        }
       }
-
     }
-  }
+
+  } //Class
+
+} //Namespace

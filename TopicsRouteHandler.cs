@@ -1,9 +1,5 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| TOPICS ROUTE HANDLER
-|
-| Author        Jeremy Caney, Ignia LLC (Jeremy.Caney@Ignia.com)
+| Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Editor
 |
@@ -11,36 +7,23 @@ namespace Ignia.Topics {
 |               the user is routed to a template corresponding to the Topic's Content Type.  Otherwise, the originally
 |               requested page is rendered (although this may yield a 404).
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               09.19.13        Jeremy Caney            Initial version created.
-|               08.09.14        Katherine Trunkey       Added logic for managing available Views.
-|               MM.DD.YY        FName LName             Description
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.Routing;
+using System.Web.Compilation;
+using Ignia.Topics.Configuration;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
-  using System.Collections.Specialized;
-  using System.Configuration;
-  using System.IO;
-  using System.Linq;
-  using System.Web;
-  using System.Web.UI;
-  using System.Web.Routing;
-  using System.Web.Compilation;
-  using Ignia.Topics;
-  using Ignia.Topics.Configuration;
+namespace Ignia.Topics {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class TopicsRouteHandler : IRouteHandler {
 
   /*============================================================================================================================
@@ -51,8 +34,7 @@ namespace Ignia.Topics {
   /*============================================================================================================================
   | CONSTRUCTOR
   \---------------------------------------------------------------------------------------------------------------------------*/
-    public TopicsRouteHandler() {
-      }
+    public TopicsRouteHandler() { }
 
   /*============================================================================================================================
   | PROPERTY: VIEWS PATH
@@ -67,10 +49,10 @@ namespace Ignia.Topics {
         TopicsSection           topicsSection           = (TopicsSection)ConfigurationManager.GetSection("topics");
         if (topicsSection != null && topicsSection.Views != null && !String.IsNullOrEmpty(topicsSection.Views.Path)) {
           viewsPath                                     = topicsSection.Views.Path;
-          }
-        return viewsPath;
         }
+        return viewsPath;
       }
+    }
 
   /*============================================================================================================================
   | PROPERTY: VIEWS
@@ -99,33 +81,33 @@ namespace Ignia.Topics {
           //Strip off the extension (must do even for the FileInfo instance)
             string      fileName                        = file.Name.ToLower().Replace(".aspx", "");
             views.Add(fileName);
-            }
+          }
         //Get view files specific to Content Type
           foreach (DirectoryInfo subDirectory in subDirectories) {
             string      subDirectoryName                = subDirectory.Name;
             foreach (FileInfo file in subDirectory.GetFiles(searchPattern, searchOption)) {
               string    fileName                        = file.Name.ToLower().Replace(".aspx", "");
               views.Add(subDirectoryName + "/" + fileName);
-              }
             }
+          }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | SET VIEWS
         \---------------------------------------------------------------------------------------------------------------------*/
           _views                = views;
 
-          }
+        }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | RETURN VIEWS
       \-----------------------------------------------------------------------------------------------------------------------*/
         return _views;
 
-        }
+      }
       set {
         _views = value;
-        }
       }
+    }
 
   /*============================================================================================================================
   | PROPERTY: IS VALID VIEW
@@ -144,14 +126,14 @@ namespace Ignia.Topics {
         File.Exists(HttpContext.Current.Server.MapPath(ViewsPath + contentType + "/" + viewName + ".aspx"))
         ) {
         matchedView           = contentType + "/" + viewName;
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | CHECK FOR GENERIC VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
       else if (!String.IsNullOrEmpty(viewName) && Views.Contains(viewName, StringComparer.InvariantCultureIgnoreCase)) {
         matchedView             = viewName;
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | RETURN NULL (INVALID) VIEW
@@ -159,9 +141,9 @@ namespace Ignia.Topics {
       else {
         matchedView             = null;
         return false;
-        }
-      return true;
       }
+      return true;
+    }
 
 
   /*============================================================================================================================
@@ -189,7 +171,7 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) {
         return BuildManager.CreateInstanceFromVirtualPath("~/" + path, typeof(Page)) as IHttpHandler;
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | SET ROUTE VARIABLES
@@ -199,19 +181,18 @@ namespace Ignia.Topics {
       if (String.IsNullOrEmpty(nameSpace)) {
         nameSpace                               = topic.UniqueKey.Substring(0, topic.UniqueKey.IndexOf(":"));
         path                                    = topic.UniqueKey.Substring(topic.UniqueKey.IndexOf(":")+1);
-        }
+      }
 
       requestContext.RouteData.Values["contentType"]            = contentType;
       requestContext.RouteData.Values["directory"]              = directory;
       requestContext.RouteData.Values["path"]                   = path;
-    //requestContext.RouteData.Values["nameSpace"]              = nameSpace;
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | VALIDATE CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(contentType)) {
         throw new Exception("The ContentType for the Topic \"" + topic.UniqueKey + "\" (" + topic.Id + ") is not set.  Set the ContentType value of the Topic based on the template that should be associated with it.  E.g., a standard page will have the ContentType of \"Page\".");
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | DERIVE EXPECTED VIEW
@@ -225,7 +206,7 @@ namespace Ignia.Topics {
     //Pull from QueryString
       if (viewName == null && HttpContext.Current.Request.QueryString["View"] != null) {
         IsValidView(contentType, HttpContext.Current.Request.QueryString["View"].ToString(), out viewName);
-        }
+      }
 
     //Pull from Accept header
       if (viewName == null && HttpContext.Current.Request.Headers["Accept"] != null) {
@@ -239,21 +220,21 @@ namespace Ignia.Topics {
           //Validate against available views; if content-type represents a valid view, stop validation
             if (IsValidView(contentType, acceptHeader, out viewName)) {
               break;
-              }
             }
           }
         }
+      }
 
     //Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary,
     //as it is set as the default View value for the Topic
       if (viewName == null && !String.IsNullOrEmpty(topic.View)) {
         IsValidView(contentType, topic.View, out viewName);
-        }
+      }
 
     //Use (fall back to) the Topic's ContentType Attribute
       if (viewName == null) {
         viewName                                = contentType;
-        }
+      }
 
     /*--------------------------------------------------------------------------------------------------------------------------
     | SET TARGET PATH
@@ -275,8 +256,8 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
       return BuildManager.CreateInstanceFromVirtualPath(targetPath, typeof(TopicPage)) as IHttpHandler;
 
-      }
+    }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace

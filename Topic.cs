@@ -1,16 +1,12 @@
-namespace Ignia.Topics {
-
-/*=============================================================================================================================
-| TOPIC
-|
-| Author        Casey Margell, Ignia LLC (casey.margell@ignia.com)
+/*==============================================================================================================================
+| Author        Casey Margell, Ignia LLC
 | Client        Ignia
-| Project       Topics Library
+| Project       Topics Editor
 |
 | Purpose       The Topic object is a simple container for a particular node in the topic hierarchy. It contains the
 |               metadata associated with the particular node, a list of children, etc....
 |
->==============================================================================================================================
+>===============================================================================================================================
 | Revisions     Date            Author                  Comments
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 |               03.24.09        Casey Margell           Initial version template
@@ -39,24 +35,19 @@ namespace Ignia.Topics {
 |                                                       removed setter as it is no longer needed. Finalized View property.
 |               09.11.14        Katherine Trunkey       Updated FindAllByAttribute() to be IndexOf-inclusive.
 |               09.27.14        Jeremy Caney            Added support for version history.
-\----------------------------------------------------------------------------------------------------------------------------*/
+\-----------------------------------------------------------------------------------------------------------------------------*/
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Globalization;
 
-/*=============================================================================================================================
-| NAMESPACES
-\----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
-  using System.Text;
-  using System.Linq;
-  using System.Globalization;
+namespace Ignia.Topics {
 
-//TO REMOVE: In place for debugging/writing values
-  using System.Web;
 
-/*=============================================================================================================================
-| CLASS
-\----------------------------------------------------------------------------------------------------------------------------*/
+  /*=============================================================================================================================
+  | CLASS
+  \----------------------------------------------------------------------------------------------------------------------------*/
   public class Topic : KeyedCollection<string, Topic>, IDisposable {
 
 
@@ -82,17 +73,16 @@ namespace Ignia.Topics {
   >============================================================================================================================
   | Constructors for the topic object.
   \--------------------------------------------------------------------------------------------------------------------------*/
-    public Topic() : base(StringComparer.OrdinalIgnoreCase) {
-      }
+    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
     public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
       this.Key                  = key;
-      }
+    }
 
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       this.Key                  = key;
       this.Attributes.Add(new AttributeValue("ContentType", contentType));
-      }
+    }
 
   /*===========================================================================================================================
   | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
@@ -136,13 +126,13 @@ namespace Ignia.Topics {
       get {
         if (_attributes == null) {
           _attributes = new AttributeValueCollection();
-          }
-        return _attributes;
         }
+        return _attributes;
+      }
       set {
         _attributes = value;
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: RELATIONSHIPS
@@ -153,10 +143,10 @@ namespace Ignia.Topics {
       get {
         if (_relationships == null) {
           _relationships = new Topic();
-          }
-        return _relationships;
         }
+        return _relationships;
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: INCOMING RELATIONSHIPS
@@ -168,10 +158,10 @@ namespace Ignia.Topics {
       get {
         if (_incomingRelationships == null) {
           _incomingRelationships = new Topic();
-          }
-        return _incomingRelationships;
         }
+        return _incomingRelationships;
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: PARENT
@@ -181,29 +171,29 @@ namespace Ignia.Topics {
     public Topic Parent {
       get {
         return _parent;
-        }
+      }
       set {
         if (value == null) {
           throw new InvalidOperationException("The value for Parent must not be null.");
-          }
+        }
         if (_parent == value) {
           return;
-          }
+        }
         if (!value.Contains(this.Key)) {
           value.Add(this);
-          }
+        }
         else {
           throw new Exception("Duplicate key when setting Parent property: the topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic.");
-          }
+        }
         if (_parent != null) {
           TopicRepository.Move(this, value);
           _parent.Remove(this.Key);
-          }
+        }
         _parent = value;
         Attributes.Remove("ParentID");
         Attributes.Add(new AttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture)));
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: DERIVED TOPIC
@@ -218,19 +208,19 @@ namespace Ignia.Topics {
           bool success = Int32.TryParse(this.Attributes["TopicID"].Value.ToString(), out topicId);
           if (!success || topicId == 0) return null;
           _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
-          }
-        return _derivedTopic;
         }
+        return _derivedTopic;
+      }
       set {
         _derivedTopic = value;
         if (value != null) {
           this.Attributes.SetAttributeValue("TopicID", value.Id.ToString());
-          }
+        }
         else if (this.Attributes.Contains("TopicID")) {
           this.Attributes.Remove("TopicID");
-          }
         }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: SORTED CHILDREN
@@ -241,8 +231,8 @@ namespace Ignia.Topics {
     public IEnumerable<Topic> SortedChildren {
       get {
         return this.Items.OrderBy(topic => topic.SortOrder);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: NESTED TOPICS
@@ -258,8 +248,8 @@ namespace Ignia.Topics {
     public NestedTopicCollection NestedTopics {
       get {
         return new NestedTopicCollection(this);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: CHILD TOPICS
@@ -270,8 +260,8 @@ namespace Ignia.Topics {
     public ChildTopicCollection ChildTopics {
       get {
         return new ChildTopicCollection(this);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: ID
@@ -281,11 +271,11 @@ namespace Ignia.Topics {
     public int Id {
       get {
         return _id;
-        }
+      }
       set {
         _id = value;
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: ORIGINAL NAME
@@ -295,11 +285,11 @@ namespace Ignia.Topics {
     public string OriginalName {
       get {
         throw new NotImplementedException();
-        }
+      }
       set {
         throw new NotImplementedException();
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: ORIGINAL KEY
@@ -309,11 +299,11 @@ namespace Ignia.Topics {
     public string OriginalKey {
       get {
         return _originalKey;
-        }
+      }
       set {
         _originalKey = value;
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: NAME
@@ -323,11 +313,11 @@ namespace Ignia.Topics {
     public string Name {
       get {
         throw new NotImplementedException();
-        }
+      }
       set {
         throw new NotImplementedException();
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: KEY
@@ -336,26 +326,19 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public string Key {
       get {
-        //GetAttribute("Key", null);
         return _key;
-        }
+      }
       set {
         if (_originalKey == null) {
           _originalKey = GetAttribute("Key", null);
-          }
+        }
         if (_originalKey != null && !value.Equals(Key) && Parent != null) {
           Parent.ChangeKey(this, value);
-          }
-        Attributes.SetAttributeValue("Key", value);
-      //if ((ContentType.Key == "List" || Attributes["Type"].Value == "TopicList.ascx") && !value.StartsWith("_")) {
-      //  Attributes["Key"].Value = "_" + value;
-      //  }
-      //else {
-        //Attributes["Key"].Value = value;
-          _key = value;
-      //  }
         }
+        Attributes.SetAttributeValue("Key", value);
+        _key = value;
       }
+    }
 
   /*===========================================================================================================================
   | METHOD: CHANGE KEY
@@ -366,7 +349,7 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
-      }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: FULL NAME
@@ -376,8 +359,8 @@ namespace Ignia.Topics {
     public string FullName {
       get {
         throw new NotImplementedException();
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: UNIQUE KEY
@@ -398,15 +381,15 @@ namespace Ignia.Topics {
           uniqueKey     = topic.Key + uniqueKey;
           topic         = topic.Parent;
           if (topic == null) break;
-          }
+        }
 
       /*-----------------------------------------------------------------------------------------------------------------------
       | Return value
       \----------------------------------------------------------------------------------------------------------------------*/
         return uniqueKey;
 
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: WEB PATH
@@ -416,10 +399,9 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public string WebPath {
       get {
-      //return UniqueKey.Replace("Root", "").Replace(":", "/") + "/";
         return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: CONTENT TYPE
@@ -433,22 +415,21 @@ namespace Ignia.Topics {
         if (_contentType == null) {
           if (Attributes.Contains("ContentType") && !String.IsNullOrEmpty(Attributes["ContentType"].Value) && TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)) {
             _contentType = TopicRepository.ContentTypes[Attributes["ContentType"].Value];
-            }
           }
+        }
 
       //If content type doesn't exist, default to Container.
         if (_contentType == null) {
           _contentType = TopicRepository.ContentTypes["Container"];
-          }
+        }
 
         return _contentType;
 
-        }
-
+      }
       set {
         _contentType = value;
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: LAST MODIFIED
@@ -464,23 +445,23 @@ namespace Ignia.Topics {
         //Return converted DateTime
           if (DateTime.TryParse(lastModified, out dateTimeValue)) {
             return dateTimeValue;
-            }
+          }
         //Return minimum date value if datetime cannot be parsed from attribute
           else {
             return DateTime.MinValue;
-            }
           }
+        }
         else {
         //Return minimum date value, if LastModified is not already populated
           return DateTime.MinValue;
-          }
         }
+      }
       set {
         if (value != null) {
           Attributes.SetAttributeValue("LastModified", value.ToString());
-          }
         }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: VERSIONS
@@ -495,8 +476,8 @@ namespace Ignia.Topics {
       //Since versions won't normally be required, except during rollback scenarios, may alternatively configure these to load
       //on demand.
         return _versions;
-        }
       }
+    }
   \--------------------------------------------------------------------------------------------------------------------------*/
 
   /*===========================================================================================================================
@@ -508,10 +489,10 @@ namespace Ignia.Topics {
       get {
         if (_versionHistory == null) {
           _versionHistory = new List<DateTime>();
-          }
-        return _versionHistory;
         }
+        return _versionHistory;
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: VIEW
@@ -522,11 +503,11 @@ namespace Ignia.Topics {
       get {
       //Return current Topic's View Attribute or the default for the ContentType.
         return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
-        }
+      }
       set {
         Attributes.SetAttributeValue("View", value);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: TITLE
@@ -536,11 +517,11 @@ namespace Ignia.Topics {
     public string Title {
       get {
         return GetAttribute("Title", Key);
-        }
+      }
       set {
         Attributes.SetAttributeValue("Title", value);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: DESCRIPTION
@@ -550,11 +531,11 @@ namespace Ignia.Topics {
     public string Description {
       get {
         return GetAttribute("Description");
-        }
+      }
       set {
         Attributes.SetAttributeValue("Description", value);
-        }
       }
+    }
 
   /*===========================================================================================================================
   | PROPERTY: SORT ORDER
@@ -566,11 +547,11 @@ namespace Ignia.Topics {
     public int SortOrder {
       get {
         return _sortOrder;
-        }
+      }
       set {
         _sortOrder = value;
-        }
       }
+    }
 
   /*===========================================================================================================================
   | METHOD: SET RELATIONSHIP
@@ -585,9 +566,9 @@ namespace Ignia.Topics {
       if (String.IsNullOrEmpty(relatedCsv)) {
         if (this.Relationships.Contains(scope)) {
           this.Relationships.Remove(scope);
-          }
-        return;
         }
+        return;
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | BUILD COLLECTION FROM CSV
@@ -604,33 +585,33 @@ namespace Ignia.Topics {
           Topic topic = TopicRepository.RootTopic.GetTopic(number);
           if (topic == null) {
             throw new ArgumentException("SetRelationship failed to find TopicId: " + number.ToString(CultureInfo.InvariantCulture));
-            }
+          }
           if (!related.Contains(topic.Key)) {
             related.Add(topic);
-            }
           }
+        }
         else {
           if (csv[i] == null) csv[i] = "";
           throw new ArgumentException("Attempted conversion of '" + csv[i] + "' failed.");
-          }
         }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | SET INCOMING RELATIONSHIPS
     \------------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic relatedTopic in related) {
         relatedTopic.SetRelationship(scope, this, true);
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | SET PROPERTY VALUE
     \------------------------------------------------------------------------------------------------------------------------*/
       if (this.Relationships.Contains(related.Key)) {
         this.Relationships.Remove(related.Key);
-        }
+      }
       this.Relationships.Add(related);
 
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: SET RELATIONSHIP
@@ -643,24 +624,24 @@ namespace Ignia.Topics {
 
       if (isIncoming) {
         relationships = this.IncomingRelationships;
-        }
+      }
 
     //Create new namespace, if not present
       if (!relationships.Contains(scope)) {
         relationships.Add(new Topic(scope));
-        }
+      }
 
     //Add the relationship to the correct scoped key
       if (!relationships[scope].Contains(related.Key)) {
         relationships[scope].Add(related);
-        }
+      }
 
     //Set incoming relationship
       if (!isIncoming) {
         related.SetRelationship(scope, this, true);
-        }
-
       }
+
+    }
 
   /*===========================================================================================================================
   | METHOD: GET ATTRIBUTE
@@ -669,7 +650,7 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public string GetAttribute(string name, bool isRecursive = false) {
       return GetAttribute(name, "", isRecursive);
-      }
+    }
 
     public string GetAttribute(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
 
@@ -680,35 +661,35 @@ namespace Ignia.Topics {
     \------------------------------------------------------------------------------------------------------------------------*/
       if (Attributes.Contains(name)) {
         value = Attributes[name].Value;
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | LOOKUP VALUE FROM TOPIC POINTER
     \------------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(value) && this.DerivedTopic != null && maxHops > 0) {
         value = this.DerivedTopic.GetAttribute(name, null, false, maxHops-1);
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | LOOKUP VALUE FROM PARENT
     \------------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(value) && isRecursive && Parent != null) {
         value = Parent.GetAttribute(name, defaultValue, isRecursive);
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | RETURN VALUE, IF FOUND
     \------------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(value)) {
         return value;
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | FINALLY, RETURN DEFAULT
     \------------------------------------------------------------------------------------------------------------------------*/
       return defaultValue;
 
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: FIND ALL BY ATTRIBUTE
@@ -722,17 +703,17 @@ namespace Ignia.Topics {
       Collection<Topic> results = new Collection<Topic>();
       if (this.GetAttribute(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
         results.Add(this);
-        }
+      }
       if (isRecursive) {
         foreach (Topic topic in this) {
           Collection<Topic> nestedResults = topic.FindAllByAttribute(name, value, true);
           foreach (Topic matchedTopic in nestedResults) {
             results.Add(matchedTopic);
-            }
           }
         }
-      return results;
       }
+      return results;
+    }
 
 
   /*===========================================================================================================================
@@ -744,44 +725,44 @@ namespace Ignia.Topics {
   //Load by string name
     public static Topic Load() {
       return Load("", -1);
-      }
+    }
 
     public static Topic Load(bool deepLoad) {
       return Load("", deepLoad?-1:0);
-      }
+    }
 
     public static Topic Load(string topic) {
       return Load(topic, -1);
-      }
+    }
 
     public static Topic Load(string topic, bool deepLoad) {
       return Load(topic, deepLoad?-1:0);
-      }
+    }
 
     public static Topic Load(string topic, int depth) {
       return TopicRepository.Load(topic, depth);
-      }
+    }
 
     public static Topic Load(string topic, DateTime version) {
       return TopicRepository.Load(topic, 0, version);
-      }
+    }
 
   //Load by topicId
     public static Topic Load(int topicId) {
       return Load(topicId, -1);
-      }
+    }
 
     public static Topic Load(int topicId, bool deepLoad) {
       return Load(topicId, deepLoad?-1:0);
-      }
+    }
 
     public static Topic Load(int topicId, int depth) {
       return TopicRepository.Load(topicId, depth);
-      }
+    }
 
     public static Topic Load(int topicId, DateTime version) {
       return TopicRepository.Load(topicId, 0, version);
-      }
+    }
 
   /*===========================================================================================================================
   | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
@@ -795,7 +776,7 @@ namespace Ignia.Topics {
     //Construct children objects
     //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects are
     //already created and available.
-      }
+    }
   \--------------------------------------------------------------------------------------------------------------------------*/
 
   /*===========================================================================================================================
@@ -809,7 +790,7 @@ namespace Ignia.Topics {
     //Construct children objects
     //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects are
     //already created and available.
-      }
+    }
   \--------------------------------------------------------------------------------------------------------------------------*/
 
   /*===========================================================================================================================
@@ -830,8 +811,8 @@ namespace Ignia.Topics {
       foreach (AttributeValue attribute in originalVersion.Attributes) {
         if (!this.Attributes.Contains(attribute.Key) || this.Attributes[attribute.Key].Value != attribute.Value) {
           attribute.IsDirty = true;
-          }
         }
+      }
 
     //Construct new AttributeCollection
       this.Attributes                                   = originalVersion.Attributes;
@@ -839,7 +820,7 @@ namespace Ignia.Topics {
     //Save as new version
       this.Save();
 
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: GET TOPIC
@@ -855,15 +836,15 @@ namespace Ignia.Topics {
       foreach (Topic childTopic in this) {
         Topic topic = childTopic.GetTopic(topicId);
         if (topic != null) return topic;
-        }
+      }
 
       return null;
 
-      }
+    }
 
     public Topic GetTopic(string namespaceKey, string topic) {
       return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
-      }
+    }
 
     public Topic GetTopic(string topic) {
 
@@ -886,7 +867,7 @@ namespace Ignia.Topics {
         !topic.Equals("Categories", StringComparison.OrdinalIgnoreCase)
         ) {
         topic = "Root:" + topic;
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | VALIDATE PARAMETERS
@@ -910,7 +891,7 @@ namespace Ignia.Topics {
 
       return this[nextChild].GetTopic(topic);
 
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: SAVE
@@ -919,7 +900,7 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public int Save() {
       return Save(false, false);
-      }
+    }
 
   //Overload for save as draft
     /*
@@ -931,7 +912,7 @@ namespace Ignia.Topics {
     public int Save(bool isRecursive, bool isDraft) {
       Id = TopicRepository.Save(this, isRecursive, isDraft);
       return Id;
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: REFRESH
@@ -940,11 +921,11 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public bool Refresh() {
       return Refresh(true);
-      }
+    }
 
     public bool Refresh(bool isRecursive) {
       throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: DELETE
@@ -954,11 +935,11 @@ namespace Ignia.Topics {
   \--------------------------------------------------------------------------------------------------------------------------*/
     public void Delete() {
       Delete(true);
-      }
+    }
 
     public void Delete(bool isRecursive) {
       TopicRepository.Delete(this, isRecursive);
-      }
+    }
 
   /*=========================================================================================================================
   | OVERRIDE: GET KEY FOR ITEM
@@ -967,7 +948,7 @@ namespace Ignia.Topics {
   \------------------------------------------------------------------------------------------------------------------------*/
     protected override string GetKeyForItem(Topic item) {
       return item.Key;
-      }
+    }
 
   /*===========================================================================================================================
   | METHOD: DISPOSE
@@ -975,9 +956,8 @@ namespace Ignia.Topics {
   | Technically, there's nothing to be done when disposing a Topic.  However, this allows the topic attributes (and properties)
   | to be set using a using statement, which is syntactically convenient.
   \--------------------------------------------------------------------------------------------------------------------------*/
-    public void Dispose() {
-      }
+    public void Dispose() { }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace

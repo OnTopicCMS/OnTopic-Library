@@ -1,33 +1,19 @@
-namespace Ignia.Topics {
-
-/*=============================================================================================================================
-| FILE PATH
-|
-| Author        Katherine Trunkey, Ignia LLC (Katherine.Trunkey@Ignia.com)
+/*==============================================================================================================================
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia, LLC
-| Project       OnTopic
+| Project       Topics Library
 |
 | Purpose       Provides a strongly-typed class associated with the FilePath.ascx Attribute Type control and locic associated
 |               with building a configured file path from values passed to the constructor.
 |
->==============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               10.05.14        Katherine Trunkey       Initial version created.
-\----------------------------------------------------------------------------------------------------------------------------*/
+>=============================================================================================================================*/
+using System;
 
-/*=============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->==============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Linq;
-  using System.Web;
+namespace Ignia.Topics {
 
-/*=============================================================================================================================
-| CLASS
-\----------------------------------------------------------------------------------------------------------------------------*/
+  /*=============================================================================================================================
+  | CLASS
+  \----------------------------------------------------------------------------------------------------------------------------*/
   public class FilePath {
 
   /*===========================================================================================================================
@@ -72,8 +58,8 @@ namespace Ignia.Topics {
         startTopic                      = startTopic.Parent;
         if (startTopic != null && !String.IsNullOrEmpty(attributeKey)) {
           filePath                      = startTopic.GetAttribute(attributeKey);
-          }
         }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | ADD TOPIC KEYS (DIRECTORY NAMES) BETWEEN THE START TOPIC AND END TOPIC BASED ON THE TOPICS' WEBPATH PROPERTIES
@@ -88,9 +74,9 @@ namespace Ignia.Topics {
           int truncateTopicLocation     = relativePath.IndexOf(truncationTopic, StringComparison.InvariantCultureIgnoreCase);
           if (truncateTopicLocation >= 0) {
             relativePath                = relativePath.Substring(0, truncateTopicLocation + truncationTopic.Length + 1);
-            }
           }
         }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | ADD RESULTING RELATIVE PATH TO THE ORIGINAL FILE PATH (BASED ON STARTING TOPIC)
@@ -102,14 +88,15 @@ namespace Ignia.Topics {
     \------------------------------------------------------------------------------------------------------------------------*/
       if (filePath.IndexOf("\\") >= 0) {
         filePath                        = filePath.Replace("/", "\\");
-        }
+      }
 
     /*-------------------------------------------------------------------------------------------------------------------------
     | RETURN RESULTING FILE PATH
     \------------------------------------------------------------------------------------------------------------------------*/
       return filePath;
-      }
 
-    } //Class
+    }
 
-  } //Namespace
+  } //Class
+
+} //Namespace

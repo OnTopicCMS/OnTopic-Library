@@ -1,34 +1,19 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| CLASS: ATTRIBUTE VALUE COLLECTION
-|
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@Ignia.com)
+| Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
 |
 | Purpose       Provides a base class by which to associate Attribute subclasses with specific memebers and methods.
 |
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.06.14        Katherine Trunkey       Created initial version.
-|               MM.DD.YY        FName LName             Description
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Collections.ObjectModel;
 
-/*==============================================================================================================================
-| DEFINE ASSEMBLY ATTRIBUTES
->===============================================================================================================================
-| Declare and define attributes used to compile the finished assembly.
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Xml;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+namespace Ignia.Topics {
 
-/*==============================================================================================================================
-| CLASS: ATTRIBUTE VALUE COLLECTION
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS: ATTRIBUTE VALUE COLLECTION
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
   /*============================================================================================================================
@@ -36,7 +21,7 @@ namespace Ignia.Topics {
   >=============================================================================================================================
   | Allows a new object to be instantiated.
   \---------------------------------------------------------------------------------------------------------------------------*/
-    public AttributeValueCollection() : base(StringComparer.OrdinalIgnoreCase) {}
+    public AttributeValueCollection() : base(StringComparer.OrdinalIgnoreCase) { }
 
   /*============================================================================================================================
   | SET ATTRIBUTE VALUE METHOD
@@ -47,11 +32,11 @@ namespace Ignia.Topics {
     public void SetAttributeValue(string key, string value) {
       if (this.Contains(key)) {
         this[key].Value = value;
-        }
+      }
       else {
         this.Add(new AttributeValue(key, value));
-        }
       }
+    }
 
   /*============================================================================================================================
   | OVERRIDE: GET KEY FOR ITEM
@@ -62,6 +47,6 @@ namespace Ignia.Topics {
       return item.Key;
       }
 
-    }
+  } //Class
 
-  }
+} //Namespace

@@ -1,32 +1,20 @@
-namespace Ignia.Topics {
-
 /*==============================================================================================================================
-| CONTENT TYPE
-|
-| Author        Jeremy Caney, Ignia LLC (Jeremy.Caney@Ignia.com)
+| Author        Jeremy Caney, Ignia LLC
 | Client        Ignia
 | Project       Topics Editor
 |
 | Purpose       The ContentType object provides a specific implementation of Topic that is optimized for working with
 |               ContentType Topics.
 |
->===============================================================================================================================
-| Revisions     Date      Author                Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               09.28.13  Jeremy Caney          Created initial version.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
+using System;
+using System.Collections.Generic;
 
-/*==============================================================================================================================
-| NAMESPACES
-\-----------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Collections.Generic;
-  using System.Text;
-  using System.Linq;
+namespace Ignia.Topics {
 
-/*==============================================================================================================================
-| CLASS
-\-----------------------------------------------------------------------------------------------------------------------------*/
+  /*==============================================================================================================================
+  | CLASS
+  \-----------------------------------------------------------------------------------------------------------------------------*/
   public class ContentType : Topic {
 
   /*============================================================================================================================
@@ -39,11 +27,9 @@ namespace Ignia.Topics {
   >=============================================================================================================================
   | Constructors for the topic object.
   \---------------------------------------------------------------------------------------------------------------------------*/
-    public ContentType() : base() {
-      }
+    public ContentType() : base() { }
 
-    public ContentType(string key) : base(key) {
-      }
+    public ContentType(string key) : base(key) { }
 
   /*============================================================================================================================
   | PROPERTY: SUPPORTED ATTRIBUTE
@@ -52,6 +38,7 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     public Dictionary<string, Attribute> SupportedAttributes {
       get {
+
         if (_supportedAttributes == null) {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -78,7 +65,7 @@ namespace Ignia.Topics {
         \---------------------------------------------------------------------------------------------------------------------*/
           foreach (Attribute attribute in this["Attributes"]) {
             _supportedAttributes.Add(attribute.Key, attribute);
-            }
+          }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | GET VALUES FROM PARENT
@@ -88,14 +75,16 @@ namespace Ignia.Topics {
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);
-                }
               }
             }
           }
-        return _supportedAttributes;
+
         }
+
+        return _supportedAttributes;
       }
+    }
 
-    } //Class
+  } //Class
 
-  } //Namespace
+} //Namespace
