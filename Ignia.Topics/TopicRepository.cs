@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Casey Margell, Ignia LLC (casey.margell@ignia.com)
 | Client        Ignia
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       The Topic Repository object provides access to a cached collection of Topic trees to support systems where we
 |               may want to implement multiple taxonomies for different purposes.

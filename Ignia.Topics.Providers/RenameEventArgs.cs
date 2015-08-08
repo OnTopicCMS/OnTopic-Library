@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Casey Margell, Ignia LLC
 | Client        Ignia, LLC
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       The RenameEventArgs object defines an event argument type specific to rename events
 |

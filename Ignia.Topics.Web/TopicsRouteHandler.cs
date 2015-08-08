@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       Provides routing for any path that matches a path managed by the Topics database.  If a match is found, then
 |               the user is routed to a template corresponding to the Topic's Content Type.  Otherwise, the originally

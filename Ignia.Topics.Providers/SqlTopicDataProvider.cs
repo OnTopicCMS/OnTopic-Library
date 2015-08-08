@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Casey Margell, Ignia LLC (casey.margell@ignia.com)
 | Client        Ignia
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       Implementation of the topic provider specific to SQL.
 |

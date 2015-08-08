@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       Provides a base class for controls used in the Topics Editor.  Each control maps to an Attribute Type, and
 |               provides a common interface for the Topics Editor to interact with, while leaving the rendering and business

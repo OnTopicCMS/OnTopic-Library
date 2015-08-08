@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
 | Client        Ignia
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       Provides an interface that all topic editor controls must implement in order to participate in the editor's
 |               life cycle.  These controls represent attribute types, and are instantiated as Attributes in a Content Type.

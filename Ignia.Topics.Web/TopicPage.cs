@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       Provides a base class for Topic-related pages.
 |

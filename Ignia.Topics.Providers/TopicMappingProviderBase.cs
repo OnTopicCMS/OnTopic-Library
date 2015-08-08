@@ -1,7 +1,7 @@
 /*==============================================================================================================================
 | Author        Casey Margell, Ignia LLC
 | Client        Ignia, LLC
-| Project       Topics Editor
+| Project       Topics Library
 |
 | Purpose       The ITopicImplementationProvider object defines an interface for implementation providers of the Topics system
 |
