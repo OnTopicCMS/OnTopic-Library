@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Katherine Trunkey, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides a custom configuration element which represents the views settings configuration. Permits an

@@ -45,16 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attribute.cs" />
-    <Compile Include="AttributeTypeControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AttributeValue.cs" />
-    <Compile Include="AttributeValueCollection.cs" />
-    <Compile Include="Behaviors.cs" />
-    <Compile Include="ChildTopic.cs" />
-    <Compile Include="ChildTopicCollection.cs" />
-    <Compile Include="CompactEventArgs.cs" />
     <Compile Include="Ignia.Topics.Configuration\EditorElement.cs" />
     <Compile Include="Ignia.Topics.Configuration\PageTypeElement.cs" />
     <Compile Include="Ignia.Topics.Configuration\PageTypeElementCollection.cs" />
@@ -67,29 +57,34 @@
     <Compile Include="Ignia.Topics.Configuration\TopicsSection.cs" />
     <Compile Include="Ignia.Topics.Configuration\VersioningElement.cs" />
     <Compile Include="Ignia.Topics.Configuration\ViewsElement.cs" />
-    <Compile Include="ContentType.cs" />
-    <Compile Include="ContentTypeCollection.cs" />
-    <Compile Include="DeleteEventArgs.cs" />
-    <Compile Include="FilePath.cs" />
-    <Compile Include="IEditControl.cs" />
-    <Compile Include="MoveEventArgs.cs" />
-    <Compile Include="NestedTopic.cs" />
-    <Compile Include="NestedTopicCollection.cs" />
-    <Compile Include="NullTopicMappingProvider.cs" />
+    <Compile Include="Ignia.Topics.Editor\AttributeTypeControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Ignia.Topics.Editor\FilePath.cs" />
+    <Compile Include="Ignia.Topics.Editor\IEditControl.cs" />
+    <Compile Include="Ignia.Topics.Providers\CompactEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Providers\DeleteEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Providers\MoveEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Providers\NullTopicMappingProvider.cs" />
+    <Compile Include="Ignia.Topics.Providers\RenameEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Providers\SqlTopicDataProvider.cs" />
+    <Compile Include="Ignia.Topics.Providers\TopicDataProviderBase.cs" />
+    <Compile Include="Ignia.Topics.Providers\TopicMappingProviderBase.cs" />
+    <Compile Include="Ignia.Topics.Web\TopicPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Ignia.Topics.Web\TopicsRouteHandler.cs" />
+    <Compile Include="Ignia.Topics.Web\TypedTopicPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Ignia.Topics\Attribute.cs" />
+    <Compile Include="Ignia.Topics\AttributeValue.cs" />
+    <Compile Include="Ignia.Topics\AttributeValueCollection.cs" />
+    <Compile Include="Ignia.Topics\ContentType.cs" />
+    <Compile Include="Ignia.Topics\ContentTypeCollection.cs" />
+    <Compile Include="Ignia.Topics\Topic.cs" />
+    <Compile Include="Ignia.Topics\TopicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenameEventArgs.cs" />
-    <Compile Include="SqlTopicDataProvider.cs" />
-    <Compile Include="Topic.cs" />
-    <Compile Include="TopicDataProviderBase.cs" />
-    <Compile Include="TopicMappingProviderBase.cs" />
-    <Compile Include="TopicPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="TopicRepository.cs" />
-    <Compile Include="TopicsRouteHandler.cs" />
-    <Compile Include="TypedTopicPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
