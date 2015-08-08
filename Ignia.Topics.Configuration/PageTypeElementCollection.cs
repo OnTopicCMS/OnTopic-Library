@@ -1,5 +1,5 @@
 /*==============================================================================================================================
-| Author        Katherine Trunkey, Ignia LLC (katherine.trunkey@ignia.com)
+| Author        Katherine Trunkey, Ignia LLC 
 | Client        Ignia
 | Project       Topics Library
 |
