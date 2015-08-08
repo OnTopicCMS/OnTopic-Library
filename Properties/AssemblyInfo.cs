@@ -22,23 +22,24 @@
 /*===========================================================================================================================
 | DECLARE NAMESPACE REFERENCES
 \--------------------------------------------------------------------------------------------------------------------------*/
-  using System;
-  using System.Reflection;
-  using System.Runtime.InteropServices;
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 /*===========================================================================================================================
 | DEFINE ASSEMBLY ATTRIBUTES
 >============================================================================================================================
 | Declare and define attributes used in the compiling of the finished assembly.
 \--------------------------------------------------------------------------------------------------------------------------*/
-[ assembly: AssemblyCompany                            ("Ignia, LLC") ]
-[ assembly: AssemblyCopyright                          ("Ignia, LLC.  All rights reserved.") ]
-[ assembly: AssemblyProduct                            ("Ignia Topics Library") ]
-[ assembly: AssemblyTitle                              ("Ignia Topics Library") ]
-[ assembly: AssemblyDescription                        ("Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.") ]
-[ assembly: AssemblyTrademark                          ("") ]
-[ assembly: AssemblyCulture                            ("") ]
+[assembly: AssemblyCompany("Ignia, LLC")]
+[assembly: AssemblyCopyright("Ignia, LLC.  All rights reserved.")]
+[assembly: AssemblyProduct("Ignia Topics Library")]
+[assembly: AssemblyTitle("Ignia Topics Library")]
+[assembly: AssemblyDescription("Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("3.0.0.0")]
 
-[ assembly: System.Runtime.InteropServices.ComVisible  (false) ]
-[ assembly: CLSCompliant                               (true) ]
-[ assembly: GuidAttribute                              ("3CA9F6CB-B45A-4E74-AAA4-0C87CAA2704F") ]
+[assembly: System.Runtime.InteropServices.ComVisible(false)]
+[assembly: CLSCompliant(true)]
+[assembly: GuidAttribute("3CA9F6CB-B45A-4E74-AAA4-0C87CAA2704F")]
