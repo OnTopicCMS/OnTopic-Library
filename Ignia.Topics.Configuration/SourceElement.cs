@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Katherine Trunkey, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides configuration element references which represent a custom configuration source (e.g., for versioning,

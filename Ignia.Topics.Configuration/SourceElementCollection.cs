@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Katherine Trunkey, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides a custom implementation of a ConfigurationElementCollection responsible for encapsulating a set of

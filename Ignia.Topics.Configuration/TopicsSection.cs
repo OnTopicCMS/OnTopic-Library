@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Katherine Trunkey, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides a customized version of the ConfigurationSection class in order to permit configuration of the Topics

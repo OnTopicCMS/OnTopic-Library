@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides an interface that all topic editor controls must implement in order to participate in the editor's

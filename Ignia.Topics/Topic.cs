@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Casey Margell, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       The Topic object is a simple container for a particular node in the topic hierarchy. It contains the

@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Jeremy Caney, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       The ContentType object provides a specific implementation of Topic that is optimized for working with

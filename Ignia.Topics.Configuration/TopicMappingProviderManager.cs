@@ -1,6 +1,6 @@
 /*==============================================================================================================================
 | Author        Katherine Trunkey, Ignia LLC
-| Client        Ignia
+| Client        Ignia, LLC
 | Project       Topics Library
 |
 | Purpose       Provides initialization of the specified Topic MAPPING provider based on retrieving the appropriate data from
