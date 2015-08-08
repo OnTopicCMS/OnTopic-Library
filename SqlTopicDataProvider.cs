@@ -34,7 +34,6 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Globalization;
 using System.Xml;
-using Ignia.Web.Tools;
 
 namespace Ignia.Topics {
 
@@ -70,12 +69,12 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | ESTABLISH QUERY PARAMETERS
       \-----------------------------------------------------------------------------------------------------------------------*/
-        Utility.AddSqlParameter(command, "TopicName",   topicKey,                                       SqlDbType.VarChar);
-        Utility.AddSqlParameter(command, "Depth",       depth.ToString(CultureInfo.InvariantCulture),   SqlDbType.Int);
-        Utility.AddSqlParameter(command, "TopicID",     topicId.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        AddSqlParameter(command, "TopicName",   topicKey,                                       SqlDbType.VarChar);
+        AddSqlParameter(command, "Depth",       depth.ToString(CultureInfo.InvariantCulture),   SqlDbType.Int);
+        AddSqlParameter(command, "TopicID",     topicId.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
 
         if (version != null) {
-          Utility.AddSqlParameter(command, "Version",   version.ToString(),                             SqlDbType.DateTime);
+          AddSqlParameter(command, "Version",   version.ToString(),                             SqlDbType.DateTime);
         }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -454,19 +453,19 @@ namespace Ignia.Topics {
       | ESTABLISH QUERY PARAMETERS
       \-----------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
-          Utility.AddSqlParameter(command,      "TopicID",              topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(command,      "TopicID",              topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
         }
         if (topic.Parent != null) {
-          Utility.AddSqlParameter(command,      "ParentID",             topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(command,      "ParentID",             topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
         }
-        Utility.AddSqlParameter(command,        "Version",              version.ToString("yyyy-MM-dd HH:mm:ss.fff"), SqlDbType.DateTime);
-        Utility.AddSqlParameter(command,        "Attributes",           attributes.ToString(),                  SqlDbType.VarChar);
+        AddSqlParameter(command,        "Version",              version.ToString("yyyy-MM-dd HH:mm:ss.fff"), SqlDbType.DateTime);
+        AddSqlParameter(command,        "Attributes",           attributes.ToString(),                  SqlDbType.VarChar);
         if (topic.Id != -1) {
-          Utility.AddSqlParameter(command,      "NullAttributes",       nullAttributes.ToString(),              SqlDbType.VarChar);
-          Utility.AddSqlParameter(command,      "DeleteRelationships",  "1",                                    SqlDbType.Bit);
+          AddSqlParameter(command,      "NullAttributes",       nullAttributes.ToString(),              SqlDbType.VarChar);
+          AddSqlParameter(command,      "DeleteRelationships",  "1",                                    SqlDbType.Bit);
         }
-        Utility.AddSqlParameter(command,        "Blob",                 blob.ToString(),                        SqlDbType.Xml);
-        Utility.AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
+        AddSqlParameter(command,        "Blob",                 blob.ToString(),                        SqlDbType.Xml);
+        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | EXECUTE QUERY
@@ -557,12 +556,12 @@ namespace Ignia.Topics {
         command.CommandType                     = CommandType.StoredProcedure;
 
       //Add Parameters
-        Utility.AddSqlParameter(command, "TopicID",  topic.Id.ToString(CultureInfo.InvariantCulture),  SqlDbType.Int);
-        Utility.AddSqlParameter(command, "ParentID", target.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        AddSqlParameter(command, "TopicID",  topic.Id.ToString(CultureInfo.InvariantCulture),  SqlDbType.Int);
+        AddSqlParameter(command, "ParentID", target.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
 
       //Append sibling ID if set
         if (sibling != null) {
-          Utility.AddSqlParameter(command, "SiblingID", sibling.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(command, "SiblingID", sibling.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
         }
 
       //Execute Query
@@ -619,7 +618,7 @@ namespace Ignia.Topics {
         command.CommandType                     = CommandType.StoredProcedure;
 
       //Add Parameters
-        Utility.AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
 
       //Execute Query
         connection.Open();
@@ -683,9 +682,9 @@ namespace Ignia.Topics {
           }
 
         //Add Parameters:
-          Utility.AddSqlParameter(command, "RelationshipTypeID",  scope.Key,                            SqlDbType.VarChar);
-          Utility.AddSqlParameter(command, "Source_TopicID",      topicId,                              SqlDbType.Int);
-          Utility.AddSqlParameter(command, "Target_TopicIDs",     String.Join(",", targetIds),          SqlDbType.VarChar);
+          AddSqlParameter(command, "RelationshipTypeID",  scope.Key,                            SqlDbType.VarChar);
+          AddSqlParameter(command, "Source_TopicID",      topicId,                              SqlDbType.Int);
+          AddSqlParameter(command, "Target_TopicIDs",     String.Join(",", targetIds),          SqlDbType.VarChar);
 
           command.ExecuteNonQuery();
 
@@ -741,6 +740,75 @@ namespace Ignia.Topics {
         blob.Append("</related>");
       }
       return blob.ToString();
+    }
+
+    /*============================================================================================================================
+    | FUNCTION: CONV DB TYPE
+    >------------------------------------------------------------------------------------------------------------------------
+    | Converts a string into the appropriate database type object
+    \----------------------------------------------------------------------------------------------------------------------*/
+    public static SqlDbType ConvDbType (String sqlDbType) {
+
+      switch (sqlDbType.ToLower()) {
+        case "int":               return SqlDbType.Int;
+        case "tinyint":           return SqlDbType.TinyInt;
+        case "smallint":          return SqlDbType.SmallInt;
+        case "uniqueidentifier":  return SqlDbType.UniqueIdentifier;
+        case "bit":               return SqlDbType.Bit;
+        case "char":              return SqlDbType.Char;
+        case "varchar":           return SqlDbType.VarChar;
+        case "datetime":          return SqlDbType.DateTime;
+      }
+
+      return SqlDbType.VarChar;
+
+    }
+
+    /*============================================================================================================================
+    | METHOD: ADD SQL PARAMETER
+    >------------------------------------------------------------------------------------------------------------------------
+    | Wrapper function that adds a SQL paramter to a command object
+    \----------------------------------------------------------------------------------------------------------------------*/
+    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType) {
+      AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
+    }
+    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
+      AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
+    }
+
+    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
+
+      if (sqlLength > 0) {
+        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType, sqlLength));
+      }
+      else {
+        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType));
+      }
+      commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
+
+      if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
+        if (fieldValue == null || fieldValue == "") {
+          commandObject.Parameters["@" + sqlParameter].Value = null;
+        }
+        else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
+          commandObject.Parameters["@" + sqlParameter].Value = Int64.Parse(fieldValue);
+        }
+        else if (sqlDbType == SqlDbType.UniqueIdentifier) {
+          commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
+        }
+        else if (sqlDbType == SqlDbType.Bit) {
+          if (fieldValue == "1" || fieldValue.ToLower() == "true") {
+            commandObject.Parameters["@" + sqlParameter].Value = true;
+          }
+          else {
+            commandObject.Parameters["@" + sqlParameter].Value = false;
+          }
+        }
+        else {
+          commandObject.Parameters["@" + sqlParameter].Value = fieldValue;
+        }
+      }
+
     }
 
   } //Class
