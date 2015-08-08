@@ -10,11 +10,8 @@ namespace Ignia.Topics {
   | CLASS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a specific implementation of Topic that is optimized for working with Attribute Topics.
+  ///   Provides a strongly-typed implement of Topic that is maps to Attribute Content Types.
   /// </summary>
-  /// <remarks>
-  ///   This class Inherits from the <see cref="Topic"/> class, but defines properties specifically associated with Attributes.
-  /// </remarks>
   public class Attribute : Topic {
 
     /*==========================================================================================================================
