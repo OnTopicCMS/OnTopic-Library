@@ -2,52 +2,66 @@
 | Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia
 | Project       Topics Library
-|
-| Purpose       Represents an instance of an Attribute value; provides values and metadata specific to individual attribute
-|               value instances, such as state (IsDirty = has changed) and last modified date. State (IsDirty) is evaluated as
-|               part of the setter for Value.
-|
 \=============================================================================================================================*/
 using System;
 
 namespace Ignia.Topics {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Represents an instance of an Attribute value; provides values and metadata specific to individual attribute value
+  ///   instances, such as state(IsDirty = has changed) and last modified date.State(IsDirty) is evaluated as part of the setter
+  ///   for Value.
+  /// </summary>
   public class AttributeValue {
 
-  /*============================================================================================================================
-  | PRIVATE VARIABLES
-  \---------------------------------------------------------------------------------------------------------------------------*/
-    private     string          _key                    = null;
-    private     string          _value                  = null;
-    private     bool            _isDirty                = false;
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private     string  _key            = null;
+    private     string  _value          = null;
+    private     bool    _isDirty        = false;
 
-  /*============================================================================================================================
-  | CONSTRUCTOR
-  >=============================================================================================================================
-  | Allows a new object to be instantiated. Optional overloads allow object to be constructed based on specified key/value
-  | pairs or for the IsDirty (has been changed) property to be set.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  Initializes a new instance of the <see cref="AttributeValue"/> class.
+    /// </summary>
+    /// <remarks>
+    ///   Optional overloads allow object to be constructed based on specified key/value pairs or for the
+    ///   IsDirty (has been changed) property to be set.
+    /// </remarks>
+    /// <param name="key">
+    ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
+    /// </param>
+    /// <param name="value">
+    ///   The string value text for the <see cref="AttributeValue"/> collection item key/value pair.
+    /// </param>
+    /// <param name="isDirty">
+    ///   The boolean indicator noting whether the <see cref="AttributeValue"/> collection item has been changed.
+    /// </param>
     public AttributeValue() { }
 
     public AttributeValue(string key, string value) {
-      this.Key                  = key;
-      this.Value                = value;
-      }
+      this.Key          = key;
+      this.Value        = value;
+    }
 
     public AttributeValue(string key, string value, bool isDirty) {
-      this.Key                  = key;
-      this.Value                = value;
-      this.IsDirty              = isDirty;
-      }
+      this.Key          = key;
+      this.Value        = value;
+      this.IsDirty      = isDirty;
+    }
 
-  /*============================================================================================================================
-  | KEY
-  >=============================================================================================================================
-  | String containing the key of the attribute.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | PROPERTY: KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  String containing the key of the attribute.
+    /// </summary>
     public string Key {
       get {
         return _key;
@@ -57,40 +71,43 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | VALUE
-  >=============================================================================================================================
-  | String containing the current value of the attribute. Sets IsDirty based on whether the value has changed.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | PROPERTY: VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  String containing the current value of the attribute. Sets IsDirty based on whether the value has changed.
+    /// </summary>
     public string Value {
       get {
         return _value;
       }
       set {
-        _isDirty = !value.Equals(_value) || _isDirty;
-        _value = value;
+        _isDirty        = !value.Equals(_value) || _isDirty;
+        _value          = value;
       }
     }
 
-  /*============================================================================================================================
-  | IS DIRTY
-  >=============================================================================================================================
-  | Boolean setting which is set automatically when an attribute's Value is set to a new value.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*============================================================================================================================
+    | PROPERTY: IS DIRTY
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  Boolean setting which is set automatically when an attribute's Value is set to a new value.
+    /// </summary>
     public bool IsDirty {
       get {
         return _isDirty;
       }
       set {
-        _isDirty = value;
+        _isDirty        = value;
       }
     }
 
-  /*=========================================================================================================================
-  | PROPERTY: LAST MODIFIED
-  >==========================================================================================================================
-  | Provides reference to last DateTime the AttributeValue instance was updated.
-  \------------------------------------------------------------------------------------------------------------------------*/
+    /*=========================================================================================================================
+    | PROPERTY: LAST MODIFIED
+    \------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  Reference to last DateTime the <see cref="AttributeValue"/> instance was updated.
+    /// </summary>
     public readonly DateTime LastModified       = DateTime.Now;
 
   } //Class
