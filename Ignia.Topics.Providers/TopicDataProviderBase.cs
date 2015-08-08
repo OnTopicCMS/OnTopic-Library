@@ -9,7 +9,7 @@
 using System;
 using System.Configuration.Provider;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Providers {
 
   /*============================================================================================================================
   | CLASS: TOPIC DATA PROVIDER BASE

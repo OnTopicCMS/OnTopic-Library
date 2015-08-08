@@ -10,6 +10,7 @@
 using System;
 using System.Configuration;
 using System.Web.Configuration;
+using Ignia.Topics.Providers;
 
 namespace Ignia.Topics.Configuration {
 

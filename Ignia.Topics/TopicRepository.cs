@@ -9,6 +9,7 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Configuration;
+using Ignia.Topics.Providers;
 
 namespace Ignia.Topics {
 

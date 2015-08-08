@@ -8,6 +8,7 @@
 |
 \=============================================================================================================================*/
 using System.Configuration.Provider;
+using Ignia.Topics.Providers;
 
 namespace Ignia.Topics.Configuration {
 

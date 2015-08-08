@@ -35,7 +35,7 @@ using System.Configuration;
 using System.Globalization;
 using System.Xml;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Providers {
 
   /*==============================================================================================================================
   | CLASS
