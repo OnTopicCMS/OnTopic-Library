@@ -7,7 +7,7 @@
 |               life cycle.  These controls represent attribute types, and are instantiated as Attributes in a Content Type.
 |
 \=============================================================================================================================*/
-namespace Ignia.Topics {
+namespace Ignia.Topics.Editor {
 
   /*===========================================================================================================================
   | INTERFACE
