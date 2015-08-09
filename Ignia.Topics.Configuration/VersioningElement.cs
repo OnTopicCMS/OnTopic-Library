@@ -2,26 +2,36 @@
 | Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       Provides a custom configuration element which represents the data versioning configuration. Permits an
-|               application to define whether or not draft Topics data should be displayed to the user, and if so under which
-|               specific location. Adapted from the Ignia Localization library; in the future, these libraries may (and should)
-|               share custom configuration classes.
-|
 \=============================================================================================================================*/
 using System.Configuration;
 
 namespace Ignia.Topics.Configuration {
 
-  /*===========================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \--------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a custom <see cref="ConfigurationElement"/> which represents the data versioning configuration.
+  /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     Permits an application to define whether or not draft Topics data should be displayed to the user, and if so under
+  ///     which specific location.
+  ///   </para>
+  ///   <para>
+  ///     Adapted from the Ignia Localization library; in the future, these libraries may(and should) share custom
+  ///     configuration classes.
+  ///   </para>
+  /// </remarks>
   public class VersioningElement : ConfigurationElement {
 
-  /*=========================================================================================================================
-  | ELEMENT: DRAFT MODE
-  \------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("draftMode") ]
+    /*=========================================================================================================================
+    | ELEMENT: DRAFT MODE
+    \------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the draft mode attribute value from the <see cref="VersioningElement"/> configuration element.
+    /// </summary>
+    [ConfigurationProperty("draftMode")]
     public SourceElement DraftMode {
       get {
         return this["draftMode"] as SourceElement;

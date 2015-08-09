@@ -2,12 +2,6 @@
 | Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       Provides configuration element references which represent a custom configuration source (e.g., for versioning,
-|               the OnTopic editor, etc.). Allows the application to retrieve configuration data from multiple sources. Adapted
-|               DIRECTLY from the Ignia Localization library; in the future, these libraries may (and should) share custom
-|               configuration classes.
-|
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
@@ -17,56 +11,87 @@ using System.Web.Security;
 
 namespace Ignia.Topics.Configuration {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a custom <see cref="ConfigurationElement"/> implementation which represents a custom configuration source
+  ///   (e.g., for versioning, the OnTopic editor, etc.). Allows the application to retrieve configuration data from multiple
+  ///   sources.
+  /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     Inherits from .
+  ///   </para>
+  ///   <para>
+  ///     Adapted DIRECTLY from the Ignia Localization library; in the future, these libraries may (and should) share custom
+  ///     configuration classes.
+  ///   </para>
+  /// </remarks>
   public class SourceElement : ConfigurationElement {
 
-  /*============================================================================================================================
-  | ATTRIBUTE: SOURCE
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("source", DefaultValue="QueryString", IsRequired=true, IsKey=true) ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: SOURCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the source for the configuration setting.
+    /// </summary>
+    [ConfigurationProperty("source", DefaultValue="QueryString", IsRequired=true, IsKey=true)]
     public string Source {
       get {
         return this["source"] as string;
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: ENABLED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("enabled", DefaultValue="True", IsRequired=false) ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: ENABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a value indicating whether this <see cref="SourceElement"/> is enabled.
+    /// </summary>
+    [ConfigurationProperty("enabled", DefaultValue="True", IsRequired=false)]
     public bool Enabled {
       get {
         return Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: LOCATION
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("location", IsRequired=false) ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: LOCATION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the location attribute value.
+    /// </summary>
+    [ConfigurationProperty("location", IsRequired=false)]
     public string Location {
       get {
         return this["location"] as string;
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: TRUSTED
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("trusted", DefaultValue="False", IsRequired=false) ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: TRUSTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a value indicating whether this <see cref="SourceElement"/> is trusted.
+    /// </summary>
+    [ConfigurationProperty("trusted", DefaultValue="False", IsRequired=false)]
     public bool Trusted {
       get {
         return Convert.ToBoolean(this["trusted"], CultureInfo.InvariantCulture);
       }
     }
 
-  /*============================================================================================================================
-  | METHOD: GET ELEMENT
-  >=============================================================================================================================
-  | Looks up a source element given the parent element or collection and expected name.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: GET ELEMENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the source element given the parent element or collection and expected name.
+    /// </summary>
+    /// <param name="parent">
+    ///   The parent <see cref="ConfigurationElement"/> or <see cref="ConfigurationElementCollection"/>.
+    /// </param>
+    /// <param name="key">The string key (expected name).</param>
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
       return (SourceElement)parent.ElementInformation.Properties[key].Value;
@@ -82,12 +107,17 @@ namespace Ignia.Topics.Configuration {
       return null;
     }
 
-  /*============================================================================================================================
-  | METHOD: GET VALUE
-  >=============================================================================================================================
-  | Looks up a source element at a given location, identifies the source value and, assuming it's enabled, returns the
-  | target value.  Otherwise, returns null.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: GET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Looks up a source element at a given location and, assuming it's enabled, identifies the source value.
+    /// </summary>
+    /// <param name="parent">
+    ///   The parent <see cref="ConfigurationElement"/> or <see cref="ConfigurationElementCollection"/>.
+    /// </param>
+    /// <param name="key">The string key (expected name).</param>
+    /// <returns>Returns the target value, if found, or null.</returns>
     public static string GetValue(ConfigurationElement parent, string key) {
       return GetValue(GetElement(parent, key));
     }
@@ -98,14 +128,14 @@ namespace Ignia.Topics.Configuration {
 
     public static string GetValue(SourceElement element) {
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | RETURN NULL IF DISABLED OR MISSING
-    \-------------------------------------------------------------------------------------------------------------------------*/
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return null if the element is disabled or missing
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (element == null || !element.Enabled) return null;
 
-    /*--------------------------------------------------------------------------------------------------------------------------
-    | PULL VALUE FROM SUPPORTED SOURCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Pull value from support source
+      \-----------------------------------------------------------------------------------------------------------------------*/
       string value = null;
 
       switch (element.Source.ToUpperInvariant()) {
@@ -143,12 +173,19 @@ namespace Ignia.Topics.Configuration {
 
     }
 
-  /*=========================================================================================================================
-  | METHOD: IS ENABLED
-  >==========================================================================================================================
-  | Looks up a source element at a given location, identifies the source value and returns a boolean value representing
-  | whether or not the source is available, enabled or set to true.
-  \------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: IS ENABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Looks up a source element at a given location, identifies the source value and returns a boolean value representing
+    ///   whether or not the source is available, enabled or set to true.
+    /// </summary>
+    /// <param name="parent">
+    ///   The parent <see cref="ConfigurationElement"/>, <see cref="ConfigurationElementCollection"/>, or
+    ///   <see cref="SourceElement"/>.
+    /// </param>
+    /// <param name="key">The string key (expected name).</param>
+    /// <param name="evaluateValue">Boolean indicator noting whether to use the Value to determine enabled status.</param>
     public static bool IsEnabled(ConfigurationElement parent, string key) {
       return IsEnabled(parent, key, true);
     }
@@ -185,12 +222,17 @@ namespace Ignia.Topics.Configuration {
 
     }
 
-  /*=========================================================================================================================
-  | METHOD: IS TRUSTED
-  >==========================================================================================================================
-  | Looks up a source element at a given location, identifies the source value and returns a boolean value representing
-  | whether or not the source is available, enabled or set to true.
-  \------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: IS TRUSTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether the specified parent is trusted.
+    /// </summary>
+    /// <param name="parent">
+    ///   The parent <see cref="ConfigurationElement"/> or <see cref="ConfigurationElementCollection"/>.
+    /// </param>
+    /// <param name="key">The string key (expected name).</param>
+    /// <param name="element">The <see cref="SourceElement"/> object.</param>
     public static bool IsTrusted(ConfigurationElement parent, string key) {
       return IsTrusted(GetElement(parent, key));
     }

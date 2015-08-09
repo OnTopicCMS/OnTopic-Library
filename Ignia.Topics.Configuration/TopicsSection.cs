@@ -2,33 +2,40 @@
 | Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       Provides a customized version of the ConfigurationSection class in order to permit configuration of the Topics
-|               data management classes via the application's web.config.
-|
 \=============================================================================================================================*/
 using System.Configuration;
 
 namespace Ignia.Topics.Configuration {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a customized version of the <see cref="ConfigurationSection"/> class in order to permit configuration of the
+  //    Topics data management classes via the application's web.config.
+  /// </summary>
   public class TopicsSection : ConfigurationSection {
 
-  /*============================================================================================================================
-  | FACTORY METHOD: GET CONFIG
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | FACTORY METHOD: GET CONFIG
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the <topics /> element from the web.config as the configuation section.
+    /// </summary>
     public static TopicsSection GetConfig() {
       return ConfigurationManager.GetSection("topics") as TopicsSection;
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: ROOT TOPIC NAMESPACE
-  >=============================================================================================================================
-  | Sets the root (parent) Topic expected to be defined for Topics data.
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("rootTopicNamespace", DefaultValue = "Root") ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: ROOT TOPIC NAMESPACE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    /// Gets or sets the root (parent) Topic expected to be defined for Topics data.
+    /// </summary>
+    /// <value>
+    /// The root topic namespace.
+    /// </value>
+    [ConfigurationProperty("rootTopicNamespace", DefaultValue = "Root")]
     public string RootTopicNamespace {
       get {
         return (string)this["rootTopicNamespace"];
@@ -38,12 +45,13 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: TOPIC DELIMITER
-  >=============================================================================================================================
-  | Sets the delimiter character expected to be used for separating Topics (Topic keys).
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("topicDelimiter", DefaultValue = "/") ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: TOPIC DELIMITER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the delimiter character expected to be used for separating Topics (Topic keys).
+    /// </summary>
+    [ConfigurationProperty("topicDelimiter", DefaultValue = "/")]
     public string TopicDelimiter {
       get {
         return (string)this["topicDelimiter"];
@@ -53,12 +61,13 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: DEFAULT DATA PROVIDER
-  >=============================================================================================================================
-  | Sets the default Topics data provider that should be used.
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("defaultDataProvider", DefaultValue = "SqlTopicDataProvider") ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: DEFAULT DATA PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the default Topics data provider that should be used.
+    /// </summary>
+    [ConfigurationProperty("defaultDataProvider", DefaultValue = "SqlTopicDataProvider")]
     public string DefaultDataProvider {
       get {
         return (string)this["defaultDataProvider"];
@@ -68,12 +77,13 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  /*============================================================================================================================
-  | ATTRIBUTE: DEFAULT MAPPING PROVIDER
-  >=============================================================================================================================
-  | Sets the default Topics mapping provider that should be used.
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("defaultMappingProvider", DefaultValue = "NullTopicMappingProvider") ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: DEFAULT MAPPING PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the default Topics mapping provider that should be used.
+    /// </summary>
+    [ConfigurationProperty("defaultMappingProvider", DefaultValue = "NullTopicMappingProvider")]
     public string DefaultMappingProvider {
       get {
         return (string)this["defaultMappingProvider"];
@@ -83,70 +93,88 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  /*============================================================================================================================
-  | ELEMENT: VERSIONING
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("versioning") ]
+    /*==========================================================================================================================
+    | ELEMENT: VERSIONING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the <versioning /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("versioning")]
     public VersioningElement Versioning {
       get {
         return this["versioning"] as VersioningElement;
       }
     }
 
-  /*============================================================================================================================
-  | ELEMENT: EDITOR
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("editor") ]
+    /*==========================================================================================================================
+    | ELEMENT: EDITOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the <editor /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("editor")]
     public EditorElement Editor {
       get {
         return this["editor"] as EditorElement;
       }
     }
 
-  /*============================================================================================================================
-  | ELEMENT: VIEWS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("views") ]
+    /*==========================================================================================================================
+    | ELEMENT: VIEWS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the <view /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("views")]
     public ViewsElement Views {
       get {
         return this["views"] as ViewsElement;
       }
     }
 
-  /*============================================================================================================================
-  | COLLECTION: PAGE TYPES
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("pageTypes") ]
+    /*==========================================================================================================================
+    | COLLECTION: PAGE TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the <pageTypes /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("pageTypes")]
     public PageTypeElementCollection PageTypes {
       get {
         return this["pageTypes"] as PageTypeElementCollection;
       }
     }
 
-  /*============================================================================================================================
-  | COLLECTION: PROVIDERS
-  [ ConfigurationProperty("providers") ]
-    public ProviderSettingsCollection Providers {
-      get {
-        return (ProviderSettingsCollection)base["providers"];
+    /*==========================================================================================================================
+    | COLLECTION: PROVIDERS
+    [ConfigurationProperty("providers")]
+      public ProviderSettingsCollection Providers {
+        get {
+          return (ProviderSettingsCollection)base["providers"];
       }
     }
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
-  /*============================================================================================================================
-  | COLLECTION: DATA PROVIDERS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("dataProviders") ]
+    /*==========================================================================================================================
+    | COLLECTION: DATA PROVIDERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the <dataProviders /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("dataProviders")]
     public ProviderSettingsCollection DataProviders {
       get {
         return (ProviderSettingsCollection)base["dataProviders"];
       }
     }
 
-  /*============================================================================================================================
-  | COLLECTION: MAPPING PROVIDERS
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("mappingProviders") ]
+    /*==========================================================================================================================
+    | COLLECTION: MAPPING PROVIDERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the  <mappingProviders /> element from the configuration.
+    /// </summary>
+    [ConfigurationProperty("mappingProviders")]
     public ProviderSettingsCollection MappingProviders {
       get {
         return (ProviderSettingsCollection)base["mappingProviders"];

@@ -2,24 +2,29 @@
 | Author        Katherine Trunkey, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       Provides a custom configuration element which represents the views settings configuration. Permits an
-|               application to define the location of common views files.
-|
 \=============================================================================================================================*/
 using System.Configuration;
 
 namespace Ignia.Topics.Configuration {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a custom <see cref="ConfigurationElement"/> which represents the views settings configuration.
+  /// </summary>
+  /// <remarks>
+  ///   Permits an application to define the location of common views files.
+  /// </remarks>
   public class ViewsElement : ConfigurationElement {
 
-  /*============================================================================================================================
-  | ATTRIBUTE: PATH
-  \---------------------------------------------------------------------------------------------------------------------------*/
-  [ ConfigurationProperty("path", IsRequired=false) ]
+    /*==========================================================================================================================
+    | ATTRIBUTE: PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the path attribute value from the <see cref="ViewsElement"/> configuration element.
+    /// </summary>
+    [ConfigurationProperty("path", IsRequired=false)]
     public string Path {
       get {
         return this["path"] as string;
