@@ -12,6 +12,11 @@ namespace Ignia.Topics {
   /// <summary>
   ///   Provides a strongly-typed implementation of Topic that is maps to Attribute Content Types.
   /// </summary>
+  /// <remarks>
+  ///   The Attribute Content Type represents an individual attribute on a content type. For instance, the "Page" Content Type
+  ///   has attributes such as "Keywords", "Body", etc. Each of those individually represent instances of the Attribute Content 
+  ///   Type. 
+  /// </remarks>
   public class Attribute : Topic {
 
     /*==========================================================================================================================
