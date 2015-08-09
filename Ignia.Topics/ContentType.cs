@@ -2,19 +2,18 @@
 | Author        Jeremy Caney, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       The ContentType object provides a specific implementation of Topic that is optimized for working with
-|               ContentType Topics.
-|
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
 
 namespace Ignia.Topics {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a specific implementation of Topic that is optimized for working with ContentType Topics.
+  /// </summary>
   public class ContentType : Topic {
 
   /*============================================================================================================================
@@ -22,54 +21,62 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     private   Dictionary<string, Attribute>             _supportedAttributes            = null;
 
-  /*============================================================================================================================
-  | CONSTRUCTOR
-  >=============================================================================================================================
-  | Constructors for the topic object.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  Initializes a new instance of the <see cref="ContentType"/> class.
+    /// </summary>
+    /// <remarks>
+    ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
+    /// </remarks>
+    /// <param name="key">
+    ///   The string identifier for the <see cref="ContentType"/> Topic.
+    /// </param>
     public ContentType() : base() { }
 
     public ContentType(string key) : base(key) { }
 
-  /*============================================================================================================================
-  | PROPERTY: SUPPORTED ATTRIBUTE
-  >=============================================================================================================================
-  | Provides a list of Attribute objects that are supported for objects implementing this ContentType.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | PROPERTY: SUPPORTED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///  Provides a list of Attribute objects that are supported for objects implementing this ContentType.
+    /// </summary>
     public Dictionary<string, Attribute> SupportedAttributes {
       get {
 
         if (_supportedAttributes == null) {
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | CREATE NEW INSTANCE
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Create new instance
+          \-------------------------------------------------------------------------------------------------------------------*/
           _supportedAttributes = new Dictionary<string, Attribute>();
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | VALIDATE ATTRIBUTES COLLECTION
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Validate Attributes collection
+          \-------------------------------------------------------------------------------------------------------------------*/
           if (!this.Contains("Attributes")) {
             throw new Exception("The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected.");
           }
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | GET VALUES FROM SELF
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
-        | collection.
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE KLT052015: The only place this is really used (and where the strongly-typed Attribute is needed) is in
-        | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
-        | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Get values from self
+          >---------------------------------------------------------------------------------------------------------------------
+          | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
+          | collection.
+          >---------------------------------------------------------------------------------------------------------------------
+          | ### NOTE KLT052015: The only place this is really used (and where the strongly-typed Attribute is needed) is in
+          | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
+          | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
+          \-------------------------------------------------------------------------------------------------------------------*/
           foreach (Attribute attribute in this["Attributes"]) {
             _supportedAttributes.Add(attribute.Key, attribute);
           }
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | GET VALUES FROM PARENT
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Get values from parent
+          \-------------------------------------------------------------------------------------------------------------------*/
           ContentType parent = this.Parent as ContentType;
           if (parent != null) {
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
@@ -81,7 +88,11 @@ namespace Ignia.Topics {
 
         }
 
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return the dictionary object
+        \---------------------------------------------------------------------------------------------------------------------*/
         return _supportedAttributes;
+
       }
     }
 

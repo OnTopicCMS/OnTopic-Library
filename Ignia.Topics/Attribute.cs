@@ -23,9 +23,11 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Attribute"/> class, with an overload available accepting the Attribute's
-    ///   <see cref="Topic.Key"/> property.
+    ///   Initializes a new instance of the <see cref="Attribute"/> class.
     /// </summary>
+    /// <remarks>
+    ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
+    /// </remarks>
     /// <param name="key">
     ///   The string identifier for the <see cref="Attribute"/> Topic.
     /// </param>

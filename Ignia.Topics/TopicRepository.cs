@@ -1,11 +1,7 @@
 /*==============================================================================================================================
-| Author        Casey Margell, Ignia LLC (casey.margell@ignia.com)
-| Client        Ignia
+| Author        Casey Margell, Ignia LLC
+| Client        Ignia, LLC
 | Project       Topics Library
-|
-| Purpose       The Topic Repository object provides access to a cached collection of Topic trees to support systems where we
-|               may want to implement multiple taxonomies for different purposes.
-|
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Configuration;
@@ -13,46 +9,53 @@ using Ignia.Topics.Providers;
 
 namespace Ignia.Topics {
 
-  /*==============================================================================================================================
+  /*============================================================================================================================
   | CLASS: TOPIC REPOSITORY
-  \-----------------------------------------------------------------------------------------------------------------------------*/
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   The Topic Repository object provides access to a cached collection of Topic trees to support systems where we may want to
+  ///   implement multiple taxonomies for different purposes.
+  /// </summary>
   public static class TopicRepository {
 
   /*============================================================================================================================
-  | DECLARE PRIVATE VARIABLES
+  | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
     private static      TopicDataProviderBase           _dataProvider           = null;
     private static      TopicMappingProviderBase        _mappingProvider        = null;
     private static      Topic                           _rootTopic              = null;
     private static      ContentTypeCollection           _contentTypes           = null;
 
-  /*============================================================================================================================
-  | CONTENT TYPES
-  >=============================================================================================================================
-  | Get a list of available Content Types from the Configuration.
-  >-----------------------------------------------------------------------------------------------------------------------------
-  | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on changes.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a list of available Content Types from the Configuration.
+    /// </summary>
+    /// <remarks>
+    ///   ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
+    ///   changes.
+    /// </remarks>
     public static ContentTypeCollection ContentTypes {
       get {
         if (_contentTypes == null) {
           _contentTypes                 = new ContentTypeCollection();
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | MAKE SURE ROOT TOPIC IS AVAILABLE FOR USE WITH SUPPORTING METHODS
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Ensure root topic is available for use with supporting methods
+          \-------------------------------------------------------------------------------------------------------------------*/
           if (RootTopic == null) throw new Exception("Root topic is null");
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | MAKE SURE THE PARENT CONTENTTYPES TOPIC IS AVAILABLE TO ITERATE OVER
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Ensure the parent ContentTypes topic is available to iterate over
+          \-------------------------------------------------------------------------------------------------------------------*/
           if (RootTopic.GetTopic("Configuration:ContentTypes") == null) throw new Exception ("Configuration:ContentTypes");
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | ADD AVAILABLE CONTENT TYPES TO THE COLLECTION
-        \---------------------------------------------------------------------------------------------------------------------*/
+          /*--------------------------------------------------------------------------------------------------------------------
+          | Add available Content Types to the collection
+          \-------------------------------------------------------------------------------------------------------------------*/
           foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType", true)) {
-          //Make sure the Topic is used as the strongly-typed ContentType
+          //Ensure the Topic is used as the strongly-typed ContentType
             ContentType contentType     = topic as ContentType;
           //Add ContentType Topic to collection if not already added
             if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
@@ -68,11 +71,12 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | ROOT TOPIC
-  >=============================================================================================================================
-  | Static reference to the root Topic
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static reference to the root <see cref="Topic"/>.
+    /// </summary>
     public static Topic RootTopic {
       get {
         if (_rootTopic == null) {
@@ -85,11 +89,15 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | TOPIC PROVIDER
-  >=============================================================================================================================
-  | Getter for the data provider that we're using. Pulled from the Ignia.Topics.Configuration TopicDataProviderManager.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | TOPIC PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Getter for the data provider that we're using.
+    /// </summary>
+    /// <remarks>
+    ///   Pulled from the <see cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
+    /// </remarks>
     public static TopicDataProviderBase DataProvider {
       get {
         if (_dataProvider == null) {
@@ -103,11 +111,15 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | MAPPING PROVIDER
-  >=============================================================================================================================
-  | Getter for the data provider that we're using. Pulled from the Ignia.Topics.Configuration TopicMappingProviderManager.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | MAPPING PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Getter for the data mapping provider that we're using.
+    /// </summary>
+    /// <remarks>
+    ///   Pulled from the <see cref="Ignia.Topics.Configuration.TopicMappingProviderManager"/>.
+    /// </remarks>
     public static TopicMappingProviderBase MappingProvider {
       get {
         if (_mappingProvider == null) {
@@ -117,11 +129,19 @@ namespace Ignia.Topics {
       }
     }
 
-  /*============================================================================================================================
-  | METHOD: LOAD
-  >=============================================================================================================================
-  | Static method that passes Load requests along to the current topic data provider.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: LOAD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that passes Load requests along to the current topic data provider.
+    /// </summary>
+    /// <remarks>
+    ///   Optional overload allows for the topic's ID to be specified rather than the string uniqueKey value of the topic.
+    /// </remarks>
+    /// <param name="topic">String uniqueKey identifier for the topic.</param>
+    /// <param name="topicId">Integer identifier for the topic.</param>
+    /// <param name="depth">Integer level to which to also load the topic's children.</param>
+    /// <param name="version">DateTime identifier for the version of the topic.</param>
     public static Topic Load(string topic, int depth = 0, DateTime? version = null) {
       return DataProvider.Load(topic, depth, version);
     }
@@ -130,22 +150,37 @@ namespace Ignia.Topics {
       return DataProvider.Load(topicId, depth, version);
     }
 
-  /*============================================================================================================================
-  | METHOD: SAVE
-  >=============================================================================================================================
-  | Static method that passes Save requests along to the current topic data provider.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: SAVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that passes Save requests along to the current topic data provider.
+    /// </summary>
+    /// <param name="topic">The topic object.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse through the topic's children and save them as well.
+    /// </param>
+    /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     public static int Save(Topic topic, bool isRecursive, bool isDraft = false) {
       return DataProvider.Save(topic, isRecursive, isDraft);
     }
 
-  /*============================================================================================================================
-  | METHOD: MOVE
-  >=============================================================================================================================
-  | Static method that passes Move requests along to the current topic data provider.
-  | For ordering: Optionally accepts the sibling topic to place topic behind.  Defaults
-  | to placing topic in front of existing siblings.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: MOVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that passes Move requests along to the current topic data provider.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
+    ///     existing siblings.
+    ///   </para>
+    ///   <para></para>
+    /// </remarks>
+    /// <param name="topic">The topic object to be moved.</param>
+    /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public static bool Move(Topic topic, Topic target) {
       ReorderSiblings(topic);
       return DataProvider.Move(topic, target);
@@ -156,6 +191,16 @@ namespace Ignia.Topics {
       return DataProvider.Move(topic, target, sibling);
     }
 
+    /*==========================================================================================================================
+    | METHOD: REORDER SIBLINGS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that updates the sort order of topics at a particular level.
+    /// </summary>
+    /// <param name="source">The topic object representing the reordering point.</param>
+    /// <param name="sibling">
+    ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
+    /// </param>
     private static void ReorderSiblings(Topic source) {
       ReorderSiblings(source, null);
     }
@@ -165,12 +210,16 @@ namespace Ignia.Topics {
       Topic   parent          = source.Parent;
       int     sortOrder       = -1;
 
-    //If there is no sibling, inject the source at the beginning of the collection
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If there is no sibling, inject the source at the beginning of the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (sibling == null) {
         source.SortOrder = sortOrder++;
       }
 
-    //Loop through each topic to assign a new priority order
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through each topic to assign a new priority order
+      \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic topic in parent.SortedChildren) {
       //Assuming the topic isn't the source, increment the sortOrder
         if (topic != source) {
@@ -184,11 +233,16 @@ namespace Ignia.Topics {
 
     }
 
-  /*============================================================================================================================
-  | METHOD: DELETE
-  >=============================================================================================================================
-  | Static method that passes Delete requests along to the current topic data provider.
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | METHOD: DELETE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that passes Delete requests along to the current topic data provider.
+    /// </summary>
+    /// <param name="topic">The topic object to delete.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    /// </param>
     public static void Delete(Topic topic) {
       Delete(topic, true);
     }
