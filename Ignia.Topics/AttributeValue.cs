@@ -14,8 +14,9 @@ namespace Ignia.Topics {
   ///   Represents an instance of an Attribute value.
   /// </summary>
   /// <remarks>
-  ///   Provides values and metadata specific to individual attribute value instances, such as state(IsDirty = has changed) and 
-  ///   last modified date.State(IsDirty) is evaluated as part of the setter for Value.
+  ///   Provides values and metadata specific to individual attribute value instances, such as state (e.g., IsDirty signifies 
+  ///   that the attribute value has changed) and last modified date. State (IsDirty) is evaluated as part of the setter for 
+  ///   Value; i.e., when the value changes, IsDirty is automatically set to true, if it wasn't previously.
   /// </remarks>
   public class AttributeValue {
 
@@ -36,6 +37,8 @@ namespace Ignia.Topics {
     ///   Optional overloads allow object to be constructed based on specified key/value pairs or for the
     ///   IsDirty (has been changed) property to be set.
     /// </remarks>
+    public AttributeValue() { }
+
     /// <param name="key">
     ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
     /// </param>
@@ -45,13 +48,20 @@ namespace Ignia.Topics {
     /// <param name="isDirty">
     ///   The boolean indicator noting whether the <see cref="AttributeValue"/> collection item has been changed.
     /// </param>
-    public AttributeValue() { }
-
     public AttributeValue(string key, string value) {
       this.Key          = key;
       this.Value        = value;
     }
 
+    /// <param name="key">
+    ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
+    /// </param>
+    /// <param name="value">
+    ///   The string value text for the <see cref="AttributeValue"/> collection item key/value pair.
+    /// </param>
+    /// <param name="isDirty">
+    ///   The boolean indicator noting whether the <see cref="AttributeValue"/> collection item has been changed.
+    /// </param>
     public AttributeValue(string key, string value, bool isDirty) {
       this.Key          = key;
       this.Value        = value;
@@ -62,7 +72,7 @@ namespace Ignia.Topics {
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///  String containing the key of the attribute.
+    ///  Gets or sets the key of the attribute.
     /// </summary>
     public string Key {
       get {
@@ -77,7 +87,7 @@ namespace Ignia.Topics {
     | PROPERTY: VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///  String containing the current value of the attribute. Sets IsDirty based on whether the value has changed.
+    ///   Gets or sets the current value of the attribute. Automatically sets IsDirty based on whether the value has changed.
     /// </summary>
     public string Value {
       get {
@@ -114,9 +124,9 @@ namespace Ignia.Topics {
     | PROPERTY: LAST MODIFIED
     \------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///  Reference to last DateTime the <see cref="AttributeValue"/> instance was updated.
+    ///   Read-only reference to last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
-    public readonly DateTime LastModified       = DateTime.Now;
+    public readonly DateTime LastModified = DateTime.Now;
 
   } //Class
 
