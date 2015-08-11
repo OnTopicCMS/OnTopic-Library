@@ -88,37 +88,27 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###NOTE JJC080313: The Attributes type should be changed to use either KeyedCollection (ideally, with the
+    | INotifyCollectionChanged interface) or ObservableCollection(with a string indexer and duplicate key check). To
+    | begin, it is recommended that this be converted to use the more standard KeyedCollection, which can be upgraded to
+    | use INotifyCollectionChanged at a later date. When it is made observable, this can (and should) be used specifically
+    | to intercept changes to either ParentID or Key, since they have specific implications in terms of the data integrity
+    | of the collection.
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###NOTE KLT081314: Attributes is now of type AttributeValueCollection
+    | (KeyedCollection<string, <see cref=">AttributeValue"/>>). Extending the collection to incorporate the
+    | INotifyCollectionChanged interface or converting it to an ObservableCollection remains an item for future development.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Attributes is a generic property bag for keeping track of either named or arbitrary attributes, thus providing
     ///   significant extensibility.
     /// </summary>
     /// <remarks>
-    ///   <para>
-    ///     ###NOTE JJC080313: The Attributes type should be changed to use either KeyedCollection (ideally, with the
-    ///     INotifyCollectionChanged interface) or ObservableCollection(with a string indexer and duplicate key check). To
-    ///     begin, it is recommended that this be converted to use the more standard KeyedCollection, which can be upgraded to
-    ///     use INotifyCollectionChanged at a later date.When it is made observable, this can(and should) be used specifically
-    ///     to intercept changes to either ParentID or Key, since they have specific implications in terms of the data integrity
-    ///     of the collection.
-    ///   </para>
-    ///   <para>
-    ///     ###NOTE KLT081314: Attributes is now of type AttributeValueCollection
-    ///     (KeyedCollection<string, <see cref=">AttributeValue"/>>). Extending the collection to incorporate the
-    ///     INotifyCollectionChanged interface or converting it to an ObservableCollection remains an item for future development.
-    ///   </para>
-    ///   <para>
-    ///     ###NOTE JJC080313: To implement a KeyedCollection, a new class will need to be created for storing Attribute values.
-    ///     This may be a point of confusion with TopicAttribute, which describes an ATTRIBUTE, as opposed to a particular
-    ///     INSTANCE of an attribute.We could explore a means of "Object Inheritance" (as opposed to class inheritance), but
-    ///     it's questionable whether the default metadata of a TopicAttribute is really necessary when working with Attributes
-    ///     at the topics level. As a result, this may require further evaluation.
-    ///   </para>
-    ///   <para>
-    ///     ###NOTE KLT081314: The <see cref=">AttributeValue"/> class and <see cref=">AttributeValueCollection"/>
-    ///     (KeyedCollection<string, <see cref=">AttributeValue"/>>) have been created. The question of "Object Inheritance"
-    ///     remains.
-    ///   </para>
+    ///   Attributes are stored via an <see cref="AttributeValue"/> class which, in addition to the Attribute Key and Value, 
+    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified"/> 
+    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/> 
+    ///   property). 
     /// </remarks>
     public AttributeValueCollection Attributes {
       get {
@@ -138,6 +128,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, &c.
     /// </summary>
+    /// <remarks>
+    ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g., 
+    ///   "Related" for related topics); those child topics in turn have child topics representing references to each related 
+    ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
+    /// </remarks>
     public Topic Relationships {
       get {
         if (_relationships == null) {
@@ -151,10 +146,13 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships FROM other topics; can be used for tags, related topics, &c. 
+    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, &c. 
     /// </summary>
     /// <remarks>
-    ///   (This is a reverse index of the Relationships property.)
+    ///   The incoming relationships property provides a reverse index of the Relationships property, in order to indicate which
+    ///   topics point to the current topic. This can be useful for traversing the topic tree as a network graph. This is of 
+    ///   particular use for tags, where the current topic represents a tag, and the incoming relationships represents all topics
+    ///   associated with that tag.
     /// </remarks>
     public Topic IncomingRelationships {
       get {
@@ -171,6 +169,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
     /// </summary>
+    /// <remarks>
+    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily 
+    ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
+    ///   have a null parent.
+    /// </remarks>
     public Topic Parent {
       get {
         return _parent;
@@ -205,7 +208,17 @@ namespace Ignia.Topics {
     ///   Reference to the topic that this topic is derived from, if available.
     /// </summary>
     /// <remarks>
-    ///   Derived topics allow attribute values to be inherited from another topic.
+    ///   <para>
+    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
+    ///     TopicId attribute key, values from that topic are used when the <see cref="GetAttribute(string, bool)"/> method is 
+    ///     unable to find a local value for the attribute. 
+    ///   </para>  
+    ///   <para>
+    ///     Be aware that while multiple levels of derived topics can be configured, the <see 
+    ///     cref="GetAttribute(string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
+    ///     overwritten by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
+    ///     explicitly defining the number of hops.
+    ///   </para>
     /// </remarks>
     public Topic DerivedTopic {
       get {
@@ -235,8 +248,9 @@ namespace Ignia.Topics {
     ///   Provides a reference to the values collection, sorted by the SortOrder property.  
     /// </summary>
     /// <remarks>
-    ///   Since Dictionaries do not guarantee sort order, this is necessary for anything that expects to honor the order of
-    ///   topics in the database.
+    ///   Since Dictionaries do not guarantee sort order, this is necessary for any code that expects to honor the order of
+    ///   topics in the database. Simply calling <see cref="Collection{T}.Items"/> may return topics in the correct order, but
+    ///   this cannot be assumed.
     /// </remarks>
     public IEnumerable<Topic> SortedChildren {
       get {
@@ -246,17 +260,18 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: NESTED TOPICS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
+    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
+    | KeyedCollection class, possibly a dirivitive of the NestedTopics class. Preferrably, this will be dynamically created
+    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
+    | parent collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a reference to the values collection, filtered by Topics of the ContentType TopicsList, which represent
     ///   Nested Topics.
     /// </summary>
     /// <remarks>
-    ///   ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
-    ///   ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
-    ///   KeyedCollection class, possibly a dirivitive of the NestedTopics class. Preferrably, this will be dynamically created
-    ///   based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
-    ///   parent collection.
     /// </remarks>
     public Topic NestedTopics {
       get {
@@ -312,6 +327,9 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: ORIGINAL KEY
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for 
+    | instance, changing the Key property. If so, allowing external access may cause problems. 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets or sets the topic's original key.
