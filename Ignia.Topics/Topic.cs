@@ -820,20 +820,11 @@ namespace Ignia.Topics {
     /// <param name="topicId"></param>
     /// <returns>Returns a topic object and N number of child topics, depending on depth specified.</returns>
 
-    //Load by string name
-    public static Topic Load() {
-      return Load("", -1);
-    }
-
     public static Topic Load(bool deepLoad) {
       return Load("", deepLoad?-1:0);
     }
 
-    public static Topic Load(string topic) {
-      return Load(topic, -1);
-    }
-
-    public static Topic Load(string topic, bool deepLoad) {
+    public static Topic Load(string topic = "", bool deepLoad = false) {
       return Load(topic, deepLoad?-1:0);
     }
 
@@ -846,11 +837,7 @@ namespace Ignia.Topics {
     }
 
   //Load by topicId
-    public static Topic Load(int topicId) {
-      return Load(topicId, -1);
-    }
-
-    public static Topic Load(int topicId, bool deepLoad) {
+    public static Topic Load(int topicId, bool deepLoad = false) {
       return Load(topicId, deepLoad?-1:0);
     }
 
