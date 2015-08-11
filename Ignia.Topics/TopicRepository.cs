@@ -176,7 +176,9 @@ namespace Ignia.Topics {
     ///     For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
     ///     existing siblings.
     ///   </para>
-    ///   <para></para>
+    ///   <para>
+    ///     Optional overload allows for specifying a sibling topic.
+    ///   </para>
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
