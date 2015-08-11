@@ -438,7 +438,11 @@ namespace Ignia.Topics {
         | Create singleton reference to content type object in repository
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_contentType == null) {
-          if (Attributes.Contains("ContentType") && !String.IsNullOrEmpty(Attributes["ContentType"].Value) && TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)) {
+          if (
+            Attributes.Contains("ContentType") && 
+            !String.IsNullOrEmpty(Attributes["ContentType"].Value) && 
+            TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)
+          ) {
             _contentType = TopicRepository.ContentTypes[Attributes["ContentType"].Value];
           }
         }
@@ -471,27 +475,24 @@ namespace Ignia.Topics {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Return converted string attribute value, if available
+        | Return minimum date value, if LastModified is not already populated
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (!String.IsNullOrEmpty(GetAttribute("LastModified", ""))) {
-          string lastModified = GetAttribute("LastModified");
-          DateTime dateTimeValue;
-
-          //Return converted DateTime
-          if (DateTime.TryParse(lastModified, out dateTimeValue)) {
-            return dateTimeValue;
-          }
-
-          //Return minimum date value if datetime cannot be parsed from attribute
-          else {
-            return DateTime.MinValue;
-          }
-
+        if (String.IsNullOrEmpty(GetAttribute("LastModified", ""))) {
+          return DateTime.MinValue;
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Return minimum date value, if LastModified is not already populated
+        | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
+        string lastModified = GetAttribute("LastModified");
+        DateTime dateTimeValue;
+
+        //Return converted DateTime
+        if (DateTime.TryParse(lastModified, out dateTimeValue)) {
+          return dateTimeValue;
+        }
+
+        //Return minimum date value if datetime cannot be parsed from attribute
         else {
           return DateTime.MinValue;
         }
@@ -540,10 +541,15 @@ namespace Ignia.Topics {
     | PROPERTY: VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the View attribute.
+    ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set either at the topic level, or at the Content Type level.
+    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), via the
+    ///   Accepts header (also via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), on the topic itself (via this
+    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the 
+    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the 
+    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
+    ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
     public string View {
       get {
@@ -559,10 +565,12 @@ namespace Ignia.Topics {
     | PROPERTY: TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the Title attribute.
+    ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   Falls back to the topic's <see cref="Key"/> if not set.
+    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what 
+    ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
+    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>. 
     /// </remarks>
     public string Title {
       get {
