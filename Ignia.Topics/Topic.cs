@@ -344,24 +344,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: NAME
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Name attribute.
-    /// </summary>
-    /// <remarks>
-    ///   Deprecated/no longer used.
-    /// </remarks>
-    public string Name {
-      get {
-        throw new NotImplementedException();
-      }
-      set {
-        throw new NotImplementedException();
-      }
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -395,21 +377,6 @@ namespace Ignia.Topics {
     /// </remarks>
       internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: FULL NAME
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the full name of the Topic including parents ("bar" vs. "foo:bar").
-    /// </summary>
-    /// <remarks>
-    ///   Deprecated/no longer used. Use <see cref="UniqueKey"/> instead.
-    /// </remarks>
-    public string FullName {
-      get {
-        throw new NotImplementedException();
-      }
     }
 
     /*==========================================================================================================================
