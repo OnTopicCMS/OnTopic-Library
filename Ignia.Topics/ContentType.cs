@@ -12,8 +12,13 @@ namespace Ignia.Topics {
   | CLASS: CONTENT TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a specific implementation of Topic that is optimized for working with ContentType Topics.
+  ///   Provides a strongly types implementation of Topic that is exposes properties specific to ContentType.
   /// </summary>
+  /// <remarks>
+  ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
+  ///   Editor (via the <see cref="SupportedAttributes"/> property). The content type also determines, by default, which view
+  ///   is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down the pipe). 
+  /// </remarks>
   public class ContentType : Topic {
 
   /*============================================================================================================================
@@ -30,11 +35,11 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
     /// </remarks>
+    public ContentType() : base() { }
+
     /// <param name="key">
     ///   The string identifier for the <see cref="ContentType"/> Topic.
     /// </param>
-    public ContentType() : base() { }
-
     public ContentType(string key) : base(key) { }
 
     /*==========================================================================================================================
@@ -43,6 +48,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///  Provides a list of Attribute objects that are supported for objects implementing this ContentType.
     /// </summary>
+    /// <remarks>
+    ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from 
+    ///   any parent content types. For instance, if a Content Type "Page" has an attribute "Body", then all Content Types 
+    ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="SupportedAttributes"/> property
+    ///   must crawl through each parent Content Type to collate the list of supported attributes.
+    /// </remarks>
     public Dictionary<string, Attribute> SupportedAttributes {
       get {
 
@@ -57,7 +68,9 @@ namespace Ignia.Topics {
           | Validate Attributes collection
           \-------------------------------------------------------------------------------------------------------------------*/
           if (!this.Contains("Attributes")) {
-            throw new Exception("The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected.");
+            throw new Exception(
+              "The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected."
+            );
           }
 
           /*--------------------------------------------------------------------------------------------------------------------
