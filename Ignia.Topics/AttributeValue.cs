@@ -11,10 +11,12 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents an instance of an Attribute value; provides values and metadata specific to individual attribute value
-  ///   instances, such as state(IsDirty = has changed) and last modified date.State(IsDirty) is evaluated as part of the setter
-  ///   for Value.
+  ///   Represents an instance of an Attribute value.
   /// </summary>
+  /// <remarks>
+  ///   Provides values and metadata specific to individual attribute value instances, such as state(IsDirty = has changed) and 
+  ///   last modified date.State(IsDirty) is evaluated as part of the setter for Value.
+  /// </remarks>
   public class AttributeValue {
 
     /*==========================================================================================================================
