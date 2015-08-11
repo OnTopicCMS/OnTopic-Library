@@ -44,6 +44,9 @@ namespace Ignia.Topics.Providers {
 
     /*==========================================================================================================================
     | METHOD: LOAD
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### NOTE JJC081115: This method should be broken down into private helper functions to better separate functionality, 
+    | avoid lengthy nested blocks, and enhance code readability. 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Interface method that loads topics into memory.
