@@ -95,6 +95,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///  Boolean setting which is set automatically when an attribute's Value is set to a new value.
     /// </summary>
+    /// <remarks>
+    ///   The IsDirty attribute is used by the <see cref="Topics.Providers.TopicDataProviderBase"/> to determine whether or not 
+    ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database 
+    ///   when <see cref="Topics.Providers.TopicDataProviderBase.Save(Topic, bool, bool)"/> is called. Otherwise, it is ignored, 
+    ///   thus preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
+    /// </remarks>
     public bool IsDirty {
       get {
         return _isDirty;
