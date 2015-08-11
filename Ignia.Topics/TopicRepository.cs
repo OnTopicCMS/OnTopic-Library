@@ -139,13 +139,15 @@ namespace Ignia.Topics {
     ///   Optional overload allows for the topic's ID to be specified rather than the string uniqueKey value of the topic.
     /// </remarks>
     /// <param name="topic">String uniqueKey identifier for the topic.</param>
-    /// <param name="topicId">Integer identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
     public static Topic Load(string topic, int depth = 0, DateTime? version = null) {
       return DataProvider.Load(topic, depth, version);
     }
 
+    /// <param name="topicId">Integer identifier for the topic.</param>
+    /// <param name="depth">Integer level to which to also load the topic's children.</param>
+    /// <param name="version">DateTime identifier for the version of the topic.</param>
     public static Topic Load(int topicId, int depth = 0, DateTime? version = null) {
       return DataProvider.Load(topicId, depth, version);
     }
@@ -182,12 +184,14 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public static bool Move(Topic topic, Topic target) {
       ReorderSiblings(topic);
       return DataProvider.Move(topic, target);
     }
 
+    /// <param name="topic">The topic object to be moved.</param>
+    /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public static bool Move(Topic topic, Topic target, Topic sibling) {
       ReorderSiblings(topic, sibling);
       return DataProvider.Move(topic, target, sibling);
@@ -203,11 +207,7 @@ namespace Ignia.Topics {
     /// <param name="sibling">
     ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
     /// </param>
-    private static void ReorderSiblings(Topic source) {
-      ReorderSiblings(source, null);
-    }
-
-    private static void ReorderSiblings(Topic source, Topic sibling) {
+    private static void ReorderSiblings(Topic source, Topic sibling = null) {
 
       Topic   parent          = source.Parent;
       int     sortOrder       = -1;
@@ -242,13 +242,14 @@ namespace Ignia.Topics {
     ///   Static method that passes Delete requests along to the current topic data provider.
     /// </summary>
     /// <param name="topic">The topic object to delete.</param>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
-    /// </param>
     public static void Delete(Topic topic) {
       Delete(topic, true);
     }
 
+    /// <param name="topic">The topic object to delete.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    /// </param>
     public static void Delete(Topic topic, bool isRecursive) {
       DataProvider.Delete(topic, isRecursive);
     }
