@@ -45,9 +45,7 @@ namespace Ignia.Topics.Providers {
       return Load(topicKey, -1, depth, version);
     }
 
-    public virtual Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
-      return null;
-    }
+    public abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
 
     /*==========================================================================================================================
     | METHOD: SAVE
@@ -98,9 +96,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
-    public virtual bool Move(Topic topic, Topic target, Topic sibling) {
-      return true;
-    }
+    public abstract bool Move(Topic topic, Topic target, Topic sibling);
 
     public virtual bool Move(Topic topic, Topic target) {
       if (MoveEvent != null) {
@@ -111,8 +107,6 @@ namespace Ignia.Topics.Providers {
 
     /*==========================================================================================================================
     | METHOD: DELETE
-    >---------------------------------------------------------------------------------------------------------------------------
-    | 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Interface method that deletes the provided topic from the tree
