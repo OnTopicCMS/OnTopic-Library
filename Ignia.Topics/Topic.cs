@@ -57,18 +57,21 @@ namespace Ignia.Topics {
     ///   Optional overloads allow object to be constructed based on the Topic's <see cref="Key"/> and/or
     ///   <see cref="ContentType"/> properties. 
     /// </remarks>
+    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
+
+    /// <param name="key">
+    ///   The string identifier for the <see cref="Topic"/>.
+    /// </param>
+    public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
+      this.Key                  = key;
+    }
+
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
     /// <param name="contentType">
     ///   The string value text for the Topic's ContentType Attribute.
     /// </param>
-    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
-
-    public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
-      this.Key                  = key;
-    }
-
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       this.Key                  = key;
       this.Attributes.Add(new AttributeValue("ContentType", contentType));
