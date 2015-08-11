@@ -8,11 +8,20 @@ using System;
 namespace Ignia.Topics.Providers {
 
   /*============================================================================================================================
-  | CLASS: COMMUNITY SERVER TOPIC MAPPING PROVIDER
+  | CLASS: NULL TOPIC MAPPING PROVIDER
+  >-----------------------------------------------------------------------------------------------------------------------------
+  | ### TODO JJC 081115: Are the concrete implementations for the event handlers required? This seems to add unnecessary logic 
+  | for scenarios where no mapping provider is called for.
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Defines a topic mapping provider that allows the topics system to work independent of a third-party system.
   /// </summary>
+  /// <remarks>
+  ///   Originally, the topic library was intended to work in conjunction with third-party CMSs as a means of extending the 
+  ///   metadata content types. For instance, it could be used to add tagging data to SharePoint objects. The topic library may
+  ///   instead be used as a stand-alone CMS, however, in which case the null topic mapping provider disables all third-party 
+  ///   integration.
+  /// </remarks>
   public class NullTopicMappingProvider : TopicMappingProviderBase {
 
     /*==========================================================================================================================
