@@ -251,6 +251,84 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the View attribute, representing the default view to be used for the topic.
+    /// </summary>
+    /// <remarks>
+    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), via the
+    ///   Accepts header (also via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), on the topic itself (via this
+    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the 
+    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the 
+    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
+    ///   /Common/Templates/Page/Page.aspx.
+    /// </remarks>
+    public string View {
+      get {
+        //Return current Topic's View Attribute or the default for the ContentType.
+        return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
+      }
+      set {
+        Attributes.SetAttributeValue("View", value);
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
+    /// </summary>
+    /// <remarks>
+    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what 
+    ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
+    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>. 
+    /// </remarks>
+    public string Title {
+      get {
+        return GetAttribute("Title", Key);
+      }
+      set {
+        Attributes.SetAttributeValue("Title", value);
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: DESCRIPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the Description attribute.
+    /// </summary>
+    public string Description {
+      get {
+        return GetAttribute("Description");
+      }
+      set {
+        Attributes.SetAttributeValue("Description", value);
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: SORT ORDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's sort order.
+    /// </summary>
+    /// <remarks>
+    ///   Sort order should be assigned by the <see cref="TopicDataProvider"/>; it may be based on an attribute or based on the physical
+    ///   order of records from the data source, depending on the capabilities of the storageprovider.
+    /// </remarks>
+    public int SortOrder {
+      get {
+        return _sortOrder;
+      }
+      set {
+        _sortOrder = value;
+      }
+    }
+
+    /*==========================================================================================================================
     | PROPERTY: LAST MODIFIED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -517,84 +595,6 @@ namespace Ignia.Topics {
           _versionHistory = new List<DateTime>();
         }
         return _versionHistory;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: VIEW
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the View attribute, representing the default view to be used for the topic.
-    /// </summary>
-    /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), via the
-    ///   Accepts header (also via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), on the topic itself (via this
-    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the 
-    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the 
-    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
-    ///   /Common/Templates/Page/Page.aspx.
-    /// </remarks>
-    public string View {
-      get {
-      //Return current Topic's View Attribute or the default for the ContentType.
-        return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
-      }
-      set {
-        Attributes.SetAttributeValue("View", value);
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: TITLE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
-    /// </summary>
-    /// <remarks>
-    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what 
-    ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
-    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>. 
-    /// </remarks>
-    public string Title {
-      get {
-        return GetAttribute("Title", Key);
-      }
-      set {
-        Attributes.SetAttributeValue("Title", value);
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: DESCRIPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the Description attribute.
-    /// </summary>
-    public string Description {
-      get {
-        return GetAttribute("Description");
-      }
-      set {
-        Attributes.SetAttributeValue("Description", value);
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: SORT ORDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's sort order.
-    /// </summary>
-    /// <remarks>
-    ///   Sort order should be assigned by the <see cref="TopicDataProvider"/>; it may be based on an attribute or based on the physical
-    ///   order of records from the data source, depending on the capabilities of the storageprovider.
-    /// </remarks>
-    public int SortOrder {
-      get {
-        return _sortOrder;
-      }
-      set {
-        _sortOrder = value;
       }
     }
 
