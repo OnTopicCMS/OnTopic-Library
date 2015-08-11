@@ -134,8 +134,14 @@ namespace Ignia.Topics {
     | PROPERTY: CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Getter for the ContentType attribute.
+    ///   Getter for the content type attribute.
     /// </summary>
+    /// <remarks>
+    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
+    ///   Editor (via the <see cref="ContentType.SupportedAttributes"/> property). The content type also determines, by default, 
+    ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down 
+    ///   the pipe). 
+    /// </remarks>
     public ContentType ContentType {
       get {
 
@@ -228,6 +234,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the topic's original key.
     /// </summary>
+    /// <remarks>
+    ///   The original key is automatically set by <see cref="Key"/> when its value is updated (assuming the original key isn't
+    ///   already set). This is, in turn, used by the <see cref="Providers.RenameEventArgs"/> to represent the original value, 
+    ///   and thus allow the <see cref="Providers.TopicDataProviderBase"/> (or derived providers) from updating the data store
+    ///   appropriately.
+    /// </remarks>
     public string OriginalKey {
       get {
         return _originalKey;
@@ -245,7 +257,8 @@ namespace Ignia.Topics {
     ///   site.
     /// </summary>
     /// <remarks>
-    ///   (If this assumption is not true, the application needs to specifically account for that).
+    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views 
+    ///   that reference the web path (e.g., by providing a prefix).
     /// </remarks>
     public string WebPath {
       get {
@@ -319,8 +332,9 @@ namespace Ignia.Topics {
     ///   Gets or sets the topic's sort order.
     /// </summary>
     /// <remarks>
-    ///   Sort order should be assigned by the <see cref="TopicDataProvider"/>; it may be based on an attribute or based on the physical
-    ///   order of records from the data source, depending on the capabilities of the storageprovider.
+    ///   Sort order should be assigned by the <see cref="Providers.TopicDataProviderBase"/> (or one of its derived providers); 
+    ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the 
+    ///   capabilities of the storage provider.
     /// </remarks>
     public int SortOrder {
       get {
@@ -335,10 +349,13 @@ namespace Ignia.Topics {
     | PROPERTY: LAST MODIFIED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's LastModified attribute.
+    ///   Gets or sets the topic's last modified attribute.
     /// </summary>
     /// <remarks>
-    ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system.
+    ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system. It
+    ///   is important to note that the last modified attribute is not tied to the system versioning (which operates at an 
+    ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly 
+    ///   overwrite this value for various reasons (such as backdating a webpage). 
     /// </remarks>
     public DateTime LastModified {
       get {
@@ -503,7 +520,6 @@ namespace Ignia.Topics {
       }
     }
 
-
     /*==========================================================================================================================
     | PROPERTY: SORTED CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -565,7 +581,7 @@ namespace Ignia.Topics {
     ///   By default, KeyedCollection doesn't permit mutable keys; this mitigates that issue by allowing the collection's
     ///   lookup dictionary to be updated whenever the key is updated in the corresponding topic object.
     /// </remarks>
-      internal void ChangeKey(Topic topic, string newKey) {
+    internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
     }
 
@@ -592,6 +608,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
     /// </summary>
+    /// <remarks>
+    ///   It is expected that this collection will be populated by the <see cref="Providers.TopicDataProviderBase"/> (or one of
+    ///   its derived providers). 
+    /// </remarks>
     public List<DateTime> VersionHistory {
       get {
         if (_versionHistory == null) {
@@ -605,7 +625,7 @@ namespace Ignia.Topics {
     | METHOD: SET RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Set the collection of related items (by scope) via a CSV.
+    ///   Set the collection of related items (by scope) via a CSV file.
     /// </summary>
     /// <remarks>
     ///   Not currently referenced by the library.
@@ -713,13 +733,15 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="name"></param>
     /// <param name="isRecursive"></param>
-    /// <param name="defaultValue"></param>
-    /// <param name="maxHops"></param>
     /// <returns>Returns the string value for the Attribute.</returns>
     public string GetAttribute(string name, bool isRecursive = false) {
       return GetAttribute(name, "", isRecursive);
     }
 
+    /// <param name="name"></param>
+    /// <param name="defaultValue"></param>
+    /// <param name="isRecursive"></param>
+    /// <param name="maxHops"></param>
     public string GetAttribute(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
 
       string value = null;
@@ -789,7 +811,6 @@ namespace Ignia.Topics {
       return results;
     }
 
-
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -800,37 +821,43 @@ namespace Ignia.Topics {
     ///   Optionsl overloads.
     /// </remarks>
     /// <param name="deepLoad"></param>
-    /// <param name="topic"></param>
-    /// <param name="depth"></param>
-    /// <param name="version"></param>
-    /// <param name="topicId"></param>
     /// <returns>Returns a topic object and N number of child topics, depending on depth specified.</returns>
-
     public static Topic Load(bool deepLoad) {
       return Load("", deepLoad?-1:0);
     }
 
+    /// <param name="topic"></param>
+    /// <param name="deepLoad"></param>
     public static Topic Load(string topic = "", bool deepLoad = false) {
       return Load(topic, deepLoad?-1:0);
     }
 
+    /// <param name="topic"></param>
+    /// <param name="depth"></param>
     public static Topic Load(string topic, int depth) {
       return TopicRepository.Load(topic, depth);
     }
 
+    /// <param name="topic"></param>
+    /// <param name="version"></param>
     public static Topic Load(string topic, DateTime version) {
       return TopicRepository.Load(topic, 0, version);
     }
 
-  //Load by topicId
+    /// <param name="topicId"></param>
+    /// <param name="deepLoad"></param>
     public static Topic Load(int topicId, bool deepLoad = false) {
       return Load(topicId, deepLoad?-1:0);
     }
 
+    /// <param name="topicId"></param>
+    /// <param name="depth"></param>
     public static Topic Load(int topicId, int depth) {
       return TopicRepository.Load(topicId, depth);
     }
 
+    /// <param name="topicId"></param>
+    /// <param name="version"></param>
     public static Topic Load(int topicId, DateTime version) {
       return TopicRepository.Load(topicId, 0, version);
     }
@@ -921,8 +948,6 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
-    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
     public Topic GetTopic(int topicId) {
 
       if (this.Id == topicId) return this;
@@ -936,10 +961,13 @@ namespace Ignia.Topics {
 
     }
 
+    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
+    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
     public Topic GetTopic(string namespaceKey, string topic) {
       return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
     }
 
+    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
     public Topic GetTopic(string topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -997,15 +1025,15 @@ namespace Ignia.Topics {
     ///   Optional overload allows for specifying whether all children should also be saved, as well as whether the topic should
     ///   be marked as having Draft status.
     /// </remarks>
+    public int Save() {
+      return Save(false, false);
+    }
+
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's children and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>Returns the topic's integer identifier.</returns>
-    public int Save() {
-      return Save(false, false);
-    }
-
     public int Save(bool isRecursive = false, bool isDraft = false) {
       Id = TopicRepository.Save(this, isRecursive, isDraft);
       return Id;
@@ -1020,13 +1048,13 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Optional overload allows for specifying whether the topic's children should be refreshed as well.
     /// </remarks>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and refresh them as well.
-    /// </param>
     public bool Refresh() {
       return Refresh(true);
     }
 
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse through the topic's children and refresh them as well.
+    /// </param>
     public bool Refresh(bool isRecursive) {
       throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
     }
@@ -1047,13 +1075,13 @@ namespace Ignia.Topics {
     ///     delete and reassign children or something.
     ///   </para>
     /// </remarks>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
-    /// </param>
     public void Delete() {
       Delete(true);
     }
 
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    /// </param>
     public void Delete(bool isRecursive) {
       TopicRepository.Delete(this, isRecursive);
     }
