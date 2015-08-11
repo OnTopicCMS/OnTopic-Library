@@ -75,6 +75,265 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's id according to the data provider.
+    /// </summary>
+    public int Id {
+      get {
+        return _id;
+      }
+      set {
+        _id = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
+    /// </summary>
+    /// <remarks>
+    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily 
+    ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
+    ///   have a null parent.
+    /// </remarks>
+    public Topic Parent {
+      get {
+        return _parent;
+      }
+      set {
+        if (value == null) {
+          throw new InvalidOperationException("The value for Parent must not be null.");
+        }
+        if (_parent == value) {
+          return;
+        }
+        if (!value.Contains(this.Key)) {
+          value.Add(this);
+        }
+        else {
+          throw new Exception("Duplicate key when setting Parent property: the topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic.");
+        }
+        if (_parent != null) {
+          TopicRepository.Move(this, value);
+          _parent.Remove(this.Key);
+        }
+        _parent = value;
+        Attributes.Remove("ParentID");
+        Attributes.Add(new AttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture)));
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Getter for the ContentType attribute.
+    /// </summary>
+    public ContentType ContentType {
+      get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Create singleton reference to content type object in repository
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_contentType == null) {
+          if (
+            Attributes.Contains("ContentType") &&
+            !String.IsNullOrEmpty(Attributes["ContentType"].Value) &&
+            TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)
+          ) {
+            _contentType = TopicRepository.ContentTypes[Attributes["ContentType"].Value];
+          }
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | If content type doesn't exist, default to Container.
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_contentType == null) {
+          _contentType = TopicRepository.ContentTypes["Container"];
+        }
+
+        return _contentType;
+
+      }
+      set {
+        _contentType = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
+    /// </summary>
+    public string Key {
+      get {
+        return _key;
+      }
+      set {
+        if (_originalKey == null) {
+          _originalKey = GetAttribute("Key", null);
+        }
+        if (_originalKey != null && !value.Equals(Key) && Parent != null) {
+          Parent.ChangeKey(this, value);
+        }
+        Attributes.SetAttributeValue("Key", value);
+        _key = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the full name of the Topic including parents ("bar" vs. "foo:bar").
+    /// </summary>
+    public string UniqueKey {
+      get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Crawl up tree to define uniqueKey
+        \---------------------------------------------------------------------------------------------------------------------*/
+        string uniqueKey = "";
+        Topic topic = this;
+
+        for (int i = 0; i < 100; i++) {
+          if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
+          uniqueKey = topic.Key + uniqueKey;
+          topic = topic.Parent;
+          if (topic == null) break;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        return uniqueKey;
+
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: ORIGINAL KEY
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for 
+    | instance, changing the Key property. If so, allowing external access may cause problems. 
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's original key.
+    /// </summary>
+    public string OriginalKey {
+      get {
+        return _originalKey;
+      }
+      set {
+        _originalKey = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the TopicRoot is bound to the root of the
+    ///   site.
+    /// </summary>
+    /// <remarks>
+    ///   (If this assumption is not true, the application needs to specifically account for that).
+    /// </remarks>
+    public string WebPath {
+      get {
+        return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's LastModified attribute.
+    /// </summary>
+    /// <remarks>
+    ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system.
+    /// </remarks>
+    public DateTime LastModified {
+      get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return minimum date value, if LastModified is not already populated
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (String.IsNullOrEmpty(GetAttribute("LastModified", ""))) {
+          return DateTime.MinValue;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return converted string attribute value, if available
+        \---------------------------------------------------------------------------------------------------------------------*/
+        string lastModified = GetAttribute("LastModified");
+        DateTime dateTimeValue;
+
+        //Return converted DateTime
+        if (DateTime.TryParse(lastModified, out dateTimeValue)) {
+          return dateTimeValue;
+        }
+
+        //Return minimum date value if datetime cannot be parsed from attribute
+        else {
+          return DateTime.MinValue;
+        }
+
+      }
+      set {
+        if (value != null) {
+          Attributes.SetAttributeValue("LastModified", value.ToString());
+        }
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: DERIVED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Reference to the topic that this topic is derived from, if available.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
+    ///     TopicId attribute key, values from that topic are used when the <see cref="GetAttribute(string, bool)"/> method is 
+    ///     unable to find a local value for the attribute. 
+    ///   </para>  
+    ///   <para>
+    ///     Be aware that while multiple levels of derived topics can be configured, the <see 
+    ///     cref="GetAttribute(string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
+    ///     overwritten by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
+    ///     explicitly defining the number of hops.
+    ///   </para>
+    /// </remarks>
+    public Topic DerivedTopic {
+      get {
+        if (_derivedTopic == null && this.Attributes.Contains("TopicID")) {
+          int topicId = 0;
+          bool success = Int32.TryParse(this.Attributes["TopicID"].Value.ToString(), out topicId);
+          if (!success || topicId == 0) return null;
+          _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
+        }
+        return _derivedTopic;
+      }
+      set {
+        _derivedTopic = value;
+        if (value != null) {
+          this.Attributes.SetAttributeValue("TopicID", value.Id.ToString());
+        }
+        else if (this.Attributes.Contains("TopicID")) {
+          this.Attributes.Remove("TopicID");
+        }
+      }
+    }
+
+    /*==========================================================================================================================
     | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
     | proposed Import/Export schema.
     >---------------------------------------------------------------------------------------------------------------------------
@@ -163,83 +422,6 @@ namespace Ignia.Topics {
       }
     }
 
-    /*==========================================================================================================================
-    | PROPERTY: PARENT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
-    /// </summary>
-    /// <remarks>
-    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily 
-    ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
-    ///   have a null parent.
-    /// </remarks>
-    public Topic Parent {
-      get {
-        return _parent;
-      }
-      set {
-        if (value == null) {
-          throw new InvalidOperationException("The value for Parent must not be null.");
-        }
-        if (_parent == value) {
-          return;
-        }
-        if (!value.Contains(this.Key)) {
-          value.Add(this);
-        }
-        else {
-          throw new Exception("Duplicate key when setting Parent property: the topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic.");
-        }
-        if (_parent != null) {
-          TopicRepository.Move(this, value);
-          _parent.Remove(this.Key);
-        }
-        _parent = value;
-        Attributes.Remove("ParentID");
-        Attributes.Add(new AttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture)));
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: DERIVED TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Reference to the topic that this topic is derived from, if available.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
-    ///     TopicId attribute key, values from that topic are used when the <see cref="GetAttribute(string, bool)"/> method is 
-    ///     unable to find a local value for the attribute. 
-    ///   </para>  
-    ///   <para>
-    ///     Be aware that while multiple levels of derived topics can be configured, the <see 
-    ///     cref="GetAttribute(string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
-    ///     overwritten by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
-    ///     explicitly defining the number of hops.
-    ///   </para>
-    /// </remarks>
-    public Topic DerivedTopic {
-      get {
-        if (_derivedTopic == null && this.Attributes.Contains("TopicID")) {
-          int topicId = 0;
-          bool success = Int32.TryParse(this.Attributes["TopicID"].Value.ToString(), out topicId);
-          if (!success || topicId == 0) return null;
-          _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
-        }
-        return _derivedTopic;
-      }
-      set {
-        _derivedTopic = value;
-        if (value != null) {
-          this.Attributes.SetAttributeValue("TopicID", value.Id.ToString());
-        }
-        else if (this.Attributes.Contains("TopicID")) {
-          this.Attributes.Remove("TopicID");
-        }
-      }
-    }
 
     /*==========================================================================================================================
     | PROPERTY: SORTED CHILDREN
@@ -293,21 +475,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: ID
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's id according to the data provider.
-    /// </summary>
-    public int Id {
-      get {
-        return _id;
-      }
-      set {
-        _id = value;
-      }
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: ORIGINAL NAME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -322,47 +489,7 @@ namespace Ignia.Topics {
       }
       set {
         throw new NotImplementedException();
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: ORIGINAL KEY
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for 
-    | instance, changing the Key property. If so, allowing external access may cause problems. 
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's original key.
-    /// </summary>
-    public string OriginalKey {
-      get {
-        return _originalKey;
-      }
-      set {
-        _originalKey = value;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
-    /// </summary>
-    public string Key {
-      get {
-        return _key;
-      }
-      set {
-        if (_originalKey == null) {
-          _originalKey = GetAttribute("Key", null);
-        }
-        if (_originalKey != null && !value.Equals(Key) && Parent != null) {
-          Parent.ChangeKey(this, value);
-        }
-        Attributes.SetAttributeValue("Key", value);
-        _key = value;
-      }
+      } 
     }
 
     /*==========================================================================================================================
@@ -377,132 +504,6 @@ namespace Ignia.Topics {
     /// </remarks>
       internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the full name of the Topic including parents ("bar" vs. "foo:bar").
-    /// </summary>
-    public string UniqueKey {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Crawl up tree to define uniqueKey
-        \---------------------------------------------------------------------------------------------------------------------*/
-        string          uniqueKey       = "";
-        Topic           topic           = this;
-
-        for (int i=0; i < 100; i++) {
-          if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
-          uniqueKey     = topic.Key + uniqueKey;
-          topic         = topic.Parent;
-          if (topic == null) break;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        return uniqueKey;
-
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: WEB PATH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the TopicRoot is bound to the root of the
-    ///   site.
-    /// </summary>
-    /// <remarks>
-    ///   (If this assumption is not true, the application needs to specifically account for that).
-    /// </remarks>
-    public string WebPath {
-      get {
-        return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONTENT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Getter for the ContentType attribute.
-    /// </summary>
-    public ContentType ContentType {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Create singleton reference to content type object in repository
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_contentType == null) {
-          if (
-            Attributes.Contains("ContentType") && 
-            !String.IsNullOrEmpty(Attributes["ContentType"].Value) && 
-            TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)
-          ) {
-            _contentType = TopicRepository.ContentTypes[Attributes["ContentType"].Value];
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | If content type doesn't exist, default to Container.
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_contentType == null) {
-          _contentType = TopicRepository.ContentTypes["Container"];
-        }
-
-        return _contentType;
-
-      }
-      set {
-        _contentType = value;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: LAST MODIFIED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's LastModified attribute.
-    /// </summary>
-    /// <remarks>
-    ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system.
-    /// </remarks>
-    public DateTime LastModified {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return minimum date value, if LastModified is not already populated
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(GetAttribute("LastModified", ""))) {
-          return DateTime.MinValue;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return converted string attribute value, if available
-        \---------------------------------------------------------------------------------------------------------------------*/
-        string lastModified = GetAttribute("LastModified");
-        DateTime dateTimeValue;
-
-        //Return converted DateTime
-        if (DateTime.TryParse(lastModified, out dateTimeValue)) {
-          return dateTimeValue;
-        }
-
-        //Return minimum date value if datetime cannot be parsed from attribute
-        else {
-          return DateTime.MinValue;
-        }
-
-      }
-      set {
-        if (value != null) {
-          Attributes.SetAttributeValue("LastModified", value.ToString());
-        }
-      }
     }
 
     /*==========================================================================================================================
