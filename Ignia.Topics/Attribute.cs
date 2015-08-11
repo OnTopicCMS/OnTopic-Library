@@ -15,7 +15,8 @@ namespace Ignia.Topics {
   /// <remarks>
   ///   The Attribute Content Type represents an individual attribute on a content type. For instance, the "Page" Content Type
   ///   has attributes such as "Keywords", "Body", etc. Each of those individually represent instances of the Attribute Content 
-  ///   Type. 
+  ///   Type. This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of 
+  ///   the CMS; except in very particular cases, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
   public class Attribute : Topic {
 
@@ -28,11 +29,11 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
     /// </remarks>
+    public Attribute() : base() { }
+
     /// <param name="key">
     ///   The string identifier for the <see cref="Attribute"/> Topic.
     /// </param>
-    public Attribute() : base() { }
-
     public Attribute(string key) : base(key) { }
 
     /*==========================================================================================================================
@@ -41,6 +42,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the filename refence to the Attribute Type control associate with the Topic object.
     /// </summary>
+    /// <remarks>
+    ///   The type attribute maps to the name of a control, directive, or partial view in the editor representing the specific 
+    ///   type of attribute. For instance, a value of "checkbox" might map to a file "checkbox.ascx" which displays an 
+    ///   attribute's value as a standard HTML checkbox. There is no validation of the type at the library level; it is up to 
+    ///   the editor to provide a match and, if not found, display an error.
+    /// </remarks>
     public string Type {
       get {
         return this.GetAttribute("Type", "");
@@ -56,6 +63,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the tab in the editor within which the Attribute should be displayed.
     /// </summary>
+    /// <remarks>
+    ///   When attributes are displayed in the editor, they are grouped by tabs. The tabs are not predetermined, but rather set
+    ///   by individual attributes. Is five attributes, for instance, have a display group of "Settings", then a tab will be 
+    ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>).
+    /// </remarks>
     public string DisplayGroup {
       get {
         return this.GetAttribute("DisplayGroup", "");
@@ -72,8 +84,15 @@ namespace Ignia.Topics {
     ///   Gets or sets the default configuration.
     /// </summary>
     /// <remarks>
-    ///   When an attribute is bound to an attribute type control in the editor, the default configuration is injected into the 
-    ///   control's configuration. This allows attribute type specific properties to be set on a per-attribute basis. 
+    ///   <para>
+    ///     When an attribute is bound to an attribute type control in the editor, the default configuration is injected into 
+    ///     the control's configuration. This allows attribute type specific properties to be set on a per-attribute basis. 
+    ///   </para> 
+    ///   <para>
+    ///     The properties available will be up to the control associated with the <see cref="Type"/>, and the format will be 
+    ///     dependent on framework that the attribute type control is written in. For example, for ASP.NET User Controls as 
+    ///     well as AngularJS Directives, the format is Property1="Value" Propert2="Value". 
+    ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
       get {
@@ -91,11 +110,19 @@ namespace Ignia.Topics {
     ///   Gets or sets whether the attribute should be hidden in the editor.
     /// </summary>
     /// <remarks>
-    ///   By default, all attributes associated with a <see cref="ContentType"/> are rendered in the editor. Optionally, 
-    ///   however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type as some
-    ///   parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can also be
-    ///   valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a timestamp or
-    ///   version).
+    ///   <para>
+    ///     By default, all attributes associated with a <see cref="ContentType"/> are rendered in the editor. Optionally, 
+    ///     however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type as some
+    ///     parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can also 
+    ///     be valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a timestamp 
+    ///     or version).
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view 
+    ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see 
+    ///     cref="Topic.GetAttribute(string, bool)"/>) then the attribute will be displayed on the page. The <see 
+    ///     cref="IsHidden"/> property is used exclusively by the editor.
+    ///   </para>
     /// </remarks>
     public bool IsHidden {
       get {
