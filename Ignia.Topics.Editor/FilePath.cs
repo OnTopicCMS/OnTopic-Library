@@ -8,7 +8,7 @@ using System;
 namespace Ignia.Topics.Editor {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: FILE PATH
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a strongly-typed class associated with the FilePath.ascx Attribute Type control and logic associated with

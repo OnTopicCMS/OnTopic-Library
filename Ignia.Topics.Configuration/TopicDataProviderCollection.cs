@@ -9,7 +9,7 @@ using Ignia.Topics.Providers;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: TOPIC DATA PROVIDER COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom implementation of a <see cref="ProviderCollection"/> responsible for encapsulating a set of

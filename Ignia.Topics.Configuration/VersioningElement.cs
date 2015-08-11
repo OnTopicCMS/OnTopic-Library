@@ -8,7 +8,7 @@ using System.Configuration;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: VERSIONING ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom <see cref="ConfigurationElement"/> which represents the data versioning configuration.

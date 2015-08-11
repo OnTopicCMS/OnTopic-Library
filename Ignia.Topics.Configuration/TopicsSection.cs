@@ -8,7 +8,7 @@ using System.Configuration;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: TOPICS SECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a customized version of the <see cref="ConfigurationSection"/> class in order to permit configuration of the

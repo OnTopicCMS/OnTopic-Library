@@ -8,7 +8,7 @@ using System.Web.UI;
 namespace Ignia.Topics.Editor {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: ATTRIBUTE TYPE CONTROL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a base class for controls used in the Topics Editor.

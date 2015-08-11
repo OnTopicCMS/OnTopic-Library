@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace Ignia.Topics {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: CONTENT TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a specific implementation of Topic that is optimized for working with ContentType Topics.

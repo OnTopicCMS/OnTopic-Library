@@ -10,7 +10,7 @@ using System.Configuration;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: PAGE TYPE ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom <see cref="ConfigurationElement"/> which represents a page type

@@ -11,7 +11,7 @@ using Ignia.Topics.Providers;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: TOPIC DATA PROVIDER MANAGER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides initialization of the specified Topic data provider based on retrieving the appropriate data from the custom

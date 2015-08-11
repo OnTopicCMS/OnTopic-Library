@@ -10,7 +10,7 @@ using System.Globalization;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: EDITOR ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom <see cref="ConfigurationElement"/> which represents the (default: OnTopic) editor configuration. 

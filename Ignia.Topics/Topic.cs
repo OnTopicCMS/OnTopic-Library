@@ -23,7 +23,7 @@ using System.Globalization;
 namespace Ignia.Topics {
   
   /*============================================================================================================================
-  | CLASS
+  | CLASS: TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
