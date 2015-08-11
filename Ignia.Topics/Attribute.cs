@@ -7,7 +7,7 @@
 namespace Ignia.Topics {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: ATTRIBUTE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a strongly-typed implementation of Topic that is maps to Attribute Content Types.

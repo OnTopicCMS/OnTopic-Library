@@ -12,7 +12,7 @@ using System.Web.Security;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: SOURCE ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom <see cref="ConfigurationElement"/> implementation which represents a custom configuration source

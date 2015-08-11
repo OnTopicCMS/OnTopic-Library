@@ -8,7 +8,7 @@ using System.Configuration;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: PAGE TYPE ELEMENT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom implementation of a <see cref="ConfigurationElementCollection"/> responsible for encapsulating a set

@@ -8,7 +8,7 @@ using System;
 namespace Ignia.Topics {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: ATTRIBUTE VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents an instance of an Attribute value; provides values and metadata specific to individual attribute value

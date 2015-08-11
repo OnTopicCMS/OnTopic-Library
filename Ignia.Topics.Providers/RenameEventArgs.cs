@@ -8,7 +8,7 @@ using System;
 namespace Ignia.Topics.Providers {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: RENAME EVENT ARGS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The RenameEventArgs object defines an event argument type specific to rename events.

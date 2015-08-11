@@ -8,7 +8,7 @@ using System;
 namespace Ignia.Topics.Providers {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: MOVE EVENT ARGS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The MoveEventArgs object defines an event argument type specific to move events.

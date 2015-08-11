@@ -11,7 +11,7 @@ using Ignia.Topics.Providers;
 namespace Ignia.Topics.Configuration {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: TOPIC MAPPING PROVIDER MANAGER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides initialization of the specified Topic MAPPING provider based on retrieving the appropriate data from the

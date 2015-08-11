@@ -35,7 +35,7 @@ using System.Xml;
 namespace Ignia.Topics.Providers {
 
   /*============================================================================================================================
-  | CLASS
+  | CLASS: SQL TOPIC DATA PROVIDER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Implementation of the topic provider specific to SQL.
@@ -53,7 +53,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="depth">The level to which to recurse through and load a topic's children.</param>
     /// <param name="version">The DateTime stamp signifying when the topic was saved.</param>
     /// <exception cref="Exception">
-    ///   The topic Ignia.Topics.<c></c>contentType</c> does not derive from Ignia.Topics.Topic.
+    ///   The topic Ignia.Topics.<c>contentType</c> does not derive from Ignia.Topics.Topic.
     /// </exception>
     /// <exception cref="Exception">
     ///   Topics failed to load: <c>ex.Message</c>
