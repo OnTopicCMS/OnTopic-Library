@@ -12,7 +12,7 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a customized version of the <see cref="ConfigurationSection"/> class in order to permit configuration of the
-  //    Topics data management classes via the application's web.config.
+  ///   Topics data management classes via the application's web.config.
   /// </summary>
   public class TopicsSection : ConfigurationSection {
 
