@@ -30,10 +30,10 @@ namespace Ignia.Topics.Configuration {
     /*==========================================================================================================================
     | PROPRTY: ENABLED
     \-------------------------------------------------------------------------------------------------------------------------*/
-    [ConfigurationProperty("enabled", DefaultValue="True", IsRequired=false)]
     /// <summary>
     ///   Gets whether the (CMS) editor is enabled as defined by the configuration attribute. 
     /// </summary>
+    [ConfigurationProperty("enabled", DefaultValue = "True", IsRequired = false)]
     public bool Enabled {
       get {
         return Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
