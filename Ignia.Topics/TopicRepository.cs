@@ -13,8 +13,8 @@ namespace Ignia.Topics {
   | CLASS: TOPIC REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The Topic Repository object provides access to a cached collection of Topic trees to support systems where we may want to
-  ///   implement multiple taxonomies for different purposes.
+  ///   The Topic Repository class provides access to a cached collection of Topic trees to support systems where we may want
+  ///   to implement multiple taxonomies for different purposes.
   /// </summary>
   public static class TopicRepository {
 
@@ -28,14 +28,13 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | CONTENT TYPES
+    >===========================================================================================================================
+    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
+    | changes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets a list of available Content Types from the Configuration.
+    ///   Gets a list of available <see cref="ContentType"/> objects from the Configuration.
     /// </summary>
-    /// <remarks>
-    ///   ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
-    ///   changes.
-    /// </remarks>
     public static ContentTypeCollection ContentTypes {
       get {
         if (_contentTypes == null) {
@@ -93,10 +92,11 @@ namespace Ignia.Topics {
     | TOPIC PROVIDER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Getter for the data provider that we're using.
+    ///   Gets the currently configured data provider for topics data.
     /// </summary>
     /// <remarks>
-    ///   Pulled from the <see cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
+    ///   Pulled from the implementing website's configuration via the <see
+    ///   cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
     /// </remarks>
     public static TopicDataProviderBase DataProvider {
       get {
@@ -115,10 +115,11 @@ namespace Ignia.Topics {
     | MAPPING PROVIDER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Getter for the data mapping provider that we're using.
+    ///   Gets the currently configured mapping provider for topics data.
     /// </summary>
     /// <remarks>
-    ///   Pulled from the <see cref="Ignia.Topics.Configuration.TopicMappingProviderManager"/>.
+    ///   Pulled from the implementing website's configuration via the <see
+    ///   cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
     /// </remarks>
     public static TopicMappingProviderBase MappingProvider {
       get {
@@ -136,7 +137,8 @@ namespace Ignia.Topics {
     ///   Static method that passes Load requests along to the current topic data provider.
     /// </summary>
     /// <remarks>
-    ///   Optional overload allows for the topic's ID to be specified rather than the string uniqueKey value of the topic.
+    ///   Optional overload allows for the topic's integer identifier to be specified rather than the string uniqueKey value
+    ///   of the topic.
     /// </remarks>
     /// <param name="topic">String uniqueKey identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
