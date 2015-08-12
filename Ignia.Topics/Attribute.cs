@@ -72,7 +72,7 @@ namespace Ignia.Topics {
     ///   When attributes are displayed in the editor, they are grouped by tabs. The tabs are not predetermined, but rather set
     ///   by individual attributes. If five attributes, for instance, have a display group of "Settings", then a tab will be 
     ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>)
-    ///   according to their sort order.
+    ///   according to their <see cref="Topic.SortOrder"/> values.
     /// </remarks>
     public string DisplayGroup {
       get {

@@ -2,18 +2,7 @@
 | Author        Casey Margell, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               08.06.14        Katherine Trunkey       Updated all instances of Attributes[key] to
-|                                                       Attributes[key].Value.
-|               08.06.14        Katherine Trunkey       Updated instances of Attributes.Keys.Contains([key]) to
-|                                                       Attributes.Contains([key]) for compatibility with KeyedCollection.
-|               08.11.14        Katherine Trunkey       Updated ContentType property to correspond to strongly-typed object;
-|                                                       removed setter as it is no longer needed. Finalized View property.
-|               09.11.14        Katherine Trunkey       Updated FindAllByAttribute() to be IndexOf-inclusive.
-|               09.27.14        Jeremy Caney            Added support for version history.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -81,7 +70,7 @@ namespace Ignia.Topics {
     | PROPERTY: ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's id according to the data provider.
+    ///   Gets or sets the topic's integer identifier according to the data provider.
     /// </summary>
     public int Id {
       get {
@@ -134,7 +123,7 @@ namespace Ignia.Topics {
     | PROPERTY: CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Getter for the content type attribute.
+    ///   Gets the strongly-typed <see cref="ContentType"/> attribute.
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
@@ -199,8 +188,12 @@ namespace Ignia.Topics {
     | PROPERTY: UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the full name of the Topic including parents ("bar" vs. "foo:bar").
+    ///   Gets the full, hierarchical identifier for the topic, including parents.
     /// </summary>
+    /// <remarks>
+    ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
+    ///   Example: "Root:Configuration:ContentTypes:Page".
+    /// </remarks>
     public string UniqueKey {
       get {
 
@@ -253,8 +246,8 @@ namespace Ignia.Topics {
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the TopicRoot is bound to the root of the
-    ///   site.
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the <see cref="TopicRepository.RootTopic"/>
+    ///   is bound to the root of the site.
     /// </summary>
     /// <remarks>
     ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views 
@@ -282,7 +275,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string View {
       get {
-        //Return current Topic's View Attribute or the default for the ContentType.
+        // Return current Topic's View Attribute or the default for the ContentType.
         return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
       }
       set {
@@ -316,6 +309,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the Description attribute.
     /// </summary>
+    /// <remarks>
+    ///   The Description attribute is primarily used by the editor to display help content for an attribute topic, noting
+    ///   how the attribute is used, what is the expected input format or value, etc.
+    /// </remarks>
     public string Description {
       get {
         return GetAttribute("Description");
@@ -406,7 +403,7 @@ namespace Ignia.Topics {
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see 
     ///     cref="GetAttribute(string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
-    ///     overwritten by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
+    ///     overridden by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
     ///     explicitly defining the number of hops.
     ///   </para>
     /// </remarks>
@@ -454,7 +451,7 @@ namespace Ignia.Topics {
     | of the collection.
     >---------------------------------------------------------------------------------------------------------------------------
     | ###NOTE KLT081314: Attributes is now of type AttributeValueCollection
-    | (KeyedCollection<string, <see cref=">AttributeValue"/>>). Extending the collection to incorporate the
+    | (KeyedCollection<string, AttributeValue">). Extending the collection to incorporate the
     | INotifyCollectionChanged interface or converting it to an ObservableCollection remains an item for future development.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -483,7 +480,7 @@ namespace Ignia.Topics {
     | PROPERTY: RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, &c.
+    ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g., 
@@ -503,13 +500,13 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, &c. 
+    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, etc. 
     /// </summary>
     /// <remarks>
-    ///   The incoming relationships property provides a reverse index of the Relationships property, in order to indicate which
-    ///   topics point to the current topic. This can be useful for traversing the topic tree as a network graph. This is of 
-    ///   particular use for tags, where the current topic represents a tag, and the incoming relationships represents all topics
-    ///   associated with that tag.
+    ///   The incoming relationships property provides a reverse index of the <see cref="Relationships"/> property, in order to
+    ///   indicate which topics point to the current topic. This can be useful for traversing the topic tree as a network graph.
+    ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
+    ///   all topics associated with that tag.
     /// </remarks>
     public Topic IncomingRelationships {
       get {
@@ -524,7 +521,7 @@ namespace Ignia.Topics {
     | PROPERTY: SORTED CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the values collection, sorted by the SortOrder property.  
+    ///   Provides a reference to the values collection, sorted by the <see cref="SortOrder"/> property.  
     /// </summary>
     /// <remarks>
     ///   Since Dictionaries do not guarantee sort order, this is necessary for any code that expects to honor the order of
@@ -542,16 +539,14 @@ namespace Ignia.Topics {
     >---------------------------------------------------------------------------------------------------------------------------
     | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
     | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
-    | KeyedCollection class, possibly a dirivitive of the NestedTopics class. Preferrably, this will be dynamically created
+    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
     | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
     | parent collection.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics of the ContentType TopicsList, which represent
-    ///   Nested Topics.
+    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
+    ///   represent Nested Topics.
     /// </summary>
-    /// <remarks>
-    /// </remarks>
     public Topic NestedTopics {
       get {
         throw new NotImplementedException();
@@ -562,8 +557,8 @@ namespace Ignia.Topics {
     | PROPERTY: CHILD TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics that are NOT of the ContentType TopicList, which
-    ///   represent Child Topics.This provides a complement to the NestedTopics collection.
+    ///   Provides a reference to the values collection, filtered by Topics that are NOT of the <see cref="ContentType"/>
+    ///   TopicList, which represent Child Topics. This provides a complement to the <see cref="NestedTopics"/> collection.
     /// </summary>
     public Topic ChildTopics {
       get {
@@ -689,7 +684,7 @@ namespace Ignia.Topics {
     | METHOD: SET RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Set a new relationship based on the relationship type, target topic and direction.
+    ///   Sets a new relationship based on the relationship type, target topic and direction.
     /// </summary>
     public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
 
@@ -783,14 +778,13 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
+    >===========================================================================================================================
+    | ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
+    | allowing a search by any criteria - including attributes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a collection of topics based on an attribute name and value, optionally recursively.
     /// </summary>
-    /// <remarks>
-    ///   ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
-    ///   allowing a search by any criteria - including attributes.
-    /// </remarks>
     /// <param name="name"></param>
     /// <param name="value"></param>
     /// <param name="isRecursive"></param>
@@ -818,7 +812,8 @@ namespace Ignia.Topics {
     ///   Pull topics data out of the storage provider to a given depth.
     /// </summary>
     /// <remarks>
-    ///   Optionsl overloads.
+    ///   Optional overloads allow for a topic to be loaded based on a specified key or version, and to a specified or full
+    ///   depth with respect to loading its available children.
     /// </remarks>
     /// <param name="deepLoad"></param>
     /// <returns>Returns a topic object and N number of child topics, depending on depth specified.</returns>
@@ -940,14 +935,12 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Returns null if the topic cannot be found.
-    ///   </para>
-    ///   <para>
     ///     Optional overloads allow the developer to explicitly state the namespace as a separate parameter, or look up the
     ///     topic by ID or by part or all of a <see cref="UniqueKey"/> string.
     ///   </para>
     /// </remarks>
     /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <returns>Returns the topic or null, if the topic is not found.</returns>
     public Topic GetTopic(int topicId) {
 
       if (this.Id == topicId) return this;
@@ -1080,7 +1073,7 @@ namespace Ignia.Topics {
     }
 
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    ///   Boolean indicator nothing whether to recurse over the topic's children and delete them as well.
     /// </param>
     public void Delete(bool isRecursive) {
       TopicRepository.Delete(this, isRecursive);
