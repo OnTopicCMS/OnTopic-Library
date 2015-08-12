@@ -12,7 +12,8 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE VALUE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a base class by which to associate Attribute subclasses with specific memebers and methods.
+  ///   Provides the abstract base class for a collection of <see cref="AttributeValue"/> objects whose string keys are embedded
+  ///   in the values.
   /// </summary>
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
@@ -20,7 +21,7 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Allows a new object to be instantiated.
+    ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
     /// </summary>
     public AttributeValueCollection() : base(StringComparer.OrdinalIgnoreCase) { }
 
@@ -28,8 +29,8 @@ namespace Ignia.Topics {
     | METHOD: SET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new AttributeValue object or updates the value of an existing one, depending on 
-    ///   whether that value already exists.
+    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
     /// </summary>
     /// <remarks>
     ///   Minimizes the need for defensive conditions throughout the library.
@@ -47,7 +48,7 @@ namespace Ignia.Topics {
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Method must be overridden for the KeyedCollection to extract the keys from the items.
+    ///   Method must be overridden for the <see cref="KeyedCollection{TKey, TItem}"/> to extract the keys from the items.
     /// </summary>
     protected override string GetKeyForItem(AttributeValue item) {
       return item.Key;
