@@ -10,13 +10,18 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed implementation of Topic that is maps to Attribute Content Types.
+  ///   Provides a strongly-typed implementation of Topic that maps to Attribute Content Types.
   /// </summary>
   /// <remarks>
-  ///   The Attribute Content Type represents an individual attribute on a content type. For instance, the "Page" Content Type
-  ///   has attributes such as "Keywords", "Body", etc. Each of those individually represent instances of the Attribute Content 
-  ///   Type. This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of 
-  ///   the CMS; except in very particular cases, it is not typically used elsewhere in the Topic Library itself.
+  ///   <para>
+  ///     The Attribute Content Type represents an individual attribute applied to another Content Type. For instance, the 
+  ///     commonly-configured "Page" Content Type has attributes such as "Keywords", "Body", etc. Each of those individually 
+  ///     represent instances of the Attribute Content Type.
+  ///   </para>
+  ///   <para>
+  ///     This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of 
+  ///     the CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
+  ///   </para>
   /// </remarks>
   public class Attribute : Topic {
 
@@ -44,7 +49,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   The type attribute maps to the name of a control, directive, or partial view in the editor representing the specific 
-    ///   type of attribute. For instance, a value of "checkbox" might map to a file "checkbox.ascx" which displays an 
+    ///   type of attribute. For instance, a value of "Checkbox" might map to a file "Checkbox.ascx" which displays an 
     ///   attribute's value as a standard HTML checkbox. There is no validation of the type at the library level; it is up to 
     ///   the editor to provide a match and, if not found, display an error.
     /// </remarks>
@@ -65,8 +70,9 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   When attributes are displayed in the editor, they are grouped by tabs. The tabs are not predetermined, but rather set
-    ///   by individual attributes. Is five attributes, for instance, have a display group of "Settings", then a tab will be 
-    ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>).
+    ///   by individual attributes. If five attributes, for instance, have a display group of "Settings", then a tab will be 
+    ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>)
+    ///   according to their sort order.
     /// </remarks>
     public string DisplayGroup {
       get {
@@ -86,12 +92,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     When an attribute is bound to an attribute type control in the editor, the default configuration is injected into 
-    ///     the control's configuration. This allows attribute type specific properties to be set on a per-attribute basis. 
+    ///     the control's configuration. This allows attribute type-specific properties to be set on a per-attribute basis. 
     ///   </para> 
     ///   <para>
-    ///     The properties available will be up to the control associated with the <see cref="Type"/>, and the format will be 
-    ///     dependent on framework that the attribute type control is written in. For example, for ASP.NET User Controls as 
-    ///     well as AngularJS Directives, the format is Property1="Value" Propert2="Value". 
+    ///     Properties available for configuration are up to the control associated with the <see cref="Type"/>, and the format
+    ///     will be  dependent on the framework in which the attribute type control is written. For example, for ASP.NET User
+    ///     Controls as well as AngularJS Directives, the format is Property1="Value" Propert2="Value". 
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
@@ -112,10 +118,10 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     By default, all attributes associated with a <see cref="ContentType"/> are rendered in the editor. Optionally, 
-    ///     however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type as some
-    ///     parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can also 
-    ///     be valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a timestamp 
-    ///     or version).
+    ///     however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type, as
+    ///     some parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can
+    ///     also be valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a 
+    ///     timestamp or version).
     ///   </para>
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view 
@@ -152,9 +158,9 @@ namespace Ignia.Topics {
       }
     }
 
-    /*============================================================================================================================
+    /*==========================================================================================================================
     | PROPERTY: DEFAULT VALUE
-    \---------------------------------------------------------------------------------------------------------------------------*/
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets or sets the default value that should be used if an explicit value is not defined.
     /// </summary>
@@ -172,11 +178,11 @@ namespace Ignia.Topics {
         }
       }
 
-    /*============================================================================================================================
+    /*==========================================================================================================================
     | PROPERTY: STORE IN BLOB?
-    \---------------------------------------------------------------------------------------------------------------------------*/
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets whether or not the attribute is stored in the blob. 
+    ///   Gets or sets whether or not the attribute is stored in the XML blob. 
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -184,7 +190,7 @@ namespace Ignia.Topics {
     ///     to in-memory queries. This is more efficient to store, and is required for larger values. 
     ///   </para>
     ///   <para>
-    ///     Attributes that are needed to provide indexes, sitemaps, navigation, etc. should be indexed, so that they're always 
+    ///     Attributes that are needed to provide indexes, sitemaps, navigation, etc. should be indexed so that they're always 
     ///     available in memory without requiring an additional database query. These increase the memory requirements of the 
     ///     application, but reduce the number of database roundtrips required for topics that are accessed outside of a single
     ///     page. For instance, the title and description of a topic may be cross-referenced on other pages or as part of the
