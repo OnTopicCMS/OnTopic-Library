@@ -12,7 +12,7 @@ namespace Ignia.Topics {
   | CLASS: CONTENT TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly types implementation of Topic that is exposes properties specific to ContentType.
+  ///   Provides a strongly-typed implementation of <see cref="Topic"/> that exposes properties specific to ContentType.
   /// </summary>
   /// <remarks>
   ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
@@ -46,7 +46,7 @@ namespace Ignia.Topics {
     | PROPERTY: SUPPORTED ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///  Provides a list of Attribute objects that are supported for objects implementing this ContentType.
+    ///   Provides a list of <see cref="Attribute"/> objects that are supported for objects implementing this ContentType.
     /// </summary>
     /// <remarks>
     ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from 
