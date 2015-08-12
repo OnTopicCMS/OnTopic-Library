@@ -86,13 +86,13 @@ namespace Ignia.Topics.Web {
           /*--------------------------------------------------------------------------------------------------------------------
           | Disvoer all view templates available via the configured path
           \-------------------------------------------------------------------------------------------------------------------*/
-          //Get top-level (generic) view files
+          // Get top-level (generic) view files
           foreach (FileInfo file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {
-            //Strip off the extension (must do even for the FileInfo instance)
+            // Strip off the extension (must do even for the FileInfo instance)
             string      fileName                        = file.Name.ToLower().Replace(".aspx", "");
             views.Add(fileName);
           }
-          //Get view files specific to Content Type
+          // Get view files specific to Content Type
           foreach (DirectoryInfo subDirectory in subDirectories) {
             string      subDirectoryName                = subDirectory.Name;
             foreach (FileInfo file in subDirectory.GetFiles(searchPattern, searchOption)) {
@@ -227,21 +227,21 @@ namespace Ignia.Topics.Web {
       \-----------------------------------------------------------------------------------------------------------------------*/
       string            viewName                = null;
 
-      //Pull from QueryString
+      // Pull from QueryString
       if (viewName == null && HttpContext.Current.Request.QueryString["View"] != null) {
         IsValidView(contentType, HttpContext.Current.Request.QueryString["View"].ToString(), out viewName);
       }
 
-      //Pull from Accept header
+      // Pull from Accept header
       if (viewName == null && HttpContext.Current.Request.Headers["Accept"] != null) {
         string          acceptHeaders           = HttpContext.Current.Request.Headers["Accept"].ToString();
         string[]        splitHeaders            = acceptHeaders.Split(new Char [] {',', ';'});
-        //Validate the content-type after the slash, then validate it against available views
+        // Validate the content-type after the slash, then validate it against available views
         for (int i=0; i < splitHeaders.Length; i++) {
           if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
-            //Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
+            // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
             string      acceptHeader            = splitHeaders[i].Substring(splitHeaders[i].IndexOf("/") + 1).Replace("+", "-");
-            //Validate against available views; if content-type represents a valid view, stop validation
+            // Validate against available views; if content-type represents a valid view, stop validation
             if (IsValidView(contentType, acceptHeader, out viewName)) {
               break;
             }
@@ -249,13 +249,13 @@ namespace Ignia.Topics.Web {
         }
       }
 
-      //Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not
-      //necessary, as it is set as the default View value for the Topic
+      // Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not
+      // necessary, as it is set as the default View value for the Topic
       if (viewName == null && !String.IsNullOrEmpty(topic.View)) {
         IsValidView(contentType, topic.View, out viewName);
       }
 
-      //Use (fall back to) the Topic's ContentType Attribute
+      // Use (fall back to) the Topic's ContentType Attribute
       if (viewName == null) {
         viewName                                = contentType;
       }

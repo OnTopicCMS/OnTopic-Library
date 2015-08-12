@@ -73,20 +73,20 @@ namespace Ignia.Topics.Web {
         \---------------------------------------------------------------------------------------------------------------------*/
         string    pagePath        = null;
 
-        //Pull from RouteData
+        // Pull from RouteData
         if (Page.RouteData.Values["directory"] != null) {
           pagePath = (string)Page.RouteData.Values["directory"];
         }
 
-        //Pull from QueryString
+        // Pull from QueryString
         if (String.IsNullOrEmpty(pagePath) && Request.QueryString["Path"] != null) {
           pagePath = Request.QueryString["Path"].ToString().Replace(":", "/");
         }
 
-        //Default to blank
+        // Default to blank
         pagePath = pagePath?? "";
 
-        //Strip trailing colon
+        // Strip trailing colon
         if (pagePath.EndsWith(":")) {
           pagePath = pagePath.Substring(0, pagePath.Length-1);
         }

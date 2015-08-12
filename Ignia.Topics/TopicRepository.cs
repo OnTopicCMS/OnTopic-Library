@@ -256,7 +256,7 @@ namespace Ignia.Topics {
       DataProvider.Delete(topic, isRecursive);
     }
 
-  } //Class
+  } // Class
 
 } //Namespace
 

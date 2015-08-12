@@ -275,7 +275,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string View {
       get {
-        //Return current Topic's View Attribute or the default for the ContentType.
+        // Return current Topic's View Attribute or the default for the ContentType.
         return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
       }
       set {
