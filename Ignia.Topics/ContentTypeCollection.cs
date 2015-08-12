@@ -12,7 +12,8 @@ namespace Ignia.Topics {
   | CLASS: CONTENT TYPE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a base class by which to associate ContentType subclasses with specific memebers and methods.
+  ///   Provides the abstract base class for a collection of <see cref="ContentType"/> objects whose string keys are embedded
+  ///   in the values.
   /// </summary>
   public class ContentTypeCollection : KeyedCollection<string, ContentType> {
 
