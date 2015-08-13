@@ -23,8 +23,8 @@ namespace Ignia.Topics.Web {
   ///   Provides routing for any path that matches a path managed by the Topics database.
   /// </summary>
   /// <remarks>
-  ///   If a match is found, then the user is routed to a template corresponding to the Topic's Content Type. Otherwise, the
-  ///   originally-requested page is rendered (although this may yield a 404).
+  ///   If a match is found, then the user is routed to a template corresponding to the Topic's <see cref="Topic.ContentType"/>.
+  ///   Otherwise, the originally-requested page is rendered (although this may yield a 404).
   /// </remarks>
   public class TopicsRouteHandler : IRouteHandler {
 
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Web {
     private string ViewsPath {
       get {
         string                  viewsPath               = "~/Common/Templates/";
-      //Use configuration settings, if available
+        // Use configuration settings, if available
         TopicsSection           topicsSection           = (TopicsSection)ConfigurationManager.GetSection("topics");
         if (topicsSection != null && topicsSection.Views != null && !String.IsNullOrEmpty(topicsSection.Views.Path)) {
           viewsPath                                     = topicsSection.Views.Path;
@@ -67,9 +67,6 @@ namespace Ignia.Topics.Web {
     ///   Iterates through available 'view' template (ASPX) files within the specified directory, collecting them to make them
     ///   available for validation against a specified View (and consequently, target path).
     /// </summary>
-    /// <value>
-    /// The views.
-    /// </value>
     private List<string> Views {
       get {
         if (_views == null) {
@@ -123,13 +120,14 @@ namespace Ignia.Topics.Web {
     | PROPERTY: IS VALID VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Checks the specified view name against its availability in the Views collection.
+    ///   Checks the specified view name against its availability in the <see cref="Views"/> collection.
     /// </summary>
     /// <param name="contentType">The name of the topic's <see cref="Ignia.Topics.ContentType"/>.</param>
     /// <param name="viewName">The filename (minus extension) of the view.</param>
     /// <param name="matchedView">The string identifier for the matched view.</param>
     /// <returns>
-    ///   Returns the boolean value of the view's validity as well as the output variable 'matchedView', indicating the View name.
+    ///   Returns the boolean value of the view's validity as well as the output variable 'matchedView', indicating the
+    ///   <see cref="Topic.View"/> name.
     /// </returns>
     private bool IsValidView(string contentType, string viewName, out string matchedView) {
 
@@ -166,8 +164,8 @@ namespace Ignia.Topics.Web {
     | GET HTTP HANDLER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Evaluates the route data to identify the most appropriate HTTP Handler to use, then returns an instance of that
-    ///   handler.
+    ///   Evaluates the <see cref="RouteData"/> to identify the most appropriate HTTP Handler to use, then returns an instance
+    ///   of that handler.
     /// </summary>
     /// <param name="requestContext">The HTTP request context.</param>
     /// <exception cref="Exception">

@@ -55,7 +55,7 @@ namespace Ignia.Topics.Web {
     | PROPERTY: TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic associated with the page based on the RouteData.
+    ///   Gets or sets the topic associated with the page based on the <see cref="Page.RouteData"/>.
     /// </summary>
     /// <remarks>
     ///   If the topic cannot be identified then a null reference is returned.
@@ -162,13 +162,12 @@ namespace Ignia.Topics.Web {
 
     /*==========================================================================================================================
     | EDIT URL
+    >===========================================================================================================================
+    | ###TODO KLT081015: Wire up to the <editor /> element location attribute in the configuration. 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Identifies the appropriate route to edit the current page.
     /// </summary>
-    /// <remarks>
-    ///   ###TODO KLT081015: Wire up to the <c><editor /></c> element <c>location</c> attribute in the configuration. 
-    /// </remarks>
     public String EditUrl {
       get {
         return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;
