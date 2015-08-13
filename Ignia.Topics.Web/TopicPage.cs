@@ -175,6 +175,6 @@ namespace Ignia.Topics.Web {
       }
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

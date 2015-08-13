@@ -1166,6 +1166,6 @@ namespace Ignia.Topics {
     /// </summary>
     public void Dispose() { }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

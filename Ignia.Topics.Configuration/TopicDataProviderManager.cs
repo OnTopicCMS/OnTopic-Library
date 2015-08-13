@@ -107,6 +107,6 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

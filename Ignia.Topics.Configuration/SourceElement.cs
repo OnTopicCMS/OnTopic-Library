@@ -298,7 +298,7 @@ namespace Ignia.Topics.Configuration {
       return (element == null)? false : element.Trusted;
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace
 

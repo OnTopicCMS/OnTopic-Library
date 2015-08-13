@@ -102,6 +102,6 @@ namespace Ignia.Topics.Editor {
 
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

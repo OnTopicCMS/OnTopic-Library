@@ -56,6 +56,6 @@ namespace Ignia.Topics {
       return item.Key;
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

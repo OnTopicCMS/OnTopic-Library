@@ -74,6 +74,6 @@ namespace Ignia.Topics.Providers {
     /// <param name="args">The <see cref="RenameEventArgs"/> instance containing the event data.</param>
     public abstract void RenameEventHandler(object sender, RenameEventArgs args);
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

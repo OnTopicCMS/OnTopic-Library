@@ -183,6 +183,6 @@ namespace Ignia.Topics.Providers {
 
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

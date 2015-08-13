@@ -62,6 +62,6 @@ namespace Ignia.Topics.Configuration {
       return ((SourceElement)element).Source;
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

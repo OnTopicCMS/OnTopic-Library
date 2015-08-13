@@ -148,7 +148,7 @@ namespace Ignia.Topics.Providers {
       throw new NotImplementedException();
     }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace
 

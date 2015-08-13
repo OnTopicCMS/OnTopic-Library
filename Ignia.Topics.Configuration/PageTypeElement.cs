@@ -50,7 +50,7 @@ namespace Ignia.Topics.Configuration {
       }
     }
 
-  } //Class
+  } // Class
 
-} //Namepsace
+} // Namespace
 

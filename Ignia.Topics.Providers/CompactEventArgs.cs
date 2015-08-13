@@ -23,6 +23,6 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     public CompactEventArgs() { }
 
-  } //Class
+  } // Class
 
-} //Namespace
+} // Namespace

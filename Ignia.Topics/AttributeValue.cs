@@ -130,6 +130,6 @@ namespace Ignia.Topics {
     /// </summary>
     public readonly DateTime LastModified = DateTime.Now;
 
-  } //Class
+  } // Class
 
-} //Namepace
+} // Namespace

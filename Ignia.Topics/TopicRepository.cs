@@ -266,5 +266,5 @@ namespace Ignia.Topics {
 
   } // Class
 
-} //Namespace
+} // Namespace
 
