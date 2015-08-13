@@ -23,7 +23,7 @@ namespace Ignia.Topics.Editor {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    /// Initializes a new instance of the <see cref="AttributeTypeControl"/> class.
+    ///   Initializes a new instance of the <see cref="AttributeTypeControl"/> class.
     /// </summary>
     public AttributeTypeControl() : base() { }
 
