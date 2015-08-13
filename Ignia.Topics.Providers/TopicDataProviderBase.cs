@@ -16,35 +16,71 @@ namespace Ignia.Topics.Providers {
   /// </summary>
   public abstract class TopicDataProviderBase : ProviderBase {
 
+    /*==========================================================================================================================
+    | EVENT HANDLERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
+    /// </summary>
     public event EventHandler<DeleteEventArgs>        DeleteEvent;
+
+    /// <summary>
+    ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
+    /// </summary>
     public event EventHandler<MoveEventArgs>          MoveEvent;
+
+    /// <summary>
+    ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
+    /// </summary>
     public event EventHandler<RenameEventArgs>        RenameEvent;
 
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface methods that loads topics to the specified depth.
+    ///   Interface methods that loads topics to the specified depth, optionally based on the DateTime version.
     /// </summary>
     /// <remarks>
     ///   Optional overloads allow for a topic to be loaded based on its specified key or ID.
     /// </remarks>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
-    /// <param name="topicId">Integer identifier for the topic.</param>
-    /// <param name="topicKey">String identifier for the topic.</param>
     public Topic Load(int depth, DateTime? version = null) {
       return Load(null, -1, depth, version);
     }
 
+    /// <summary>
+    ///   Loads topics to the specified depth, based on the specified integer identifier for the topic, and optionally based
+    ///   on its DateTime version.
+    /// </summary>
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="depth">The depth.</param>
+    /// <param name="version">The version.</param>
     public Topic Load(int topicId, int depth, DateTime? version = null) {
       return Load(null, topicId, depth, version);
     }
 
+    /// <summary>
+    ///   Loads topics to the specified depth, based on the specified string identifier for the topic, and optionally based
+    ///   on its DateTime version.
+    /// </summary>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="depth">The depth.</param>
+    /// <param name="version">The version.</param>
+    /// <returns></returns>
     public Topic Load(string topicKey, int depth, DateTime? version = null) {
       return Load(topicKey, -1, depth, version);
     }
 
+    /// <summary>
+    ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
+    ///   optionally based on its DateTime version.
+    /// </summary>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="depth">The depth.</param>
+    /// <param name="version">The version.</param>
+    /// <returns></returns>
     public abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
 
     /*==========================================================================================================================
@@ -90,14 +126,16 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Interface method that supports moving a topic from one position to another.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for specifying a sibling topic.
-    /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public abstract bool Move(Topic topic, Topic target, Topic sibling);
 
+    /// <summary>
+    ///   Interface method that supports moving a topic from one position to another.
+    /// </summary>
+    /// <param name="topic">The topic object to be moved.</param>
+    /// <param name="target">A topic object under which to move the source topic.</param>
     public virtual bool Move(Topic topic, Topic target) {
       if (MoveEvent != null) {
         MoveEvent(this, new MoveEventArgs(topic, target));

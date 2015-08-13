@@ -2,26 +2,7 @@
 | Author        Casey Margell, Ignia LLC
 | Client        Ignia, LLC
 | Project       Topics Library
->===============================================================================================================================
-| Revisions     Date            Author                  Comments
-| - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-|               03.24.09        Casey Margell           Initial version template
-|               07.26.10        Hedley Robertson        Added handling for relationships
-|               11.12.10        Jeremy Caney            Fixed issue with connection pooling during Save().
-|               08.25.13        Jeremy Caney            Updated Save() to correctly recurse, including setting of ParentID.
-|               08.25.13        Jeremy Caney            Modified behavior of attribute lookup to handle arbitrary blob values.
-|               09.28.13        Jeremy Caney            Added basic dependency injection (DI) to support Topic derivations.
-|               09.30.13        Jeremy Caney            Updated to use TopicRepository.ContentTypes to lookup StoreInBlob on
-|                                                       Save().
-|               08.06.14        Katherine Trunkey       Updated references to TopicAttribute to Attribute.
-|               08.06.14        Katherine Trunkey       Updated all instances of Attributes[key] to Attributes[key].Value.
-|               08.07.14        Katherine Trunkey       Updated Save() method correspondent to Versioning feature; added
-|                                                       IsDraft parameter and corresponding logic.
-|               08.13.14        Katherine Trunkey       Removed obsolete GetAttributes() property method.
-|               08.14.14        Katherine Trunkey       Updated Save() method to use uncommon, multi-character delimiters rather
-|                                                       than a colon and semicolon in the creation of the Attributes string in
-|                                                       order to provide better escaping safety for the @Attributes parameter.
-\-----------------------------------------------------------------------------------------------------------------------------*/
+\=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -557,16 +538,19 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Interface method that moves the specified topic within the tree.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for a sibling to be specified; the sibling acts as a secondary target.
-    /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public override bool Move(Topic topic, Topic target) {
       return this.Move(topic, target, null);
     }
 
+    /// <summary>
+    ///   Interface method that moves the specified topic within the tree, usng the specified sibling topic object as a
+    ///   secondary target for the move.
+    /// </summary>
+    /// <param name="topic">The topic object to be moved.</param>
+    /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
+    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     public override bool Move(Topic topic, Topic target, Topic sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -692,20 +676,23 @@ namespace Ignia.Topics.Providers {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
+    ///   appending to the attribute 'blob'.
+    /// </summary>
+    /// <param name="topic">The topic object whose relationships should be persisted.</param>
+    /// <param name="connection">The SQL connection.</param>
+    private static string PersistRelations(Topic topic, SqlConnection connection) {
+      return PersistRelations(topic, connection, false);
+    }
+
+    /// <summary>
+    ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
     ///   appending to the attribute 'blob' unless <c>skipBlob == true</c>.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for the <c>skipBlob</c> indicator to be specified.
-    /// </remarks>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
     /// <param name="skipBlob">
     ///   Boolean indicator noting whether attributes saved in the blob should be skipped as part of the operation.
     /// </param>
-    private static string PersistRelations(Topic topic, SqlConnection connection) {
-      return PersistRelations(topic, connection, false);
-    }
-
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipBlob) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -834,21 +821,34 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Wrapper function that adds a SQL paramter to a command object.
     /// </summary>
-    /// <remarks>
-    ///   Optional overloads allow for parameter direction and SQL field length to be specified.
-    /// </remarks>
+    /// <param name="commandObject">The SQL command object.</param>
+    /// <param name="sqlParameter">The SQL parameter.</param>
+    /// <param name="fieldValue">The SQL field value.</param>
+    /// <param name="sqlDbType">The SQL field data type.</param>
+    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType) {
+      AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
+    }
+
+    /// <summary>
+    ///   Adds a SQL paramter to a command object, additionally setting the specified parameter direction.
+    /// </summary>
+    /// <param name="commandObject">The SQL command object.</param>
+    /// <param name="sqlParameter">The SQL parameter.</param>
+    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
+    /// <param name="sqlDbType">The SQL field data type.</param>
+    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
+      AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
+    }
+
+    /// <summary>
+    ///   Adds a SQL paramter to a command object, additionally setting the specified SQL data length for the field.
+    /// </summary>
     /// <param name="commandObject">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType) {
-      AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
-    }
-    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
-      AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
-    }
-
+    /// <param name="sqlLength">Length limit for the SQL field.</param>
     private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
 
       if (sqlLength > 0) {

@@ -31,6 +31,11 @@ namespace Ignia.Topics.Providers {
     /// </remarks>
     public RenameEventArgs() { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="RenameEventArgs"/> class and sets the <see cref="Topic"/> property based 
+    ///   on the specified object.
+    /// </summary>
+    /// <param name="topic">The topic object associated with the rename event.</param>
     public RenameEventArgs(Topic topic) {
       _topic = topic;
     }
