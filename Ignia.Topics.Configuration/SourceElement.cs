@@ -21,9 +21,6 @@ namespace Ignia.Topics.Configuration {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Inherits from .
-  ///   </para>
-  ///   <para>
   ///     Adapted DIRECTLY from the Ignia Localization library; in the future, these libraries may (and should) share custom
   ///     configuration classes.
   ///   </para>
@@ -86,7 +83,7 @@ namespace Ignia.Topics.Configuration {
     | METHOD: GET ELEMENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the source element given the parent element or collection and expected name.
+    ///   Gets the source element given the parent element and expected name.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
@@ -95,6 +92,9 @@ namespace Ignia.Topics.Configuration {
       return (SourceElement)parent.ElementInformation.Properties[key].Value;
     }
 
+    /// <summary>
+    ///   Gets the source element given the parent element collection and expected name.
+    /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
     public static SourceElement GetElement(ConfigurationElementCollection parent, string key) {
@@ -111,7 +111,8 @@ namespace Ignia.Topics.Configuration {
     | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Looks up a source element at a given location and, assuming it's enabled, identifies the source value.
+    ///   Looks up a source element given the parent element and expected name, and, assuming it's enabled, identifies the
+    ///   source value.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
@@ -120,12 +121,21 @@ namespace Ignia.Topics.Configuration {
       return GetValue(GetElement(parent, key));
     }
 
+    /// <summary>
+    ///   Looks up a source element given the parent element collection and expected name and, assuming it's enabled,
+    ///   identifies the source value.
+    /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
     public static string GetValue(ConfigurationElementCollection parent, string key) {
       return GetValue(GetElement(parent, key));
     }
 
+    /// <summary>
+    ///   Gets the value for the specified element, assuming it's enabled, and based on the type of specified element's source,
+    ///   looks up its value.
+    /// </summary>
+    /// <param name="element">The configuration element.</param>
     public static string GetValue(SourceElement element) {
 
       /*------------------------------------------------------------------------------------------------------------------------
