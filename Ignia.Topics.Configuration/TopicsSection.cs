@@ -30,11 +30,8 @@ namespace Ignia.Topics.Configuration {
     | ATTRIBUTE: ROOT TOPIC NAMESPACE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    /// Gets or sets the root (parent) Topic expected to be defined for Topics data.
+    ///   Gets or sets the root (parent) Topic expected to be defined for Topics data.
     /// </summary>
-    /// <value>
-    /// The root topic namespace.
-    /// </value>
     [ConfigurationProperty("rootTopicNamespace", DefaultValue = "Root")]
     public string RootTopicNamespace {
       get {

@@ -57,7 +57,7 @@ namespace Ignia.Topics.Configuration {
     | ELEMENT: ADMIN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the admin element, which dscribes administrative rights on the system.
+    ///   Gets the admin element, which describes administrative rights on the system.
     /// </summary>
     [ConfigurationProperty("admin")]
     public SourceElement Admin {

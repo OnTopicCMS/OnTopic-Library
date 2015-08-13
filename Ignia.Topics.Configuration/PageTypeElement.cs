@@ -13,8 +13,8 @@ namespace Ignia.Topics.Configuration {
   | CLASS: PAGE TYPE ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a custom <see cref="ConfigurationElement"/> which represents a page type
-  ///   (default: <see cref="Ignia.Topics.Web.TopicPage"/>) as developed for the application.
+  ///   Provides a custom <see cref="ConfigurationElement"/> which represents a page type (default: 
+  ///   <see cref="Ignia.Topics.Web.TopicPage"/>) as developed for the application.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -27,7 +27,7 @@ namespace Ignia.Topics.Configuration {
     | ATTRIBUTE: NAME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the name of the page type.
+    ///   Gets the name of the page type; typically set to <see cref="Ignia.Topics.Web.TopicPage"/>.
     /// </summary>
     [ConfigurationProperty("name", IsRequired=true, IsKey=true)]
     public string Name {
