@@ -57,7 +57,7 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Creates a new <see cref="PageTypeElement"/>.
     /// </summary>
-    /// <returns>Returns a new instance of a <see cref="PageTypeElement"/>.</returns>
+    /// <returns>A new instance of a <see cref="PageTypeElement"/>.</returns>
     protected override ConfigurationElement CreateNewElement() {
       return new PageTypeElement();
     }
@@ -68,8 +68,8 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Gets the key for the <see cref="ConfigurationElement"/> item in the collection.
     /// </summary>
-    /// <param name="element">The <see cref="ConfigurationElement"/> element object.</param>
-    /// <returns>Returns the Name string value for the <see cref="PageTypeElement"/> as the element's key.</returns>
+    /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
+    /// <returns>The Name string value for the <see cref="PageTypeElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
       return ((PageTypeElement)element).Name;
     }

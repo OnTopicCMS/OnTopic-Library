@@ -126,7 +126,7 @@ namespace Ignia.Topics.Web {
     /// <param name="viewName">The filename (minus extension) of the view.</param>
     /// <param name="matchedView">The string identifier for the matched view.</param>
     /// <returns>
-    ///   Returns the boolean value of the view's validity as well as the output variable 'matchedView', indicating the
+    ///   A boolean value representing the view's validity as well as the output variable 'matchedView', indicating the
     ///   <see cref="Topic.View"/> name.
     /// </returns>
     private bool IsValidView(string contentType, string viewName, out string matchedView) {
@@ -168,6 +168,7 @@ namespace Ignia.Topics.Web {
     ///   of that handler.
     /// </summary>
     /// <param name="requestContext">The HTTP request context.</param>
+    /// <returns>An <see cref="IHttpHandler"/> instance.</returns>
     /// <exception cref="Exception">
     ///   The ContentType for the Topic <c>topic.UniqueKey</c> (<c>topic.Id</c>) is not set. Set the ContentType value of the
     ///   Topic based on the template that should be associated with it. E.g., a standard page will have the ContentType of

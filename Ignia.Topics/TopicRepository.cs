@@ -139,6 +139,7 @@ namespace Ignia.Topics {
     /// <param name="topic">String uniqueKey identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
+    /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(string topic, int depth = 0, DateTime? version = null) {
       return DataProvider.Load(topic, depth, version);
     }
@@ -150,6 +151,7 @@ namespace Ignia.Topics {
     /// <param name="topicId">Integer identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
+    /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(int topicId, int depth = 0, DateTime? version = null) {
       return DataProvider.Load(topicId, depth, version);
     }
@@ -165,6 +167,7 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
+    /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     public static int Save(Topic topic, bool isRecursive, bool isDraft = false) {
       return DataProvider.Save(topic, isRecursive, isDraft);
     }
@@ -181,6 +184,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public static bool Move(Topic topic, Topic target) {
       ReorderSiblings(topic);
       return DataProvider.Move(topic, target);
@@ -193,6 +197,7 @@ namespace Ignia.Topics {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public static bool Move(Topic topic, Topic target, Topic sibling) {
       ReorderSiblings(topic, sibling);
       return DataProvider.Move(topic, target, sibling);

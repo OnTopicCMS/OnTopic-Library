@@ -45,6 +45,7 @@ namespace Ignia.Topics.Providers {
     /// </remarks>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
+    /// <returns>A topic object.</returns>
     public Topic Load(int depth, DateTime? version = null) {
       return Load(null, -1, depth, version);
     }
@@ -56,6 +57,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="depth">The depth.</param>
     /// <param name="version">The version.</param>
+    /// <returns>A topic object.</returns>
     public Topic Load(int topicId, int depth, DateTime? version = null) {
       return Load(null, topicId, depth, version);
     }
@@ -67,7 +69,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="depth">The depth.</param>
     /// <param name="version">The version.</param>
-    /// <returns></returns>
+    /// <returns>A topic object.</returns>
     public Topic Load(string topicKey, int depth, DateTime? version = null) {
       return Load(topicKey, -1, depth, version);
     }
@@ -80,7 +82,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="depth">The depth.</param>
     /// <param name="version">The version.</param>
-    /// <returns></returns>
+    /// <returns>A topic object.</returns>
     public abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
 
     /*==========================================================================================================================
@@ -94,6 +96,7 @@ namespace Ignia.Topics.Providers {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
+    /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="ArgumentNullException">topic</exception>
     public virtual int Save(Topic topic, bool isRecursive, bool isDraft) {
 
@@ -129,6 +132,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public abstract bool Move(Topic topic, Topic target, Topic sibling);
 
     /// <summary>
@@ -136,6 +140,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual bool Move(Topic topic, Topic target) {
       if (MoveEvent != null) {
         MoveEvent(this, new MoveEventArgs(topic, target));

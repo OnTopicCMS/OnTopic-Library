@@ -36,6 +36,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topicId">The integer identifier for the topic.</param>
     /// <param name="depth">The level to which to recurse through and load a topic's children.</param>
     /// <param name="version">The DateTime stamp signifying when the topic was saved.</param>
+    /// <returns>A topic object.</returns>
     /// <exception cref="Exception">
     ///   The topic Ignia.Topics.<c>contentType</c> does not derive from Ignia.Topics.Topic.
     /// </exception>
@@ -335,6 +336,7 @@ namespace Ignia.Topics.Providers {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
+    /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">
     ///   The Content Type <c>topic.GetAttribute(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
@@ -453,11 +455,9 @@ namespace Ignia.Topics.Providers {
         DateTime version        = DateTime.Now;
 
         // NOTE: KLT031915: Commented out as Draft functionality is not fully implemented
-        /*
-        if (isDraft) {
-          version               = DateTime.MaxValue;
-          }
-        */
+        // if (isDraft) {
+        //   version            = DateTime.MaxValue;
+        // }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
@@ -540,6 +540,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public override bool Move(Topic topic, Topic target) {
       return this.Move(topic, target, null);
     }
@@ -551,6 +552,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public override bool Move(Topic topic, Topic target, Topic sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -693,6 +695,10 @@ namespace Ignia.Topics.Providers {
     /// <param name="skipBlob">
     ///   Boolean indicator noting whether attributes saved in the blob should be skipped as part of the operation.
     /// </param>
+    /// <returns>
+    ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> blob content, or a blank string if
+    ///   <c>skipBlob == true</c>.
+    /// </returns>
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipBlob) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -765,7 +771,7 @@ namespace Ignia.Topics.Providers {
     ///   Internal helper function to build string of related xml nodes for each scope of related items in model.
     /// </summary>
     /// <param name="topic">The topic object for which to create the relationsihps.</param>
-    /// <returns>Returns the blob string.</returns>
+    /// <returns>The blob string.</returns>
     private static string CreateRelationshipsBlob(Topic topic) {
       StringBuilder blob = new StringBuilder("");
     
@@ -797,7 +803,7 @@ namespace Ignia.Topics.Providers {
     ///   Converts a string into the appropriate database type object
     /// </summary>
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
-    /// <returns>Returns the converted SQL data type.</returns>
+    /// <returns>The converted SQL data type.</returns>
     public static SqlDbType ConvDbType (String sqlDbType) {
 
       switch (sqlDbType.ToLower()) {

@@ -45,7 +45,7 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Creates a new <see cref="ConfigurationElement"/>.
     /// </summary>
-    /// <returns>Returns a new instance of a <see cref="ConfigurationElement"/>.</returns>
+    /// <returns>A new instance of a <see cref="ConfigurationElement"/>.</returns>
     protected override ConfigurationElement CreateNewElement() {
       return new SourceElement();
     }
@@ -56,8 +56,8 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Gets the key for the <see cref="ConfigurationElement"/> item in the collection.
     /// </summary>
-    /// <param name="element">The <see cref="ConfigurationElement"/> element object.</param>
-    /// <returns>Returns the Source string value for the <see cref="SourceElement"/> as the element's key.</returns>
+    /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
+    /// <returns>The Source string value for the <see cref="SourceElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
       return ((SourceElement)element).Source;
     }

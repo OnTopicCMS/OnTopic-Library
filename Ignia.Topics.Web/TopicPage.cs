@@ -168,6 +168,7 @@ namespace Ignia.Topics.Web {
     /// <summary>
     ///   Identifies the appropriate route to edit the current page.
     /// </summary>
+    /// <remarks>The URL in the editor associated with the current topic.</remarks>
     public String EditUrl {
       get {
         return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;

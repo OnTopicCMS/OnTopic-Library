@@ -116,7 +116,7 @@ namespace Ignia.Topics.Configuration {
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
-    /// <returns>Returns the target value, if found, or null.</returns>
+    /// <returns>The target value, or null if one is not found.</returns>
     public static string GetValue(ConfigurationElement parent, string key) {
       return GetValue(GetElement(parent, key));
     }
@@ -127,6 +127,7 @@ namespace Ignia.Topics.Configuration {
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
+    /// <returns>The target value, or null if one is not found.</returns>
     public static string GetValue(ConfigurationElementCollection parent, string key) {
       return GetValue(GetElement(parent, key));
     }
@@ -136,6 +137,7 @@ namespace Ignia.Topics.Configuration {
     ///   looks up its value.
     /// </summary>
     /// <param name="element">The configuration element.</param>
+    /// <returns>The target value, or null if one is not found.</returns>
     public static string GetValue(SourceElement element) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -187,24 +189,36 @@ namespace Ignia.Topics.Configuration {
     | METHOD: IS ENABLED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Looks up a source element at a given location, identifies the source value and returns a 
+    /// </summary>
+    /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
+    /// <param name="key">The string key (expected name).</param>
+    /// <returns>
+    ///   Boolean value representing whether or not the source is available, enabled or set to true.
+    /// </returns>
+    public static bool IsEnabled(ConfigurationElement parent, string key) {
+      return IsEnabled(parent, key, true);
+    }
+
+    /// <summary>
     ///   Looks up a source element at a given location, identifies the source value and returns a boolean value representing
     ///   whether or not the source is available, enabled or set to true.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
-    public static bool IsEnabled(ConfigurationElement parent, string key) {
-      return IsEnabled(parent, key, true);
-    }
-
-    /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
-    /// <param name="key">The string key (expected name).</param>
     /// <param name="evaluateValue">Boolean indicator noting whether to use the Value to determine enabled status.</param>
+    /// <returns>
+    ///   Boolean value representing whether or not the source is available, enabled or set to true.
+    /// </returns>
     public static bool IsEnabled(ConfigurationElement parent, string key, bool evaluateValue) {
       return IsEnabled(GetElement(parent, key), evaluateValue);
     }
 
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
+    /// <returns>
+    ///   Boolean value representing whether or not the source is available, enabled or set to true.
+    /// </returns>
     public static bool IsEnabled(ConfigurationElementCollection parent, string key) {
       return IsEnabled(parent, key, false);
     }
@@ -212,12 +226,18 @@ namespace Ignia.Topics.Configuration {
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
     /// <param name="evaluateValue">Boolean indicator noting whether to use the Value to determine enabled status.</param>
+    /// <returns>
+    ///   Boolean value representing whether or not the source is available, enabled or set to true.
+    /// </returns>
     public static bool IsEnabled(ConfigurationElementCollection parent, string key, bool evaluateValue) {
       return IsEnabled(GetElement(parent, key), evaluateValue);
     }
 
     /// <param name="element">The target <see cref="SourceElement"/>.</param>
     /// <param name="evaluateValue">Boolean indicator noting whether to use the Value to determine enabled status.</param>
+    /// <returns>
+    ///   Boolean value representing whether or not the source is available, enabled or set to true.
+    /// </returns>
     public static bool IsEnabled(SourceElement element, bool evaluateValue) {
 
       if (element == null) {
@@ -242,21 +262,38 @@ namespace Ignia.Topics.Configuration {
     | METHOD: IS TRUSTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines whether the specified parent is trusted.
+    ///   Determines whether the specified element is trusted, using the parent element and expected element name to find the
+    ///   element.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
+    /// <returns>
+    ///   Boolean value representing whether the specified element is available.
+    /// </returns>
     public static bool IsTrusted(ConfigurationElement parent, string key) {
       return IsTrusted(GetElement(parent, key));
     }
 
+    /// <summary>
+    ///   Determines whether the specified element is trusted, using the parent element collection and expected element name to
+    ///   find the element.
+    /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
+    /// <returns>
+    ///   Boolean value representing whether the specified element is available.
+    /// </returns>
     public static bool IsTrusted(ConfigurationElementCollection parent, string key) {
       return IsTrusted(GetElement(parent, key));
     }
 
+    /// <summary>
+    ///   Determines whether the specified element is trusted via its availability.
+    /// </summary>
     /// <param name="element">The <see cref="SourceElement"/> object.</param>
+    /// <returns>
+    ///   Boolean value representing whether the specified element is available.
+    /// </returns>
     public static bool IsTrusted(SourceElement element) {
       return (element == null)? false : element.Trusted;
     }

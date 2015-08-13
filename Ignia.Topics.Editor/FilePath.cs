@@ -35,7 +35,7 @@ namespace Ignia.Topics.Editor {
     /// <param name="attributeKey">The attribute key.</param>
     /// <param name="includeLeafTopic">Boolean indicator as to whether to include the endpoint/leaf topic in the path.</param>
     /// <param name="truncatePathAtTopic">The assembled topic keys at which to end the path string.</param>
-    /// <returns>Returns a constructed file path.</returns>
+    /// <returns>A constructed file path.</returns>
     public static string GetPath(
       Topic     topic,
       string    attributeKey,

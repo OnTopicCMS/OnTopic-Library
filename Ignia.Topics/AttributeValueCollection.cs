@@ -50,6 +50,8 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Method must be overridden for the <see cref="KeyedCollection{TKey, TItem}"/> to extract the keys from the items.
     /// </summary>
+    /// <param name="item">The <see cref="AttributeValue"/> element from which to extract the key.</param>
+    /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(AttributeValue item) {
       return item.Key;
     }

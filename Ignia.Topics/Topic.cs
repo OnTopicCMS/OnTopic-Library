@@ -62,7 +62,7 @@ namespace Ignia.Topics {
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
     /// <param name="contentType">
-    ///   The string value text for the Topic's ContentType Attribute.
+    ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
     /// </param>
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       this.Key                  = key;
@@ -576,8 +576,9 @@ namespace Ignia.Topics {
     ///   Changes the key associated with a topic to maintain referential integrity.
     /// </summary>
     /// <remarks>
-    ///   By default, KeyedCollection doesn't permit mutable keys; this mitigates that issue by allowing the collection's
-    ///   lookup dictionary to be updated whenever the key is updated in the corresponding topic object.
+    ///   By default, <see cref="KeyedCollection{TKey, TItem}"/> doesn't permit mutable keys; this mitigates that issue by
+    ///   allowing the collection's lookup dictionary to be updated whenever the key is updated in the corresponding topic
+    ///   object.
     /// </remarks>
     internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
@@ -630,9 +631,9 @@ namespace Ignia.Topics {
     /// </remarks>
     public void SetRelationship(string scope, string relatedCsv) {
 
-      /*-----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle Deletion
-      \----------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(relatedCsv)) {
         if (this.Relationships.Contains(scope)) {
           this.Relationships.Remove(scope);
@@ -640,9 +641,9 @@ namespace Ignia.Topics {
         return;
       }
 
-      /*-----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Build collection from CSV
-      \----------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Topic related = new Topic(scope);
       char[] stringSeparators = new char[] {','};
 
@@ -726,9 +727,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="isRecursive"></param>
-    /// <returns>Returns the string value for the Attribute.</returns>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
+    ///   get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
     public string GetAttribute(string name, bool isRecursive = false) {
       return GetAttribute(name, "", isRecursive);
     }
@@ -737,10 +741,14 @@ namespace Ignia.Topics {
     ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
     ///   parents through whom to crawl to retrieve an inherited value.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="defaultValue"></param>
-    /// <param name="isRecursive"></param>
-    /// <param name="maxHops"></param>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
+    ///   get the value.
+    /// </param>
+    /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
+    /// <returns>The string value for the Attribute.</returns>
     public string GetAttribute(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
 
       string value = null;
@@ -789,10 +797,12 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Retrieves a collection of topics based on an attribute name and value, optionally recursively.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="value"></param>
-    /// <param name="isRecursive"></param>
-    /// <returns>Returns a collection of topics matching the input parameters.</returns>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's children when performing the find operation.
+    /// </param>
+    /// <returns>A collection of topics matching the input parameters.</returns>
     public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
       Collection<Topic> results = new Collection<Topic>();
       if (this.GetAttribute(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
@@ -821,7 +831,7 @@ namespace Ignia.Topics {
     /// <param name="deepLoad">
     ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
     /// </param>
-    /// <returns>Returns a topic object and N number of child topics, depending on depth specified.</returns>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
     public static Topic Load(bool deepLoad) {
       return Load("", deepLoad?-1:0);
     }
@@ -834,6 +844,7 @@ namespace Ignia.Topics {
     /// <param name="deepLoad">
     ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
     /// </param>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
     public static Topic Load(string topic = "", bool deepLoad = false) {
       return Load(topic, deepLoad?-1:0);
     }
@@ -846,6 +857,7 @@ namespace Ignia.Topics {
     /// <param name="depth">
     ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
     /// </param>
+    /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(string topic, int depth) {
       return TopicRepository.Load(topic, depth);
     }
@@ -858,6 +870,7 @@ namespace Ignia.Topics {
     /// <param name="version">
     ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
     /// </param>
+    /// <returns>A topic object.</returns>
     public static Topic Load(string topic, DateTime version) {
       return TopicRepository.Load(topic, 0, version);
     }
@@ -870,6 +883,7 @@ namespace Ignia.Topics {
     /// <param name="deepLoad">
     ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
     /// </param>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
     public static Topic Load(int topicId, bool deepLoad = false) {
       return Load(topicId, deepLoad?-1:0);
     }
@@ -882,6 +896,7 @@ namespace Ignia.Topics {
     /// <param name="depth">
     ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
     /// </param>
+    /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(int topicId, int depth) {
       return TopicRepository.Load(topicId, depth);
     }
@@ -894,6 +909,7 @@ namespace Ignia.Topics {
     /// <param name="version">
     ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
     /// </param>
+    /// <returns>A topic object.</returns>
     public static Topic Load(int topicId, DateTime version) {
       return TopicRepository.Load(topicId, 0, version);
     }
@@ -940,12 +956,12 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic originalVersion         = Topic.Load(this.Id, version);
+      Topic originalVersion     = Topic.Load(this.Id, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Rename topic, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Key                                          = originalVersion.Key;
+      this.Key                  = originalVersion.Key;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark each attribute as dirty
@@ -959,7 +975,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct new AttributeCollection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Attributes                                   = originalVersion.Attributes;
+      this.Attributes           = originalVersion.Attributes;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
@@ -978,7 +994,7 @@ namespace Ignia.Topics {
     ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
     /// </remarks>
     /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>Returns the topic or null, if the topic is not found.</returns>
+    /// <returns>The topic or null, if the topic is not found.</returns>
     public Topic GetTopic(int topicId) {
 
       if (this.Id == topicId) return this;
@@ -997,6 +1013,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
     /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
     public Topic GetTopic(string namespaceKey, string topic) {
       return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
     }
@@ -1007,6 +1024,7 @@ namespace Ignia.Topics {
     /// <param name="topic">
     ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
     /// </param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
     public Topic GetTopic(string topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1039,9 +1057,9 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string   remainder       = topic.Substring(UniqueKey.Length + 1);
-      int      marker          = remainder.IndexOf(":", StringComparison.Ordinal);
-      string   nextChild       = (marker < 0)? remainder : remainder.Substring(0, marker);
+      string   remainder        = topic.Substring(UniqueKey.Length + 1);
+      int      marker           = remainder.IndexOf(":", StringComparison.Ordinal);
+      string   nextChild        = (marker < 0)? remainder : remainder.Substring(0, marker);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find topic
@@ -1064,6 +1082,7 @@ namespace Ignia.Topics {
     ///   Optional overload allows for specifying whether all children should also be saved, as well as whether the topic should
     ///   be marked as having Draft status.
     /// </remarks>
+    /// <returns>The topic's integer identifier.</returns>
     public int Save() {
       return Save(false, false);
     }
@@ -1076,7 +1095,7 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
-    /// <returns>Returns the topic's integer identifier.</returns>
+    /// <returns>The topic's integer identifier.</returns>
     public int Save(bool isRecursive = false, bool isDraft = false) {
       Id = TopicRepository.Save(this, isRecursive, isDraft);
       return Id;
@@ -1132,6 +1151,8 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Method must be overridden for the EntityCollection to extract the keys from the items.
     /// </summary>
+    /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
+    /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(Topic item) {
       return item.Key;
     }

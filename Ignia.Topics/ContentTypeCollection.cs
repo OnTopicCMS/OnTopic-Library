@@ -31,6 +31,8 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Method must be overridden for the KeyedCollection to extract the keys from the items.
     /// </summary>
+    /// <param name="item">The <see cref="ContentType"/> element from which to extract the key.</param>
+    /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(ContentType item) {
       return item.Key;
     }
