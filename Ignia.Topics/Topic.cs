@@ -42,7 +42,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
-    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
+    internal Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier.
@@ -55,8 +55,9 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name.
+    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
+    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will return a 
+    ///   strongly-typed version. 
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -64,6 +65,7 @@ namespace Ignia.Topics {
     /// <param name="contentType">
     ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
     /// </param>
+    [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       this.Key                  = key;
       this.Attributes.Add(new AttributeValue("ContentType", contentType));
