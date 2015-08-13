@@ -32,11 +32,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///  Initializes a new instance of the <see cref="ContentType"/> class.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
-    /// </remarks>
     public ContentType() : base() { }
 
+    /// <summary>
+    ///  Initializes a new instance of the <see cref="ContentType"/> class based on the specified <see cref="Topic.Key"/>.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="ContentType"/> Topic.
     /// </param>

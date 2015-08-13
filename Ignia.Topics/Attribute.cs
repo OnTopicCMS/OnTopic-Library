@@ -31,11 +31,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Attribute"/> class.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows the object to be constructed based on the Attribute's <see cref="Topic.Key"/> property.
-    /// </remarks>
     public Attribute() : base() { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="Attribute"/> class based on the specified <see cref="Topic.Key"/>.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Attribute"/> Topic.
     /// </param>

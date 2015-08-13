@@ -136,10 +136,6 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Static method that passes Load requests along to the current topic data provider.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for the topic's integer identifier to be specified rather than the string uniqueKey value
-    ///   of the topic.
-    /// </remarks>
     /// <param name="topic">String uniqueKey identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
@@ -147,6 +143,10 @@ namespace Ignia.Topics {
       return DataProvider.Load(topic, depth, version);
     }
 
+    /// <summary>
+    ///   Passes Load requests along to the current topic data provider, using the topic's integer identifier instead of the
+    ///   topic's uniqueKey value (see <see cref="Load(string, int, DateTime?)"/>).
+    /// </summary>
     /// <param name="topicId">Integer identifier for the topic.</param>
     /// <param name="depth">Integer level to which to also load the topic's children.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
@@ -162,7 +162,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <param name="topic">The topic object.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and save them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     public static int Save(Topic topic, bool isRecursive, bool isDraft = false) {
@@ -176,13 +176,8 @@ namespace Ignia.Topics {
     ///   Static method that passes Move requests along to the current topic data provider.
     /// </summary>
     /// <remarks>
-    ///   <para>
-    ///     For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
-    ///     existing siblings.
-    ///   </para>
-    ///   <para>
-    ///     Optional overload allows for specifying a sibling topic.
-    ///   </para>
+    ///   For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
+    ///   existing siblings.
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
@@ -191,6 +186,10 @@ namespace Ignia.Topics {
       return DataProvider.Move(topic, target);
     }
 
+    /// <summary>
+    ///   Passes Move requests along to the current topic data provider, using one of the target topic's children as a sibling
+    ///   reference point adjacent to which the source topic should be moved.
+    /// </summary>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
@@ -225,11 +224,11 @@ namespace Ignia.Topics {
       | Loop through each topic to assign a new priority order
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic topic in parent.SortedChildren) {
-      //Assuming the topic isn't the source, increment the sortOrder
+        // Assuming the topic isn't the source, increment the sortOrder
         if (topic != source) {
           topic.SortOrder = sortOrder++;
         }
-      //If the topic is the sibling, then assign the next sortOrder to the source
+        // If the topic is the sibling, then assign the next sortOrder to the source
         if (topic == sibling) {
           source.SortOrder = sortOrder++;
         }
@@ -241,16 +240,20 @@ namespace Ignia.Topics {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Static method that passes Delete requests along to the current topic data provider.
+    ///   Static method that passes Delete requests for the topic and all of its descendants to the current topic data provider.
     /// </summary>
     /// <param name="topic">The topic object to delete.</param>
     public static void Delete(Topic topic) {
       Delete(topic, true);
     }
 
+    /// <summary>
+    ///   Passes Delete requests for the topic to the current topic data provider, optionally including requests for the topic's
+    ///   descendants.
+    /// </summary>
     /// <param name="topic">The topic object to delete.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well.
     /// </param>
     public static void Delete(Topic topic, bool isRecursive) {
       DataProvider.Delete(topic, isRecursive);

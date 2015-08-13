@@ -32,14 +32,13 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///  Initializes a new instance of the <see cref="AttributeValue"/> class.
+    ///   Initializes a new instance of the <see cref="AttributeValue"/> class.
     /// </summary>
-    /// <remarks>
-    ///   Optional overloads allow object to be constructed based on specified key/value pairs or for the
-    ///   IsDirty (has been changed) property to be set.
-    /// </remarks>
     public AttributeValue() { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
     /// </param>
@@ -51,6 +50,10 @@ namespace Ignia.Topics {
       this.Value        = value;
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair as well as
+    ///   the manual setting for whether the item has changed.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
     /// </param>

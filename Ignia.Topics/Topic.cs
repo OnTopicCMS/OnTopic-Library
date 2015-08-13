@@ -42,12 +42,11 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
-    /// <remarks>
-    ///   Optional overloads allow object to be constructed based on the Topic's <see cref="Key"/> and/or
-    ///   <see cref="ContentType"/> properties. 
-    /// </remarks>
     public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
@@ -55,6 +54,10 @@ namespace Ignia.Topics {
       this.Key                  = key;
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
+    ///   <see cref="ContentType"/> name.
+    /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
@@ -370,12 +373,12 @@ namespace Ignia.Topics {
         string lastModified = GetAttribute("LastModified");
         DateTime dateTimeValue;
 
-        //Return converted DateTime
+        // Return converted DateTime
         if (DateTime.TryParse(lastModified, out dateTimeValue)) {
           return dateTimeValue;
         }
 
-        //Return minimum date value if datetime cannot be parsed from attribute
+        // Return minimum date value if datetime cannot be parsed from attribute
         else {
           return DateTime.MinValue;
         }
@@ -438,7 +441,7 @@ namespace Ignia.Topics {
       //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
       //are already created and available.
       }
-    \----=--------------------------------------------------------------------------------------------------------------------*/
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
@@ -723,9 +726,6 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload.
-    /// </remarks>
     /// <param name="name"></param>
     /// <param name="isRecursive"></param>
     /// <returns>Returns the string value for the Attribute.</returns>
@@ -733,6 +733,10 @@ namespace Ignia.Topics {
       return GetAttribute(name, "", isRecursive);
     }
 
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
+    ///   parents through whom to crawl to retrieve an inherited value.
+    /// </summary>
     /// <param name="name"></param>
     /// <param name="defaultValue"></param>
     /// <param name="isRecursive"></param>
@@ -809,50 +813,87 @@ namespace Ignia.Topics {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Pull topics data out of the storage provider to a given depth.
+    ///   Pulls data out of the storage provider for the topic and, optionally, all of its descendants.
     /// </summary>
     /// <remarks>
-    ///   Optional overloads allow for a topic to be loaded based on a specified key or version, and to a specified or full
-    ///   depth with respect to loading its available children.
+    ///   If the deepLoad flag is set to true, all available descendants are also loaded.
     /// </remarks>
-    /// <param name="deepLoad"></param>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
     /// <returns>Returns a topic object and N number of child topics, depending on depth specified.</returns>
     public static Topic Load(bool deepLoad) {
       return Load("", deepLoad?-1:0);
     }
 
-    /// <param name="topic"></param>
-    /// <param name="deepLoad"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and,
+    ///   optionally, all of its descendants (see <see cref="Load(bool)"/>).
+    /// </summary>
+    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
     public static Topic Load(string topic = "", bool deepLoad = false) {
       return Load(topic, deepLoad?-1:0);
     }
 
-    /// <param name="topic"></param>
-    /// <param name="depth"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value; additionally
+    ///   loads its descendants to the depth specified.
+    /// </summary>
+    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
+    /// <param name="depth">
+    ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
+    /// </param>
     public static Topic Load(string topic, int depth) {
       return TopicRepository.Load(topic, depth);
     }
 
-    /// <param name="topic"></param>
-    /// <param name="version"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and DateTime 
+    ///   <see cref="Version"/> marker.
+    /// </summary>
+    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
+    /// <param name="version">
+    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
+    /// </param>
     public static Topic Load(string topic, DateTime version) {
       return TopicRepository.Load(topic, 0, version);
     }
 
-    /// <param name="topicId"></param>
-    /// <param name="deepLoad"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and,
+    ///   optionally, all of its descendants (see <see cref="Load(bool)"/>).
+    /// </summary>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
     public static Topic Load(int topicId, bool deepLoad = false) {
       return Load(topicId, deepLoad?-1:0);
     }
 
-    /// <param name="topicId"></param>
-    /// <param name="depth"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier; additionally loads its
+    ///   descendants to the depth specified (see <see cref="Load(string, int)"/>).
+    /// </summary>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <param name="depth">
+    ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
+    /// </param>
     public static Topic Load(int topicId, int depth) {
       return TopicRepository.Load(topicId, depth);
     }
 
-    /// <param name="topicId"></param>
-    /// <param name="version"></param>
+    /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and DateTime 
+    ///   <see cref="Version"/> marker (see <see cref="Load(string, DateTime)"/>.
+    /// </summary>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <param name="version">
+    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
+    /// </param>
     public static Topic Load(int topicId, DateTime version) {
       return TopicRepository.Load(topicId, 0, version);
     }
@@ -931,13 +972,10 @@ namespace Ignia.Topics {
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Pull data out of the storage provider to a given depth.
+    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
     /// </summary>
     /// <remarks>
-    ///   <para>
-    ///     Optional overloads allow the developer to explicitly state the namespace as a separate parameter, or look up the
-    ///     topic by ID or by part or all of a <see cref="UniqueKey"/> string.
-    ///   </para>
+    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
     /// </remarks>
     /// <param name="topicId">The integer identifier for the topic.</param>
     /// <returns>Returns the topic or null, if the topic is not found.</returns>
@@ -954,13 +992,21 @@ namespace Ignia.Topics {
 
     }
 
+    /// <summary>
+    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
+    /// </summary>
     /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
     /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
     public Topic GetTopic(string namespaceKey, string topic) {
       return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
     }
 
-    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
+    /// <summary>
+    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
+    /// </summary>
+    /// <param name="topic">
+    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
+    /// </param>
     public Topic GetTopic(string topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1022,8 +1068,12 @@ namespace Ignia.Topics {
       return Save(false, false);
     }
 
+    /// <summary>
+    ///   Saves the topic information, optionally saving the information for all of its descendants; additionally, optionally
+    ///   marks the topic as having a draft status.
+    /// </summary>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and save them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>Returns the topic's integer identifier.</returns>
@@ -1036,17 +1086,17 @@ namespace Ignia.Topics {
     | METHOD: REFRESH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Refreshes the topic data from the provider.
+    ///   Reloads the topic data from the provider and the data for all of the topic's descendants.
     /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for specifying whether the topic's children should be refreshed as well.
-    /// </remarks>
     public bool Refresh() {
       return Refresh(true);
     }
 
+    /// <summary>
+    ///   Reloads the topic data from the provider, optionally reloading all of the topic's descendants.
+    /// </summary>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and refresh them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and refresh them as well.
     /// </param>
     public bool Refresh(bool isRecursive) {
       throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
@@ -1059,19 +1109,16 @@ namespace Ignia.Topics {
     ///   Deletes the current topic (as well as all children).
     /// </summary>
     /// <remarks>
-    ///   <para>
-    ///     Optional overload allows for specifying whether the topic's children should be deleted as well. Default behavior is
-    ///     to delete children.
-    ///   </para>
-    ///   <para>
-    ///     We may want to rethink this at some point and have functionality to delete a node and elavate it's children or
-    ///     delete and reassign children or something.
-    ///   </para>
+    ///   We may want to rethink this at some point and have functionality to delete a node and elavate it's children or
+    ///   delete and reassign children or something.
     /// </remarks>
     public void Delete() {
       Delete(true);
     }
 
+    /// <summary>
+    ///   Deletes the current topic, optionally deleting all of the topic's descendants.
+    /// </summary>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse over the topic's children and delete them as well.
     /// </param>
