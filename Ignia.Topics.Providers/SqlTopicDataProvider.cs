@@ -351,7 +351,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and save them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <exception cref="ArgumentNullException">topic</exception>
@@ -633,7 +633,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object to be deleted.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's children and delete them as well.
+    ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well.
     /// </param>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
