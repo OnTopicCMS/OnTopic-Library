@@ -93,25 +93,10 @@ namespace Ignia.Topics.Providers {
           // Handle ParentID (could be null for root topic)
           Int32.TryParse(reader["ParentID"].ToString(), out parentId);
 
-          // Determine target type
-          Type                  baseType        = System.Type.GetType("Ignia.Topics.Topic");
-          Type                  targetType      = System.Type.GetType("Ignia.Topics." + contentType);
-
-          // Validate type
-          if (targetType == null) {
-            targetType          = baseType;
-          }
-          else if (!targetType.IsSubclassOf(baseType)) {
-            targetType          = baseType;
-            throw new Exception("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-          }
-
-          // Identify the appropriate topic
-          dynamic               current         = Activator.CreateInstance(targetType);
+          dynamic current = Topic.Create(key, contentType);
 
           // Create new topic, if topic doesn't exist
           if (!topics.Keys.Contains(id)) {
-            current.Key         = key;
             current.Id          = id;
             topics.Add(current.Id, current);
           }

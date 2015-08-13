@@ -820,6 +820,49 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | METHOD: CREATE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
+    ///   available.
+    /// </summary>
+    /// <remarks>
+    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For 
+    ///   instance, if the content type is "Page", it will look for an "Ignia.Topics.Page" class. If found, it will confirm that
+    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class 
+    ///   exists but does not derive from <see cref="Topic"/>, then an exception will be thrown. And otherwise, a new instance
+    ///   of the generic <see cref="Topic"/> class will be created.
+    /// </remarks>
+    /// <param name="key">A string representing the key for the new topic instance.</param>
+    /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
+    /// </exception>
+    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    public static Topic Create(string key, string contentType) {
+
+      // Determine target type
+      Type baseType = System.Type.GetType("Ignia.Topics.Topic");
+      Type targetType = System.Type.GetType("Ignia.Topics." + contentType);
+
+      // Validate type
+      if (targetType == null) {
+        targetType = baseType;
+      }
+      else if (!targetType.IsSubclassOf(baseType)) {
+        targetType = baseType;
+        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
+      }
+
+      // Identify the appropriate topic
+      Topic topic = (Topic)Activator.CreateInstance(targetType);
+      topic.Key = key;
+
+      return topic;
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
