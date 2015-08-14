@@ -12,9 +12,13 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE VALUE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides the abstract base class for a collection of <see cref="AttributeValue"/> objects whose string keys are embedded
-  ///   in the values.
+  ///   Represents a collection of <see cref="AttributeValue"/> objects.
   /// </summary>
+  /// <remarks>
+  ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics. 
+  ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of 
+  ///   the <see cref="AttributeValueCollection"/> class.
+  /// </remarks>
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================

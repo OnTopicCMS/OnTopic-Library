@@ -21,6 +21,10 @@ namespace Ignia.Topics {
   ///     to <c>true</c>, if it wasn't previously.
   ///   </para>  
   ///   <para>
+  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via 
+  ///     the <see cref="Topic.Attributes"/> collection. 
+  ///   </para>
+  ///   <para>
   ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for 
   ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see 
   ///     cref="Attribute"/> class. 

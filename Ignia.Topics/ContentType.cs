@@ -12,12 +12,22 @@ namespace Ignia.Topics {
   | CLASS: CONTENT TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed implementation of <see cref="Topic"/> that exposes properties specific to ContentType.
+  ///   Content types provide schema information for each topic, including which attributes that topic is expected to include.
   /// </summary>
   /// <remarks>
-  ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
-  ///   Editor (via the <see cref="SupportedAttributes"/> property). The content type also determines, by default, which view
-  ///   is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down the pipe). 
+  ///   <para>
+  ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
+  ///     Editor (via the <see cref="SupportedAttributes"/> property). The content type also determines, by default, which view
+  ///     is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down the pipe). 
+  ///   </para>  
+  ///   <para>
+  ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of 
+  ///     "Content Type". The attributes of the "Content Type" Content Type represent the metadata associated with every content 
+  ///     type. For example, the "Content Type" Content Type has attributes such as <see cref="SupportedAttributes"/> which 
+  ///     represents which attributes should be associated with each instance of a <see cref="ContentType"/>. To represent this, 
+  ///     the <see cref="ContentType"/> class provides a strongly-typed derivation of the <see cref="Topic"/> class, with 
+  ///     properties mapping to attributes specific to the "Content Type" Content Type.
+  ///   </para>
   /// </remarks>
   public class ContentType : Topic {
 
