@@ -79,7 +79,7 @@ namespace Ignia.Topics {
     public static Topic RootTopic {
       get {
         if (_rootTopic == null) {
-          _rootTopic = Topic.Load();
+          _rootTopic = Topic.Load("", -1);
         }
         return _rootTopic;
       }
