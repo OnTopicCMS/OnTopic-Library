@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Ignia.Topics {
 
@@ -35,6 +36,8 @@ namespace Ignia.Topics {
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
     private   Dictionary<string, Attribute>             _supportedAttributes            = null;
+    private   ReadOnlyCollection<ContentType>           _permittedContentTypes          = null;
+    private   bool?                                     _disableChildTopics             = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -51,6 +54,78 @@ namespace Ignia.Topics {
     ///   The string identifier for the <see cref="ContentType"/> Topic.
     /// </param>
     public ContentType(string key) : base(key) { }
+
+    /*==========================================================================================================================
+    | PROPERTY: DISABLE CHILD TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether instances of this <see cref="ContentType"/> are permitted to contain child topics.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, topics are hierarchical: any topic can contain any number of child topics. While this flexibility makes
+    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual 
+    ///     topics. For example, while it may make sense for a "Page" topic to have child "Page" topics, it likely won't make 
+    ///     sense for an "Article" topic to. This property allows this functionality to be disabled.
+    ///   </para>
+    ///   <para>
+    ///     It is important to note that this functionality only affects the Topic Editor interface, by disabling the option to
+    ///     add a child topic. This functionality is not enforced by the library itself. As such, developers may programmatically
+    ///     add child topics to a topic regardless of whether it's associated <see cref="ContentType"/> is set to <see 
+    ///     cref="DisableChildTopics"/>.
+    ///   </para>
+    /// </remarks>
+    public Boolean DisableChildTopics {
+      get {
+        return (GetAttribute("DisableChildTopics", "0").Equals("1"));
+      }
+      set {
+        Attributes.SetAttributeValue("DisableChildTopics", value? "1" : "0");
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: PERMITTED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a readonly collection of what types of content types are permitted to be created as children of instances of 
+    ///   this content type.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, topics are hierarchical: any topic can contain any number of child topics. While this flexibility makes
+    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual 
+    ///     topics. For example, while it may make sense for a "Page" topic to have child "Comment" topics, it wouldn't make 
+    ///     sense for "Comment" topics to have child "Page" topics. This property allows the topics library to configure which 
+    ///     types of topics can be created under instances of the current content type.
+    ///   </para>
+    ///   <para>
+    ///     It is important to note that this functionality only affects the Topic Editor interface by restricting the content 
+    ///     type of topics created under instances of this content type. This functionality is not enforced by the library 
+    ///     itself. As such, developers may programmatically add child topics to a topic regardless of whether it's associated 
+    ///     <see cref="ContentType"/> permits topics of that Content Type to be created.
+    ///   </para>
+    ///   <para>
+    ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see 
+    ///     cref="Topic.SetRelationship(string, Topic, bool)"/>. 
+    ///   </para>
+    /// </remarks>
+    public ReadOnlyCollection<ContentType> PermittedContentTypes {
+      get {
+        if (_permittedContentTypes == null) {
+          var permittedContentTypes = new List<ContentType>();
+          var contentTypes = new Topic();
+          if (Relationships.Contains("ContentTypes")) {
+            contentTypes = Relationships["ContentTypes"];
+          }
+          foreach (ContentType contentType in contentTypes) {
+            permittedContentTypes.Add(contentType);
+          }
+          _permittedContentTypes = new ReadOnlyCollection<ContentType>(permittedContentTypes);
+        }
+        return _permittedContentTypes;
+      }
+    }
 
     /*==========================================================================================================================
     | PROPERTY: SUPPORTED ATTRIBUTE
