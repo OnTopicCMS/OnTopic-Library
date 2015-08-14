@@ -11,13 +11,20 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE VALUE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents an instance of an Attribute value.
+  ///   Represents the value of a particular attribute on a <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
-  ///   Provides values and metadata specific to individual attribute value instances, such as state (e.g., the
-  ///   <see cref="IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="LastModified"/>
-  ///   date. State (IsDirty) is evaluated as part of the setter for <see cref="Value"/>; i.e., when the value changes,
-  ///   IsDirty is automatically set to <c>true</c>, if it wasn't previously.
+  ///   <para>
+  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="IsDirty"/> 
+  ///     property signifies whether the attribute value has changed) and its <see cref="LastModified"/> date. State (IsDirty) 
+  ///     is evaluated as part of the setter for <see cref="Value"/>; i.e., when the value changes, IsDirty is automatically set 
+  ///     to <c>true</c>, if it wasn't previously.
+  ///   </para>  
+  ///   <para>
+  ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for 
+  ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see 
+  ///     cref="Attribute"/> class. 
+  ///   </para>
   /// </remarks>
   public class AttributeValue {
 
