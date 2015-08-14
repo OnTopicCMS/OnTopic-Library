@@ -35,6 +35,8 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Minimizes the need for defensive conditions throughout the library.
     /// </remarks>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
     public void SetAttributeValue(string key, string value) {
       if (this.Contains(key)) {
         this[key].Value = value;

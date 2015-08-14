@@ -12,6 +12,7 @@ namespace Ignia.Topics.Web {
   /// <summary>
   ///   Provides a generic page class implementation which is aware of the strongly-typed Topic.
   /// </summary>
+  /// <typeparam name="T" />
   public class TypedTopicPage<T> : TopicPage where T : Topic {
 
     /*==========================================================================================================================

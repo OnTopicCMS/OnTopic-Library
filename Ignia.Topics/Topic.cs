@@ -631,6 +631,8 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Not currently referenced by the library.
     /// </remarks>
+    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
+    /// <param name="relatedCsv">The source CSV file containing the relationship data.</param>
     public void SetRelationship(string scope, string relatedCsv) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -692,6 +694,9 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Sets a new relationship based on the relationship type, target topic and direction.
     /// </summary>
+    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
+    /// <param name="related">The target topic object for which to set the relationship.</param>
+    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
     public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
 
       Topic relationships = this.Relationships;
@@ -1152,6 +1157,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Reloads the topic data from the provider and the data for all of the topic's descendants.
     /// </summary>
+    /// <returns>Boolean value representing whether the topic has been refreshed/reloaded.</returns>
     public bool Refresh() {
       return Refresh(true);
     }
@@ -1162,6 +1168,7 @@ namespace Ignia.Topics {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and refresh them as well.
     /// </param>
+    /// <returns>Boolean value representing whether the topic has been refreshed/reloaded.</returns>
     public bool Refresh(bool isRecursive) {
       throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
     }
