@@ -10,13 +10,24 @@ namespace Ignia.Topics {
   | CLASS: ATTRIBUTE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed implementation of Topic that maps to Attribute Content Types.
+  ///   Represents metadata for describing an attribute, including information on how it will be presented and validated in the
+  ///   editor.
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     The Attribute Content Type represents an individual attribute applied to another Content Type. For instance, the 
-  ///     commonly-configured "Page" Content Type has attributes such as "Keywords", "Body", etc. Each of those individually 
-  ///     represent instances of the Attribute Content Type.
+  ///     Every <see cref="Topic"/> in the Topic Library is associated with a <see cref="ContentType"/>, which determines the 
+  ///     expected schema of the topic. That schema is described through the <see cref="ContentType.SupportedAttributes"/> 
+  ///     collection, which provides a list of <see cref="Attribute"/>s associated with that content type. For instance, the 
+  ///     commonly-configured "Page" Content Type has attributes such as "Keywords", "Body", etc. Each of those are 
+  ///     individually represented by instances of the <see cref="Attribute"/> class.
+  ///   </para>
+  ///   <para>
+  ///     Each attribute associated with a <see cref="ContentType"/> is itself a <see cref="Topic"/> with a Content Type of 
+  ///     "Attribute". The attributes of the "Attribute" Content Type represent the metadata associated with each attribute. 
+  ///     For example, the "Attribute" Content Type has attributes such as <see cref="IsHidden"/> to determine whether or not
+  ///     the attribute is displayed in the editor, and <see cref="IsRequired"/> to determine whether a value is required for
+  ///     that attribute. To represent this, the <see cref="Attribute"/> class provides a strongly-typed derivation of the 
+  ///     <see cref="Topic"/> class, with properties mapping to attributes specific to the Attribute Content Type.
   ///   </para>
   ///   <para>
   ///     This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of 
