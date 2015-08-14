@@ -42,7 +42,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
-    internal Topic() : base(StringComparer.OrdinalIgnoreCase) { }
+    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier.
