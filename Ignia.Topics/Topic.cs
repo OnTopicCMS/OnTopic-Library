@@ -865,6 +865,9 @@ namespace Ignia.Topics {
       Topic topic = (Topic)Activator.CreateInstance(targetType);
       topic.Key = key;
 
+      // Set the topic's Content Type
+      topic.Attributes.SetAttributeValue("ContentType", contentType);
+
       return topic;
 
     }
