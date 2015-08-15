@@ -54,9 +54,8 @@ namespace Ignia.Topics.Providers {
     ///   Core delete method, which permits deleting based on a string.
     /// </summary>
     /// <param name="originalTag">The string identifier for the topic to be deleted.</param>
-    /// <exception cref="NotImplementedException"></exception>
     public void Delete(string originalTag) {
-      throw new NotImplementedException();
+      // Do nothing
     }
 
     /*==========================================================================================================================
@@ -143,9 +142,8 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="originalTag">The string identifier for the topic to be renamed.</param>
     /// <param name="newTag">The new string identifier for the topic.</param>
-    /// <exception cref="NotImplementedException"></exception>
     public void Rename(string originalTag, string newTag) {
-      throw new NotImplementedException();
+      // Do nothing
     }
 
   } // Class
