@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Providers {
 
@@ -39,6 +40,9 @@ namespace Ignia.Topics.Providers {
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>
     public MoveEventArgs(Topic topic, Topic target) {
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+      Contract.Requires<ArgumentNullException>(target != null, "target");
+      Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
       _topic = topic;
       _target = target;
     }

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics {
 
@@ -42,6 +43,11 @@ namespace Ignia.Topics {
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     public void SetAttributeValue(string key, string value) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
+      Contract.Requires<ArgumentException>(
+        !value.Contains(" "),
+        "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+      );
       if (this.Contains(key)) {
         this[key].Value = value;
       }

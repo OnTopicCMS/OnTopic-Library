@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics {
 
@@ -74,9 +75,7 @@ namespace Ignia.Topics {
     /// <param name="isDirty">
     ///   The boolean indicator noting whether the <see cref="AttributeValue"/> collection item has been changed.
     /// </param>
-    public AttributeValue(string key, string value, bool isDirty) {
-      this.Key          = key;
-      this.Value        = value;
+    public AttributeValue(string key, string value, bool isDirty) : this(key, value) {
       this.IsDirty      = isDirty;
     }
 
@@ -91,6 +90,11 @@ namespace Ignia.Topics {
         return _key;
       }
       set {
+        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentException>(
+          !value.Contains(" "),
+          "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+        );
         _key = value;
       }
     }

@@ -6,6 +6,7 @@
 using System;
 using Ignia.Topics.Configuration;
 using Ignia.Topics.Providers;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics {
 
@@ -215,6 +216,15 @@ namespace Ignia.Topics {
     /// </param>
     private static void ReorderSiblings(Topic source, Topic sibling = null) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(source != null, "source");
+      Contract.Requires<ArgumentException>(source != sibling, "The source cannot be reordered relative to itself.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Topic   parent          = source.Parent;
       int     sortOrder       = -1;
 

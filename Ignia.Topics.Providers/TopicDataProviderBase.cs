@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration.Provider;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Providers {
 
@@ -103,7 +104,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) throw new ArgumentNullException("topic");
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
@@ -142,6 +143,8 @@ namespace Ignia.Topics.Providers {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual bool Move(Topic topic, Topic target) {
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+      Contract.Requires<ArgumentNullException>(target != null, "target");
       if (MoveEvent != null) {
         MoveEvent(this, new MoveEventArgs(topic, target));
       }
@@ -164,7 +167,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) throw new ArgumentNullException("topic");
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event

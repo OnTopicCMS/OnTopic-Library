@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration.Provider;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Providers {
 
@@ -29,7 +30,7 @@ namespace Ignia.Topics.Providers {
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (value == null) throw new ArgumentNullException("value");
+        Contract.Requires<ArgumentNullException>(value != null);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Wire up events

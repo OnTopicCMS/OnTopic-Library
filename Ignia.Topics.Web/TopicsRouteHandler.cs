@@ -13,6 +13,7 @@ using System.Web.UI;
 using System.Web.Routing;
 using System.Web.Compilation;
 using Ignia.Topics.Configuration;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Web {
 
@@ -132,6 +133,11 @@ namespace Ignia.Topics.Web {
     private bool IsValidView(string contentType, string viewName, out string matchedView) {
 
       /*-------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \------------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(contentType != null, "contentType");
+
+      /*-------------------------------------------------------------------------------------------------------------------------
       | Check for content type specific view
       \------------------------------------------------------------------------------------------------------------------------*/
       if (
@@ -177,9 +183,14 @@ namespace Ignia.Topics.Web {
     public IHttpHandler GetHttpHandler(RequestContext requestContext) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(requestContext != null, "requestContext");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
+      string nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
       string    path                            = (string)requestContext.RouteData.Values["path"]?? "";
       string    directory                       = nameSpace + "/" + path;
 

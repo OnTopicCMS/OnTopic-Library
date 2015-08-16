@@ -12,6 +12,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Globalization;
 using System.Xml;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Providers {
 
@@ -44,6 +45,14 @@ namespace Ignia.Topics.Providers {
     ///   Topics failed to load: <c>ex.Message</c>
     /// </exception>
     public override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(
+        !String.IsNullOrWhiteSpace(topicKey) || topicId > 0, 
+        "Either the topicKey or the topicId are required."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -336,7 +345,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) throw new ArgumentNullException("topic");
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -543,8 +552,10 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) throw new ArgumentNullException("topic");
-      if (target == null) throw new ArgumentNullException("target");
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+      Contract.Requires<ArgumentNullException>(target != null, "target");
+      Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");
+      Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory
@@ -789,7 +800,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
     /// <returns>The converted SQL data type.</returns>
-    public static SqlDbType ConvDbType (String sqlDbType) {
+    private static SqlDbType ConvDbType (String sqlDbType) {
 
       switch (sqlDbType.ToLower()) {
         case "int":               return SqlDbType.Int;
