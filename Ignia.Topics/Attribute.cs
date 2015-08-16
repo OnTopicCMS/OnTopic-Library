@@ -22,12 +22,11 @@ namespace Ignia.Topics {
   ///     individually represented by instances of the <see cref="Attribute"/> class.
   ///   </para>
   ///   <para>
-  ///     Each attribute associated with a <see cref="ContentType"/> is itself a <see cref="Topic"/> with a Content Type of 
-  ///     "Attribute". The attributes of the "Attribute" Content Type represent the metadata associated with each attribute. 
-  ///     For example, the "Attribute" Content Type has attributes such as <see cref="IsHidden"/> to determine whether or not
-  ///     the attribute is displayed in the editor, and <see cref="IsRequired"/> to determine whether a value is required for
-  ///     that attribute. To represent this, the <see cref="Attribute"/> class provides a strongly-typed derivation of the 
-  ///     <see cref="Topic"/> class, with properties mapping to attributes specific to the Attribute Content Type.
+  ///     The purpose of the <see cref="Attribute"/> class is only to describe the schema of an attribute. For each individual
+  ///     <see cref="Topic"/>, the actual values of attributes are stored in <see cref="AttributeValue"/> objects via the 
+  ///     <see cref="Topic.Attributes"/> property. By contrast to <see cref="Attribute"/>, the <see cref="AttributeValue"/>
+  ///     class is focused exclusively on representing the attribute's value; it is not aware of whether that attribute is
+  ///     required, what data type it represents, or how it should be displayed in the editor.
   ///   </para>
   ///   <para>
   ///     This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of 
