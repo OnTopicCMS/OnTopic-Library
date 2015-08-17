@@ -214,6 +214,12 @@ namespace Ignia.Topics {
     /// <param name="sibling">
     ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
     /// </param>
+    /// <requires description="The source topic must be specified." exception="T:System.ArgumentNullException">
+    ///   source != null
+    /// </requires>
+    /// <requires description="The source topic cannot be reordered relative to itself." exception="T:System.ArgumentException">
+    ///   source != sibling
+    /// </requires>
     private static void ReorderSiblings(Topic source, Topic sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------

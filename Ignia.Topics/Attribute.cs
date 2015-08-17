@@ -66,6 +66,12 @@ namespace Ignia.Topics {
     ///   attribute's value as a standard HTML checkbox. There is no validation of the type at the library level; it is up to 
     ///   the editor to provide a match and, if not found, display an error.
     /// </remarks>
+    /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
+    ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
+    /// </requires>
     public string Type {
       get {
         return this.GetAttribute("Type", "");
@@ -92,6 +98,9 @@ namespace Ignia.Topics {
     ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>)
     ///   according to their <see cref="Topic.SortOrder"/> values.
     /// </remarks>
+    /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
     public string DisplayGroup {
       get {
         return this.GetAttribute("DisplayGroup", "");

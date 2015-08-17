@@ -85,6 +85,14 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the key of the attribute.
     /// </summary>
+    /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
     public string Key {
       get {
         return _key;

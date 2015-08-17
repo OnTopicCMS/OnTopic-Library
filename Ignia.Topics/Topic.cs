@@ -66,6 +66,14 @@ namespace Ignia.Topics {
     /// <param name="contentType">
     ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
     /// </param>
+    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(contentType)
+    /// </requires>
+    /// <requires
+    ///   description="The contentType key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !contentType.Contains(" ")
+    /// </requires>
     [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
@@ -83,6 +91,9 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the topic's integer identifier according to the data provider.
     /// </summary>
+    /// <requires description="The id is expected to be a positive value." exception="T:System.ArgumentException">
+    ///   value > 0
+    /// </requires>
     public int Id {
       get {
         return _id;
@@ -104,6 +115,17 @@ namespace Ignia.Topics {
     ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
     ///   have a null parent.
     /// </remarks>
+    /// <requires description="The value for Parent must not be null." exception="T:System.ArgumentNullException">
+    ///   value != null
+    /// </requires>
+    /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
+    ///   value != _parent
+    /// </requires>
+    /// <requires
+    ///   description="Duplicate key when setting Parent property: a topic with this topic's key already exists in the parent
+    ///   topic." exception="T:System.ArgumentException">
+    ///   !value.Contains(this.Key)
+    /// </requires>
     public Topic Parent {
       get {
         return _parent;
@@ -114,7 +136,7 @@ namespace Ignia.Topics {
         Contract.Requires<ArgumentException>(value != _parent, "A topic cannot be its own parent.");
         Contract.Requires<ArgumentException>(
           !value.Contains(this.Key), 
-          "Duplicate key when setting Parent property: the topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic."
+          "Duplicate key when setting Parent property: a topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic."
         );
 
         value.Add(this);
@@ -180,6 +202,14 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
+    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
+    ///   value != null
+    /// </requires>
+    /// <requires
+    ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
     public string Key {
       get {
         return _key;
@@ -250,6 +280,11 @@ namespace Ignia.Topics {
     ///   and thus allow the <see cref="Providers.TopicDataProviderBase"/> (or derived providers) from updating the data store
     ///   appropriately.
     /// </remarks>
+    /// <requires
+    ///   description="The OriginalKey should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !value?.Contains(" ")?? true
+    /// </requires>
     public string OriginalKey {
       get {
         return _originalKey;
@@ -294,6 +329,11 @@ namespace Ignia.Topics {
     ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
     ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
+    /// <requires
+    ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !value?.Contains(" ")?? true
+    /// </requires>
     public string View {
       get {
         // Return current Topic's View Attribute or the default for the ContentType.
@@ -432,6 +472,9 @@ namespace Ignia.Topics {
     ///     explicitly defining the number of hops.
     ///   </para>
     /// </remarks>
+    /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
+    ///   value != this
+    /// </requires>
     public Topic DerivedTopic {
       get {
         if (_derivedTopic == null && this.Attributes.Contains("TopicID")) {
@@ -657,6 +700,14 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
     /// <param name="relatedCsv">The source CSV file containing the relationship data.</param>
+    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(scope)
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !scope.Contains(" ")
+    /// </requires>
     public void SetRelationship(string scope, string relatedCsv) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -730,6 +781,15 @@ namespace Ignia.Topics {
     /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
     /// <param name="related">The target topic object for which to set the relationship.</param>
     /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
+    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(scope)
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !scope.Contains(" ")
+    /// </requires>
+    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
     public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -802,6 +862,22 @@ namespace Ignia.Topics {
     /// </param>
     /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
     /// <returns>The string value for the Attribute.</returns>
+    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(name)
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !scope.Contains(" ")
+    /// </requires>
+    /// <requires
+    ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
+    ///   maxHops &gt;= 0
+    /// </requires>
+    /// <requires
+    ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
+    ///   maxHops &lt;= 100
+    /// </requires>
     public string GetAttribute(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -867,6 +943,14 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to recurse over the topic's children when performing the find operation.
     /// </param>
     /// <returns>A collection of topics matching the input parameters.</returns>
+    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(name)
+    /// </requires>
+    /// <requires
+    ///   decription="The name should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !name.Contains(" ")
+    /// </requires>
     public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
@@ -914,6 +998,22 @@ namespace Ignia.Topics {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   decription="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !key.Contains(" ")
+    /// </requires>
+    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(contentType)
+    /// </requires>
+    /// <requires
+    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !contentType.Contains(" ")
+    /// </requires>
     public static Topic Create(string key, string contentType) {
 
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
@@ -1083,6 +1183,11 @@ namespace Ignia.Topics {
     ///   saving the new version.
     /// </summary>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
+    /// <requires 
+    ///   description="The version requested for rollback does not exist in the version history."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !VersionHistory.Contains(version)
+    /// </requires>
     public void Rollback(DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1135,6 +1240,9 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topicId">The integer identifier for the topic.</param>
     /// <returns>The topic or null, if the topic is not found.</returns>
+    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
+    ///   topicId &lt;= 0
+    /// </requires>
     public Topic GetTopic(int topicId) {
 
       Contract.Requires<ArgumentException>(topicId <= 0, "The topicId is expected to be a positive integer");

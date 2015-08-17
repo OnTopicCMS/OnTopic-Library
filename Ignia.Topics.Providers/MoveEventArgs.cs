@@ -39,6 +39,12 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>
+    /// <requires description="The topic to move must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires 
+    ///   description="The target topic under which to move the topic must be provided." exception="T:System.ArgumentNullException">
+    ///   target != null
+    /// </requires>
+    /// <requires description="The topic cannot be its own parent." exception="T:System.ArgumentException">topic != target</requires>
     public MoveEventArgs(Topic topic, Topic target) {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");

@@ -23,6 +23,7 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Upon setting the data provider we add this object as a listener to the events of that provider.
     /// </summary>
+    /// <requires description="The data provider must be available." exception="T:System.ArgumentNullException">value != null</requires>
     /// <exception cref="ArgumentNullException">value</exception>
     public TopicDataProviderBase DataProvider {
       set {

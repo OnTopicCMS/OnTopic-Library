@@ -98,6 +98,7 @@ namespace Ignia.Topics.Providers {
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
+    /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     public virtual int Save(Topic topic, bool isRecursive, bool isDraft) {
 
@@ -142,6 +143,10 @@ namespace Ignia.Topics.Providers {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
+    /// <requires description="The topic to move must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     public virtual bool Move(Topic topic, Topic target) {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
@@ -161,6 +166,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well.
     /// </param>
+    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     public virtual void Delete(Topic topic, bool isRecursive) {
 
