@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.Contracts;
 using System.Web.UI;
 using System.Web.Security;
 using System.Linq;
@@ -171,6 +172,12 @@ namespace Ignia.Topics.Web {
     /// <remarks>The URL in the editor associated with the current topic.</remarks>
     public String EditUrl {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<String>() != null);
+
         return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;
       }
     }

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Web.Configuration;
 using Ignia.Topics.Providers;
 
@@ -91,6 +92,12 @@ namespace Ignia.Topics.Configuration {
     /// </summary>
     public static TopicMappingProviderBase MappingProvider {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<TopicMappingProviderBase>() != null);
+
         return _defaultMappingProvider;
       }
     }
@@ -104,6 +111,12 @@ namespace Ignia.Topics.Configuration {
     /// </summary>
     public static TopicMappingProviderCollection MappingProviders {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<TopicMappingProviderCollection>() != null);
+
         return _mappingProviders;
       }
     }

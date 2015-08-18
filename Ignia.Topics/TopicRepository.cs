@@ -38,6 +38,12 @@ namespace Ignia.Topics {
     /// </summary>
     public static ContentTypeCollection ContentTypes {
       get {
+
+        /*------------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \-----------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
+
         if (_contentTypes == null) {
           _contentTypes                 = new ContentTypeCollection();
 
@@ -79,6 +85,12 @@ namespace Ignia.Topics {
     /// </summary>
     public static Topic RootTopic {
       get {
+
+        /*------------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \-----------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<Topic>() != null);
+
         if (_rootTopic == null) {
           _rootTopic = Topic.Load("", -1);
         }
@@ -101,6 +113,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public static TopicDataProviderBase DataProvider {
       get {
+
+        /*------------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \-----------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<TopicDataProviderBase>() != null);
+
         if (_dataProvider == null) {
           _dataProvider = TopicDataProviderManager.DataProvider;
           MappingProvider.DataProvider = _dataProvider;
@@ -124,6 +142,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public static TopicMappingProviderBase MappingProvider {
       get {
+
+        /*------------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \-----------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<TopicMappingProviderBase>() != null);
+
         if (_mappingProvider == null) {
           _mappingProvider = TopicMappingProviderManager.MappingProvider;
         }

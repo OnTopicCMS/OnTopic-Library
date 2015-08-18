@@ -253,6 +253,11 @@ namespace Ignia.Topics {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<String>() != null);
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Crawl up tree to define uniqueKey
         \---------------------------------------------------------------------------------------------------------------------*/
         string uniqueKey = "";
@@ -319,6 +324,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public string WebPath {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<String>() != null);
+
         return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
       }
     }
@@ -546,12 +557,24 @@ namespace Ignia.Topics {
     /// </remarks>
     public AttributeValueCollection Attributes {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
+
         if (_attributes == null) {
           _attributes = new AttributeValueCollection();
         }
         return _attributes;
       }
       set {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate input
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Requires<ArgumentNullException>(value != null, "A topic's AttributeValue collection cannot be null.");
+
         _attributes = value;
       }
     }
@@ -569,6 +592,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public Topic Relationships {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<Topic>() != null);
+
         if (_relationships == null) {
           _relationships = new Topic();
         }
@@ -590,6 +619,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public Topic IncomingRelationships {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<Topic>() != null);
+
         if (_incomingRelationships == null) {
           _incomingRelationships = new Topic();
         }
@@ -610,6 +645,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public IEnumerable<Topic> SortedChildren {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
+
         return this.Items.OrderBy(topic => topic.SortOrder);
       }
     }
@@ -690,6 +731,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public List<DateTime> VersionHistory {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<List<DateTime>>() != null);
+
         if (_versionHistory == null) {
           _versionHistory = new List<DateTime>();
         }
@@ -967,6 +1014,11 @@ namespace Ignia.Topics {
         "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
       );
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<Collection<Topic>>() != null);
+
       Collection<Topic> results = new Collection<Topic>();
 
       if (this.GetAttribute(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
@@ -1024,6 +1076,9 @@ namespace Ignia.Topics {
     /// </requires>
     public static Topic Create(string key, string contentType) {
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate inputs
+      \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentException>(
         !key.Contains(" "),
@@ -1035,11 +1090,20 @@ namespace Ignia.Topics {
         "The contentType should be an alphanumeric sequence; it should not contain spaces or symbols"
       );
 
-      // Determine target type
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<Topic>() != null);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Determine target type
+      \---------------------------------------------------------------------------------------------------------------------*/
       Type baseType = System.Type.GetType("Ignia.Topics.Topic");
       Type targetType = System.Type.GetType("Ignia.Topics." + contentType);
 
-      // Validate type
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate type
+      \---------------------------------------------------------------------------------------------------------------------*/
       if (targetType == null) {
         targetType = baseType;
       }
@@ -1048,11 +1112,15 @@ namespace Ignia.Topics {
         throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
       }
 
-      // Identify the appropriate topic
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Identify the appropriate topic
+      \---------------------------------------------------------------------------------------------------------------------*/
       Topic topic = (Topic)Activator.CreateInstance(targetType);
       topic.Key = key;
 
-      // Set the topic's Content Type
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set the topic's Content Type
+      \---------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetAttributeValue("ContentType", contentType);
 
       return topic;

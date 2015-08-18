@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics {
 
@@ -112,6 +113,12 @@ namespace Ignia.Topics {
     /// </remarks>
     public ReadOnlyCollection<ContentType> PermittedContentTypes {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<ReadOnlyCollection<ContentType>>() != null);
+
         if (_permittedContentTypes == null) {
           var permittedContentTypes = new List<ContentType>();
           var contentTypes = new Topic();
@@ -141,6 +148,11 @@ namespace Ignia.Topics {
     /// </remarks>
     public Dictionary<string, Attribute> SupportedAttributes {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<Dictionary<String, Attribute>>() != null);
 
         if (_supportedAttributes == null) {
 

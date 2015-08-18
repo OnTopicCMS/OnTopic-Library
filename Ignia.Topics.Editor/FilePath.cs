@@ -4,6 +4,7 @@
 | Project       Topics Library
 >=============================================================================================================================*/
 using System;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Editor {
 
@@ -42,6 +43,11 @@ namespace Ignia.Topics.Editor {
       bool      includeLeafTopic        = true,
       string[]  truncatePathAtTopic     = null
       ) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<String>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Only process the path if both topic and attribtueKey are provided
