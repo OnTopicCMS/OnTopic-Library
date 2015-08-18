@@ -48,12 +48,18 @@ namespace Ignia.Topics {
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
     ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
     public void SetAttributeValue(string key, string value) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "value");
       Contract.Requires<ArgumentException>(
         !value.Contains(" "),
         "The key should be an alphanumeric sequence; it should not contain spaces or symbols"

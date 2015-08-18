@@ -199,7 +199,17 @@ namespace Ignia.Topics {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
+    /// <requires
+    ///   description="The topic cannot be moved or reordered relative to itself." exception="T:System.ArgumentException">
+    ///   topic != sibling
+    /// </requires>
     public static bool Move(Topic topic, Topic target, Topic sibling) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topic != sibling, "The topic cannot be moved or reordered relative to itself.");
+
       ReorderSiblings(topic, sibling);
       return DataProvider.Move(topic, target, sibling);
     }

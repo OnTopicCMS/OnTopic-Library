@@ -69,7 +69,9 @@ namespace Ignia.Topics.Editor {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add topic keys (directory names) between the start topic and the end topic based on the topic's webpath property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      relativePath                      = endTopic.WebPath.Substring(startTopic.WebPath.Length);
+      if (startTopic != null) {
+        relativePath                    = endTopic.WebPath.Substring(startTopic.WebPath.Length);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform path truncation based on topics included in TruncatePathAtTopic

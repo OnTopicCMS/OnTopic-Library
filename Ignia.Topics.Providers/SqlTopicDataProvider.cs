@@ -696,7 +696,14 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
+    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+
       return PersistRelations(topic, connection, false);
     }
 
@@ -713,7 +720,13 @@ namespace Ignia.Topics.Providers {
     ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> blob content, or a blank string if
     ///   <c>skipBlob == true</c>.
     /// </returns>
+    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipBlob) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -786,9 +799,15 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="topic">The topic object for which to create the relationsihps.</param>
     /// <returns>The blob string.</returns>
+    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string CreateRelationshipsBlob(Topic topic) {
       StringBuilder blob = new StringBuilder("");
-    
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -818,7 +837,19 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
     /// <returns>The converted SQL data type.</returns>
+    /// <requires
+    ///   description="The SQL data type identifier must not be null." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(sqlDbType)
+    /// </requires>
     private static SqlDbType ConvDbType (String sqlDbType) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(
+        !String.IsNullOrWhiteSpace(sqlDbType),
+        "The SQL data type identifier must be specified."
+      );
 
       switch (sqlDbType.ToLower()) {
         case "int":               return SqlDbType.Int;

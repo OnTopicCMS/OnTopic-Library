@@ -51,7 +51,11 @@ namespace Ignia.Topics {
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
+    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(topic)
+    /// </requires>
     public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       this.Key                  = key;
     }
 
@@ -66,6 +70,9 @@ namespace Ignia.Topics {
     /// <param name="contentType">
     ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
     /// </param>
+    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(topic)
+    /// </requires>
     /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(contentType)
     /// </requires>
@@ -76,6 +83,7 @@ namespace Ignia.Topics {
     /// </requires>
     [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
       Contract.Requires<ArgumentException>(
         !contentType.Contains(" "),
@@ -135,8 +143,8 @@ namespace Ignia.Topics {
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
         Contract.Requires<ArgumentException>(value != _parent, "A topic cannot be its own parent.");
         Contract.Requires<ArgumentException>(
-          !value.Contains(this.Key), 
-          "Duplicate key when setting Parent property: a topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic."
+          !value.Contains(this.Key),
+          "Duplicate key when setting Parent property: a topic with the this topic's Key already exists in the Parent topic."
         );
 
         value.Add(this);

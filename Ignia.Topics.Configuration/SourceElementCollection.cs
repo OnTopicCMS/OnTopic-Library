@@ -3,7 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Configuration {
 
@@ -27,11 +29,20 @@ namespace Ignia.Topics.Configuration {
     ///   Gets or sets the <see cref="SourceElement"/> at the specified index.
     /// </summary>
     /// <param name="index">The integer index for the <see cref="SourceElement"/> item in the collection.</param>
+    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
+    ///   value != null
+    /// </requires>
     public SourceElement this[int index] {
       get {
         return base.BaseGet(index) as SourceElement;
       }
       set {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate input
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
+
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }
