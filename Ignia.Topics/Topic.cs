@@ -348,6 +348,9 @@ namespace Ignia.Topics {
     ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
     ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
+    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
+    ///   !string.IsNullOrWhiteSpace(value)
+    /// </requires>
     /// <requires
     ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentException">
@@ -359,6 +362,7 @@ namespace Ignia.Topics {
         return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
       }
       set {
+        Contract.Requires(!string.IsNullOrWhiteSpace(value));
         Contract.Requires<ArgumentException>(
           !value?.Contains(" ")?? true,
           "The View should be an alphanumeric sequence; it should not contain spaces or symbols"
@@ -378,11 +382,15 @@ namespace Ignia.Topics {
     ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
     ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>. 
     /// </remarks>
+    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
+    ///   !string.IsNullOrWhiteSpace(value)
+    /// </requires>
     public string Title {
       get {
         return GetAttribute("Title", Key);
       }
       set {
+        Contract.Requires(!string.IsNullOrWhiteSpace(value));
         Attributes.SetAttributeValue("Title", value);
       }
     }
@@ -397,11 +405,15 @@ namespace Ignia.Topics {
     ///   The Description attribute is primarily used by the editor to display help content for an attribute topic, noting
     ///   how the attribute is used, what is the expected input format or value, etc.
     /// </remarks>
+    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
+    ///   !string.IsNullOrWhiteSpace(value)
+    /// </requires>
     public string Description {
       get {
         return GetAttribute("Description");
       }
       set {
+        Contract.Requires(!string.IsNullOrWhiteSpace(value));
         Attributes.SetAttributeValue("Description", value);
       }
     }
@@ -438,6 +450,9 @@ namespace Ignia.Topics {
     ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly 
     ///   overwrite this value for various reasons (such as backdating a webpage). 
     /// </remarks>
+    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
+    ///   !string.IsNullOrWhiteSpace(value.ToString())
+    /// </requires>
     public DateTime LastModified {
       get {
 
@@ -466,9 +481,8 @@ namespace Ignia.Topics {
 
       }
       set {
-        if (value != null) {
-          Attributes.SetAttributeValue("LastModified", value.ToString());
-        }
+        Contract.Requires(!string.IsNullOrWhiteSpace(value.ToString()));
+        Attributes.SetAttributeValue("LastModified", value.ToString());
       }
     }
 
@@ -839,6 +853,9 @@ namespace Ignia.Topics {
     /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(scope)
     /// </requires>
+    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
+    ///   related != null
+    /// </requires>
     /// <requires
     ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentNullException">
@@ -851,6 +868,7 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
+      Contract.Requires<ArgumentNullException>(related != null);
       Contract.Requires<ArgumentException>(
         !scope.Contains(" "),
         "The scope should be an alphanumeric sequence; it should not contain spaces or symbols"
