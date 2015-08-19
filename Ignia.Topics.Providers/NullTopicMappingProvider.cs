@@ -4,6 +4,7 @@
 | Project     Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Providers {
 
@@ -32,13 +33,14 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="DeleteEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments are not available.</exception>
+    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void DeleteEventHandler(object sender, DeleteEventArgs args) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (args == null) throw new ArgumentNullException("Arguments are not available.");
+      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
+      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Relay to method
@@ -66,13 +68,14 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="MoveEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments are not available.</exception>
+    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void MoveEventHandler(object sender, MoveEventArgs args) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (args == null) throw new ArgumentNullException("Arguments are not available.");
+      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
+      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments
@@ -107,13 +110,14 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="RenameEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments are not available.</exception>
+    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void RenameEventHandler(object sender, RenameEventArgs args) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (args == null) throw new ArgumentNullException("Arguments are not available.");
+      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
+      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments
