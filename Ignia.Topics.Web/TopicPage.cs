@@ -71,6 +71,14 @@ namespace Ignia.Topics.Web {
           this._topic != null || this.Page != null,
           "It is assumed that either the topic or the page are available in order to render the page."
           );
+        Contract.Assume(
+          this._topic != null || this.Page.RouteData != null,
+          "It is assumed that either the topic or the route are available in order to render the page."
+          );
+        Contract.Assume(
+          this._topic != null || this.Page.RouteData.Values != null,
+          "It is assumed that either the topic or the route are available in order to render the page."
+          );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Get cached instance
