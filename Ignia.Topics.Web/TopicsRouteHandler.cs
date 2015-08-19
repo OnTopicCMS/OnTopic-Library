@@ -186,6 +186,11 @@ namespace Ignia.Topics.Web {
     ///   Topic based on the template that should be associated with it. E.g., a standard page will have the ContentType of
     ///   Page.
     /// </exception>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+      "Microsoft.Contracts",
+      "RequiresOnCall-requestContext != null",
+      Justification = "The contract for requestContext is valid but may not be implemented at the interface level."
+      )]
     public IHttpHandler GetHttpHandler(RequestContext requestContext) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -196,7 +201,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
+      string    nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
       string    path                            = (string)requestContext.RouteData.Values["path"]?? "";
       string    directory                       = nameSpace + "/" + path;
 
