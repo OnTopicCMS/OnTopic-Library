@@ -33,14 +33,13 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="DeleteEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void DeleteEventHandler(object sender, DeleteEventArgs args) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
+      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Relay to method
@@ -75,7 +74,7 @@ namespace Ignia.Topics.Providers {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
+      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments
@@ -117,7 +116,7 @@ namespace Ignia.Topics.Providers {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
+      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments

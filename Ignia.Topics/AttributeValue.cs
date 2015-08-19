@@ -57,7 +57,17 @@ namespace Ignia.Topics {
     /// <param name="value">
     ///   The string value text for the <see cref="AttributeValue"/> collection item key/value pair.
     /// </param>
+    /// <requires
+    ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
     public AttributeValue(string key, string value) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(key));
+
       this.Key          = key;
       this.Value        = value;
     }

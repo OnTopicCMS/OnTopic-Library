@@ -645,11 +645,6 @@ namespace Ignia.Topics.Providers {
     public override void Delete(Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) throw new ArgumentNullException("topic");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.Delete(topic, isRecursive);
@@ -806,12 +801,16 @@ namespace Ignia.Topics.Providers {
     /// <returns>The blob string.</returns>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string CreateRelationshipsBlob(Topic topic) {
-      StringBuilder blob = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Create blog string container
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      StringBuilder blob = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
@@ -831,6 +830,7 @@ namespace Ignia.Topics.Providers {
         blob.Append(String.Join(",", targetIds));
         blob.Append("</related>");
       }
+
       return blob.ToString();
     }
 
@@ -846,7 +846,7 @@ namespace Ignia.Topics.Providers {
     ///   description="The SQL data type identifier must not be null." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(sqlDbType)
     /// </requires>
-    private static SqlDbType ConvDbType (String sqlDbType) {
+    private static SqlDbType ConvDbType (string sqlDbType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
