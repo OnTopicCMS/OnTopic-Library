@@ -63,6 +63,14 @@ namespace Ignia.Topics.Providers {
       Contract.Ensures(Contract.Result<Topic>() == null);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings != null,
+        "The Load method assumes the connection strings are available from the configuration."
+        );
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
@@ -643,6 +651,14 @@ namespace Ignia.Topics.Providers {
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
     public override void Delete(Topic topic, bool isRecursive) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings != null,
+        "The Delete method assumes the database connection strings are available from the configuration."
+        );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

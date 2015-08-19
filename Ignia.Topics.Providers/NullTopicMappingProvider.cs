@@ -42,6 +42,11 @@ namespace Ignia.Topics.Providers {
       // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(args.Topic != null, "The topic object to be deleted is assumed to be available.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Relay to method
       \-----------------------------------------------------------------------------------------------------------------------*/
       Delete(args.Topic.UniqueKey);
@@ -75,6 +80,12 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
       // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(args.Topic != null, "The topic object to be moved is assumed to be available.");
+      Contract.Assume(args.Target != null, "The target topic under which the topic should be moved is assumed to be available.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments
@@ -117,6 +128,11 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
       // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(args.Topic != null, "The topic object to be renamed is assumed to be available.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set arguments

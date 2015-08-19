@@ -81,6 +81,12 @@ namespace Ignia.Topics {
     /// <param name="item">The <see cref="AttributeValue"/> element from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(AttributeValue item) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions for external callers
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(item != null, "Method assumes the item is available when deriving its key.");
+
       return item.Key;
     }
 

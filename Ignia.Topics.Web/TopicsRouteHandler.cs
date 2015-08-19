@@ -70,6 +70,15 @@ namespace Ignia.Topics.Web {
     /// </summary>
     private List<string> Views {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Define assumptions
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Assume(
+          this._views != null || HttpContext.Current != null,
+          "It is assumed that either the views list or the HTTP context are available in order to render the current view."
+          );
+
         if (_views == null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
@@ -197,6 +206,12 @@ namespace Ignia.Topics.Web {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(requestContext != null, "requestContext");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Define assumptions
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(requestContext.RouteData != null, "It is assumed the route data are available from the request context.");
+      Contract.Assume(requestContext.RouteData.Values != null, "It is assumed that routes are available from the route data.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables

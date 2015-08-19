@@ -70,6 +70,12 @@ namespace Ignia.Topics.Configuration {
     /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
     /// <returns>The Source string value for the <see cref="SourceElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions for external callers
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(((SourceElement)element).Source != null, "Method assumes the element is available when deriving its key.");
+
       return ((SourceElement)element).Source;
     }
 
