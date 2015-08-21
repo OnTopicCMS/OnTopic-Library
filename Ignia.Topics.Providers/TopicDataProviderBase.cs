@@ -15,6 +15,7 @@ namespace Ignia.Topics.Providers {
   /// <summary>
   ///   Defines a base abstract class for taxonomy data providers.
   /// </summary>
+  [ContractClass(typeof(TopicDataProviderBaseContract))]
   public abstract class TopicDataProviderBase : ProviderBase {
 
     /*==========================================================================================================================

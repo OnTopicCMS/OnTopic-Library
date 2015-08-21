@@ -15,6 +15,7 @@ namespace Ignia.Topics.Providers {
   /// <summary>
   ///   Defines a base class for topic mapping providers
   /// </summary>
+  [ContractClass(typeof(TopicMappingProviderBaseContract))]
   public abstract class TopicMappingProviderBase : ProviderBase {
 
     /*==========================================================================================================================
@@ -47,7 +48,7 @@ namespace Ignia.Topics.Providers {
     | METHOD: DELETE EVENT HANDLER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Abstranct definition of the <see cref="DeleteEventHandler(object, DeleteEventArgs)"/> that inheriting objects must
+    ///   Abstract definition of the <see cref="DeleteEventHandler(object, DeleteEventArgs)"/> that inheriting objects must
     ///   implement.
     /// </summary>
     /// <param name="sender">The sender.</param>
@@ -58,7 +59,7 @@ namespace Ignia.Topics.Providers {
     | METHOD: MOVE EVENT HANDLER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Abstranct definition of the <see cref="MoveEventHandler(object, MoveEventArgs)"/> that inheriting objects must
+    ///   Abstract definition of the <see cref="MoveEventHandler(object, MoveEventArgs)"/> that inheriting objects must
     ///   implement.
     /// </summary>
     /// <param name="sender">The sender.</param>
@@ -69,7 +70,7 @@ namespace Ignia.Topics.Providers {
     | METHOD: RENAME EVENT HANDLER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Abstranct definition of the <see cref="RenameEventHandler(object, RenameEventArgs)"/> that inheriting objects must
+    ///   Abstract definition of the <see cref="RenameEventHandler(object, RenameEventArgs)"/> that inheriting objects must
     ///   implement.
     /// </summary>
     /// <param name="sender">The sender.</param>

@@ -31,15 +31,12 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Definition of the DeleteEventHandler override from the base; deletes the event handler.
     /// </summary>
+    /// <remarks>
+    ///   Contract preconditions are defined in the <see cref="TopicMappingProviderBaseContract"/> contract class.
+    /// </remarks>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="DeleteEventArgs"/> instance containing the event data.</param>
     public override void DeleteEventHandler(object sender, DeleteEventArgs args) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define assumptions
@@ -70,16 +67,12 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Definition of the RenameEventHandler override from the base; moves the event handler.
     /// </summary>
+    /// <remarks>
+    ///   Contract preconditions are defined in the <see cref="TopicMappingProviderBaseContract"/> contract class.
+    /// </remarks>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="MoveEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void MoveEventHandler(object sender, MoveEventArgs args) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define assumptions
@@ -118,16 +111,12 @@ namespace Ignia.Topics.Providers {
     /// <summary>
     ///   Definition of the RenameEventHandler override from the base; renames the event handler.
     /// </summary>
+    /// <remarks>
+    ///   Contract preconditions are defined in the <see cref="TopicMappingProviderBaseContract"/> contract class.
+    /// </remarks>
     /// <param name="sender">The topic object.</param>
     /// <param name="args">The <see cref="RenameEventArgs"/> instance containing the event data.</param>
-    /// <exception cref="ArgumentNullException">Arguments must be provided.</exception>
     public override void RenameEventHandler(object sender, RenameEventArgs args) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      // if (args == null) throw new ArgumentNullException("Arguments must be provided.");
-      // Contract.Requires<ArgumentNullException>(args != null, "Arguments must be provided.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define assumptions

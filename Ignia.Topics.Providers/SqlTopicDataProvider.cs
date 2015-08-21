@@ -38,9 +38,6 @@ namespace Ignia.Topics.Providers {
     /// <param name="depth">The level to which to recurse through and load a topic's children.</param>
     /// <param name="version">The DateTime stamp signifying when the topic was saved.</param>
     /// <returns>A topic object.</returns>
-    /// <requires description="Either the topicKey or the topicId are required." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(topicKey) || topicId > 0
-    /// </requires>
     /// <exception cref="Exception">
     ///   The topic Ignia.Topics.<c>contentType</c> does not derive from Ignia.Topics.Topic.
     /// </exception>
@@ -48,14 +45,6 @@ namespace Ignia.Topics.Providers {
     ///   Topics failed to load: <c>ex.Message</c>
     /// </exception>
     public override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(topicKey) || topicId > 0, 
-        "Either the topicKey or the topicId are required."
-      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate return value
@@ -347,10 +336,6 @@ namespace Ignia.Topics.Providers {
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
-    /// <requires description="The topic to be saved must not be null." exception="T:System.ArgumentNullException">
-    ///   topic != null
-    /// </requires>
-    /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">
     ///   The Content Type <c>topic.GetAttribute(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
     ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
@@ -360,11 +345,6 @@ namespace Ignia.Topics.Providers {
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
     public override int Save(Topic topic, bool isRecursive, bool isDraft = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -562,31 +542,19 @@ namespace Ignia.Topics.Providers {
     ///   Interface method that moves the specified topic within the tree, usng the specified sibling topic object as a
     ///   secondary target for the move.
     /// </summary>
+    /// <remarks>
+    ///   Contract preconditions are defined in the <see cref="TopicDataProviderBaseContract"/> contract class.
+    /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    /// <requires description="The topic to be moved must not be null." exception="T:System.ArgumentNullException">
-    ///   topic != null
-    /// </requires>
-    /// <requires description="The target parent topic must not be null." exception="T:System.ArgumentNullException">
-    ///   target != null
-    /// </requires>
-    /// <requires description="The topic to be moved cannot be its own parent." exception="T:System.ArgumentException">
-    ///   topic != target
-    /// </requires>
-    /// <requires description="The topic cannot be moved relative to itself." exception="T:System.ArgumentException">
-    ///   topic != sibling
-    /// </requires>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+      "Microsoft.Contracts",
+      "TestAlwaysEvaluatingToAConstant",
+      Justification = "Sibling may be null from overloaded caller."
+      )]
     public override bool Move(Topic topic, Topic target, Topic sibling) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
-      Contract.Requires<ArgumentNullException>(target != null, "target");
-      Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");
-      Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory
@@ -858,19 +826,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
     /// <returns>The converted SQL data type.</returns>
-    /// <requires
-    ///   description="The SQL data type identifier must not be null." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(sqlDbType)
-    /// </requires>
     private static SqlDbType ConvDbType (string sqlDbType) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(sqlDbType),
-        "The SQL data type identifier must be specified."
-      );
 
       switch (sqlDbType.ToLower()) {
         case "int":               return SqlDbType.Int;
@@ -921,7 +877,15 @@ namespace Ignia.Topics.Providers {
     /// <param name="sqlDbType">The SQL field data type.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
     /// <param name="sqlLength">Length limit for the SQL field.</param>
+    /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
+    ///   commandObject != null
+    /// </requires>
     private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(commandObject != null, "The SQL command object must be specified.");
 
       if (sqlLength > 0) {
         commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType, sqlLength));
