@@ -52,20 +52,16 @@ namespace Ignia.Topics.Providers {
       Contract.Ensures(Contract.Result<Topic>() == null);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Define primary assumptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings != null,
-        "The Load method assumes the connection strings are available from the configuration."
-        );
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
       Contract.Assume(
+        ConfigurationManager.ConnectionStrings != null,
+        "Assumes the connection strings are available from the configuration."
+        );
+      Contract.Assume(
         ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
-        "The Load method assumes the connection strings are available from the configuration."
+        "Assumes the topics connection string are available from the configuration."
         );
       SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
       SqlCommand                command         = new SqlCommand("topics_GetTopics", connection);
@@ -333,7 +329,7 @@ namespace Ignia.Topics.Providers {
           }
 
           // Set history
-          if (!current.VersionHistory.Contains(dateTime)) {
+          if (current != null && !current.VersionHistory.Contains(dateTime)) {
             current.VersionHistory.Add(dateTime);
           }
 
@@ -885,14 +881,14 @@ namespace Ignia.Topics.Providers {
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
     /// <returns>The converted SQL data type.</returns>
     /// <requires description="The sqlDbType must not be null." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(sqlDbType)
+    ///   sqlDbType != null
     /// </requires>
     private static SqlDbType ConvDbType (string sqlDbType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(sqlDbType), "The sqlDbType must not be null.");
+      Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
 
       switch (sqlDbType.ToLower()) {
         case "int":               return SqlDbType.Int;

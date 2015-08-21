@@ -192,7 +192,7 @@ namespace Ignia.Topics {
           \-------------------------------------------------------------------------------------------------------------------*/
           ContentType parent = this.Parent as ContentType;
           if (parent != null) {
-            Contract.Assume(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
+            Contract.Assert(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);

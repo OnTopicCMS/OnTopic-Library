@@ -1440,7 +1440,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(this[nextChild].GetTopic(topic) != null, "Assumes the child topic is available.");
+      Contract.Assume(this[nextChild] != null, "Assumes the child topic is available.");
       return this[nextChild].GetTopic(topic);
 
     }
