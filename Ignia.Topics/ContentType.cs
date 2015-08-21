@@ -123,6 +123,8 @@ namespace Ignia.Topics {
           var permittedContentTypes = new List<ContentType>();
           var contentTypes = new Topic();
           if (Relationships.Contains("ContentTypes")) {
+            // Assume that the ContentTypes Relationships item is not null
+            Contract.Assume(Relationships["ContentTypes"] != null);
             contentTypes = Relationships["ContentTypes"];
           }
           foreach (ContentType contentType in contentTypes) {
@@ -180,6 +182,7 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
+          Contract.Assume(this["Attributes"] != null, "Assume the ContentType topic Attributes collection is available.");
           foreach (Attribute attribute in this["Attributes"]) {
             _supportedAttributes.Add(attribute.Key, attribute);
           }
@@ -189,6 +192,7 @@ namespace Ignia.Topics {
           \-------------------------------------------------------------------------------------------------------------------*/
           ContentType parent = this.Parent as ContentType;
           if (parent != null) {
+            Contract.Assume(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);

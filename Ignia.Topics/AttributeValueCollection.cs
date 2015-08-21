@@ -65,6 +65,7 @@ namespace Ignia.Topics {
         "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
       );
       if (this.Contains(key)) {
+        Contract.Assume(this[key] != null, "Assumes the AttributeValue is available.");
         this[key].Value = value;
       }
       else {

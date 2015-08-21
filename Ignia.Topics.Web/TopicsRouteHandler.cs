@@ -76,7 +76,7 @@ namespace Ignia.Topics.Web {
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(
           this._views != null || HttpContext.Current != null,
-          "It is assumed that either the views list or the HTTP context are available in order to render the current view."
+          "Assumes that either the views list or the HTTP context are available in order to render the current view."
           );
 
         if (_views == null) {
@@ -152,12 +152,13 @@ namespace Ignia.Topics.Web {
       /*-------------------------------------------------------------------------------------------------------------------------
       | Check for content type specific view
       \------------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(HttpContext.Current != null, "Assumes the current HTTP context is available.");
       if (
         !String.IsNullOrEmpty(viewName) &&
         Views.Contains(contentType + "/" + viewName, StringComparer.InvariantCultureIgnoreCase) &&
         File.Exists(HttpContext.Current.Server.MapPath(ViewsPath + contentType + "/" + viewName + ".aspx"))
         ) {
-        matchedView           = contentType + "/" + viewName;
+        matchedView             = contentType + "/" + viewName;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -195,23 +196,14 @@ namespace Ignia.Topics.Web {
     ///   Topic based on the template that should be associated with it. E.g., a standard page will have the ContentType of
     ///   Page.
     /// </exception>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-      "Microsoft.Contracts",
-      "RequiresOnCall-requestContext != null",
-      Justification = "The contract for requestContext is valid but may not be implemented at the interface level."
-      )]
     public IHttpHandler GetHttpHandler(RequestContext requestContext) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(requestContext != null, "requestContext");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Define assumptions
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(requestContext.RouteData != null, "It is assumed the route data are available from the request context.");
-      Contract.Assume(requestContext.RouteData.Values != null, "It is assumed that routes are available from the route data.");
+      Contract.Assert(requestContext != null, "Confirm that the request context is available.");
+      Contract.Assume(requestContext.RouteData != null, "Assumes the route data are available from the request context.");
+      Contract.Assume(requestContext.RouteData.Values != null, "Assumes that routes are available from the route data.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
@@ -239,6 +231,7 @@ namespace Ignia.Topics.Web {
       string    contentType                     = topic.ContentType.Key;
 
       if (String.IsNullOrEmpty(nameSpace)) {
+        Contract.Assume(topic.UniqueKey.IndexOf(":") >= 0, "Assumes the UniqueKey contains the : delimiter.");
         nameSpace                               = topic.UniqueKey.Substring(0, topic.UniqueKey.IndexOf(":"));
         path                                    = topic.UniqueKey.Substring(topic.UniqueKey.IndexOf(":")+1);
       }
@@ -264,6 +257,7 @@ namespace Ignia.Topics.Web {
       string            viewName                = null;
 
       // Pull from QueryString
+      Contract.Assume(HttpContext.Current != null, "Assumes the current HTTP context is available.");
       if (viewName == null && HttpContext.Current.Request.QueryString["View"] != null) {
         IsValidView(contentType, HttpContext.Current.Request.QueryString["View"].ToString(), out viewName);
       }

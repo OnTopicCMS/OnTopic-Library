@@ -82,6 +82,7 @@ namespace Ignia.Topics {
           !value.Contains(" ") && !value.Contains("/"), 
           "Type values should not contain spaces, slashes, or characters not permitted in file names"
         );
+        Contract.Assume(this.Attributes["Type"] != null);
         this.Attributes["Type"].Value = value;
       }
     }
@@ -107,6 +108,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+        Contract.Assume(this.Attributes["DisplayGroup"] != null);
         this.Attributes["DisplayGroup"].Value = value;
       }
     }
@@ -133,6 +135,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("DefaultConfiguration", "");
       }
       set {
+        Contract.Assume(this.Attributes["DefaultConfiguration"] != null);
         this.Attributes["DefaultConfiguration"].Value = value;
       }
     }
@@ -163,6 +166,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("IsHidden", "0").Equals("1");
       }
       set {
+        Contract.Assume(this.Attributes["IsHidden"] != null);
         this.Attributes["IsHidden"].Value = value.ToString();
       }
     }
@@ -182,6 +186,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("IsRequired", "0").Equals("1");
       }
       set {
+        Contract.Assume(this.Attributes["IsRequired"] != null);
         this.Attributes["IsRequired"].Value = value.ToString();
       }
     }
@@ -202,6 +207,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("DefaultValue", "");
         }
       set {
+        Contract.Assume(this.Attributes["DefaultValue"] != null);
         this.Attributes["DefaultValue"].Value = value;
         }
       }
@@ -230,6 +236,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("StoreInBlob", "1").Equals("1");
       }
       set {
+        Contract.Assume(this.Attributes["StoreInBlob"] != null);
         this.Attributes["StoreInBlob"].Value = value.ToString();
       }
     }

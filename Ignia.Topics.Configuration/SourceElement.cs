@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Web;
 using System.Web.Security;
@@ -90,6 +91,10 @@ namespace Ignia.Topics.Configuration {
     /// <returns>The matching source configuration element, or null if not found.</returns>
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
+      Contract.Assume(
+        parent.ElementInformation.Properties[key] != null,
+        "Assumes the configuration property information is accessible."
+        );
       return (SourceElement)parent.ElementInformation.Properties[key].Value;
     }
 
@@ -152,6 +157,8 @@ namespace Ignia.Topics.Configuration {
       \-----------------------------------------------------------------------------------------------------------------------*/
       string value = null;
 
+      Contract.Assume(element.Source != null, "Assumes the Source value for the element is available.");
+      Contract.Assume(HttpContext.Current != null, "Assumes the current HTTP context is available.");
       switch (element.Source.ToUpperInvariant()) {
         case("QUERYSTRING") :
           value         = HttpContext.Current.Request.QueryString[element.Location];
@@ -160,10 +167,12 @@ namespace Ignia.Topics.Configuration {
           value         = HttpContext.Current.Request.Form[element.Location];
           break;
         case("APPLICATION") :
-          value         = (string)HttpContext.Current.Application[element.Location];
+          Contract.Assume(HttpContext.Current.Application != null, "Assumes the application context is available.");
+          value = (string)HttpContext.Current.Application[element.Location];
           break;
         case("SESSION") :
-          value         = (string)HttpContext.Current.Session[element.Location];
+          Contract.Assume(HttpContext.Current.Session != null, "Assumes the current session is available.");
+          value = (string)HttpContext.Current.Session[element.Location];
           break;
         case("COOKIE") :
           if (HttpContext.Current.Request.Cookies[element.Location] != null) {
@@ -177,6 +186,10 @@ namespace Ignia.Topics.Configuration {
           value         = element.Location;
           break;
         case("URL") :
+          Contract.Assume(
+            Int32.Parse(element.Location, CultureInfo.InvariantCulture) >= 0,
+            "Assumes the location value for the element results in a positive value."
+            );
           value         = HttpContext.Current.Request.Path.Split('/')[Int32.Parse(element.Location, CultureInfo.InvariantCulture)];
           break;
         default :

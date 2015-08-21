@@ -52,7 +52,7 @@ namespace Ignia.Topics.Providers {
       Contract.Ensures(Contract.Result<Topic>() == null);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Define assumptions
+      | Define primary assumptions
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Assume(
         ConfigurationManager.ConnectionStrings != null,
@@ -63,6 +63,10 @@ namespace Ignia.Topics.Providers {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
+        "The Load method assumes the connection strings are available from the configuration."
+        );
       SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
       SqlCommand                command         = new SqlCommand("topics_GetTopics", connection);
       command.CommandType                       = CommandType.StoredProcedure;
@@ -98,13 +102,22 @@ namespace Ignia.Topics.Providers {
         while (reader.Read()) {
 
           // Identify attribute values
+          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
           int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["ContentType"] != null, "Assumes the ContentType value is available from the SQL reader.");
           string                contentType     = reader["ContentType"].ToString();
+
+          Contract.Assume(reader["TopicKey"] != null, "Assumes the TopicKey value is available from the SQL reader.");
           string                key             = reader["TopicKey"].ToString();
+
+          Contract.Assume(reader["SortOrder"] != null, "Assumes the SortOrder value is available from the SQL reader.");
                                 sortOrder       = Int32.Parse(reader["SortOrder"].ToString(), CultureInfo.InvariantCulture);
+
           int                   parentId        = -1;
 
           // Handle ParentID (could be null for root topic)
+          Contract.Assume(reader["ParentID"] != null, "Assumes the ParentID value is available from the SQL reader.");
           Int32.TryParse(reader["ParentID"].ToString(), out parentId);
 
           dynamic current = Topic.Create(key, contentType);
@@ -163,10 +176,18 @@ namespace Ignia.Topics.Providers {
         while (reader.Read()) {
 
           // Identify attribute values
+          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
           int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["AttributeKey"] != null, "Assumes the AttributeKey value is available from the SQL reader.");
           string                name            = reader["AttributeKey"].ToString();
+
+          Contract.Assume(reader["AttributeValue"] != null, "Assumes the AttributeValue value is available from the SQL reader.");
           string                value           = reader["AttributeValue"].ToString();
+
+          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
           DateTime              versionDate     = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
           Topic                 current         = topics[id];
 
           // Treat empty as null
@@ -193,14 +214,19 @@ namespace Ignia.Topics.Providers {
         while (reader.Read()) {
 
           // Identify variables
+          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
           int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
           DateTime              versionDate     = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
           XmlDocument           blob            = new XmlDocument();
 
           // Load the blob into an XmlDocument object
           blob.LoadXml((string)reader["Blob"]);
 
           // This scenario should never occur.
+          Contract.Assume(id >= 0, "Assumes the topic ID is valid.");
           if (!topics.Keys.Contains(id)) continue;
 
           // Identify the current topic
@@ -208,7 +234,12 @@ namespace Ignia.Topics.Providers {
 
           // Loop through each node in the blob and associate with the current topic
           foreach (XmlNode attribute in blob.DocumentElement.GetElementsByTagName("attribute")) {
+
+            Contract.Assume(attribute.Attributes != null, "Assumes the blob AttributeValue collection is available.");
+            Contract.Assume(attribute.Attributes["key"] != null, "Assumes the key is available from the blob.");
             string              name            = attribute.Attributes["key"].Value;
+
+            Contract.Assume(System.Web.HttpContext.Current != null, "Assumes the current HTTP context is available.");
             string              value           = System.Web.HttpContext.Current.Server.HtmlDecode(attribute.InnerXml);
 
             // Treat empty as null
@@ -239,9 +270,15 @@ namespace Ignia.Topics.Providers {
         while (reader.Read()) {
 
           // Identify variables
+          Contract.Assume(reader["Source_TopicID"] != null, "Assumes the Source_TopicID value is available from the SQL reader.");
           int                   sourceTopicId           = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["Target_TopicID"] != null, "Assumes the Target_TopicID value is available from the SQL reader.");
           int                   targetTopicId           = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["RelationshipTypeID"] != null, "Assumes the RelationshipTypeID value is available from the SQL reader.");
           string                relationshipTypeId      = (string)reader["RelationshipTypeID"];
+
           Topic                 related                 = null;
           Topic                 current                 = null;
 
@@ -281,12 +318,17 @@ namespace Ignia.Topics.Providers {
         while (reader.Read()) {
 
           // Identify variables
+          Contract.Assume(reader["TopicId"] != null, "Assumes the TopicId value is available from the SQL reader.");
           int                   sourceTopicId           = Int32.Parse(reader["TopicId"].ToString(), CultureInfo.InvariantCulture);
+
+          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
           DateTime              dateTime                = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
           Topic                 current                 = null;
 
           // Fetch the target topic
           if (topics.Keys.Contains(sourceTopicId)) {
+            Contract.Assume(topics[sourceTopicId] != null, "Assumes the source topic specified by ID is valid.");
             current                                     = topics[sourceTopicId];
           }
 
@@ -378,15 +420,18 @@ namespace Ignia.Topics.Providers {
         string                  key             = attributeValue.Key;
         Attribute               attribute       = null;
 
+        Contract.Assume(contentType != null, "Assumes the Content Type is available.");
         if (contentType.SupportedAttributes.Keys.Contains(key)) {
           attribute                             = contentType.SupportedAttributes[key];
         }
 
         // For attributes not stored in the Blob, only add the AttributeValue item to store if it has changed
         if (attribute != null && !attribute.StoreInBlob && attributeValue.IsDirty) {
+          Contract.Assume(topic.Attributes[key] != null, "Assumes the AttributeValue is available.");
           attributes.Append(key + "~~" + topic.Attributes[key].Value + "``");
         }
         else if (attribute != null && attribute.StoreInBlob) {
+          Contract.Assume(topic.Attributes[key] != null, "Assumes the AttributeValue is available.");
           blob.Append("<attribute key=\"" + key + "\"><![CDATA[" + topic.Attributes[key].Value + "]]></attribute>");
         }
 
@@ -404,6 +449,7 @@ namespace Ignia.Topics.Providers {
 
         // Set preconditions
         Attribute attribute     = contentType.SupportedAttributes[attributeKey];
+        Contract.Assume(topic.Attributes[attributeKey] != null, "Assumes the AttributeValue for the topic is not null.");
         bool topicHasAttribute  = (topic.Attributes.Contains(attributeKey) && topic.Attributes[attributeKey].Value != null);
         bool isPrimaryAttribute = (attributeKey == "Key" || attributeKey == "ContentType" || attributeKey == "ParentID");
         bool isRelationships    = (contentType.SupportedAttributes[attributeKey].Type == "Relationships.ascx");
@@ -419,6 +465,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(ConfigurationManager.ConnectionStrings != null, "Assumes the connection strings are available in the configuration.");
+      Contract.Assume(ConfigurationManager.ConnectionStrings["TopicsServer"] != null, "Assumes the connection string is available.");
       SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
       SqlCommand                command         = null;
       int                       returnVal       = -1;
@@ -478,7 +526,11 @@ namespace Ignia.Topics.Providers {
         /*----------------------------------------------------------------------------------------------------------------------
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
+        Contract.Assume(command.Parameters["@ReturnCode"] != null, "Assumes the return code parameter is available on query.");
         returnVal               = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+
+        Contract.Assume(returnVal > 0, "Assumes the return value is positive and thus a valid topic ID.");
         topic.Id                = returnVal;
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -513,6 +565,7 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (Topic childTopic in topic) {
+          Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
           childTopic.Attributes["ParentID"].Value = returnVal.ToString();
           childTopic.Save(isRecursive, isDraft);
         }
@@ -535,6 +588,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public override bool Move(Topic topic, Topic target) {
+      Contract.Assume(topic != target, "Assumes the topic to move is not also specified as the target topic.");
       return this.Move(topic, target, null);
     }
 
@@ -636,7 +690,9 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      Contract.Assert(ConfigurationManager.ConnectionStrings != null, "Assumes the connection strings are available in the configuration.");
+      Contract.Assume(ConfigurationManager.ConnectionStrings["TopicsServer"] != null, "Assumes the connection string is available.");
+      SqlConnection connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
       SqlCommand                command         = null;
 
       try {
@@ -731,6 +787,7 @@ namespace Ignia.Topics.Providers {
           command                               = new SqlCommand("topics_PersistRelations", connection);
           command.CommandType                   = CommandType.StoredProcedure;
 
+          Contract.Assume(topic.Relationships[scope.Key] != null, "Assumes the Relationships topic is available.");
           string[]      targetIds               = new string[topic.Relationships[scope.Key].Count];
           string        topicId                 = topic.Id.ToString(CultureInfo.InvariantCulture);
           int           count                   = 0;
@@ -805,6 +862,7 @@ namespace Ignia.Topics.Providers {
         blob.Append("\">");
 
         // Build out string array of related items in this scope
+        Contract.Assume(topic.Relationships[scope.Key] != null, "Assumes the Relationships topic is available.");
         string[] targetIds = new string[topic.Relationships[scope.Key].Count];
         int count = 0;
         foreach (Topic relTopic in topic.Relationships[scope.Key]) {
@@ -826,7 +884,15 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
     /// <returns>The converted SQL data type.</returns>
+    /// <requires description="The sqlDbType must not be null." exception="T:System.ArgumentNullException">
+    ///   !string.IsNullOrWhiteSpace(sqlDbType)
+    /// </requires>
     private static SqlDbType ConvDbType (string sqlDbType) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(sqlDbType), "The sqlDbType must not be null.");
 
       switch (sqlDbType.ToLower()) {
         case "int":               return SqlDbType.Int;
@@ -887,12 +953,19 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(commandObject != null, "The SQL command object must be specified.");
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define primary assumptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(commandObject.Parameters != null, "Assumes the command object parameters collection is available.");
+
       if (sqlLength > 0) {
         commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType, sqlLength));
       }
       else {
         commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType));
       }
+
+      Contract.Assume(commandObject.Parameters["@" + sqlParameter] != null, "Assumes the parameter is valid.");
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
       if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {

@@ -127,13 +127,19 @@ namespace Ignia.Topics {
     ///   value != null
     /// </requires>
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
-    ///   value != _parent
+    ///   value != this
     /// </requires>
     /// <requires
     ///   description="Duplicate key when setting Parent property: a topic with this topic's key already exists in the parent
     ///   topic." exception="T:System.ArgumentException">
     ///   !value.Contains(this.Key)
     /// </requires>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+      "Microsoft.Contracts",
+      "Requires-!value.Contains(this.Key)",
+      Justification = "The Contains() method on System.Collections.ObjectModel.KeyedCollection is not considered or marked as "
+        + "pure, but the contract requirement for this.Key is valid."
+      )]
     public Topic Parent {
       get {
         return _parent;
@@ -141,7 +147,7 @@ namespace Ignia.Topics {
       set {
 
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
-        Contract.Requires<ArgumentException>(value != _parent, "A topic cannot be its own parent.");
+        Contract.Requires<ArgumentException>(value != this, "A topic cannot be its own parent.");
         Contract.Requires<ArgumentException>(
           !value.Contains(this.Key),
           "Duplicate key when setting Parent property: a topic with the this topic's Key already exists in the Parent topic."
@@ -180,6 +186,8 @@ namespace Ignia.Topics {
         | Create singleton reference to content type object in repository
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_contentType == null) {
+          // Assume the topic's ContentType AttributeValue is not null
+          Contract.Assume(Attributes["ContentType"] != null);
           if (
             Attributes.Contains("ContentType") &&
             !String.IsNullOrEmpty(Attributes["ContentType"].Value) &&
@@ -510,8 +518,12 @@ namespace Ignia.Topics {
     /// </requires>
     public Topic DerivedTopic {
       get {
+        //Assume the topic's TopicID AttributeValue is not null
+        Contract.Assume(this.Attributes["TopicID"] != null);
         if (_derivedTopic == null && this.Attributes.Contains("TopicID")) {
           int topicId = 0;
+          //Assume the topic's TopicID AttributeValue Value is not null
+          Contract.Assume(this.Attributes["TopicID"].Value != null);
           bool success = Int32.TryParse(this.Attributes["TopicID"].Value.ToString(), out topicId);
           if (!success || topicId == 0) return null;
           _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
@@ -894,6 +906,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add the relationship to the correct scoped key
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(relationships[scope] != null);
       if (!relationships[scope].Contains(related.Key)) {
         relationships[scope].Add(related);
       }
@@ -970,6 +983,8 @@ namespace Ignia.Topics {
       | Look up value from Attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Attributes.Contains(name)) {
+        //Assume the AttributeValue is not null
+        Contract.Assume(Attributes[name] != null);
         value = Attributes[name].Value;
       }
 
@@ -1026,7 +1041,11 @@ namespace Ignia.Topics {
     /// </requires>
     public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
       Contract.Requires<ArgumentException>(
         !name.Contains(" "),
         "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
@@ -1039,6 +1058,9 @@ namespace Ignia.Topics {
 
       Collection<Topic> results = new Collection<Topic>();
 
+      //Assume the value of the AttributeValue is not null
+      Contract.Assume(this.Attributes[name] != null, "Assumes the AttributeValue is available.");
+      Contract.Assume(!string.IsNullOrWhiteSpace(this.GetAttribute(name)), "Assumes the AttributeValue has length.");
       if (this.GetAttribute(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
         results.Add(this);
       }
@@ -1295,6 +1317,8 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assert(this != null, "Confirms the version is available.");
+      Contract.Assume(Topic.Load(this.Id, version) != null, "Assumes the topic is available.");
       Topic originalVersion     = Topic.Load(this.Id, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1306,6 +1330,7 @@ namespace Ignia.Topics {
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (AttributeValue attribute in originalVersion.Attributes) {
+        Contract.Assume(this.Attributes[attribute.Key] != null, "Assumes the AttributeValue is available.");
         if (!this.Attributes.Contains(attribute.Key) || this.Attributes[attribute.Key].Value != attribute.Value) {
           attribute.IsDirty = true;
         }
@@ -1412,6 +1437,10 @@ namespace Ignia.Topics {
 
       if (nextChild == remainder) return this[nextChild];
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(this[nextChild].GetTopic(topic) != null, "Assumes the child topic is available.");
       return this[nextChild].GetTopic(topic);
 
     }
@@ -1441,6 +1470,7 @@ namespace Ignia.Topics {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The topic's integer identifier.</returns>
     public int Save(bool isRecursive = false, bool isDraft = false) {
+      Contract.Assume(Id > 0, "Assumes the ID is positive and thus a valid topic ID.");
       Id = TopicRepository.Save(this, isRecursive, isDraft);
       return Id;
     }
@@ -1500,6 +1530,12 @@ namespace Ignia.Topics {
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(Topic item) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define assumptions for external callers
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(item != null, "Method assumes the item is available when deriving its key.");
+
       return item.Key;
     }
 
