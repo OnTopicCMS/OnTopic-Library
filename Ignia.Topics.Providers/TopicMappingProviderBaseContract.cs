@@ -30,11 +30,6 @@ namespace Ignia.Topics.Providers {
     /// </requires>
     public override void DeleteEventHandler(object sender, DeleteEventArgs args) {
 	
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(args != null, "The Delete event arguments must not be null.");
-
     }
 
     /*==========================================================================================================================
@@ -49,11 +44,6 @@ namespace Ignia.Topics.Providers {
     /// </requires>
     public override void MoveEventHandler(object sender, MoveEventArgs args) {
 	
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(args != null, "The Move event arguments must not be null.");
-
     }
 
     /*==========================================================================================================================
@@ -67,11 +57,6 @@ namespace Ignia.Topics.Providers {
     ///   args != null
     /// </requires>
     public override void RenameEventHandler(object sender, RenameEventArgs args) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(args != null, "The Rename event arguments must not be null.");
 	
     }
 

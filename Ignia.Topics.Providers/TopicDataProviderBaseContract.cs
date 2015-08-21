@@ -27,14 +27,6 @@ namespace Ignia.Topics.Providers {
     public override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
   
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(topicKey) || topicId > 0, 
-        "Either the topicKey or the topicId are required."
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       return new Topic();
