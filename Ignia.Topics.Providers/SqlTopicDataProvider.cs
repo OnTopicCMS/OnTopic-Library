@@ -96,69 +96,7 @@ namespace Ignia.Topics.Providers {
         | Populate topics
         \---------------------------------------------------------------------------------------------------------------------*/
         while (reader.Read()) {
-
-          // Identify attribute values
-          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-          int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["ContentType"] != null, "Assumes the ContentType value is available from the SQL reader.");
-          string                contentType     = reader["ContentType"].ToString();
-
-          Contract.Assume(reader["TopicKey"] != null, "Assumes the TopicKey value is available from the SQL reader.");
-          string                key             = reader["TopicKey"].ToString();
-
-          Contract.Assume(reader["SortOrder"] != null, "Assumes the SortOrder value is available from the SQL reader.");
-                                sortOrder       = Int32.Parse(reader["SortOrder"].ToString(), CultureInfo.InvariantCulture);
-
-          int                   parentId        = -1;
-
-          // Handle ParentID (could be null for root topic)
-          Int32.TryParse(reader["ParentID"].ToString(), out parentId);
-
-          dynamic current = Topic.Create(key, contentType);
-
-          // Create new topic, if topic doesn't exist
-          if (!topics.Keys.Contains(id)) {
-            current.Id          = id;
-            topics.Add(current.Id, current);
-          }
-
-          // Reference existing topic, if topic exists
-          else {
-            current             = topics[id];
-          }
-
-          // Assign sort order, based on database order
-          if (current.SortOrder < 0) {
-            current.SortOrder   = sortOrder++;
-          }
-
-          // Set Content Type
-          if (!current.Attributes.Contains("ContentType")) {
-            current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-          }
-
-          // Provide special handling for ParentId
-          if (parentId == -1) {
-            continue;
-          }
-
-          if (topics.Keys.Contains(parentId)) {
-            current.Parent      = topics[parentId];
-          }
-
-          // Add Key, ContentType, and ParentID to Attributes (AttributesCollection) if not available
-          // to ensure Attributes is populated
-          if (!current.Attributes.Contains("Key")) {
-            current.Attributes.Add(new AttributeValue("Key", key, false));
-          }
-          if (!current.Attributes.Contains("ContentType")) {
-            current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-          }
-          if (!current.Attributes.Contains("ParentID")) {
-            current.Attributes.Add(new AttributeValue("ParentID", parentId.ToString(), false));
-          }
-
+          AddTopic(reader, topics, out sortOrder);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -169,30 +107,7 @@ namespace Ignia.Topics.Providers {
         reader.NextResult();
 
         while (reader.Read()) {
-
-          // Identify attribute values
-          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-          int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["AttributeKey"] != null, "Assumes the AttributeKey value is available from the SQL reader.");
-          string                name            = reader["AttributeKey"].ToString();
-
-          Contract.Assume(reader["AttributeValue"] != null, "Assumes the AttributeValue value is available from the SQL reader.");
-          string                value           = reader["AttributeValue"].ToString();
-
-          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-          DateTime              versionDate     = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
-
-          Topic                 current         = topics[id];
-
-          // Treat empty as null
-          if (String.IsNullOrEmpty(value) || DBNull.Value.Equals(value)) continue;
-
-          // Set attribute value
-          if (!current.Attributes.Contains(name)) {
-            current.Attributes.Add(new AttributeValue(name, value, false));
-          }
-
+          SetIndexedAttributes(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -207,47 +122,7 @@ namespace Ignia.Topics.Providers {
 
         // Loop through each blob, each record associated with a specific record
         while (reader.Read()) {
-
-          // Identify variables
-          Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-          int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-          DateTime              versionDate     = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
-
-          XmlDocument           blob            = new XmlDocument();
-
-          // Load the blob into an XmlDocument object
-          blob.LoadXml((string)reader["Blob"]);
-
-          // This scenario should never occur.
-          if (!topics.Keys.Contains(id)) continue;
-
-          // Identify the current topic
-          Topic                 current         = topics[id];
-
-          // Loop through each node in the blob and associate with the current topic
-          foreach (XmlNode attribute in blob.DocumentElement.GetElementsByTagName("attribute")) {
-
-            Contract.Assume(attribute.Attributes != null, "Assumes the blob AttributeValue collection is available.");
-            Contract.Assume(attribute.Attributes["key"] != null, "Assumes the key is available from the blob.");
-            string              name            = attribute.Attributes["key"].Value;
-
-            Contract.Assume(System.Web.HttpContext.Current != null, "Assumes the current HTTP context is available.");
-            string              value           = System.Web.HttpContext.Current.Server.HtmlDecode(attribute.InnerXml);
-
-            // Treat empty as null
-            if (String.IsNullOrEmpty(value)) continue;
-
-            if (!current.Attributes.Contains(name)) {
-              current.Attributes.Add(new AttributeValue(name, value, false));
-            }
-            else {
-            // System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
-            }
-
-          }
-
+          SetBlogAttributes(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -262,39 +137,7 @@ namespace Ignia.Topics.Providers {
 
         // Loop through each relationship; multiple records may exist per topic
         while (reader.Read()) {
-
-          // Identify variables
-          Contract.Assume(reader["Source_TopicID"] != null, "Assumes the Source_TopicID value is available from the SQL reader.");
-          int                   sourceTopicId           = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["Target_TopicID"] != null, "Assumes the Target_TopicID value is available from the SQL reader.");
-          int                   targetTopicId           = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["RelationshipTypeID"] != null, "Assumes the RelationshipTypeID value is available from the SQL reader.");
-          string                relationshipTypeId      = (string)reader["RelationshipTypeID"];
-
-          Topic                 related                 = null;
-          Topic                 current                 = null;
-
-          // Fetch the source topic
-          if (topics.Keys.Contains(sourceTopicId)) {
-            current             = topics[sourceTopicId];
-          }
-          else {
-            current             = TopicRepository.RootTopic.GetTopic(sourceTopicId);
-          }
-
-          // Fetch the related topic
-          if (topics.Keys.Contains(targetTopicId)) {
-            related             = topics[targetTopicId];
-          }
-
-          // Bypass if either of the objects are missing
-          if (current == null || related == null) continue;
-
-          // Set relationships on object
-          current.SetRelationship(relationshipTypeId, related);
-
+          SetRelationships(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -310,26 +153,6 @@ namespace Ignia.Topics.Providers {
 
         // Loop through each version; multiple records may exist per topic
         while (reader.Read()) {
-
-          // Identify variables
-          Contract.Assume(reader["TopicId"] != null, "Assumes the TopicId value is available from the SQL reader.");
-          int                   sourceTopicId           = Int32.Parse(reader["TopicId"].ToString(), CultureInfo.InvariantCulture);
-
-          Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-          DateTime              dateTime                = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
-
-          Topic                 current                 = null;
-
-          // Fetch the target topic
-          if (topics.Keys.Contains(sourceTopicId)) {
-            Contract.Assume(topics[sourceTopicId] != null, "Assumes the source topic specified by ID is valid.");
-            current                                     = topics[sourceTopicId];
-          }
-
-          // Set history
-          if (current != null && !current.VersionHistory.Contains(dateTime)) {
-            current.VersionHistory.Add(dateTime);
-          }
 
         }
 
@@ -357,6 +180,212 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topics.Count == 0) return null;
       return topics[topics.Keys.ElementAt(0)];
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: ADD TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
+
+      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
+      Contract.Assume(reader["ContentType"] != null, "Assumes the ContentType value is available from the SQL reader.");
+      Contract.Assume(reader["TopicKey"] != null, "Assumes the TopicKey value is available from the SQL reader.");
+      Contract.Assume(reader["SortOrder"] != null, "Assumes the SortOrder value is available from the SQL reader.");
+
+      // Identify attribute values
+      int                   parentId        = -1;
+      int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      string                contentType     = reader["ContentType"].ToString();
+      string                key             = reader["TopicKey"].ToString();
+                            sortOrder       = Int32.Parse(reader["SortOrder"].ToString(), CultureInfo.InvariantCulture);
+
+      // Handle ParentID (could be null for root topic)
+      Int32.TryParse(reader["ParentID"].ToString(), out parentId);
+
+      dynamic current = Topic.Create(key, contentType);
+
+      // Create new topic, if topic doesn't exist
+      if (!topics.Keys.Contains(id)) {
+        current.Id          = id;
+        topics.Add(current.Id, current);
+      }
+
+      // Reference existing topic, if topic exists
+      else {
+        current             = topics[id];
+      }
+
+      // Assign sort order, based on database order
+      if (current.SortOrder < 0) {
+        current.SortOrder   = sortOrder++;
+      }
+
+      // Set Content Type
+      if (!current.Attributes.Contains("ContentType")) {
+        current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
+      }
+
+      // Provide special handling for ParentId
+      if (parentId == -1) {
+        return;
+      }
+
+      if (topics.Keys.Contains(parentId)) {
+        current.Parent      = topics[parentId];
+      }
+
+      // Add Key, ContentType, and ParentID to Attributes (AttributesCollection) if not available
+      // to ensure Attributes is populated
+      if (!current.Attributes.Contains("Key")) {
+        current.Attributes.Add(new AttributeValue("Key", key, false));
+      }
+      if (!current.Attributes.Contains("ContentType")) {
+        current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
+      }
+      if (!current.Attributes.Contains("ParentID")) {
+        current.Attributes.Add(new AttributeValue("ParentID", parentId.ToString(), false));
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET INDEXED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
+      Contract.Assume(reader["AttributeKey"] != null, "Assumes the AttributeKey value is available from the SQL reader.");
+      Contract.Assume(reader["AttributeValue"] != null, "Assumes the AttributeValue value is available from the SQL reader.");
+      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
+
+      // Identify attribute values
+      int id = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      string name = reader["AttributeKey"].ToString();
+      string value = reader["AttributeValue"].ToString();
+      DateTime versionDate = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
+      //Identify relevant topic
+      Topic current = topics[id];
+
+      // Treat empty as null
+      if (String.IsNullOrEmpty(value) || DBNull.Value.Equals(value)) return;
+
+      // Set attribute value
+      if (!current.Attributes.Contains(name)) {
+        current.Attributes.Add(new AttributeValue(name, value, false));
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET BLOB ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private void SetBlogAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
+      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
+
+      // Identify variables
+      int id = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      DateTime versionDate = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
+      XmlDocument blob = new XmlDocument();
+
+      // Load the blob into an XmlDocument object
+      blob.LoadXml((string)reader["Blob"]);
+
+      // This scenario should never occur.
+      if (!topics.Keys.Contains(id)) return;
+
+      // Identify the current topic
+      Topic current = topics[id];
+
+      // Loop through each node in the blob and associate with the current topic
+      foreach (XmlNode attribute in blob.DocumentElement.GetElementsByTagName("attribute")) {
+
+        Contract.Assume(attribute.Attributes != null, "Assumes the blob AttributeValue collection is available.");
+        Contract.Assume(attribute.Attributes["key"] != null, "Assumes the key is available from the blob.");
+        Contract.Assume(System.Web.HttpContext.Current != null, "Assumes the current HTTP context is available.");
+
+        string name = attribute.Attributes["key"].Value;
+        string value = System.Web.HttpContext.Current.Server.HtmlDecode(attribute.InnerXml);
+
+        // Treat empty as null
+        if (String.IsNullOrEmpty(value)) continue;
+
+        if (!current.Attributes.Contains(name)) {
+          current.Attributes.Add(new AttributeValue(name, value, false));
+        }
+        else {
+          // System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
+        }
+
+      }
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      Contract.Assume(reader["Source_TopicID"] != null, "Assumes the Source_TopicID value is available from the SQL reader.");
+      Contract.Assume(reader["Target_TopicID"] != null, "Assumes the Target_TopicID value is available from the SQL reader.");
+      Contract.Assume(reader["RelationshipTypeID"] != null, "Assumes the RelationshipTypeID value is available from the SQL reader.");
+
+      // Identify variables
+      int sourceTopicId = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      int targetTopicId = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      string relationshipTypeId = (string)reader["RelationshipTypeID"];
+
+      Topic related = null;
+      Topic current = null;
+
+      // Fetch the source topic
+      if (topics.Keys.Contains(sourceTopicId)) {
+        current = topics[sourceTopicId];
+      }
+      else {
+        current = TopicRepository.RootTopic.GetTopic(sourceTopicId);
+      }
+
+      // Fetch the related topic
+      if (topics.Keys.Contains(targetTopicId)) {
+        related = topics[targetTopicId];
+      }
+
+      // Bypass if either of the objects are missing
+      if (current == null || related == null) return;
+
+      // Set relationships on object
+      current.SetRelationship(relationshipTypeId, related);
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET VERSION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private void SetVersion(SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      Contract.Assume(reader["TopicId"] != null, "Assumes the TopicId value is available from the SQL reader.");
+      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
+
+      //Identify variables
+      int sourceTopicId = Int32.Parse(reader["TopicId"].ToString(), CultureInfo.InvariantCulture);
+      DateTime dateTime = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+
+      Topic current = null;
+
+      // Fetch the target topic
+      if (topics.Keys.Contains(sourceTopicId)) {
+        Contract.Assume(topics[sourceTopicId] != null, "Assumes the source topic specified by ID is valid.");
+        current = topics[sourceTopicId];
+      }
+
+      // Set history
+      if (current != null && !current.VersionHistory.Contains(dateTime)) {
+        current.VersionHistory.Add(dateTime);
+      }
 
     }
 
