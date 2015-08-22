@@ -156,7 +156,8 @@ namespace Ignia.Topics {
         value.Add(this);
 
         if (_parent != null) {
-          TopicRepository.Move(this, value);
+          ReorderSiblings(value);
+          TopicRepository.DataProvider.Move(this, value);
           _parent.Remove(this.Key);
         }
 
@@ -1087,7 +1088,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(string topic, int depth) {
-      return TopicRepository.Load(topic, depth);
+      return TopicRepository.DataProvider.Load(topic, depth);
     }
 
     /// <summary>
@@ -1100,7 +1101,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object.</returns>
     public static Topic Load(string topic, DateTime version) {
-      return TopicRepository.Load(topic, 0, version);
+      return TopicRepository.DataProvider.Load(topic, 0, version);
     }
 
     /// <summary>
@@ -1126,7 +1127,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object and its descendants, to the depth specified.</returns>
     public static Topic Load(int topicId, int depth) {
-      return TopicRepository.Load(topicId, depth);
+      return TopicRepository.DataProvider.Load(topicId, depth);
     }
 
     /// <summary>
@@ -1139,7 +1140,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object.</returns>
     public static Topic Load(int topicId, DateTime version) {
-      return TopicRepository.Load(topicId, 0, version);
+      return TopicRepository.DataProvider.Load(topicId, 0, version);
     }
 
     /*==========================================================================================================================
@@ -1349,7 +1350,7 @@ namespace Ignia.Topics {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The topic's integer identifier.</returns>
     public int Save(bool isRecursive = false, bool isDraft = false) {
-      Id = TopicRepository.Save(this, isRecursive, isDraft);
+      Id = TopicRepository.DataProvider.Save(this, isRecursive, isDraft);
       return Id;
     }
 
@@ -1396,7 +1397,104 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to recurse over the topic's children and delete them as well.
     /// </param>
     public void Delete(bool isRecursive) {
-      TopicRepository.Delete(this, isRecursive);
+      TopicRepository.DataProvider.Delete(this, isRecursive);
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MOVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Moves the topic to a new parent.
+    /// </summary>
+    /// <remarks>
+    ///   For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
+    ///   existing siblings.
+    /// </remarks>
+    /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
+    public bool Move(Topic target) {
+      ReorderSiblings();
+      return TopicRepository.DataProvider.Move(this, target);
+    }
+
+    /// <summary>
+    ///   Moves the topic to a new parent, using one of the target topic's children as a reference point adjacent to which the 
+    ///   source topic should be moved.
+    /// </summary>
+    /// <param name="target">A topic object under which to move the source topic.</param>
+    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
+    /// <requires
+    ///   description="The topic may not be its own parent." exception="T:System.ArgumentException">
+    ///   topic != target
+    /// </requires>
+    /// <requires
+    ///   description="The topic cannot be moved or reordered relative to itself." exception="T:System.ArgumentException">
+    ///   topic != sibling
+    /// </requires>
+    public bool Move(Topic target, Topic sibling) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(this != target, "The topic may not be its own parent.");
+      Contract.Requires<ArgumentException>(this != sibling, "The topic cannot be moved or reordered relative to itself.");
+
+      ReorderSiblings(sibling);
+      return TopicRepository.DataProvider.Move(this, target, sibling);
+    }
+
+    /*==========================================================================================================================
+    | METHOD: REORDER SIBLINGS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static method that updates the sort order of topics at a particular level.
+    /// </summary>
+    /// <param name="source">The topic object representing the reordering point.</param>
+    /// <param name="sibling">
+    ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
+    /// </param>
+    /// <requires description="The source topic must be specified." exception="T:System.ArgumentNullException">
+    ///   source != null
+    /// </requires>
+    /// <requires description="The source topic cannot be reordered relative to itself." exception="T:System.ArgumentException">
+    ///   source != sibling
+    /// </requires>
+    private void ReorderSiblings(Topic sibling = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(this != null, "source");
+      Contract.Requires<ArgumentException>(this != sibling, "The source cannot be reordered relative to itself.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Topic parent = this.Parent;
+      int sortOrder = -1;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If there is no sibling, inject the source at the beginning of the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (sibling == null) {
+        this.SortOrder = sortOrder++;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through each topic to assign a new priority order
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (Topic topic in parent.SortedChildren) {
+        // Assuming the topic isn't the source, increment the sortOrder
+        if (topic != this) {
+          topic.SortOrder = sortOrder++;
+        }
+        // If the topic is the sibling, then assign the next sortOrder to the source
+        if (topic == sibling) {
+          this.SortOrder = sortOrder++;
+        }
+      }
+
     }
 
     /*==========================================================================================================================
