@@ -162,7 +162,7 @@ namespace Ignia.Topics {
 
         _parent = value;
 
-        Attributes.SetAttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
+        Attributes.Set("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
 
       }
     }
@@ -235,12 +235,12 @@ namespace Ignia.Topics {
           "The Key should be an alphanumeric sequence; it should not contain spaces or symbols"
         );
         if (_originalKey == null) {
-          _originalKey = GetAttribute("Key", null);
+          _originalKey = Attributes.Get("Key", null);
         }
         if (_originalKey != null && !value.Equals(Key) && Parent != null) {
           Parent.ChangeKey(this, value);
         }
-        Attributes.SetAttributeValue("Key", value);
+        Attributes.Set("Key", value);
         _key = value;
       }
     }
@@ -365,7 +365,7 @@ namespace Ignia.Topics {
     public string View {
       get {
         // Return current Topic's View Attribute or the default for the ContentType.
-        return GetAttribute("View", ContentType.GetAttribute("View", ContentType.Key));
+        return Attributes.Get("View", ContentType.Attributes.Get("View", ContentType.Key));
       }
       set {
         Contract.Requires(!string.IsNullOrWhiteSpace(value));
@@ -373,7 +373,7 @@ namespace Ignia.Topics {
           !value?.Contains(" ")?? true,
           "The View should be an alphanumeric sequence; it should not contain spaces or symbols"
         );
-        Attributes.SetAttributeValue("View", value);
+        Attributes.Set("View", value);
       }
     }
 
@@ -393,11 +393,11 @@ namespace Ignia.Topics {
     /// </requires>
     public string Title {
       get {
-        return GetAttribute("Title", Key);
+        return Attributes.Get("Title", Key);
       }
       set {
         Contract.Requires(!string.IsNullOrWhiteSpace(value));
-        Attributes.SetAttributeValue("Title", value);
+        Attributes.Set("Title", value);
       }
     }
 
@@ -416,11 +416,11 @@ namespace Ignia.Topics {
     /// </requires>
     public string Description {
       get {
-        return GetAttribute("Description");
+        return Attributes.Get("Description");
       }
       set {
         Contract.Requires(!string.IsNullOrWhiteSpace(value));
-        Attributes.SetAttributeValue("Description", value);
+        Attributes.Set("Description", value);
       }
     }
 
@@ -465,14 +465,14 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return minimum date value, if LastModified is not already populated
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(GetAttribute("LastModified", ""))) {
+        if (String.IsNullOrEmpty(Attributes.Get("LastModified", ""))) {
           return DateTime.MinValue;
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
-        string lastModified = GetAttribute("LastModified");
+        string lastModified = Attributes.Get("LastModified");
         DateTime dateTimeValue;
 
         // Return converted DateTime
@@ -488,7 +488,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires(!string.IsNullOrWhiteSpace(value.ToString()));
-        Attributes.SetAttributeValue("LastModified", value.ToString());
+        Attributes.Set("LastModified", value.ToString());
       }
     }
 
@@ -501,13 +501,13 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
-    ///     TopicId attribute key, values from that topic are used when the <see cref="GetAttribute(string, bool)"/> method is 
+    ///     TopicId attribute key, values from that topic are used when the <see cref="Attributes.Get((string, bool)"/> method is 
     ///     unable to find a local value for the attribute. 
     ///   </para>  
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see 
-    ///     cref="GetAttribute(string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
-    ///     overridden by client code by calling the <see cref="GetAttribute(string, string, bool, int)"/> overload and 
+    ///     cref="Attributes.Get((string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
+    ///     overridden by client code by calling the <see cref="Attributes.Get((string, string, bool, int)"/> overload and 
     ///     explicitly defining the number of hops.
     ///   </para>
     /// </remarks>
@@ -535,7 +535,7 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          this.Attributes.SetAttributeValue("TopicID", value.Id.ToString());
+          this.Attributes.Set("TopicID", value.Id.ToString());
         }
         else if (this.Attributes.Contains("TopicID")) {
           this.Attributes.Remove("TopicID");
@@ -889,101 +889,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary.
-    /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
-    ///   get the value.
-    /// </param>
-    /// <returns>The string value for the Attribute.</returns>
-    public string GetAttribute(string name, bool isRecursive = false) {
-      return GetAttribute(name, "", isRecursive);
-    }
-
-    /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
-    ///   parents through whom to crawl to retrieve an inherited value.
-    /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
-    ///   get the value.
-    /// </param>
-    /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
-    /// <returns>The string value for the Attribute.</returns>
-    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(name)
-    /// </requires>
-    /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !scope.Contains(" ")
-    /// </requires>
-    /// <requires
-    ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
-    ///   maxHops &gt;= 0
-    /// </requires>
-    /// <requires
-    ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
-    ///   maxHops &lt;= 100
-    /// </requires>
-    public string GetAttribute(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
-      Contract.Requires<ArgumentException>(
-        !name.Contains(" "),
-        "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
-      Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
-      Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
-
-      string value = null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Look up value from Attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Attributes.Contains(name)) {
-        Contract.Assume(Attributes[name] != null, "Assumes the AttributeValue is not null");
-        value = Attributes[name].Value;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Look up value from topic pointer
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && this.DerivedTopic != null && maxHops > 0) {
-        value = this.DerivedTopic.GetAttribute(name, null, false, maxHops-1);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Look up value from parent
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && isRecursive && Parent != null) {
-        value = Parent.GetAttribute(name, defaultValue, isRecursive);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return value, if found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(value)) {
-        return value;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Finaly, return default
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return defaultValue;
-
-    }
-
-    /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
     >===========================================================================================================================
     | ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
@@ -1029,7 +934,7 @@ namespace Ignia.Topics {
       Collection<Topic> results = new Collection<Topic>();
 
       Contract.Assume(this.Attributes[name] != null, "Assumes the AttributeValue is available.");
-      if (this.GetAttribute(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+      if (this.Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
         results.Add(this);
       }
 
@@ -1136,7 +1041,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Set the topic's Content Type
       \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetAttributeValue("ContentType", contentType);
+      topic.Attributes.Set("ContentType", contentType);
 
       return topic;
 

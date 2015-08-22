@@ -12,26 +12,26 @@ namespace Ignia.Topics.Tests {
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentType));
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.GetAttribute("ContentType"), "ContentType");
+      Assert.AreEqual<string>(topic.Attributes.Get("ContentType"), "ContentType");
     }
 
     [TestMethod]
     public void GetAttributeTest() {
       Topic topic = new Topic("Test");
-      Assert.AreEqual<string>("Test", topic.GetAttribute("Key"));
+      Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
     }
 
     [TestMethod]
     public void DefaultAttributeTest() {
       Topic topic = new Topic("Test");
-      Assert.AreEqual<string>("Foo", topic.GetAttribute("InvalidAttribute", "Foo"));
+      Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
     }
 
     [TestMethod]
     public void SetAttributeTest() {
       Topic topic = new Topic("Test");
-      topic.Attributes.SetAttributeValue("Foo", "Bar");
-      Assert.AreEqual<string>("Bar", topic.GetAttribute("Foo"));
+      topic.Attributes.Set("Foo", "Bar");
+      Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
     }
 
     [TestMethod]
@@ -40,10 +40,10 @@ namespace Ignia.Topics.Tests {
       Topic parentTopic = new Topic("Parent");
 
       childTopic.Parent = parentTopic;
-      parentTopic.Attributes.SetAttributeValue("Foo", "Bar");
+      parentTopic.Attributes.Set("Foo", "Bar");
 
-      Assert.IsNull(childTopic.GetAttribute("Foo", null));
-      Assert.AreEqual<string>(childTopic.GetAttribute("Foo", null, true), "Bar");
+      Assert.IsNull(childTopic.Attributes.Get("Foo", null));
+      Assert.AreEqual<string>(childTopic.Attributes.Get("Foo", null, true), "Bar");
 
     }
 
@@ -58,10 +58,10 @@ namespace Ignia.Topics.Tests {
         topics[i] = topic;
       }
 
-      topics[0].Attributes.SetAttributeValue("Foo", "Bar");
+      topics[0].Attributes.Set("Foo", "Bar");
 
-      Assert.IsNull(topics[4].GetAttribute("Foo", null));
-      Assert.AreEqual<string>(topics[4].GetAttribute("Foo", true), "Bar");
+      Assert.IsNull(topics[4].Attributes.Get("Foo", null));
+      Assert.AreEqual<string>(topics[4].Attributes.Get("Foo", true), "Bar");
 
     }
 
@@ -74,7 +74,7 @@ namespace Ignia.Topics.Tests {
       childTopic.Parent = parentTopic;
 
       Assert.ReferenceEquals(parentTopic["Child"], childTopic);
-      Assert.AreEqual<int>(5, Int32.Parse(childTopic.GetAttribute("ParentId", "0")));
+      Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
 
     }
 
@@ -92,7 +92,7 @@ namespace Ignia.Topics.Tests {
 
       Assert.ReferenceEquals(targetParent["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Contains("ChildTopic"));
-      Assert.AreEqual<int>(10, Int32.Parse(childTopic.GetAttribute("ParentId", "0")));
+      Assert.AreEqual<int>(10, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
 
     }
 

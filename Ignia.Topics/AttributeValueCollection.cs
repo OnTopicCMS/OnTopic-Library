@@ -43,6 +43,102 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
+    ///   get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
+    public string Get(string name, bool isRecursive = false) {
+      return Get(name, "", isRecursive);
+    }
+
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
+    ///   parents through whom to crawl to retrieve an inherited value.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
+    ///   get the value.
+    /// </param>
+    /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
+    /// <returns>The string value for the Attribute.</returns>
+    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(name)
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !scope.Contains(" ")
+    /// </requires>
+    /// <requires
+    ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
+    ///   maxHops &gt;= 0
+    /// </requires>
+    /// <requires
+    ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
+    ///   maxHops &lt;= 100
+    /// </requires>
+    public string Get(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentException>(
+        !name.Contains(" "),
+        "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
+      );
+      Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
+      Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
+
+      string value = null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Look up value from Attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (this.Contains(name)) {
+        Contract.Assume(this[name] != null, "Assumes the AttributeValue is not null");
+        value = this[name].Value;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Look up value from topic pointer
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(value) && _parent.DerivedTopic != null && maxHops > 0) {
+        value = _parent.DerivedTopic.Attributes.Get(name, null, false, maxHops - 1);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Look up value from parent
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(value) && isRecursive && _parent != null) {
+        value = _parent.Attributes.Get(name, defaultValue, isRecursive);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value, if found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!String.IsNullOrEmpty(value)) {
+        return value;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Finaly, return default
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return defaultValue;
+
+    }
+
+
+    /*==========================================================================================================================
     | METHOD: SET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -69,7 +165,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetAttributeValue(string key, string value) {
+    public void Set(string key, string value) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "value");
       Contract.Requires<ArgumentException>(

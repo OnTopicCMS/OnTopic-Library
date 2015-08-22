@@ -74,7 +74,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string Type {
       get {
-        return this.GetAttribute("Type", "");
+        return this.Attributes.Get("Type", "");
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
@@ -103,7 +103,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string DisplayGroup {
       get {
-        return this.GetAttribute("DisplayGroup", "");
+        return this.Attributes.Get("DisplayGroup", "");
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
@@ -131,7 +131,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string DefaultConfiguration {
       get {
-        return this.GetAttribute("DefaultConfiguration", "");
+        return this.Attributes.Get("DefaultConfiguration", "");
       }
       set {
         this.Attributes["DefaultConfiguration"].Value = value;
@@ -155,13 +155,13 @@ namespace Ignia.Topics {
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view 
     ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see 
-    ///     cref="Topic.GetAttribute(string, bool)"/>) then the attribute will be displayed on the page. The <see 
+    ///     cref="Topic.Attributes.Get(string, bool)"/>) then the attribute will be displayed on the page. The <see 
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>
     public bool IsHidden {
       get {
-        return this.GetAttribute("IsHidden", "0").Equals("1");
+        return this.Attributes.Get("IsHidden", "0").Equals("1");
       }
       set {
         Contract.Assume(this.Attributes["IsHidden"] != null, "Assumes IsHidden will always have a value.");
@@ -181,7 +181,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public bool IsRequired {
       get {
-        return this.GetAttribute("IsRequired", "0").Equals("1");
+        return this.Attributes.Get("IsRequired", "0").Equals("1");
       }
       set {
         Contract.Assume(this.Attributes["IsRequired"] != null, "Assumes IsRequired will always have a value.");
@@ -202,7 +202,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string DefaultValue {
       get {
-        return this.GetAttribute("DefaultValue", "");
+        return this.Attributes.Get("DefaultValue", "");
         }
       set {
         this.Attributes["DefaultValue"].Value = value;
@@ -230,7 +230,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public bool StoreInBlob {
       get {
-        return this.GetAttribute("StoreInBlob", "1").Equals("1");
+        return this.Attributes.Get("StoreInBlob", "1").Equals("1");
       }
       set {
         Contract.Assume(this.Attributes["StoreInBlob"] != null, "Assumes StoreInBlob will always have a value.");

@@ -152,7 +152,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle missing or disabled topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (EnableValidation && pageTopic != null && pageTopic.GetAttribute("IsDisabled", true).Equals("1")) {
+      if (EnableValidation && pageTopic != null && pageTopic.Attributes.Get("IsDisabled", true).Equals("1")) {
         Contract.Assume(Page != null, "Assumes the Page is available.");
         Contract.Assume(Page.User != null, "Assumes the user information from the Page is available.");
         Contract.Assume(Page.User.Identity.Name != null, "Assumes the Identity information from the Page is available.");
@@ -169,14 +169,14 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (EnableValidation && pageTopic != null && !String.IsNullOrEmpty(pageTopic.GetAttribute("URL"))) {
-        Response.RedirectPermanent(pageTopic.GetAttribute("URL"), true);
+      if (EnableValidation && pageTopic != null && !String.IsNullOrEmpty(pageTopic.Attributes.Get("URL"))) {
+        Response.RedirectPermanent(pageTopic.Attributes.Get("URL"), true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set title
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Page.Title = ((pageTopic != null)? pageTopic.GetAttribute("MetaTitle", pageTopic.GetAttribute("Title", pageTopic.Key)) : "");
+      Page.Title = ((pageTopic != null)? pageTopic.Attributes.Get("MetaTitle", pageTopic.Attributes.Get("Title", pageTopic.Key)) : "");
 
     }
 

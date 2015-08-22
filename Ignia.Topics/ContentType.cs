@@ -78,10 +78,10 @@ namespace Ignia.Topics {
     /// </remarks>
     public Boolean DisableChildTopics {
       get {
-        return (GetAttribute("DisableChildTopics", "0").Equals("1"));
+        return (this.Attributes.Get("DisableChildTopics", "0").Equals("1"));
       }
       set {
-        Attributes.SetAttributeValue("DisableChildTopics", value? "1" : "0");
+        this.Attributes.Set("DisableChildTopics", value? "1" : "0");
       }
     }
 

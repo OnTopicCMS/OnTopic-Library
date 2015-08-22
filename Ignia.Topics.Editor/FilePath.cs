@@ -68,7 +68,7 @@ namespace Ignia.Topics.Editor {
       while (String.IsNullOrEmpty(filePath) && startTopic != null) {
         startTopic                      = startTopic.Parent;
         if (startTopic != null && !String.IsNullOrEmpty(attributeKey)) {
-          filePath                      = startTopic.GetAttribute(attributeKey);
+          filePath                      = startTopic.Attributes.Get(attributeKey);
         }
       }
 

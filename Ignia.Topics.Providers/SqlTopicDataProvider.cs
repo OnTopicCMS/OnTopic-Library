@@ -373,7 +373,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.GetAttribute(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
+    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
     ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
@@ -390,8 +390,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!TopicRepository.ContentTypes.Contains(topic.GetAttribute("ContentType"))) {
-        throw new Exception("The Content Type \"" + topic.GetAttribute("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + TopicRepository.ContentTypes.Count + " ContentTypes in the Repository.");
+      if (!TopicRepository.ContentTypes.Contains(topic.Attributes.Get("ContentType"))) {
+        throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + TopicRepository.ContentTypes.Count + " ContentTypes in the Repository.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -401,7 +401,7 @@ namespace Ignia.Topics.Providers {
       StringBuilder             attributes      = new StringBuilder();
       StringBuilder             nullAttributes  = new StringBuilder();
       StringBuilder             blob            = new StringBuilder();
-      ContentType               contentType     = TopicRepository.ContentTypes[topic.GetAttribute("ContentType", "Page")];
+      ContentType               contentType     = TopicRepository.ContentTypes[topic.Attributes.Get("ContentType", "Page")];
 
       blob.Append("<attributes>");
 
