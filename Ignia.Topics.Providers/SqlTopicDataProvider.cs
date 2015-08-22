@@ -112,9 +112,6 @@ namespace Ignia.Topics.Providers {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Read blob
-        >-----------------------------------------------------------------------------------------------------------------------
-        | Values of arbitrary length are stored in an XML blob. This makes them more efficient to store, but more difficult to
-        | query; as such, it's ideal for content-oriented data. The blob values are returned as a separate data set.
         \---------------------------------------------------------------------------------------------------------------------*/
 
         // Move to blob dataset
@@ -127,9 +124,6 @@ namespace Ignia.Topics.Providers {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Read related items
-        >-----------------------------------------------------------------------------------------------------------------------
-        | Topics can be cross-referenced with each other via a many-to-many relationships. Once the topics are populated in
-        | memory, loop through the data to create these associations.
         \---------------------------------------------------------------------------------------------------------------------*/
 
         // Move to the relationships dataset
@@ -142,10 +136,6 @@ namespace Ignia.Topics.Providers {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Read version history
-        >-----------------------------------------------------------------------------------------------------------------------
-        | Every time a value changes for an attribute, a new version is created, represented by the date of the change. This
-        | version history is aggregated per topic to allow topic information to be rolled back to a specific date. While version
-        | content is not exposed directly via the Load() method, the metadata is.
         \---------------------------------------------------------------------------------------------------------------------*/
 
         // Move to the version history dataset
@@ -153,7 +143,7 @@ namespace Ignia.Topics.Providers {
 
         // Loop through each version; multiple records may exist per topic
         while (reader.Read()) {
-
+          SetVersionHistory(reader, topics);
         }
 
       }
@@ -281,6 +271,15 @@ namespace Ignia.Topics.Providers {
     /*==========================================================================================================================
     | METHOD: SET BLOB ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds attributes retrieved from an individual blob record to their associated topic.
+    /// </summary>
+    /// <remarks>
+    ///   Values of arbitrary length are stored in an XML blob. This makes them more efficient to store, but more difficult to
+    ////  query; as such, it's ideal for content-oriented data. The blob values are returned as a separate data set.
+    /// </remarks>
+    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
+    /// <param name="topics">The index of topics currently being loaded.</param>
     private void SetBlogAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
@@ -327,6 +326,15 @@ namespace Ignia.Topics.Providers {
     /*==========================================================================================================================
     | METHOD: SET RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds relationships retrieved from an individual relationship record to their associated topics.
+    /// </summary>
+    /// <remarks>
+    ///   Topics can be cross-referenced with each other via a many-to-many relationships.Once the topics are populated in 
+    ///   memory, loop through the data to create these associations.
+    /// </remarks>
+    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
+    /// <param name="topics">The index of topics currently being loaded.</param>
     private void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       Contract.Assume(reader["Source_TopicID"] != null, "Assumes the Source_TopicID value is available from the SQL reader.");
@@ -363,9 +371,19 @@ namespace Ignia.Topics.Providers {
     }
 
     /*==========================================================================================================================
-    | METHOD: SET VERSION
+    | METHOD: SET VERSION HISTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private void SetVersion(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <summary>
+    ///   Adds versions retrieved from an individual topic record to its associated topics.
+    /// </summary>
+    /// <remarks>
+    ///   Every time a value changes for an attribute, a new version is created, represented by the date of the change.This
+    ///   version history is aggregated per topic to allow topic information to be rolled back to a specific date.While version
+    ///   content is not exposed directly via the Load() method, the metadata is.
+    /// </remarks>
+    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
+    /// <param name="topics">The index of topics currently being loaded.</param>
+    private void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       Contract.Assume(reader["TopicId"] != null, "Assumes the TopicId value is available from the SQL reader.");
       Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
