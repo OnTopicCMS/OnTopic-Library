@@ -581,24 +581,14 @@ namespace Ignia.Topics {
     /// </remarks>
     public AttributeValueCollection Attributes {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
-
         if (_attributes == null) {
-          _attributes = new AttributeValueCollection();
+          _attributes = new AttributeValueCollection(this);
         }
         return _attributes;
       }
       set {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate input
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentNullException>(value != null, "A topic's AttributeValue collection cannot be null.");
-
         _attributes = value;
       }
     }
@@ -616,12 +606,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public Topic Relationships {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<Topic>() != null);
-
         if (_relationships == null) {
           _relationships = new Topic();
         }
@@ -643,12 +628,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public Topic IncomingRelationships {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<Topic>() != null);
-
         if (_incomingRelationships == null) {
           _incomingRelationships = new Topic();
         }
@@ -669,12 +649,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public IEnumerable<Topic> SortedChildren {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
-
         return this.Items.OrderBy(topic => topic.SortOrder);
       }
     }
@@ -755,12 +730,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public List<DateTime> VersionHistory {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<List<DateTime>>() != null);
-
         if (_versionHistory == null) {
           _versionHistory = new List<DateTime>();
         }
@@ -1053,6 +1023,9 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Ensures(Contract.Result<Collection<Topic>>() != null);
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Search attributes
+      \---------------------------------------------------------------------------------------------------------------------*/
       Collection<Topic> results = new Collection<Topic>();
 
       Contract.Assume(this.Attributes[name] != null, "Assumes the AttributeValue is available.");
@@ -1060,6 +1033,9 @@ namespace Ignia.Topics {
         results.Add(this);
       }
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Search children, if recursive
+      \---------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (Topic topic in this) {
           Collection<Topic> nestedResults = topic.FindAllByAttribute(name, value, true);
@@ -1069,6 +1045,9 @@ namespace Ignia.Topics {
         }
       }
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return results
+      \---------------------------------------------------------------------------------------------------------------------*/
       return results;
 
     }

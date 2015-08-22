@@ -23,12 +23,24 @@ namespace Ignia.Topics {
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Topic                       _parent                         = null;
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
     /// </summary>
-    public AttributeValueCollection() : base(StringComparer.OrdinalIgnoreCase) { }
+    /// <remarks>
+    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the 
+    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal. 
+    /// </remarks>
+    /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
+    internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
+      _parent = parentTopic;
+    }
 
     /*==========================================================================================================================
     | METHOD: SET ATTRIBUTE VALUE

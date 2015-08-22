@@ -59,7 +59,7 @@
     <CodeContractsExtraAnalysisOptions>
     </CodeContractsExtraAnalysisOptions>
     <CodeContractsSQLServerOption />
-    <CodeContractsBaseLineFile />
+    <CodeContractsBaseLineFile>..\..\baseline.xml</CodeContractsBaseLineFile>
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
     <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
