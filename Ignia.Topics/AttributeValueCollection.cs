@@ -59,8 +59,23 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional enabling of 
+    ///   inheritance.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="useInheritance">
+    ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
+    ///   get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
+    public string Get(string name, string defaultValue, bool useInheritance = false) {
+      return Get(name, defaultValue, useInheritance, 5);
+    }
+
+    /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
-    ///   parents through whom to crawl to retrieve an inherited value.
+    ///   <see cref="Topic.DerivedTopic"/>s through whom to crawl to retrieve an inherited value.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
@@ -86,7 +101,7 @@ namespace Ignia.Topics {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    public string Get(string name, string defaultValue, bool useInheritance = false, int maxHops = 5) {
+    private string Get(string name, string defaultValue, bool useInheritance, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
