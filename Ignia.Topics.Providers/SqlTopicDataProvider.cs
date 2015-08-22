@@ -189,7 +189,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId        = -1;
+      int                   parentId        = -1;
       int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
       string                contentType     = reader["ContentType"].ToString();
       string                key             = reader["TopicKey"].ToString();
@@ -201,19 +201,15 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current;
+      Topic current = Topic.Create(key, contentType);
+      current.Id          = id;
+      topics.Add(current.Id, current);
 
-      // Create new topic, if topic doesn't exist
-      if (!topics.Keys.Contains(id)) {
-        current = Topic.Create(key, contentType);
-        current.Id          = id;
-        topics.Add(current.Id, current);
-      }
-
-      // Reference existing topic, if topic exists
-      else {
-        current             = topics[id];
-      }
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure attributes not set to dirty
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      current.Attributes["ContentType"].IsDirty = false;
+      current.Attributes["Key"].IsDirty = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign sort order, based on database order
@@ -223,39 +219,10 @@ namespace Ignia.Topics.Providers {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set content type, if not set
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!current.Attributes.Contains("ContentType")) {
-        current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-      }
-      else {
-        current.Attributes["ContentType"].IsDirty = false;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Asside parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId == -1) {
-        return;
-      }
-
-      if (topics.Keys.Contains(parentId)) {
+      if (parentId >= 0 && topics.Keys.Contains(parentId)) {
         current.Parent      = topics[parentId];
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add other attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      // Add Key, ContentType, and ParentID to Attributes (AttributesCollection) if not available
-      // to ensure Attributes is populated
-      if (!current.Attributes.Contains("Key")) {
-        current.Attributes.Add(new AttributeValue("Key", key, false));
-      }
-      if (!current.Attributes.Contains("ContentType")) {
-        current.Attributes.Add(new AttributeValue("ContentType", contentType, false));
-      }
-      if (!current.Attributes.Contains("ParentID")) {
-        current.Attributes.Add(new AttributeValue("ParentID", parentId.ToString(), false));
       }
 
     }
@@ -333,12 +300,6 @@ namespace Ignia.Topics.Providers {
       blob.LoadXml((string)reader["Blob"]);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle orphaned blobs
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      // This scenario should never occur.
-      if (!topics.Keys.Contains(id)) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify the urrent topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       Topic current = topics[id];
@@ -408,16 +369,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Topic current = topics[sourceTopicId];
       Topic related = null;
-      Topic current = null;
-
-      // Fetch the source topic
-      if (topics.Keys.Contains(sourceTopicId)) {
-        current = topics[sourceTopicId];
-      }
-      else {
-        current = TopicRepository.RootTopic.GetTopic(sourceTopicId);
-      }
 
       // Fetch the related topic
       if (topics.Keys.Contains(targetTopicId)) {
@@ -425,7 +378,7 @@ namespace Ignia.Topics.Providers {
       }
 
       // Bypass if either of the objects are missing
-      if (current == null || related == null) return;
+      if (related == null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
@@ -464,19 +417,12 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = null;
-
-      if (topics.Keys.Contains(sourceTopicId)) {
-        Contract.Assume(topics[sourceTopicId] != null, "Assumes the source topic specified by ID is valid.");
-        current = topics[sourceTopicId];
-      }
+      Topic current = topics[sourceTopicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set history
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (current != null && !current.VersionHistory.Contains(dateTime)) {
-        current.VersionHistory.Add(dateTime);
-      }
+      current.VersionHistory.Add(dateTime);
 
     }
 
