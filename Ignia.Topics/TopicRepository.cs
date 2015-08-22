@@ -7,6 +7,7 @@ using System;
 using Ignia.Topics.Configuration;
 using Ignia.Topics.Providers;
 using System.Diagnostics.Contracts;
+using System.Configuration;
 
 namespace Ignia.Topics {
 
@@ -19,9 +20,10 @@ namespace Ignia.Topics {
   /// </summary>
   public static class TopicRepository {
 
-  /*============================================================================================================================
-  | PRIVATE VARIABLES
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*============================================================================================================================
+    | PRIVATE VARIABLES
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    private static      TopicsSection                   _configuration          = null;
     private static      TopicDataProviderBase           _dataProvider           = null;
     private static      Topic                           _rootTopic              = null;
     private static      ContentTypeCollection           _contentTypes           = null;
@@ -97,6 +99,27 @@ namespace Ignia.Topics {
       }
       set {
         _rootTopic = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONFIGURATION SECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the current configuration for the application from the web.config file. 
+    /// </summary>
+    /// <remarks>
+    ///   The web.config stores information such as data providers, views directory, etc. 
+    /// </remarks>
+    public static TopicsSection Configuration {
+      get {
+        if (_configuration == null) {
+          _configuration = (TopicsSection)ConfigurationManager.GetSection("archive");
+          if (_configuration == null) {
+            throw new ConfigurationErrorsException("The Topics configuration section (<topics/>) is not set correctly.");
+          }
+        }
+        return _configuration;
       }
     }
 
