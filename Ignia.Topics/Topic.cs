@@ -502,14 +502,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
-    ///     TopicId attribute key, values from that topic are used when the <see cref="Attributes.Get((string, bool)"/> method is 
-    ///     unable to find a local value for the attribute. 
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(string, 
+    ///     bool)"/> method unable to find a local value for the attribute. 
     ///   </para>  
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see 
-    ///     cref="Attributes.Get((string, bool)"/> method defaults to a maximum level of five "hops". This can be optionally 
-    ///     overridden by client code by calling the <see cref="Attributes.Get((string, string, bool, int)"/> overload and 
-    ///     explicitly defining the number of hops.
+    ///     cref="AttributeValueCollection.Get(string, bool)"/> method defaults to a maximum level of five "hops". 
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -1450,7 +1448,6 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Static method that updates the sort order of topics at a particular level.
     /// </summary>
-    /// <param name="source">The topic object representing the reordering point.</param>
     /// <param name="sibling">
     ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
     /// </param>
@@ -1517,7 +1514,11 @@ namespace Ignia.Topics {
     ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
-    public void Dispose() { }
+    public virtual void Dispose() {
+      _incomingRelationships.Dispose();
+      _relationships.Dispose();
+      GC.SuppressFinalize(this);
+    }
 
   } // Class
 

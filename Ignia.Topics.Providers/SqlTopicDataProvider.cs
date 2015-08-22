@@ -161,7 +161,7 @@ namespace Ignia.Topics.Providers {
       finally {
         if (reader != null) reader.Dispose();
         command.Dispose();
-        connection.Dispose();
+      //connection.Dispose();
         connection.Close();
       }
 
@@ -275,7 +275,7 @@ namespace Ignia.Topics.Providers {
     /// </summary>
     /// <remarks>
     ///   Values of arbitrary length are stored in an XML blob. This makes them more efficient to store, but more difficult to
-    ////  query; as such, it's ideal for content-oriented data. The blob values are returned as a separate data set.
+    ///   query; as such, it's ideal for content-oriented data. The blob values are returned as a separate data set.
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
