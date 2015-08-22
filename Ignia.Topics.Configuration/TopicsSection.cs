@@ -76,22 +76,6 @@ namespace Ignia.Topics.Configuration {
     }
 
     /*==========================================================================================================================
-    | ATTRIBUTE: DEFAULT MAPPING PROVIDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the default Topics mapping provider that should be used.
-    /// </summary>
-    [ConfigurationProperty("defaultMappingProvider", DefaultValue = "NullTopicMappingProvider")]
-    public string DefaultMappingProvider {
-      get {
-        return (string)this["defaultMappingProvider"];
-      }
-      set {
-        this["defaultMappingProvider"] = value;
-      }
-    }
-
-    /*==========================================================================================================================
     | ELEMENT: VERSIONING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -163,19 +147,6 @@ namespace Ignia.Topics.Configuration {
     public ProviderSettingsCollection DataProviders {
       get {
         return (ProviderSettingsCollection)base["dataProviders"];
-      }
-    }
-
-    /*==========================================================================================================================
-    | COLLECTION: MAPPING PROVIDERS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the  <mappingProviders /> element from the configuration.
-    /// </summary>
-    [ConfigurationProperty("mappingProviders")]
-    public ProviderSettingsCollection MappingProviders {
-      get {
-        return (ProviderSettingsCollection)base["mappingProviders"];
       }
     }
 

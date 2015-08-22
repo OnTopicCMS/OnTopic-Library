@@ -23,7 +23,6 @@ namespace Ignia.Topics {
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
     private static      TopicDataProviderBase           _dataProvider           = null;
-    private static      TopicMappingProviderBase        _mappingProvider        = null;
     private static      Topic                           _rootTopic              = null;
     private static      ContentTypeCollection           _contentTypes           = null;
 
@@ -121,37 +120,11 @@ namespace Ignia.Topics {
 
         if (_dataProvider == null) {
           _dataProvider = TopicDataProviderManager.DataProvider;
-          MappingProvider.DataProvider = _dataProvider;
         }
         return _dataProvider;
       }
       set {
         _dataProvider = value;
-      }
-    }
-
-    /*==========================================================================================================================
-    | MAPPING PROVIDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the currently configured mapping provider for topics data.
-    /// </summary>
-    /// <remarks>
-    ///   Pulled from the implementing website's configuration via the <see
-    ///   cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
-    /// </remarks>
-    public static TopicMappingProviderBase MappingProvider {
-      get {
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \-----------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<TopicMappingProviderBase>() != null);
-
-        if (_mappingProvider == null) {
-          _mappingProvider = TopicMappingProviderManager.MappingProvider;
-        }
-        return _mappingProvider;
       }
     }
 
