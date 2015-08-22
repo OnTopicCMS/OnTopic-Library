@@ -49,7 +49,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() == null);
+      // Contract.Ensures(Contract.Result<Topic>() == null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -113,7 +113,6 @@ namespace Ignia.Topics.Providers {
           int                   parentId        = -1;
 
           // Handle ParentID (could be null for root topic)
-          Contract.Assume(reader["ParentID"] != null, "Assumes the ParentID value is available from the SQL reader.");
           Int32.TryParse(reader["ParentID"].ToString(), out parentId);
 
           dynamic current = Topic.Create(key, contentType);
@@ -222,7 +221,6 @@ namespace Ignia.Topics.Providers {
           blob.LoadXml((string)reader["Blob"]);
 
           // This scenario should never occur.
-          Contract.Assume(id >= 0, "Assumes the topic ID is valid.");
           if (!topics.Keys.Contains(id)) continue;
 
           // Identify the current topic
@@ -526,7 +524,6 @@ namespace Ignia.Topics.Providers {
         Contract.Assume(command.Parameters["@ReturnCode"] != null, "Assumes the return code parameter is available on query.");
         returnVal               = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
-        Contract.Assume(returnVal > 0, "Assumes the return value is positive and thus a valid topic ID.");
         topic.Id                = returnVal;
 
         /*----------------------------------------------------------------------------------------------------------------------

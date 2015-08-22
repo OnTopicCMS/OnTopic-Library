@@ -65,7 +65,7 @@ namespace Ignia.Topics {
         "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
       );
       if (this.Contains(key)) {
-        Contract.Assume(this[key] != null, "Assumes the AttributeValue is available.");
+        Contract.Assume(this[key] != null, "Assumes the AttributeValue is available, if the collection contains the key.");
         this[key].Value = value;
       }
       else {
@@ -86,7 +86,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define assumptions for external callers
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(item != null, "Method assumes the item is available when deriving its key.");
+      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
 
       return item.Key;
     }

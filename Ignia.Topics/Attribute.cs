@@ -82,7 +82,6 @@ namespace Ignia.Topics {
           !value.Contains(" ") && !value.Contains("/"), 
           "Type values should not contain spaces, slashes, or characters not permitted in file names"
         );
-        Contract.Assume(this.Attributes["Type"] != null);
         this.Attributes["Type"].Value = value;
       }
     }
@@ -108,7 +107,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Contract.Assume(this.Attributes["DisplayGroup"] != null);
+        Contract.Assume(this.Attributes["DisplayGroup"] != null, "Assumes DisplayGroup will always have a value.");
         this.Attributes["DisplayGroup"].Value = value;
       }
     }
@@ -135,7 +134,6 @@ namespace Ignia.Topics {
         return this.GetAttribute("DefaultConfiguration", "");
       }
       set {
-        Contract.Assume(this.Attributes["DefaultConfiguration"] != null);
         this.Attributes["DefaultConfiguration"].Value = value;
       }
     }
@@ -166,7 +164,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("IsHidden", "0").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["IsHidden"] != null);
+        Contract.Assume(this.Attributes["IsHidden"] != null, "Assumes IsHidden will always have a value.");
         this.Attributes["IsHidden"].Value = value.ToString();
       }
     }
@@ -186,7 +184,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("IsRequired", "0").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["IsRequired"] != null);
+        Contract.Assume(this.Attributes["IsRequired"] != null, "Assumes IsRequired will always have a value.");
         this.Attributes["IsRequired"].Value = value.ToString();
       }
     }
@@ -207,7 +205,6 @@ namespace Ignia.Topics {
         return this.GetAttribute("DefaultValue", "");
         }
       set {
-        Contract.Assume(this.Attributes["DefaultValue"] != null);
         this.Attributes["DefaultValue"].Value = value;
         }
       }
@@ -236,7 +233,7 @@ namespace Ignia.Topics {
         return this.GetAttribute("StoreInBlob", "1").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["StoreInBlob"] != null);
+        Contract.Assume(this.Attributes["StoreInBlob"] != null, "Assumes StoreInBlob will always have a value.");
         this.Attributes["StoreInBlob"].Value = value.ToString();
       }
     }

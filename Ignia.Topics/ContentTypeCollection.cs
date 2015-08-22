@@ -39,7 +39,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define assumptions for external callers
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(item != null, "Method assumes the item is available when deriving its key.");
+      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
 
       return item.Key;
     }

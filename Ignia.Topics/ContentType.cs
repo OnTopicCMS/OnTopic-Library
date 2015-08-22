@@ -123,8 +123,10 @@ namespace Ignia.Topics {
           var permittedContentTypes = new List<ContentType>();
           var contentTypes = new Topic();
           if (Relationships.Contains("ContentTypes")) {
-            // Assume that the ContentTypes Relationships item is not null
-            Contract.Assume(Relationships["ContentTypes"] != null);
+            Contract.Assume(
+              Relationships["ContentTypes"] != null,
+              "Assume that the ContentTypes item is available, if Relationships contains the ContentTypes key."
+              );
             contentTypes = Relationships["ContentTypes"];
           }
           foreach (ContentType contentType in contentTypes) {
