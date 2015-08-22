@@ -443,7 +443,6 @@ namespace Ignia.Topics.Providers {
 
         // Set preconditions
         Attribute attribute     = contentType.SupportedAttributes[attributeKey];
-        Contract.Assume(topic.Attributes[attributeKey] != null, "Assumes the AttributeValue for the topic is not null.");
         bool topicHasAttribute  = (topic.Attributes.Contains(attributeKey) && topic.Attributes[attributeKey].Value != null);
         bool isPrimaryAttribute = (attributeKey == "Key" || attributeKey == "ContentType" || attributeKey == "ParentID");
         bool isRelationships    = (contentType.SupportedAttributes[attributeKey].Type == "Relationships.ascx");
