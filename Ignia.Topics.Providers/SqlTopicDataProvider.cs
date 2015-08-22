@@ -44,7 +44,7 @@ namespace Ignia.Topics.Providers {
     /// <exception cref="Exception">
     ///   Topics failed to load: <c>ex.Message</c>
     /// </exception>
-    public override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
+    internal override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate return value

@@ -24,7 +24,7 @@ namespace Ignia.Topics.Providers {
     /// <remarks>
     ///   Contract preconditions are defined in the <see cref="TopicDataProviderBaseContract"/> contract class.
     /// </remarks>
-    public override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
+    internal override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
   
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value

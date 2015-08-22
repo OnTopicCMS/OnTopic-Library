@@ -1090,19 +1090,6 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and DateTime 
-    ///   <see cref="Version"/> marker.
-    /// </summary>
-    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
-    /// <param name="version">
-    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
-    /// </param>
-    /// <returns>A topic object.</returns>
-    public static Topic Load(string topic, DateTime version) {
-      return TopicRepository.DataProvider.Load(topic, 0, version);
-    }
-
-    /// <summary>
     ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and,
     ///   optionally, all of its descendants (see <see cref="Load(bool)"/>).
     /// </summary>
@@ -1112,7 +1099,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
     public static Topic Load(int topicId, bool deepLoad = false) {
-      return Load(topicId, deepLoad?-1:0);
+      return Load(topicId, deepLoad ? -1 : 0);
     }
 
     /// <summary>
@@ -1129,6 +1116,19 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
+    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and DateTime 
+    ///   <see cref="Version"/> marker.
+    /// </summary>
+    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
+    /// <param name="version">
+    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
+    /// </param>
+    /// <returns>A topic object.</returns>
+    public static Topic Load(string topic, DateTime version) {
+      return TopicRepository.DataProvider.Load(topic, -1, 0, version);
+    }
+
+    /// <summary>
     ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and DateTime 
     ///   <see cref="Version"/> marker (see <see cref="Load(string, DateTime)"/>.
     /// </summary>
@@ -1138,7 +1138,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A topic object.</returns>
     public static Topic Load(int topicId, DateTime version) {
-      return TopicRepository.DataProvider.Load(topicId, 0, version);
+      return TopicRepository.DataProvider.Load(null, topicId, 0, version);
     }
 
     /*==========================================================================================================================

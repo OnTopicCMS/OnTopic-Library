@@ -40,40 +40,52 @@ namespace Ignia.Topics.Providers {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface methods that loads topics to the specified depth, optionally based on the DateTime version.
+    ///   Loads a specific version of a specific topic based on the topic id.
     /// </summary>
-    /// <remarks>
-    ///   Optional overloads allow for a topic to be loaded based on its specified key or ID.
-    /// </remarks>
-    /// <param name="depth">Integer level to which to also load the topic's children.</param>
+    /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">DateTime identifier for the version of the topic.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(int depth, DateTime? version = null) {
-      return Load(null, -1, depth, version);
+    public Topic Load(int topicId, DateTime version) {
+      return Load(null, topicId, -1, version);
     }
 
     /// <summary>
-    ///   Loads topics to the specified depth, based on the specified integer identifier for the topic, and optionally based
-    ///   on its DateTime version.
+    ///   Loads a specific version of a specific topic based on the topic key.
+    /// </summary>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="version">DateTime identifier for the version of the topic.</param>
+    /// <returns>A topic object.</returns>
+    public Topic Load(string topicKey, DateTime version) {
+      return Load(topicKey, -1, -1, version);
+    }
+
+    /// <summary>
+    ///   Loads topics to the specified depth, based on the root topic.
+    /// </summary>
+    /// <param name="depth">Integer level to which to also load the topic's children.</param>
+    /// <returns>A topic object.</returns>
+    public Topic Load(int depth) {
+      return Load(null, -1, depth, null);
+    }
+
+    /// <summary>
+    ///   Loads topics to the specified depth, based on the specified integer identifier for the topic.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="depth">The depth.</param>
-    /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(int topicId, int depth, DateTime? version = null) {
-      return Load(null, topicId, depth, version);
+    public Topic Load(int topicId, int depth) {
+      return Load(null, topicId, depth, null);
     }
 
     /// <summary>
-    ///   Loads topics to the specified depth, based on the specified string identifier for the topic, and optionally based
-    ///   on its DateTime version.
+    ///   Loads topics to the specified depth, based on the specified string identifier for the topic.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="depth">The depth.</param>
-    /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(string topicKey, int depth, DateTime? version = null) {
-      return Load(topicKey, -1, depth, version);
+    public Topic Load(string topicKey, int depth) {
+      return Load(topicKey, -1, depth, null);
     }
 
     /// <summary>
@@ -85,7 +97,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="depth">The depth.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
+    internal abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
 
     /*==========================================================================================================================
     | METHOD: SAVE
