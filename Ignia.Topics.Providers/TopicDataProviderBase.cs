@@ -175,7 +175,6 @@ namespace Ignia.Topics.Providers {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
-      Contract.Requires<NullReferenceException>(DeleteEvent != null, "The Delete event handler must be instantiated.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
