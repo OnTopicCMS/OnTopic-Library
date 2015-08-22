@@ -49,13 +49,13 @@ namespace Ignia.Topics {
     ///   Gets a named attribute from the Attributes dictionary.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="isRecursive">
+    /// <param name="useInheritance">
     ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
     ///   get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string Get(string name, bool isRecursive = false) {
-      return Get(name, "", isRecursive);
+    public string Get(string name, bool useInheritance = false) {
+      return Get(name, "", useInheritance);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
-    /// <param name="isRecursive">
+    /// <param name="useInheritance">
     ///   Boolean indicator nothing whether to recurse over the topic's parents or topics from which it derives in order to
     ///   get the value.
     /// </param>
@@ -86,7 +86,7 @@ namespace Ignia.Topics {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    public string Get(string name, string defaultValue, bool isRecursive = false, int maxHops = 5) {
+    public string Get(string name, string defaultValue, bool useInheritance = false, int maxHops = 5) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -119,8 +119,8 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && isRecursive && _parent != null) {
-        value = _parent.Attributes.Get(name, defaultValue, isRecursive);
+      if (String.IsNullOrEmpty(value) && useInheritance && _parent != null) {
+        value = _parent.Attributes.Get(name, defaultValue, useInheritance);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
