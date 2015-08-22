@@ -3,9 +3,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 
+  /// <summary>
+  ///   Provides unit tests for the <see cref="Topic"/> class.
+  /// </summary>
   [TestClass]
   public class TopicTest {
 
+    /// <summary>
+    ///   Creates a topic using the factory method, and ensures it's correctly returned.
+    /// </summary>
     [TestMethod]
     public void CreateTopicTest() {
       Topic topic = Topic.Create("Test", "ContentType");
@@ -15,18 +21,27 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>(topic.Attributes.Get("ContentType"), "ContentType");
     }
 
+    /// <summary>
+    ///   Creates a new topic and ensures that the key can be returned as an attribute.
+    /// </summary>
     [TestMethod]
     public void GetAttributeTest() {
       Topic topic = new Topic("Test");
       Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
     }
 
+    /// <summary>
+    ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
+    /// </summary>
     [TestMethod]
     public void DefaultAttributeTest() {
       Topic topic = new Topic("Test");
       Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
     }
 
+    /// <summary>
+    ///   Sets a custom attribute on a topic and ensures it can be retrieved.
+    /// </summary>
     [TestMethod]
     public void SetAttributeTest() {
       Topic topic = new Topic("Test");
@@ -34,6 +49,9 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
     }
 
+    /// <summary>
+    ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
+    /// </summary>
     [TestMethod]
     public void AttributeInheritanceTest() {
       Topic childTopic = new Topic("Child");
@@ -47,6 +65,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /// <summary>
+    ///   Sets an attribute on a descendent and ensures that it is correctly retrieved via inheritance.
+    /// </summary>
     [TestMethod]
     public void LimitAttributeInheritanceTest() {
 
@@ -65,6 +86,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /// <summary>
+    ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
+    /// </summary>
     [TestMethod]
     public void SetParentTest() {
       Topic parentTopic = Topic.Create("Parent", "ContentType");
@@ -78,6 +102,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /// <summary>
+    ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
+    /// </summary>
     // ### TODO JJC20150816: This invokes dependencies on the TopicDataProvider and, in turn, the Configuration namespace.  This
     // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
     public void ChangeParentTest() {
