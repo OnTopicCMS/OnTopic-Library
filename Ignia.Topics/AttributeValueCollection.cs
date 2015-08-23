@@ -68,7 +68,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
     public string Get(string name, string defaultValue, bool inheritFromParent = false) {
-      return Get(name, defaultValue, inheritFromParent, 5);
+      return Get(name, defaultValue, inheritFromParent, true);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ namespace Ignia.Topics {
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string Get(string name, string defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+    public string Get(string name, string defaultValue, bool inheritFromParent, bool inheritFromDerived = true) {
       return Get(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
 
