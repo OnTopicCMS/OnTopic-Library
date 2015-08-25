@@ -690,23 +690,6 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
-    | METHOD: CHANGE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Changes the key associated with a topic to maintain referential integrity.
-    /// </summary>
-    /// <remarks>
-    ///   By default, <see cref="KeyedCollection{TKey, TItem}"/> doesn't permit mutable keys; this mitigates that issue by
-    ///   allowing the collection's lookup dictionary to be updated whenever the key is updated in the corresponding topic
-    ///   object.
-    /// </remarks>
-    /// <param name="topic">The topic object for which the <see cref="Key"/> should be changed.</param>
-    /// <param name="newKey">The string value for the new key.</param>
-    internal void ChangeKey(Topic topic, string newKey) {
-      base.ChangeItemKey(topic, newKey);
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: VERSIONS
     >===========================================================================================================================
     | Getter for collection of previous versions that can be rolled back to.
@@ -1417,6 +1400,23 @@ namespace Ignia.Topics {
         }
       }
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: CHANGE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Changes the key associated with a topic to maintain referential integrity.
+    /// </summary>
+    /// <remarks>
+    ///   By default, <see cref="KeyedCollection{TKey, TItem}"/> doesn't permit mutable keys; this mitigates that issue by
+    ///   allowing the collection's lookup dictionary to be updated whenever the key is updated in the corresponding topic
+    ///   object.
+    /// </remarks>
+    /// <param name="topic">The topic object for which the <see cref="Key"/> should be changed.</param>
+    /// <param name="newKey">The string value for the new key.</param>
+    internal void ChangeKey(Topic topic, string newKey) {
+      base.ChangeItemKey(topic, newKey);
     }
 
     /*==========================================================================================================================
