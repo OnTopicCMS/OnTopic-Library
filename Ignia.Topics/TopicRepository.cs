@@ -93,7 +93,7 @@ namespace Ignia.Topics {
         Contract.Ensures(Contract.Result<Topic>() != null);
 
         if (_rootTopic == null) {
-          _rootTopic = Topic.Load("", -1);
+          _rootTopic = DataProvider.Load("", -1);
         }
         return _rootTopic;
       }

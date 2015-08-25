@@ -1079,117 +1079,6 @@ namespace Ignia.Topics {
       return topic;
     }
 
-
-    /*==========================================================================================================================
-    | METHOD: LOAD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Pulls data out of the storage provider for the topic and, optionally, all of its descendants.
-    /// </summary>
-    /// <remarks>
-    ///   If the deepLoad flag is set to true, all available descendants are also loaded.
-    /// </remarks>
-    /// <param name="deepLoad">
-    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
-    /// </param>
-    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
-    public static Topic Load(bool deepLoad) {
-      return Load("", deepLoad?-1:0);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and,
-    ///   optionally, all of its descendants (see <see cref="Load(bool)"/>).
-    /// </summary>
-    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
-    /// <param name="deepLoad">
-    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
-    /// </param>
-    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
-    public static Topic Load(string topic = "", bool deepLoad = false) {
-      return Load(topic, deepLoad?-1:0);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value; additionally
-    ///   loads its descendants to the depth specified.
-    /// </summary>
-    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
-    /// <param name="depth">
-    ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
-    /// </param>
-    /// <returns>A topic object and its descendants, to the depth specified.</returns>
-    public static Topic Load(string topic, int depth) {
-      return TopicRepository.DataProvider.Load(topic, depth);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and,
-    ///   optionally, all of its descendants (see <see cref="Load(bool)"/>).
-    /// </summary>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="deepLoad">
-    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
-    /// </param>
-    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
-    public static Topic Load(int topicId, bool deepLoad = false) {
-      return Load(topicId, deepLoad ? -1 : 0);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier; additionally loads its
-    ///   descendants to the depth specified (see <see cref="Load(string, int)"/>).
-    /// </summary>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="depth">
-    ///   The integer indicator signifying at what level to which the topic's descendants should be loaded.
-    /// </param>
-    /// <returns>A topic object and its descendants, to the depth specified.</returns>
-    public static Topic Load(int topicId, int depth) {
-      return TopicRepository.DataProvider.Load(topicId, depth);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its <see cref="UniqueKey"/> value and DateTime 
-    ///   <see cref="Version"/> marker.
-    /// </summary>
-    /// <param name="topic">The <see cref="UniqueKey"/> value for the topic.</param>
-    /// <param name="version">
-    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
-    /// </param>
-    /// <returns>A topic object.</returns>
-    public static Topic Load(string topic, DateTime version) {
-      return TopicRepository.DataProvider.Load(topic, -1, 0, version);
-    }
-
-    /// <summary>
-    ///   Pulls data out of the storage provider for the specified topic, using its integer identifier and DateTime 
-    ///   <see cref="Version"/> marker (see <see cref="Load(string, DateTime)"/>.
-    /// </summary>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="version">
-    ///   The DateTime marker specifying which version of the topic and its attributes should be loaded.
-    /// </param>
-    /// <returns>A topic object.</returns>
-    public static Topic Load(int topicId, DateTime version) {
-      return TopicRepository.DataProvider.Load(null, topicId, 0, version);
-    }
-
-    /*==========================================================================================================================
-    | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
-    | Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE JJC080313: If the topic already exists, return the existing node, by calling its Merge() function. Otherwise,
-    | construct a new node using its XmlNode constructor.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
     /*==========================================================================================================================
     | METHOD: MERGE
     >---------------------------------------------------------------------------------------------------------------------------
@@ -1231,8 +1120,7 @@ namespace Ignia.Topics {
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Assert(version != null, "Confirms the version is available.");
-      Contract.Assume(Topic.Load(this.Id, version) != null, "Assumes the topic is available.");
-      Topic originalVersion     = Topic.Load(this.Id, version);
+      Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Rename topic, if necessary

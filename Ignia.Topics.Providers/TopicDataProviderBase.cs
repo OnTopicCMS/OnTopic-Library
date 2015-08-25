@@ -39,6 +39,49 @@ namespace Ignia.Topics.Providers {
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /*==========================================================================================================================
+    | METHOD: LOAD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the root topic and, optionally, all of its descendants.
+    /// </summary>
+    /// <remarks>
+    ///   If the deepLoad flag is set to true, all available descendants are also loaded.
+    /// </remarks>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
+    public Topic Load(bool deepLoad) {
+      return Load("", deepLoad ? -1 : 0);
+    }
+
+    /// <summary>
+    ///   Loads a specific topic using its unique <paramref name="topicKey"/> value and, optionally, all of its descendants 
+    ///   (see <see cref="Load(bool)"/>).
+    /// </summary>
+    /// <param name="topicKey">The unique key for the topic.</param>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
+    public Topic Load(string topicKey = "", bool deepLoad = false) {
+      return Load(topicKey, deepLoad ? -1 : 0);
+    }
+
+    /// <summary>
+    ///   Loads a specific topic using its unique id and, optionally, all of its descendants (see <see cref="Load(bool)"/>).
+    /// </summary>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <param name="deepLoad">
+    ///   Boolean indicator signifying whether to load all of a topic's children along with the topic.
+    /// </param>
+    /// <returns>A topic object and its descendants, if <c>deepLoad = true</c>.</returns>
+    public Topic Load(int topicId, bool deepLoad = false) {
+      return Load(topicId, deepLoad ? -1 : 0);
+    }
+
     /// <summary>
     ///   Loads a specific version of a specific topic based on the topic id.
     /// </summary>
@@ -98,6 +141,21 @@ namespace Ignia.Topics.Providers {
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
     internal abstract Topic Load(string topicKey, int topicId, int depth, DateTime? version = null);
+
+    /*==========================================================================================================================
+    | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
+    | Import/Export schema.
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###NOTE JJC080313: If the topic already exists, return the existing node, by calling its Merge() function. Otherwise,
+    | construct a new node using its XmlNode constructor.
+    >---------------------------------------------------------------------------------------------------------------------------
+      public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
+      //Process XML
+      //Construct children objects
+      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
+      //are already created and available.
+      }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: SAVE
