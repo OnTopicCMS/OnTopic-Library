@@ -654,9 +654,6 @@ namespace Ignia.Topics.Providers {
     ///   Interface method that moves the specified topic within the tree, usng the specified sibling topic object as a
     ///   secondary target for the move.
     /// </summary>
-    /// <remarks>
-    ///   Contract preconditions are defined in the <see cref="TopicDataProviderBaseContract"/> contract class.
-    /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
