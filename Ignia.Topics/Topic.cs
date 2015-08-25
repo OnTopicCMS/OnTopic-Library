@@ -129,13 +129,6 @@ namespace Ignia.Topics {
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
-    /// </requires>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-      "Microsoft.Contracts",
-      "Requires-!value.Contains(this.Key)",
-      Justification = "The Contains() method on System.Collections.ObjectModel.KeyedCollection is not considered or marked as "
-        + "pure, but the contract requirement for this.Key is valid."
-      )]
     public Topic Parent {
       get {
         return _parent;
@@ -705,6 +698,8 @@ namespace Ignia.Topics {
     ///   allowing the collection's lookup dictionary to be updated whenever the key is updated in the corresponding topic
     ///   object.
     /// </remarks>
+    /// <param name="topic">The topic object for which the <see cref="Key"/> should be changed.</param>
+    /// <param name="newKey">The string value for the new key.</param>
     internal void ChangeKey(Topic topic, string newKey) {
       base.ChangeItemKey(topic, newKey);
     }
