@@ -201,15 +201,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = Topic.Create(key, contentType);
-      current.Id          = id;
+      Topic current = Topic.Create(key, contentType, id);
       topics.Add(current.Id, current);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure attributes not set to dirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes["ContentType"].IsDirty = false;
-      current.Attributes["Key"].IsDirty = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign sort order, based on database order
@@ -509,7 +502,7 @@ namespace Ignia.Topics.Providers {
 
         // Set preconditions
         Attribute attribute     = contentType.SupportedAttributes[attributeKey];
-        bool topicHasAttribute  = (topic.Attributes.Contains(attributeKey) && topic.Attributes[attributeKey].Value != null);
+        bool topicHasAttribute  = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes[attributeKey].Value));
         bool isPrimaryAttribute = (attributeKey == "Key" || attributeKey == "ContentType" || attributeKey == "ParentID");
         bool isRelationships    = (contentType.SupportedAttributes[attributeKey].Type == "Relationships.ascx");
         bool isNestedTopic      = (contentType.SupportedAttributes[attributeKey].Type == "TopicList.ascx");

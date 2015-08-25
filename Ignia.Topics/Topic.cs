@@ -1039,16 +1039,46 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Topic topic = (Topic)Activator.CreateInstance(targetType);
 
-      topic.Key = key;
-
       /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's Content Type
+      | Set the topic's Key and Content Type
       \---------------------------------------------------------------------------------------------------------------------*/
+      topic.Key = key;
       topic.Attributes.Set("ContentType", contentType);
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return the topic
+      \---------------------------------------------------------------------------------------------------------------------*/
       return topic;
 
     }
+
+    /// <summary>
+    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
+    ///   available. Used for cases where a <see cref="Topic"/> is being deserialized from an existing instance, as indicated
+    ///   by the <paramref name="id"/> parameter.
+    /// </summary>
+    /// <remarks>
+    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see 
+    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database. 
+    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Key"/> and <see cref="ContentType"/> on the 
+    ///   new <see cref="Topic"/> are set to false, as it is assumed these are being set to the same values currently used in 
+    ///   the persistance store.
+    /// </remarks>
+    /// <param name="key">A string representing the key for the new topic instance.</param>
+    /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
+    /// </exception>
+    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    public static Topic Create(string key, string contentType, int id) {
+      Topic topic = Create(key, contentType);
+      topic.Id = id;
+      topic.Attributes["Key"].IsDirty = false;
+      topic.Attributes["ContentType"].IsDirty = false;
+      return topic;
+    }
+
 
     /*==========================================================================================================================
     | METHOD: LOAD
