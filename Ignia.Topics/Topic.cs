@@ -126,6 +126,9 @@ namespace Ignia.Topics {
     /// <requires description="The value for Parent must not be null." exception="T:System.ArgumentNullException">
     ///   value != null
     /// </requires>
+    /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
+    ///   value != this
+    /// </requires>
     /// <requires
     ///   description="Duplicate key when setting Parent property: a topic with this topic's key already exists in the parent
     ///   topic." exception="T:System.ArgumentException">
@@ -144,27 +147,14 @@ namespace Ignia.Topics {
       set {
 
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
+        Contract.Requires<ArgumentException>(value != this, "A topic cannot be its own parent.");
         Contract.Requires<ArgumentException>(
           !value.Contains(this.Key),
           "Duplicate key when setting Parent property: a topic with the this topic's Key already exists in the Parent topic."
         );
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Check that the topic's current Parent is not the same before setting it
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_parent == value) {
-          return;
-          }
-        if (!value.Contains(this.Key)) {
-          value.Add(this);
-          }
-        else {
-          throw new Exception("Duplicate key when setting Parent property: the topic with the name '" + this.Key + "' already exists in the '" + value.Key + "' topic.");
-          }
+        value.Add(this);
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | If the Parent is new, perform move and reordering
-        \---------------------------------------------------------------------------------------------------------------------*/
         if (_parent != null) {
           ReorderSiblings(value);
           TopicRepository.DataProvider.Move(this, value);
