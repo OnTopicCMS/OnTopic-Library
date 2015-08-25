@@ -5,7 +5,8 @@
 /*===========================================================================================================================
 | IGNIA TOPICS LIBRARY
 |
-| Author        Jeremy Caney, Ignia LLC (Jeremy@ignia.com)
+
+| Author        Ignia, LLC
 | Client        Ignia
 | Project       Topics
 |

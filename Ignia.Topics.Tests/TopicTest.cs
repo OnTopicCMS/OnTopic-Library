@@ -1,14 +1,24 @@
-﻿using System;
+﻿/*==============================================================================================================================
+| Author        Ignia, LLC
+| Client        Ignia, LLC
+| Project       Topics Library
+\=============================================================================================================================*/using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 
+  /*============================================================================================================================
+  | CLASS: TOPIC TEST
+  \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="Topic"/> class.
   /// </summary>
   [TestClass]
   public class TopicTest {
 
+    /*==========================================================================================================================
+    | TEST: CREATE TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
@@ -21,6 +31,9 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>(topic.Attributes.Get("ContentType"), "ContentType");
     }
 
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a new topic and ensures that the key can be returned as an attribute.
     /// </summary>
@@ -30,6 +43,9 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
     }
 
+    /*==========================================================================================================================
+    | TEST: DEFAULT ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
     /// </summary>
@@ -39,6 +55,9 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
     }
 
+    /*==========================================================================================================================
+    | TEST: SET ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a custom attribute on a topic and ensures it can be retrieved.
     /// </summary>
@@ -49,6 +68,9 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
     }
 
+    /*==========================================================================================================================
+    | TEST: ATTRIBUTE INHERITANCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
     /// </summary>
@@ -65,6 +87,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: LIMIT ATTRIBUTE INHERITANCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an attribute on a descendent and ensures that it is correctly retrieved via inheritance.
     /// </summary>
@@ -86,6 +111,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SET PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
@@ -102,6 +130,9 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CHANGE PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
