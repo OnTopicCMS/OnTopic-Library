@@ -38,7 +38,6 @@ namespace Ignia.Topics {
   \---------------------------------------------------------------------------------------------------------------------------*/
     private   Dictionary<string, Attribute>             _supportedAttributes            = null;
     private   ReadOnlyCollection<ContentType>           _permittedContentTypes          = null;
-    private   bool?                                     _disableChildTopics             = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
