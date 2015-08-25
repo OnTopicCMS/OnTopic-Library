@@ -663,7 +663,7 @@ namespace Ignia.Topics {
     | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
     | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
     | parent collection.
-    \-------------------------------------------------------------------------------------------------------------------------*/
+    >---------------------------------------------------------------------------------------------------------------------------
     /// <summary>
     ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
     ///   represent Nested Topics.
@@ -673,10 +673,11 @@ namespace Ignia.Topics {
         throw new NotImplementedException();
       }
     }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: CHILD TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
+    >---------------------------------------------------------------------------------------------------------------------------
     /// <summary>
     ///   Provides a reference to the values collection, filtered by Topics that are NOT of the <see cref="ContentType"/>
     ///   TopicList, which represent Child Topics. This provides a complement to the <see cref="NestedTopics"/> collection.
@@ -686,6 +687,7 @@ namespace Ignia.Topics {
         throw new NotImplementedException();
       }
     }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: CHANGE KEY
@@ -1276,7 +1278,7 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | METHOD: REFRESH
-    \-------------------------------------------------------------------------------------------------------------------------*/
+    >---------------------------------------------------------------------------------------------------------------------------
     /// <summary>
     ///   Reloads the topic data from the provider and the data for all of the topic's descendants.
     /// </summary>
@@ -1295,6 +1297,7 @@ namespace Ignia.Topics {
     public bool Refresh(bool isRecursive) {
       throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
     }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: DELETE
