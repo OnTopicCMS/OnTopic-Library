@@ -180,6 +180,12 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is 
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being 
+    ///   persisted to the data store on <see cref="Topic.Save()"/>.
+    /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
     ///   exception="T:System.ArgumentNullException">
@@ -195,19 +201,37 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void Set(string key, string value) {
+    public void Set(string key, string value, bool? isDirty = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "value");
       Contract.Requires<ArgumentException>(
         !value.Contains(" "),
         "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
       );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update existing attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (this.Contains(key)) {
         Contract.Assume(this[key] != null, "Assumes the AttributeValue is available, if the collection contains the key.");
         this[key].Value = value;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Create new attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       else {
         this.Add(new AttributeValue(key, value));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Optionally override IsDirty, regardless of the default behavior
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (isDirty.HasValue) {
+        this[key].IsDirty = isDirty.Value;
       }
     }
 
@@ -220,12 +244,7 @@ namespace Ignia.Topics {
     /// <param name="item">The <see cref="AttributeValue"/> element from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(AttributeValue item) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define assumptions for external callers
-      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
-
       return item.Key;
     }
 
