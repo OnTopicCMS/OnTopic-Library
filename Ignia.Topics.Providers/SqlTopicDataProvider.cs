@@ -628,7 +628,7 @@ namespace Ignia.Topics.Providers {
       if (isRecursive) {
         foreach (Topic childTopic in topic) {
           Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
-          childTopic.Attributes["ParentID"].Value = returnVal.ToString();
+          childTopic.Attributes.Set("ParentID", returnVal.ToString());
           childTopic.Save(isRecursive, isDraft);
         }
       }

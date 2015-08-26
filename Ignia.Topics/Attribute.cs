@@ -81,7 +81,7 @@ namespace Ignia.Topics {
           !value.Contains(" ") && !value.Contains("/"), 
           "Type values should not contain spaces, slashes, or characters not permitted in file names"
         );
-        this.Attributes["Type"].Value = value;
+        this.Attributes.Set("Type", value);
       }
     }
 
