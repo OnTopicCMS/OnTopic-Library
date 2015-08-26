@@ -114,10 +114,10 @@ namespace Ignia.Topics.Migrations {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     In addition to acting as a pass-through for <see cref="Topic.Save"/>, this also ensures that a) the topic is saved
-    ///     twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see cref="ContentTypes"/>
-    ///     collection is first synchronized with the <see cref="TopicRepository"/>, and then the TopicRepository state is
-    ///     restored to its original.
+    ///     In addition to acting as a pass-through for <see cref="Topic.Save(bool, bool)"/>, this also ensures that a) the 
+    ///     topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see 
+    ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the 
+    ///     TopicRepository state is restored to its original.
     ///   </para>
     ///   <para>
     ///     The one dependency that remains on the TopicRepository is in the Save() method, which relies on it as a centralized
