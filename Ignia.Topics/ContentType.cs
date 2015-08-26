@@ -31,6 +31,7 @@ namespace Ignia.Topics {
   ///     properties mapping to attributes specific to the "Content Type" Content Type.
   ///   </para>
   /// </remarks>
+  //  ### TODO JJC082515: Should add a Get() to simply checks against the collection (e.g., via Contains() then indexer[]).
   public class ContentType : Topic {
 
   /*============================================================================================================================
@@ -172,6 +173,7 @@ namespace Ignia.Topics {
               "The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected."
             );
           }
+          Contract.Assume(this["Attributes"] != null, "Assume the ContentType topic Attributes collection is available.");
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
@@ -183,7 +185,6 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
-          Contract.Assume(this["Attributes"] != null, "Assume the ContentType topic Attributes collection is available.");
           foreach (Attribute attribute in this["Attributes"]) {
             _supportedAttributes.Add(attribute.Key, attribute);
           }
@@ -193,7 +194,7 @@ namespace Ignia.Topics {
           \-------------------------------------------------------------------------------------------------------------------*/
           ContentType parent = this.Parent as ContentType;
           if (parent != null) {
-            Contract.Assert(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
+            Contract.Assume(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);

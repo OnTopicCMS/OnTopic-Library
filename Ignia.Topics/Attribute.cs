@@ -106,8 +106,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Contract.Assume(this.Attributes["DisplayGroup"] != null, "Assumes DisplayGroup will always have a value.");
-        this.Attributes["DisplayGroup"].Value = value;
+        this.Attributes.Set("DisplayGroup", value);
       }
     }
 
@@ -133,7 +132,7 @@ namespace Ignia.Topics {
         return this.Attributes.Get("DefaultConfiguration", "");
       }
       set {
-        this.Attributes["DefaultConfiguration"].Value = value;
+        this.Attributes.Set("DefaultConfiguration", value);
       }
     }
 
@@ -163,8 +162,7 @@ namespace Ignia.Topics {
         return this.Attributes.Get("IsHidden", "0").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["IsHidden"] != null, "Assumes IsHidden will always have a value.");
-        this.Attributes["IsHidden"].Value = value.ToString();
+        this.Attributes.Set("IsHidden", value.ToString());
       }
     }
 
@@ -183,8 +181,7 @@ namespace Ignia.Topics {
         return this.Attributes.Get("IsRequired", "0").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["IsRequired"] != null, "Assumes IsRequired will always have a value.");
-        this.Attributes["IsRequired"].Value = value.ToString();
+        this.Attributes.Set("IsRequired", value.ToString());
       }
     }
 
@@ -204,7 +201,7 @@ namespace Ignia.Topics {
         return this.Attributes.Get("DefaultValue", "");
         }
       set {
-        this.Attributes["DefaultValue"].Value = value;
+        this.Attributes.Set("DefaultValue", value);
         }
       }
 
@@ -232,8 +229,7 @@ namespace Ignia.Topics {
         return this.Attributes.Get("StoreInBlob", "1").Equals("1");
       }
       set {
-        Contract.Assume(this.Attributes["StoreInBlob"] != null, "Assumes StoreInBlob will always have a value.");
-        this.Attributes["StoreInBlob"].Value = value.ToString();
+        this.Attributes.Set("StoreInBlob", value.ToString());
       }
     }
 

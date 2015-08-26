@@ -35,12 +35,7 @@ namespace Ignia.Topics {
     /// <param name="item">The <see cref="ContentType"/> element from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(ContentType item) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define assumptions for external callers
-      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
-
       return item.Key;
     }
 

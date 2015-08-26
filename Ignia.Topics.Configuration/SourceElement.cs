@@ -95,7 +95,7 @@ namespace Ignia.Topics.Configuration {
         parent.ElementInformation.Properties[key] != null,
         "Assumes the configuration property information is accessible."
         );
-      return (SourceElement)parent.ElementInformation.Properties[key].Value;
+      return (SourceElement)parent?.ElementInformation?.Properties?[key]?.Value;
     }
 
     /// <summary>

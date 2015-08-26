@@ -6,6 +6,7 @@
 using System;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Configuration {
 
@@ -32,6 +33,7 @@ namespace Ignia.Topics.Configuration {
     [ConfigurationProperty("name", IsRequired=true, IsKey=true)]
     public string Name {
       get {
+        Contract.Ensures(Contract.Result<string>() != null);
         return this["name"] as string;
       }
     }

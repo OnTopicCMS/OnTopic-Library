@@ -189,12 +189,9 @@ namespace Ignia.Topics {
         | Create singleton reference to content type object in repository
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_contentType == null) {
-          if (
-            Attributes.Contains("ContentType") &&
-            !String.IsNullOrEmpty(Attributes["ContentType"].Value) &&
-            TopicRepository.ContentTypes.Contains(Attributes["ContentType"].Value)
-          ) {
-            _contentType = TopicRepository.ContentTypes[Attributes["ContentType"].Value];
+          string contentType = Attributes.Get("ContentType");
+          if (!String.IsNullOrEmpty(contentType) && TopicRepository.ContentTypes.Contains(contentType)) {
+            _contentType = TopicRepository.ContentTypes[contentType];
           }
         }
 
@@ -517,14 +514,10 @@ namespace Ignia.Topics {
     /// </requires>
     public Topic DerivedTopic {
       get {
-        if (_derivedTopic == null && this.Attributes.Contains("TopicID")) {
-          Contract.Assume(
-            !String.IsNullOrWhiteSpace(this.Attributes["TopicID"].Value),
-            "Assume the topic's TopicID AttributeValue Value is not null"
-            );
+        if (_derivedTopic == null) {
           int topicId = 0;
-          bool success = Int32.TryParse(this.Attributes["TopicID"].Value.ToString(), out topicId);
-          if (!success || topicId == 0) return null;
+          bool success = Int32.TryParse(this.Attributes.Get("TopicId", "-1", false, false), out topicId);
+          if (!success || topicId < 0) return null;
           _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
         }
         return _derivedTopic;
@@ -588,7 +581,7 @@ namespace Ignia.Topics {
         }
         return _attributes;
       }
-      set {
+      internal set {
         Contract.Requires<ArgumentNullException>(value != null, "A topic's AttributeValue collection cannot be null.");
         _attributes = value;
       }
@@ -605,6 +598,9 @@ namespace Ignia.Topics {
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related 
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
+    //  ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
+    //  of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
+    //  that a relationship collection would benefit from (such as a custom Set() and Get() method). 
     public Topic Relationships {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
@@ -745,6 +741,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentNullException">
     ///   !scope.Contains(" ")
     /// </requires>
+    [Obsolete("The SetRelationship(string, string) overload for accepting CSV files is obsolete. Use SetRelationship(string, Topic) instead.")]
     public void SetRelationship(string scope, string relatedCsv) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -921,7 +918,6 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Collection<Topic> results = new Collection<Topic>();
 
-      Contract.Assume(this.Attributes[name] != null, "Assumes the AttributeValue is available.");
       if (this.Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
         results.Add(this);
       }
@@ -1057,11 +1053,18 @@ namespace Ignia.Topics {
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
     public static Topic Create(string key, string contentType, int id) {
+
       Topic topic = Create(key, contentType);
       topic.Id = id;
+
+      Contract.Assume(topic.Attributes["Key"] != null);
+      Contract.Assume(topic.Attributes["ContentType"] != null);
+
       topic.Attributes["Key"].IsDirty = false;
       topic.Attributes["ContentType"].IsDirty = false;
+
       return topic;
+
     }
 
     /*==========================================================================================================================
@@ -1104,7 +1107,6 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assert(version != null, "Confirms the version is available.");
       Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1340,9 +1342,6 @@ namespace Ignia.Topics {
     /// </requires>
     public bool Move(Topic target, Topic sibling) {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentException>(this != target, "The topic may not be its own parent.");
       Contract.Requires<ArgumentException>(this != sibling, "The topic cannot be moved or reordered relative to itself.");
 
