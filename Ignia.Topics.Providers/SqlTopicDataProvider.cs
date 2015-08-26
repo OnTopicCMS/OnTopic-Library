@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Xml;
 using System.Diagnostics.Contracts;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Ignia.Topics.Providers {
 
@@ -57,12 +58,12 @@ namespace Ignia.Topics.Providers {
       >-------------------------------------------------------------------------------------------------------------------------
       | ### TODO JJC082515: This code is redundant across several methods; should be able to centralize it via a private helper 
       | function (assuming that will still satisfy the Static Contract Checker).
-      \-----------------------------------------------------------------------------------------------------------------------*/
+
       if (ConfigurationManager.ConnectionStrings?["TopicsServer"] == null) {
         throw new ArgumentException(
           "Required connection string 'TopicsServer` is missing from the web.config's <connectionStrings> element"
         );
-      }
+        }
       Contract.Assume(
         ConfigurationManager.ConnectionStrings != null,
         "Assumes the connection strings are available from the configuration."
@@ -71,12 +72,15 @@ namespace Ignia.Topics.Providers {
         ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
         "Assumes the topics connection string are available from the configuration."
         );
+      
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      ValidateConnectionStrings("TopicsServer");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
-      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings?["TopicsServer"].ConnectionString);
       SqlCommand                command         = new SqlCommand("topics_GetTopics", connection);
       command.CommandType                       = CommandType.StoredProcedure;
       SqlDataReader             reader          = null;
@@ -1050,6 +1054,25 @@ namespace Ignia.Topics.Providers {
         }
       }
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: VALIDATE CONNECTION STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Confirms that the SQL connection as defined in the application configuration is available/valid.
+    /// </summary>
+    /// <param name="connectionString">The expected name of the SQL connection to validate in the configuration.</param>
+    [Pure]
+    public static void ValidateConnectionStrings(string connectionString) {
+      Contract.Requires<ArgumentNullException>(
+        !String.IsNullOrWhiteSpace(connectionString),
+        "The name of the connection string must be provided in order to be validated."
+      );
+      Contract.Requires<ArgumentOutOfRangeException>(
+        ConfigurationManager.ConnectionStrings?[connectionString] != null,
+        "The specified connection string is missing from application configuration's <connectionStrings /> element collection."
+      );
     }
 
   } // Class
