@@ -166,17 +166,13 @@ namespace Ignia.Topics.Configuration {
           value         = HttpContext.Current.Request.Form[element.Location];
           break;
         case("APPLICATION") :
-          Contract.Assume(HttpContext.Current.Application != null, "Assumes the application context is available.");
-          value = (string)HttpContext.Current.Application[element.Location];
+          value = (string)HttpContext.Current.Application?[element.Location];
           break;
         case("SESSION") :
-          Contract.Assume(HttpContext.Current.Session != null, "Assumes the current session is available.");
-          value = (string)HttpContext.Current.Session[element.Location];
+          value = (string)HttpContext.Current.Session?[element.Location];
           break;
         case("COOKIE") :
-          if (HttpContext.Current.Request.Cookies[element.Location] != null) {
-            value       = HttpContext.Current.Request.Cookies[element.Location].Value;
-            }
+          value       = HttpContext.Current.Request.Cookies[element.Location]?.Value;
           break;
         case("ROLE") :
           value         = Roles.IsUserInRole(element.Location).ToString();
