@@ -1,17 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CodeContractTest {
   public class ContractTest {
 
     public ContractTest () { }
  
-    public string MethodTest() {
+    public void Init() {
+      var test = MethodTest(HttpContext.Current);
+    }
 
-      return System.Web.HttpContext.Current?.Request.QueryString["Test"];
+    public string MethodTest(HttpContext context) {
+
+      Contract.Requires<ArgumentNullException>(context != null);
+      Contract.Requires<ArgumentNullException>(context.User != null);
+
+      return HttpContext.Current?.Request.QueryString["Test"];
 
     }
 
