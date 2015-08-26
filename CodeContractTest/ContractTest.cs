@@ -15,10 +15,16 @@ namespace CodeContractTest {
       var test = MethodTest(HttpContext.Current);
     }
 
-    public string MethodTest(HttpContext context) {
-
+    [Pure]
+    public static bool ValidateInput(HttpContext context) {
       Contract.Requires<ArgumentNullException>(context != null);
       Contract.Requires<ArgumentNullException>(context.User != null);
+      return true;
+    }
+
+    public string MethodTest(HttpContext context) {
+
+      ValidateInput(context);
 
       var user = context.User.Identity.Name;
 
