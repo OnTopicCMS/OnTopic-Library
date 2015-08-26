@@ -191,7 +191,7 @@ namespace Ignia.Topics.Providers {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       int                   parentId        = -1;
-      int                   id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      int                   id              = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
       string                contentType     = reader["ContentType"].ToString();
       string                key             = reader["TopicKey"].ToString();
                             sortOrder       = Int32.Parse(reader["SortOrder"].ToString(), CultureInfo.InvariantCulture);
@@ -1038,21 +1038,6 @@ namespace Ignia.Topics.Providers {
 
     /*==========================================================================================================================
     | METHOD: VALIDATE CONNECTION STRING
-
-      if (ConfigurationManager.ConnectionStrings?["TopicsServer"] == null) {
-        throw new ArgumentException(
-          "Required connection string 'TopicsServer` is missing from the web.config's <connectionStrings> element"
-        );
-        }
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings != null,
-        "Assumes the connection strings are available from the configuration."
-        );
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
-        "Assumes the topics connection string are available from the configuration."
-        );
-      
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Confirms that the SQL connection as defined in the application configuration is available/valid.
@@ -1064,10 +1049,23 @@ namespace Ignia.Topics.Providers {
         !String.IsNullOrWhiteSpace(connectionString),
         "The name of the connection string must be provided in order to be validated."
       );
-      Contract.Requires<ArgumentOutOfRangeException>(
-        ConfigurationManager.ConnectionStrings?[connectionString] != null,
-        "The specified connection string is missing from application configuration's <connectionStrings /> element collection."
+
+      if (ConfigurationManager.ConnectionStrings?[connectionString] == null) {
+        throw new ArgumentException(
+          "Required connection string '" + connectionString + "' is missing from the web.config's <connectionStrings /> element."
+        );
+      }
+
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings != null,
+        "Assumes the connection strings are available from the configuration."
       );
+
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
+        "Assumes the topics connection string are available from the configuration."
+      );
+
     }
 
   } // Class
