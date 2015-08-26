@@ -860,8 +860,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add the relationship to the correct scoped key
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(relationships[scope] != null, "Assumes the Relationships item has been created.");
-      if (!relationships[scope].Contains(related.Key)) {
+      if (!relationships[scope]?.Contains(related.Key) ?? false) {
         relationships[scope].Add(related);
       }
 
@@ -1228,8 +1227,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(this[nextChild] != null, "Assumes the child topic is available.");
-      return this[nextChild].GetTopic(topic);
+      return this[nextChild]?.GetTopic(topic);
 
     }
 

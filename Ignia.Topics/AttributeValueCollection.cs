@@ -212,8 +212,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Contains(key)) {
-        Contract.Assume(this[key] != null, "Assumes the AttributeValue is available, if the collection contains the key.");
+      if (this.Contains(key) && this[key] != null) {
         this[key].Value = value;
       }
 
