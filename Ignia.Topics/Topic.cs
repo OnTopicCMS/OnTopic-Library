@@ -368,7 +368,7 @@ namespace Ignia.Topics {
         return Attributes.Get("View", ContentType.Attributes.Get("View", ContentType.Key));
       }
       set {
-        Contract.Requires(!string.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
         Contract.Requires<ArgumentException>(
           !value?.Contains(" ")?? true,
           "The View should be an alphanumeric sequence; it should not contain spaces or symbols"
@@ -396,7 +396,7 @@ namespace Ignia.Topics {
         return Attributes.Get("Title", Key);
       }
       set {
-        Contract.Requires(!string.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
         Attributes.Set("Title", value);
       }
     }
@@ -419,7 +419,7 @@ namespace Ignia.Topics {
         return Attributes.Get("Description");
       }
       set {
-        Contract.Requires(!string.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
         Attributes.Set("Description", value);
       }
     }
@@ -487,7 +487,7 @@ namespace Ignia.Topics {
 
       }
       set {
-        Contract.Requires(!string.IsNullOrWhiteSpace(value.ToString()));
+        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value.ToString()));
         Attributes.Set("LastModified", value.ToString());
       }
     }
