@@ -34,8 +34,8 @@ namespace CodeContractTest {
 
       collection.Add(new FauxObject("Test"));
 
-      if (collection.Contains(user) && collection[user] != null) {
-        user += collection[user].Value;
+      if (collection.Contains(user)) {
+        user += collection[user]?.Value;
       }
 
       if (context.Request.QueryString.AllKeys.Contains<string>("Test")) {
