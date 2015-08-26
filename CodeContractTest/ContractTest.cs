@@ -20,7 +20,9 @@ namespace CodeContractTest {
       Contract.Requires<ArgumentNullException>(context != null);
       Contract.Requires<ArgumentNullException>(context.User != null);
 
-      return HttpContext.Current?.Request.QueryString["Test"];
+      var user = context.User.Identity.Name;
+
+      return HttpContext.Current?.Request.QueryString["Test"] ?? user;
 
     }
 
