@@ -180,24 +180,16 @@ namespace Ignia.Topics.Providers {
     private void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-      Contract.Assume(reader["ContentType"] != null, "Assumes the ContentType value is available from the SQL reader.");
-      Contract.Assume(reader["TopicKey"] != null, "Assumes the TopicKey value is available from the SQL reader.");
-      Contract.Assume(reader["SortOrder"] != null, "Assumes the SortOrder value is available from the SQL reader.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int                   parentId        = -1;
+      int parentId        = -1;
       int                   id              = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      string                contentType     = reader["ContentType"].ToString();
-      string                key             = reader["TopicKey"].ToString();
-                            sortOrder       = Int32.Parse(reader["SortOrder"].ToString(), CultureInfo.InvariantCulture);
+      string                contentType     = reader?["ContentType"].ToString();
+      string                key             = reader?["TopicKey"].ToString();
+                            sortOrder       = Int32.Parse(reader?["SortOrder"].ToString(), CultureInfo.InvariantCulture);
 
       // Handle ParentID (could be null for root topic)
-      Int32.TryParse(reader["ParentID"].ToString(), out parentId);
+      Int32.TryParse(reader?["ParentID"].ToString(), out parentId);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
@@ -227,20 +219,12 @@ namespace Ignia.Topics.Providers {
     private void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-      Contract.Assume(reader["AttributeKey"] != null, "Assumes the AttributeKey value is available from the SQL reader.");
-      Contract.Assume(reader["AttributeValue"] != null, "Assumes the AttributeValue value is available from the SQL reader.");
-      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int       id              = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      string    name            = reader["AttributeKey"].ToString();
-      string    value           = reader["AttributeValue"].ToString();
-      DateTime  versionDate     = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+      int id              = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      string    name            = reader?["AttributeKey"].ToString();
+      string    value           = reader?["AttributeValue"].ToString();
+      DateTime  versionDate     = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -275,23 +259,17 @@ namespace Ignia.Topics.Providers {
     /// <param name="topics">The index of topics currently being loaded.</param>
     private void SetBlogAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
-     /*------------------------------------------------------------------------------------------------------------------------
-     | Validate input
-     \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(reader["TopicID"] != null, "Assumes the TopicID value is available from the SQL reader.");
-      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      DateTime versionDate = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+      int id = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      DateTime versionDate = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
       \-----------------------------------------------------------------------------------------------------------------------*/
       XmlDocument blob = new XmlDocument();
-      blob.LoadXml((string)reader["Blob"]);
+      blob.LoadXml((string)reader?["Blob"]);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the urrent topic
@@ -346,18 +324,11 @@ namespace Ignia.Topics.Providers {
     private void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(reader["Source_TopicID"] != null, "Assumes the Source_TopicID value is available from the SQL reader.");
-      Contract.Assume(reader["Target_TopicID"] != null, "Assumes the Target_TopicID value is available from the SQL reader.");
-      Contract.Assume(reader["RelationshipTypeID"] != null, "Assumes the RelationshipTypeID value is available from the SQL reader.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      int targetTopicId = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      string relationshipTypeId = (string)reader["RelationshipTypeID"];
+      int sourceTopicId = Int32.Parse(reader?["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      int targetTopicId = Int32.Parse(reader?["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      string relationshipTypeId = (string)reader?["RelationshipTypeID"];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
@@ -396,16 +367,10 @@ namespace Ignia.Topics.Providers {
     private void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(reader["TopicId"] != null, "Assumes the TopicId value is available from the SQL reader.");
-      Contract.Assume(reader["Version"] != null, "Assumes the Version value is available from the SQL reader.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader["TopicId"].ToString(), CultureInfo.InvariantCulture);
-      DateTime dateTime = Convert.ToDateTime(reader["Version"].ToString(), CultureInfo.InvariantCulture);
+      int sourceTopicId = Int32.Parse(reader?["TopicId"].ToString(), CultureInfo.InvariantCulture);
+      DateTime dateTime = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
