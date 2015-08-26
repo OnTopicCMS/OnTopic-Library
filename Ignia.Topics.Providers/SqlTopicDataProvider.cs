@@ -14,7 +14,6 @@ using System.Globalization;
 using System.Xml;
 using System.Diagnostics.Contracts;
 using System.Web;
-using System.Text.RegularExpressions;
 
 namespace Ignia.Topics.Providers {
 
@@ -59,13 +58,29 @@ namespace Ignia.Topics.Providers {
       | ### TODO JJC082515: This code is redundant across several methods; should be able to centralize it via a private helper 
       | function (assuming that will still satisfy the Static Contract Checker).
       \-----------------------------------------------------------------------------------------------------------------------*/
+<<<<<<< HEAD
       ValidateConnectionStrings("TopicsServer");
+=======
+      if (ConfigurationManager.ConnectionStrings?["TopicsServer"] == null) {
+        throw new ArgumentException(
+          "Required connection string 'TopicsServer` is missing from the web.config's <connectionStrings> element"
+        );
+      }
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings != null,
+        "Assumes the connection strings are available from the configuration."
+        );
+      Contract.Assume(
+        ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
+        "Assumes the topics connection string are available from the configuration."
+        );
+>>>>>>> origin/master
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
-      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings?["TopicsServer"].ConnectionString);
+      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
       SqlCommand                command         = new SqlCommand("topics_GetTopics", connection);
       command.CommandType                       = CommandType.StoredProcedure;
       SqlDataReader             reader          = null;
@@ -617,7 +632,7 @@ namespace Ignia.Topics.Providers {
       if (isRecursive) {
         foreach (Topic childTopic in topic) {
           Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
-          childTopic.Attributes.Set("ParentID", returnVal.ToString());
+          childTopic.Attributes["ParentID"].Value = returnVal.ToString();
           childTopic.Save(isRecursive, isDraft);
         }
       }
@@ -1041,6 +1056,7 @@ namespace Ignia.Topics.Providers {
 
     }
 
+<<<<<<< HEAD
     /*==========================================================================================================================
     | METHOD: VALIDATE CONNECTION STRING
 
@@ -1075,6 +1091,8 @@ namespace Ignia.Topics.Providers {
       );
     }
 
+=======
+>>>>>>> origin/master
   } // Class
 
 } // Namespace

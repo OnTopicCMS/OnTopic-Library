@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
@@ -19,14 +20,27 @@ namespace CodeContractTest {
     public static bool ValidateInput(HttpContext context) {
       Contract.Requires<ArgumentNullException>(context != null);
       Contract.Requires<ArgumentNullException>(context.User != null);
+      Contract.Assert(context.User.Identity != null);
       return true;
     }
 
     public string MethodTest(HttpContext context) {
 
+      Contract.Ensures(Contract.Result<string>() != null);
       ValidateInput(context);
 
       var user = context.User.Identity.Name;
+      var collection = new FauxObjectCollection();
+
+      collection.Add(new FauxObject("Test"));
+
+      if (collection.Contains(user) && collection[user] != null) {
+        user += collection[user].Value;
+      }
+
+      if (context.Request.QueryString.AllKeys.Contains<string>("Test")) {
+        user += context.Request.QueryString["Test"];
+      }
 
       return HttpContext.Current?.Request.QueryString["Test"] ?? user;
 

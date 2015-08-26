@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Globalization;
 using System.Diagnostics.Contracts;
+using System.Text.RegularExpressions;
 
 namespace Ignia.Topics {
   
@@ -1399,6 +1400,26 @@ namespace Ignia.Topics {
         }
       }
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: VALIDATE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Validates the format of a key used for an individual topic.
+    /// </summary>
+    /// <remarks>
+    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question 
+    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code 
+    ///   Contract Checker.
+    /// </remarks>
+    /// <param name="topicKey">The topic key that should be validated.</param>
+    [Pure]
+    public static void ValidateKey(string topicKey) {
+      Contract.Requires<ArgumentException>(
+        Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\-_]*$"),
+        "Key names should only contain letters, numbers, hyphens, and/or underscores."
+      );
     }
 
     /*==========================================================================================================================

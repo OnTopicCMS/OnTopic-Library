@@ -122,12 +122,9 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
-      Contract.Requires<ArgumentException>(
-        !name.Contains(" "),
-        "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
       Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
       Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
+      Topic.ValidateKey(name);
 
       string value = null;
 

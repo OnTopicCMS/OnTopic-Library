@@ -77,10 +77,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Contract.Requires<ArgumentException>(
-          !value.Contains(" ") && !value.Contains("/"), 
-          "Type values should not contain spaces, slashes, or characters not permitted in file names"
-        );
+        Topic.ValidateKey(value);
         this.Attributes.Set("Type", value);
       }
     }

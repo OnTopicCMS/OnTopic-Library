@@ -67,6 +67,7 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(key));
+      Topic.ValidateKey(key);
 
       this.Key          = key;
       this.Value        = value;
@@ -109,10 +110,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Contract.Requires<ArgumentException>(
-          !value.Contains(" "),
-          "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-        );
+        Topic.ValidateKey(value);
         _key = value;
       }
     }
