@@ -139,6 +139,11 @@ namespace Ignia.Topics.Migrations {
     void Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure TopicRepository references the local instances of the ContentTypes
       \-----------------------------------------------------------------------------------------------------------------------*/
       TopicRepository.ContentTypes = ContentTypes;
@@ -179,12 +184,26 @@ namespace Ignia.Topics.Migrations {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     void UpdateDerivedTopics(Topic topic, bool isRecursive = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update the topic reference/derivation
+      \-----------------------------------------------------------------------------------------------------------------------*/
       topic.DerivedTopic = topic.DerivedTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Recurse over child topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (Topic childTopic in topic) {
           UpdateDerivedTopics(childTopic, isRecursive);
         }
       }
+
     }
 
     /*==========================================================================================================================
@@ -215,6 +234,12 @@ namespace Ignia.Topics.Migrations {
     /// <param name="contentType">The topic's <see cref="Topic.ContentType"/> key.</param>
     /// <returns>The configured topic object.</returns>
     Topic SetTopic(Topic parentTopic, string key, string contentType) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
+
       Topic topic = null;
       if (!parentTopic.Contains(key)) {
 
@@ -276,6 +301,11 @@ namespace Ignia.Topics.Migrations {
     Topic SetContentType(Topic parentTopic, string key) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Create content type, if not already present
       \-----------------------------------------------------------------------------------------------------------------------*/
       ContentType contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
@@ -310,8 +340,8 @@ namespace Ignia.Topics.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(parentContentType) && !String.IsNullOrWhiteSpace(childContentType),
-        "The parent and child ContentTypes must both be specified."
+        !String.IsNullOrWhiteSpace(parentContentType) || !String.IsNullOrWhiteSpace(childContentType),
+        "Either the parent or child ContentTypes must be specified."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -372,7 +402,7 @@ namespace Ignia.Topics.Migrations {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(
         !String.IsNullOrWhiteSpace(parentContentType),
-        "The parent ContentTypes must be specified."
+        "The parent ContentType key must be specified."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -402,7 +432,14 @@ namespace Ignia.Topics.Migrations {
     /// </summary>
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     void DisableChildTopics(Topic parentContentType) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(parentContentType != null, "The parent ContentType must be specified.");
+
       parentContentType.Attributes.Set("DisableChildTopics", "1");
+
       }
 
     /*==========================================================================================================================
@@ -417,6 +454,12 @@ namespace Ignia.Topics.Migrations {
     /// <param name="key">The <see cref="Topic.Key"/> for the attribute to be referenced.</param>
     /// <returns>The topic object for the referencing topic.</returns>
     Topic SetAttributeReference(Topic contentType, Topic attributes, string key) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(attributes != null, "The attributes topic must be specified.");
+      Contract.Requires<ArgumentNullException>(contentType != null, "The contentTYpe topic must be specified.");
 
       if (!attributes.Contains(key)) {
         throw new Exception("The attribute with the key '" + key + "' does not exist in the '" + attributes.Key + "' Topic.");
