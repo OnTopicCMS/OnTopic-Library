@@ -69,8 +69,12 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(key));
       Topic.ValidateKey(key);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set local values
+      \-----------------------------------------------------------------------------------------------------------------------*/
       this.Key          = key;
       this.Value        = value;
+
     }
 
     /// <summary>

@@ -115,18 +115,17 @@ namespace Ignia.Topics {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
+        | Validate contract
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<ReadOnlyCollection<ContentType>>() != null);
 
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Populate values from relationships
+        \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes == null) {
           var permittedContentTypes = new List<ContentType>();
           var contentTypes = new Topic();
-          if (Relationships.Contains("ContentTypes")) {
-            Contract.Assume(
-              Relationships["ContentTypes"] != null,
-              "Assume that the ContentTypes item is available, if Relationships contains the ContentTypes key."
-              );
+          if (Relationships.Contains("ContentTypes") && Relationships["ContentTypes"] != null) {
             contentTypes = Relationships["ContentTypes"];
           }
           foreach (ContentType contentType in contentTypes) {
@@ -134,7 +133,12 @@ namespace Ignia.Topics {
           }
           _permittedContentTypes = new ReadOnlyCollection<ContentType>(permittedContentTypes);
         }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return values
+        \---------------------------------------------------------------------------------------------------------------------*/
         return _permittedContentTypes;
+
       }
     }
 
@@ -168,12 +172,11 @@ namespace Ignia.Topics {
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
           \-------------------------------------------------------------------------------------------------------------------*/
-          if (!this.Contains("Attributes")) {
+          if (!this.Contains("Attributes") || this["Attributes"] == null) {
             throw new Exception(
               "The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected."
             );
           }
-          Contract.Assume(this["Attributes"] != null, "Assume the ContentType topic Attributes collection is available.");
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
@@ -193,8 +196,7 @@ namespace Ignia.Topics {
           | Get values from parent
           \-------------------------------------------------------------------------------------------------------------------*/
           ContentType parent = this.Parent as ContentType;
-          if (parent != null) {
-            Contract.Assume(parent.SupportedAttributes != null, "Assumes the SupportedAttributes collection is available.");
+          if (parent?.SupportedAttributes != null) {
             foreach (Attribute attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);

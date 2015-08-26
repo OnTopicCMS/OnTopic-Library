@@ -282,16 +282,15 @@ namespace Ignia.Topics.Providers {
       foreach (XmlNode attribute in blob.DocumentElement.GetElementsByTagName("attribute")) {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Validate assumptions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(attribute.Attributes != null, "Assumes the blob AttributeValue collection is available.");
-        Contract.Assume(attribute.Attributes["key"] != null, "Assumes the key is available from the blob.");
-
-        /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        string  name    = attribute.Attributes["key"].Value;
+        string  name    = attribute.Attributes?["key"]?.Value;
         string  value   = HttpUtility.HtmlDecode(attribute.InnerXml);
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate assumptions
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Assume(name != null, "Assumes the blob AttributeValue collection is available and has a 'key' attribute.");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Set attribute value
@@ -749,12 +748,7 @@ namespace Ignia.Topics.Providers {
     /// <param name="connection">The SQL connection.</param>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
-
       return PersistRelations(topic, connection, false);
     }
 
@@ -974,6 +968,7 @@ namespace Ignia.Topics.Providers {
       }
 
       Contract.Assume(commandObject.Parameters["@" + sqlParameter] != null, "Assumes the parameter is valid.");
+
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
       if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {

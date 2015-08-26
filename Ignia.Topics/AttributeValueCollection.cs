@@ -132,8 +132,7 @@ namespace Ignia.Topics {
       | Look up value from Attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (this.Contains(name)) {
-        Contract.Assume(this[name] != null, "Assumes the AttributeValue is not null");
-        value = this[name].Value;
+        value = this[name]?.Value;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -204,16 +203,12 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Contract.Requires<ArgumentException>(
-        !value.Contains(" "),
-        "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
+      Topic.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Contains(key)) {
-        Contract.Assume(this[key] != null, "Assumes the AttributeValue is available, if the collection contains the key.");
+      if (this.Contains(key) && this[key] != null) {
         this[key].Value = value;
       }
 

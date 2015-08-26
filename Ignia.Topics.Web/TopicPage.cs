@@ -68,16 +68,8 @@ namespace Ignia.Topics.Web {
         | Define assumptions
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(
-          this._topic != null || this.Page != null,
+          this._topic != null || this.Page?.RouteData?.Values != null,
           "Assumes that either the topic or the page are available in order to render the page."
-          );
-        Contract.Assume(
-          this._topic != null || this.Page.RouteData != null,
-          "Assumes that either the topic or the route are available in order to render the page."
-          );
-        Contract.Assume(
-          this._topic != null || this.Page.RouteData.Values != null,
-          "Assumes that either the topic or the route are available in order to render the page."
           );
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -153,10 +145,7 @@ namespace Ignia.Topics.Web {
       | Handle missing or disabled topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (EnableValidation && pageTopic != null && pageTopic.Attributes.Get("IsDisabled", true).Equals("1")) {
-        Contract.Assume(Page != null, "Assumes the Page is available.");
-        Contract.Assume(Page.User != null, "Assumes the user information from the Page is available.");
-        Contract.Assume(Page.User.Identity.Name != null, "Assumes the Identity information from the Page is available.");
-        if (!Roles.IsUserInRole(Page.User.Identity.Name, "Administrators")) {
+        if (!Roles.IsUserInRole(Page?.User?.Identity?.Name?? "", "Administrators")) {
           if (Request.QueryString["PageID"] != null) {
             Response.Redirect("/Redirector.aspx?PageID=" + Request.QueryString["PageID"]);
           }
@@ -191,13 +180,8 @@ namespace Ignia.Topics.Web {
     /// <remarks>The URL in the editor associated with the current topic.</remarks>
     public String EditUrl {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<String>() != null);
-
-        Contract.Assume(this.Topic != null, "Assumes the page topic is not null.");
+        Contract.Requires(this.Topic != null, "Assumes the page topic is not null.");
         return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;
       }
     }

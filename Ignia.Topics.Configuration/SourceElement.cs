@@ -91,11 +91,7 @@ namespace Ignia.Topics.Configuration {
     /// <returns>The matching source configuration element, or null if not found.</returns>
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
-      Contract.Assume(
-        parent.ElementInformation.Properties[key] != null,
-        "Assumes the configuration property information is accessible."
-        );
-      return (SourceElement)parent?.ElementInformation?.Properties?[key]?.Value;
+      return (SourceElement)parent.ElementInformation?.Properties?[key]?.Value;
     }
 
     /// <summary>
@@ -148,6 +144,11 @@ namespace Ignia.Topics.Configuration {
     public static string GetValue(SourceElement element) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(HttpContext.Current != null, "Assumes the current HTTP context is available.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return null if the element is disabled or missing
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (element == null || !element.Enabled) return null;
@@ -157,9 +158,7 @@ namespace Ignia.Topics.Configuration {
       \-----------------------------------------------------------------------------------------------------------------------*/
       string value = null;
 
-      Contract.Assume(element.Source != null, "Assumes the Source value for the element is available.");
-      Contract.Assume(HttpContext.Current != null, "Assumes the current HTTP context is available.");
-      switch (element.Source.ToUpperInvariant()) {
+      switch (element.Source?.ToUpperInvariant()?? "") {
         case("QUERYSTRING") :
           value         = HttpContext.Current.Request.QueryString[element.Location];
           break;

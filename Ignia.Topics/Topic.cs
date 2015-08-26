@@ -57,6 +57,7 @@ namespace Ignia.Topics {
     /// </requires>
     public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
+      Topic.ValidateKey(key);
       this.Key                  = key;
     }
 
@@ -86,11 +87,9 @@ namespace Ignia.Topics {
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
-      Contract.Requires<ArgumentException>(
-        !contentType.Contains(" "),
-        "The contentType key should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
-      this.Key                  = key;
+      Topic.ValidateKey(key);
+      Topic.ValidateKey(contentType);
+      this.Key = key;
       this.Attributes.Add(new AttributeValue("ContentType", contentType));
     }
 
@@ -136,6 +135,9 @@ namespace Ignia.Topics {
       }
       set {
 
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Check preconditions
+        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
         Contract.Requires<ArgumentException>(value != this, "A topic cannot be its own parent.");
 
@@ -231,10 +233,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Contract.Requires<ArgumentException>(
-          !value.Contains(" "),
-          "The Key should be an alphanumeric sequence; it should not contain spaces or symbols"
-        );
+        Topic.ValidateKey(value);
         if (_originalKey == null) {
           _originalKey = Attributes.Get("Key", null);
         }
@@ -310,10 +309,7 @@ namespace Ignia.Topics {
         return _originalKey;
       }
       set {
-        Contract.Requires<ArgumentException>(
-          !value?.Contains(" ")?? true,
-          "The OriginalKey should be an alphanumeric sequence; it should not contain spaces or symbols"
-        );
+        Topic.ValidateKey(value);
         _originalKey = value;
       }
     }
@@ -331,12 +327,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string WebPath {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<String>() != null);
-
         return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
       }
     }
@@ -370,10 +361,7 @@ namespace Ignia.Topics {
       }
       set {
         Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
-        Contract.Requires<ArgumentException>(
-          !value?.Contains(" ")?? true,
-          "The View should be an alphanumeric sequence; it should not contain spaces or symbols"
-        );
+        Topic.ValidateKey(value);
         Attributes.Set("View", value);
       }
     }
@@ -397,7 +385,6 @@ namespace Ignia.Topics {
         return Attributes.Get("Title", Key);
       }
       set {
-        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
         Attributes.Set("Title", value);
       }
     }
@@ -420,7 +407,6 @@ namespace Ignia.Topics {
         return Attributes.Get("Description");
       }
       set {
-        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
         Attributes.Set("Description", value);
       }
     }
@@ -488,7 +474,6 @@ namespace Ignia.Topics {
 
       }
       set {
-        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value.ToString()));
         Attributes.Set("LastModified", value.ToString());
       }
     }
@@ -749,10 +734,7 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope), "scope");
-      Contract.Requires<ArgumentException>(
-        !scope.Contains(" "),
-        "The scope should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
+      Topic.ValidateKey(scope);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle Deletion
@@ -835,10 +817,7 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
       Contract.Requires<ArgumentNullException>(related != null);
-      Contract.Requires<ArgumentException>(
-        !scope.Contains(" "),
-        "The scope should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
+      Topic.ValidateKey(scope);
       // Contract.Requires<ArgumentException>(related != this, "A topic cannot be related to itself.");
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -860,8 +839,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add the relationship to the correct scoped key
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(relationships[scope] != null, "Assumes the Relationships item has been created.");
-      if (!relationships[scope].Contains(related.Key)) {
+      if (!relationships[scope]?.Contains(related.Key)?? false) {
         relationships[scope].Add(related);
       }
 
@@ -904,10 +882,7 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-      Contract.Requires<ArgumentException>(
-        !name.Contains(" "),
-        "The name should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
+      Topic.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate return value
@@ -984,15 +959,9 @@ namespace Ignia.Topics {
       | Validate inputs
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentException>(
-        !key.Contains(" "),
-        "The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Requires<ArgumentException>(
-        !contentType.Contains(" "),
-        "The contentType should be an alphanumeric sequence; it should not contain spaces or symbols"
-      );
+      Topic.ValidateKey(key);
+      Topic.ValidateKey(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate return value
@@ -1055,15 +1024,33 @@ namespace Ignia.Topics {
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
     public static Topic Create(string key, string contentType, int id) {
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate inputs
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(id >= 0);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Create object
+      \---------------------------------------------------------------------------------------------------------------------*/
       Topic topic = Create(key, contentType);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Assign identifier
+      \---------------------------------------------------------------------------------------------------------------------*/
       topic.Id = id;
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set dirty state to false
+      \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Assume(topic.Attributes["Key"] != null);
       Contract.Assume(topic.Attributes["ContentType"] != null);
 
       topic.Attributes["Key"].IsDirty = false;
       topic.Attributes["ContentType"].IsDirty = false;
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return object
+      \---------------------------------------------------------------------------------------------------------------------*/
       return topic;
 
     }
@@ -1152,15 +1139,27 @@ namespace Ignia.Topics {
     /// </requires>
     public Topic GetTopic(int topicId) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return if current
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (this.Id == topicId) return this;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Iterate through children
+      \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic childTopic in this) {
         Topic topic = childTopic.GetTopic(topicId);
         if (topic != null) return topic;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return null if not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return null;
 
     }
@@ -1228,8 +1227,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(this[nextChild] != null, "Assumes the child topic is available.");
-      return this[nextChild].GetTopic(topic);
+      return this[nextChild]?.GetTopic(topic);
 
     }
 
@@ -1348,6 +1346,7 @@ namespace Ignia.Topics {
 
       ReorderSiblings(sibling);
       return TopicRepository.DataProvider.Move(this, target, sibling);
+
     }
 
     /*==========================================================================================================================
@@ -1370,7 +1369,6 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(this != null, "source");
       Contract.Requires<ArgumentException>(this != sibling, "The source cannot be reordered relative to itself.");
 
       /*------------------------------------------------------------------------------------------------------------------------

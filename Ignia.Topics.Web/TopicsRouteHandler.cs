@@ -75,8 +75,8 @@ namespace Ignia.Topics.Web {
         | Define assumptions
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(
-          this._views != null || HttpContext.Current != null,
-          "Assumes that either the views list or the HTTP context are available in order to render the current view."
+          HttpContext.Current != null,
+          "Assumes that the HTTP context are available in order to render the current view."
           );
 
         if (_views == null) {
@@ -148,6 +148,7 @@ namespace Ignia.Topics.Web {
       | Validate parameters
       \------------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(contentType != null, "contentType");
+      Topic.ValidateKey(contentType);
 
       /*-------------------------------------------------------------------------------------------------------------------------
       | Check for content type specific view
@@ -201,9 +202,10 @@ namespace Ignia.Topics.Web {
       /*----------------------------------------------------------------------------------------------------------------------
       | Define assumptions
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assert(requestContext != null, "Confirm that the request context is available.");
-      Contract.Assume(requestContext.RouteData != null, "Assumes the route data are available from the request context.");
-      Contract.Assume(requestContext.RouteData.Values != null, "Assumes that routes are available from the route data.");
+      Contract.Assert(
+        requestContext?.RouteData?.Values != null, 
+        "Confirm that the request context and route data are available."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
@@ -229,11 +231,11 @@ namespace Ignia.Topics.Web {
       | Set route variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       string    contentType                     = topic.ContentType.Key;
+      var       firstColon                      = topic.UniqueKey.IndexOf(":");
 
-      if (String.IsNullOrEmpty(nameSpace)) {
-        Contract.Assume(topic.UniqueKey.IndexOf(":") >= 0, "Assumes the UniqueKey contains the : delimiter.");
-        nameSpace                               = topic.UniqueKey.Substring(0, topic.UniqueKey.IndexOf(":"));
-        path                                    = topic.UniqueKey.Substring(topic.UniqueKey.IndexOf(":")+1);
+      if (String.IsNullOrEmpty(nameSpace) && firstColon >= 0) {
+        nameSpace                               = topic.UniqueKey.Substring(0, firstColon);
+        path                                    = topic.UniqueKey.Substring(firstColon+1);
       }
 
       requestContext.RouteData.Values["contentType"]            = contentType;

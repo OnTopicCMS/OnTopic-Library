@@ -86,12 +86,7 @@ namespace Ignia.Topics {
     /// </summary>
     public static Topic RootTopic {
       get {
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \-----------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<Topic>() != null);
-
         if (_rootTopic == null) {
           _rootTopic = DataProvider.Load("", -1);
         }
@@ -135,12 +130,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public static TopicDataProviderBase DataProvider {
       get {
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \-----------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<TopicDataProviderBase>() != null);
-
         if (_dataProvider == null) {
           _dataProvider = TopicDataProviderManager.DataProvider;
         }

@@ -36,12 +36,7 @@ namespace Ignia.Topics.Configuration {
         return base.BaseGet(index) as PageTypeElement;
       }
       set {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate input
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
-
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }

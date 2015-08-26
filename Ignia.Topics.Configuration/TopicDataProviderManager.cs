@@ -91,12 +91,7 @@ namespace Ignia.Topics.Configuration {
     /// </summary>
     public static TopicDataProviderBase DataProvider {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<TopicDataProviderBase>() != null);
-
         return _defaultDataProvider;
       }
     }
