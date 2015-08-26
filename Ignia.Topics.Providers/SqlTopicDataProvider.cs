@@ -638,10 +638,6 @@ namespace Ignia.Topics.Providers {
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public override bool Move(Topic topic, Topic target) {
-      Contract.Requires<ArgumentException>(
-        topic != target, 
-        "Assumes the topic to move is not also specified as the target topic."
-      );
       return this.Move(topic, target, null);
     }
 
