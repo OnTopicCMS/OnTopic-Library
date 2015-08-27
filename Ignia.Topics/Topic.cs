@@ -456,7 +456,7 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return minimum date value, if LastModified is not already populated
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(Attributes.Get("LastModified", ""))) {
+        if (String.IsNullOrWhiteSpace(Attributes.Get("LastModified", ""))) {
           return DateTime.MinValue;
         }
 
@@ -471,7 +471,9 @@ namespace Ignia.Topics {
           return dateTimeValue;
         }
 
-        // Return minimum date value if datetime cannot be parsed from attribute
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Otherwise, return default of minimum value
+        \---------------------------------------------------------------------------------------------------------------------*/
         else {
           return DateTime.MinValue;
         }
