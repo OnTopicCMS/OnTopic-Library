@@ -859,13 +859,10 @@ namespace Ignia.Topics {
     | allowing a search by any criteria - including attributes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a collection of topics based on an attribute name and value, optionally recursively.
+    ///   Retrieves a collection of topics based on an attribute name and value.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
     /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse over the topic's children when performing the find operation.
-    /// </param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(name)
@@ -875,7 +872,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
+    public Collection<Topic> FindAllByAttribute(string name, string value) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -900,12 +897,10 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Search children, if recursive
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive) {
-        foreach (Topic topic in this) {
-          Collection<Topic> nestedResults = topic.FindAllByAttribute(name, value, true);
-          foreach (Topic matchedTopic in nestedResults) {
-            results.Add(matchedTopic);
-          }
+      foreach (Topic topic in this) {
+        Collection<Topic> nestedResults = topic.FindAllByAttribute(name, value);
+        foreach (Topic matchedTopic in nestedResults) {
+          results.Add(matchedTopic);
         }
       }
 
@@ -914,6 +909,23 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       return results;
 
+    }
+
+    /// <summary>
+    ///   Retrieves a collection of topics based on an attribute name and value, optionally recursively.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="isRecursive">
+    ///   Boolean indicator nothing whether to recurse over the topic's children when performing the find operation.
+    /// </param>
+    /// <returns>A collection of topics matching the input parameters.</returns>
+    [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
+    public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
+      if (!isRecursive) {
+        throw new NotImplementedException("The isRecursive flag is obsolete and should not be used");
+      }
+      return FindAllByAttribute(name, value);
     }
 
     /*==========================================================================================================================

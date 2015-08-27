@@ -61,7 +61,7 @@ namespace Ignia.Topics {
           /*--------------------------------------------------------------------------------------------------------------------
           | Add available Content Types to the collection
           \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType", true)) {
+          foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
             // Ensure the Topic is used as the strongly-typed ContentType
             ContentType contentType     = topic as ContentType;
             // Add ContentType Topic to collection if not already added

@@ -88,7 +88,7 @@ namespace Ignia.Topics.Migrations {
           | Add any available Content Types to the collection
           \-------------------------------------------------------------------------------------------------------------------*/
           if (RootTopic.GetTopic("Configuration:ContentTypes") != null) {
-            foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType", true)) {
+            foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
 
               // Make sure the Topic is used as the strongly-typed ContentType
               ContentType contentType = topic as ContentType;
