@@ -240,7 +240,8 @@ namespace Ignia.Topics {
         if (_originalKey == null) {
           _originalKey = Attributes.Get("Key", null);
         }
-        if (_originalKey != null && !value.Equals(Key) && Parent != null) {
+        //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
+        if (_originalKey != null && !value.Equals(_key) && Parent != null) {
           Parent.ChangeKey(this, value);
         }
         Attributes.Set("Key", value);
@@ -307,7 +308,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value?.Contains(" ")?? true
     /// </requires>
-    public string OriginalKey {
+    internal string OriginalKey {
       get {
         return _originalKey;
       }
