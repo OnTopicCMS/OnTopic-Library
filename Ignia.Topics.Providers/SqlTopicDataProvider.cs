@@ -183,13 +183,13 @@ namespace Ignia.Topics.Providers {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       int parentId        = -1;
-      int                   id              = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      string                contentType     = reader?["ContentType"].ToString();
-      string                key             = reader?["TopicKey"].ToString();
-                            sortOrder       = Int32.Parse(reader?["SortOrder"].ToString(), CultureInfo.InvariantCulture);
+      int                   id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      string                contentType     = reader?["ContentType"]?.ToString();
+      string                key             = reader?["TopicKey"]?.ToString();
+                            sortOrder       = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
 
       // Handle ParentID (could be null for root topic)
-      Int32.TryParse(reader?["ParentID"].ToString(), out parentId);
+      Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
@@ -221,10 +221,10 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id              = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      string    name            = reader?["AttributeKey"].ToString();
-      string    value           = reader?["AttributeValue"].ToString();
-      DateTime  versionDate     = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
+      int id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      string    name            = reader?["AttributeKey"]?.ToString();
+      string    value           = reader?["AttributeValue"]?.ToString();
+      DateTime  versionDate     = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -262,8 +262,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id = Int32.Parse(reader?["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      DateTime versionDate = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
+      int id = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      DateTime versionDate = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
@@ -325,8 +325,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader?["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      int targetTopicId = Int32.Parse(reader?["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      int sourceTopicId = Int32.Parse(reader?["Source_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      int targetTopicId = Int32.Parse(reader?["Target_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       string relationshipTypeId = (string)reader?["RelationshipTypeID"];
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -368,8 +368,8 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader?["TopicId"].ToString(), CultureInfo.InvariantCulture);
-      DateTime dateTime = Convert.ToDateTime(reader?["Version"].ToString(), CultureInfo.InvariantCulture);
+      int sourceTopicId = Int32.Parse(reader?["TopicId"]?.ToString(), CultureInfo.InvariantCulture);
+      DateTime dateTime = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
