@@ -737,7 +737,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentNullException">
     ///   !scope.Contains(" ")
     /// </requires>
-    [Obsolete("The SetRelationship(string, string) overload for accepting CSV files is obsolete. Use SetRelationship(string, Topic) instead.")]
+    [Obsolete("The SetRelationship(string, string) overload for accepting CSV files is obsolete. Use SetRelationship(string, Topic) instead.", true)]
     public void SetRelationship(string scope, string relatedCsv) {
 
       /*------------------------------------------------------------------------------------------------------------------------
