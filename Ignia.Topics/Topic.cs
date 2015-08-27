@@ -1308,10 +1308,8 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Deletes the current topic (as well as all children).
     /// </summary>
-    /// <remarks>
-    ///   We may want to rethink this at some point and have functionality to delete a node and elavate it's children or
-    ///   delete and reassign children or something.
-    /// </remarks>
+    //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's 
+    //  children or delete and reassign children or something.
     public void Delete() {
       Delete(true);
     }
