@@ -1442,7 +1442,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
     [Pure]
-    public static void ValidateKey(string topicKey) {
+    internal static void ValidateKey(string topicKey) {
       Contract.Requires<ArgumentException>(
         Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\-_]*$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
