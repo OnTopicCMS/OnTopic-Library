@@ -39,7 +39,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void GetAttributeTest() {
-      Topic topic = new Topic("Test");
+      Topic topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
     }
 
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void DefaultAttributeTest() {
-      Topic topic = new Topic("Test");
+      Topic topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
     }
 
@@ -63,7 +63,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void SetAttributeTest() {
-      Topic topic = new Topic("Test");
+      Topic topic = Topic.Create("Test", "Container");
       topic.Attributes.Set("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
     }
@@ -76,8 +76,8 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void AttributeInheritanceTest() {
-      Topic childTopic = new Topic("Child");
-      Topic parentTopic = new Topic("Parent");
+      Topic childTopic = Topic.Create("Child", "Container");
+      Topic parentTopic = Topic.Create("Parent", "Container");
 
       childTopic.Parent = parentTopic;
       parentTopic.Attributes.Set("Foo", "Bar");
@@ -99,7 +99,7 @@ namespace Ignia.Topics.Tests {
       Topic[] topics = new Topic[5];
 
       for (int i=0; i<=4; i++) {
-        Topic topic = new Topic("Topic" + i);
+        Topic topic = Topic.Create("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
       }

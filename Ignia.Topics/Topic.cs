@@ -40,6 +40,9 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
+    >-----------=---------------------------------------------------------------------------------------------------------------
+    | ### NOTE JJC082715: The empty constructor is a prerequisite of the factory method, which relies on Activator to create a 
+    | new instance of the object.
     \-----------=-------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
@@ -47,24 +50,32 @@ namespace Ignia.Topics {
     public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier.
+    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text 
+    ///   identifier.
     /// </summary>
+    /// <remarks>
+    ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This 
+    ///   is ensured by using the <see cref="Create(string, string)"/> factory method. When constructing derived types directly, 
+    ///   however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and calls
+    ///   this base constructor; it will automatically set the content type based on the derived class's type.
+    /// </remarks>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
     /// </param>
     /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(topic)
     /// </requires>
-    public Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
+    protected Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
-      this.Key                  = key;
+      this.Key = key;
+      this.Attributes.Set("ContentType", this.GetType().Name);
     }
 
     /// <summary>
-    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will return a 
-    ///   strongly-typed version. 
+    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
+    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will 
+    ///   return a strongly-typed version. 
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -843,7 +854,7 @@ namespace Ignia.Topics {
       | Create new namespace, if not present
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!relationships.Contains(scope)) {
-        relationships.Add(new Topic(scope));
+        relationships.Add(Topic.Create(scope, "Container"));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
