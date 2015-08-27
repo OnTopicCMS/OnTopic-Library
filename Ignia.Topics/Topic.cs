@@ -1450,8 +1450,8 @@ namespace Ignia.Topics {
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
     public virtual void Dispose() {
-      _incomingRelationships.Dispose();
-      _relationships.Dispose();
+      _incomingRelationships?.Dispose();
+      _relationships?.Dispose();
       GC.SuppressFinalize(this);
     }
 
