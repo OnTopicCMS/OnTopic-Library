@@ -1133,6 +1133,9 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version 
+    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
@@ -1185,16 +1188,26 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
     /// </summary>
-    /// <param name="topic">
+    /// <param name="uniqueKey">
     ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
     /// </param>
     /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string topic) {
+    public Topic GetTopic(string uniqueKey) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(topic)) return null;
+      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide shortcut for local calls
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.IndexOf(":") < 0) {
+        if (this.Contains(uniqueKey)) {
+          return this[uniqueKey];
+        }
+        return null;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide implicit root
@@ -1204,24 +1217,22 @@ namespace Ignia.Topics {
       | needing to be aware of the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        !topic.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
-        !topic.StartsWith("Categories:", StringComparison.OrdinalIgnoreCase) &&
-        !topic.Equals("Root", StringComparison.OrdinalIgnoreCase) &&
-        !topic.Equals("Categories", StringComparison.OrdinalIgnoreCase)
+        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
+        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
         ) {
-        topic = "Root:" + topic;
+        uniqueKey = "Root:" + uniqueKey;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!topic.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
-      if (topic.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
+      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
+      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string   remainder        = topic.Substring(UniqueKey.Length + 1);
+      string   remainder        = uniqueKey.Substring(UniqueKey.Length + 1);
       int      marker           = remainder.IndexOf(":", StringComparison.Ordinal);
       string   nextChild        = (marker < 0)? remainder : remainder.Substring(0, marker);
 
@@ -1235,7 +1246,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return this[nextChild]?.GetTopic(topic);
+      return this[nextChild]?.GetTopic(uniqueKey);
 
     }
 
