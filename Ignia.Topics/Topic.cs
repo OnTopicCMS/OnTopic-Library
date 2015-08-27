@@ -117,6 +117,9 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: PARENT
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082715: Currently, calling Parent forces an immediate Save(). This should instead be done manually at the 
+    | discretion of client code. This is a potentially breaking change that will require updating any code that sets Parent.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
@@ -581,6 +584,10 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
+    | of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
+    | that a relationship collection would benefit from (such as a custom Set() and Get() method). 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, etc.
@@ -590,9 +597,6 @@ namespace Ignia.Topics {
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related 
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    //  ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
-    //  of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
-    //  that a relationship collection would benefit from (such as a custom Set() and Get() method). 
     public Topic Relationships {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
