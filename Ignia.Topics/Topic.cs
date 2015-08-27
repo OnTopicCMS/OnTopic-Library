@@ -1264,21 +1264,12 @@ namespace Ignia.Topics {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Saves the topic information.
+    ///   Saves the topic information, optionally including all descendants, and optionally marking as draft.
     /// </summary>
     /// <remarks>
     ///   Optional overload allows for specifying whether all children should also be saved, as well as whether the topic should
     ///   be marked as having Draft status.
     /// </remarks>
-    /// <returns>The topic's integer identifier.</returns>
-    public int Save() {
-      return Save(false, false);
-    }
-
-    /// <summary>
-    ///   Saves the topic information, optionally saving the information for all of its descendants; additionally, optionally
-    ///   marks the topic as having a draft status.
-    /// </summary>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
