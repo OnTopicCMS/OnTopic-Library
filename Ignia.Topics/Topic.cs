@@ -711,6 +711,12 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082715: Consider changing the version history behavior so that version is instead saved as a property on
+    | AttributeValue and then the VersionHistory method simply provides a rollup of those versions. This would increase memory
+    | requirements by adding metadata to AttributeValue, but ensure VersionHistory doesn't need to be maintained in parallel to
+    | AttributeValue. It would potentially also allow new functionality with regard to merging or additional metadata in the 
+    | editor. 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
