@@ -890,7 +890,10 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Collection<Topic> results = new Collection<Topic>();
 
-      if (this.Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0) {
+      if (
+        !String.IsNullOrEmpty(this.Attributes.Get(name)) &&
+        this.Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        ) {
         results.Add(this);
       }
 
@@ -1088,6 +1091,7 @@ namespace Ignia.Topics {
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, version);
+      Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Rename topic, if necessary
@@ -1098,7 +1102,7 @@ namespace Ignia.Topics {
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (AttributeValue attribute in originalVersion.Attributes) {
-        if (!this.Attributes.Contains(attribute.Key) || this.Attributes[attribute.Key].Value != attribute.Value) {
+        if (!this.Attributes.Contains(attribute.Key) || this.Attributes.Get(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
       }
