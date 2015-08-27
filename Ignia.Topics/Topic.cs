@@ -878,16 +878,12 @@ namespace Ignia.Topics {
     public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Validate input
+      | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-      Topic.ValidateKey(name);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Ensures(Contract.Result<Collection<Topic>>() != null);
+      Topic.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -956,17 +952,13 @@ namespace Ignia.Topics {
     public static Topic Create(string key, string contentType) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Validate inputs
+      | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
+      Contract.Ensures(Contract.Result<Topic>() != null);
       Topic.ValidateKey(key);
       Topic.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine target type
