@@ -27,6 +27,22 @@ namespace Ignia.Topics {
     public ContentTypeCollection() : base(StringComparer.OrdinalIgnoreCase) { }
 
     /*==========================================================================================================================
+    | METHOD: GET
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the content type with a given key, and otherwise returns null.
+    /// </summary>
+    /// <param name="contentType">The content type to return, if available.</param>
+    /// <returns>The specified <see cref="ContentType"/>.</returns>
+    public ContentType Get(string contentType) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "Requires a content type parameter.");
+      if (this.Contains(contentType)) {
+        return this[contentType];
+      }
+      return null;
+    }
+
+    /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
