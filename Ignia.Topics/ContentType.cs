@@ -214,6 +214,22 @@ namespace Ignia.Topics {
       }
     }
 
+    /*==========================================================================================================================
+    | METHOD: IS TYPE OF
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether the current content is of (or derives from) the specified content type.
+    /// </summary>
+    /// <param name="contentType">The content type to evaluate.</param>
+    public bool IsTypeOf(string contentType) {
+      ContentType currentContentType = this;
+      while (currentContentType != null) {
+        if (currentContentType.Key.Equals(contentType)) return true;
+        currentContentType = currentContentType.Parent as ContentType;
+      }
+      return false;
+    }
+
   } // Class
 
 } // Namespace

@@ -32,6 +32,26 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS (CONTENT) TYPE OF
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Associates a new topic with several contnet types, and confirms that the topic is reported as a type of those content
+    ///   types.
+    /// </summary>
+    [TestMethod]
+    public void IsContentTypeOf() {
+      ContentType contentType = new ContentType("Root");
+      for (int i=0; i<5; i++) {
+        ContentType childContentType = new ContentType("ContentType" + i);
+        childContentType.Parent = contentType;
+        contentType = childContentType;
+      }
+      Topic topic = Topic.Create("Test", "Container");
+      topic.ContentType = contentType;
+      Assert.IsTrue(topic.ContentType.IsTypeOf("Root"));
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
