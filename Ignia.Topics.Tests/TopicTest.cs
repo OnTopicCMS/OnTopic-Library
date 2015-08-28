@@ -2,7 +2,8 @@
 | Author        Ignia, LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-\=============================================================================================================================*/using System;
+\=============================================================================================================================*/
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
