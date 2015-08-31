@@ -88,7 +88,7 @@ namespace Ignia.Topics.Web {
           string                searchPattern           = "*.aspx";
           DirectoryInfo         viewsDirectoryInfo      = new DirectoryInfo(HttpContext.Current.Server.MapPath(ViewsPath));
           SearchOption          searchOption            = SearchOption.TopDirectoryOnly;
-          DirectoryInfo[]       subDirectories          = viewsDirectoryInfo.GetDirectories("*", SearchOption.AllDirectories);
+          DirectoryInfo[]       subDirectories          = viewsDirectoryInfo?.GetDirectories("*", SearchOption.AllDirectories);
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Disvoer all view templates available via the configured path
@@ -202,15 +202,13 @@ namespace Ignia.Topics.Web {
       /*----------------------------------------------------------------------------------------------------------------------
       | Define assumptions
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assert(
-        requestContext?.RouteData?.Values != null, 
-        "Confirm that the request context and route data are available."
-      );
+      Contract.Assume(requestContext.RouteData != null, "Assumes the request context and route data are available.");
+      Contract.Assume(requestContext.RouteData.Values != null, "Assumes route data values are available.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
+      string nameSpace                       = (string)requestContext.RouteData.Values["namespace"]?? "";
       string    path                            = (string)requestContext.RouteData.Values["path"]?? "";
       string    directory                       = nameSpace + "/" + path;
 

@@ -904,8 +904,8 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
       Contract.Ensures(Contract.Result<Collection<Topic>>() != null);
       Topic.ValidateKey(name);
 
@@ -949,9 +949,20 @@ namespace Ignia.Topics {
     /// <returns>A collection of topics matching the input parameters.</returns>
     [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
     public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Provide a warning if the isRecursive parameter is used
+      \---------------------------------------------------------------------------------------------------------------------*/
       if (!isRecursive) {
         throw new NotImplementedException("The isRecursive flag is obsolete and should not be used");
       }
+
       return FindAllByAttribute(name, value);
     }
 
@@ -1059,9 +1070,9 @@ namespace Ignia.Topics {
     public static Topic Create(string key, string contentType, int id) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Validate inputs
+      | Validate input
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(id >= 0);
+      Contract.Requires<ArgumentNullException>(id > 0);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Create object

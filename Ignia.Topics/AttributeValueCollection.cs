@@ -86,6 +86,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
     public string Get(string name, string defaultValue, bool inheritFromParent, bool inheritFromDerived = true) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       return Get(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
 
@@ -119,7 +120,7 @@ namespace Ignia.Topics {
     private string Get(string name, string defaultValue, bool inheritFromParent, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
+      | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
@@ -222,7 +223,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Optionally override IsDirty, regardless of the default behavior
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty.HasValue) {
+      if (isDirty.HasValue && this[key] != null) {
         this[key].IsDirty = isDirty.Value;
       }
     }

@@ -77,8 +77,11 @@ namespace Ignia.Topics.Configuration {
     /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
     /// <returns>The Name string value for the <see cref="PageTypeElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
-      Contract.Assume(element != null, "Assumes the element is available when deriving its key.");
-      return ((PageTypeElement)element).Name;
+      Contract.Assert(
+        ((PageTypeElement)element) != null,
+        "Confirms the element's Name value is available when deriving its key."
+      );
+      return ((PageTypeElement)element);
     }
 
   } // Class

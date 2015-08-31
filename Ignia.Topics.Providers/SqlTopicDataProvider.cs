@@ -48,23 +48,16 @@ namespace Ignia.Topics.Providers {
     internal override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
+      | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate connection string
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ### TODO JJC082515: This code is redundant across several methods; should be able to centralize it via a private helper 
-      | function (assuming that will still satisfy the Static Contract Checker).
-      \-----------------------------------------------------------------------------------------------------------------------*/
       ValidateConnectionStrings("TopicsServer");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic>    topics          = new Dictionary<int, Topic>();
-      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      SqlConnection             connection      = new SqlConnection(ConfigurationManager.ConnectionStrings?["TopicsServer"]?.ConnectionString);
       SqlCommand                command         = new SqlCommand("topics_GetTopics", connection);
       command.CommandType                       = CommandType.StoredProcedure;
       SqlDataReader             reader          = null;
@@ -160,9 +153,8 @@ namespace Ignia.Topics.Providers {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (reader != null) reader.Dispose();
-        command.Dispose();
-      //connection.Dispose();
+        reader?.Dispose();
+        command?.Dispose();
         connection.Close();
       }
 
@@ -182,11 +174,11 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId        = -1;
-      int                   id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      string                contentType     = reader?["ContentType"]?.ToString();
-      string                key             = reader?["TopicKey"]?.ToString();
-                            sortOrder       = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
+      int       parentId        = -1;
+      int       id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      string    contentType     = reader?["ContentType"]?.ToString();
+      string    key             = reader?["TopicKey"]?.ToString();
+                sortOrder       = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
 
       // Handle ParentID (could be null for root topic)
       Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId);
@@ -194,7 +186,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = Topic.Create(key, contentType, id);
+      Topic     current         = Topic.Create(key, contentType, id);
       topics.Add(current.Id, current);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -221,7 +213,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      int       id              = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       string    name            = reader?["AttributeKey"]?.ToString();
       string    value           = reader?["AttributeValue"]?.ToString();
       DateTime  versionDate     = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
@@ -234,7 +226,7 @@ namespace Ignia.Topics.Providers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = topics[id];
+      Topic     current         = topics[id];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
@@ -260,6 +252,11 @@ namespace Ignia.Topics.Providers {
     private void SetBlogAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       int id = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
@@ -272,7 +269,7 @@ namespace Ignia.Topics.Providers {
       blob.LoadXml((string)reader?["Blob"]);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Identify the urrent topic
+      | Identify the current topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       Topic current = topics[id];
 
@@ -323,6 +320,11 @@ namespace Ignia.Topics.Providers {
     private void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       int sourceTopicId = Int32.Parse(reader?["Source_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
@@ -364,6 +366,11 @@ namespace Ignia.Topics.Providers {
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
     private void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -1005,9 +1012,14 @@ namespace Ignia.Topics.Providers {
     /// <param name="connectionString">The expected name of the SQL connection to validate in the configuration.</param>
     [Pure]
     public static void ValidateConnectionStrings(string connectionString) {
+      
       Contract.Requires<ArgumentNullException>(
         !String.IsNullOrWhiteSpace(connectionString),
         "The name of the connection string must be provided in order to be validated."
+      );
+      Contract.Assert(
+        ConfigurationManager.ConnectionStrings != null,
+        "Confirms the connection strings are available from the configuration."
       );
 
       if (ConfigurationManager.ConnectionStrings?[connectionString] == null) {
@@ -1015,16 +1027,6 @@ namespace Ignia.Topics.Providers {
           "Required connection string '" + connectionString + "' is missing from the web.config's <connectionStrings /> element."
         );
       }
-
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings != null,
-        "Assumes the connection strings are available from the configuration."
-      );
-
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings["TopicsServer"] != null,
-        "Assumes the topics connection string are available from the configuration."
-      );
 
     }
 

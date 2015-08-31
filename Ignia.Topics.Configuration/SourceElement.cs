@@ -91,7 +91,7 @@ namespace Ignia.Topics.Configuration {
     /// <returns>The matching source configuration element, or null if not found.</returns>
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
-      return (SourceElement)parent.ElementInformation?.Properties?[key]?.Value;
+      return (SourceElement)parent.ElementInformation.Properties?[key]?.Value;
     }
 
     /// <summary>
@@ -166,13 +166,13 @@ namespace Ignia.Topics.Configuration {
           value         = HttpContext.Current.Request.Form[element.Location];
           break;
         case("APPLICATION") :
-          value = (string)HttpContext.Current.Application?[element.Location];
+          value         = (string)HttpContext.Current.Application?[element.Location];
           break;
         case("SESSION") :
-          value = (string)HttpContext.Current.Session?[element.Location];
+          value         = (string)HttpContext.Current.Session?[element.Location];
           break;
         case("COOKIE") :
-          value       = HttpContext.Current.Request.Cookies[element.Location]?.Value;
+          value         = HttpContext.Current.Request.Cookies[element.Location]?.Value;
           break;
         case("ROLE") :
           value         = Roles.IsUserInRole(element.Location).ToString();
@@ -181,11 +181,9 @@ namespace Ignia.Topics.Configuration {
           value         = element.Location;
           break;
         case("URL") :
-          Contract.Assume(
-            Int32.Parse(element.Location, CultureInfo.InvariantCulture) >= 0,
-            "Assumes the location value for the element results in a positive value."
-            );
-          value         = HttpContext.Current.Request.Path.Split('/')[Int32.Parse(element.Location, CultureInfo.InvariantCulture)];
+          if (Int32.Parse(element.Location, CultureInfo.InvariantCulture) >= 0) {
+            value       = HttpContext.Current.Request.Path.Split('/')[Int32.Parse(element.Location, CultureInfo.InvariantCulture)];
+          }
           break;
         default :
           throw new ConfigurationErrorsException("The source '" + element.Source + "' in the web.config is invalid.");
