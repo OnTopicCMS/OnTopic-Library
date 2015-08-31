@@ -113,7 +113,7 @@ namespace Ignia.Topics.Providers {
 
         // Loop through each blob, each record associated with a specific record
         while (reader.Read()) {
-          SetBlogAttributes(reader, topics);
+          SetBlobAttributes(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ namespace Ignia.Topics.Providers {
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetBlogAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private void SetBlobAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
