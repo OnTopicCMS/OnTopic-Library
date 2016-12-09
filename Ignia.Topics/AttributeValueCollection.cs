@@ -139,7 +139,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from topic pointer
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && _parent.DerivedTopic != null && maxHops > 0) {
+      if (String.IsNullOrEmpty(value) && !name.Equals("TopicId") && _parent.DerivedTopic != null && maxHops > 0) {
         value = _parent.DerivedTopic.Attributes.Get(name, null, false, maxHops - 1);
       }
 
