@@ -25,7 +25,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     readonly        Topic   _parent = null;
+    private     readonly        Topic   _associatedTopic = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -39,7 +39,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
     internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
-      _parent = parentTopic;
+      _associatedTopic = parentTopic;
     }
 
     /*==========================================================================================================================
@@ -139,15 +139,15 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from topic pointer
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && !name.Equals("TopicId") && _parent.DerivedTopic != null && maxHops > 0) {
-        value = _parent.DerivedTopic.Attributes.Get(name, null, false, maxHops - 1);
+      if (String.IsNullOrEmpty(value) && !name.Equals("TopicId") && _associatedTopic.DerivedTopic != null && maxHops > 0) {
+        value = _associatedTopic.DerivedTopic.Attributes.Get(name, null, false, maxHops - 1);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && inheritFromParent && _parent.Parent != null) {
-        value = _parent.Parent.Attributes.Get(name, defaultValue, inheritFromParent);
+      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent != null) {
+        value = _associatedTopic.Parent.Attributes.Get(name, defaultValue, inheritFromParent);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
