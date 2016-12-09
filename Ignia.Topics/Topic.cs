@@ -1252,7 +1252,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide shortcut for local calls
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.IndexOf(":") < 0) {
+      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
         if (this.Contains(uniqueKey)) {
           return this[uniqueKey];
         }
