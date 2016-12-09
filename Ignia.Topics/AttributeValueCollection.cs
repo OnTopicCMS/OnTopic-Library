@@ -146,8 +146,8 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && inheritFromParent && _parent != null) {
-        value = _parent.Attributes.Get(name, defaultValue, inheritFromParent);
+      if (String.IsNullOrEmpty(value) && inheritFromParent && _parent.Parent != null) {
+        value = _parent.Parent.Attributes.Get(name, defaultValue, inheritFromParent);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
