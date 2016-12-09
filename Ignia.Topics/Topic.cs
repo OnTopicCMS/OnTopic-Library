@@ -264,7 +264,7 @@ namespace Ignia.Topics {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
         if (_originalKey == null) {
-          _originalKey = Attributes.Get("Key", null);
+          _originalKey = Attributes.Get("Key", false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
