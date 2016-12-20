@@ -183,9 +183,7 @@ namespace Ignia.Topics.Providers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
         RenameEventArgs       args    = new RenameEventArgs(topic);
-        if (RenameEvent != null) {
-          RenameEvent(this, args);
-        }
+        RenameEvent?.Invoke(this, args);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -221,9 +219,7 @@ namespace Ignia.Topics.Providers {
     public virtual bool Move(Topic topic, Topic target) {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
-      if (MoveEvent != null) {
-        MoveEvent(this, new MoveEventArgs(topic, target));
-      }
+      MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       return true;
     }
 
@@ -250,7 +246,7 @@ namespace Ignia.Topics.Providers {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       DeleteEventArgs         args    = new DeleteEventArgs(topic);
-      DeleteEvent(this, args);
+      DeleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
