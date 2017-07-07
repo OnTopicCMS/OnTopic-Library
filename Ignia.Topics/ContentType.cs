@@ -18,16 +18,16 @@ namespace Ignia.Topics {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
+  ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
   ///     Editor (via the <see cref="SupportedAttributes"/> property). The content type also determines, by default, which view
-  ///     is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down the pipe). 
-  ///   </para>  
+  ///     is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down the pipe).
+  ///   </para>
   ///   <para>
-  ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of 
-  ///     "Content Type". The attributes of the "Content Type" Content Type represent the metadata associated with every content 
-  ///     type. For example, the "Content Type" Content Type has attributes such as <see cref="SupportedAttributes"/> which 
-  ///     represents which attributes should be associated with each instance of a <see cref="ContentType"/>. To represent this, 
-  ///     the <see cref="ContentType"/> class provides a strongly-typed derivation of the <see cref="Topic"/> class, with 
+  ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of
+  ///     "Content Type". The attributes of the "Content Type" Content Type represent the metadata associated with every content
+  ///     type. For example, the "Content Type" Content Type has attributes such as <see cref="SupportedAttributes"/> which
+  ///     represents which attributes should be associated with each instance of a <see cref="ContentType"/>. To represent this,
+  ///     the <see cref="ContentType"/> class provides a strongly-typed derivation of the <see cref="Topic"/> class, with
   ///     properties mapping to attributes specific to the "Content Type" Content Type.
   ///   </para>
   /// </remarks>
@@ -65,14 +65,14 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     By default, topics are hierarchical: any topic can contain any number of child topics. While this flexibility makes
-    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual 
-    ///     topics. For example, while it may make sense for a "Page" topic to have child "Page" topics, it likely won't make 
+    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual
+    ///     topics. For example, while it may make sense for a "Page" topic to have child "Page" topics, it likely won't make
     ///     sense for an "Article" topic to. This property allows this functionality to be disabled.
     ///   </para>
     ///   <para>
     ///     It is important to note that this functionality only affects the Topic Editor interface, by disabling the option to
     ///     add a child topic. This functionality is not enforced by the library itself. As such, developers may programmatically
-    ///     add child topics to a topic regardless of whether it's associated <see cref="ContentType"/> is set to <see 
+    ///     add child topics to a topic regardless of whether it's associated <see cref="ContentType"/> is set to <see
     ///     cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
@@ -89,26 +89,26 @@ namespace Ignia.Topics {
     | PROPERTY: PERMITTED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a readonly collection of what types of content types are permitted to be created as children of instances of 
+    ///   Provides a readonly collection of what types of content types are permitted to be created as children of instances of
     ///   this content type.
     /// </summary>
     /// <remarks>
     ///   <para>
     ///     By default, topics are hierarchical: any topic can contain any number of child topics. While this flexibility makes
-    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual 
-    ///     topics. For example, while it may make sense for a "Page" topic to have child "Comment" topics, it wouldn't make 
-    ///     sense for "Comment" topics to have child "Page" topics. This property allows the topics library to configure which 
+    ///     sense for both the library and the underlying data stores, however, it doesn't always make sense for individual
+    ///     topics. For example, while it may make sense for a "Page" topic to have child "Comment" topics, it wouldn't make
+    ///     sense for "Comment" topics to have child "Page" topics. This property allows the topics library to configure which
     ///     types of topics can be created under instances of the current content type.
     ///   </para>
     ///   <para>
-    ///     It is important to note that this functionality only affects the Topic Editor interface by restricting the content 
-    ///     type of topics created under instances of this content type. This functionality is not enforced by the library 
-    ///     itself. As such, developers may programmatically add child topics to a topic regardless of whether it's associated 
+    ///     It is important to note that this functionality only affects the Topic Editor interface by restricting the content
+    ///     type of topics created under instances of this content type. This functionality is not enforced by the library
+    ///     itself. As such, developers may programmatically add child topics to a topic regardless of whether it's associated
     ///     <see cref="ContentType"/> permits topics of that Content Type to be created.
     ///   </para>
     ///   <para>
-    ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see 
-    ///     cref="Topic.SetRelationship(string, Topic, bool)"/>. 
+    ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
+    ///     cref="Topic.SetRelationship(string, Topic, bool)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyCollection<ContentType> PermittedContentTypes {
@@ -149,8 +149,8 @@ namespace Ignia.Topics {
     ///   Provides a list of <see cref="Attribute"/> objects that are supported for objects implementing this ContentType.
     /// </summary>
     /// <remarks>
-    ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from 
-    ///   any parent content types. For instance, if a Content Type "Page" has an attribute "Body", then all Content Types 
+    ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from
+    ///   any parent content types. For instance, if a Content Type "Page" has an attribute "Body", then all Content Types
     ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="SupportedAttributes"/> property
     ///   must crawl through each parent Content Type to collate the list of supported attributes.
     /// </remarks>
@@ -215,19 +215,38 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: IS TYPE OF
+    | METHOD: IS TYPE OF?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines whether the current content is of (or derives from) the specified content type.
+    ///   Determines whether the Content Type that the current topic implements is, or derives from, a particular Content Type.
     /// </summary>
-    /// <param name="contentType">The content type to evaluate.</param>
-    public bool IsTypeOf(string contentType) {
-      ContentType currentContentType = this;
-      while (currentContentType != null) {
-        if (currentContentType.Key.Equals(contentType)) return true;
-        currentContentType = currentContentType.Parent as ContentType;
+    /// <param name="contentTypeName">The string identifier for the Content Type to compare to.</param>
+    /// <returns>A Boolean value stating whether the current topic implements a particular Content Type.</returns>
+    /// <requires description="The Content Type name must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(contentTypeName)
+    /// </requires>
+    public bool IsTypeOf(string contentTypeName) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentTypeName), "The attribute contentTypeName must be specified.");
+      Topic.ValidateKey(contentTypeName);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Determine match
+      \---------------------------------------------------------------------------------------------------------------------*/
+      ContentType contentType = this.ContentType;
+
+      while (contentType != null) {
+        if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
+          return true;
+        }
+        contentType = contentType.Parent as ContentType;
       }
-      return false;
+
+      return true;
+
     }
 
   } // Class
