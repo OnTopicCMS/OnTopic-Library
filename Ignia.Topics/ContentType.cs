@@ -236,7 +236,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine match
       \---------------------------------------------------------------------------------------------------------------------*/
-      ContentType contentType = this.ContentType;
+      ContentType contentType = this;
 
       while (contentType != null) {
         if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
