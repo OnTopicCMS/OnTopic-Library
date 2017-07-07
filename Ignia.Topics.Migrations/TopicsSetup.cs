@@ -15,7 +15,7 @@ namespace Ignia.Topics.Migrations {
   ///   The Topics Setup class provides specific-purpose properties and methods associated with initial setup for the Topics
   ///   Library and CMS editor.
   /// </summary>
-  class TopicsSetup {
+  public class TopicsSetup {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
