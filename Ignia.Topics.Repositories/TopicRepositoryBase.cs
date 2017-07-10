@@ -103,7 +103,7 @@ namespace Ignia.Topics.Repositories {
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    public virtual void Save(Topic topic, bool isRecursive, bool isDraft) {
+    public virtual int Save(Topic topic, bool isRecursive, bool isDraft) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -122,7 +122,7 @@ namespace Ignia.Topics.Repositories {
       | Reset originaal key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
-      //return -1;
+      return -1;
 
     }
 

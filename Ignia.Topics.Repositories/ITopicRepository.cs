@@ -88,7 +88,7 @@ namespace Ignia.Topics.Repositories {
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    void Save(Topic topic, bool isRecursive, bool isDraft = false);
+    int Save(Topic topic, bool isRecursive, bool isDraft = false);
 
     /*==========================================================================================================================
     | METHOD: MOVE

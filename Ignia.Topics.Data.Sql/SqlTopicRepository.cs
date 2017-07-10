@@ -430,7 +430,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via 
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
-    public override void Save(Topic topic, bool isRecursive, bool isDraft = false) {
+    public override int Save(Topic topic, bool isRecursive, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -615,7 +615,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //return returnVal;
+      return returnVal;
 
     }
 
