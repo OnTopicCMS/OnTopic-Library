@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Configuration.Provider;
-using Ignia.Topics.Providers;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Configuration {
 
@@ -13,7 +13,7 @@ namespace Ignia.Topics.Configuration {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom implementation of a <see cref="ProviderCollection"/> responsible for encapsulating a set of
-  ///   <see cref="TopicDataProviderBase"/> elements.
+  ///   <see cref="TopicRepositoryBase"/> elements.
   /// </summary>
   public class TopicDataProviderCollection : ProviderCollection {
 
@@ -21,14 +21,14 @@ namespace Ignia.Topics.Configuration {
     | INDEXER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the <see cref="TopicDataProviderBase"/> with the specified name.
+    ///   Gets the <see cref="TopicRepositoryBase"/> with the specified name.
     /// </summary>
     /// <param name="name">
-    ///   The string name value used as the indexer for the <see cref="TopicDataProviderBase"/> item in the collection.
+    ///   The string name value used as the indexer for the <see cref="TopicRepositoryBase"/> item in the collection.
     /// </param>
-    new public TopicDataProviderBase this[string name] {
+    new public ITopicRepository this[string name] {
       get {
-        return (TopicDataProviderBase)base[name];
+        return (ITopicRepository)base[name];
       }
     }
 

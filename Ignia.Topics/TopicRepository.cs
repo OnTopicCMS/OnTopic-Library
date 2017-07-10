@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Configuration;
-using Ignia.Topics.Providers;
+using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using System.Configuration;
 
@@ -24,7 +24,7 @@ namespace Ignia.Topics {
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
     private static      TopicsSection                   _configuration          = null;
-    private static      TopicDataProviderBase           _dataProvider           = null;
+    private static      ITopicRepository                _topicRepository           = null;
     private static      Topic                           _rootTopic              = null;
     private static      ContentTypeCollection           _contentTypes           = null;
 
@@ -128,16 +128,16 @@ namespace Ignia.Topics {
     ///   Pulled from the implementing website's configuration via the <see
     ///   cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
     /// </remarks>
-    public static TopicDataProviderBase DataProvider {
+    public static ITopicRepository DataProvider {
       get {
-        Contract.Ensures(Contract.Result<TopicDataProviderBase>() != null);
-        if (_dataProvider == null) {
-          _dataProvider = TopicDataProviderManager.DataProvider;
+        Contract.Ensures(Contract.Result<ITopicRepository>() != null);
+        if (_topicRepository == null) {
+          _topicRepository = TopicDataProviderManager.DataProvider;
         }
-        return _dataProvider;
+        return _topicRepository;
       }
       set {
-        _dataProvider = value;
+        _topicRepository = value;
       }
     }
 

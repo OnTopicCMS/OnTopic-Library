@@ -325,8 +325,8 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   The original key is automatically set by <see cref="Key"/> when its value is updated (assuming the original key isn't
-    ///   already set). This is, in turn, used by the <see cref="Providers.RenameEventArgs"/> to represent the original value, 
-    ///   and thus allow the <see cref="Providers.TopicDataProviderBase"/> (or derived providers) from updating the data store
+    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs"/> to represent the original value, 
+    ///   and thus allow the <see cref="Repositories.ITopicRepository"/> (or derived providers) from updating the data store
     ///   appropriately.
     /// </remarks>
     /// <requires
@@ -448,7 +448,7 @@ namespace Ignia.Topics {
     ///   Gets or sets the topic's sort order.
     /// </summary>
     /// <remarks>
-    ///   Sort order should be assigned by the <see cref="Providers.TopicDataProviderBase"/> (or one of its derived providers); 
+    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers); 
     ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the 
     ///   capabilities of the storage provider.
     /// </remarks>
@@ -734,7 +734,7 @@ namespace Ignia.Topics {
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
     /// </summary>
     /// <remarks>
-    ///   It is expected that this collection will be populated by the <see cref="Providers.TopicDataProviderBase"/> (or one of
+    ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
     ///   its derived providers). 
     /// </remarks>
     public List<DateTime> VersionHistory {
@@ -1152,7 +1152,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, version);
+      Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, 0, version);
       Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1377,9 +1377,9 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public bool Move(Topic target) {
+    public void Move(Topic target) {
       ReorderSiblings();
-      return TopicRepository.DataProvider.Move(this, target);
+      TopicRepository.DataProvider.Move(this, target);
     }
 
     /// <summary>
@@ -1397,13 +1397,13 @@ namespace Ignia.Topics {
     ///   description="The topic cannot be moved or reordered relative to itself." exception="T:System.ArgumentException">
     ///   topic != sibling
     /// </requires>
-    public bool Move(Topic target, Topic sibling) {
+    public void Move(Topic target, Topic sibling) {
 
       Contract.Requires<ArgumentException>(this != target, "The topic may not be its own parent.");
       Contract.Requires<ArgumentException>(this != sibling, "The topic cannot be moved or reordered relative to itself.");
 
       ReorderSiblings(sibling);
-      return TopicRepository.DataProvider.Move(this, target, sibling);
+      TopicRepository.DataProvider.Move(this, target, sibling);
 
     }
 
@@ -1470,6 +1470,7 @@ namespace Ignia.Topics {
     ///   Contract Checker.
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
+    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
     [Pure]
     internal static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<ArgumentException>(

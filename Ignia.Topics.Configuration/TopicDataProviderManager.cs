@@ -7,7 +7,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Web.Configuration;
-using Ignia.Topics.Providers;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Configuration {
 
@@ -23,7 +23,7 @@ namespace Ignia.Topics.Configuration {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private     static  TopicDataProviderBase           _defaultDataProvider    = null;
+    private     static  ITopicRepository                _defaultDataProvider    = null;
     private     static  TopicDataProviderCollection     _dataProviders          = null;
 
     /*==========================================================================================================================
@@ -65,7 +65,7 @@ namespace Ignia.Topics.Configuration {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _dataProviders                                    = new TopicDataProviderCollection();
 
-      ProvidersHelper.InstantiateProviders(topicsConfiguration.DataProviders, _dataProviders, typeof(TopicDataProviderBase));
+      ProvidersHelper.InstantiateProviders(topicsConfiguration.DataProviders, _dataProviders, typeof(TopicRepositoryBase));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set data providers to read-only
@@ -89,9 +89,9 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Gets the Topics data provider as set to the defaultDataProvider attribute on the <topics /> configuration section.
     /// </summary>
-    public static TopicDataProviderBase DataProvider {
+    public static ITopicRepository DataProvider {
       get {
-        Contract.Ensures(Contract.Result<TopicDataProviderBase>() != null);
+        Contract.Ensures(Contract.Result<ITopicRepository>() != null);
         return _defaultDataProvider;
       }
     }
