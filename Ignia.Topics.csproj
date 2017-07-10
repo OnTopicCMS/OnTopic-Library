@@ -208,6 +208,12 @@
     <Compile Include="Ignia.Topics.Providers\SqlTopicDataProvider.cs" />
     <Compile Include="Ignia.Topics.Providers\TopicDataProviderBase.cs" />
     <Compile Include="Ignia.Topics.Providers\TopicDataProviderBaseContract.cs" />
+    <Compile Include="Ignia.Topics.Repositories\DeleteEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Repositories\ITopicRepository.cs" />
+    <Compile Include="Ignia.Topics.Repositories\MoveEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Repositories\RenameEventArgs.cs" />
+    <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBase.cs" />
+    <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBaseContract.cs" />
     <Compile Include="Ignia.Topics.Web\TopicPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -224,6 +230,7 @@
     <Compile Include="Ignia.Topics\TopicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
