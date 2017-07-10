@@ -28,7 +28,7 @@ namespace Ignia.Topics.Data.Sql {
   /// <remarks>
   ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.IDataRepository"/> class.
   /// </remarks>
-  public class SqlTopicDataRepository : TopicRepositoryBase {
+  public class SqlTopicRepository : TopicRepositoryBase {
 
     /*==========================================================================================================================
     | METHOD: ADD TOPIC
