@@ -23,7 +23,7 @@ namespace Ignia.Topics.Configuration {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private     static  ITopicRepository                _defaultDataProvider    = null;
+    private     static  TopicRepositoryBase             _defaultDataProvider    = null;
     private     static  TopicDataProviderCollection     _dataProviders          = null;
 
     /*==========================================================================================================================
@@ -89,9 +89,9 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Gets the Topics data provider as set to the defaultDataProvider attribute on the <topics /> configuration section.
     /// </summary>
-    public static ITopicRepository DataProvider {
+    public static TopicRepositoryBase DataProvider {
       get {
-        Contract.Ensures(Contract.Result<ITopicRepository>() != null);
+        Contract.Ensures(Contract.Result<TopicRepositoryBase>() != null);
         return _defaultDataProvider;
       }
     }

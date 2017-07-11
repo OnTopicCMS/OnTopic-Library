@@ -26,9 +26,9 @@ namespace Ignia.Topics.Configuration {
     /// <param name="name">
     ///   The string name value used as the indexer for the <see cref="TopicRepositoryBase"/> item in the collection.
     /// </param>
-    new public ITopicRepository this[string name] {
+    new public TopicRepositoryBase this[string name] {
       get {
-        return (ITopicRepository)base[name];
+        return (TopicRepositoryBase)base[name];
       }
     }
 

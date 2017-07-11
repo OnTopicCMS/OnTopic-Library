@@ -132,7 +132,7 @@ namespace Ignia.Topics {
       get {
         Contract.Ensures(Contract.Result<ITopicRepository>() != null);
         if (_topicRepository == null) {
-          _topicRepository = TopicDataProviderManager.DataProvider;
+          _topicRepository = TopicDataProviderManager.DataProvider as ITopicRepository;
         }
         return _topicRepository;
       }
