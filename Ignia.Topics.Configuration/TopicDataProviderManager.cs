@@ -128,7 +128,7 @@ namespace Ignia.Topics.Configuration {
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_dataProviders == null) {
           _dataProviders = new TopicDataProviderCollection();
-          ProvidersHelper.InstantiateProviders(_configuration.DataProviders, _dataProviders, typeof(TopicRepositoryBase));
+          ProvidersHelper.InstantiateProviders(Configuration.DataProviders, _dataProviders, typeof(TopicRepositoryBase));
           _dataProviders.SetReadOnly();
         }
 
