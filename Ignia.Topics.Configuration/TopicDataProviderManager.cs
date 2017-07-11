@@ -49,15 +49,17 @@ namespace Ignia.Topics.Configuration {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Establish requirements
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Ensures(Contract.Result<TopicsSection>() != null);
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Retrieve <topics /> configuration section
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_configuration == null) {
-          TopicsSection topicsConfiguration = (TopicsSection)ConfigurationManager.GetSection("topics");
+          _configuration = (TopicsSection)ConfigurationManager.GetSection("topics");
         }
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate confiruation
-        \---------------------------------------------------------------------------------------------------------------------*/
         if (_configuration == null) {
           throw new ConfigurationErrorsException("The Topics configuration section (<topics />) is not set correctly.");
         }
