@@ -20,9 +20,10 @@ namespace Ignia.Topics.Configuration {
   /// </summary>
   public class TopicDataProviderManager {
 
-  /*============================================================================================================================
-  | PRIVATE VARIABLES
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*============================================================================================================================
+    | PRIVATE VARIABLES
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    private     static  TopicsSection                   _configuration          = null;
     private     static  TopicRepositoryBase             _defaultDataProvider    = null;
     private     static  TopicDataProviderCollection     _dataProviders          = null;
 
@@ -33,52 +34,38 @@ namespace Ignia.Topics.Configuration {
     ///   Initializes the <see cref="TopicDataProviderManager"/> class and fires the data provider initialization method.
     /// </summary>
     static TopicDataProviderManager() {
-      Initialize();
     }
 
     /*==========================================================================================================================
-    | METHOD: INITIALIZE
+    | PROPERTY: CONFIGURATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes the TopicDataProviderBase and TopicDataProviderCollection classes as configured in the web.config. As
-    ///   part of this, each data provider is initialized using the values defined in the web.config.
+    ///   Retrieves the Topic Section from the configuration.
     /// </summary>
     /// <exception cref="ConfigurationErrorsException">
     ///   The Topics configuration section (<topics />) is not set correctly.
     /// </exception>
-    /// <exception cref="Exception">
-    ///   The defaultDataProvider value is not available from the Topics configuration section (<topics />).
-    /// </exception>
-    private static void Initialize() {
+    public static TopicsSection Configuration {
+      get {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve <topics /> configuration section
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicsSection     topicsConfiguration             = (TopicsSection)ConfigurationManager.GetSection("topics");
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Retrieve <topics /> configuration section
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_configuration == null) {
+          TopicsSection topicsConfiguration = (TopicsSection)ConfigurationManager.GetSection("topics");
+        }
 
-      if (topicsConfiguration == null) {
-        throw new ConfigurationErrorsException("The Topics configuration section (<topics />) is not set correctly.");
-      }
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate confiruation
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_configuration == null) {
+          throw new ConfigurationErrorsException("The Topics configuration section (<topics />) is not set correctly.");
+        }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Instantiate data providers
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _dataProviders                                    = new TopicDataProviderCollection();
-
-      ProvidersHelper.InstantiateProviders(topicsConfiguration.DataProviders, _dataProviders, typeof(TopicRepositoryBase));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set data providers to read-only
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _dataProviders.SetReadOnly();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve default data provider setting
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _defaultDataProvider                              = _dataProviders[topicsConfiguration.DefaultDataProvider];
-
-      if (_defaultDataProvider == null) {
-        throw new Exception("The defaultDataProvider value is not available from the Topics configuration section (<topics />).");
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return results
+        \---------------------------------------------------------------------------------------------------------------------*/
+        return _configuration;
       }
 
     }
@@ -89,10 +76,33 @@ namespace Ignia.Topics.Configuration {
     /// <summary>
     ///   Gets the Topics data provider as set to the defaultDataProvider attribute on the <topics /> configuration section.
     /// </summary>
+    /// <exception cref="Exception">
+    ///   The defaultDataProvider value is not available from the Topics configuration section (<topics />).
+    /// </exception>
     public static TopicRepositoryBase DataProvider {
       get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Establish requirements
+        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<TopicRepositoryBase>() != null);
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Retrieve default data provider setting
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_defaultDataProvider == null) {
+          _defaultDataProvider = DataProviders[Configuration.DefaultDataProvider];
+        }
+
+        if (_defaultDataProvider == null) {
+          throw new Exception("The defaultDataProvider value is not available from the Topics configuration section (<topics />).");
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return data
+        \---------------------------------------------------------------------------------------------------------------------*/
         return _defaultDataProvider;
+
       }
     }
 
@@ -107,11 +117,24 @@ namespace Ignia.Topics.Configuration {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
+        | Establish requirements
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Contract.Result<TopicDataProviderCollection>() != null);
 
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Instantiate data providers
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_dataProviders == null) {
+          _dataProviders = new TopicDataProviderCollection();
+          ProvidersHelper.InstantiateProviders(_configuration.DataProviders, _dataProviders, typeof(TopicRepositoryBase));
+          _dataProviders.SetReadOnly();
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return data
+        \---------------------------------------------------------------------------------------------------------------------*/
         return _dataProviders;
+
       }
     }
 
