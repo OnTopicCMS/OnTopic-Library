@@ -201,13 +201,6 @@
     <Compile Include="Ignia.Topics.Editor\FilePath.cs" />
     <Compile Include="Ignia.Topics.Editor\IEditControl.cs" />
     <Compile Include="Ignia.Topics.Migrations\TopicsSetup.cs" />
-    <Compile Include="Ignia.Topics.Providers\CompactEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Providers\DeleteEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Providers\MoveEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Providers\RenameEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Providers\SqlTopicDataProvider.cs" />
-    <Compile Include="Ignia.Topics.Providers\TopicDataProviderBase.cs" />
-    <Compile Include="Ignia.Topics.Providers\TopicDataProviderBaseContract.cs" />
     <Compile Include="Ignia.Topics.Repositories\DeleteEventArgs.cs" />
     <Compile Include="Ignia.Topics.Repositories\ITopicRepository.cs" />
     <Compile Include="Ignia.Topics.Repositories\MoveEventArgs.cs" />
