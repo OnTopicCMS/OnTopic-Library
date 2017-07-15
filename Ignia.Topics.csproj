@@ -190,8 +190,6 @@
     <Compile Include="Ignia.Topics.Configuration\PageTypeElementCollection.cs" />
     <Compile Include="Ignia.Topics.Configuration\SourceElement.cs" />
     <Compile Include="Ignia.Topics.Configuration\SourceElementCollection.cs" />
-    <Compile Include="Ignia.Topics.Configuration\TopicDataProviderCollection.cs" />
-    <Compile Include="Ignia.Topics.Configuration\TopicDataProviderManager.cs" />
     <Compile Include="Ignia.Topics.Configuration\TopicsSection.cs" />
     <Compile Include="Ignia.Topics.Configuration\VersioningElement.cs" />
     <Compile Include="Ignia.Topics.Configuration\ViewsElement.cs" />

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using System.Data.SqlClient;
-using System.Configuration;
 using System.Data;
 using System.Xml;
 using System.Web;
@@ -34,6 +33,34 @@ namespace Ignia.Topics.Data.Sql {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private             ContentTypeCollection           _contentTypes           = null;
+    private             string                          _connectionString       = null;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Instantiates a new instance of the SqlTopicRepository with a dependency on a connection string to provide necessary 
+    ///   access to a SQL database. 
+    /// </summary>
+    /// <param name="connectionString">A connection string to a SQL server that contains the Topics database.</param>
+    /// <returns>A new instance of the SqlTopicRepository.</returns>
+    public SqlTopicRepository(string connectionString) : base() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(
+        !String.IsNullOrWhiteSpace(connectionString),
+        "The name of the connection string must be provided in order to be validated."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set private fields
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _connectionString = connectionString;
+
+    }
+
 
     /*==========================================================================================================================
     | METHOD: ADD TOPIC
@@ -365,17 +392,16 @@ namespace Ignia.Topics.Data.Sql {
     /// </exception>
     protected override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
 
-    /*------------------------------------------------------------------------------------------------------------------------
-    | Validate contracts
-    \-----------------------------------------------------------------------------------------------------------------------*/
-    Contract.Ensures(Contract.Result<Topic>() != null);
-      ValidateConnectionStrings("TopicsServer");
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<Topic>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       Dictionary<int, Topic> topics = new Dictionary<int, Topic>();
-      SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings?["TopicsServer"]?.ConnectionString);
+      SqlConnection connection = new SqlConnection(_connectionString);
       SqlCommand command = new SqlCommand("topics_GetTopics", connection);
       command.CommandType = CommandType.StoredProcedure;
       SqlDataReader reader = null;
@@ -521,8 +547,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
     /// </exception>
     /// <exception cref="Exception">
-    ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via 
-    ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
+    ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via connection string: <c>ex.Message</c>
     /// </exception>
     public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
@@ -609,9 +634,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(ConfigurationManager.ConnectionStrings != null, "Assumes the connection strings are available in the configuration.");
-      Contract.Assume(ConfigurationManager.ConnectionStrings["TopicsServer"] != null, "Assumes the connection string is available.");
-      SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      SqlConnection connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
       int returnVal = -1;
 
@@ -692,7 +715,7 @@ namespace Ignia.Topics.Data.Sql {
       | Catch excewption
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
-        throw new Exception("Failed to save Topic " + topic.Key + " (" + topic.Id + ") via " + ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString + ": " + ex.Message);
+        throw new Exception("Failed to save Topic " + topic.Key + " (" + topic.Id + ") via " + _connectionString + ": " + ex.Message);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -749,7 +772,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move in database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      SqlConnection connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
 
       try {
@@ -809,14 +832,6 @@ namespace Ignia.Topics.Data.Sql {
     public override void Delete(Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Define assumptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings != null,
-        "The Delete method assumes the database connection strings are available from the configuration."
-        );
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.Delete(topic, isRecursive);
@@ -824,9 +839,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assert(ConfigurationManager.ConnectionStrings != null, "Assumes the connection strings are available in the configuration.");
-      Contract.Assume(ConfigurationManager.ConnectionStrings["TopicsServer"] != null, "Assumes the connection string is available.");
-      SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["TopicsServer"].ConnectionString);
+      SqlConnection connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
 
       try {
@@ -1116,33 +1129,6 @@ namespace Ignia.Topics.Data.Sql {
         else {
           commandObject.Parameters["@" + sqlParameter].Value = fieldValue;
         }
-      }
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: VALIDATE CONNECTION STRING
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Confirms that the SQL connection as defined in the application configuration is available/valid.
-    /// </summary>
-    /// <param name="connectionString">The expected name of the SQL connection to validate in the configuration.</param>
-    [Pure]
-    public static void ValidateConnectionStrings(string connectionString) {
-
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(connectionString),
-        "The name of the connection string must be provided in order to be validated."
-      );
-      Contract.Assert(
-        ConfigurationManager.ConnectionStrings != null,
-        "Confirms the connection strings are available from the configuration."
-      );
-
-      if (ConfigurationManager.ConnectionStrings?[connectionString] == null) {
-        throw new ArgumentException(
-          "Required connection string '" + connectionString + "' is missing from the web.config's <connectionStrings /> element."
-        );
       }
 
     }
