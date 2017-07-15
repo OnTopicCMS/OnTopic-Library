@@ -257,9 +257,6 @@ namespace Ignia.Topics.Data.Sql {
 
     /*==========================================================================================================================
     | GET CONTENT TYPES
-    >===========================================================================================================================
-    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
-    | changes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
@@ -541,6 +538,14 @@ namespace Ignia.Topics.Data.Sql {
       if (!contentTypes.Contains(topic.Attributes.Get("ContentType"))) {
         throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
       }
+      ContentType contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update content types collection, if appropriate
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic is ContentType && !contentTypes.Contains(topic.Key)) {
+        _contentTypes.Add(topic as ContentType);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute strings
@@ -549,7 +554,6 @@ namespace Ignia.Topics.Data.Sql {
       StringBuilder attributes = new StringBuilder();
       StringBuilder nullAttributes = new StringBuilder();
       StringBuilder blob = new StringBuilder();
-      ContentType contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
 
       Contract.Assume(contentType != null, "Assumes the Content Type is available.");
 
