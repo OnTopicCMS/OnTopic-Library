@@ -143,6 +143,7 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      ReorderSiblings(topic);
       //return true;
     }
 
