@@ -228,7 +228,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set route variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    contentType                     = topic.ContentType.Key;
+      string    contentType                     = topic.Key;
       var       firstColon                      = topic.UniqueKey.IndexOf(":");
 
       if (String.IsNullOrEmpty(nameSpace) && firstColon >= 0) {

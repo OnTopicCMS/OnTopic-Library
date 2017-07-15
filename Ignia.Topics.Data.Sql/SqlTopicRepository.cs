@@ -353,43 +353,6 @@ namespace Ignia.Topics.Data.Sql {
 
     }
 
-
-    /*==========================================================================================================================
-    | METHOD: SET CONTENT TYPES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets strongly-typed references to <see cref="Ignia.Topics.Topic.ContentType"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Topics are each associated with a via <see cref="Ignia.Topics.Topic.ContentType"/> that denotes their structure. Once 
-    ///   the topics are populated in memory, loop through the data to create these associations. By handling this in the 
-    ///   repository, we avoid needing to rely on lazy-loading, which would complicate dependency injection.
-    /// </remarks>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetContentTypes(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve content types
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentTypes = GetContentTypes(topics);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic topic in topics.Values) {
-        string contentType = topic.Attributes.Get("ContentType");
-        if (!String.IsNullOrEmpty(contentType) && contentTypes.Contains(contentType)) {
-          topic.ContentType = contentTypes[contentType];
-        }
-      }
-
-    }
-
     /*==========================================================================================================================
     | METHOD: SET VERSION HISTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -547,7 +510,6 @@ namespace Ignia.Topics.Data.Sql {
         | Populate strongly typed references
         \---------------------------------------------------------------------------------------------------------------------*/
         SetDerivedTopics(topics);
-        SetContentTypes(topics);
 
       }
 

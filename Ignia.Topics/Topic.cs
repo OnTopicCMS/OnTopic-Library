@@ -30,7 +30,6 @@ namespace Ignia.Topics {
     private     AttributeValueCollection        _attributes             = null;
     private     int                             _id                     = -1;
     private     string                          _key                    = null;
-    private     ContentType                     _contentType            = null;
     private     string                          _originalKey            = null;
     private     Topic                           _relationships          = null;
     private     Topic                           _incomingRelationships  = null;
@@ -204,7 +203,7 @@ namespace Ignia.Topics {
     | PROPERTY: CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the strongly-typed <see cref="ContentType"/> attribute.
+    ///   Gets the key name of the content type that the current topic represents.
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
@@ -212,12 +211,12 @@ namespace Ignia.Topics {
     ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down 
     ///   the pipe). 
     /// </remarks>
-    public ContentType ContentType {
+    public string ContentType {
       get {
-        return _contentType;
+        return this.Attributes.Get("ContentType");
       }
       set {
-        _contentType = value;
+        this.Attributes.Set("ContentType", value);
       }
     }
 

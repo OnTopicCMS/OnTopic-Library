@@ -161,18 +161,9 @@ namespace Ignia.Topics.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Change content type, if necessary
+      | Ensure Parent, ContentType are maintained
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.ContentType == originalVersion.ContentType) {
-        topic.Attributes.Set("ContentType", topic.ContentType.Key, false);
-      }
-      else {
-        topic.ContentType = originalVersion.ContentType;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure parent is maintained
-      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Attributes.Set("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
       topic.Attributes.Set("ParentId", topic.Parent.Id.ToString(), false);
 
       /*------------------------------------------------------------------------------------------------------------------------
