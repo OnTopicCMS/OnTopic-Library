@@ -60,22 +60,6 @@ namespace Ignia.Topics.Configuration {
     }
 
     /*==========================================================================================================================
-    | ATTRIBUTE: DEFAULT DATA PROVIDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the default Topics data provider that should be used.
-    /// </summary>
-    [ConfigurationProperty("defaultDataProvider", DefaultValue = "SqlTopicDataProvider")]
-    public string DefaultDataProvider {
-      get {
-        return (string)this["defaultDataProvider"];
-      }
-      set {
-        this["defaultDataProvider"] = value;
-      }
-    }
-
-    /*==========================================================================================================================
     | ELEMENT: VERSIONING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -124,29 +108,6 @@ namespace Ignia.Topics.Configuration {
     public PageTypeElementCollection PageTypes {
       get {
         return this["pageTypes"] as PageTypeElementCollection;
-      }
-    }
-
-    /*==========================================================================================================================
-    | COLLECTION: PROVIDERS
-    [ConfigurationProperty("providers")]
-      public ProviderSettingsCollection Providers {
-        get {
-          return (ProviderSettingsCollection)base["providers"];
-      }
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | COLLECTION: DATA PROVIDERS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the value of the <dataProviders /> element from the configuration.
-    /// </summary>
-    [ConfigurationProperty("dataProviders")]
-    public ProviderSettingsCollection DataProviders {
-      get {
-        return (ProviderSettingsCollection)base["dataProviders"];
       }
     }
 

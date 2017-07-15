@@ -107,7 +107,7 @@ namespace Ignia.Topics {
       get {
         Contract.Ensures(Contract.Result<ITopicRepository>() != null);
         if (_topicRepository == null) {
-          _topicRepository = (ITopicRepository)TopicDataProviderManager.DataProvider;
+          throw new Exception("The TopicRepository has not been configured with an instance of ITopicProvider. Configure the application by setting the TopicRepository.DataProvider in e.g. the global.asax file.");
         }
         return _topicRepository;
       }

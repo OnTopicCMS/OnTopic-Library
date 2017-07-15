@@ -16,7 +16,7 @@ namespace Ignia.Topics.Repositories {
   ///   Defines a base abstract class for taxonomy data providers.
   /// </summary>
   [ContractClass(typeof(TopicRepositoryBaseContract))]
-  public abstract class TopicRepositoryBase : ProviderBase {
+  public abstract class TopicRepositoryBase {
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -35,6 +35,14 @@ namespace Ignia.Topics.Repositories {
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
     /// </summary>
     public event EventHandler<RenameEventArgs>        RenameEvent;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a new instance of the provider.
+    /// </summary>
+    public TopicRepositoryBase() { }
 
     /*==========================================================================================================================
     | GET CONTENT TYPES
