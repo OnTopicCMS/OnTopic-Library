@@ -31,6 +31,11 @@ namespace Ignia.Topics.Data.Sql {
   public class SqlTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private             ContentTypeCollection           _contentTypes           = null;
+
+    /*==========================================================================================================================
     | METHOD: ADD TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     private void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
@@ -217,6 +222,175 @@ namespace Ignia.Topics.Data.Sql {
     }
 
     /*==========================================================================================================================
+    | METHOD: SET DERIVED TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets references to <see cref="Ignia.Topics.Topic.DerivedTopic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   Topics can be cross-referenced with each other via <see cref="Ignia.Topics.Topic.DerivedTopic"/>. Once the topics are 
+    ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
+    ///   needing to rely on lazy-loading, which would complicate dependency injection. 
+    /// </remarks>
+    /// <param name="topics">The index of topics currently being loaded.</param>
+    private void SetDerivedTopics(Dictionary<int, Topic> topics) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (Topic topic in topics.Values) {
+        int derivedTopicId = 0;
+        bool success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out derivedTopicId);
+        if (!success || derivedTopicId < 0) continue;
+        if (topics.Keys.Contains(derivedTopicId)) {
+          topic.DerivedTopic = topics[derivedTopicId];
+        }
+
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | GET CONTENT TYPES
+    >===========================================================================================================================
+    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
+    | changes.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a list of available <see cref="ContentType"/> objects from the raw data returned from the database.
+    /// </summary>
+    /// <param name="topics">Optional. The index of topics currently being loaded.</param>
+    public ContentTypeCollection GetContentTypes(Dictionary<int, Topic> topics) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_contentTypes == null) {
+
+        _contentTypes = new ContentTypeCollection();
+
+        /*--------------------------------------------------------------------------------------------------------------------
+        | Add available Content Types to the collection
+        \-------------------------------------------------------------------------------------------------------------------*/
+        foreach (Topic topic in topics.Values.Where(t => t.Attributes.Get("ContentType").Equals("ContentType"))) {
+          // Ensure the Topic is used as the strongly-typed ContentType
+          ContentType contentType = topic as ContentType;
+          // Add ContentType Topic to collection if not already added
+          if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
+            _contentTypes.Add(contentType);
+          }
+        }
+
+      }
+
+      return _contentTypes;
+
+    }
+
+    /*==========================================================================================================================
+    | GET CONTENT TYPES
+    >===========================================================================================================================
+    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
+    | changes.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the Configuration namespace from the database, and sets the <see cref="ContentType"/> objects from there.
+    /// </summary>
+    public ContentTypeCollection GetContentTypes() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_contentTypes == null) {
+
+        _contentTypes = new ContentTypeCollection();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Load configuration data
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var configuration = this.Load("Configuration");
+
+        /*--------------------------------------------------------------------------------------------------------------------
+        | Add available Content Types to the collection
+        \-------------------------------------------------------------------------------------------------------------------*/
+        _contentTypes = new ContentTypeCollection();
+
+        /*--------------------------------------------------------------------------------------------------------------------
+        | Ensure the parent ContentTypes topic is available to iterate over
+        \-------------------------------------------------------------------------------------------------------------------*/
+        if (configuration.GetTopic("Configuration:ContentTypes") == null) throw new Exception("Configuration:ContentTypes");
+
+        /*--------------------------------------------------------------------------------------------------------------------
+        | Add available Content Types to the collection
+        \-------------------------------------------------------------------------------------------------------------------*/
+        foreach (Topic topic in configuration.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+          // Ensure the Topic is used as the strongly-typed ContentType
+          ContentType contentType = topic as ContentType;
+          // Add ContentType Topic to collection if not already added
+          if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
+            _contentTypes.Add(contentType);
+          }
+        }
+
+      }
+
+      return _contentTypes;
+
+    }
+
+
+    /*==========================================================================================================================
+    | METHOD: SET CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets strongly-typed references to <see cref="Ignia.Topics.Topic.ContentType"/>.
+    /// </summary>
+    /// <remarks>
+    ///   Topics are each associated with a via <see cref="Ignia.Topics.Topic.ContentType"/> that denotes their structure. Once 
+    ///   the topics are populated in memory, loop through the data to create these associations. By handling this in the 
+    ///   repository, we avoid needing to rely on lazy-loading, which would complicate dependency injection.
+    /// </remarks>
+    /// <param name="topics">The index of topics currently being loaded.</param>
+    private void SetContentTypes(Dictionary<int, Topic> topics) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentTypes = GetContentTypes(topics);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (Topic topic in topics.Values) {
+        string contentType = topic.Attributes.Get("ContentType");
+        if (!String.IsNullOrEmpty(contentType) && contentTypes.Contains(contentType)) {
+          topic.ContentType = contentTypes[contentType];
+        }
+      }
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: SET VERSION HISTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -369,6 +543,12 @@ namespace Ignia.Topics.Data.Sql {
           SetVersionHistory(reader, topics);
         }
 
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Populate strongly typed references
+        \---------------------------------------------------------------------------------------------------------------------*/
+        SetDerivedTopics(topics);
+        SetContentTypes(topics);
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -394,7 +574,7 @@ namespace Ignia.Topics.Data.Sql {
       return topics[topics.Keys.ElementAt(0)];
 
     }
-    
+
     /*==========================================================================================================================
     | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
     | Import/Export schema.
@@ -405,8 +585,8 @@ namespace Ignia.Topics.Data.Sql {
       public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
 
@@ -424,13 +604,13 @@ namespace Ignia.Topics.Data.Sql {
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
     ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
-    ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
+    ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
     /// </exception>
     /// <exception cref="Exception">
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via 
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
-    public override int Save(Topic topic, bool isRecursive, bool isDraft = false) {
+    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -440,8 +620,9 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!TopicRepository.ContentTypes.Contains(topic.Attributes.Get("ContentType"))) {
-        throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + TopicRepository.ContentTypes.Count + " ContentTypes in the Repository.");
+      var contentTypes = GetContentTypes();
+      if (!contentTypes.Contains(topic.Attributes.Get("ContentType"))) {
+        throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -451,7 +632,7 @@ namespace Ignia.Topics.Data.Sql {
       StringBuilder attributes = new StringBuilder();
       StringBuilder nullAttributes = new StringBuilder();
       StringBuilder blob = new StringBuilder();
-      ContentType contentType = TopicRepository.ContentTypes[topic.Attributes.Get("ContentType", "Page")];
+      ContentType contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
 
       Contract.Assume(contentType != null, "Assumes the Content Type is available.");
 
@@ -608,7 +789,7 @@ namespace Ignia.Topics.Data.Sql {
         foreach (Topic childTopic in topic) {
           Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
           childTopic.Attributes["ParentID"].Value = returnVal.ToString();
-          childTopic.Save(isRecursive, isDraft);
+          Save(childTopic, isRecursive, isDraft);
         }
       }
 
