@@ -100,7 +100,7 @@ namespace Ignia.Topics.Data.Caching {
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via 
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
-    public override int Save(Topic topic, bool isRecursive, bool isDraft = false) {
+    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
       return -1;
     }
 
