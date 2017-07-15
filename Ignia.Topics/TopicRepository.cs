@@ -40,6 +40,9 @@ namespace Ignia.Topics {
     [Obsolete("The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static ContentTypeCollection ContentTypes {
       get {
+        if (_contentTypes != null) {
+          return _contentTypes;
+        }
         return DataProvider.GetContentTypes();
       }
       set {
