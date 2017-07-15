@@ -40,8 +40,8 @@ namespace Ignia.Topics.Data.Caching {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicProvider in order to
-    ///   provide necessary data access. 
+    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicRepository in order 
+    ///   to provide necessary data access. 
     /// </summary>
     /// <param name="dataProvider">A concrete instance of an ITopicRepository, which will be used for data access.</param>
     /// <returns>A new instance of the CachedTopicRepository.</returns>
