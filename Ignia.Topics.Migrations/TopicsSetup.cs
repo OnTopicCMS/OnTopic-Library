@@ -151,7 +151,7 @@ namespace Ignia.Topics.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Save new configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Save(isRecursive, isDraft);
+      TopicRepository.DataProvider.Save(topic, isRecursive, isDraft);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update Derived Topic references to ensure any newly assigned IDs are available
@@ -161,7 +161,7 @@ namespace Ignia.Topics.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Update TopicID references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Save(isRecursive, isDraft);
+      TopicRepository.DataProvider.Save(topic, isRecursive, isDraft);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset the TopicRepository's ContentType's cache so it isn't orphaned from the TopicRepository's configuration
@@ -218,7 +218,7 @@ namespace Ignia.Topics.Migrations {
     public void DeleteTopic(string topicName) {
       Topic topic = RootTopic.GetTopic(topicName);
       if (topic != null) {
-        topic.Delete();
+        TopicRepository.DataProvider.Delete(topic);
       }
       return;
     }
