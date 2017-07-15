@@ -262,48 +262,6 @@ namespace Ignia.Topics.Data.Sql {
     | changes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets a list of available <see cref="ContentType"/> objects from the raw data returned from the database.
-    /// </summary>
-    /// <param name="topics">Optional. The index of topics currently being loaded.</param>
-    public ContentTypeCollection GetContentTypes(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize content types
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypes == null) {
-
-        _contentTypes = new ContentTypeCollection();
-
-        /*--------------------------------------------------------------------------------------------------------------------
-        | Add available Content Types to the collection
-        \-------------------------------------------------------------------------------------------------------------------*/
-        foreach (Topic topic in topics.Values.Where(t => t.Attributes.Get("ContentType").Equals("ContentType"))) {
-          // Ensure the Topic is used as the strongly-typed ContentType
-          ContentType contentType = topic as ContentType;
-          // Add ContentType Topic to collection if not already added
-          if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
-            _contentTypes.Add(contentType);
-          }
-        }
-
-      }
-
-      return _contentTypes;
-
-    }
-
-    /*==========================================================================================================================
-    | GET CONTENT TYPES
-    >===========================================================================================================================
-    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
-    | changes.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
     ///   Retrieves the Configuration namespace from the database, and sets the <see cref="ContentType"/> objects from there.
     /// </summary>
     public ContentTypeCollection GetContentTypes() {
