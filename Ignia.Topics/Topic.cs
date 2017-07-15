@@ -366,7 +366,7 @@ namespace Ignia.Topics {
     public string View {
       get {
         // Return current Topic's View Attribute or the default for the ContentType.
-        return Attributes.Get("View", ContentType.Attributes.Get("View", ContentType.Key));
+        return Attributes.Get("View", this.Attributes.Get("View", ""));
       }
       set {
         Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
