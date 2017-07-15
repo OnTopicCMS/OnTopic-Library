@@ -24,7 +24,7 @@ namespace Ignia.Topics {
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
     private static      TopicsSection                   _configuration          = null;
-    private static      ITopicRepository                _topicRepository           = null;
+    private static      ITopicRepository                _topicRepository        = null;
     private static      Topic                           _rootTopic              = null;
     private static      ContentTypeCollection           _contentTypes           = null;
 
