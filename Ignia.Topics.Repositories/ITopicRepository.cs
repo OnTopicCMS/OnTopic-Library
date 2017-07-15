@@ -75,6 +75,22 @@ namespace Ignia.Topics.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
+    | METHOD: ROLLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
+    ///   saving the new version.
+    /// </summary>
+    /// <param name="topic">The current version of the topic to rollback.</param>
+    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
+    /// <requires 
+    ///   description="The version requested for rollback does not exist in the version history."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !VersionHistory.Contains(version)
+    /// </requires>
+    void Rollback(Topic topic, DateTime version);
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

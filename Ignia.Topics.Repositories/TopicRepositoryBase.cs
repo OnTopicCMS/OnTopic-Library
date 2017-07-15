@@ -90,6 +90,99 @@ namespace Ignia.Topics.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
+    | METHOD: ROLLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
+    ///   saving the new version.
+    /// </summary>
+    /// <param name="topic">The current version of the topic to rollback.</param>
+    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
+    /// <requires 
+    ///   description="The version requested for rollback does not exist in the version history."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !VersionHistory.Contains(version)
+    /// </requires>
+    public void Rollback(Topic topic, DateTime version) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topic != null);
+      Contract.Requires<ArgumentException>(version != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC071417: We should use a code contract for this, but due to an intermittent error are throwing a standard 
+      | exception so we can include the version in the error message.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      /*
+      Contract.Requires<ArgumentException>(
+        !topic.VersionHistory.Contains(version),
+        "The version requested for rollback does not exist in the version history"
+      );
+      */
+      if (!topic.VersionHistory.Contains(version)) {
+        throw new ArgumentException("The version requested for rollback ('" + version + "') does not exist in the version history", "version");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve topic from database
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Topic originalVersion = Load(topic.Id, 0, version);
+      Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Mark each attribute as dirty
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (AttributeValue attribute in originalVersion.Attributes) {
+        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
+          attribute.IsDirty = true;
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Construct new AttributeCollection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Attributes.Clear();
+      foreach (AttributeValue attribute in originalVersion.Attributes) {
+        topic.Attributes.Add(attribute);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Rename topic, if necessary
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Key == originalVersion.Key) {
+        topic.Attributes.Set("Key", topic.Key, false);
+      }
+      else {
+        topic.Key = originalVersion.Key;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Change content type, if necessary
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.ContentType == originalVersion.ContentType) {
+        topic.Attributes.Set("ContentType", topic.ContentType.Key, false);
+      }
+      else {
+        topic.ContentType = originalVersion.ContentType;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure parent is maintained
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Attributes.Set("ParentId", topic.Parent.Id.ToString(), false);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Save as new version
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Save(topic, false);
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
