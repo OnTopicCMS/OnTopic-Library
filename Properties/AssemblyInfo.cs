@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("3.1.0.0")]
 
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: CLSCompliant(true)]
