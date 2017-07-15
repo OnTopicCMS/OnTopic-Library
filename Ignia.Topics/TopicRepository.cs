@@ -18,7 +18,6 @@ namespace Ignia.Topics {
   ///   The Topic Repository class provides access to a cached collection of Topic trees to support systems where we may want
   ///   to implement multiple taxonomies for different purposes.
   /// </summary>
-  [Obsolete("The TopicRepository class is obsolete. Instead, clients should use Dependency Injection with the ITopicRepository interface. The TopicRepository ", false)]
   public static class TopicRepository {
 
     /*============================================================================================================================
