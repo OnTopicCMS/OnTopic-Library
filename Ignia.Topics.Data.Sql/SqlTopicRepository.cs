@@ -291,12 +291,14 @@ namespace Ignia.Topics.Data.Sql {
         /*--------------------------------------------------------------------------------------------------------------------
         | Ensure the parent ContentTypes topic is available to iterate over
         \-------------------------------------------------------------------------------------------------------------------*/
-        if (configuration.GetTopic("Configuration:ContentTypes") == null) throw new Exception("Configuration:ContentTypes");
+        if (configuration.GetTopic("ContentTypes") == null) {
+          throw new Exception("Unable to load section Configuration:ContentTypes.");
+        }
 
         /*--------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \-------------------------------------------------------------------------------------------------------------------*/
-        foreach (Topic topic in configuration.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+        foreach (Topic topic in configuration.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
           // Ensure the Topic is used as the strongly-typed ContentType
           ContentType contentType = topic as ContentType;
           // Add ContentType Topic to collection if not already added
