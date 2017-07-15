@@ -37,6 +37,14 @@ namespace Ignia.Topics.Repositories {
     public event EventHandler<RenameEventArgs>        RenameEvent;
 
     /*==========================================================================================================================
+    | GET CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
+    /// </summary>
+    public abstract ContentTypeCollection GetContentTypes();
+    
+    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

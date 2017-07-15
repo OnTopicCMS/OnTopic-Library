@@ -50,6 +50,19 @@ namespace Ignia.Topics.Data.Caching {
     }
 
     /*==========================================================================================================================
+    | GET CONTENT TYPES
+    >===========================================================================================================================
+    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
+    | changes.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
+    /// </summary>
+    public override ContentTypeCollection GetContentTypes() {
+      return _dataProvider.GetContentTypes();
+    }
+
+    /*==========================================================================================================================
     | METHOD: LOAD
     >---------------------------------------------------------------------------------------------------------------------------
     | ### NOTE JJC081115: This method should be broken down into private helper functions to better separate functionality, 

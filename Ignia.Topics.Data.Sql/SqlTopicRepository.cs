@@ -262,14 +262,9 @@ namespace Ignia.Topics.Data.Sql {
     | changes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves the Configuration namespace from the database, and sets the <see cref="ContentType"/> objects from there.
+    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public ContentTypeCollection GetContentTypes() {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
+    public override ContentTypeCollection GetContentTypes() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
