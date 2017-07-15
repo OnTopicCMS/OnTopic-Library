@@ -40,39 +40,7 @@ namespace Ignia.Topics {
     [Obsolete("The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static ContentTypeCollection ContentTypes {
       get {
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \-----------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
-
-        if (_contentTypes == null) {
-          _contentTypes                 = new ContentTypeCollection();
-
-          /*--------------------------------------------------------------------------------------------------------------------
-          | Ensure root topic is available for use with supporting methods
-          \-------------------------------------------------------------------------------------------------------------------*/
-          if (RootTopic == null) throw new Exception("Root topic is null");
-
-          /*--------------------------------------------------------------------------------------------------------------------
-          | Ensure the parent ContentTypes topic is available to iterate over
-          \-------------------------------------------------------------------------------------------------------------------*/
-          if (RootTopic.GetTopic("Configuration:ContentTypes") == null) throw new Exception ("Configuration:ContentTypes");
-
-          /*--------------------------------------------------------------------------------------------------------------------
-          | Add available Content Types to the collection
-          \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
-            // Ensure the Topic is used as the strongly-typed ContentType
-            ContentType contentType     = topic as ContentType;
-            // Add ContentType Topic to collection if not already added
-            if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
-              _contentTypes.Add(contentType);
-            }
-          }
-
-        }
-        return _contentTypes;
+        return DataProvider.GetContentTypes();
       }
       set {
         _contentTypes = value;
