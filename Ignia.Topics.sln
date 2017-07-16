@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics", "Ignia.Topic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Tests", "Ignia.Topics.Tests\Ignia.Topics.Tests.csproj", "{27632801-BFE3-41D9-8678-3C4BBE45E6C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeContractTest", "CodeContractTest\CodeContractTest.csproj", "{6777CAAF-0621-430A-B61A-BC12D9283677}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.CodeContractTest", "Ignia.Topics.CodeContractTest\Ignia.Topics.CodeContractTest.csproj", "{6777CAAF-0621-430A-B61A-BC12D9283677}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Data.Sql.Tests", "Ignia.Topics.Data.Sql.Tests\Ignia.Topics.Data.Sql.Tests.csproj", "{7FF87B1D-36EB-46A7-81E5-91BD9436F475}"
 EndProject
