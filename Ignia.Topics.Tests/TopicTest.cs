@@ -47,9 +47,7 @@ namespace Ignia.Topics.Tests {
         childContentType.Parent = contentType;
         contentType = childContentType;
       }
-      Topic topic = Topic.Create("Test", "Container");
-      topic.ContentType = contentType;
-      Assert.IsTrue(topic.ContentType.IsTypeOf("Root"));
+      Assert.IsTrue(contentType.IsTypeOf("Root"));
     }
 
     /*==========================================================================================================================

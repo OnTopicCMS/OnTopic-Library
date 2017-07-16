@@ -30,7 +30,6 @@ namespace Ignia.Topics {
     private     AttributeValueCollection        _attributes             = null;
     private     int                             _id                     = -1;
     private     string                          _key                    = null;
-    private     ContentType                     _contentType            = null;
     private     string                          _originalKey            = null;
     private     Topic                           _relationships          = null;
     private     Topic                           _incomingRelationships  = null;
@@ -178,8 +177,6 @@ namespace Ignia.Topics {
         | Perform reordering and/or move
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_parent != null) {
-          ReorderSiblings(value);
-          TopicRepository.DataProvider.Move(this, value);
           _parent.Remove(this.Key);
         }
 
@@ -206,7 +203,7 @@ namespace Ignia.Topics {
     | PROPERTY: CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the strongly-typed <see cref="ContentType"/> attribute.
+    ///   Gets the key name of the content type that the current topic represents.
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
@@ -214,31 +211,12 @@ namespace Ignia.Topics {
     ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down 
     ///   the pipe). 
     /// </remarks>
-    public ContentType ContentType {
+    public string ContentType {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Create singleton reference to content type object in repository
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_contentType == null) {
-          string contentType = Attributes.Get("ContentType");
-          if (!String.IsNullOrEmpty(contentType) && TopicRepository.ContentTypes.Contains(contentType)) {
-            _contentType = TopicRepository.ContentTypes[contentType];
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | If content type doesn't exist, default to Container.
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_contentType == null) {
-          _contentType = TopicRepository.ContentTypes["Container"];
-        }
-
-        return _contentType;
-
+        return this.Attributes.Get("ContentType");
       }
       set {
-        _contentType = value;
+        this.Attributes.Set("ContentType", value);
       }
     }
 
@@ -325,8 +303,8 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   The original key is automatically set by <see cref="Key"/> when its value is updated (assuming the original key isn't
-    ///   already set). This is, in turn, used by the <see cref="Providers.RenameEventArgs"/> to represent the original value, 
-    ///   and thus allow the <see cref="Providers.TopicDataProviderBase"/> (or derived providers) from updating the data store
+    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs"/> to represent the original value, 
+    ///   and thus allow the <see cref="Repositories.ITopicRepository"/> (or derived providers) from updating the data store
     ///   appropriately.
     /// </remarks>
     /// <requires
@@ -348,8 +326,8 @@ namespace Ignia.Topics {
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the <see cref="TopicRepository.RootTopic"/>
-    ///   is bound to the root of the site.
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the 
+    ///   site.
     /// </summary>
     /// <remarks>
     ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views 
@@ -387,7 +365,7 @@ namespace Ignia.Topics {
     public string View {
       get {
         // Return current Topic's View Attribute or the default for the ContentType.
-        return Attributes.Get("View", ContentType.Attributes.Get("View", ContentType.Key));
+        return Attributes.Get("View", this.Attributes.Get("View", ""));
       }
       set {
         Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
@@ -448,7 +426,7 @@ namespace Ignia.Topics {
     ///   Gets or sets the topic's sort order.
     /// </summary>
     /// <remarks>
-    ///   Sort order should be assigned by the <see cref="Providers.TopicDataProviderBase"/> (or one of its derived providers); 
+    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers); 
     ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the 
     ///   capabilities of the storage provider.
     /// </remarks>
@@ -532,12 +510,6 @@ namespace Ignia.Topics {
     /// </requires>
     public Topic DerivedTopic {
       get {
-        if (_derivedTopic == null) {
-          int topicId = 0;
-          bool success = Int32.TryParse(this.Attributes.Get("TopicId", "-1", false, false), out topicId);
-          if (!success || topicId < 0) return null;
-          _derivedTopic = TopicRepository.RootTopic.GetTopic(topicId);
-        }
         return _derivedTopic;
       }
       set {
@@ -562,8 +534,8 @@ namespace Ignia.Topics {
       public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
 
@@ -734,7 +706,7 @@ namespace Ignia.Topics {
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
     /// </summary>
     /// <remarks>
-    ///   It is expected that this collection will be populated by the <see cref="Providers.TopicDataProviderBase"/> (or one of
+    ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
     ///   its derived providers). 
     /// </remarks>
     public List<DateTime> VersionHistory {
@@ -745,87 +717,6 @@ namespace Ignia.Topics {
         }
         return _versionHistory;
       }
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Set the collection of related items (by scope) via a CSV file.
-    /// </summary>
-    /// <remarks>
-    ///   Not currently referenced by the library.
-    /// </remarks>
-    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
-    /// <param name="relatedCsv">The source CSV file containing the relationship data.</param>
-    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(scope)
-    /// </requires>
-    /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !scope.Contains(" ")
-    /// </requires>
-    [Obsolete("The SetRelationship(string, string) overload for accepting CSV files is obsolete. Use SetRelationship(string, Topic) instead.", true)]
-    public void SetRelationship(string scope, string relatedCsv) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope), "scope");
-      Topic.ValidateKey(scope);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle Deletion
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(relatedCsv)) {
-        if (this.Relationships.Contains(scope)) {
-          this.Relationships.Remove(scope);
-        }
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Build collection from CSV
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic related = new Topic(scope);
-      char[] stringSeparators = new char[] {','};
-
-      string[] csv = relatedCsv.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-      for (int i=0; i < csv.Length; i++) {
-        int number;
-        bool result = Int32.TryParse(csv[i], out number);
-        if (result) {
-          Topic topic = TopicRepository.RootTopic.GetTopic(number);
-          if (topic == null) {
-            throw new ArgumentException("SetRelationship failed to find TopicId: " + number.ToString(CultureInfo.InvariantCulture));
-          }
-          if (!related.Contains(topic.Key)) {
-            related.Add(topic);
-          }
-        }
-        else {
-          if (csv[i] == null) csv[i] = "";
-          throw new ArgumentException("Attempted conversion of '" + csv[i] + "' failed.");
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set incoming relationships
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic relatedTopic in related) {
-        relatedTopic.SetRelationship(scope, this, true);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set property value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Relationships.Contains(related.Key)) {
-        this.Relationships.Remove(related.Key);
-      }
-      this.Relationships.Add(related);
-
     }
 
     /*==========================================================================================================================
@@ -1121,8 +1012,8 @@ namespace Ignia.Topics {
       public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
 
@@ -1139,45 +1030,8 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
     /// </requires>
+    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
     public void Rollback(DateTime version) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(
-        !VersionHistory.Contains(version), 
-        "The version requested for rollback does not exist in the version history"
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve topic from database
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic originalVersion     = TopicRepository.DataProvider.Load(this.Id, version);
-      Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Rename topic, if necessary
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Key                  = originalVersion.Key;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Mark each attribute as dirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (AttributeValue attribute in originalVersion.Attributes) {
-        if (!this.Attributes.Contains(attribute.Key) || this.Attributes.Get(attribute.Key) != attribute.Value) {
-          attribute.IsDirty = true;
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Construct new AttributeCollection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Attributes           = originalVersion.Attributes;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Save as new version
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Save();
 
     }
 
@@ -1315,9 +1169,9 @@ namespace Ignia.Topics {
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The topic's integer identifier.</returns>
+    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Save() instead.", true)]
     public int Save(bool isRecursive = false, bool isDraft = false) {
-      Id = TopicRepository.DataProvider.Save(this, isRecursive, isDraft);
-      return Id;
+      return -1;
     }
 
     /*==========================================================================================================================
@@ -1351,6 +1205,7 @@ namespace Ignia.Topics {
     /// </summary>
     //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's 
     //  children or delete and reassign children or something.
+    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
     public void Delete() {
       Delete(true);
     }
@@ -1361,8 +1216,8 @@ namespace Ignia.Topics {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse over the topic's children and delete them as well.
     /// </param>
+    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
     public void Delete(bool isRecursive) {
-      TopicRepository.DataProvider.Delete(this, isRecursive);
     }
 
     /*==========================================================================================================================
@@ -1377,9 +1232,8 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public bool Move(Topic target) {
-      ReorderSiblings();
-      return TopicRepository.DataProvider.Move(this, target);
+    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
+    public void Move(Topic target) {
     }
 
     /// <summary>
@@ -1397,65 +1251,8 @@ namespace Ignia.Topics {
     ///   description="The topic cannot be moved or reordered relative to itself." exception="T:System.ArgumentException">
     ///   topic != sibling
     /// </requires>
-    public bool Move(Topic target, Topic sibling) {
-
-      Contract.Requires<ArgumentException>(this != target, "The topic may not be its own parent.");
-      Contract.Requires<ArgumentException>(this != sibling, "The topic cannot be moved or reordered relative to itself.");
-
-      ReorderSiblings(sibling);
-      return TopicRepository.DataProvider.Move(this, target, sibling);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: REORDER SIBLINGS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static method that updates the sort order of topics at a particular level.
-    /// </summary>
-    /// <param name="sibling">
-    ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
-    /// </param>
-    /// <requires description="The source topic must be specified." exception="T:System.ArgumentNullException">
-    ///   source != null
-    /// </requires>
-    /// <requires description="The source topic cannot be reordered relative to itself." exception="T:System.ArgumentException">
-    ///   source != sibling
-    /// </requires>
-    private void ReorderSiblings(Topic sibling = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(this != sibling, "The source cannot be reordered relative to itself.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic parent = this.Parent;
-      int sortOrder = -1;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | If there is no sibling, inject the source at the beginning of the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sibling == null) {
-        this.SortOrder = sortOrder++;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through each topic to assign a new priority order
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic topic in parent.SortedChildren) {
-        // Assuming the topic isn't the source, increment the sortOrder
-        if (topic != this) {
-          topic.SortOrder = sortOrder++;
-        }
-        // If the topic is the sibling, then assign the next sortOrder to the source
-        if (topic == sibling) {
-          this.SortOrder = sortOrder++;
-        }
-      }
-
+    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
+    public void Move(Topic target, Topic sibling) {
     }
 
     /*==========================================================================================================================
@@ -1470,8 +1267,9 @@ namespace Ignia.Topics {
     ///   Contract Checker.
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
+    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
     [Pure]
-    internal static void ValidateKey(string topicKey, bool isOptional = false) {
+    public static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<ArgumentException>(
         (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
