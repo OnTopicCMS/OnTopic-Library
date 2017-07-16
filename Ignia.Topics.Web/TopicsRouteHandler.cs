@@ -12,7 +12,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.Routing;
 using System.Web.Compilation;
-using Ignia.Topics.Configuration;
+using Ignia.Topics.Web.Configuration;
 using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Web {
@@ -228,7 +228,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set route variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    contentType                     = topic.ContentType.Key;
+      string    contentType                     = topic.ContentType;
       var       firstColon                      = topic.UniqueKey.IndexOf(":");
 
       if (String.IsNullOrEmpty(nameSpace) && firstColon >= 0) {
@@ -294,6 +294,8 @@ namespace Ignia.Topics.Web {
       | Set target path
       \-----------------------------------------------------------------------------------------------------------------------*/
       string    targetPath                      = ViewsPath + viewName + ".aspx";
+
+      requestContext.RouteData.Values["targetPath"] = targetPath;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | SET TARGET TYPES
