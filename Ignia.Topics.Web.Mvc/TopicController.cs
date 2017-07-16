@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Ignia.Topics;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Web.Mvc {
 
@@ -20,17 +22,24 @@ namespace Ignia.Topics.Web.Mvc {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views). 
   /// </summary>
-  class TopicController : AsyncController {
+  class TopicController<T> : AsyncController where T : Topic {
 
     /*==========================================================================================================================
-    | GET TOPIC
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private     ITopicRepository                _topicRepository        = null;
+    private     T                               _currentTopic           = null;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   An internal helper method for looking up the topic associated with the current path.
+    ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
-    /// <returns>A topic associated with the current path, if available.</returns>
-    private Topic GetTopic(string path) {
-      return new Topic();
+    /// <returns>A topic controller for loading OnTopic views.</returns>
+    public TopicController(ITopicRepository topicRepository, T currentTopic) {
+      _topicRepository = topicRepository;
+      _currentTopic = currentTopic;
     }
 
     /*==========================================================================================================================
@@ -59,7 +68,6 @@ namespace Ignia.Topics.Web.Mvc {
       return HttpNotFound("This controller is not yet implemented.");
 
     }
-
 
   } //Class
 
