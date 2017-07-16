@@ -183,23 +183,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ignia.Topics.Repositories\DeleteEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Repositories\ITopicRepository.cs" />
-    <Compile Include="Ignia.Topics.Repositories\MoveEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Repositories\RenameEventArgs.cs" />
-    <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBase.cs" />
-    <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBaseContract.cs" />
-    <Compile Include="Ignia.Topics\Attribute.cs" />
-    <Compile Include="Ignia.Topics\AttributeValue.cs" />
-    <Compile Include="Ignia.Topics\AttributeValueCollection.cs" />
-    <Compile Include="Ignia.Topics\ContentType.cs" />
-    <Compile Include="Ignia.Topics\ContentTypeCollection.cs" />
-    <Compile Include="Ignia.Topics\Topic.cs" />
+    <Compile Include="Repositories\DeleteEventArgs.cs" />
+    <Compile Include="Repositories\ITopicRepository.cs" />
+    <Compile Include="Repositories\MoveEventArgs.cs" />
+    <Compile Include="Repositories\RenameEventArgs.cs" />
+    <Compile Include="Repositories\TopicRepositoryBase.cs" />
+    <Compile Include="Repositories\TopicRepositoryBaseContract.cs" />
+    <Compile Include="Attribute.cs" />
+    <Compile Include="AttributeValue.cs" />
+    <Compile Include="AttributeValueCollection.cs" />
+    <Compile Include="ContentType.cs" />
+    <Compile Include="ContentTypeCollection.cs" />
+    <Compile Include="Topic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics", "Ignia.Topics.csproj", "{B8D5B290-4451-4C3B-AE9E-0FF075958A74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics", "Ignia.Topics\Ignia.Topics.csproj", "{B8D5B290-4451-4C3B-AE9E-0FF075958A74}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Tests", "Ignia.Topics.Tests\Ignia.Topics.Tests.csproj", "{27632801-BFE3-41D9-8678-3C4BBE45E6C9}"
 EndProject

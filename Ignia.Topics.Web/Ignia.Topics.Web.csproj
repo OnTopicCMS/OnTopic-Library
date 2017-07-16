@@ -112,7 +112,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Ignia.Topics.csproj">
+    <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">
       <Project>{b8d5b290-4451-4c3b-ae9e-0ff075958a74}</Project>
       <Name>Ignia.Topics</Name>
     </ProjectReference>
