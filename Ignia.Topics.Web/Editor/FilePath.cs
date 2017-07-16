@@ -6,7 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics.Editor {
+namespace Ignia.Topics.Web.Editor {
 
   /*============================================================================================================================
   | CLASS: FILE PATH

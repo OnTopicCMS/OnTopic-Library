@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Configuration.Provider;
 using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Repositories {

@@ -7,7 +7,7 @@ using System;
 using System.Configuration;
 using System.Globalization;
 
-namespace Ignia.Topics.Configuration {
+namespace Ignia.Topics.Web.Configuration {
 
   /*============================================================================================================================
   | CLASS: EDITOR ELEMENT

@@ -175,9 +175,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -185,40 +183,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ignia.Topics.Configuration\EditorElement.cs" />
-    <Compile Include="Ignia.Topics.Configuration\PageTypeElement.cs" />
-    <Compile Include="Ignia.Topics.Configuration\PageTypeElementCollection.cs" />
-    <Compile Include="Ignia.Topics.Configuration\SourceElement.cs" />
-    <Compile Include="Ignia.Topics.Configuration\SourceElementCollection.cs" />
-    <Compile Include="Ignia.Topics.Configuration\TopicsSection.cs" />
-    <Compile Include="Ignia.Topics.Configuration\VersioningElement.cs" />
-    <Compile Include="Ignia.Topics.Configuration\ViewsElement.cs" />
-    <Compile Include="Ignia.Topics.Editor\AttributeTypeControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Ignia.Topics.Editor\FilePath.cs" />
-    <Compile Include="Ignia.Topics.Editor\IEditControl.cs" />
-    <Compile Include="Ignia.Topics.Migrations\TopicsSetup.cs" />
     <Compile Include="Ignia.Topics.Repositories\DeleteEventArgs.cs" />
     <Compile Include="Ignia.Topics.Repositories\ITopicRepository.cs" />
     <Compile Include="Ignia.Topics.Repositories\MoveEventArgs.cs" />
     <Compile Include="Ignia.Topics.Repositories\RenameEventArgs.cs" />
     <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBase.cs" />
     <Compile Include="Ignia.Topics.Repositories\TopicRepositoryBaseContract.cs" />
-    <Compile Include="Ignia.Topics.Web\TopicPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Ignia.Topics.Web\TopicsRouteHandler.cs" />
-    <Compile Include="Ignia.Topics.Web\TypedTopicPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Ignia.Topics\Attribute.cs" />
     <Compile Include="Ignia.Topics\AttributeValue.cs" />
     <Compile Include="Ignia.Topics\AttributeValueCollection.cs" />
     <Compile Include="Ignia.Topics\ContentType.cs" />
     <Compile Include="Ignia.Topics\ContentTypeCollection.cs" />
     <Compile Include="Ignia.Topics\Topic.cs" />
-    <Compile Include="Ignia.Topics\TopicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

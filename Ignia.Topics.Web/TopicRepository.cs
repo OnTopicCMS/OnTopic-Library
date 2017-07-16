@@ -4,12 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Configuration;
+using Ignia.Topics.Web.Configuration;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using System.Configuration;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Web {
 
   /*============================================================================================================================
   | CLASS: TOPIC REPOSITORY

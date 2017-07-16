@@ -6,7 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics.Migrations {
+namespace Ignia.Topics.Web.Migrations {
 
   /*============================================================================================================================
   | CLASS: TOPICS SETUP

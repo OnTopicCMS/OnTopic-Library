@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics.Configuration {
+namespace Ignia.Topics.Web.Configuration {
 
   /*============================================================================================================================
   | CLASS: PAGE TYPE ELEMENT

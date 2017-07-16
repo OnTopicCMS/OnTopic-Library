@@ -7,34 +7,33 @@ using System;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics.Configuration {
+namespace Ignia.Topics.Web.Configuration {
 
   /*============================================================================================================================
-  | CLASS: SOURCE ELEMENT COLLECTION
+  | CLASS: PAGE TYPE ELEMENT COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom implementation of a <see cref="ConfigurationElementCollection"/> responsible for encapsulating a set
-  ///   of <see cref="SourceElement"/> elements.
+  ///   of <see cref="PageTypeElement"/> elements.
   /// </summary>
   /// <remarks>
-  ///   Adapted DIRECTLY from the Ignia Localization library; in the future, these libraries may (and should) share custom
-  ///   configuration classes.
+  ///   Includes the Default property that exposes the default page type (<see cref="Ignia.Topics.Web.TopicPage"/>).
   /// </remarks>
-  public class SourceElementCollection : ConfigurationElementCollection {
+  public class PageTypeElementCollection : ConfigurationElementCollection {
 
     /*==========================================================================================================================
     | INDEXER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the <see cref="SourceElement"/> at the specified index.
+    ///   Gets or sets the <see cref="PageTypeElement"/> at the specified index.
     /// </summary>
-    /// <param name="index">The integer index for the <see cref="SourceElement"/> item in the collection.</param>
+    /// <param name="index">The integer index for the <see cref="PageTypeElement"/> item in the collection.</param>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value != null
     /// </requires>
-    public SourceElement this[int index] {
+    public PageTypeElement this[int index] {
       get {
-        return base.BaseGet(index) as SourceElement;
+        return base.BaseGet(index) as PageTypeElement;
       }
       set {
         Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
@@ -46,14 +45,27 @@ namespace Ignia.Topics.Configuration {
     }
 
     /*==========================================================================================================================
+    | ATTRIBUTE: DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the default page type (e.g., <see cref="Ignia.Topics.Web.TopicPage"/>).
+    /// </summary>
+    [ConfigurationProperty("default", DefaultValue="TopicPage", IsRequired = false)]
+    public string Default {
+      get {
+        return (string)base["default"];
+      }
+    }
+
+    /*==========================================================================================================================
     | METHOD: CREATE NEW ELEMENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a new <see cref="ConfigurationElement"/>.
+    ///   Creates a new <see cref="PageTypeElement"/>.
     /// </summary>
-    /// <returns>A new instance of a <see cref="ConfigurationElement"/>.</returns>
+    /// <returns>A new instance of a <see cref="PageTypeElement"/>.</returns>
     protected override ConfigurationElement CreateNewElement() {
-      return new SourceElement();
+      return new PageTypeElement();
     }
 
     /*==========================================================================================================================
@@ -63,13 +75,13 @@ namespace Ignia.Topics.Configuration {
     ///   Gets the key for the <see cref="ConfigurationElement"/> item in the collection.
     /// </summary>
     /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
-    /// <returns>The Source string value for the <see cref="SourceElement"/> as the element's key.</returns>
+    /// <returns>The Name string value for the <see cref="PageTypeElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
-      Contract.Assume(
-        ((SourceElement)element).Source != null,
-        "Confirm the element's Source value is available when deriving its key."
+      Contract.Assert(
+        ((PageTypeElement)element) != null,
+        "Confirms the element's Name value is available when deriving its key."
       );
-      return ((SourceElement)element).Source;
+      return ((PageTypeElement)element);
     }
 
   } // Class

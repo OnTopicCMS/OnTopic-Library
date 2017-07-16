@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Web;
 using System.Web.Security;
 
-namespace Ignia.Topics.Configuration {
+namespace Ignia.Topics.Web.Configuration {
 
   /*============================================================================================================================
   | CLASS: SOURCE ELEMENT

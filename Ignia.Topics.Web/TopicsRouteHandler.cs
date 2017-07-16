@@ -12,7 +12,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.Routing;
 using System.Web.Compilation;
-using Ignia.Topics.Configuration;
+using Ignia.Topics.Web.Configuration;
 using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Web {
