@@ -68,8 +68,21 @@ namespace Ignia.Topics.Web {
         | Lookup topic
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_topic == null) {
-          var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, this.Request.RequestContext);
-          _topic = topicRoutingService.Topic;
+          var path = Request.QueryString["Path"];
+          if (path != null) {
+            _topic = TopicRepository.RootTopic.GetTopic(path);
+          }
+          else {
+            var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, this.Request.RequestContext);
+            _topic = topicRoutingService.Topic;
+          }
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Provide Fallback
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_topic == null) {
+          _topic = TopicRepository.RootTopic.FirstOrDefault();
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
