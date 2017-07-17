@@ -10,11 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
-using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
 using System.Xml;
-using System.Web;
 using System.Globalization;
 
 namespace Ignia.Topics.Data.Caching {
@@ -29,12 +27,13 @@ namespace Ignia.Topics.Data.Caching {
   ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.IDataRepository"/> class.
   /// </remarks>
 
-  public class CachedTopicRepository : TopicRepositoryBase {
+  public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    ITopicRepository _dataProvider = null;
+    ITopicRepository            _dataProvider            = null;
+    Topic                       _cache                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -51,9 +50,6 @@ namespace Ignia.Topics.Data.Caching {
 
     /*==========================================================================================================================
     | GET CONTENT TYPES
-    >===========================================================================================================================
-    | ###TODO JJC092813: Need to identify a way of handling cache dependencies and/or recycling of ContentTypes based on
-    | changes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
@@ -64,9 +60,6 @@ namespace Ignia.Topics.Data.Caching {
 
     /*==========================================================================================================================
     | METHOD: LOAD
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### NOTE JJC081115: This method should be broken down into private helper functions to better separate functionality, 
-    | avoid lengthy nested blocks, and enhance code readability. 
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Interface method that loads topics into memory.
@@ -89,9 +82,45 @@ namespace Ignia.Topics.Data.Caching {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Ensures(Contract.Result<Topic>() != null);
 
-      return new Topic();
-    }
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Relay version requests to data provider
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (version != null) {
+        if (topicKey == null) {
+          return _dataProvider.Load(topicId, depth, version);
+        }
+        else {
+          return _dataProvider.Load(topicKey, depth, version);
+        }
+      }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure topics are loaded
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_cache == null) {
+        _cache = _dataProvider.Load();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Lookup by TopicId
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicId >= 0) {
+        return _cache.GetTopic(topicId);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Lookup by TopicKey
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!String.IsNullOrWhiteSpace(topicKey)) {
+        return _cache.GetTopic(topicKey);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return entire cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return _cache;
+
+    }
 
     /*==========================================================================================================================
     | METHOD: SAVE
@@ -114,7 +143,7 @@ namespace Ignia.Topics.Data.Caching {
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
     public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
-      return -1;
+      return _dataProvider.Save(topic, isRecursive, isDraft);
     }
 
     /*==========================================================================================================================
@@ -136,12 +165,7 @@ namespace Ignia.Topics.Data.Caching {
       Justification = "Sibling may be null from overloaded caller."
       )]
     public override void Move(Topic topic, Topic target, Topic sibling) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target);
-
+      _dataProvider.Move(topic, target, sibling);
     }
 
     /*==========================================================================================================================
@@ -159,20 +183,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
     public override void Delete(Topic topic, bool isRecursive = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define assumptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(
-        ConfigurationManager.ConnectionStrings != null,
-        "The Delete method assumes the database connection strings are available from the configuration."
-        );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Delete(topic, isRecursive);
-
+      _dataProvider.Delete(topic, isRecursive);
     }
 
   } //Class
