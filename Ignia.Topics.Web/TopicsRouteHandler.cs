@@ -88,61 +88,29 @@ namespace Ignia.Topics.Web {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE: JJC071617: Most of these variables are only needed to establish the routing variables. If those are not 
-      | actually needed for backward compatibility, then much of this can be removed. Alternatively, it can be inferred from the
-      | TopicRoutingService, if there's some flexibility on the exact format.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var       routeData                       = requestContext.RouteData;
-      var       nameSpace                       = (string)routeData.Values["namespace"]?? "";
-      var       path                            = (string)routeData.Values["path"]?? "";
-      var       directory                       = nameSpace + "/" + path;
-
-      if (directory.StartsWith("/"))            directory       = directory.Substring(1);
-      if (directory.EndsWith("/"))              directory       = directory.Substring(0, directory.Length-1);
-      if (path.EndsWith("/"))                   path            = path.Substring(0, path.Length-1);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Get topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
       var       topicRoutingService             = new TopicRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
       var       topic                           = topicRoutingService.Topic;
+      var       viewName                        = topicRoutingService.View;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate path
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) {
-        return BuildManager.CreateInstanceFromVirtualPath("~/" + path, typeof(Page)) as IHttpHandler;
+        return BuildManager.CreateInstanceFromVirtualPath(ViewsPath, typeof(Page)) as IHttpHandler;
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set route variables
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE: JJC071617: See above with regard to whether these routes are still necessary.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      string    contentType                     = topic.ContentType;
-      var       firstColon                      = topic.UniqueKey.IndexOf(":");
-
-      if (String.IsNullOrEmpty(nameSpace) && firstColon >= 0) {
-        nameSpace                               = topic.UniqueKey.Substring(0, firstColon);
-        path                                    = topic.UniqueKey.Substring(firstColon+1);
-      }
-
-      routeData.Values["contentType"]           = topicRoutingService.ContentType;
-      routeData.Values["directory"]             = directory;
-      routeData.Values["path"]                  = path;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Derive expected view
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewName = topicRoutingService.View;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target path
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    targetPath                      = ViewsPath + viewName + ".aspx";
+      string targetPath                      = ViewsPath + viewName + ".aspx";
 
-      requestContext.RouteData.Values["targetPath"] = targetPath;
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set route data
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      routeData.Values["targetPath"] = targetPath;
+      routeData.Values["directory"] = topicRoutingService.AbsolutePath;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | SET TARGET TYPES
