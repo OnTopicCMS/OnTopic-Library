@@ -53,8 +53,20 @@ namespace Ignia.Topics {
       ITopicRepository topicRepository,
       RequestContext requestContext,
       string viewsPath = "~/Shared/Views/", 
-      string viewExtension = ".cshtml"
+      string viewExtension = "cshtml"
      ) : base(requestContext.HttpContext.Request.Url.ToString()) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(requestContext != null, "An instance of a RequestContext is required.");
+      Contract.Requires(viewsPath.IndexOf("/") >= 0, "The viewPath parameter should be a relative path (e.g., '/Views/`).");
+      Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set values locally
+      \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository = topicRepository;
       _requestContext = requestContext;
       _viewsPath = viewsPath;
