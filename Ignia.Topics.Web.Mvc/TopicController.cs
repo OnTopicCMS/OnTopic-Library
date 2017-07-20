@@ -53,24 +53,24 @@ namespace Ignia.Topics.Web.Mvc {
     public async Task<ActionResult> Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate Topic Key
-      var topic = GetTopic(path);
-
-      if (topic == null) {
-        return HttpNotFound("A topic with the UniqueKey '" + path + "' does not exist.");
-      }
-      \-----------------------------------------------------------------------------------------------------------------------*/
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish Page Topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicRoutingService = new TopicRoutingService(_topicRepository, this.HttpContext.Request.RequestContext);
 
-    //Topic topic = _currentTopic;
-      ViewBag.Topic = topicRoutingService.Topic;
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle exceptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicRoutingService.Topic == null) {
+        return HttpNotFound("There is no topic associated with this path.");
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return the homepage view
+      | Establish default view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topicViewModel = new TopicViewModel(_topicRepository, topicRoutingService.Topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify associated razor view
       \-----------------------------------------------------------------------------------------------------------------------*/
       var view = new RazorView(
         this.ControllerContext,
@@ -79,13 +79,11 @@ namespace Ignia.Topics.Web.Mvc {
         true, 
         null
        );
-      return View(view);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Lookup and return appropriate model, view
-      return await GetView(path);
+      | Return view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return HttpNotFound("This controller is not yet implemented.");
+      return View(view, topicViewModel);
 
     }
 
