@@ -23,7 +23,7 @@ namespace Ignia.Topics.Web.Mvc {
   ///   Will be the primary model used by the <see cref="TopicController{T}"/>, and any specialized derivatives (although those 
   ///   derivatives may well need to be created to extend the view model with data specific to that content type and its views. 
   /// </remarks>
-  class TopicViewModel {
+  public class TopicViewModel {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
