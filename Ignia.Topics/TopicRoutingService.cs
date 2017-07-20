@@ -37,8 +37,8 @@ namespace Ignia.Topics {
     private     string                  _contentType                    = null;
     private     List<string>            _views                          = null;
     private     string                  _view                           = null;
-    private     string                  _viewsPath                      = null;
-    private     string                  _localViewsPath                 = null;
+    private     string                  _viewsDirectory                 = null;
+    private     string                  _localViewsDirectory            = null;
     private     string                  _viewExtension                  = null;
     private     Topic                   _topic                          = null;
 
@@ -47,13 +47,13 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified 
-    ///   path to the views folder, and, optionally, the expected filename suffix fo each view file. 
+    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file. 
     /// </summary>
     public TopicRoutingService(
-      ITopicRepository topicRepository,
-      RequestContext requestContext,
-      string viewsPath = "~/Shared/Views/", 
-      string viewExtension = "cshtml"
+      ITopicRepository                  topicRepository,
+      RequestContext                    requestContext,
+      string                            viewsDirectory                     = "~/Views/", 
+      string                            viewExtension                   = "cshtml"
      ) : base(requestContext.HttpContext.Request.Url.ToString()) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -61,48 +61,48 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(requestContext != null, "An instance of a RequestContext is required.");
-      Contract.Requires(viewsPath.IndexOf("/") >= 0, "The viewPath parameter should be a relative path (e.g., '/Views/`).");
+      Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
       Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository = topicRepository;
-      _requestContext = requestContext;
-      _viewsPath = viewsPath;
-      _viewExtension = viewExtension;
+      _topicRepository                  = topicRepository;
+      _requestContext                   = requestContext;
+      _viewsDirectory                      = viewsDirectory;
+      _viewExtension                    = viewExtension;
     }
 
     /*==========================================================================================================================
-    | PROPERTY: VIEWS PATH
+    | PROPERTY: VIEWS DIRECTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets the expected location for View files. Must be set during the constructor. 
     /// </summary>
-    public string ViewsPath {
+    public string ViewsDirectory {
       get {
-        return _viewsPath;
+        return _viewsDirectory;
       }
       private set {
-        _viewsPath = value;
+        _viewsDirectory = value;
       }
     }
 
     /*==========================================================================================================================
-    | PROPERTY: LOCAL VIEWS PATH
+    | PROPERTY: LOCAL VIEWS DIRECTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets the expected location for View files. Must be set during the constructor. 
     /// </summary>
-    public string LocalViewsPath {
+    public string LocalViewsDirectory {
       get {
-        if (_localViewsPath == null) {
-          _requestContext.HttpContext.Request.MapPath(ViewsPath);
+        if (_localViewsDirectory == null) {
+          _requestContext.HttpContext.Request.MapPath(ViewsDirectory);
         }
-        return _localViewsPath;
+        return _localViewsDirectory;
       }
       private set {
-        _localViewsPath = value;
+        _localViewsDirectory = value;
       }
     }
 
@@ -278,7 +278,7 @@ namespace Ignia.Topics {
           \-------------------------------------------------------------------------------------------------------------------*/
           List<string> views = new List<string>();
           string searchPattern = "*." + ViewExtension;
-          DirectoryInfo viewsDirectoryInfo = new DirectoryInfo(_requestContext.HttpContext.Request.MapPath(ViewsPath));
+          DirectoryInfo viewsDirectoryInfo = new DirectoryInfo(LocalViewsDirectory);
           SearchOption searchOption = SearchOption.TopDirectoryOnly;
           DirectoryInfo[] subDirectories = viewsDirectoryInfo?.GetDirectories("*", SearchOption.AllDirectories);
 
@@ -316,6 +316,19 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: VIEW PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the full path to the target view, including the <see cref="ViewsDirectory"/> and the <see cref="ViewExtension"/>.
+    /// </summary>
+    public string ViewPath {
+      get {
+        return ViewsDirectory + ContentType + "/" + View + "." + ViewExtension;
+      }
+
+    }
+
+    /*==========================================================================================================================
     | PROPERTY: IS VALID VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -345,7 +358,7 @@ namespace Ignia.Topics {
       if (
         !String.IsNullOrEmpty(viewName) &&
         Views.Contains(contentType + "\\" + viewName, StringComparer.InvariantCultureIgnoreCase) &&
-        File.Exists(ViewsPath + "\\" + contentType + "\\" + viewName + "." + ViewExtension)
+        File.Exists(LocalViewsDirectory + "\\" + contentType + "\\" + viewName + "." + ViewExtension)
         ) {
         matchedView = contentType + "\\" + viewName;
       }
