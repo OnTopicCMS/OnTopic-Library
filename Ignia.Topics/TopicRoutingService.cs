@@ -97,7 +97,7 @@ namespace Ignia.Topics {
     public string LocalViewsDirectory {
       get {
         if (_localViewsDirectory == null) {
-          _requestContext.HttpContext.Request.MapPath(ViewsDirectory);
+          _localViewsDirectory = _requestContext.HttpContext.Request.MapPath(ViewsDirectory);
         }
         return _localViewsDirectory;
       }
