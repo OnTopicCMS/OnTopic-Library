@@ -22,7 +22,7 @@ namespace Ignia.Topics.Web.Mvc {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views). 
   /// </summary>
-  class TopicController<T> : AsyncController where T : Topic {
+  public class TopicController<T> : AsyncController where T : Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -60,6 +60,26 @@ namespace Ignia.Topics.Web.Mvc {
         return HttpNotFound("A topic with the UniqueKey '" + path + "' does not exist.");
       }
       \-----------------------------------------------------------------------------------------------------------------------*/
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish Page Topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topicRoutingService = new TopicRoutingService(_topicRepository, this.HttpContext.Request.RequestContext);
+
+    //Topic topic = _currentTopic;
+      ViewBag.Topic = topicRoutingService.Topic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the homepage view
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var view = new RazorView(
+        this.ControllerContext,
+        topicRoutingService.ViewPath, 
+        null, 
+        true, 
+        null
+       );
+      return View(view);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup and return appropriate model, view
