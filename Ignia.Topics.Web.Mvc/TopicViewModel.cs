@@ -29,7 +29,7 @@ namespace Ignia.Topics.Web.Mvc {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private             ITopicRepository    _topicRepository        = null;
-    private             Topic               _currentTopic           = null;
+    private             Topic               _topic                  = null;
     private             Topic               _rootTopic              = null;
 
     /*==========================================================================================================================
@@ -39,9 +39,9 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic View Model with appropriate dependencies.
     /// </summary>
     /// <returns>A Topic view model.</returns>
-    public TopicViewModel(ITopicRepository topicRepository, Topic currentTopic) {
+    public TopicViewModel(ITopicRepository topicRepository, Topic topic) {
       _topicRepository = topicRepository;
-      _currentTopic = currentTopic;
+      _topic = topic;
     }
 
     /*==========================================================================================================================
@@ -67,7 +67,7 @@ namespace Ignia.Topics.Web.Mvc {
     public Topic RootTopic {
       get {
         if (_rootTopic == null) {
-          _rootTopic = _currentTopic;
+          _rootTopic = _topic;
           while (_rootTopic.Parent != null) {
             _rootTopic = _rootTopic.Parent;
           }
@@ -77,19 +77,17 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: CURRENT TOPIC
+    | PROPERTY: TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Returns the topic associated with the current page based on the URL or route. 
     /// </summary>
     /// <returns>The <see cref="Topic"/> associated with the current page.</returns>
-    public Topic CurrentTopic {
+    public Topic Topic {
       get {
-        return _currentTopic;
+        return _topic;
       }
     }
-
-
 
   } //Class
 
