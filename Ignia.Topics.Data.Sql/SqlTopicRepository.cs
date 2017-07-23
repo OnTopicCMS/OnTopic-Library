@@ -61,7 +61,6 @@ namespace Ignia.Topics.Data.Sql {
 
     }
 
-
     /*==========================================================================================================================
     | METHOD: ADD TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -70,11 +69,12 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId = -1;
-      int id = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      string contentType = reader?["ContentType"]?.ToString();
-      string key = reader?["TopicKey"]?.ToString();
-      sortOrder = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
+      var parentId              = -1;
+      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var contentType           = reader?["ContentType"]?.ToString();
+      var key                   = reader?["TopicKey"]?.ToString();
+
+      sortOrder                 = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
 
       // Handle ParentID (could be null for root topic)
       Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId);
@@ -109,10 +109,10 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      string name = reader?["AttributeKey"]?.ToString();
-      string value = reader?["AttributeValue"]?.ToString();
-      DateTime versionDate = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var name                  = reader?["AttributeKey"]?.ToString();
+      var value                 = reader?["AttributeValue"]?.ToString();
+      var versionDate           = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -155,8 +155,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int id = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      DateTime versionDate = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var versionDate           = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
@@ -177,8 +177,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        string name = attribute.Attributes?["key"]?.Value;
-        string value = HttpUtility.HtmlDecode(attribute.InnerXml);
+        var name                = attribute.Attributes?["key"]?.Value;
+        var value               = HttpUtility.HtmlDecode(attribute.InnerXml);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
@@ -223,15 +223,15 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader?["Source_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      int targetTopicId = Int32.Parse(reader?["Target_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      string relationshipTypeId = (string)reader?["RelationshipTypeID"];
+      var sourceTopicId         = Int32.Parse(reader?["Source_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var targetTopicId         = Int32.Parse(reader?["Target_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var relationshipTypeId    = (string)reader?["RelationshipTypeID"];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = topics[sourceTopicId];
-      Topic related = null;
+      Topic current             = topics[sourceTopicId];
+      Topic related             = null;
 
       // Fetch the related topic
       if (topics.Keys.Contains(targetTopicId)) {
@@ -271,8 +271,8 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic topic in topics.Values) {
-        int derivedTopicId = 0;
-        bool success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out derivedTopicId);
+        var derivedTopicId = 0;
+        var success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out derivedTopicId);
         if (!success || derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
           topic.DerivedTopic = topics[derivedTopicId];
@@ -355,13 +355,13 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int sourceTopicId = Int32.Parse(reader?["TopicId"]?.ToString(), CultureInfo.InvariantCulture);
-      DateTime dateTime = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      var sourceTopicId         = Int32.Parse(reader?["TopicId"]?.ToString(), CultureInfo.InvariantCulture);
+      var dateTime              = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = topics[sourceTopicId];
+      var current               = topics[sourceTopicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set history
@@ -400,13 +400,14 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Dictionary<int, Topic> topics = new Dictionary<int, Topic>();
-      SqlConnection connection = new SqlConnection(_connectionString);
-      SqlCommand command = new SqlCommand("topics_GetTopics", connection);
-      command.CommandType = CommandType.StoredProcedure;
-      command.CommandTimeout = 120;
-      SqlDataReader reader = null;
-      int sortOrder = 0;
+      var topics                = new Dictionary<int, Topic>();
+      var connection            = new SqlConnection(_connectionString);
+      var command               = new SqlCommand("topics_GetTopics", connection);
+      var sortOrder             = 0;
+
+      command.CommandType       = CommandType.StoredProcedure;
+      command.CommandTimeout    = 120;
+      SqlDataReader reader      = null;
 
       try {
 
@@ -418,12 +419,12 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicName", topicKey, SqlDbType.VarChar);
-        AddSqlParameter(command, "Depth", depth.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-        AddSqlParameter(command, "TopicID", topicId.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        AddSqlParameter(command, "TopicName",    topicKey,                                          SqlDbType.VarChar);
+        AddSqlParameter(command, "Depth",        depth.ToString(CultureInfo.InvariantCulture),      SqlDbType.Int);
+        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),    SqlDbType.Int);
 
         if (version != null) {
-          AddSqlParameter(command, "Version", version.ToString(), SqlDbType.DateTime);
+          AddSqlParameter(command, "Version",    version.ToString(),                                SqlDbType.DateTime);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -577,9 +578,9 @@ namespace Ignia.Topics.Data.Sql {
       | Establish attribute strings
       \-----------------------------------------------------------------------------------------------------------------------*/
       // Strings are immutable, use a stringbuilder to save memory
-      StringBuilder attributes = new StringBuilder();
-      StringBuilder nullAttributes = new StringBuilder();
-      StringBuilder blob = new StringBuilder();
+      var attributes            = new StringBuilder();
+      var nullAttributes        = new StringBuilder();
+      var blob                  = new StringBuilder();
 
       Contract.Assume(contentType != null, "Assumes the Content Type is available.");
 
@@ -619,12 +620,12 @@ namespace Ignia.Topics.Data.Sql {
       foreach (string attributeKey in contentType.SupportedAttributes.Keys) {
 
         // Set preconditions
-        Attribute attribute = contentType.SupportedAttributes[attributeKey];
-        bool topicHasAttribute = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes[attributeKey].Value));
-        bool isPrimaryAttribute = (attributeKey == "Key" || attributeKey == "ContentType" || attributeKey == "ParentID");
-        bool isRelationships = (contentType.SupportedAttributes[attributeKey].Type == "Relationships.ascx");
-        bool isNestedTopic = (contentType.SupportedAttributes[attributeKey].Type == "TopicList.ascx");
-        bool conditionsMet = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
+        var attribute           = contentType.SupportedAttributes[attributeKey];
+        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes[attributeKey].Value));
+        var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
+        var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
+        var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));
+        var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
           nullAttributes.Append(attributeKey + ",");
@@ -661,7 +662,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | SET VERSION DATETIME
         \---------------------------------------------------------------------------------------------------------------------*/
-        DateTime version = DateTime.Now;
+        var version = DateTime.Now;
 
         // NOTE: KLT031915: Commented out as Draft functionality is not fully implemented
         // if (isDraft) {
@@ -927,12 +928,12 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (Topic scope in topic.Relationships) {
 
-          command = new SqlCommand("topics_PersistRelations", connection);
-          command.CommandType = CommandType.StoredProcedure;
+          command               = new SqlCommand("topics_PersistRelations", connection);
+          command.CommandType   = CommandType.StoredProcedure;
 
-          string[] targetIds = new string[scope.Count];
-          string topicId = topic.Id.ToString(CultureInfo.InvariantCulture);
-          int count = 0;
+          var targetIds         = new string[scope.Count];
+          var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
+          var count             = 0;
 
           foreach (Topic relTopic in scope) {
             targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
@@ -1036,14 +1037,14 @@ namespace Ignia.Topics.Data.Sql {
       Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
 
       switch (sqlDbType.ToLower()) {
-        case "int": return SqlDbType.Int;
-        case "tinyint": return SqlDbType.TinyInt;
-        case "smallint": return SqlDbType.SmallInt;
-        case "uniqueidentifier": return SqlDbType.UniqueIdentifier;
-        case "bit": return SqlDbType.Bit;
-        case "char": return SqlDbType.Char;
-        case "varchar": return SqlDbType.VarChar;
-        case "datetime": return SqlDbType.DateTime;
+        case "int"              : return SqlDbType.Int;
+        case "tinyint"          : return SqlDbType.TinyInt;
+        case "smallint"         : return SqlDbType.SmallInt;
+        case "uniqueidentifier" : return SqlDbType.UniqueIdentifier;
+        case "bit"              : return SqlDbType.Bit;
+        case "char"             : return SqlDbType.Char;
+        case "varchar"          : return SqlDbType.VarChar;
+        case "datetime"         : return SqlDbType.DateTime;
       }
 
       return SqlDbType.VarChar;
