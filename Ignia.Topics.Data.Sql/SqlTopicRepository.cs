@@ -404,6 +404,7 @@ namespace Ignia.Topics.Data.Sql {
       SqlConnection connection = new SqlConnection(_connectionString);
       SqlCommand command = new SqlCommand("topics_GetTopics", connection);
       command.CommandType = CommandType.StoredProcedure;
+      command.CommandTimeout = 120;
       SqlDataReader reader = null;
       int sortOrder = 0;
 

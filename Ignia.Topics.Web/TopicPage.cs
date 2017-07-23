@@ -65,59 +65,30 @@ namespace Ignia.Topics.Web {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Define assumptions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(
-          this._topic != null || this.Page?.RouteData?.Values != null,
-          "Assumes that either the topic or the page are available in order to render the page."
-          );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Get cached instance
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_topic != null) return _topic;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Define page path
-        \---------------------------------------------------------------------------------------------------------------------*/
-        string    pagePath        = null;
-
-        // Pull from RouteData
-        if (Page.RouteData.Values["directory"] != null) {
-          pagePath = (string)Page.RouteData.Values["directory"];
-        }
-
-        // Pull from QueryString
-        if (String.IsNullOrEmpty(pagePath) && Request.QueryString["Path"] != null) {
-          pagePath = Request.QueryString["Path"].ToString().Replace(":", "/");
-        }
-
-        // Default to blank
-        pagePath = pagePath?? "";
-
-        // Strip trailing colon
-        if (pagePath.EndsWith(":")) {
-          pagePath = pagePath.Substring(0, pagePath.Length-1);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Define variables
-        \---------------------------------------------------------------------------------------------------------------------*/
-        string    topicPath       = pagePath.Replace("/", ":");
-        string    nameSpace       = pagePath.IndexOf("/") > 0? pagePath.Substring(0, pagePath.IndexOf("/")) : pagePath;
-        Topic     rootTopic       = String.IsNullOrEmpty(nameSpace)? null : TopicRepository.RootTopic.GetTopic(nameSpace);
-
-        /*----------------------------------------------------------------------------------------------------------------------
         | Lookup topic
         \---------------------------------------------------------------------------------------------------------------------*/
-        _topic = TopicRepository.RootTopic.GetTopic(topicPath);
-
-        if (rootTopic != null) {
-          ValidatePageTopic(_topic);
+        if (_topic == null) {
+          var path = Request.QueryString["Path"];
+          if (path != null) {
+            _topic = TopicRepository.RootTopic.GetTopic(path);
+          }
+          else {
+            var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, this.Request.RequestContext);
+            _topic = topicRoutingService.Topic;
+          }
         }
-        else {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Provide Fallback
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_topic == null) {
           _topic = TopicRepository.RootTopic.FirstOrDefault();
         }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate topic
+        \---------------------------------------------------------------------------------------------------------------------*/
+        ValidatePageTopic(_topic);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Return topic
