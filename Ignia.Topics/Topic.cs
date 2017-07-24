@@ -37,6 +37,11 @@ namespace Ignia.Topics {
     private     List<DateTime>                  _versionHistory         = null;
 
     /*==========================================================================================================================
+    | STATIC VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    static      Dictionary<string, Type>        _typeLookup             = new Dictionary<string, Type>();
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     >-----------=---------------------------------------------------------------------------------------------------------------
     | ### NOTE JJC082715: The empty constructor is a prerequisite of the factory method, which relies on Activator to create a 
@@ -869,6 +874,75 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET TOPIC TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Static helper method for looking up a class type based on a string name.
+    /// </summary>
+    /// <remarks>
+    ///   Currently, this method uses <see cref="Type.GetType"/>, which can be non-performant. As such, this helper method 
+    ///   caches its results in a static lookup table keyed by the string value. 
+    /// </remarks>
+    /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <returns>A class type corresponding to a derived class of <see cref="Topic"/>.</returns>
+    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(contentType)
+    /// </requires>
+    /// <requires
+    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentException">
+    ///   !contentType.Contains(" ")
+    /// </requires>
+    public static Type GetTopicType(string contentType) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
+      Contract.Ensures(Contract.Result<Type>() != null);
+      Topic.ValidateKey(contentType);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return cached entry
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (_typeLookup.Keys.Contains(contentType)) {
+        return _typeLookup[contentType];
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Determine if there is a matched type
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Type baseType = typeof(Topic);
+      Type targetType = Type.GetType("Ignia.Topics." + contentType);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate type
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (targetType == null) {
+        targetType = baseType;
+      }
+      else if (!targetType.IsSubclassOf(baseType)) {
+        targetType = baseType;
+        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Cache findings
+      \---------------------------------------------------------------------------------------------------------------------*/
+      lock (_typeLookup) {
+        if (_typeLookup.Keys.Contains(contentType)) {
+          _typeLookup.Add(contentType, targetType);
+        }
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return result
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return targetType;
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: CREATE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -918,19 +992,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine target type
       \---------------------------------------------------------------------------------------------------------------------*/
-      Type baseType = Type.GetType("Ignia.Topics.Topic");
-      Type targetType = Type.GetType("Ignia.Topics." + contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (targetType == null) {
-        targetType = baseType;
-      }
-      else if (!targetType.IsSubclassOf(baseType)) {
-        targetType = baseType;
-        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-      }
+      Type targetType = Topic.GetTopicType(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
