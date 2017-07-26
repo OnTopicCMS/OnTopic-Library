@@ -61,7 +61,7 @@ namespace Ignia.Topics.Web {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
         if (_rootTopic == null) {
-          _rootTopic = DataProvider.Load("", -1);
+          _rootTopic = DataProvider.Load();
         }
         return _rootTopic;
       }

@@ -70,13 +70,10 @@ namespace Ignia.Topics.Repositories {
     ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
     ///   optionally based on its DateTime version.
     /// </summary>
-    /// <param name="topicKey">The unique topic key .</param>
-    /// <param name="depth">The depth.</param>
-    /// <param name="version">The version.</param>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(string topicKey = null, int depth = -1, DateTime? version = null) {
-      return Load(topicKey, -1, depth, version);
-    }
+    public abstract Topic Load(string topicKey = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
@@ -145,7 +142,6 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic originalVersion = Load(topic.Id, 0, version);
       Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
 
       /*------------------------------------------------------------------------------------------------------------------------

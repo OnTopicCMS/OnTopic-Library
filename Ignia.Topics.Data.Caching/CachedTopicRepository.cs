@@ -61,38 +61,19 @@ namespace Ignia.Topics.Data.Caching {
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
+
     /// <summary>
-    ///   Interface method that loads topics into memory.
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
     /// </summary>
-    /// <param name="topicKey">The string identifier for the topic.</param>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="depth">The level to which to recurse through and load a topic's children.</param>
-    /// <param name="version">The DateTime stamp signifying when the topic was saved.</param>
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    /// <exception cref="Exception">
-    ///   The topic Ignia.Topics.<c>contentType</c> does not derive from Ignia.Topics.Topic.
-    /// </exception>
-    /// <exception cref="Exception">
-    ///   Topics failed to load: <c>ex.Message</c>
-    /// </exception>
-    protected override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
+    public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Relay version requests to data provider
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (version != null) {
-        if (topicKey == null) {
-          return _dataProvider.Load(topicId, depth, version);
-        }
-        else {
-          return _dataProvider.Load(topicKey, depth, version);
-        }
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
@@ -106,6 +87,28 @@ namespace Ignia.Topics.Data.Caching {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId >= 0) {
         return _cache.GetTopic(topicId);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return entire cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return _cache;
+
+    }
+
+    /// <summary>
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    /// </summary>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+    /// <returns>A topic object.</returns>
+    public override Topic Load(string topicKey = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure topics are loaded
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_cache == null) {
+        _cache = _dataProvider.Load();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

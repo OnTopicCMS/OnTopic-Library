@@ -376,13 +376,88 @@ namespace Ignia.Topics.Data.Sql {
     | ### NOTE JJC081115: This method should be broken down into private helper functions to better separate functionality, 
     | avoid lengthy nested blocks, and enhance code readability. 
     \-------------------------------------------------------------------------------------------------------------------------*/
+
     /// <summary>
-    ///   Interface method that loads topics into memory.
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified topic key.
     /// </summary>
-    /// <param name="topicKey">The string identifier for the topic.</param>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <param name="depth">The level to which to recurse through and load a topic's children.</param>
-    /// <param name="version">The DateTime stamp signifying when the topic was saved.</param>
+    /// <param name="topicKey">The topic key.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
+    /// <returns>A topic object.</returns>
+    public override Topic Load(string topicKey = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle empty topic
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
+      | call Load() with the special integer value of -1, which will load all topics from the root.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrWhiteSpace(topicKey)) {
+        return Load(-1, isRecursive);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish database connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var connection = new SqlConnection(_connectionString);
+      var command = new SqlCommand("topics_GetTopicID", connection);
+      int topicId;
+
+      command.CommandType = CommandType.StoredProcedure;
+
+      try {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Open connection
+        \---------------------------------------------------------------------------------------------------------------------*/
+        connection.Open();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Establish query parameters
+        \---------------------------------------------------------------------------------------------------------------------*/
+        AddSqlParameter(command,        "TopicKey",             topicKey,                               SqlDbType.VarChar);
+        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Populate topics
+        \---------------------------------------------------------------------------------------------------------------------*/
+        command.ExecuteNonQuery();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Process return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
+        Contract.Assume(command.Parameters["@ReturnCode"] != null, "Assumes the return code parameter is available on query.");
+        topicId = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Catch exception
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      catch (Exception ex) {
+        throw new Exception("Topic(s) failed to load: " + ex.Message);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Close connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      finally {
+        command?.Dispose();
+        connection.Close();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return Load(topicId, isRecursive);
+
+    }
+
+    /// <summary>
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    /// </summary>
+    /// <param name="topicId">The topic's unique identifier.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
     /// <exception cref="Exception">
     ///   The topic Ignia.Topics.<c>contentType</c> does not derive from Ignia.Topics.Topic.
@@ -390,7 +465,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <exception cref="Exception">
     ///   Topics failed to load: <c>ex.Message</c>
     /// </exception>
-    protected override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
+    public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -419,13 +494,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicName",    topicKey,                                          SqlDbType.VarChar);
-        AddSqlParameter(command, "Depth",        depth.ToString(CultureInfo.InvariantCulture),      SqlDbType.Int);
-        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),    SqlDbType.Int);
-
-        if (version != null) {
-          AddSqlParameter(command, "Version",    version.ToString(),                                SqlDbType.DateTime);
-        }
+        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
+        AddSqlParameter(command, "DeepLoad",     isRecursive.ToString(CultureInfo.InvariantCulture),   SqlDbType.Bit);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
