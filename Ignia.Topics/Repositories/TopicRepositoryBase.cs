@@ -50,25 +50,20 @@ namespace Ignia.Topics.Repositories {
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
     public abstract ContentTypeCollection GetContentTypes();
-    
+
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
-    ///   optionally based on its DateTime version.
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
-    /// <param name="depth">The number of levels of topics to load.</param>
-    /// <param name="version">The specific version number, in DateTime format.</param>
+    /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(int topicId, int depth = -1, DateTime? version = null) {
-      return Load(null, topicId, depth, version);
-    }
+    public abstract Topic Load(int topicId, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
-    ///   optionally based on its DateTime version.
+    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
