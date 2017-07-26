@@ -112,7 +112,6 @@ namespace Ignia.Topics.Data.Sql {
       var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       var name                  = reader?["AttributeKey"]?.ToString();
       var value                 = reader?["AttributeValue"]?.ToString();
-      var versionDate           = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -156,7 +155,6 @@ namespace Ignia.Topics.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var versionDate           = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
