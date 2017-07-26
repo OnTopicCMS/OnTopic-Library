@@ -63,14 +63,16 @@ namespace Ignia.Topics.Repositories {
     Topic Load(string topicKey = null, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads topics to the specified depth, based on the specified string and integer identifiers for the topic, and
-    ///   optionally based on its DateTime version.
+    ///   Loads a specific version of a topic based on its version.
     /// </summary>
-    /// <param name="topicKey">The unique topic key .</param>
-    /// <param name="depth">The depth.</param>
+    /// <remarks>
+    ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
+    ///   it will only load versions for which the unique identifier is known.
+    /// </remarks>
+    /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    Topic Load(string topicKey = null, int depth = -1, DateTime? version = null);
+    Topic Load(int topicId, DateTime version);
 
     /*==========================================================================================================================
     | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed

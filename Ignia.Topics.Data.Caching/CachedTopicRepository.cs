@@ -125,6 +125,20 @@ namespace Ignia.Topics.Data.Caching {
 
     }
 
+    /// <summary>
+    ///   Loads a specific version of a topic based on its version.
+    /// </summary>
+    /// <remarks>
+    ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
+    ///   it will only load versions for which the unique identifier is known.
+    /// </remarks>
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="version">The version.</param>
+    /// <returns>A topic object.</returns>
+    public override Topic Load(int topicId, DateTime version) {
+      return _dataProvider.Load(topicId, version);
+    }
+
     /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/

@@ -62,13 +62,23 @@ namespace Ignia.Topics.Repositories {
     }
 
     /// <summary>
-    ///   Interface method that loads topics into memory.
+    ///   Loads a specific version of a topic based on its version.
     /// </summary>
     /// <remarks>
-    ///   Contract preconditions are defined in the <see cref="TopicRepositoryBaseContract"/> contract class.
+    ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
+    ///   it will only load versions for which the unique identifier is known.
     /// </remarks>
-    protected override Topic Load(string topicKey, int topicId, int depth, DateTime? version = null) {
-  
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="version">The version.</param>
+    /// <returns>A topic object.</returns>
+    public override Topic Load(int topicId, DateTime version) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(version.Date > new DateTime(2014, 12, 9), "The version is expected to have been created since version support was introduced into the topic library.");
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value
       \-----------------------------------------------------------------------------------------------------------------------*/

@@ -587,6 +587,142 @@ namespace Ignia.Topics.Data.Sql {
 
     }
 
+    /// <summary>
+    ///   Loads a specific version of a topic based on its version.
+    /// </summary>
+    /// <remarks>
+    ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
+    ///   it will only load versions for which the unique identifier is known. 
+    /// </remarks>
+    /// <param name="topicId">The topic identifier.</param>
+    /// <param name="version">The version.</param>
+    /// <returns>A topic object.</returns>
+    public override Topic Load(int topicId, DateTime version) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<Topic>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish database connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topics                = new Dictionary<int, Topic>();
+      var connection            = new SqlConnection(_connectionString);
+      var command               = new SqlCommand("topics_GetVersion", connection);
+      var sortOrder             = 0;
+
+      command.CommandType       = CommandType.StoredProcedure;
+      command.CommandTimeout    = 120;
+      SqlDataReader reader      = null;
+
+      command.CommandType = CommandType.StoredProcedure;
+
+      try {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Open connection
+        \---------------------------------------------------------------------------------------------------------------------*/
+        connection.Open();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Establish query parameters
+        \---------------------------------------------------------------------------------------------------------------------*/
+        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
+        AddSqlParameter(command, "Version",      version.ToString(CultureInfo.InvariantCulture),       SqlDbType.DateTime);
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Execute query/reader
+        \---------------------------------------------------------------------------------------------------------------------*/
+        reader = command.ExecuteReader();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Populate topics
+        \---------------------------------------------------------------------------------------------------------------------*/
+        while (reader.Read()) {
+          AddTopic(reader, topics, out sortOrder);
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Read attributes
+        \---------------------------------------------------------------------------------------------------------------------*/
+
+        // Move to TopicAttributes dataset
+        reader.NextResult();
+
+        while (reader.Read()) {
+          SetIndexedAttributes(reader, topics);
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Read blob
+        \---------------------------------------------------------------------------------------------------------------------*/
+
+        // Move to blob dataset
+        reader.NextResult();
+
+        // Loop through each blob, each record associated with a specific record
+        while (reader.Read()) {
+          SetBlobAttributes(reader, topics);
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Read related items
+        >-----------------------------------------------------------------------------------------------------------------------
+        | ### NOTE JJC072617: While getVersion correctly returns relationships, they cannot be correctly set because this 
+        | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since 
+        | relationships are not currently versioned.
+        \---------------------------------------------------------------------------------------------------------------------*/
+
+        // Move to the relationships dataset
+        reader.NextResult();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Read version history
+        \---------------------------------------------------------------------------------------------------------------------*/
+
+        // Move to the version history dataset
+        reader.NextResult();
+
+        // Loop through each version; multiple records may exist per topic
+        while (reader.Read()) {
+          SetVersionHistory(reader, topics);
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Populate strongly typed references
+        >-----------------------------------------------------------------------------------------------------------------------
+        | ### NOTE JJC072617: While getVersion correctly returns the derived topic, it cannot be correctly set because this 
+        | overload doesn't maintain a full set of topics to create relationships to. 
+        \---------------------------------------------------------------------------------------------------------------------*/
+        //SetDerivedTopics(topics);
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Catch exception
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      catch (Exception ex) {
+        throw new Exception("Topics failed to load: " + ex.Message);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Close connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      finally {
+        reader?.Dispose();
+        command?.Dispose();
+        connection.Close();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topics.Count == 0) return null;
+      return topics[topics.Keys.ElementAt(0)];
+
+    }
+
     /*==========================================================================================================================
     | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
     | Import/Export schema.
