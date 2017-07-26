@@ -39,8 +39,8 @@ namespace Ignia.Topics.Data.Sql {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the SqlTopicRepository with a dependency on a connection string to provide necessary 
-    ///   access to a SQL database. 
+    ///   Instantiates a new instance of the SqlTopicRepository with a dependency on a connection string to provide necessary
+    ///   access to a SQL database.
     /// </summary>
     /// <param name="connectionString">A connection string to a SQL server that contains the Topics database.</param>
     /// <returns>A new instance of the SqlTopicRepository.</returns>
@@ -208,7 +208,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   Adds relationships retrieved from an individual relationship record to their associated topics.
     /// </summary>
     /// <remarks>
-    ///   Topics can be cross-referenced with each other via a many-to-many relationships.Once the topics are populated in 
+    ///   Topics can be cross-referenced with each other via a many-to-many relationships.Once the topics are populated in
     ///   memory, loop through the data to create these associations.
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
@@ -255,9 +255,9 @@ namespace Ignia.Topics.Data.Sql {
     ///   Sets references to <see cref="Ignia.Topics.Topic.DerivedTopic"/>.
     /// </summary>
     /// <remarks>
-    ///   Topics can be cross-referenced with each other via <see cref="Ignia.Topics.Topic.DerivedTopic"/>. Once the topics are 
+    ///   Topics can be cross-referenced with each other via <see cref="Ignia.Topics.Topic.DerivedTopic"/>. Once the topics are
     ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
-    ///   needing to rely on lazy-loading, which would complicate dependency injection. 
+    ///   needing to rely on lazy-loading, which would complicate dependency injection.
     /// </remarks>
     /// <param name="topics">The index of topics currently being loaded.</param>
     private void SetDerivedTopics(Dictionary<int, Topic> topics) {
@@ -372,9 +372,6 @@ namespace Ignia.Topics.Data.Sql {
 
     /*==========================================================================================================================
     | METHOD: LOAD
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### NOTE JJC081115: This method should be broken down into private helper functions to better separate functionality, 
-    | avoid lengthy nested blocks, and enhance code readability. 
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
@@ -733,7 +730,7 @@ namespace Ignia.Topics.Data.Sql {
       public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
       //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -751,7 +748,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
+    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
     /// </exception>
     /// <exception cref="Exception">
@@ -879,19 +876,19 @@ namespace Ignia.Topics.Data.Sql {
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
-          AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(command,      "TopicID",              topic.Id.ToString(CultureInfo.InvariantCulture),  SqlDbType.Int);
         }
         if (topic.Parent != null) {
-          AddSqlParameter(command, "ParentID", topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(command,      "ParentID",             topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
         }
-        AddSqlParameter(command, "Version", version.ToString("yyyy-MM-dd HH:mm:ss.fff"), SqlDbType.DateTime);
-        AddSqlParameter(command, "Attributes", attributes.ToString(), SqlDbType.VarChar);
+        AddSqlParameter(command,        "Version",              version.ToString("yyyy-MM-dd HH:mm:ss.fff"),      SqlDbType.DateTime);
+        AddSqlParameter(command,        "Attributes",           attributes.ToString(),                            SqlDbType.VarChar);
         if (topic.Id != -1) {
-          AddSqlParameter(command, "NullAttributes", nullAttributes.ToString(), SqlDbType.VarChar);
-          AddSqlParameter(command, "DeleteRelationships", "1", SqlDbType.Bit);
+          AddSqlParameter(command,      "NullAttributes",       nullAttributes.ToString(),                        SqlDbType.VarChar);
+          AddSqlParameter(command,      "DeleteRelationships",  "1", SqlDbType.Bit);
         }
-        AddSqlParameter(command, "Blob", blob.ToString(), SqlDbType.Xml);
-        AddSqlParameter(command, "ReturnCode", ParameterDirection.ReturnValue, SqlDbType.Int);
+        AddSqlParameter(command,        "Blob",                 blob.ToString(),                                  SqlDbType.Xml);
+        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,                   SqlDbType.Int);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query
@@ -959,8 +956,8 @@ namespace Ignia.Topics.Data.Sql {
     ///   Interface method that supports moving a topic from one position to another.
     /// </summary>
     /// <remarks>
-    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the 
-    ///   topic. 
+    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the
+    ///   topic.
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>
