@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Web.Mvc", "Ign
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Web.Mvc.Tests", "Ignia.Topics.Web.Mvc.Tests\Ignia.Topics.Web.Mvc.Tests.csproj", "{E300B625-5E26-4976-961E-1F3D1CC2D09F}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Ignia.Topics.Data.Sql.Database", "Ignia.Topics.Data.Sql.Database\Ignia.Topics.Data.Sql.Database.sqlproj", "{A1D96A34-C6EA-491A-BC60-8BB9E809B005}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug CC|Any CPU = Debug CC|Any CPU
@@ -81,6 +83,15 @@ Global
 		{E300B625-5E26-4976-961E-1F3D1CC2D09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E300B625-5E26-4976-961E-1F3D1CC2D09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E300B625-5E26-4976-961E-1F3D1CC2D09F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug CC|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug CC|Any CPU.Build.0 = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug CC|Any CPU.Deploy.0 = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1D96A34-C6EA-491A-BC60-8BB9E809B005}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
