@@ -5,7 +5,7 @@
 [Ww]ebsite/[Aa]rchives/*/
 [Ww]ebsite/[Ss]cripts/
 [Ww]ebsite/[Dd]ebug/
- 
+
 # User-specific files
 *.suo
 *.user
@@ -162,6 +162,7 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
+*.jfm
 *.pfx
 *.publishsettings
 node_modules/
