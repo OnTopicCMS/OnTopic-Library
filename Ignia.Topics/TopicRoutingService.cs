@@ -69,7 +69,7 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository                  = topicRepository;
       _requestContext                   = requestContext;
-      _viewsDirectory                      = viewsDirectory;
+      _viewsDirectory                   = viewsDirectory;
       _viewExtension                    = viewExtension;
     }
 
@@ -246,7 +246,7 @@ namespace Ignia.Topics {
         | Default to content type
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (viewName == null) {
-          viewName = contentType;
+          IsValidView(contentType, contentType, out viewName);
         }
 
         /*------------------------------------------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ namespace Ignia.Topics {
     /// </summary>
     public string ViewPath {
       get {
-        return ViewsDirectory + ContentType + "/" + View + "." + ViewExtension;
+        return ViewsDirectory + View + "." + ViewExtension;
       }
 
     }
@@ -344,7 +344,7 @@ namespace Ignia.Topics {
     /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
     ///   contentType != null
     /// </requires>
-    private bool IsValidView(string contentType, string viewName, out string matchedView) {
+    public bool IsValidView(string contentType, string viewName, out string matchedView) {
 
       /*-------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -357,10 +357,9 @@ namespace Ignia.Topics {
       \------------------------------------------------------------------------------------------------------------------------*/
       if (
         !String.IsNullOrEmpty(viewName) &&
-        Views.Contains(contentType + "\\" + viewName, StringComparer.InvariantCultureIgnoreCase) &&
-        File.Exists(LocalViewsDirectory + "\\" + contentType + "\\" + viewName + "." + ViewExtension)
+        Views.Contains(contentType + "/" + viewName, StringComparer.InvariantCultureIgnoreCase)
         ) {
-        matchedView = contentType + "\\" + viewName;
+        matchedView = contentType + "/" + viewName;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
