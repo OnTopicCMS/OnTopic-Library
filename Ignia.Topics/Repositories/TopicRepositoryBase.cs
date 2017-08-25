@@ -306,21 +306,21 @@ namespace Ignia.Topics.Repositories {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       Topic parent = source.Parent;
-      int sortOrder = -1;
+      int sortOrder = 0;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If there is no sibling, inject the source at the beginning of the collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (sibling == null) {
-        source.SortOrder = sortOrder++;
+        source.SortOrder = int.MaxValue;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through each topic to assign a new priority order
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (Topic topic in parent.SortedChildren) {
-        // Assuming the topic isn't the source, increment the sortOrder
-        if (topic != source) {
+        // Assuming the topic isn't the source, or no sibling is present, increment the sortOrder
+        if (topic != source || sibling == null) {
           topic.SortOrder = sortOrder++;
         }
         // If the topic is the sibling, then assign the next sortOrder to the source
