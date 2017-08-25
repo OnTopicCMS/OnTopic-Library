@@ -96,6 +96,7 @@ namespace Ignia.Topics.Data.Sql {
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (parentId >= 0 && topics.Keys.Contains(parentId)) {
+        current.Attributes.Set("ParentID", parentId.ToString(), false);
         current.Parent = topics[parentId];
       }
 
@@ -1013,6 +1014,11 @@ namespace Ignia.Topics.Data.Sql {
         if (command != null) command.Dispose();
         if (connection != null) connection.Dispose();
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Reset dirty status
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Attributes["ParentId"].IsDirty = false;
 
       //return true;
 
