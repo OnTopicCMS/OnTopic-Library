@@ -12,7 +12,7 @@ using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
 namespace Ignia.Topics {
-  
+
   /*============================================================================================================================
   | CLASS: TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | CONSTRUCTOR
     >-----------=---------------------------------------------------------------------------------------------------------------
-    | ### NOTE JJC082715: The empty constructor is a prerequisite of the factory method, which relies on Activator to create a 
+    | ### NOTE JJC082715: The empty constructor is a prerequisite of the factory method, which relies on Activator to create a
     | new instance of the object.
     \-----------=-------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -53,12 +53,12 @@ namespace Ignia.Topics {
     public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
 
     /// <summary>
-    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text 
+    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text
     ///   identifier.
     /// </summary>
     /// <remarks>
-    ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This 
-    ///   is ensured by using the <see cref="Create(string, string)"/> factory method. When constructing derived types directly, 
+    ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
+    ///   is ensured by using the <see cref="Create(string, string)"/> factory method. When constructing derived types directly,
     ///   however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and calls
     ///   this base constructor; it will automatically set the content type based on the derived class's type.
     /// </remarks>
@@ -77,8 +77,8 @@ namespace Ignia.Topics {
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will 
-    ///   return a strongly-typed version. 
+    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will
+    ///   return a strongly-typed version.
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -132,14 +132,14 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PROPERTY: PARENT
     >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Currently, calling Parent forces an immediate Save(). This should instead be done manually at the 
+    | ### TODO JJC082715: Currently, calling Parent forces an immediate Save(). This should instead be done manually at the
     | discretion of client code. This is a potentially breaking change that will require updating any code that sets Parent.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
     /// </summary>
     /// <remarks>
-    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily 
+    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily
     ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
     ///   have a null parent.
     /// </remarks>
@@ -172,7 +172,7 @@ namespace Ignia.Topics {
           }
         else {
           throw new Exception(
-            "Duplicate key when setting Parent property: the topic with the name '" + this.Key + 
+            "Duplicate key when setting Parent property: the topic with the name '" + this.Key +
             "' already exists in the '" + value.Key + "' topic."
             );
           }
@@ -210,10 +210,10 @@ namespace Ignia.Topics {
     ///   Gets the key name of the content type that the current topic represents.
     /// </summary>
     /// <remarks>
-    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics 
-    ///   Editor (via the <see cref="ContentType.SupportedAttributes"/> property). The content type also determines, by default, 
-    ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down 
-    ///   the pipe). 
+    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
+    ///   Editor (via the <see cref="ContentType.SupportedAttributes"/> property). The content type also determines, by default,
+    ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down
+    ///   the pipe).
     /// </remarks>
     public string ContentType {
       get {
@@ -299,15 +299,15 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PROPERTY: ORIGINAL KEY
     >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for 
-    | instance, changing the Key property. If so, allowing external access may cause problems. 
+    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for
+    | instance, changing the Key property. If so, allowing external access may cause problems.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets or sets the topic's original key.
     /// </summary>
     /// <remarks>
     ///   The original key is automatically set by <see cref="Key"/> when its value is updated (assuming the original key isn't
-    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs"/> to represent the original value, 
+    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs"/> to represent the original value,
     ///   and thus allow the <see cref="Repositories.ITopicRepository"/> (or derived providers) from updating the data store
     ///   appropriately.
     /// </remarks>
@@ -330,11 +330,11 @@ namespace Ignia.Topics {
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the 
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the
     ///   site.
     /// </summary>
     /// <remarks>
-    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views 
+    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
     ///   that reference the web path (e.g., by providing a prefix).
     /// </remarks>
     public string WebPath {
@@ -353,9 +353,9 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   This value can be set via the query string (via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), via the
     ///   Accepts header (also via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), on the topic itself (via this
-    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the 
-    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the 
-    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance, 
+    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the
+    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the
+    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance,
     ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
@@ -385,9 +385,9 @@ namespace Ignia.Topics {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what 
+    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what
     ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
-    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>. 
+    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>.
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
@@ -430,8 +430,8 @@ namespace Ignia.Topics {
     ///   Gets or sets the topic's sort order.
     /// </summary>
     /// <remarks>
-    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers); 
-    ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the 
+    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers);
+    ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the
     ///   capabilities of the storage provider.
     /// </remarks>
     public int SortOrder {
@@ -451,9 +451,9 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system. It
-    ///   is important to note that the last modified attribute is not tied to the system versioning (which operates at an 
-    ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly 
-    ///   overwrite this value for various reasons (such as backdating a webpage). 
+    ///   is important to note that the last modified attribute is not tied to the system versioning (which operates at an
+    ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly
+    ///   overwrite this value for various reasons (such as backdating a webpage).
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value.ToString())
@@ -500,13 +500,13 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the 
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(string, 
-    ///     bool)"/> method unable to find a local value for the attribute. 
-    ///   </para>  
+    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(string,
+    ///     bool)"/> method unable to find a local value for the attribute.
+    ///   </para>
     ///   <para>
-    ///     Be aware that while multiple levels of derived topics can be configured, the <see 
-    ///     cref="AttributeValueCollection.Get(string, bool)"/> method defaults to a maximum level of five "hops". 
+    ///     Be aware that while multiple levels of derived topics can be configured, the <see
+    ///     cref="AttributeValueCollection.Get(string, bool)"/> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -538,7 +538,7 @@ namespace Ignia.Topics {
       public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
       //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -562,10 +562,10 @@ namespace Ignia.Topics {
     ///   significant extensibility.
     /// </summary>
     /// <remarks>
-    ///   Attributes are stored via an <see cref="AttributeValue"/> class which, in addition to the Attribute Key and Value, 
-    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified"/> 
-    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/> 
-    ///   property). 
+    ///   Attributes are stored via an <see cref="AttributeValue"/> class which, in addition to the Attribute Key and Value,
+    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified"/>
+    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/>
+    ///   property).
     /// </remarks>
     public AttributeValueCollection Attributes {
       get {
@@ -586,14 +586,14 @@ namespace Ignia.Topics {
     >---------------------------------------------------------------------------------------------------------------------------
     | ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
     | of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
-    | that a relationship collection would benefit from (such as a custom Set() and Get() method). 
+    | that a relationship collection would benefit from (such as a custom Set() and Get() method).
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
-    ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g., 
-    ///   "Related" for related topics); those child topics in turn have child topics representing references to each related 
+    ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g.,
+    ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
     public Topic Relationships {
@@ -610,7 +610,7 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, etc. 
+    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The incoming relationships property provides a reverse index of the <see cref="Relationships"/> property, in order to
@@ -632,7 +632,7 @@ namespace Ignia.Topics {
     | PROPERTY: SORTED CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the values collection, sorted by the <see cref="SortOrder"/> property.  
+    ///   Provides a reference to the values collection, sorted by the <see cref="SortOrder"/> property.
     /// </summary>
     /// <remarks>
     ///   Since Dictionaries do not guarantee sort order, this is necessary for any code that expects to honor the order of
@@ -703,15 +703,15 @@ namespace Ignia.Topics {
     | ### TODO JJC082715: Consider changing the version history behavior so that version is instead saved as a property on
     | AttributeValue and then the VersionHistory method simply provides a rollup of those versions. This would increase memory
     | requirements by adding metadata to AttributeValue, but ensure VersionHistory doesn't need to be maintained in parallel to
-    | AttributeValue. It would potentially also allow new functionality with regard to merging or additional metadata in the 
-    | editor. 
+    | AttributeValue. It would potentially also allow new functionality with regard to merging or additional metadata in the
+    | editor.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
     /// </summary>
     /// <remarks>
     ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
-    ///   its derived providers). 
+    ///   its derived providers).
     /// </remarks>
     public List<DateTime> VersionHistory {
       get {
@@ -880,8 +880,8 @@ namespace Ignia.Topics {
     ///   Static helper method for looking up a class type based on a string name.
     /// </summary>
     /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType"/>, which can be non-performant. As such, this helper method 
-    ///   caches its results in a static lookup table keyed by the string value. 
+    ///   Currently, this method uses <see cref="Type.GetType"/>, which can be non-performant. As such, this helper method
+    ///   caches its results in a static lookup table keyed by the string value.
     /// </remarks>
     /// <param name="contentType">A string representing the key of the target content type.</param>
     /// <returns>A class type corresponding to a derived class of <see cref="Topic"/>.</returns>
@@ -950,9 +950,9 @@ namespace Ignia.Topics {
     ///   available.
     /// </summary>
     /// <remarks>
-    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For 
+    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For
     ///   instance, if the content type is "Page", it will look for an "Ignia.Topics.Page" class. If found, it will confirm that
-    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class 
+    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class
     ///   exists but does not derive from <see cref="Topic"/>, then an exception will be thrown. And otherwise, a new instance
     ///   of the generic <see cref="Topic"/> class will be created.
     /// </remarks>
@@ -1018,10 +1018,10 @@ namespace Ignia.Topics {
     ///   by the <paramref name="id"/> parameter.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see 
-    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database. 
-    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Key"/> and <see cref="ContentType"/> on the 
-    ///   new <see cref="Topic"/> are set to false, as it is assumed these are being set to the same values currently used in 
+    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
+    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database.
+    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Key"/> and <see cref="ContentType"/> on the
+    ///   new <see cref="Topic"/> are set to false, as it is assumed these are being set to the same values currently used in
     ///   the persistance store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
@@ -1073,7 +1073,7 @@ namespace Ignia.Topics {
       public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
       //Process XML
       //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and 
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
       //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -1086,7 +1086,7 @@ namespace Ignia.Topics {
     ///   saving the new version.
     /// </summary>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires 
+    /// <requires
     ///   description="The version requested for rollback does not exist in the version history."
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
@@ -1099,7 +1099,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | METHOD: GET TOPIC
     >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version 
+    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
     | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -1264,7 +1264,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Deletes the current topic (as well as all children).
     /// </summary>
-    //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's 
+    //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's
     //  children or delete and reassign children or something.
     [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
     public void Delete() {
@@ -1298,7 +1298,7 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Moves the topic to a new parent, using one of the target topic's children as a reference point adjacent to which the 
+    ///   Moves the topic to a new parent, using one of the target topic's children as a reference point adjacent to which the
     ///   source topic should be moved.
     /// </summary>
     /// <param name="target">A topic object under which to move the source topic.</param>
@@ -1323,8 +1323,8 @@ namespace Ignia.Topics {
     ///   Validates the format of a key used for an individual topic.
     /// </summary>
     /// <remarks>
-    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question 
-    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code 
+    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
+    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
     ///   Contract Checker.
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
