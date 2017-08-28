@@ -18,9 +18,9 @@ namespace Ignia.Topics.Web.Mvc {
   | CLASS: TOPIC TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a default ASP.NET MVC Controller for any paths associated with the Ignia Topic Library. Responsible for 
+  ///   Provides a default ASP.NET MVC Controller for any paths associated with the Ignia Topic Library. Responsible for
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
-  ///   that content type (with potential overrides for multiple views). 
+  ///   that content type (with potential overrides for multiple views).
   /// </summary>
   public class TopicController<T> : AsyncController where T : Topic {
 
@@ -46,8 +46,8 @@ namespace Ignia.Topics.Web.Mvc {
     | GET: /PATH/PATH/PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the query 
-    ///   string or topic's view. 
+    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the query
+    ///   string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     public async Task<ActionResult> Index(string path) {
@@ -65,6 +65,22 @@ namespace Ignia.Topics.Web.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle disabled topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
+      //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
+      if (topicRoutingService.Topic.Attributes.Get("IsDisabled", "0").Equals("1")) {
+        return new HttpUnauthorizedResult("The topic at this location is disabled.");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle redirect
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!String.IsNullOrEmpty(topicRoutingService.Topic.Attributes.Get("URL"))) {
+        return RedirectPermanent(topicRoutingService.Topic.Attributes.Get("URL"));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicViewModel = new TopicViewModel(_topicRepository, topicRoutingService.Topic);
@@ -74,9 +90,9 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var view = new RazorView(
         this.ControllerContext,
-        topicRoutingService.ViewPath, 
-        null, 
-        true, 
+        topicRoutingService.ViewPath,
+        null,
+        true,
         null
        );
 
