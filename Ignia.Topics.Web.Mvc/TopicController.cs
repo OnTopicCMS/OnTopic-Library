@@ -95,7 +95,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
-      if (topicRoutingService.Topic.Attributes.Get("IsDisabled", "0").Equals("1")) {
+      if (topicRoutingService.Topic.IsDisabled) {
         return new HttpUnauthorizedResult("The topic at this location is disabled.");
       }
 
@@ -104,6 +104,16 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(topicRoutingService.Topic.Attributes.Get("URL"))) {
         return RedirectPermanent(topicRoutingService.Topic.Attributes.Get("URL"));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle page group
+      >-----------------------------------------------------------------------------------------------------------------------—-
+      | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
+      | redirected to the first (non-hidden, non-disabled) page in the page group.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicRoutingService.Topic.ContentType.Equals("PageGroup")) {
+        return Redirect(topicRoutingService.Topic.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
