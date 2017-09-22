@@ -379,6 +379,51 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: IS HIDDEN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets whether the current topic is hidden.
+    /// </summary>
+    public bool IsHidden {
+      get {
+        return Attributes.Get("IsHidden", "0").Equals("1");
+      }
+      set {
+        Attributes.Set("IsHidden", value? "1" : "0");
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: IS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets whether the current topic is disabled.
+    /// </summary>
+    public bool IsDisabled {
+      get {
+        return Attributes.Get("IsDisabled", "0").Equals("1");
+      }
+      set {
+        Attributes.Set("IsDisabled", value? "1" : "0");
+      }
+    }
+
+    /*==========================================================================================================================
+    | METHOD: IS VISIBLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether or not a topic should be visible based on IsHidden, IsDisabled, and an optional parameter
+    ///   specifying whether or not to show disabled items (which may by triggered if, for example, a user is an administrator).
+    /// </summary>
+    /// <remarks>
+    ///   If an item is not marked as IsVisible, then the item will not be visible independent of whether showDisabled is set.
+    /// </remarks>
+    /// <param name="showDisabled">Determines whether or not items marked as IsDisabled should be displayed.</param>
+    public bool IsVisible(bool showDisabled = false) {
+      return IsHidden && (showDisabled || !IsDisabled);
+    }
+
+    /*==========================================================================================================================
     | PROPERTY: TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
