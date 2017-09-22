@@ -95,7 +95,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
-      if (topicRoutingService.Topic.Attributes.Get("IsDisabled", "0").Equals("1")) {
+      if (topicRoutingService.Topic.IsDisabled) {
         return new HttpUnauthorizedResult("The topic at this location is disabled.");
       }
 
@@ -113,7 +113,7 @@ namespace Ignia.Topics.Web.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicRoutingService.Topic.ContentType.Equals("PageGroup")) {
-        return Redirect(topic.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+        return Redirect(topicRoutingService.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
