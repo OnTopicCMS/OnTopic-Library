@@ -107,6 +107,16 @@ namespace Ignia.Topics.Web.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle page group
+      >-----------------------------------------------------------------------------------------------------------------------—-
+      | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
+      | redirected to the first (non-hidden, non-disabled) page in the page group.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicRoutingService.Topic.ContentType.Equals("PageGroup")) {
+        return Redirect(topic.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicViewModel = new TopicViewModel(_topicRepository, topicRoutingService.Topic);
