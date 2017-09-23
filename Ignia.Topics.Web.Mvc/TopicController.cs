@@ -49,7 +49,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    public protected ITopicRepository TopicRepository {
+    protected ITopicRepository TopicRepository {
     	get {
         return _topicRepository;
       }
@@ -62,7 +62,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Provides a reference to the current topic associated with the request.
     /// </summary>
     /// <returns>The Topic associated with the current request.</returns>
-    public protected Topic CurrentTopic {
+    protected Topic CurrentTopic {
       get {
         return _currentTopic;
       }
