@@ -420,7 +420,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="showDisabled">Determines whether or not items marked as IsDisabled should be displayed.</param>
     public bool IsVisible(bool showDisabled = false) {
-      return IsHidden && (showDisabled || !IsDisabled);
+      return !IsHidden && (showDisabled || !IsDisabled);
     }
 
     /*==========================================================================================================================
