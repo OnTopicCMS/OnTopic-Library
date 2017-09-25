@@ -154,7 +154,7 @@ namespace Ignia.Topics {
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>
-    public bool IsHidden {
+    public new bool IsHidden {
       get {
         return this.Attributes.Get("IsHidden", "0").Equals("1");
       }
