@@ -16,19 +16,19 @@ namespace Ignia.Topics {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="IsDirty"/> 
-  ///     property signifies whether the attribute value has changed) and its <see cref="LastModified"/> date. State (IsDirty) 
-  ///     is evaluated as part of the setter for <see cref="Value"/>; i.e., when the value changes, IsDirty is automatically set 
+  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="IsDirty"/>
+  ///     property signifies whether the attribute value has changed) and its <see cref="LastModified"/> date. State (IsDirty)
+  ///     is evaluated as part of the setter for <see cref="Value"/>; i.e., when the value changes, IsDirty is automatically set
   ///     to <c>true</c>, if it wasn't previously.
-  ///   </para>  
-  ///   <para>
-  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via 
-  ///     the <see cref="Topic.Attributes"/> collection. 
   ///   </para>
   ///   <para>
-  ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for 
-  ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see 
-  ///     cref="Attribute"/> class. 
+  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
+  ///     the <see cref="Topic.Attributes"/> collection.
+  ///   </para>
+  ///   <para>
+  ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for
+  ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see
+  ///     cref="Attribute"/> class.
   ///   </para>
   /// </remarks>
   public class AttributeValue {
@@ -143,9 +143,9 @@ namespace Ignia.Topics {
     ///   Boolean setting which is set automatically when an attribute's <see cref="Value"/> is set to a new value.
     /// </summary>
     /// <remarks>
-    ///   The IsDirty property is used by the <see cref="Topics.Repositories.ITopicRepository"/> to determine whether or not 
-    ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database 
-    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, bool, bool)"/> is called. Otherwise, it is ignored, 
+    ///   The IsDirty property is used by the <see cref="Topics.Repositories.ITopicRepository"/> to determine whether or not
+    ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database
+    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, bool, bool)"/> is called. Otherwise, it is ignored,
     ///   thus preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
     /// </remarks>
     public bool IsDirty {

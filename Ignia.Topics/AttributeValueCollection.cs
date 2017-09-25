@@ -16,8 +16,8 @@ namespace Ignia.Topics {
   ///   Represents a collection of <see cref="AttributeValue"/> objects.
   /// </summary>
   /// <remarks>
-  ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics. 
-  ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of 
+  ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics.
+  ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
   ///   the <see cref="AttributeValueCollection"/> class.
   /// </remarks>
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
@@ -34,8 +34,8 @@ namespace Ignia.Topics {
     ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the 
-    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal. 
+    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the
+    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
     internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
@@ -58,7 +58,7 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional enabling of 
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional enabling of
     ///   inheritance.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
@@ -91,7 +91,7 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of 
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of
     ///   <see cref="Topic.DerivedTopic"/>s through whom to crawl to retrieve an inherited value.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
@@ -179,8 +179,8 @@ namespace Ignia.Topics {
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="isDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is 
-    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being 
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Topic.Save(bool, bool)"/>.
     /// </param>
     /// <requires

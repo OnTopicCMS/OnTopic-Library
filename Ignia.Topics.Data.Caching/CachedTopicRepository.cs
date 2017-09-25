@@ -39,8 +39,8 @@ namespace Ignia.Topics.Data.Caching {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicRepository in order 
-    ///   to provide necessary data access. 
+    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicRepository in order
+    ///   to provide necessary data access.
     /// </summary>
     /// <param name="dataProvider">A concrete instance of an ITopicRepository, which will be used for data access.</param>
     /// <returns>A new instance of the CachedTopicRepository.</returns>
@@ -152,11 +152,11 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under 
+    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
-    ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via 
+    ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via
     ///   <c>ConfigurationManager.ConnectionStrings[TopicsServer].ConnectionString</c>: <c>ex.Message</c>
     /// </exception>
     public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
@@ -170,8 +170,8 @@ namespace Ignia.Topics.Data.Caching {
     ///   Interface method that supports moving a topic from one position to another.
     /// </summary>
     /// <remarks>
-    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the 
-    ///   topic. 
+    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the
+    ///   topic.
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">The target (parent) topic object under which the topic should be moved.</param>

@@ -588,7 +588,7 @@ namespace Ignia.Topics.Data.Sql {
     /// </summary>
     /// <remarks>
     ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
-    ///   it will only load versions for which the unique identifier is known. 
+    ///   it will only load versions for which the unique identifier is known.
     /// </remarks>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
@@ -665,8 +665,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read related items
         >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getVersion correctly returns relationships, they cannot be correctly set because this 
-        | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since 
+        | ### NOTE JJC072617: While getVersion correctly returns relationships, they cannot be correctly set because this
+        | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since
         | relationships are not currently versioned.
         \---------------------------------------------------------------------------------------------------------------------*/
 
@@ -688,8 +688,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate strongly typed references
         >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getVersion correctly returns the derived topic, it cannot be correctly set because this 
-        | overload doesn't maintain a full set of topics to create relationships to. 
+        | ### NOTE JJC072617: While getVersion correctly returns the derived topic, it cannot be correctly set because this
+        | overload doesn't maintain a full set of topics to create relationships to.
         \---------------------------------------------------------------------------------------------------------------------*/
         //SetDerivedTopics(topics);
 

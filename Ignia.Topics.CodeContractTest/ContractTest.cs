@@ -11,7 +11,7 @@ namespace CodeContractTest {
   public class ContractTest {
 
     public ContractTest () { }
- 
+
     public void Init() {
       var test = MethodTest(HttpContext.Current);
     }

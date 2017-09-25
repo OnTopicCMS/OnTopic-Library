@@ -13,7 +13,7 @@ using System.Diagnostics.Contracts;
 using Ignia.Topics.Repositories;
 using System.Collections.Specialized;
 
-namespace Ignia.Topics { 
+namespace Ignia.Topics {
 
   /*============================================================================================================================
   | CLASS: TOPIC ROUTING SERVICE
@@ -22,7 +22,7 @@ namespace Ignia.Topics {
   ///   Given a URL, ITopicProvider, and views directory, will determine the associated Topic, as well as the appropriate view.
   /// </summary>
   /// <remarks>
-  ///   The view location will change based on the environment. That said, in all cases, the view will factor in the topic's 
+  ///   The view location will change based on the environment. That said, in all cases, the view will factor in the topic's
   ///   Content Type and (if set) View properties, and optionally the view determined via the URL (as either a URL part, or a
   ///   query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName. Inherits from the
   ///   CLR <seealso cref="System.Uri"/> class to provide a familiar interface with additional useful capabilities.
@@ -45,13 +45,13 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified 
-    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file. 
+    ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified
+    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
     /// </summary>
     public TopicRoutingService(
       ITopicRepository                  topicRepository,
       RequestContext                    requestContext,
-      string                            viewsDirectory                     = "~/Views/", 
+      string                            viewsDirectory                     = "~/Views/",
       string                            viewExtension                   = "cshtml"
      ) : base(requestContext.HttpContext.Request.Url.ToString()) {
 
@@ -76,7 +76,7 @@ namespace Ignia.Topics {
     | PROPERTY: VIEWS DIRECTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the expected location for View files. Must be set during the constructor. 
+    ///   Gets the expected location for View files. Must be set during the constructor.
     /// </summary>
     public string ViewsDirectory {
       get {
@@ -91,7 +91,7 @@ namespace Ignia.Topics {
     | PROPERTY: LOCAL VIEWS DIRECTORY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the expected location for View files. Must be set during the constructor. 
+    ///   Gets the expected location for View files. Must be set during the constructor.
     /// </summary>
     public string LocalViewsDirectory {
       get {
@@ -109,7 +109,7 @@ namespace Ignia.Topics {
     | PROPERTY: VIEW SUFFIX
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the expected file suffix for View files. Can be set via the appropriate constructor overload. Defaults to 
+    ///   Gets the expected file suffix for View files. Can be set via the appropriate constructor overload. Defaults to
     ///   ".cshtml".
     /// </summary>
     public string ViewExtension {
@@ -177,8 +177,8 @@ namespace Ignia.Topics {
     | PROPERTY: VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines the view name based on the content type, in combination with the query string, headers, and 
-    ///   topic attributes. 
+    ///   Determines the view name based on the content type, in combination with the query string, headers, and
+    ///   topic attributes.
     /// </summary>
     public string View {
       get {
@@ -211,8 +211,8 @@ namespace Ignia.Topics {
         /*------------------------------------------------------------------------------------------------------------------------
         | Pull Headers
         >-------------------------------------------------------------------------------------------------------------------------
-        | ### TODO JJC071617: This introduces an unwanted dependency on HttpContext. While this is possible, it may introduce 
-        | incompatibilities with the context (e.g., do ASP.NET MVC and ASP.NET Web Forms expose the same HttpContext objects? 
+        | ### TODO JJC071617: This introduces an unwanted dependency on HttpContext. While this is possible, it may introduce
+        | incompatibilities with the context (e.g., do ASP.NET MVC and ASP.NET Web Forms expose the same HttpContext objects?
         | Preferrably, this would be handled by each environment as appropriate, but that might muddle the logic.
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (viewName == null && _requestContext.HttpContext.Request.Headers["Accept"] != null) {
@@ -382,7 +382,7 @@ namespace Ignia.Topics {
     | QUERY PARAMETERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Evaluates the <see cref="Uri.Query"/> to identify any parameters set and return them as a 
+    ///   Evaluates the <see cref="Uri.Query"/> to identify any parameters set and return them as a
     ///   <see cref="Dictionary{String, String}"/> object.
     /// </summary>
     /// <returns>An <see cref="Dictionary{String, String}"/> instance of key/value pairs.</returns>
