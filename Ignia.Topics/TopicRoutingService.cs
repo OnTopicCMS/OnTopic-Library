@@ -34,7 +34,6 @@ namespace Ignia.Topics {
     \---------------------------------------------------------------------------------------------------------------------------*/
     private     ITopicRepository        _topicRepository                = null;
     private     RequestContext          _requestContext                 = null;
-    private     string                  _contentType                    = null;
     private     List<string>            _views                          = null;
     private     string                  _view                           = null;
     private     string                  _viewsDirectory                 = null;
