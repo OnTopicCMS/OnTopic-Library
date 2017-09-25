@@ -212,7 +212,7 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
     ///   Editor (via the <see cref="ContentType.SupportedAttributes"/> property). The content type also determines, by default,
-    ///   which view is rendered by the <see cref="Topics.Web.TopicsRouteHandler"/> (assuming the value isn't overwritten down
+    ///   which view is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't overwritten down
     ///   the pipe).
     /// </remarks>
     public string ContentType {
@@ -351,11 +351,11 @@ namespace Ignia.Topics {
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), via the
-    ///   Accepts header (also via the <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> class), on the topic itself (via this
+    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.TopicRoutingService"/> class), via the
+    ///   Accepts header (also via the <see cref="Ignia.Topics.TopicRoutingService"/> class), on the topic itself (via this
     ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the
     ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the
-    ///   <see cref="Ignia.Topics.Web.TopicsRouteHandler"/> to look for a view at, for instance,
+    ///   <see cref="Ignia.Topics.TopicRoutingService"/> to look for a view at, for instance,
     ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
@@ -925,7 +925,7 @@ namespace Ignia.Topics {
     ///   Static helper method for looking up a class type based on a string name.
     /// </summary>
     /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType"/>, which can be non-performant. As such, this helper method
+    ///   Currently, this method uses <see cref="Type.GetType()"/>, which can be non-performant. As such, this helper method
     ///   caches its results in a static lookup table keyed by the string value.
     /// </remarks>
     /// <param name="contentType">A string representing the key of the target content type.</param>
