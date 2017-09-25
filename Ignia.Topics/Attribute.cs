@@ -170,8 +170,8 @@ namespace Ignia.Topics {
     ///   Gets or sets whether or not the attribute is required. 
     /// </summary>
     /// <remarks>
-    ///   This is used to establish a required field validator in the editor interface, and maps to the 
-    ///   <see cref="Ignia.Topics.Editor.IEditControl.Required"/> property.
+    ///   This is used to establish a required field validator in the editor interface. This should be used by the form 
+    ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
     public bool IsRequired {
       get {
