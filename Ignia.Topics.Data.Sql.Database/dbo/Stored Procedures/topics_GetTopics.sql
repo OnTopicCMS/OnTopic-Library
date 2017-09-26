@@ -21,7 +21,7 @@
 CREATE PROCEDURE [dbo].[topics_GetTopics]
 		@TopicID	int			= -1,
 		@DeepLoad	bit			= 1,
-		@TopicKey	varchar(64)		= null
+		@TopicKey	varchar(255)		= null
 AS
 
 -----------------------------------------------------------------------------------------------------------------------------------------------

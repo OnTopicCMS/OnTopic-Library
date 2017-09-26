@@ -7,7 +7,7 @@
 --		Jeremy Caney		10922014  Updated to support multiple relationship types
 -----------------------------------------------------------------------------------------------------------------------------------------------
 CREATE PROCEDURE [dbo].[topics_PersistRelations]
-		@RelationshipTypeID	VARCHAR(128)	= 'related',
+		@RelationshipTypeID	VARCHAR(64)	= 'related',
 		@Source_TopicID		INT		= -1,
 		@Target_TopicIDs	VARCHAR(max)	= ''
 AS
