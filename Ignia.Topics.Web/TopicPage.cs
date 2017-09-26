@@ -22,8 +22,8 @@ namespace Ignia.Topics.Web {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private     bool                    _enableValidation                       = true;
-    private     Topic                   _topic                                  = null;
+    private                     bool                            _enableValidation               = true;
+    private                     Topic                           _topic                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -44,12 +44,8 @@ namespace Ignia.Topics.Web {
     ///   This can optionally be disabled, which is useful for the Editor.
     /// </remarks>
     public bool EnableValidation {
-      get {
-        return _enableValidation;
-      }
-      set {
-        _enableValidation = value;
-      }
+      get => _enableValidation;
+      set => _enableValidation = value;
     }
 
     /*==========================================================================================================================
@@ -73,7 +69,7 @@ namespace Ignia.Topics.Web {
             _topic = TopicRepository.RootTopic.GetTopic(path);
           }
           else {
-            var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, this.Request.RequestContext);
+            var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, Request.RequestContext);
             _topic = topicRoutingService.Topic;
           }
         }
@@ -143,17 +139,17 @@ namespace Ignia.Topics.Web {
     /*==========================================================================================================================
     | EDIT URL
     >===========================================================================================================================
-    | ###TODO KLT081015: Wire up to the <editor /> element location attribute in the configuration. 
+    | ###TODO KLT081015: Wire up to the <editor /> element location attribute in the configuration.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Identifies the appropriate route to edit the current page.
     /// </summary>
     /// <remarks>The URL in the editor associated with the current topic.</remarks>
-    public String EditUrl {
+    public string EditUrl {
       get {
-        Contract.Requires(this.Topic != null, "Assumes the page topic is not null.");
-        Contract.Ensures(Contract.Result<String>() != null);
-        return "/!Admin/Topics/Default.aspx?Path=" + this.Topic.UniqueKey;
+        Contract.Requires(Topic != null, "Assumes the page topic is not null.");
+        Contract.Ensures(Contract.Result<string>() != null);
+        return "/!Admin/Topics/Default.aspx?Path=" + Topic.UniqueKey;
       }
     }
 

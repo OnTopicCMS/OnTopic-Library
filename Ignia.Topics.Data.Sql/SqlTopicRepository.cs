@@ -32,8 +32,8 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private             ContentTypeCollection           _contentTypes           = null;
-    private             string                          _connectionString       = null;
+    private                     ContentTypeCollection           _contentTypes                   = null;
+    private                     string                          _connectionString               = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -82,7 +82,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = Topic.Create(key, contentType, id);
+      var current = Topic.Create(key, contentType, id);
       topics.Add(current.Id, current);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = topics[id];
+      var current = topics[id];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
@@ -160,13 +160,13 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
       \-----------------------------------------------------------------------------------------------------------------------*/
-      XmlDocument blob = new XmlDocument();
+      var blob = new XmlDocument();
       blob.LoadXml((string)reader?["Blob"]);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the current topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current = topics[id];
+      var current               = topics[id];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through nodes to set attributes
@@ -229,7 +229,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic current             = topics[sourceTopicId];
+      var current               = topics[sourceTopicId];
       Topic related             = null;
 
       // Fetch the related topic
@@ -269,9 +269,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic topic in topics.Values) {
-        var derivedTopicId = 0;
-        var success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out derivedTopicId);
+      foreach (var topic in topics.Values) {
+        var success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out var derivedTopicId);
         if (!success || derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
           topic.DerivedTopic = topics[derivedTopicId];
@@ -299,7 +298,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
         \---------------------------------------------------------------------------------------------------------------------*/
-        var configuration = this.Load("Configuration");
+        var configuration = Load("Configuration");
 
         /*--------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
@@ -316,11 +315,10 @@ namespace Ignia.Topics.Data.Sql {
         /*--------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \-------------------------------------------------------------------------------------------------------------------*/
-        foreach (Topic topic in configuration.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+        foreach (var topic in configuration.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
           // Ensure the Topic is used as the strongly-typed ContentType
-          ContentType contentType = topic as ContentType;
           // Add ContentType Topic to collection if not already added
-          if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
+          if (topic is ContentType contentType && !_contentTypes.Contains(contentType.Key)) {
             _contentTypes.Add(contentType);
           }
         }
@@ -767,7 +765,7 @@ namespace Ignia.Topics.Data.Sql {
       if (!contentTypes.Contains(topic.Attributes.Get("ContentType"))) {
         throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
       }
-      ContentType contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
+      var contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
@@ -792,9 +790,9 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through the attributes, adding the names and values to the string builder
       \-----------------------------------------------------------------------------------------------------------------------*/
       // Process attributes not stored in the Blob
-      foreach (AttributeValue attributeValue in topic.Attributes) {
+      foreach (var attributeValue in topic.Attributes) {
 
-        string key = attributeValue.Key;
+        var key = attributeValue.Key;
         Attribute attribute = null;
 
         if (contentType.SupportedAttributes.Keys.Contains(key)) {
@@ -819,7 +817,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (string attributeKey in contentType.SupportedAttributes.Keys) {
+      foreach (var attributeKey in contentType.SupportedAttributes.Keys) {
 
         // Set preconditions
         var attribute           = contentType.SupportedAttributes[attributeKey];
@@ -838,9 +836,9 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      SqlConnection connection = new SqlConnection(_connectionString);
+      var connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
-      int returnVal = -1;
+      var returnVal = -1;
 
       try {
 
@@ -934,7 +932,7 @@ namespace Ignia.Topics.Data.Sql {
       | Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (Topic childTopic in topic) {
+        foreach (var childTopic in topic) {
           Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
           childTopic.Attributes["ParentID"].Value = returnVal.ToString();
           Save(childTopic, isRecursive, isDraft);
@@ -976,13 +974,14 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move in database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      SqlConnection connection = new SqlConnection(_connectionString);
+      var connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
 
       try {
 
-        command = new SqlCommand("topics_MoveTopic", connection);
-        command.CommandType = CommandType.StoredProcedure;
+        command = new SqlCommand("topics_MoveTopic", connection) {
+          CommandType = CommandType.StoredProcedure
+        };
 
         // Add Parameters
         AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
@@ -1048,13 +1047,14 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      SqlConnection connection = new SqlConnection(_connectionString);
+      var connection = new SqlConnection(_connectionString);
       SqlCommand command = null;
 
       try {
 
-        command = new SqlCommand("topics_DeleteTopic", connection);
-        command.CommandType = CommandType.StoredProcedure;
+        command = new SqlCommand("topics_DeleteTopic", connection) {
+          CommandType = CommandType.StoredProcedure
+        };
 
         // Add Parameters
         AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
@@ -1133,16 +1133,17 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Iterate through each scope and persist to SQL
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (Topic scope in topic.Relationships) {
+        foreach (var scope in topic.Relationships) {
 
-          command               = new SqlCommand("topics_PersistRelations", connection);
-          command.CommandType   = CommandType.StoredProcedure;
+          command = new SqlCommand("topics_PersistRelations", connection) {
+            CommandType = CommandType.StoredProcedure
+          };
 
           var targetIds         = new string[scope.Count];
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
           var count             = 0;
 
-          foreach (Topic relTopic in scope) {
+          foreach (var relTopic in scope) {
             targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
             count++;
           }
@@ -1201,20 +1202,20 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create blog string container
       \-----------------------------------------------------------------------------------------------------------------------*/
-      StringBuilder blob = new StringBuilder("");
+      var blob = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic scope in topic.Relationships) {
+      foreach (var scope in topic.Relationships) {
         blob.Append("<related scope=\"");
         blob.Append(scope.Key);
         blob.Append("\">");
 
         // Build out string array of related items in this scope
-        string[] targetIds = new string[scope.Count];
-        int count = 0;
-        foreach (Topic relTopic in scope) {
+        var targetIds = new string[scope.Count];
+        var count = 0;
+        foreach (var relTopic in scope) {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
           count++;
         }
@@ -1268,7 +1269,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType) {
+    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, string fieldValue, SqlDbType sqlDbType) {
       AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
     }
 
@@ -1279,7 +1280,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
+    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
       AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
     }
 
@@ -1295,7 +1296,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
     ///   commandObject != null
     /// </requires>
-    private static void AddSqlParameter(SqlCommand commandObject, String sqlParameter, String fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
+    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, string fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

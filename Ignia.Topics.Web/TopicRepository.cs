@@ -23,10 +23,10 @@ namespace Ignia.Topics.Web {
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
-    private static      TopicsSection                   _configuration          = null;
-    private static      ITopicRepository                _topicRepository        = null;
-    private static      Topic                           _rootTopic              = null;
-    private static      ContentTypeCollection           _contentTypes           = null;
+    private static              TopicsSection                   _configuration                  = null;
+    private static              ITopicRepository                _topicRepository                = null;
+    private static              Topic                           _rootTopic                      = null;
+    private static              ContentTypeCollection           _contentTypes                   = null;
 
     /*==========================================================================================================================
     | CONTENT TYPES
@@ -45,9 +45,7 @@ namespace Ignia.Topics.Web {
         }
         return DataProvider.GetContentTypes();
       }
-      set {
-        _contentTypes = value;
-      }
+      set => _contentTypes = value;
     }
 
     /*==========================================================================================================================
@@ -65,19 +63,17 @@ namespace Ignia.Topics.Web {
         }
         return _rootTopic;
       }
-      set {
-        _rootTopic = value;
-      }
+      set => _rootTopic = value;
     }
 
     /*==========================================================================================================================
     | PROPERTY: CONFIGURATION SECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the current configuration for the application from the web.config file. 
+    ///   Provides a reference to the current configuration for the application from the web.config file.
     /// </summary>
     /// <remarks>
-    ///   The web.config stores information such as data providers, views directory, etc. 
+    ///   The web.config stores information such as data providers, views directory, etc.
     /// </remarks>
     [Obsolete("The TopicRepository class is obsolete, as is the Configuration property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static TopicsSection Configuration {
@@ -111,9 +107,7 @@ namespace Ignia.Topics.Web {
         }
         return _topicRepository;
       }
-      set {
-        _topicRepository = value;
-      }
+      set => _topicRepository = value;
     }
 
   } // Class

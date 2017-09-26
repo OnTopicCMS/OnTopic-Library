@@ -25,21 +25,21 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     Topic                           _parent                 = null;
-    private     AttributeValueCollection        _attributes             = null;
-    private     int                             _id                     = -1;
-    private     string                          _key                    = null;
-    private     string                          _originalKey            = null;
-    private     Topic                           _relationships          = null;
-    private     Topic                           _incomingRelationships  = null;
-    private     int                             _sortOrder              = 25;
-    private     Topic                           _derivedTopic           = null;
-    private     List<DateTime>                  _versionHistory         = null;
+    private                     Topic                           _parent                         = null;
+    private                     AttributeValueCollection        _attributes                     = null;
+    private                     int                             _id                             = -1;
+    private                     string                          _key                            = null;
+    private                     string                          _originalKey                    = null;
+    private                     Topic                           _relationships                  = null;
+    private                     Topic                           _incomingRelationships          = null;
+    private                     int                             _sortOrder                      = 25;
+    private                     Topic                           _derivedTopic                   = null;
+    private                     List<DateTime>                  _versionHistory                 = null;
 
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static      Dictionary<string, Type>        _typeLookup             = new Dictionary<string, Type>();
+    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -58,7 +58,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="Create(string, string)"/> factory method. When constructing derived types directly,
+    ///   is ensured by using the <see cref="Create(String, String)"/> factory method. When constructing derived types directly,
     ///   however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and calls
     ///   this base constructor; it will automatically set the content type based on the derived class's type.
     /// </remarks>
@@ -71,13 +71,13 @@ namespace Ignia.Topics {
     protected Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
-      this.Key = key;
-      this.Attributes.Set("ContentType", this.GetType().Name);
+      Key = key;
+      Attributes.Set("ContentType", GetType().Name);
     }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(string, string)"/> factory method instead, as this will
+    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(String, String)"/> factory method instead, as this will
     ///   return a strongly-typed version.
     /// </summary>
     /// <param name="key">
@@ -103,8 +103,8 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
       Topic.ValidateKey(key);
       Topic.ValidateKey(contentType);
-      this.Key = key;
-      this.Attributes.Add(new AttributeValue("ContentType", contentType));
+      Key = key;
+      Attributes.Add(new AttributeValue("ContentType", contentType));
     }
 
     /*==========================================================================================================================
@@ -117,9 +117,7 @@ namespace Ignia.Topics {
     ///   value > 0
     /// </requires>
     public int Id {
-      get {
-        return _id;
-      }
+      get => _id;
       set {
         Contract.Requires<ArgumentException>(value > 0, "The id is expected to be a positive value.");
         if (_id >= 0 && !_id.Equals(value)) {
@@ -150,9 +148,7 @@ namespace Ignia.Topics {
     ///   value != this
     /// </requires>
     public Topic Parent {
-      get {
-        return _parent;
-      }
+      get => _parent;
       set {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -167,12 +163,12 @@ namespace Ignia.Topics {
         if (_parent == value) {
           return;
           }
-        if (!value.Contains(this.Key)) {
+        if (!value.Contains(Key)) {
           value.Add(this);
           }
         else {
           throw new Exception(
-            "Duplicate key when setting Parent property: the topic with the name '" + this.Key +
+            "Duplicate key when setting Parent property: the topic with the name '" + Key +
             "' already exists in the '" + value.Key + "' topic."
             );
           }
@@ -181,7 +177,7 @@ namespace Ignia.Topics {
         | Perform reordering and/or move
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_parent != null) {
-          _parent.Remove(this.Key);
+          _parent.Remove(Key);
         }
 
         _parent = value;
@@ -197,11 +193,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets whether the Topic's Key is invalid (null or empty).
     /// </summary>
-    public bool IsEmpty {
-      get {
-        return String.IsNullOrEmpty(Key);
-      }
-    }
+    public bool IsEmpty => String.IsNullOrEmpty(Key);
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -216,12 +208,8 @@ namespace Ignia.Topics {
     ///   the pipe).
     /// </remarks>
     public string ContentType {
-      get {
-        return this.Attributes.Get("ContentType");
-      }
-      set {
-        this.Attributes.Set("ContentType", value);
-      }
+      get => Attributes.Get("ContentType");
+      set => Attributes.Set("ContentType", value);
     }
 
     /*==========================================================================================================================
@@ -239,9 +227,7 @@ namespace Ignia.Topics {
     ///   !value.Contains(" ")
     /// </requires>
     public string Key {
-      get {
-        return _key;
-      }
+      get => _key;
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
@@ -273,15 +259,15 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<String>() != null);
+        Contract.Ensures(Contract.Result<string>() != null);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Crawl up tree to define uniqueKey
         \---------------------------------------------------------------------------------------------------------------------*/
-        string uniqueKey = "";
-        Topic topic = this;
+        var uniqueKey = "";
+        var topic = this;
 
-        for (int i = 0; i < 100; i++) {
+        for (var i = 0; i < 100; i++) {
           if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
           uniqueKey = topic.Key + uniqueKey;
           topic = topic.Parent;
@@ -317,9 +303,7 @@ namespace Ignia.Topics {
     ///   !value?.Contains(" ")?? true
     /// </requires>
     internal string OriginalKey {
-      get {
-        return _originalKey;
-      }
+      get => _originalKey;
       set {
         Topic.ValidateKey(value, true);
         _originalKey = value;
@@ -339,7 +323,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string WebPath {
       get {
-        Contract.Ensures(Contract.Result<String>() != null);
+        Contract.Ensures(Contract.Result<string>() != null);
         return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
       }
     }
@@ -367,12 +351,11 @@ namespace Ignia.Topics {
     ///   !value?.Contains(" ")?? true
     /// </requires>
     public string View {
-      get {
+      get =>
         // Return current Topic's View Attribute or the default for the ContentType.
-        return Attributes.Get("View", this.Attributes.Get("View", ""));
-      }
+        Attributes.Get("View", Attributes.Get("View", ""));
       set {
-        Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
         Attributes.Set("View", value);
       }
@@ -385,12 +368,8 @@ namespace Ignia.Topics {
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
     public bool IsHidden {
-      get {
-        return Attributes.Get("IsHidden", "0").Equals("1");
-      }
-      set {
-        Attributes.Set("IsHidden", value? "1" : "0");
-      }
+      get => Attributes.Get("IsHidden", "0").Equals("1");
+      set => Attributes.Set("IsHidden", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -400,12 +379,8 @@ namespace Ignia.Topics {
     ///   Gets or sets whether the current topic is disabled.
     /// </summary>
     public bool IsDisabled {
-      get {
-        return Attributes.Get("IsDisabled", "0").Equals("1");
-      }
-      set {
-        Attributes.Set("IsDisabled", value? "1" : "0");
-      }
+      get => Attributes.Get("IsDisabled", "0").Equals("1");
+      set => Attributes.Set("IsDisabled", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -438,12 +413,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get {
-        return Attributes.Get("Title", Key);
-      }
-      set {
-        Attributes.Set("Title", value);
-      }
+      get => Attributes.Get("Title", Key);
+      set => Attributes.Set("Title", value);
     }
 
     /*==========================================================================================================================
@@ -460,12 +431,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Description {
-      get {
-        return Attributes.Get("Description");
-      }
-      set {
-        Attributes.Set("Description", value);
-      }
+      get => Attributes.Get("Description");
+      set => Attributes.Set("Description", value);
     }
 
     /*==========================================================================================================================
@@ -480,12 +447,8 @@ namespace Ignia.Topics {
     ///   capabilities of the storage provider.
     /// </remarks>
     public int SortOrder {
-      get {
-        return _sortOrder;
-      }
-      set {
-        _sortOrder = value;
-      }
+      get => _sortOrder;
+      set => _sortOrder = value;
     }
 
     /*==========================================================================================================================
@@ -516,11 +479,10 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
-        string lastModified = Attributes.Get("LastModified");
-        DateTime dateTimeValue;
+        var lastModified = Attributes.Get("LastModified");
 
         // Return converted DateTime
-        if (DateTime.TryParse(lastModified, out dateTimeValue)) {
+        if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
           return dateTimeValue;
         }
 
@@ -532,9 +494,7 @@ namespace Ignia.Topics {
         }
 
       }
-      set {
-        Attributes.Set("LastModified", value.ToString());
-      }
+      set => Attributes.Set("LastModified", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -546,21 +506,19 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(string,
-    ///     bool)"/> method unable to find a local value for the attribute.
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(String,
+    ///     Boolean)"/> method unable to find a local value for the attribute.
     ///   </para>
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueCollection.Get(string, bool)"/> method defaults to a maximum level of five "hops".
+    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
     public Topic DerivedTopic {
-      get {
-        return _derivedTopic;
-      }
+      get => _derivedTopic;
       set {
         Contract.Requires<ArgumentException>(
           value != this,
@@ -568,10 +526,10 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          this.Attributes.Set("TopicID", value.Id.ToString());
+          Attributes.Set("TopicID", value.Id.ToString());
         }
-        else if (this.Attributes.Contains("TopicID")) {
-          this.Attributes.Remove("TopicID");
+        else if (Attributes.Contains("TopicID")) {
+          Attributes.Remove("TopicID");
         }
       }
     }
@@ -687,7 +645,7 @@ namespace Ignia.Topics {
     public IEnumerable<Topic> SortedChildren {
       get {
         Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
-        return this.Items.OrderBy(topic => topic.SortOrder);
+        return Items.OrderBy(topic => topic.SortOrder);
       }
     }
 
@@ -802,10 +760,10 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic relationships = this.Relationships;
+      var relationships = Relationships;
 
       if (isIncoming) {
-        relationships = this.IncomingRelationships;
+        relationships = IncomingRelationships;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -864,11 +822,11 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \---------------------------------------------------------------------------------------------------------------------*/
-      Collection<Topic> results = new Collection<Topic>();
+      var results = new Collection<Topic>();
 
       if (
-        !String.IsNullOrEmpty(this.Attributes.Get(name)) &&
-        this.Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        !String.IsNullOrEmpty(Attributes.Get(name)) &&
+        Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
         ) {
         results.Add(this);
       }
@@ -876,9 +834,9 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Search children, if recursive
       \---------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic topic in this) {
-        Collection<Topic> nestedResults = topic.FindAllByAttribute(name, value);
-        foreach (Topic matchedTopic in nestedResults) {
+      foreach (var topic in this) {
+        var nestedResults = topic.FindAllByAttribute(name, value);
+        foreach (var matchedTopic in nestedResults) {
           results.Add(matchedTopic);
         }
       }
@@ -957,8 +915,8 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine if there is a matched type
       \---------------------------------------------------------------------------------------------------------------------*/
-      Type baseType = typeof(Topic);
-      Type targetType = Type.GetType("Ignia.Topics." + contentType);
+      var baseType = typeof(Topic);
+      var targetType = Type.GetType("Ignia.Topics." + contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate type
@@ -1037,12 +995,12 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine target type
       \---------------------------------------------------------------------------------------------------------------------*/
-      Type targetType = Topic.GetTopicType(contentType);
+      var targetType = Topic.GetTopicType(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      Topic topic = (Topic)Activator.CreateInstance(targetType);
+      var topic = (Topic)Activator.CreateInstance(targetType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set the topic's Key and Content Type
@@ -1086,7 +1044,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Create object
       \---------------------------------------------------------------------------------------------------------------------*/
-      Topic topic = Create(key, contentType);
+      var topic = Create(key, contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Assign identifier
@@ -1168,13 +1126,13 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return if current
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Id == topicId) return this;
+      if (Id == topicId) return this;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Iterate through children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic childTopic in this) {
-        Topic topic = childTopic.GetTopic(topicId);
+      foreach (var childTopic in this) {
+        var topic = childTopic.GetTopic(topicId);
         if (topic != null) return topic;
       }
 
@@ -1213,7 +1171,7 @@ namespace Ignia.Topics {
       | Provide shortcut for local calls
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
-        if (this.Contains(uniqueKey)) {
+        if (Contains(uniqueKey)) {
           return this[uniqueKey];
         }
         return null;
@@ -1242,14 +1200,14 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string   remainder        = uniqueKey.Substring(UniqueKey.Length + 1);
-      int      marker           = remainder.IndexOf(":", StringComparison.Ordinal);
-      string   nextChild        = (marker < 0)? remainder : remainder.Substring(0, marker);
+      var   remainder           = uniqueKey.Substring(UniqueKey.Length + 1);
+      var   marker              = remainder.IndexOf(":", StringComparison.Ordinal);
+      var   nextChild           = (marker < 0)? remainder : remainder.Substring(0, marker);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!this.Contains(nextChild)) return null;
+      if (!Contains(nextChild)) return null;
 
       if (nextChild == remainder) return this[nextChild];
 

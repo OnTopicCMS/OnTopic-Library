@@ -27,8 +27,8 @@ namespace Ignia.Topics.Web.Mvc {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     ITopicRepository                _topicRepository        = null;
-    private     T                               _currentTopic           = null;
+    private                     ITopicRepository                _topicRepository                = null;
+    private                     T                               _currentTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -81,7 +81,7 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish Page Topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicRoutingService = new TopicRoutingService(_topicRepository, this.HttpContext.Request.RequestContext);
+      var topicRoutingService = new TopicRoutingService(_topicRepository, HttpContext.Request.RequestContext);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
@@ -125,7 +125,7 @@ namespace Ignia.Topics.Web.Mvc {
       | Identify associated razor view
       \-----------------------------------------------------------------------------------------------------------------------*/
       var view = new RazorView(
-        this.ControllerContext,
+        ControllerContext,
         topicRoutingService.ViewPath,
         null,
         true,

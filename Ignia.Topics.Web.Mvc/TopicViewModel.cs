@@ -28,9 +28,7 @@ namespace Ignia.Topics.Web.Mvc {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private             ITopicRepository    _topicRepository        = null;
-    private             Topic               _topic                  = null;
-    private             Topic               _rootTopic              = null;
+    private                     Topic                           _rootTopic                      = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -40,8 +38,8 @@ namespace Ignia.Topics.Web.Mvc {
     /// </summary>
     /// <returns>A Topic view model.</returns>
     public TopicViewModel(ITopicRepository topicRepository, Topic topic) {
-      _topicRepository = topicRepository;
-      _topic = topic;
+      TopicRepository = topicRepository;
+      Topic = topic;
     }
 
     /*==========================================================================================================================
@@ -51,11 +49,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Returns the topic repository associated with the current request.
     /// </summary>
     /// <returns>The <see cref="ITopicRepository"/> associated with the current request.</returns>
-    public ITopicRepository TopicRepository {
-      get {
-        return _topicRepository;
-      }
-    }
+    public ITopicRepository TopicRepository { get; }
 
     /*==========================================================================================================================
     | PROPERTY: ROOT TOPIC
@@ -63,11 +57,11 @@ namespace Ignia.Topics.Web.Mvc {
     /// <summary>
     ///   Returns the root topic associated with the object graph. This can be used to easily find other topics in the tree.
     /// </summary>
-    /// <returns>The <see cref="Topic"/> at the root of the object graph.</returns>
+    /// <returns>The <see cref="GetTopic()"/> at the root of the object graph.</returns>
     public Topic RootTopic {
       get {
         if (_rootTopic == null) {
-          _rootTopic = _topic;
+          _rootTopic = Topic;
           while (_rootTopic.Parent != null) {
             _rootTopic = _rootTopic.Parent;
           }
@@ -82,12 +76,8 @@ namespace Ignia.Topics.Web.Mvc {
     /// <summary>
     ///   Returns the topic associated with the current page based on the URL or route.
     /// </summary>
-    /// <returns>The <see cref="Topic"/> associated with the current page.</returns>
-    public Topic Topic {
-      get {
-        return _topic;
-      }
-    }
+    /// <returns>The <see cref="GetTopic()"/> associated with the current page.</returns>
+    public Topic Topic { get; }
 
   } //Class
 

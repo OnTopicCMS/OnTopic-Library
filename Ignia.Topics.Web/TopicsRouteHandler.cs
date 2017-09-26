@@ -32,7 +32,7 @@ namespace Ignia.Topics.Web {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private     List<string>    _views                  = null;
+    private                     List<string>                    _views                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -51,11 +51,10 @@ namespace Ignia.Topics.Web {
     /// </summary>
     private string ViewsPath {
       get {
-        string                  viewsPath               = "~/Common/Templates/";
-        // Use configuration settings, if available
-        TopicsSection           topicsSection           = (TopicsSection)ConfigurationManager.GetSection("topics");
+        var viewsPath           = "~/Common/Templates/";
+        var topicsSection       = (TopicsSection)ConfigurationManager.GetSection("topics");
         if (topicsSection != null && topicsSection.Views != null && !String.IsNullOrEmpty(topicsSection.Views.Path)) {
-          viewsPath                                     = topicsSection.Views.Path;
+          viewsPath             = topicsSection.Views.Path;
         }
         return viewsPath;
       }
@@ -89,10 +88,10 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var       routeData                       = requestContext.RouteData;
-      var       topicRoutingService             = new TopicRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
-      var       topic                           = topicRoutingService.Topic;
-      var       viewName                        = topicRoutingService.View;
+      var routeData             = requestContext.RouteData;
+      var topicRoutingService   = new TopicRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
+      var topic                 = topicRoutingService.Topic;
+      var viewName              = topicRoutingService.View;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate path
@@ -104,15 +103,15 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target path
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string targetPath                      = ViewsPath + viewName + ".aspx";
+      var targetPath            = ViewsPath + viewName + ".aspx";
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set route data
       \-----------------------------------------------------------------------------------------------------------------------*/
-      routeData.Values["targetPath"]         = targetPath;
-      routeData.Values["contentType"]        = topic.ContentType;
-      routeData.Values["directory"]          = topicRoutingService.AbsolutePath;
-      routeData.Values["path"]               = topic.UniqueKey;
+      routeData.Values          ["targetPath"]                  = targetPath;
+      routeData.Values          ["contentType"]                 = topic.ContentType;
+      routeData.Values          ["directory"]                   = topicRoutingService.AbsolutePath;
+      routeData.Values          ["path"]                        = topic.UniqueKey;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | SET TARGET TYPES

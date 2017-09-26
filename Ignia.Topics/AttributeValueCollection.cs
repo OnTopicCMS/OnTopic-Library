@@ -132,7 +132,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from Attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Contains(name)) {
+      if (Contains(name)) {
         value = this[name]?.Value;
       }
 
@@ -181,7 +181,7 @@ namespace Ignia.Topics {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Topic.Save(bool, bool)"/>.
+    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -209,7 +209,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (this.Contains(key) && this[key] != null) {
+      if (Contains(key) && this[key] != null) {
         this[key].Value = value;
       }
 
@@ -217,7 +217,7 @@ namespace Ignia.Topics {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        this.Add(new AttributeValue(key, value));
+        Add(new AttributeValue(key, value));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

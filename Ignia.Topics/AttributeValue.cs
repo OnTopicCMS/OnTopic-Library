@@ -36,9 +36,9 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     string  _key            = null;
-    private     string  _value          = null;
-    private     bool    _isDirty        = false;
+    private                     string                          _key                            = null;
+    private                     string                          _value                          = null;
+    private                     bool                            _isDirty                        = false;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -66,14 +66,14 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Topic.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set local values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      this.Key          = key;
-      this.Value        = value;
+      Key = key;
+      Value = value;
 
     }
 
@@ -91,7 +91,7 @@ namespace Ignia.Topics {
     ///   The boolean indicator noting whether the <see cref="AttributeValue"/> collection item has been changed.
     /// </param>
     public AttributeValue(string key, string value, bool isDirty) : this(key, value) {
-      this.IsDirty      = isDirty;
+      IsDirty = isDirty;
     }
 
     /*==========================================================================================================================
@@ -109,9 +109,7 @@ namespace Ignia.Topics {
     ///   !value.Contains(" ")
     /// </requires>
     public string Key {
-      get {
-        return _key;
-      }
+      get => _key;
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
@@ -127,12 +125,10 @@ namespace Ignia.Topics {
     ///   has changed.
     /// </summary>
     public string Value {
-      get {
-        return _value;
-      }
+      get => _value;
       set {
-        _isDirty        = !value.Equals(_value) || _isDirty;
-        _value          = value;
+        _isDirty                = !value.Equals(_value) || _isDirty;
+        _value                  = value;
       }
     }
 
@@ -145,16 +141,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   The IsDirty property is used by the <see cref="Topics.Repositories.ITopicRepository"/> to determine whether or not
     ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database
-    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, bool, bool)"/> is called. Otherwise, it is ignored,
+    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/> is called. Otherwise, it is ignored,
     ///   thus preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
     /// </remarks>
     public bool IsDirty {
-      get {
-        return _isDirty;
-      }
-      set {
-        _isDirty        = value;
-      }
+      get => _isDirty;
+      set => _isDirty = value;
     }
 
     /*=========================================================================================================================

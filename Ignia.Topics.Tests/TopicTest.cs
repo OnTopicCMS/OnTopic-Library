@@ -25,7 +25,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void CreateTopicTest() {
-      Topic topic = Topic.Create("Test", "ContentType");
+      var topic = Topic.Create("Test", "ContentType");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentType));
       Assert.AreEqual<string>(topic.Key, "Test");
@@ -41,11 +41,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void IsContentTypeOf() {
-      ContentType contentType = new ContentType("Root");
-      for (int i=0; i<5; i++) {
-        ContentType childContentType = new ContentType("ContentType" + i);
-        childContentType.Parent = contentType;
-        contentType = childContentType;
+      var contentType = new ContentType("Root");
+      for (var i=0; i<5; i++) {
+        var childContentType = new ContentType("ContentType" + i) {
+          Parent = contentType
+        };
+        contentType             = childContentType;
       }
       Assert.IsTrue(contentType.IsTypeOf("Root"));
     }
@@ -58,7 +59,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void GetAttributeTest() {
-      Topic topic = Topic.Create("Test", "Container");
+      var topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
     }
 
@@ -70,7 +71,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void DefaultAttributeTest() {
-      Topic topic = Topic.Create("Test", "Container");
+      var topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
     }
 
@@ -82,7 +83,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void SetAttributeTest() {
-      Topic topic = Topic.Create("Test", "Container");
+      var topic = Topic.Create("Test", "Container");
       topic.Attributes.Set("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
     }
@@ -95,10 +96,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void AttributeInheritanceTest() {
-      Topic childTopic = Topic.Create("Child", "Container");
-      Topic parentTopic = Topic.Create("Parent", "Container");
 
-      childTopic.Parent = parentTopic;
+      var childTopic            = Topic.Create("Child", "Container");
+      var parentTopic           = Topic.Create("Parent", "Container");
+
+      childTopic.Parent         = parentTopic;
+
       parentTopic.Attributes.Set("Foo", "Bar");
 
       Assert.IsNull(childTopic.Attributes.Get("Foo", null));
@@ -115,10 +118,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void LimitAttributeInheritanceTest() {
 
-      Topic[] topics = new Topic[5];
+      var topics = new Topic[5];
 
-      for (int i=0; i<=4; i++) {
-        Topic topic = Topic.Create("Topic" + i, "Container");
+      for (var i=0; i<=4; i++) {
+        var topic = Topic.Create("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
       }
@@ -138,11 +141,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void SetParentTest() {
-      Topic parentTopic = Topic.Create("Parent", "ContentType");
-      Topic childTopic = Topic.Create("Child", "ContentType");
 
-      parentTopic.Id = 5;
-      childTopic.Parent = parentTopic;
+      var parentTopic           = Topic.Create("Parent", "ContentType");
+      var childTopic            = Topic.Create("Child", "ContentType");
+
+      parentTopic.Id            = 5;
+      childTopic.Parent         = parentTopic;
 
       Assert.ReferenceEquals(parentTopic["Child"], childTopic);
       Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
@@ -158,14 +162,15 @@ namespace Ignia.Topics.Tests {
     // ### TODO JJC20150816: This invokes dependencies on the TopicDataProvider and, in turn, the Configuration namespace.  This
     // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
     public void ChangeParentTest() {
-      Topic sourceParent = Topic.Create("SourceParent", "ContentType");
-      Topic targetParent = Topic.Create("TargetParent", "ContentType");
-      Topic childTopic = Topic.Create("ChildTopic", "ContentType");
 
-      sourceParent.Id = 5;
-      targetParent.Id = 10;
-      childTopic.Parent = sourceParent;
-      childTopic.Parent = targetParent;
+      var sourceParent          = Topic.Create("SourceParent", "ContentType");
+      var targetParent          = Topic.Create("TargetParent", "ContentType");
+      var childTopic            = Topic.Create("ChildTopic", "ContentType");
+
+      sourceParent.Id           = 5;
+      targetParent.Id           = 10;
+      childTopic.Parent         = sourceParent;
+      childTopic.Parent         = targetParent;
 
       Assert.ReferenceEquals(targetParent["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Contains("ChildTopic"));

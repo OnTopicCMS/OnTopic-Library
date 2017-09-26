@@ -30,9 +30,9 @@ namespace CodeContractTest {
       ValidateInput(context);
 
       var user = context.User.Identity.Name;
-      var collection = new FauxObjectCollection();
-
-      collection.Add(new FauxObject("Test"));
+      var collection = new FauxObjectCollection {
+        new FauxObject("Test")
+      };
 
       if (collection.Contains(user)) {
         user += collection[user]?.Value;

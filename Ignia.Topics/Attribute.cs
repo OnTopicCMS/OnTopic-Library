@@ -72,13 +72,11 @@ namespace Ignia.Topics {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     public string Type {
-      get {
-        return this.Attributes.Get("Type", "");
-      }
+      get => Attributes.Get("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        this.Attributes.Set("Type", value);
+        Attributes.Set("Type", value);
       }
     }
 
@@ -98,12 +96,10 @@ namespace Ignia.Topics {
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
     public string DisplayGroup {
-      get {
-        return this.Attributes.Get("DisplayGroup", "");
-      }
+      get => Attributes.Get("DisplayGroup", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        this.Attributes.Set("DisplayGroup", value);
+        Attributes.Set("DisplayGroup", value);
       }
     }
 
@@ -125,12 +121,8 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
-      get {
-        return this.Attributes.Get("DefaultConfiguration", "");
-      }
-      set {
-        this.Attributes.Set("DefaultConfiguration", value);
-      }
+      get => Attributes.Get("DefaultConfiguration", "");
+      set => Attributes.Set("DefaultConfiguration", value);
     }
 
     /*==========================================================================================================================
@@ -150,17 +142,13 @@ namespace Ignia.Topics {
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view
     ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see
-    ///     cref="AttributeValueCollection.Get(string, bool)"/>) then the attribute will be displayed on the page. The <see
+    ///     cref="AttributeValueCollection.Get(String, Boolean)"/>) then the attribute will be displayed on the page. The <see
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>
     public new bool IsHidden {
-      get {
-        return this.Attributes.Get("IsHidden", "0").Equals("1");
-      }
-      set {
-        this.Attributes.Set("IsHidden", value.ToString());
-      }
+      get => Attributes.Get("IsHidden", "0").Equals("1");
+      set => Attributes.Set("IsHidden", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -174,12 +162,8 @@ namespace Ignia.Topics {
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
     public bool IsRequired {
-      get {
-        return this.Attributes.Get("IsRequired", "0").Equals("1");
-      }
-      set {
-        this.Attributes.Set("IsRequired", value.ToString());
-      }
+      get => Attributes.Get("IsRequired", "0").Equals("1");
+      set => Attributes.Set("IsRequired", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -194,13 +178,9 @@ namespace Ignia.Topics {
     ///   default value only affects the topic when it is first being created via the editor.
     /// </remarks>
     public string DefaultValue {
-      get {
-        return this.Attributes.Get("DefaultValue", "");
-        }
-      set {
-        this.Attributes.Set("DefaultValue", value);
-        }
-      }
+      get => Attributes.Get("DefaultValue", "");
+      set => Attributes.Set("DefaultValue", value);
+    }
 
     /*==========================================================================================================================
     | PROPERTY: STORE IN BLOB?
@@ -222,12 +202,8 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public bool StoreInBlob {
-      get {
-        return this.Attributes.Get("StoreInBlob", "1").Equals("1");
-      }
-      set {
-        this.Attributes.Set("StoreInBlob", value.ToString());
-      }
+      get => Attributes.Get("StoreInBlob", "1").Equals("1");
+      set => Attributes.Set("StoreInBlob", value.ToString());
     }
 
   } // Class

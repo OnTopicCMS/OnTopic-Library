@@ -76,13 +76,9 @@ namespace Ignia.Topics {
     ///     cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
-    public Boolean DisableChildTopics {
-      get {
-        return (this.Attributes.Get("DisableChildTopics", "0").Equals("1"));
-      }
-      set {
-        this.Attributes.Set("DisableChildTopics", value? "1" : "0");
-      }
+    public bool DisableChildTopics {
+      get => (Attributes.Get("DisableChildTopics", "0").Equals("1"));
+      set => Attributes.Set("DisableChildTopics", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -108,7 +104,7 @@ namespace Ignia.Topics {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="Topic.SetRelationship(string, Topic, bool)"/>.
+    ///     cref="Topic.SetRelationship(String, Topic, Boolean)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyCollection<ContentType> PermittedContentTypes {
@@ -160,7 +156,7 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<Dictionary<String, Attribute>>() != null);
+        Contract.Ensures(Contract.Result<Dictionary<string, Attribute>>() != null);
 
         if (_supportedAttributes == null) {
 
@@ -172,9 +168,9 @@ namespace Ignia.Topics {
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
           \-------------------------------------------------------------------------------------------------------------------*/
-          if (!this.Contains("Attributes") || this["Attributes"] == null) {
+          if (!Contains("Attributes") || this["Attributes"] == null) {
             throw new Exception(
-              "The ContentType '" + this.Title + "' does not contain a nested topic named 'Attributes' as expected."
+              "The ContentType '" + Title + "' does not contain a nested topic named 'Attributes' as expected."
             );
           }
 
@@ -195,9 +191,9 @@ namespace Ignia.Topics {
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from parent
           \-------------------------------------------------------------------------------------------------------------------*/
-          ContentType parent = this.Parent as ContentType;
+          var parent = Parent as ContentType;
           if (parent?.SupportedAttributes != null) {
-            foreach (Attribute attribute in parent.SupportedAttributes.Values) {
+            foreach (var attribute in parent.SupportedAttributes.Values) {
               if (!_supportedAttributes.ContainsKey(attribute.Key)) {
                 _supportedAttributes.Add(attribute.Key, attribute);
               }
@@ -236,7 +232,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine match
       \---------------------------------------------------------------------------------------------------------------------*/
-      ContentType contentType = this;
+      var contentType = this;
 
       while (contentType != null) {
         if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {

@@ -36,7 +36,7 @@ namespace Ignia.Topics {
     /// <returns>The specified <see cref="ContentType"/>.</returns>
     public ContentType Get(string contentType) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "Requires a content type parameter.");
-      if (this.Contains(contentType)) {
+      if (Contains(contentType)) {
         return this[contentType];
       }
       return null;
