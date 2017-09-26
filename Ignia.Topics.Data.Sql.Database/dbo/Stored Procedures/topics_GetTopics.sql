@@ -1,14 +1,14 @@
 ﻿-----------------------------------------------------------------------------------------------------------------------------------------------
 -- Procedure	GET TOPICS
 --
--- Purpose	Gets the tree of current topics rooted FROM the provided TopicID.  If no TopicID is provided then the sproc returns everything 
+-- Purpose	Gets the tree of current topics rooted FROM the provided TopicID.  If no TopicID is provided then the sproc returns everything
 --		under the topic with the lowest id.
 --
 -- History      Casey Margell		04062009  Initial Creation baseaed on code FROM Celko's Sql For Smarties.
 --		Jeremy Caney		07192009  Added support for AttributeID lookup.
---		Jeremy Caney		05282010  Reformatted code AND refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code AND refactored identifiers for improved readability.
 --		Jeremy Caney		06072010  Added support for blob fields.
---		Hedley Robertson	07062010  Added support for related items.  
+--		Hedley Robertson	07062010  Added support for related items.
 --		Jeremy Cane		09272013  Removed dependency on Attributes, in favor of Oroboros Configuration.
 --		Jeremy Caney		09282013  Injected separate data set for key attribute values.
 --		Katherine Trunkey	08072014  Added ROW_NUMBER functionality to (indexed) Attributes selection and TOP 1 selection to Blob
@@ -46,7 +46,7 @@ IF @TopicID < 0
     FROM	topics_Topics
     ORDER BY	TopicID ASC
   END
-  
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- CREATE TEMP TABLES
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,29 +64,29 @@ CREATE INDEX IDX_Topics_TopicID ON #Topics(TopicID, SortOrder)
 -----------------------------------------------------------------------------------------------------------------------------------------------
 IF @DeepLoad = 1
   BEGIN
-    INSERT 
+    INSERT
     INTO	#Topics (
 		  TopicID,
 		  SortOrder
 		)
     SELECT	T1.TopicID,
 		T1.RangeLeft
-    FROM	topics_Topics		AS T1, 
+    FROM	topics_Topics		AS T1,
 		topics_Topics		AS T2
-    WHERE	T1.RangeLeft 
-      BETWEEN	T2.RangeLeft 
+    WHERE	T1.RangeLeft
+      BETWEEN	T2.RangeLeft
         AND	T2.RangeRight
       AND	T2.TopicID		= @TopicID
     ORDER BY	T1.RangeLeft
     OPTION	(OPTIMIZE FOR		(@TopicID = 1))
   END
-  
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ONLY
 -----------------------------------------------------------------------------------------------------------------------------------------------
 ELSE
   BEGIN
-    INSERT 
+    INSERT
     INTO	#Topics (
 		  TopicID,
 		  SortOrder
@@ -138,7 +138,7 @@ JOIN		#Topics AS Storage
 ;SELECT		Relationships.RelationshipTypeID,
 		Relationships.Source_TopicID,
 		Relationships.Target_TopicID
-FROM		Topics_Relationships Relationships
+FROM		topics_Relationships Relationships
 JOIN		#Topics AS Storage
   ON		Storage.TopicID = Relationships.Source_TopicID
 
@@ -146,13 +146,13 @@ JOIN		#Topics AS Storage
 -- SELECT HISTORY
 -----------------------------------------------------------------------------------------------------------------------------------------------
 ;WITH TopicVersions AS (
-  SELECT	Attributes.TopicID, 
+  SELECT	Attributes.TopicID,
 		Attributes.Version,
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Storage.TopicID
 		  ORDER BY	Version DESC
 		)
-  FROM		topics_TopicAttributes Attributes 
+  FROM		topics_TopicAttributes Attributes
   JOIN		#Topics AS Storage
     ON		Storage.TopicID = Attributes.TopicID
 )

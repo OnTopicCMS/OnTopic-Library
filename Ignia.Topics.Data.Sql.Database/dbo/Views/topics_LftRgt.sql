@@ -1,7 +1,7 @@
 ﻿CREATE VIEW [dbo].[topics_LftRgt] (seq) AS
 
-SELECT		RangeLeft 
+SELECT		RangeLeft
 FROM		topics_Topics
 UNION		ALL
-SELECT		RangeRight 
+SELECT		RangeRight
 FROM		topics_Topics;

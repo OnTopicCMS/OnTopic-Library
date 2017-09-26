@@ -27,18 +27,18 @@ AS
                 )
   FROM		topics_TopicAttributes as Attributes
   WHERE		TopicID = @TopicID
-    AND		Version <= @Version 
+    AND		Version <= @Version
     AND		AttributeKey IN ('Key', 'ParentID', 'ContentType')
 )
-SELECT		TopicID, 
-		ContentType, 
-		ParentID, 
+SELECT		TopicID,
+		ContentType,
+		ParentID,
 		[Key] AS 'TopicKey',
 		1 AS 'SortOrder'
 FROM		KeyTopicAttributes
 PIVOT (		MIN(AttributeValue)
   FOR		AttributeKey IN ([ContentType], [ParentID], [Key])
-)		AS Pvt 
+)		AS Pvt
 WHERE		RowNumber = 1
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,10 +51,10 @@ WHERE		RowNumber = 1
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Attributes.TopicID, Attributes.AttributeKey
 		  ORDER BY	Attributes.Version DESC
-		) 
+		)
   FROM		topics_TopicAttributes as Attributes
   WHERE		TopicID = @TopicID
-    AND		Version <= @Version 
+    AND		Version <= @Version
     AND 	Attributes.AttributeKey not in ('Key', 'ParentID', 'ContentType')
 )
 SELECT		TopicAttributes.TopicID,
@@ -73,10 +73,10 @@ WHERE		RowNumber = 1
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Blob.TopicID
 		  ORDER BY	Blob.Version DESC
-		) 
+		)
   FROM		topics_Blob AS Blob
   WHERE		TopicID = @TopicID
-    AND		Version <= @Version 
+    AND		Version <= @Version
 )
 SELECT		TopicBlob.TopicID,
 		TopicBlob.Blob
@@ -89,7 +89,7 @@ WHERE		RowNumber = 1
 ;SELECT		Relationships.RelationshipTypeID,
 		Relationships.Source_TopicID,
 		Relationships.Target_TopicID
-FROM		Topics_Relationships Relationships
+FROM		topics_Relationships Relationships
 WHERE		Source_TopicID = @TopicID
 
 
@@ -97,13 +97,13 @@ WHERE		Source_TopicID = @TopicID
 -- SELECT HISTORY
 -----------------------------------------------------------------------------------------------------------------------------------------------
 ;WITH TopicVersions AS (
-  SELECT	Attributes.TopicID, 
+  SELECT	Attributes.TopicID,
 		Attributes.Version,
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Attributes.TopicID
 		  ORDER BY	Version DESC
 		)
-  FROM		topics_TopicAttributes Attributes 
+  FROM		topics_TopicAttributes Attributes
   WHERE		TopicID = @TopicID
 )
 SELECT		DISTINCT

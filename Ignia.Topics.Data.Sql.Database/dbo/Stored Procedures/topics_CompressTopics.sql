@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- MIND THE GAP!
 -----------------------------------------------------------------------------------------------------------------------------------------------
-UPDATE		topics_Topics 
-SET 
+UPDATE		topics_Topics
+SET
   RangeLeft	= (SELECT COUNT(*) FROM topics_LftRgt WHERE seq <= RangeLeft),
   RangeRight	= (SELECT COUNT(*) FROM topics_LftRgt WHERE seq <= RangeRight);

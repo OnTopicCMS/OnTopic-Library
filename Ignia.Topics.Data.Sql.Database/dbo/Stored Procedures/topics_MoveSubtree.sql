@@ -22,11 +22,11 @@ DECLARE		@TreeSize	INT
 -- Determine source details
 SELECT		@SrcLeft	= RangeLeft,
 		@SrcRight	= RangeRight
-FROM		topics_Topics 
+FROM		topics_Topics
 WHERE		TopicID		= @TopicID
 
 SET		@TreeSize	= @SrcRight - @SrcLeft + 1;
-	
+
 --- make space in the destination range
 EXEC		topics_ShiftRLValues @TargetLeft, @TreeSize
 
@@ -40,7 +40,7 @@ END
 -- Determine source details, again
 SELECT		@SrcLeft	= RangeLeft,
 		@SrcRight	= RangeRight
-FROM		topics_Topics 
+FROM		topics_Topics
 WHERE		TopicID		= @TopicID
 
 SET		@TreeSize	= @SrcRight - @SrcLeft + 1;

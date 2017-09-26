@@ -4,7 +4,7 @@
 -- Purpose	Used to update the attributes of a provided node
 --
 -- History	Casey Margell		04062009  Initial Creation baseaed on code from Celko's Sql For Smarties
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --              Katherine Trunkey	08052014  Added parameter for Version (datetime). Updated procedure to always create new attribute
 --						  records rather than deleting the existing attributes for the topic and recreating them.
 --              Katherine Trunkey	08142014  Updated topic_TopicAttributes insertion script to use uncommon, multi-character delimiters
@@ -35,10 +35,10 @@ SET		@Version		= getdate()
 -- ###NOTE KLT08052014: This is no longer needed since versioning has been introduced; legacy attributes should be maintained.
 /*
 DELETE
-FROM		topics_TopicAttributes 
+FROM		topics_TopicAttributes
 WHERE		TopicID = @TopicID
 
-DELETE 
+DELETE
 FROM		topics_Blob
 WHERE		TopicID = @TopicID
 */
@@ -67,12 +67,12 @@ IF NOT ISNULL()
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NEW ATTRIBUTES
 -----------------------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (	
+INSERT INTO	topics_TopicAttributes (
 		  TopicID		,
-		  AttributeKey		,	 
+		  AttributeKey		,
 		  AttributeValue	,
 		  Version
-		) 
+		)
 SELECT		@TopicID		,
 		Substring(s, 0, CharIndex('~~', s)),
 		Substring(s, CharIndex('~~', s) + 2, Len(s)),
@@ -85,7 +85,7 @@ WHERE		s != ''
 -----------------------------------------------------------------------------------------------------------------------------------------------
 IF @Blob is not null
   BEGIN
-    INSERT 
+    INSERT
     INTO	topics_Blob (
 		  TopicID		,
 		  Blob			,
@@ -97,24 +97,24 @@ IF @Blob is not null
 		@Version
     )
   END
-  
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NULL ATTRIBUTES
 -----------------------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (	
+INSERT INTO	topics_TopicAttributes (
 		  TopicID		,
-		  AttributeKey		,	 
+		  AttributeKey		,
 		  AttributeValue	,
 		  Version
-		) 
+		)
 SELECT		@TopicID		,
 		s			,
 		''			,
 		@Version
 FROM		Split (@NullAttributes, ',')
-WHERE ( 
+WHERE (
   SELECT	TOP 1
-		AttributeValue 
+		AttributeValue
   FROM		topics_TopicAttributes
   WHERE		TopicID			= @TopicID
     AND		AttributeKey		= s
@@ -127,11 +127,11 @@ WHERE (
 -- Relationships will be re-added by the Data Access Layer using Topics_PersistRelationships.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 DELETE
-FROM		[dbo].[Topics_Relationships] 
+FROM		[dbo].[topics_Relationships]
 WHERE		Source_TopicID		= @TopicID
   AND		@DeleteRelationships	= 1
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- RETURN TOPIC ID 
+-- RETURN TOPIC ID
 -----------------------------------------------------------------------------------------------------------------------------------------------
 RETURN		@TopicID

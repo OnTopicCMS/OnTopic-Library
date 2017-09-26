@@ -1,7 +1,7 @@
 ﻿-----------------------------------------------------------------------------------------------------------------------------------------------
 -- Procedure	GET TOPIC ID
 --
--- Purpose	Given a particular topic key, finds the FIRST instance of the TopicID associated with that key. Be aware that since keys are 
+-- Purpose	Given a particular topic key, finds the FIRST instance of the TopicID associated with that key. Be aware that since keys are
 --		not guaranteed to be unique, this may yield unexpected results if multiple topics share the same key; in that case, the first
 --		(and, thus, earliest) instance will be returned.
 --
@@ -27,6 +27,6 @@ WHERE		AttributeKey = 'Key'
 ORDER BY	TopicID desc
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- RETURN TOPIC ID 
+-- RETURN TOPIC ID
 -----------------------------------------------------------------------------------------------------------------------------------------------
 RETURN		@TopicID

@@ -4,10 +4,10 @@
 -- Purpose	Moves a topic and all of its children underneath another topic.
 --
 -- History	John Mulhausen		06302009  Created initial version.
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --              Hedley Robertson	07062010  Added support for SiblingID (Ordering)
---              Hedley Robertson	08122010  Inline test cases, debugging statements and check for re-parenting; 
---						  now avoids moving item to start of SET when sibling move requested 
+--              Hedley Robertson	08122010  Inline test cases, debugging statements and check for re-parenting;
+--						  now avoids moving item to start of SET when sibling move requested
 --						  and parentid has not changed
 --              Hedley Robertson	08172010  Rebuilt with externalized MoveSubTree function
 --		Jeremy Caney		09222014  Updated logic for ParentID attribute to be based on Key, not ID
@@ -27,12 +27,12 @@ AS
 DECLARE		@RangeLeft		INT
 DECLARE		@RangeRight		INT
 DECLARE		@RangeWidth		INT
-DECLARE		@ParentRangeLeft	INT 
+DECLARE		@ParentRangeLeft	INT
 DECLARE		@ParentRangeRight	INT
-DECLARE		@LeftBoundary		INT 
+DECLARE		@LeftBoundary		INT
 DECLARE		@RightBoundary		INT
-DECLARE		@OffSET			INT 
-DECLARE		@leftrange		INT 
+DECLARE		@OffSET			INT
+DECLARE		@leftrange		INT
 DECLARE		@rightrange		INT
 DECLARE		@SiblingLeft		INT		= -1
 DECLARE		@SiblingRight		INT		= -1
@@ -47,12 +47,12 @@ SET NOCOUNT ON;
 -----------------------------------------------------------------------------------------------------------------------------------------------
 SELECT		@RangeLeft		= RangeLeft,
 		@RangeRight		= RangeRight
-FROM		topics_Topics 
+FROM		topics_Topics
 WHERE		TopicID			= @TopicID
 
 SELECT		@ParentRangeLeft	= RangeLeft,
 		@ParentRangeRight	= RangeRight
-FROM		topics_Topics 
+FROM		topics_Topics
 WHERE		TopicID			= @ParentID
 
 
@@ -66,7 +66,7 @@ If @RangeLeft > @ParentRangeLeft -- move up!
     SET		@RightBoundary		= @RangeLeft - 1;                    -- 41
     SET		@RangeWidth		= @RangeRight - @RangeLeft + 1;      -- 57 - 42 + 1 = 16
     SET		@leftrange		= @RangeRight;                       -- 57
-    SET		@rightrange		= @ParentRangeLeft;                  --  2  
+    SET		@rightrange		= @ParentRangeLeft;                  --  2
   END
 ELSE -- move down!
   BEGIN
@@ -76,7 +76,7 @@ ELSE -- move down!
     SET		@RangeWidth		= @RangeLeft - @RangeRight - 1;
     SET		@leftrange		= @ParentRangeLeft + 1;
     SET		@rightrange		= @RangeLeft;
-  END 
+  END
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE BOUNDARIES TO REFLECT OFFSET, UNLESS WE ARE JUST MOVING WITHIN SAME PARENT AND SIBLING REQUESTED!
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,13 +88,13 @@ WHERE		TopicID			= @TopicID
 And		AttributeKey		= 'ParentID'
 
 -- Try to find missing parent ID
-IF		@CurrentParentID	IS null 
+IF		@CurrentParentID	IS null
   OR		@CurrentParentID	< 0
 BEGIN
-  SELECT	@CurrentParentID	= dbo.topics_GetParentID(@TopicID)                                        
+  SELECT	@CurrentParentID	= dbo.topics_GetParentID(@TopicID)
 END
 
-IF		@CurrentParentID	IS null 
+IF		@CurrentParentID	IS null
   OR		@CurrentParentID	< 0
 BEGIN
   RAISERROR (	N'FAILED TO FIND PARENT ID!',
@@ -103,17 +103,17 @@ BEGIN
   );
 END
 
-IF		(@CurrentParentID	IS null) 
-  OR (		@CurrentParentID	= @ParentID 
+IF		(@CurrentParentID	IS null)
+  OR (		@CurrentParentID	= @ParentID
     AND		@SiblingID		> -1
   )
   BEGIN
     RAISERROR (	N'The Parent is the same (%d) and sibling ID (%d) requested, do NOT reparent item.  Moving a tree that contains a sibling to be under that same ... sibling... :S',
 		10,			-- Severity.
 		1,			-- State.
-		@ParentID, 
+		@ParentID,
 		@SiblingID
-    );    
+    );
   END
 ELSE
   BEGIN
@@ -124,33 +124,33 @@ ELSE
     );
 
     UPDATE		topics_Topics
-    SET			RangeLeft		= 
+    SET			RangeLeft		=
       CASE
-        WHEN (		RangeLeft 
-          BETWEEN	@LeftBoundary 
+        WHEN (		RangeLeft
+          BETWEEN	@LeftBoundary
           AND		@RightBoundary
-        ) 
+        )
         THEN		RangeLeft		+ @RangeWidth
-        WHEN  (		RangeLeft 
-          BETWEEN	@RangeLeft 
+        WHEN  (		RangeLeft
+          BETWEEN	@RangeLeft
           AND		@RangeRight
-        ) 
+        )
         THEN		RangeLeft		+ @OffSET
-        ELSE		RangeLeft 
+        ELSE		RangeLeft
       END,
-			RangeRight		= 
+			RangeRight		=
       CASE
-        WHEN (		RangeRight 
-          BETWEEN	@LeftBoundary 
+        WHEN (		RangeRight
+          BETWEEN	@LeftBoundary
           AND		@RightBoundary
-        ) 
+        )
         THEN		RangeRight		+ @RangeWidth
-        WHEN (		RangeRight 
-          BETWEEN	@RangeLeft 
+        WHEN (		RangeRight
+          BETWEEN	@RangeLeft
           AND		@RangeRight
-        ) 
+        )
         THEN		RangeRight		+ @OffSET
-        ELSE		RangeRight 
+        ELSE		RangeRight
       END
     WHERE		RangeLeft		< @leftrange
       OR		RangeRight		> @rightrange
@@ -164,19 +164,19 @@ IF		@SiblingID		>= 0 -- SiblingID is who we want to be in BEHIND of....
 	-- Determine sibling details
     SELECT	@SiblingLeft		= RangeLeft,
 		@SiblingRight		= RangeRight
-    FROM	topics_Topics 
+    FROM	topics_Topics
     WHERE	TopicID			= @SiblingID
-	
-	
+
+
     DECLARE	@TargetLeft		INT
 
     SET		@TargetLeft		= @SiblingRight + 1;
-	
+
 
     EXEC	topics_MoveSubtree	@TopicID, @TargetLeft
-	
+
     EXEC	topics_CompressTopics;
-    
+
   END
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -189,14 +189,14 @@ WHERE		TopicID			= @TopicID
 
 -- for debugging remove this later:
 
-SELECT		@SiblingID		SiblingID, 
-		@LeftBoundary		LeftBoundary, 
-		@RightBoundary		RightBoundary, 
+SELECT		@SiblingID		SiblingID,
+		@LeftBoundary		LeftBoundary,
+		@RightBoundary		RightBoundary,
 		@ParentRangeLeft	ParentRangeLeft,
-		@ParentRangeRight	ParentRangeRight, 
-		@RangeLeft		RangeLeft, 
+		@ParentRangeRight	ParentRangeRight,
+		@RangeLeft		RangeLeft,
 		@RangeRight		RangeRight,
-		@leftrange		leftrange, 
-		@rightrange		rightrange, 
-		@SiblingOffSET		SiblingOffSET, 
+		@leftrange		leftrange,
+		@rightrange		rightrange,
+		@SiblingOffSET		SiblingOffSET,
 		@CurrentParentID	CurrentParentID

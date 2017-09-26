@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[topics_TopicAttributeIndex] 
+﻿CREATE VIEW [dbo].[topics_TopicAttributeIndex]
 WITH SCHEMABINDING
 AS
 
@@ -9,7 +9,7 @@ WITH TopicAttributes AS (
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Attributes.TopicID, Attributes.AttributeKey
 		  ORDER BY	Attributes.Version DESC
-		) 
+		)
   FROM		[dbo].[topics_TopicAttributes] as Attributes
   WHERE		Attributes.AttributeKey not in ('Key', 'ParentID', 'ContentType')
 )

@@ -1,6 +1,6 @@
-﻿CREATE VIEW [dbo].[topics_BlobIndex] 
+﻿CREATE VIEW [dbo].[topics_BlobIndex]
 WITH SCHEMABINDING
-AS 
+AS
 
 WITH TopicBlob AS (
   SELECT	Blob.TopicID,
@@ -8,7 +8,7 @@ WITH TopicBlob AS (
 		RowNumber = ROW_NUMBER() OVER (
 		  PARTITION BY	Blob.TopicID
 		  ORDER BY	Blob.Version DESC
-		) 
+		)
   FROM		[dbo].[topics_Blob] AS Blob
 )
 SELECT		TopicBlob.TopicID,

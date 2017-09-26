@@ -4,7 +4,7 @@
 -- Purpose	Returns a list of available attributes.
 --
 -- History	John Mulhausen		04072009  Created initial version.
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --		Jeremy Caney		05292010  Added new attributes to list.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ SELECT		AttributeID				,
 		DisplayName				,
 		DisplayGroup				,
 		Description				,
-		SortOrder				,		
+		SortOrder				,
 		IsVisible				,
 		IsRequired				,
 		DefaultValue				,
@@ -32,6 +32,6 @@ SELECT		AttributeID				,
 		AttributeTypes.AttributeTypeID		,
 		AttributeTypes.AttributeTypeName	,
 		AttributeTypes.DefaultConfiguration
-FROM		topics_Attributes 
+FROM		topics_Attributes
 INNER JOIN	topics_AttributeTypes AttributeTypes
   ON		AttributeTypes.AttributeTypeID		= topics_Attributes.AttributeTypeID

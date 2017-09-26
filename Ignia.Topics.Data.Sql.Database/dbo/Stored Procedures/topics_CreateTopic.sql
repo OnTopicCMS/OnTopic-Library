@@ -4,7 +4,7 @@
 -- Purpose	Creates a new topic.
 --
 -- History	Casey Margell		04062009  Initial Creation baseaed on code from Celko's Sql For Smarties.
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --		Katherine Trunkey	08142014  Updated topic_TopicAttributes insertion script to use uncommon, multi-character delimiters
 --						  rather than a colon and semicolon in order to provide better escaping safety for @Attributes.
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -32,10 +32,10 @@ SET		@RangeRight	= 0
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- RESERVE SPACE FOR NEW CHILD.
 -----------------------------------------------------------------------------------------------------------------------------------------------
-IF (@ParentID > -1) 
+IF (@ParentID > -1)
   BEGIN
     SELECT	@RangeRight	= RangeRight
-    FROM	topics_topics
+    FROM	topics_Topics
     WHERE	TopicID		= @ParentID
 
     UPDATE	topics_Topics
@@ -45,24 +45,24 @@ IF (@ParentID > -1)
           THEN	RangeLeft	+ 2
           ELSE	RangeLeft
 	END,
-		RangeRight = 
+		RangeRight =
         CASE
           WHEN	RangeRight	>= @RangeRight
           THEN	RangeRight	+ 2
-          ELSE	RangeRight 
-	END 
+          ELSE	RangeRight
+	END
     WHERE	RangeRight	>= @RangeRight
   end
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- CREATE NEW TOPIC
 -----------------------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_topics (
-		  RangeLeft, 
+INSERT INTO	topics_Topics (
+		  RangeLeft,
 		  RangeRight
 )
 Values (
-		@RangeRight, 
+		@RangeRight,
 		@RangeRight	+ 1
 )
 
@@ -73,14 +73,14 @@ SELECT		@TopicID	= @@IDENTITY
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- CREATE ATTRIBUTES FROM STRING
 -----------------------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (	
+INSERT INTO	topics_TopicAttributes (
 		  TopicID		,
-		  AttributeKey		,	 
+		  AttributeKey		,
 		  AttributeValue	,
 		  Version
-) 
+)
 SELECT		@TopicID		,
-		Substring(s, 0, CharIndex('~~', s)), 
+		Substring(s, 0, CharIndex('~~', s)),
 		Substring(s, CharIndex('~~', s) + 2, Len(s)),
 		@Version
 FROM		Split (@Attributes, '``')
@@ -103,18 +103,18 @@ IF @Blob is not null
 		@Version
     )
   END
-  
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- CACHE PARENT ID FOR DATA INTEGRITY PURPOSES
 -----------------------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO	topics_TopicAttributes (
-		  TopicID		, 
-		  AttributeKey		, 
+		  TopicID		,
+		  AttributeKey		,
 		  AttributeValue	,
 		  Version
 )
-VALUES (	@TopicID		, 
-		'ParentID'		, 
+VALUES (	@TopicID		,
+		'ParentID'		,
 		@ParentID		,
 		@Version
 )

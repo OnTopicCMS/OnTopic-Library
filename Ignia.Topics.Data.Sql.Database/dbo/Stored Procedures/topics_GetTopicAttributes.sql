@@ -4,7 +4,7 @@
 -- Purpose	Returns a list of attributes associated with a particular topic.
 --
 -- History	John Mulhausen		04072009  Created initial version.
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability. 
+--		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --		Jeremy Caney		09272013  Removed dependency on Attributes, in favor of Oroboros Configuration.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 CREATE PROCEDURE [dbo].[topics_GetTopicAttributes]

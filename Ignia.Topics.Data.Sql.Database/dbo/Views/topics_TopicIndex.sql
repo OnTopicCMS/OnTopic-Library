@@ -1,6 +1,6 @@
-﻿CREATE VIEW [dbo].[topics_TopicIndex] 
+﻿CREATE VIEW [dbo].[topics_TopicIndex]
 WITH SCHEMABINDING
-AS 
+AS
 
 WITH KeyTopicAttributes AS (
   SELECT	Attributes.TopicID,
@@ -13,12 +13,12 @@ WITH KeyTopicAttributes AS (
   FROM		[dbo].[topics_TopicAttributes] as Attributes
   WHERE		AttributeKey IN ('Key', 'ParentID', 'ContentType')
 )
-SELECT		TopicID, 
-		ContentType, 
-		ParentID, 
+SELECT		TopicID,
+		ContentType,
+		ParentID,
 		[Key] AS 'TopicKey'
 FROM		KeyTopicAttributes
 PIVOT (		MIN(AttributeValue)
   FOR		AttributeKey IN ([Key], [ParentID], [ContentType])
-)		AS Pvt 
+)		AS Pvt
 WHERE		RowNumber = 1
