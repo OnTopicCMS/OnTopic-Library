@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics", "Ignia.Topic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Tests", "Ignia.Topics.Tests\Ignia.Topics.Tests.csproj", "{27632801-BFE3-41D9-8678-3C4BBE45E6C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.CodeContractTest", "Ignia.Topics.CodeContractTest\Ignia.Topics.CodeContractTest.csproj", "{6777CAAF-0621-430A-B61A-BC12D9283677}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Data.Sql.Tests", "Ignia.Topics.Data.Sql.Tests\Ignia.Topics.Data.Sql.Tests.csproj", "{7FF87B1D-36EB-46A7-81E5-91BD9436F475}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Data.Sql", "Ignia.Topics.Data.Sql\Ignia.Topics.Data.Sql.csproj", "{1DE1F923-C7C2-435B-B49A-975ACBCB5FF0}"
@@ -41,12 +39,6 @@ Global
 		{27632801-BFE3-41D9-8678-3C4BBE45E6C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27632801-BFE3-41D9-8678-3C4BBE45E6C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27632801-BFE3-41D9-8678-3C4BBE45E6C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Debug CC|Any CPU.ActiveCfg = Debug|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Debug CC|Any CPU.Build.0 = Debug|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6777CAAF-0621-430A-B61A-BC12D9283677}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FF87B1D-36EB-46A7-81E5-91BD9436F475}.Debug CC|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FF87B1D-36EB-46A7-81E5-91BD9436F475}.Debug CC|Any CPU.Build.0 = Debug|Any CPU
 		{7FF87B1D-36EB-46A7-81E5-91BD9436F475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
