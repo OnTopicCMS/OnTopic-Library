@@ -40,7 +40,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>
     /// <requires description="The topic to move must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
-    /// <requires 
+    /// <requires
     ///   description="The target topic under which to move the topic must be provided." exception="T:System.ArgumentNullException">
     ///   target != null
     /// </requires>
@@ -60,12 +60,8 @@ namespace Ignia.Topics.Repositories {
     ///   Gets or sets the Topic object associated with the event.
     /// </summary>
     public Topic Topic {
-      get {
-        return _topic;
-      }
-      set {
-        _topic = value;
-      }
+      get => _topic;
+      set => _topic = value;
     }
 
     /*==========================================================================================================================
@@ -75,12 +71,8 @@ namespace Ignia.Topics.Repositories {
     ///   Gets or sets the new parent that the topic will be moved to.
     /// </summary>
     public Topic Target {
-      get {
-        return _target;
-      }
-      set {
-        _target = value;
-      }
+      get => _target;
+      set => _target = value;
     }
 
   } // Class

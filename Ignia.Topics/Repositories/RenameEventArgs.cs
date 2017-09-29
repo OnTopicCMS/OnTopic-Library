@@ -32,7 +32,7 @@ namespace Ignia.Topics.Repositories {
     public RenameEventArgs() { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="RenameEventArgs"/> class and sets the <see cref="Topic"/> property based 
+    ///   Initializes a new instance of the <see cref="RenameEventArgs"/> class and sets the <see cref="Topic"/> property based
     ///   on the specified object.
     /// </summary>
     /// <param name="topic">The topic object associated with the rename event.</param>
@@ -50,12 +50,8 @@ namespace Ignia.Topics.Repositories {
     /// The topic.
     /// </value>
     public Topic Topic {
-      get {
-        return _topic;
-      }
-      set {
-        _topic = value;
-      }
+      get => _topic;
+      set => _topic = value;
     }
 
   } // Class

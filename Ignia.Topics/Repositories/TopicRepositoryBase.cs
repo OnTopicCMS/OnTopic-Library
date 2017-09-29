@@ -36,14 +36,6 @@ namespace Ignia.Topics.Repositories {
     public event EventHandler<RenameEventArgs>        RenameEvent;
 
     /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Constructs a new instance of the provider.
-    /// </summary>
-    public TopicRepositoryBase() { }
-
-    /*==========================================================================================================================
     | GET CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -106,7 +98,7 @@ namespace Ignia.Topics.Repositories {
     /// </summary>
     /// <param name="topic">The current version of the topic to rollback.</param>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires 
+    /// <requires
     ///   description="The version requested for rollback does not exist in the version history."
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
@@ -122,7 +114,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE JJC071417: We should use a code contract for this, but due to an intermittent error are throwing a standard 
+      | ### NOTE JJC071417: We should use a code contract for this, but due to an intermittent error are throwing a standard
       | exception so we can include the version in the error message.
       \-----------------------------------------------------------------------------------------------------------------------*/
       /*
@@ -138,13 +130,13 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic originalVersion = Load(topic.Id, version);
+      var originalVersion = Load(topic.Id, version);
       Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (AttributeValue attribute in originalVersion.Attributes) {
+      foreach (var attribute in originalVersion.Attributes) {
         if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
@@ -154,7 +146,7 @@ namespace Ignia.Topics.Repositories {
       | Construct new AttributeCollection
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.Clear();
-      foreach (AttributeValue attribute in originalVersion.Attributes) {
+      foreach (var attribute in originalVersion.Attributes) {
         topic.Attributes.Add(attribute);
       }
 
@@ -206,7 +198,7 @@ namespace Ignia.Topics.Repositories {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
-        RenameEventArgs       args    = new RenameEventArgs(topic);
+        var       args    = new RenameEventArgs(topic);
         RenameEvent?.Invoke(this, args);
       }
 
@@ -305,20 +297,20 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic parent = source.Parent;
-      int sortOrder = 0;
+      var parent = source.Parent;
+      var sortOrder = 0;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If there is no sibling, inject the source at the beginning of the collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (sibling == null) {
-        source.SortOrder = int.MaxValue;
+        source.SortOrder = Int32.MaxValue;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through each topic to assign a new priority order
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic topic in parent.SortedChildren) {
+      foreach (var topic in parent.SortedChildren) {
         // Assuming the topic isn't the source, or no sibling is present, increment the sortOrder
         if (topic != source || sibling == null) {
           topic.SortOrder = sortOrder++;
@@ -353,7 +345,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      DeleteEventArgs         args    = new DeleteEventArgs(topic);
+      var         args    = new DeleteEventArgs(topic);
       DeleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------

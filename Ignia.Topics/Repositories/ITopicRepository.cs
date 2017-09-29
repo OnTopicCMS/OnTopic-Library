@@ -98,7 +98,7 @@ namespace Ignia.Topics.Repositories {
     /// </summary>
     /// <param name="topic">The current version of the topic to rollback.</param>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires 
+    /// <requires
     ///   description="The version requested for rollback does not exist in the version history."
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
@@ -128,8 +128,8 @@ namespace Ignia.Topics.Repositories {
     ///   Interface method that supports moving a topic from one position to another.
     /// </summary>
     /// <remarks>
-    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the 
-    ///   topic. 
+    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the
+    ///   topic.
     /// </remarks>
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>

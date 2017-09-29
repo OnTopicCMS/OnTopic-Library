@@ -38,12 +38,8 @@ namespace Ignia.Topics.Repositories {
     ///   Getter that returns the Topic object associated with the event
     /// </summary>
     public Topic Topic {
-      get {
-        return _topic;
-      }
-      set {
-        _topic = value;
-      }
+      get => _topic;
+      set => _topic = value;
     }
 
   } // Class
