@@ -394,9 +394,7 @@ namespace Ignia.Topics {
     ///   If an item is not marked as IsVisible, then the item will not be visible independent of whether showDisabled is set.
     /// </remarks>
     /// <param name="showDisabled">Determines whether or not items marked as IsDisabled should be displayed.</param>
-    public bool IsVisible(bool showDisabled = false) {
-      return !IsHidden && (showDisabled || !IsDisabled);
-    }
+    public bool IsVisible(bool showDisabled = false) => !IsHidden && (showDisabled || !IsDisabled);
 
     /*==========================================================================================================================
     | PROPERTY: TITLE
@@ -1234,9 +1232,7 @@ namespace Ignia.Topics {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The topic's integer identifier.</returns>
     [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Save() instead.", true)]
-    public int Save(bool isRecursive = false, bool isDraft = false) {
-      return -1;
-    }
+    public int Save(bool isRecursive = false, bool isDraft = false) => -1;
 
     /*==========================================================================================================================
     | METHOD: REFRESH
@@ -1270,9 +1266,7 @@ namespace Ignia.Topics {
     //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's
     //  children or delete and reassign children or something.
     [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
-    public void Delete() {
-      Delete(true);
-    }
+    public void Delete() => Delete(true);
 
     /// <summary>
     ///   Deletes the current topic, optionally deleting all of the topic's descendants.
@@ -1353,9 +1347,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The topic object for which the <see cref="Key"/> should be changed.</param>
     /// <param name="newKey">The string value for the new key.</param>
-    internal void ChangeKey(Topic topic, string newKey) {
-      base.ChangeItemKey(topic, newKey);
-    }
+    internal void ChangeKey(Topic topic, string newKey) => base.ChangeItemKey(topic, newKey);
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
