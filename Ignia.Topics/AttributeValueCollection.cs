@@ -53,9 +53,7 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string Get(string name, bool inheritFromParent = false) {
-      return Get(name, "", inheritFromParent);
-    }
+    public string Get(string name, bool inheritFromParent = false) => Get(name, "", inheritFromParent);
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional enabling of
