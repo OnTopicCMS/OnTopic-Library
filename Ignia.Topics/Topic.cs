@@ -26,7 +26,7 @@ namespace Ignia.Topics {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Topic                           _parent                         = null;
-    private                     AttributeValueFacade        _attributes                     = null;
+    private                     AttributeValueFacade            _attributes                     = null;
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
@@ -99,12 +99,6 @@ namespace Ignia.Topics {
     /// </requires>
     [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
-      Topic.ValidateKey(key);
-      Topic.ValidateKey(contentType);
-      Key = key;
-      Attributes.Add(new AttributeValue("ContentType", contentType));
     }
 
     /*==========================================================================================================================
@@ -554,7 +548,7 @@ namespace Ignia.Topics {
     | to intercept changes to either ParentID or Key, since they have specific implications in terms of the data integrity
     | of the collection.
     >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE KLT081314: Attributes is now of type AttributeValueFacade
+    | ###NOTE KLT081314: Attributes is now of type AttributeValueCollection
     | (KeyedCollection<string, AttributeValue">). Extending the collection to incorporate the
     | INotifyCollectionChanged interface or converting it to an ObservableCollection remains an item for future development.
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -570,7 +564,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public AttributeValueFacade Attributes {
       get {
-        Contract.Ensures(Contract.Result<AttributeValueFacade>() != null);
+        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
         if (_attributes == null) {
           _attributes = new AttributeValueFacade(this);
         }
@@ -1010,11 +1004,11 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Set dirty state to false
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(topic.Attributes["Key"] != null);
-      Contract.Assume(topic.Attributes["ContentType"] != null);
+      Contract.Assume(topic.Key != null);
+      Contract.Assume(topic.ContentType != null);
 
-      topic.Attributes["Key"].IsDirty = false;
-      topic.Attributes["ContentType"].IsDirty = false;
+      topic.Attributes.Set("Key", key, false);
+      topic.Attributes.Set("ContentType", contentType, false);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object

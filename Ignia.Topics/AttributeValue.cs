@@ -22,7 +22,7 @@ namespace Ignia.Topics {
   ///     to <c>true</c>, if it wasn't previously.
   ///   </para>
   ///   <para>
-  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueFacade"/> via
+  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
   ///     the <see cref="Topic.Attributes"/> collection.
   ///   </para>
   ///   <para>

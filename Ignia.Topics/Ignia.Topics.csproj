@@ -186,6 +186,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeValueCollection.cs" />
+    <Compile Include="AttributeValueFacade.cs" />
     <Compile Include="RelationshipFacade.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
@@ -195,7 +197,6 @@
     <Compile Include="Repositories\TopicRepositoryBaseContract.cs" />
     <Compile Include="Attribute.cs" />
     <Compile Include="AttributeValue.cs" />
-    <Compile Include="AttributeValueCollection.cs" />
     <Compile Include="ContentType.cs" />
     <Compile Include="ContentTypeCollection.cs" />
     <Compile Include="Topic.cs" />

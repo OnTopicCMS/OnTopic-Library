@@ -136,7 +136,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in originalVersion.Attributes) {
+      foreach (var attribute in originalVersion.Attributes.AttributeValues) {
         if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
@@ -145,9 +145,9 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct new AttributeCollection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Clear();
-      foreach (var attribute in originalVersion.Attributes) {
-        topic.Attributes.Add(attribute);
+      topic.Attributes.AttributeValues.Clear();
+      foreach (var attribute in originalVersion.Attributes.AttributeValues) {
+        topic.Attributes.AttributeValues.Add(attribute);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ namespace Ignia.Topics.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes["ParentId"].IsDirty) {
+      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId")) {
         var topicIndex = topic.Parent.IndexOf(topic);
         if (topicIndex > 0) {
           ReorderSiblings(topic, topic.Parent[topicIndex-1]);
