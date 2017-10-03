@@ -564,7 +564,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public AttributeValueFacade Attributes {
       get {
-        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
+        Contract.Ensures(Contract.Result<AttributeValueFacade>() != null);
         if (_attributes == null) {
           _attributes = new AttributeValueFacade(this);
         }
@@ -589,7 +589,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public RelationshipFacade Relationships {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
+        Contract.Ensures(Contract.Result<RelationshipFacade>() != null);
         if (_relationships == null) {
           _relationships = new RelationshipFacade(this, false);
         }
@@ -611,7 +611,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public RelationshipFacade IncomingRelationships {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
+        Contract.Ensures(Contract.Result<RelationshipFacade>() != null);
         if (_incomingRelationships == null) {
           _incomingRelationships = new RelationshipFacade(this, true);
         }

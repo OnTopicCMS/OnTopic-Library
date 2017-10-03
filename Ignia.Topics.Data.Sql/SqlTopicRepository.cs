@@ -243,7 +243,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.SetRelationship(relationshipTypeId, related);
+      current.Relationships.Set(relationshipTypeId, related);
 
     }
 
@@ -1123,7 +1123,7 @@ namespace Ignia.Topics.Data.Sql {
       | Return blank if the topic has no relations.
       \-----------------------------------------------------------------------------------------------------------------------*/
       // return "" if the topic has no relations
-      if (topic.Relationships.Count <= 0) {
+      if (topic.Relationships.Keys.Count() <= 0) {
         return "";
       }
       SqlCommand command = null;
@@ -1133,13 +1133,15 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Iterate through each scope and persist to SQL
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (var scope in topic.Relationships) {
+        foreach (var key in topic.Relationships.Keys) {
+
+          var scope = topic.Relationships.Get(key);
 
           command = new SqlCommand("topics_PersistRelations", connection) {
             CommandType = CommandType.StoredProcedure
           };
 
-          var targetIds         = new string[scope.Count];
+          var targetIds         = new string[scope.Count()];
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
           var count             = 0;
 
@@ -1149,7 +1151,7 @@ namespace Ignia.Topics.Data.Sql {
           }
 
           // Add Parameters
-          AddSqlParameter(command, "RelationshipTypeID", scope.Key, SqlDbType.VarChar);
+          AddSqlParameter(command, "RelationshipTypeID", key, SqlDbType.VarChar);
           AddSqlParameter(command, "Source_TopicID", topicId, SqlDbType.Int);
           AddSqlParameter(command, "Target_TopicIDs", String.Join(",", targetIds), SqlDbType.VarChar);
 
@@ -1207,13 +1209,14 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var scope in topic.Relationships) {
+      foreach (var key in topic.Relationships.Keys) {
+        var scope = topic.Relationships.Get(key);
         blob.Append("<related scope=\"");
-        blob.Append(scope.Key);
+        blob.Append(key);
         blob.Append("\">");
 
         // Build out string array of related items in this scope
-        var targetIds = new string[scope.Count];
+        var targetIds = new string[scope.Count()];
         var count = 0;
         foreach (var relTopic in scope) {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);

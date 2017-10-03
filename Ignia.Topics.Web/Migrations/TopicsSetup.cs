@@ -392,7 +392,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     /// <param name="childContentType">The ContentType topic for the child topic.</param>
     public void AllowContentType(Topic parentContentType, Topic childContentType) {
-      parentContentType?.SetRelationship("ContentTypes", childContentType);
+      parentContentType?.Relationships.Set("ContentTypes", childContentType);
     }
 
 
