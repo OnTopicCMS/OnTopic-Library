@@ -18,9 +18,9 @@ namespace Ignia.Topics {
   /// <remarks>
   ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics.
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
-  ///   the <see cref="AttributeValueCollection"/> class.
+  ///   the <see cref="AttributeValueFacade"/> class.
   /// </remarks>
-  public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
+  public class AttributeValueFacade : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -31,14 +31,14 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
+    ///   Initializes a new instance of the <see cref="AttributeValueFacade"/> class.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the
+    ///   The <see cref="AttributeValueFacade"/> is intended exclusively for providing access to attributes via the
     ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-    internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
+    internal AttributeValueFacade(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
       _associatedTopic = parentTopic;
     }
 
