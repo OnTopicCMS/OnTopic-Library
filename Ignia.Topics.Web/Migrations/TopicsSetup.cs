@@ -92,7 +92,7 @@ namespace Ignia.Topics.Web.Migrations {
 
               // Make sure the Topic is used as the strongly-typed ContentType
               ContentType contentType = topic as ContentType;
-              
+
               // Add ContentType Topic to collection if not already added
               if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
                 _contentTypes.Add(contentType);
@@ -114,9 +114,9 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     In addition to acting as a pass-through for <see cref="Topic.Save(bool, bool)"/>, this also ensures that a) the 
-    ///     topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see 
-    ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the 
+    ///     In addition to acting as a pass-through for <see cref="Topic.Save(bool, bool)"/>, this also ensures that a) the
+    ///     topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see
+    ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the
     ///     TopicRepository state is restored to its original.
     ///   </para>
     ///   <para>
@@ -342,11 +342,11 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(parentContentType), 
+        !String.IsNullOrWhiteSpace(parentContentType),
         "The parentContentType is required"
       );
       Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(childContentType), 
+        !String.IsNullOrWhiteSpace(childContentType),
         "The childContentType is required"
       );
       Topic.ValidateKey(parentContentType);
