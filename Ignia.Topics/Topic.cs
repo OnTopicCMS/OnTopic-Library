@@ -1342,9 +1342,7 @@ namespace Ignia.Topics {
     ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
-    public virtual void Dispose() {
-      GC.SuppressFinalize(this);
-    }
+    public virtual void Dispose() => GC.SuppressFinalize(this);
 
   } // Class
 
