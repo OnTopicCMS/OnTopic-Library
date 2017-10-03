@@ -20,7 +20,7 @@ namespace Ignia.Topics {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
-  public class Topic : KeyedCollection<string, Topic>, IDisposable {
+  public class Topic : KeyedCollection<string, Topic>, IDisposable, IEnumerable<Topic> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -1291,6 +1291,21 @@ namespace Ignia.Topics {
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET ENUMERATOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns an enumerable of the current <see cref="Topic"/> collection, sorted by <see cref="SortOrder"/>.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the enumerator will return <see cref="Topic"/> instances in the order they are stored internally. For
+    ///   small collections loaded directly from the database, the sort order will be correct. If the collection has been
+    ///   modified programmatically (e.g., via the editor), however, then the order will be incorrect since there is not a way
+    ///   to set the order on a <see cref="KeyedCollection{TKey, TItem}"/>. As such, this overrides the
+    ///   <see cref="IEnumerable{T}.GetEnumerator"/> method to ensure the correct sort order is honored.
+    /// </remarks>
+    public new IEnumerator<Topic> GetEnumerator() => SortedChildren.GetEnumerator();
 
     /*==========================================================================================================================
     | METHOD: CHANGE KEY
