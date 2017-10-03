@@ -88,13 +88,10 @@ namespace Ignia.Topics.Web.Migrations {
           | Add any available Content Types to the collection
           \-------------------------------------------------------------------------------------------------------------------*/
           if (RootTopic.GetTopic("Configuration:ContentTypes") != null) {
-            foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
-
-              // Make sure the Topic is used as the strongly-typed ContentType
-              ContentType contentType = topic as ContentType;
+            foreach (var topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
 
               // Add ContentType Topic to collection if not already added
-              if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
+              if (topic is ContentType contentType && !_contentTypes.Contains(contentType.Key)) {
                 _contentTypes.Add(contentType);
               }
 
@@ -519,7 +516,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Write out additional attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (AttributeValue attribute in topic.Attributes) {
+      foreach (var attribute in topic.Attributes.AttributeValues) {
         output += "<li><span class=\"Attribute\">" + attribute.Key + ":</span> " + attribute.Value + "</li>";
       }
 

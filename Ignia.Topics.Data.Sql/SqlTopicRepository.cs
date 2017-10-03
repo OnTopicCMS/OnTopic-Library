@@ -128,7 +128,7 @@ namespace Ignia.Topics.Data.Sql {
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!current.Attributes.Contains(name)) {
-        current.Attributes.Add(new AttributeValue(name, value, false));
+        current.Attributes.Set(name, value, false);
       }
 
     }
@@ -191,7 +191,7 @@ namespace Ignia.Topics.Data.Sql {
         if (String.IsNullOrEmpty(value)) continue;
 
         if (!current.Attributes.Contains(name)) {
-          current.Attributes.Add(new AttributeValue(name, value, false));
+          current.Attributes.Set(name, value, false);
         }
         else {
           // System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
@@ -790,7 +790,7 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through the attributes, adding the names and values to the string builder
       \-----------------------------------------------------------------------------------------------------------------------*/
       // Process attributes not stored in the Blob
-      foreach (var attributeValue in topic.Attributes) {
+      foreach (var attributeValue in topic.Attributes.AttributeValues) {
 
         var key = attributeValue.Key;
         Attribute attribute = null;
@@ -821,7 +821,7 @@ namespace Ignia.Topics.Data.Sql {
 
         // Set preconditions
         var attribute           = contentType.SupportedAttributes[attributeKey];
-        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes[attributeKey].Value));
+        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
         var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
         var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
         var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));
@@ -933,8 +933,8 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic) {
-          Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
-          childTopic.Attributes["ParentID"].Value = returnVal.ToString();
+          Contract.Assume(childTopic.Attributes.Get("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
+          childTopic.Attributes.Set("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
         }
       }
@@ -1017,7 +1017,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes["ParentId"].IsDirty = false;
+      topic.Attributes.Set("ParentId", target.Id.ToString(), false);
 
       //return true;
 
