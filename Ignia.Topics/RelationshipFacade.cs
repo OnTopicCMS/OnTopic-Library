@@ -38,8 +38,8 @@ namespace Ignia.Topics {
     ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
     ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelationshipFacade"/> may be
     ///   set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
-    ///   set, then it will not allow incoming relationships to be set via the internal <see cref="Set(string, Topic, bool)"/>
-    ///   overload.
+    ///   set, then it will not allow incoming relationships to be set via the internal
+    ///   <see cref="Set(String, Topic, Boolean)"/> overload.
     /// </remarks>
     public RelationshipFacade(Topic parent, bool isIncoming = false) {
       _parent = parent;
@@ -69,15 +69,13 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   Scopes will automatically be established when a new <see cref="Topic"/> instance is added via
-    ///   <see cref="Set(string, Topic)"/>, assuming that scope was not previously established.
+    ///   <see cref="Set(String, Topic)"/>, assuming that scope was not previously established.
     /// </remarks>
     /// <param name="scope">The scope of the relationship to be evaluated.</param>
     /// <returns>
     ///   Returns true if the specified <paramref name="scope"/> is currently established.
     /// </returns>
-    public bool Contains(string scope) {
-      return _relationships.ContainsKey(scope);
-    }
+    public bool Contains(string scope) => _relationships.ContainsKey(scope);
 
     /*==========================================================================================================================
     | METHOD: GET ALL
@@ -90,7 +88,7 @@ namespace Ignia.Topics {
     /// </returns>
     public IEnumerable<Topic> GetAll() {
       var topics = new List<Topic>();
-      foreach (Topic topic in _relationships.Values) {
+      foreach (var topic in _relationships.Values) {
         topics.Union<Topic>(topic);
       }
       return topics;
@@ -102,9 +100,7 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public IEnumerable<Topic> GetAll(string contentType) {
-      return GetAll().Where(t => t.ContentType == contentType);
-    }
+    public IEnumerable<Topic> GetAll(string contentType) => GetAll().Where(t => t.ContentType == contentType);
 
     /*==========================================================================================================================
     | METHOD: GET
