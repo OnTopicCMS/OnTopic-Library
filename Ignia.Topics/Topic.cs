@@ -30,8 +30,8 @@ namespace Ignia.Topics {
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
-    private                     Topic                           _relationships                  = null;
-    private                     Topic                           _incomingRelationships          = null;
+    private                     RelationshipFacade              _relationships                  = null;
+    private                     RelationshipFacade              _incomingRelationships          = null;
     private                     int                             _sortOrder                      = 25;
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
@@ -584,24 +584,20 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
-    | of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
-    | that a relationship collection would benefit from (such as a custom Set() and Get() method).
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g.,
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    public Topic Relationships {
+    public RelationshipFacade Relationships {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
         if (_relationships == null) {
-          _relationships = new Topic();
+          _relationships = new RelationshipFacade(this, false);
         }
         return _relationships;
       }
@@ -611,7 +607,7 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The incoming relationships property provides a reverse index of the <see cref="Relationships"/> property, in order to
@@ -619,11 +615,11 @@ namespace Ignia.Topics {
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
-    public Topic IncomingRelationships {
+    public RelationshipFacade IncomingRelationships {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
         if (_incomingRelationships == null) {
-          _incomingRelationships = new Topic();
+          _incomingRelationships = new RelationshipFacade(this, true);
         }
         return _incomingRelationships;
       }
@@ -745,46 +741,8 @@ namespace Ignia.Topics {
     ///   !scope.Contains(" ")
     /// </requires>
     /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
+    [Obsolete("The SetRelationship() method is obsolete; use Relationship.Set() instead.", true)]
     public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      Contract.Requires<ArgumentNullException>(related != null);
-      Topic.ValidateKey(scope);
-      // Contract.Requires<ArgumentException>(related != this, "A topic cannot be related to itself.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var relationships = Relationships;
-
-      if (isIncoming) {
-        relationships = IncomingRelationships;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Create new namespace, if not present
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!relationships.Contains(scope)) {
-        relationships.Add(Topic.Create(scope, "Container"));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add the relationship to the correct scoped key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!relationships[scope]?.Contains(related.Key)?? false) {
-        relationships[scope].Add(related);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set incoming relationship
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!isIncoming) {
-        related.SetRelationship(scope, this, true);
-      }
-
     }
 
     /*==========================================================================================================================
@@ -1370,8 +1328,6 @@ namespace Ignia.Topics {
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
     public virtual void Dispose() {
-      _incomingRelationships?.Dispose();
-      _relationships?.Dispose();
       GC.SuppressFinalize(this);
     }
 
