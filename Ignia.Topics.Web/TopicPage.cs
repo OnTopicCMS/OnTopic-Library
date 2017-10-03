@@ -78,7 +78,7 @@ namespace Ignia.Topics.Web {
         | Provide Fallback
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_topic == null) {
-          _topic = TopicRepository.RootTopic.FirstOrDefault();
+          _topic = TopicRepository.RootTopic.Children.FirstOrDefault();
         }
 
         /*----------------------------------------------------------------------------------------------------------------------

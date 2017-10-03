@@ -148,7 +148,7 @@ namespace Ignia.Topics.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.ReferenceEquals(parentTopic["Child"], childTopic);
+      Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
       Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
 
     }
@@ -172,8 +172,8 @@ namespace Ignia.Topics.Tests {
       childTopic.Parent         = sourceParent;
       childTopic.Parent         = targetParent;
 
-      Assert.ReferenceEquals(targetParent["ChildTopic"], childTopic);
-      Assert.IsFalse(sourceParent.Contains("ChildTopic"));
+      Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
+      Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
       Assert.AreEqual<int>(10, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
 
     }

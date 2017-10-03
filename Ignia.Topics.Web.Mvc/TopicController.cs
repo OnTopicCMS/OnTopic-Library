@@ -113,7 +113,7 @@ namespace Ignia.Topics.Web.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicRoutingService.Topic.ContentType.Equals("PageGroup")) {
-        return Redirect(topicRoutingService.Topic.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+        return Redirect(topicRoutingService.Topic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

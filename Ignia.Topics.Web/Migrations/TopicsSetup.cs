@@ -192,7 +192,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (var childTopic in topic) {
+        foreach (var childTopic in topic.Children) {
           UpdateDerivedTopics(childTopic, isRecursive);
         }
       }
@@ -235,7 +235,7 @@ namespace Ignia.Topics.Web.Migrations {
       Topic.ValidateKey(key);
 
       Topic topic = null;
-      if (!parentTopic.Contains(key)) {
+      if (!parentTopic.Children.Contains(key)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
@@ -273,7 +273,7 @@ namespace Ignia.Topics.Web.Migrations {
         /*----------------------------------------------------------------------------------------------------------------------
         | Update the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
-        topic = parentTopic[key];
+        topic = parentTopic.Children[key];
         topic.Key = key;
         topic.Attributes.Set("Key", key);
         topic.ContentType = null;
@@ -281,7 +281,7 @@ namespace Ignia.Topics.Web.Migrations {
         topic.Attributes.Set("ParentID", parentTopic.Id.ToString());
 
       }
-      return parentTopic[key];
+      return parentTopic.Children[key];
     }
 
     /*==========================================================================================================================
@@ -459,14 +459,14 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
       Topic.ValidateKey(key);
 
-      if (!attributes.Contains(key)) {
+      if (!attributes.Children.Contains(key)) {
         throw new Exception("The attribute with the key '" + key + "' does not exist in the '" + attributes.Key + "' Topic.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish the derived and target attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attribute = attributes[key];
+      var attribute = attributes.Children[key];
       var attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.Get("ContentType"));
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -533,7 +533,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in topic) {
+      foreach (var childTopic in topic.Children) {
         output = output + WriteTopic(childTopic);
       }
 

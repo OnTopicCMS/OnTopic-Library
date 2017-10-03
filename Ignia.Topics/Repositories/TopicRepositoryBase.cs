@@ -206,9 +206,9 @@ namespace Ignia.Topics.Repositories {
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null && topic.Attributes.IsDirty("ParentId")) {
-        var topicIndex = topic.Parent.IndexOf(topic);
+        var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
-          ReorderSiblings(topic, topic.Parent[topicIndex-1]);
+          ReorderSiblings(topic, topic.Parent.Children[topicIndex-1]);
         }
         else {
           ReorderSiblings(topic);
@@ -310,7 +310,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through each topic to assign a new priority order
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in parent.SortedChildren) {
+      foreach (var topic in parent.Children.Sorted) {
         // Assuming the topic isn't the source, or no sibling is present, increment the sortOrder
         if (topic != source || sibling == null) {
           topic.SortOrder = sortOrder++;
@@ -352,7 +352,7 @@ namespace Ignia.Topics.Repositories {
       | Remove from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null) {
-        topic.Parent.Remove(topic.Key);
+        topic.Parent.Children.Remove(topic.Key);
       }
 
     }

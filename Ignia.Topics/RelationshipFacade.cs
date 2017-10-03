@@ -24,9 +24,13 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Dictionary<string, Topic>   _relationships                  = new Dictionary<string, Topic>(StringComparer.OrdinalIgnoreCase);
     Topic                       _parent                         = null;
     bool                        _isIncoming                     = false;
+
+    /*==========================================================================================================================
+    | DATA STORE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    Dictionary<string, TopicCollection> _relationships = new Dictionary<string, TopicCollection>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -88,8 +92,8 @@ namespace Ignia.Topics {
     /// </returns>
     public IEnumerable<Topic> GetAll() {
       var topics = new List<Topic>();
-      foreach (var topic in _relationships.Values) {
-        topics.Union<Topic>(topic);
+      foreach (var topicCollection in _relationships.Values) {
+        topics.Union<Topic>(topicCollection);
       }
       return topics;
     }
@@ -209,7 +213,7 @@ namespace Ignia.Topics {
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!_relationships.ContainsKey(scope)) {
-        _relationships.Add(scope, Topic.Create(scope, "Container"));
+        _relationships.Add(scope, new TopicCollection(_parent));
       }
       var topics = _relationships[scope];
       topics.Add(topic);

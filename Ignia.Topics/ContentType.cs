@@ -165,7 +165,7 @@ namespace Ignia.Topics {
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
           \-------------------------------------------------------------------------------------------------------------------*/
-          if (!Contains("Attributes") || this["Attributes"] == null) {
+          if (!Children.Contains("Attributes") || Children["Attributes"] == null) {
             throw new Exception(
               "The ContentType '" + Title + "' does not contain a nested topic named 'Attributes' as expected."
             );
@@ -181,7 +181,7 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (Attribute attribute in this["Attributes"]) {
+          foreach (Attribute attribute in Children["Attributes"].Children) {
             _supportedAttributes.Add(attribute.Key, attribute);
           }
 

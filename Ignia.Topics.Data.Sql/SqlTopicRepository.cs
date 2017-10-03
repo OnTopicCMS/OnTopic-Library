@@ -932,7 +932,7 @@ namespace Ignia.Topics.Data.Sql {
       | Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (var childTopic in topic) {
+        foreach (var childTopic in topic.Children) {
           Contract.Assume(childTopic.Attributes.Get("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
           childTopic.Attributes.Set("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
