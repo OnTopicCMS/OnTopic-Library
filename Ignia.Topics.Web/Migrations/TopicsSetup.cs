@@ -40,9 +40,7 @@ namespace Ignia.Topics.Web.Migrations {
         }
         return _rootTopic;
       }
-      set {
-        _rootTopic = value;
-      }
+      set => _rootTopic = value;
     }
 
     /*==========================================================================================================================
@@ -58,9 +56,7 @@ namespace Ignia.Topics.Web.Migrations {
         }
         return _configuration;
       }
-      set {
-        _configuration = value;
-      }
+      set => _configuration = value;
     }
 
     /*==========================================================================================================================
@@ -111,8 +107,8 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     In addition to acting as a pass-through for <see cref="Topic.Save(bool, bool)"/>, this also ensures that a) the
-    ///     topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see
+    ///     In addition to acting as a pass-through for <see cref="Topic.Save(Boolean, Boolean)"/>, this also ensures that
+    ///     a) the topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see
     ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the
     ///     TopicRepository state is restored to its original.
     ///   </para>
@@ -196,7 +192,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (Topic childTopic in topic) {
+        foreach (var childTopic in topic) {
           UpdateDerivedTopics(childTopic, isRecursive);
         }
       }
@@ -213,7 +209,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   The <see cref="Topic.UniqueKey"/> or <see cref="Topic.Key"/> for the topic to be deleted.
     /// </param>
     public void DeleteTopic(string topicName) {
-      Topic topic = RootTopic.GetTopic(topicName);
+      var topic = RootTopic.GetTopic(topicName);
       if (topic != null) {
         TopicRepository.DataProvider.Delete(topic);
       }
@@ -307,8 +303,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create content type, if not already present
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentType contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
-      Topic attributes = SetTopic(contentType, "Attributes", "List");
+      var contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
+      var attributes = SetTopic(contentType, "Attributes", "List");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure content type is in ContentTypes collection
@@ -470,8 +466,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish the derived and target attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic attribute = attributes[key];
-      Topic attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.Get("ContentType"));
+      var attribute = attributes[key];
+      var attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.Get("ContentType"));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the attribute reference/derivation
@@ -506,7 +502,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic properties string and primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string output = ""
+      var output = ""
       + "  <h2>" + topic.Key + " <span class=\"ContentType\">(" + topic.Attributes.Get("ContentType") + ")</span></h2>"
       + "  <div>"
       + "    <h3>Attributes:</h3>"
@@ -537,7 +533,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic childTopic in topic) {
+      foreach (var childTopic in topic) {
         output = output + WriteTopic(childTopic);
       }
 
