@@ -1153,6 +1153,16 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | OBSOLETE METHODS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | In a legacy version of the Topic Library, CRUD shortcuts were provided directly on the Topic class, for convenience. This
+    | meant the Topic (an Entity) needed to be aware of the ITopicRepository (a Repository). Not only is this not a best
+    | practice, but it also introduces issues with the introduction of dependency injection, since it would have required that
+    | each and every Topic persist a reference to the Repository that created it. To mitigate this, these were removed with the
+    | dependency injection update.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
