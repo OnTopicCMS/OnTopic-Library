@@ -102,8 +102,8 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(topicRoutingService.Topic.Attributes.Get("URL"))) {
-        return RedirectPermanent(topicRoutingService.Topic.Attributes.Get("URL"));
+      if (!String.IsNullOrEmpty(topicRoutingService.Topic.Attributes.GetValue("URL"))) {
+        return RedirectPermanent(topicRoutingService.Topic.Attributes.GetValue("URL"));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

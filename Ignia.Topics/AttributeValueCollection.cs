@@ -75,7 +75,7 @@ namespace Ignia.Topics {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string Get(string name, bool inheritFromParent = false) => Get(name, "", inheritFromParent);
+    public string GetValue(string name, bool inheritFromParent = false) => GetValue(name, "", inheritFromParent);
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
@@ -91,9 +91,9 @@ namespace Ignia.Topics {
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string Get(string name, string defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+    public string GetValue(string name, string defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
-      return Get(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
+      return GetValue(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ namespace Ignia.Topics {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    private string Get(string name, string defaultValue, bool inheritFromParent, int maxHops) {
+    private string GetValue(string name, string defaultValue, bool inheritFromParent, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -146,14 +146,14 @@ namespace Ignia.Topics {
       | Look up value from topic pointer
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(value) && !name.Equals("TopicId") && _associatedTopic.DerivedTopic != null && maxHops > 0) {
-        value = _associatedTopic.DerivedTopic.Attributes.Get(name, null, false, maxHops - 1);
+        value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent != null) {
-        value = _associatedTopic.Parent.Attributes.Get(name, defaultValue, inheritFromParent);
+        value = _associatedTopic.Parent.Attributes.GetValue(name, defaultValue, inheritFromParent);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void Set(string key, string value, bool? isDirty = null) {
+    public void SetValue(string key, string value, bool? isDirty = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

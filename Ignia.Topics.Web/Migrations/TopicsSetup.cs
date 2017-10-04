@@ -262,11 +262,11 @@ namespace Ignia.Topics.Web.Migrations {
         | Set the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
         topic.Key = key;
-        topic.Attributes.Set("Key", key);
+        topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
-        topic.Attributes.Set("ContentType", contentType);
+        topic.Attributes.SetValue("ContentType", contentType);
         topic.Parent = parentTopic;
-        topic.Attributes.Set("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
       }
       else {
 
@@ -275,10 +275,10 @@ namespace Ignia.Topics.Web.Migrations {
         \---------------------------------------------------------------------------------------------------------------------*/
         topic = parentTopic.Children[key];
         topic.Key = key;
-        topic.Attributes.Set("Key", key);
+        topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
-        topic.Attributes.Set("ContentType", contentType);
-        topic.Attributes.Set("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ContentType", contentType);
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
 
       }
       return parentTopic.Children[key];
@@ -435,7 +435,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     public void DisableChildTopics(Topic parentContentType) {
       Contract.Requires<ArgumentNullException>(parentContentType != null, "The parent ContentType must be specified.");
-      parentContentType.Attributes.Set("DisableChildTopics", "1");
+      parentContentType.Attributes.SetValue("DisableChildTopics", "1");
     }
 
     /*==========================================================================================================================
@@ -467,7 +467,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Establish the derived and target attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attribute = attributes.Children[key];
-      var attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.Get("ContentType"));
+      var attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.GetValue("ContentType"));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the attribute reference/derivation
@@ -503,7 +503,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Establish topic properties string and primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       var output = ""
-      + "  <h2>" + topic.Key + " <span class=\"ContentType\">(" + topic.Attributes.Get("ContentType") + ")</span></h2>"
+      + "  <h2>" + topic.Key + " <span class=\"ContentType\">(" + topic.Attributes.GetValue("ContentType") + ")</span></h2>"
       + "  <div>"
       + "    <h3>Attributes:</h3>"
       + "    <ul class=\"Attributes\">"
@@ -519,7 +519,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Write out derived topic information
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(topic.Attributes.Get("TopicID"))) {
+      if (!String.IsNullOrEmpty(topic.Attributes.GetValue("TopicID"))) {
         output += "<li><span class=\"Attribute\">DerivedTopic? " + (topic.DerivedTopic != null) + "</li>";
       }
       if (topic.DerivedTopic != null) {

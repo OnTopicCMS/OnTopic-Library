@@ -96,7 +96,7 @@ namespace Ignia.Topics.Data.Sql {
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.Set("ParentID", parentId.ToString(), false);
+        current.Attributes.SetValue("ParentID", parentId.ToString(), false);
         current.Parent = topics[parentId];
       }
 
@@ -127,7 +127,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.Set(name, value, false);
+      current.Attributes.SetValue(name, value, false);
 
     }
 
@@ -186,7 +186,7 @@ namespace Ignia.Topics.Data.Sql {
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (String.IsNullOrEmpty(value)) continue;
-        current.Attributes.Set(name, value, false);
+        current.Attributes.SetValue(name, value, false);
 
       }
     }
@@ -261,7 +261,7 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var topic in topics.Values) {
-        var success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out var derivedTopicId);
+        var success = Int32.TryParse(topic.Attributes.GetValue("TopicId", "-1", false, false), out var derivedTopicId);
         if (!success || derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
           topic.DerivedTopic = topics[derivedTopicId];
@@ -736,7 +736,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
     /// </exception>
     /// <exception cref="Exception">
@@ -753,10 +753,10 @@ namespace Ignia.Topics.Data.Sql {
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypes = GetContentTypes();
-      if (!contentTypes.Contains(topic.Attributes.Get("ContentType"))) {
-        throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
+      if (!contentTypes.Contains(topic.Attributes.GetValue("ContentType"))) {
+        throw new Exception("The Content Type \"" + topic.Attributes.GetValue("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
       }
-      var contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
+      var contentType = contentTypes[topic.Attributes.GetValue("ContentType", "Page")];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
@@ -812,7 +812,7 @@ namespace Ignia.Topics.Data.Sql {
 
         // Set preconditions
         var attribute           = contentType.SupportedAttributes[attributeKey];
-        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
+        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attributeKey, null, false, false)));
         var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
         var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
         var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));
@@ -924,8 +924,8 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Contract.Assume(childTopic.Attributes.Get("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
-          childTopic.Attributes.Set("ParentID", returnVal.ToString());
+          Contract.Assume(childTopic.Attributes.GetValue("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
+          childTopic.Attributes.SetValue("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
         }
       }
@@ -1008,7 +1008,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Set("ParentId", target.Id.ToString(), false);
+      topic.Attributes.SetValue("ParentId", target.Id.ToString(), false);
 
       //return true;
 

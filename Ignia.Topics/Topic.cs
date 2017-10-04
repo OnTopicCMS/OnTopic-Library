@@ -73,7 +73,7 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
       Key = key;
-      Attributes.Set("ContentType", GetType().Name);
+      Attributes.SetValue("ContentType", GetType().Name);
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ namespace Ignia.Topics {
 
         _parent = value;
 
-        Attributes.Set("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
+        Attributes.SetValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
 
       }
     }
@@ -218,8 +218,8 @@ namespace Ignia.Topics {
     ///   the pipe).
     /// </remarks>
     public string ContentType {
-      get => Attributes.Get("ContentType");
-      set => Attributes.Set("ContentType", value);
+      get => Attributes.GetValue("ContentType");
+      set => Attributes.SetValue("ContentType", value);
     }
 
     /*==========================================================================================================================
@@ -242,13 +242,13 @@ namespace Ignia.Topics {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
         if (_originalKey == null) {
-          _originalKey = Attributes.Get("Key", false);
+          _originalKey = Attributes.GetValue("Key", false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
           Parent.Children.ChangeKey(this, value);
         }
-        Attributes.Set("Key", value);
+        Attributes.SetValue("Key", value);
         _key = value;
       }
     }
@@ -363,11 +363,11 @@ namespace Ignia.Topics {
     public string View {
       get =>
         // Return current Topic's View Attribute or the default for the ContentType.
-        Attributes.Get("View", Attributes.Get("View", ""));
+        Attributes.GetValue("View", Attributes.GetValue("View", ""));
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.Set("View", value);
+        Attributes.SetValue("View", value);
       }
     }
 
@@ -378,8 +378,8 @@ namespace Ignia.Topics {
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
     public bool IsHidden {
-      get => Attributes.Get("IsHidden", "0").Equals("1");
-      set => Attributes.Set("IsHidden", value ? "1" : "0");
+      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      set => Attributes.SetValue("IsHidden", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -389,8 +389,8 @@ namespace Ignia.Topics {
     ///   Gets or sets whether the current topic is disabled.
     /// </summary>
     public bool IsDisabled {
-      get => Attributes.Get("IsDisabled", "0").Equals("1");
-      set => Attributes.Set("IsDisabled", value ? "1" : "0");
+      get => Attributes.GetValue("IsDisabled", "0").Equals("1");
+      set => Attributes.SetValue("IsDisabled", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -421,8 +421,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get => Attributes.Get("Title", Key);
-      set => Attributes.Set("Title", value);
+      get => Attributes.GetValue("Title", Key);
+      set => Attributes.SetValue("Title", value);
     }
 
     /*==========================================================================================================================
@@ -439,8 +439,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Description {
-      get => Attributes.Get("Description");
-      set => Attributes.Set("Description", value);
+      get => Attributes.GetValue("Description");
+      set => Attributes.SetValue("Description", value);
     }
 
     /*==========================================================================================================================
@@ -480,14 +480,14 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return minimum date value, if LastModified is not already populated
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrWhiteSpace(Attributes.Get("LastModified", ""))) {
+        if (String.IsNullOrWhiteSpace(Attributes.GetValue("LastModified", ""))) {
           return DateTime.MinValue;
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
-        var lastModified = Attributes.Get("LastModified");
+        var lastModified = Attributes.GetValue("LastModified");
 
         // Return converted DateTime
         if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
@@ -502,7 +502,7 @@ namespace Ignia.Topics {
         }
 
       }
-      set => Attributes.Set("LastModified", value.ToString());
+      set => Attributes.SetValue("LastModified", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -534,7 +534,7 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          Attributes.Set("TopicID", value.Id.ToString());
+          Attributes.SetValue("TopicID", value.Id.ToString());
         }
         else {
           Attributes.Remove("TopicID");
@@ -759,8 +759,8 @@ namespace Ignia.Topics {
       var results = new Collection<Topic>();
 
       if (
-        !String.IsNullOrEmpty(Attributes.Get(name)) &&
-        Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        !String.IsNullOrEmpty(Attributes.GetValue(name)) &&
+        Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
         ) {
         results.Add(this);
       }
@@ -940,7 +940,7 @@ namespace Ignia.Topics {
       | Set the topic's Key and Content Type
       \---------------------------------------------------------------------------------------------------------------------*/
       topic.Key = key;
-      topic.Attributes.Set("ContentType", contentType);
+      topic.Attributes.SetValue("ContentType", contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
@@ -991,8 +991,8 @@ namespace Ignia.Topics {
       Contract.Assume(topic.Key != null);
       Contract.Assume(topic.ContentType != null);
 
-      topic.Attributes.Set("Key", key, false);
-      topic.Attributes.Set("ContentType", contentType, false);
+      topic.Attributes.SetValue("Key", key, false);
+      topic.Attributes.SetValue("ContentType", contentType, false);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object

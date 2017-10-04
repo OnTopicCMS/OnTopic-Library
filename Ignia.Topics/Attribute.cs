@@ -72,11 +72,11 @@ namespace Ignia.Topics {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     public string Type {
-      get => Attributes.Get("Type", "");
+      get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.Set("Type", value);
+        Attributes.SetValue("Type", value);
       }
     }
 
@@ -96,10 +96,10 @@ namespace Ignia.Topics {
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
     public string DisplayGroup {
-      get => Attributes.Get("DisplayGroup", "");
+      get => Attributes.GetValue("DisplayGroup", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Attributes.Set("DisplayGroup", value);
+        Attributes.SetValue("DisplayGroup", value);
       }
     }
 
@@ -121,8 +121,8 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
-      get => Attributes.Get("DefaultConfiguration", "");
-      set => Attributes.Set("DefaultConfiguration", value);
+      get => Attributes.GetValue("DefaultConfiguration", "");
+      set => Attributes.SetValue("DefaultConfiguration", value);
     }
 
     /*==========================================================================================================================
@@ -147,8 +147,8 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public new bool IsHidden {
-      get => Attributes.Get("IsHidden", "0").Equals("1");
-      set => Attributes.Set("IsHidden", value.ToString());
+      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      set => Attributes.SetValue("IsHidden", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -162,8 +162,8 @@ namespace Ignia.Topics {
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
     public bool IsRequired {
-      get => Attributes.Get("IsRequired", "0").Equals("1");
-      set => Attributes.Set("IsRequired", value.ToString());
+      get => Attributes.GetValue("IsRequired", "0").Equals("1");
+      set => Attributes.SetValue("IsRequired", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -178,8 +178,8 @@ namespace Ignia.Topics {
     ///   default value only affects the topic when it is first being created via the editor.
     /// </remarks>
     public string DefaultValue {
-      get => Attributes.Get("DefaultValue", "");
-      set => Attributes.Set("DefaultValue", value);
+      get => Attributes.GetValue("DefaultValue", "");
+      set => Attributes.SetValue("DefaultValue", value);
     }
 
     /*==========================================================================================================================
@@ -202,8 +202,8 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public bool StoreInBlob {
-      get => Attributes.Get("StoreInBlob", "1").Equals("1");
-      set => Attributes.Set("StoreInBlob", value.ToString());
+      get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
+      set => Attributes.SetValue("StoreInBlob", value.ToString());
     }
 
   } // Class

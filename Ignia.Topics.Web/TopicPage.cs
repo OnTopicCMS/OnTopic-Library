@@ -111,7 +111,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle missing or disabled topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (EnableValidation && pageTopic != null && pageTopic.Attributes.Get("IsDisabled", true).Equals("1")) {
+      if (EnableValidation && pageTopic != null && pageTopic.Attributes.GetValue("IsDisabled", true).Equals("1")) {
         if (!Roles.IsUserInRole(Page?.User?.Identity?.Name?? "", "Administrators")) {
           if (Request.QueryString["PageID"] != null) {
             Response.Redirect("/Redirector.aspx?PageID=" + Request.QueryString["PageID"]);
@@ -125,14 +125,14 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (EnableValidation && pageTopic != null && !String.IsNullOrEmpty(pageTopic.Attributes.Get("URL"))) {
-        Response.RedirectPermanent(pageTopic.Attributes.Get("URL"), true);
+      if (EnableValidation && pageTopic != null && !String.IsNullOrEmpty(pageTopic.Attributes.GetValue("URL"))) {
+        Response.RedirectPermanent(pageTopic.Attributes.GetValue("URL"), true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set title
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Page.Title = ((pageTopic != null)? pageTopic.Attributes.Get("MetaTitle", pageTopic.Attributes.Get("Title", pageTopic.Key)) : "");
+      Page.Title = ((pageTopic != null)? pageTopic.Attributes.GetValue("MetaTitle", pageTopic.Attributes.GetValue("Title", pageTopic.Key)) : "");
 
     }
 

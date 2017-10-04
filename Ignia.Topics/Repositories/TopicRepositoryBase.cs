@@ -137,7 +137,7 @@ namespace Ignia.Topics.Repositories {
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var attribute in originalVersion.Attributes) {
-        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
+        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
       }
@@ -154,7 +154,7 @@ namespace Ignia.Topics.Repositories {
       | Rename topic, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Key == originalVersion.Key) {
-        topic.Attributes.Set("Key", topic.Key, false);
+        topic.Attributes.SetValue("Key", topic.Key, false);
       }
       else {
         topic.Key = originalVersion.Key;
@@ -163,8 +163,8 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure Parent, ContentType are maintained
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Set("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
-      topic.Attributes.Set("ParentId", topic.Parent.Id.ToString(), false);
+      topic.Attributes.SetValue("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
+      topic.Attributes.SetValue("ParentId", topic.Parent.Id.ToString(), false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
