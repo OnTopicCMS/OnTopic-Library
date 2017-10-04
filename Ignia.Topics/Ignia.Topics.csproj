@@ -190,7 +190,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeValueCollection.cs" />
-    <Compile Include="AttributeValueFacade.cs" />
     <Compile Include="ReadOnlyTopicCollection.cs" />
     <Compile Include="RelationshipFacade.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />

@@ -136,8 +136,8 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in originalVersion.Attributes.AttributeValues) {
-        if (!topic.Attributes.AttributeValues.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
+      foreach (var attribute in originalVersion.Attributes) {
+        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
       }
@@ -145,9 +145,9 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct new AttributeCollection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.AttributeValues.Clear();
-      foreach (var attribute in originalVersion.Attributes.AttributeValues) {
-        topic.Attributes.AttributeValues.Add(attribute);
+      topic.Attributes.Clear();
+      foreach (var attribute in originalVersion.Attributes) {
+        topic.Attributes.Add(attribute);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

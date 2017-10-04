@@ -27,7 +27,7 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Topic                           _parent                         = null;
     private                     TopicCollection                 _children                       = null;
-    private                     AttributeValueFacade            _attributes                     = null;
+    private                     AttributeValueCollection        _attributes                     = null;
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
@@ -514,12 +514,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueFacade.Get(String,
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(String,
     ///     Boolean)"/> method unable to find a local value for the attribute.
     ///   </para>
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueFacade.Get(String, Boolean)"/> method defaults to a maximum level of five "hops".
+    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -578,11 +578,11 @@ namespace Ignia.Topics {
     ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/>
     ///   property).
     /// </remarks>
-    public AttributeValueFacade Attributes {
+    public AttributeValueCollection Attributes {
       get {
-        Contract.Ensures(Contract.Result<AttributeValueFacade>() != null);
+        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
         if (_attributes == null) {
-          _attributes = new AttributeValueFacade(this);
+          _attributes = new AttributeValueCollection(this);
         }
         return _attributes;
       }

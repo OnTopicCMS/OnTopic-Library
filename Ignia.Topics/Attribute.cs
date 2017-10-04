@@ -142,7 +142,7 @@ namespace Ignia.Topics {
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view
     ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see
-    ///     cref="AttributeValueFacade.Get(String, Boolean)"/>) then the attribute will be displayed on the page. The <see
+    ///     cref="AttributeValueCollection.Get(String, Boolean)"/>) then the attribute will be displayed on the page. The <see
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>

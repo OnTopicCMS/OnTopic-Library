@@ -781,7 +781,7 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through the attributes, adding the names and values to the string builder
       \-----------------------------------------------------------------------------------------------------------------------*/
       // Process attributes not stored in the Blob
-      foreach (var attributeValue in topic.Attributes.AttributeValues) {
+      foreach (var attributeValue in topic.Attributes) {
 
         var key = attributeValue.Key;
         Attribute attribute = null;
@@ -812,7 +812,7 @@ namespace Ignia.Topics.Data.Sql {
 
         // Set preconditions
         var attribute           = contentType.SupportedAttributes[attributeKey];
-        var topicHasAttribute   = (topic.Attributes.AttributeValues.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
+        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
         var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
         var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
         var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));

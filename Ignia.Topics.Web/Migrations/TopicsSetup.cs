@@ -512,7 +512,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Write out additional attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in topic.Attributes.AttributeValues) {
+      foreach (var attribute in topic.Attributes) {
         output += "<li><span class=\"Attribute\">" + attribute.Key + ":</span> " + attribute.Value + "</li>";
       }
 
