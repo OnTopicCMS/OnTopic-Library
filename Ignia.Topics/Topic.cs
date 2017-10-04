@@ -1002,38 +1002,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: MERGE
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Similar to Load(), but should merge values with existing Topic rather than creating a new TOpic. Should
-    | accept an XmlDocument or XmlNode based on the proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | METHOD: ROLLBACK
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
-    ///   saving the new version.
-    /// </summary>
-    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires
-    ///   description="The version requested for rollback does not exist in the version history."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !VersionHistory.Contains(version)
-    /// </requires>
-    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
-    public void Rollback(DateTime version) {
-
-    }
-
-    /*==========================================================================================================================
     | METHOD: GET TOPIC
     >---------------------------------------------------------------------------------------------------------------------------
     | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
@@ -1152,6 +1120,8 @@ namespace Ignia.Topics {
 
     }
 
+    #region Obsolete methods
+
     /*==========================================================================================================================
     | OBSOLETE METHODS
     >---------------------------------------------------------------------------------------------------------------------------
@@ -1258,6 +1228,39 @@ namespace Ignia.Topics {
     [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
     public void Move(Topic target, Topic sibling) {
     }
+
+    /*==========================================================================================================================
+    | METHOD: MERGE
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###TODO JJC080314: Similar to Load(), but should merge values with existing Topic rather than creating a new TOpic. Should
+    | accept an XmlDocument or XmlNode based on the proposed Import/Export schema.
+    >---------------------------------------------------------------------------------------------------------------------------
+      public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
+      //Process XML
+      //Construct children objects
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
+      //available.
+      }
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /*==========================================================================================================================
+    | METHOD: ROLLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
+    ///   saving the new version.
+    /// </summary>
+    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
+    /// <requires
+    ///   description="The version requested for rollback does not exist in the version history."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !VersionHistory.Contains(version)
+    /// </requires>
+    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
+    public void Rollback(DateTime version) {
+    }
+
+    #endregion
 
     /*==========================================================================================================================
     | METHOD: VALIDATE KEY
