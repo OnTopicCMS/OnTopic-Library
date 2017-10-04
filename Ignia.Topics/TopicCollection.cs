@@ -30,12 +30,27 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection"/> class.
+    ///   Initializes a new instance of the <see cref="TopicCollection"/> class. Assumes no parent topic is available.
     /// </summary>
-    public TopicCollection(Topic parent) : base(StringComparer.OrdinalIgnoreCase) {
-      _parent = parent;
+    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
+    public TopicCollection(IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+      _parent = new Topic();
+      if (topics != null) {
+        CopyTo(topics.ToArray(), 0);
+      }
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="TopicCollection"/> class.
+    /// </summary>
+    /// <param name="parent">Provides a reference to the parent topic.</param>
+    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
+    public TopicCollection(Topic parent, IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+      _parent = parent;
+      if (topics != null) {
+        CopyTo(topics.ToArray(), 0);
+      }
+    }
 
     /*==========================================================================================================================
     | PROPERTY: SORTED
@@ -97,7 +112,6 @@ namespace Ignia.Topics {
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
       return item.Key;
     }
-
 
   } //Class
 
