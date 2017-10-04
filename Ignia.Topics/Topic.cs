@@ -43,6 +43,8 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
 
+    #region Constructor
+
     /*==========================================================================================================================
     | CONSTRUCTOR
     >-----------=---------------------------------------------------------------------------------------------------------------
@@ -114,6 +116,10 @@ namespace Ignia.Topics {
       //available.
       }
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    #endregion
+
+    #region Core Properties
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -353,6 +359,10 @@ namespace Ignia.Topics {
       }
     }
 
+    #endregion
+
+    #region Convenience Properties
+
     /*==========================================================================================================================
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -538,6 +548,10 @@ namespace Ignia.Topics {
       set => Attributes.SetValue("LastModified", value.ToString());
     }
 
+    #endregion
+
+    #region Relationship and Collection Properties
+
     /*==========================================================================================================================
     | PROPERTY: DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -682,6 +696,10 @@ namespace Ignia.Topics {
       }
     }
 
+    #endregion
+
+    #region Collection Methods
+
     /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
     >===========================================================================================================================
@@ -768,6 +786,129 @@ namespace Ignia.Topics {
 
       return FindAllByAttribute(name, value);
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
+    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
+    /// </summary>
+    /// <remarks>
+    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
+    /// </remarks>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
+    ///   topicId &lt;= 0
+    /// </requires>
+    public Topic GetTopic(int topicId) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return if current
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (Id == topicId) return this;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Iterate through children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopic in Children) {
+        var topic = childTopic.GetTopic(topicId);
+        if (topic != null) return topic;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return null if not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /// <summary>
+    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
+    /// </summary>
+    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
+    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    public Topic GetTopic(string namespaceKey, string topic) {
+      return GetTopic(String.IsNullOrEmpty(namespaceKey) ? topic : namespaceKey + ":" + topic);
+    }
+
+    /// <summary>
+    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
+    /// </summary>
+    /// <param name="uniqueKey">
+    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
+    /// </param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    public Topic GetTopic(string uniqueKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide shortcut for local calls
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
+        if (Children.Contains(uniqueKey)) {
+          return Children[uniqueKey];
+        }
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide implicit root
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
+      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
+      | needing to be aware of the root.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
+        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
+        ) {
+        uniqueKey = "Root:" + uniqueKey;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
+      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var remainder = uniqueKey.Substring(UniqueKey.Length + 1);
+      var marker = remainder.IndexOf(":", StringComparison.Ordinal);
+      var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!Children.Contains(nextChild)) return null;
+
+      if (nextChild == remainder) return Children[nextChild];
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return Children[nextChild]?.GetTopic(uniqueKey);
+
+    }
+
+    #endregion
+
+    #region Static Methods
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC TYPE
@@ -961,123 +1102,27 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET TOPIC
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
-    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
+    | METHOD: VALIDATE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
+    ///   Validates the format of a key used for an individual topic.
     /// </summary>
     /// <remarks>
-    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
+    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
+    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
+    ///   Contract Checker.
     /// </remarks>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
-    ///   topicId &lt;= 0
-    /// </requires>
-    public Topic GetTopic(int topicId) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return if current
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Id == topicId) return this;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Iterate through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in Children) {
-        var topic = childTopic.GetTopic(topicId);
-        if (topic != null) return topic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return null if not found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
+    /// <param name="topicKey">The topic key that should be validated.</param>
+    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
+    [Pure]
+    public static void ValidateKey(string topicKey, bool isOptional = false) {
+      Contract.Requires<ArgumentException>(
+        (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
+        "Key names should only contain letters, numbers, hyphens, and/or underscores."
+      );
     }
 
-    /// <summary>
-    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
-    /// </summary>
-    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
-    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string namespaceKey, string topic) {
-      return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
-    }
-
-    /// <summary>
-    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
-    /// </summary>
-    /// <param name="uniqueKey">
-    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
-    /// </param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string uniqueKey) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide shortcut for local calls
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
-        if (Children.Contains(uniqueKey)) {
-          return Children[uniqueKey];
-        }
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide implicit root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
-      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
-      | needing to be aware of the root.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
-        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
-        ) {
-        uniqueKey = "Root:" + uniqueKey;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
-      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var   remainder           = uniqueKey.Substring(UniqueKey.Length + 1);
-      var   marker              = remainder.IndexOf(":", StringComparison.Ordinal);
-      var   nextChild           = (marker < 0)? remainder : remainder.Substring(0, marker);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Find topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Children.Contains(nextChild)) return null;
-
-      if (nextChild == remainder) return Children[nextChild];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return Children[nextChild]?.GetTopic(uniqueKey);
-
-    }
+    #endregion
 
     #region Obsolete methods
 
@@ -1246,26 +1291,7 @@ namespace Ignia.Topics {
 
     #endregion
 
-    /*==========================================================================================================================
-    | METHOD: VALIDATE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Validates the format of a key used for an individual topic.
-    /// </summary>
-    /// <remarks>
-    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
-    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
-    ///   Contract Checker.
-    /// </remarks>
-    /// <param name="topicKey">The topic key that should be validated.</param>
-    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    [Pure]
-    public static void ValidateKey(string topicKey, bool isOptional = false) {
-      Contract.Requires<ArgumentException>(
-        (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
-        "Key names should only contain letters, numbers, hyphens, and/or underscores."
-      );
-    }
+    #region Interface Implementations
 
     /*==========================================================================================================================
     | METHOD: DISPOSE
@@ -1275,6 +1301,8 @@ namespace Ignia.Topics {
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
     public virtual void Dispose() => GC.SuppressFinalize(this);
+
+    #endregion
 
   } // Class
 
