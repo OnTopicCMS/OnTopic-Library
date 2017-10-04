@@ -25,6 +25,7 @@ namespace Ignia.Topics {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     Topic                       _parent                         = null;
+    string                      _name                           = "";
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -33,23 +34,35 @@ namespace Ignia.Topics {
     ///   Initializes a new instance of the <see cref="TopicCollection"/> class. Assumes no parent topic is available.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      _parent = new Topic();
-      if (topics != null) {
-        CopyTo(topics.ToArray(), 0);
-      }
+    public TopicCollection(IEnumerable<Topic> topics = null) : this(new Topic(), "", topics) {
     }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicCollection"/> class.
     /// </summary>
     /// <param name="parent">Provides a reference to the parent topic.</param>
+    /// <param name="name">Provides a name for the collection, used to identify different collections.</param>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(Topic parent, IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+    public TopicCollection(Topic parent, string name = "", IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
+      _name = name;
       if (topics != null) {
         CopyTo(topics.ToArray(), 0);
       }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: NAME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides an optional name for the collection.
+    /// </summary>
+    /// <remarks>
+    ///   The Name property is optional, and primary intended to differentiate multiple <see cref="TopicCollection"/> instances
+    ///   being referenced in a single collection, such as the <see cref="RelatedTopicCollection"/>.
+    /// </remarks>
+    public string Name {
+      get => _name;
     }
 
     /*==========================================================================================================================

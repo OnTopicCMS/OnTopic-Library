@@ -234,7 +234,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.Set(relationshipTypeId, related);
+      current.Relationships.SetTopic(relationshipTypeId, related);
 
     }
 
@@ -1126,7 +1126,7 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (var key in topic.Relationships.Keys) {
 
-          var scope = topic.Relationships.Get(key);
+          var scope = topic.Relationships.GetTopics(key);
 
           command = new SqlCommand("topics_PersistRelations", connection) {
             CommandType = CommandType.StoredProcedure
@@ -1201,7 +1201,7 @@ namespace Ignia.Topics.Data.Sql {
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in topic.Relationships.Keys) {
-        var scope = topic.Relationships.Get(key);
+        var scope = topic.Relationships.GetTopics(key);
         blob.Append("<related scope=\"");
         blob.Append(key);
         blob.Append("\">");

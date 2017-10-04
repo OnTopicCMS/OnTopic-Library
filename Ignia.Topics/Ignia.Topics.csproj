@@ -191,7 +191,7 @@
   <ItemGroup>
     <Compile Include="AttributeValueCollection.cs" />
     <Compile Include="ReadOnlyTopicCollection.cs" />
-    <Compile Include="RelationshipFacade.cs" />
+    <Compile Include="RelatedTopicCollection.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\MoveEventArgs.cs" />

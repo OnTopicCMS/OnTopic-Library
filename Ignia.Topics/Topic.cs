@@ -31,8 +31,8 @@ namespace Ignia.Topics {
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
-    private                     RelationshipFacade              _relationships                  = null;
-    private                     RelationshipFacade              _incomingRelationships          = null;
+    private                     RelatedTopicCollection          _relationships                  = null;
+    private                     RelatedTopicCollection          _incomingRelationships          = null;
     private                     int                             _sortOrder                      = 25;
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
@@ -514,12 +514,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(String,
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.GetValue(String,
     ///     Boolean)"/> method unable to find a local value for the attribute.
     ///   </para>
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method defaults to a maximum level of five "hops".
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -603,11 +603,11 @@ namespace Ignia.Topics {
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    public RelationshipFacade Relationships {
+    public RelatedTopicCollection Relationships {
       get {
-        Contract.Ensures(Contract.Result<RelationshipFacade>() != null);
+        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
         if (_relationships == null) {
-          _relationships = new RelationshipFacade(this, false);
+          _relationships = new RelatedTopicCollection(this, false);
         }
         return _relationships;
       }
@@ -625,11 +625,11 @@ namespace Ignia.Topics {
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
-    public RelationshipFacade IncomingRelationships {
+    public RelatedTopicCollection IncomingRelationships {
       get {
-        Contract.Ensures(Contract.Result<RelationshipFacade>() != null);
+        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
         if (_incomingRelationships == null) {
-          _incomingRelationships = new RelationshipFacade(this, true);
+          _incomingRelationships = new RelatedTopicCollection(this, true);
         }
         return _incomingRelationships;
       }

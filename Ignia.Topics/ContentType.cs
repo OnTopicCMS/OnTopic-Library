@@ -120,7 +120,7 @@ namespace Ignia.Topics {
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes == null) {
           var permittedContentTypes = new List<ContentType>();
-          var contentTypes = Relationships.Get("ContentTypes");
+          var contentTypes = Relationships.GetTopics("ContentTypes");
           foreach (ContentType contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
