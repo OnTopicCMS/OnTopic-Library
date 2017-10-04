@@ -536,7 +536,7 @@ namespace Ignia.Topics {
         if (value != null) {
           Attributes.Set("TopicID", value.Id.ToString());
         }
-        else if (Attributes.Contains("TopicID")) {
+        else {
           Attributes.Remove("TopicID");
         }
       }

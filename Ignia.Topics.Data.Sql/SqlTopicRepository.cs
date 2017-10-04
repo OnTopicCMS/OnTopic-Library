@@ -127,9 +127,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!current.Attributes.Contains(name)) {
-        current.Attributes.Set(name, value, false);
-      }
+      current.Attributes.Set(name, value, false);
 
     }
 
@@ -187,15 +185,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
-        // Treat empty as null
         if (String.IsNullOrEmpty(value)) continue;
-
-        if (!current.Attributes.Contains(name)) {
-          current.Attributes.Set(name, value, false);
-        }
-        else {
-          // System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
-        }
+        current.Attributes.Set(name, value, false);
 
       }
     }
@@ -821,7 +812,7 @@ namespace Ignia.Topics.Data.Sql {
 
         // Set preconditions
         var attribute           = contentType.SupportedAttributes[attributeKey];
-        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
+        var topicHasAttribute   = (topic.Attributes.AttributeValues.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes.Get(attributeKey, null, false, false)));
         var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
         var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
         var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));

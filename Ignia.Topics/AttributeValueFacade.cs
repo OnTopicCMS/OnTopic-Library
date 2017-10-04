@@ -45,24 +45,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: KEYS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a list of relationship attribute keys available.
-    /// </summary>
-    /// <remarks>
-    ///   Does not include keys inherited from parent or derived <see cref="Topic"/> references.
-    /// </remarks>
-    /// <returns>
-    ///   Returns an enumerable list of attribute keys.
-    /// </returns>
-    public IEnumerable<string> Keys {
-      get {
-        return new List<string>();
-      }
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -76,21 +58,6 @@ namespace Ignia.Topics {
         return _attributes;
       }
     }
-
-    /*==========================================================================================================================
-    | METHOD: CONTAINS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines if the specified <paramref name="attributeKey"/> if currently established.
-    /// </summary>
-    /// <remarks>
-    ///   Determines whether a given <paramref name="attributeKey"/> is already established in the underlying collection.
-    /// </remarks>
-    /// <param name="attributeKey">The attributeKey of the relationship to be evaluated.</param>
-    /// <returns>
-    ///   Returns true if the specified <paramref name="attributeKey"/> is currently established.
-    /// </returns>
-    public bool Contains(string attributeKey) => _attributes.Contains(attributeKey);
 
     /*==========================================================================================================================
     | METHOD: REMOVE
@@ -202,7 +169,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from Attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(name)) {
+      if (_attributes.Contains(name)) {
         value = _attributes[name]?.Value;
       }
 
@@ -233,7 +200,6 @@ namespace Ignia.Topics {
       return defaultValue;
 
     }
-
 
     /*==========================================================================================================================
     | METHOD: SET ATTRIBUTE VALUE
@@ -279,7 +245,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(key)) {
+      if (_attributes.Contains(key)) {
         _attributes[key].Value = value;
       }
 

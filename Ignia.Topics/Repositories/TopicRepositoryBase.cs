@@ -137,7 +137,7 @@ namespace Ignia.Topics.Repositories {
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var attribute in originalVersion.Attributes.AttributeValues) {
-        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
+        if (!topic.Attributes.AttributeValues.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
       }
