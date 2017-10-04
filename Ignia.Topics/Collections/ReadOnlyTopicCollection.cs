@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Collections {
 
   /*============================================================================================================================
   | CLASS: READ ONLY TOPIC COLLECTION

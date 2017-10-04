@@ -8,6 +8,7 @@ using Ignia.Topics.Web.Configuration;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using System.Configuration;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Web {
 

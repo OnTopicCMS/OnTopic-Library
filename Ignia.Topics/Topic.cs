@@ -10,6 +10,7 @@ using System.Linq;
 using System.Globalization;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
 

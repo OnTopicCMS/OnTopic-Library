@@ -14,6 +14,7 @@ using System.Configuration;
 using System.Data;
 using System.Xml;
 using System.Globalization;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Data.Caching {
 

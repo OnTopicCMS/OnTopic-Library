@@ -7,7 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Collections {
 
   /*============================================================================================================================
   | CLASS: CONTENT TYPE COLLECTION

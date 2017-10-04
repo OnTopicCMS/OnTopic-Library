@@ -189,9 +189,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeValueCollection.cs" />
-    <Compile Include="ReadOnlyTopicCollection.cs" />
-    <Compile Include="RelatedTopicCollection.cs" />
+    <Compile Include="Collections\AttributeValueCollection.cs" />
+    <Compile Include="Collections\ContentTypeCollection.cs" />
+    <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
+    <Compile Include="Collections\RelatedTopicCollection.cs" />
+    <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\MoveEventArgs.cs" />
@@ -201,10 +203,8 @@
     <Compile Include="Attribute.cs" />
     <Compile Include="AttributeValue.cs" />
     <Compile Include="ContentType.cs" />
-    <Compile Include="ContentTypeCollection.cs" />
     <Compile Include="Topic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TopicCollection.cs" />
     <Compile Include="TopicRoutingService.cs" />
   </ItemGroup>
   <ItemGroup>

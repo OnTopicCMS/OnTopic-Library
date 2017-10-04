@@ -10,7 +10,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Collections {
 
   /*============================================================================================================================
   | CLASS: TOPIC

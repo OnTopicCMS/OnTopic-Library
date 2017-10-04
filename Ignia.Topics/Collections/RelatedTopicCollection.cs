@@ -11,7 +11,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Collections {
 
   /*============================================================================================================================
   | CLASS: RELATED TOPIC COLLECTION
