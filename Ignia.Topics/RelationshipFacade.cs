@@ -59,9 +59,9 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of relationship scopes.
     /// </returns>
-    public IEnumerable<string> Keys {
+    public ReadOnlyCollection<string> Keys {
       get {
-        return _relationships.Keys;
+        return new ReadOnlyCollection<string>(_relationships.Keys.ToList());
       }
     }
 
@@ -90,12 +90,12 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public IEnumerable<Topic> GetAll() {
+    public ReadOnlyCollection<Topic> GetAll() {
       var topics = new List<Topic>();
       foreach (var topicCollection in _relationships.Values) {
         topics.Union<Topic>(topicCollection);
       }
-      return topics;
+      return new ReadOnlyCollection<Topic>(topics);
     }
 
     /// <summary>
@@ -104,7 +104,10 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public IEnumerable<Topic> GetAll(string contentType) => GetAll().Where(t => t.ContentType == contentType);
+    public ReadOnlyCollection<Topic> GetAll(string contentType) {
+      var topics = GetAll().Where(t => t.ContentType == contentType);
+      return new ReadOnlyCollection<Topic>(topics.ToList());
+    }
 
     /*==========================================================================================================================
     | METHOD: GET
@@ -113,12 +116,12 @@ namespace Ignia.Topics {
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship scope.
     /// </summary>
     /// <param name="scope">The scope of the relationship to be returned.</param>
-    public IEnumerable<Topic> Get(string scope) {
+    public ReadOnlyCollection<Topic> Get(string scope) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
       if (_relationships.ContainsKey(scope)) {
-        return _relationships[scope];
+        return new ReadOnlyCollection<Topic>(_relationships[scope]);
       }
-      return new List<Topic>();
+      return new ReadOnlyCollection<Topic>(new List<Topic>());
     }
 
     /*==========================================================================================================================
