@@ -103,6 +103,18 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
+    | proposed Import/Export schema.
+    >---------------------------------------------------------------------------------------------------------------------------
+      public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
+      //Process XML
+      //Construct children objects
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
+      //available.
+      }
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /*==========================================================================================================================
     | PROPERTY: ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -196,6 +208,26 @@ namespace Ignia.Topics {
         return _children;
       }
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: NESTED TOPICS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
+    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
+    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
+    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
+    | parent collection.
+    >---------------------------------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
+    ///   represent Nested Topics.
+    /// </summary>
+    public Topic NestedTopics {
+      get {
+        throw new NotImplementedException();
+      }
+    }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: IS EMPTY
@@ -543,18 +575,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
-    | proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
     >---------------------------------------------------------------------------------------------------------------------------
     | ###NOTE JJC080313: The Attributes type should be changed to use either KeyedCollection (ideally, with the
@@ -636,43 +656,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: NESTED TOPICS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
-    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
-    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
-    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
-    | parent collection.
-    >---------------------------------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
-    ///   represent Nested Topics.
-    /// </summary>
-    public Topic NestedTopics {
-      get {
-        throw new NotImplementedException();
-      }
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | PROPERTY: VERSIONS
-    >===========================================================================================================================
-    | Getter for collection of previous versions that can be rolled back to.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: The Versions property simply exposes a list of Versions that can be rolled back to. Each Version object
-    | will contain the version date, and may contain the author's name and version notes.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public VersionCollection Versions {
-        get {
-        //Since versions won't normally be required, except during rollback scenarios, may alternatively configure these to load
-        //on demand.
-          return _versions;
-        }
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
     >---------------------------------------------------------------------------------------------------------------------------
     | ### TODO JJC082715: Consider changing the version history behavior so that version is instead saved as a property on
@@ -696,31 +679,6 @@ namespace Ignia.Topics {
         }
         return _versionHistory;
       }
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a new relationship based on the relationship type, target topic and direction.
-    /// </summary>
-    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
-    /// <param name="related">The target topic object for which to set the relationship.</param>
-    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
-    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(scope)
-    /// </requires>
-    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
-    ///   related != null
-    /// </requires>
-    /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !scope.Contains(" ")
-    /// </requires>
-    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
-    [Obsolete("The SetRelationship() method is obsolete; use Relationship.Set() instead.", true)]
-    public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
     }
 
     /*==========================================================================================================================
@@ -1258,6 +1216,31 @@ namespace Ignia.Topics {
     /// </requires>
     [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
     public void Rollback(DateTime version) {
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a new relationship based on the relationship type, target topic and direction.
+    /// </summary>
+    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
+    /// <param name="related">The target topic object for which to set the relationship.</param>
+    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
+    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(scope)
+    /// </requires>
+    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
+    ///   related != null
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !scope.Contains(" ")
+    /// </requires>
+    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
+    [Obsolete("The SetRelationship() method is obsolete; use Relationship.Set() instead.", true)]
+    public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
     }
 
     #endregion
