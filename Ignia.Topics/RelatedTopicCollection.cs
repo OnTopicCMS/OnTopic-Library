@@ -73,12 +73,12 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyCollection<Topic> GetAllTopics() {
-      var topics = new List<Topic>();
+    public ReadOnlyTopicCollection GetAllTopics() {
+      var topics = new TopicCollection();
       foreach (var topicCollection in this) {
         topics.Union<Topic>(topicCollection);
       }
-      return new ReadOnlyCollection<Topic>(topics);
+      return new ReadOnlyTopicCollection(topics);
     }
 
     /// <summary>
@@ -87,9 +87,9 @@ namespace Ignia.Topics {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyCollection<Topic> GetAllTopics(string contentType) {
+    public ReadOnlyTopicCollection GetAllTopics(string contentType) {
       var topics = GetAllTopics().Where(t => t.ContentType == contentType);
-      return new ReadOnlyCollection<Topic>(topics.ToList());
+      return ReadOnlyTopicCollection.FromList(topics.ToList());
     }
 
     /*==========================================================================================================================
@@ -98,6 +98,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship scope.
     /// </summary>
+    /// <remarks>
+    ///   Returns a reference to the underlying <see cref="TopicCollection"/>; modifications to this collection will modify the
+    ///   <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
+    /// </remarks>
     /// <param name="scope">The scope of the relationship to be returned.</param>
     public TopicCollection GetTopics(string scope) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
