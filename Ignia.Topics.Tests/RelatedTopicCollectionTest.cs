@@ -20,13 +20,13 @@ namespace Ignia.Topics.Tests {
   public class RelatedTopicCollectionTest {
 
     /*==========================================================================================================================
-    | TEST: SET RELATIONSHIP
+    | TEST: SET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible.
     /// </summary>
     [TestMethod]
-    public void SetRelationshipTest() {
+    public void RelatedTopicCollection_SetTopic() {
 
       var parent = new Topic();
       var related = new Topic();
@@ -38,13 +38,13 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: RECIPROCAL RELATIONSHIP
+    | TEST: INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
     /// </summary>
     [TestMethod]
-    public void ReciprocalRelationshipTest() {
+    public void RelatedTopicCollection_IncomingRelationshipTest() {
 
       var parent = new Topic();
       var related = Topic.Create("Related", "Page");
@@ -63,7 +63,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets relationships in multiple namespaces, and the correct number of keys are returned.
     /// </summary>
     [TestMethod]
-    public void KeysTest() {
+    public void RelatedTopicCollection_KeysTest() {
 
       var parent = new Topic();
       var relationships = new RelatedTopicCollection(parent);
@@ -77,6 +77,7 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
 
     }
+
     /*==========================================================================================================================
     | TEST: GET ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -84,7 +85,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets relationships in multiple namespaces, and ensures they are all returned via GetAllTopics().
     /// </summary>
     [TestMethod]
-    public void GetAllTopicsTest() {
+    public void RelatedTopicCollection_GetAllTopicsTest() {
 
       var parent = new Topic();
       var relationships = new RelatedTopicCollection(parent);
