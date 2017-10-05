@@ -203,9 +203,10 @@ namespace Ignia.Topics.Collections {
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!Contains(scope)) {
-        Add(new TopicCollection(_parent, scope, new Topic[] { topic }));
+        Add(new TopicCollection(_parent, scope));
       }
       var topics = this[scope];
+      topics.Add(topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create reciprocal relationship, if appropriate
