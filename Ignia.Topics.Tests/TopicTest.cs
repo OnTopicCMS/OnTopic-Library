@@ -19,13 +19,13 @@ namespace Ignia.Topics.Tests {
   public class TopicTest {
 
     /*==========================================================================================================================
-    | TEST: CREATE TOPIC
+    | TEST: CREATE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
     [TestMethod]
-    public void CreateTopicTest() {
+    public void Topic_CreateTest() {
       var topic = Topic.Create("Test", "ContentType");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentType));
@@ -40,20 +40,20 @@ namespace Ignia.Topics.Tests {
     ///   Creates a topic using the default constructor, and ensures it's returned as empty.
     /// </summary>
     [TestMethod]
-    public void IsEmptyTest() {
+    public void Topic_IsEmptyTest() {
       var topic = new Topic();
       Assert.IsTrue(topic.IsEmpty);
     }
 
     /*==========================================================================================================================
-    | TEST: RENAME ID
+    | TEST: CHANGE ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
-    public void RenameIdTest() {
+    public void Topic_Change_IdTest() {
       var topic = Topic.Create("Test", "ContentType", 123);
       topic.Id = 124;
     }
@@ -66,7 +66,7 @@ namespace Ignia.Topics.Tests {
     ///   types.
     /// </summary>
     [TestMethod]
-    public void IsContentTypeOf() {
+    public void Topic_IsContentTypeOf() {
       var contentType = new ContentType("Root");
       for (var i=0; i<5; i++) {
         var childContentType = new ContentType("ContentType" + i) {
@@ -84,7 +84,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void SetParentTest() {
+    public void Topic_Set_ParentTest() {
 
       var parentTopic           = Topic.Create("Parent", "ContentType");
       var childTopic            = Topic.Create("Child", "ContentType");
@@ -105,7 +105,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     // ### TODO JJC20150816: This invokes dependencies on the TopicDataProvider and, in turn, the Configuration namespace.  This
     // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
-    public void ChangeParentTest() {
+    public void Topic_Change_ParentTest() {
 
       var sourceParent          = Topic.Create("SourceParent", "ContentType");
       var targetParent          = Topic.Create("TargetParent", "ContentType");
@@ -129,7 +129,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures the Unique Key is correct for a deeply nested child.
     /// </summary>
     [TestMethod]
-    public void UniqueKeyTest() {
+    public void Topic_UniqueKeyTest() {
 
       var parentTopic = Topic.Create("ParentTopic", "Page");
       var childTopic = Topic.Create("ChildTopic", "Page");
@@ -150,7 +150,7 @@ namespace Ignia.Topics.Tests {
     ///   Looks for a deeply nested child topic using only the attribute value.
     /// </summary>
     [TestMethod]
-    public void FindAllByAttributeValueTest() {
+    public void Topic_FindAllByAttributeValueTest() {
 
       var parentTopic = Topic.Create("ParentTopic", "Page");
       var childTopic = Topic.Create("ChildTopic", "Page");
@@ -173,7 +173,7 @@ namespace Ignia.Topics.Tests {
     ///   Looks for a deeply nested child topic using the GetTopic() methods.
     /// </summary>
     [TestMethod]
-    public void GetTopicTest() {
+    public void Topic_GetTopicTest() {
 
       var parentTopic = Topic.Create("ParentTopic", "Page", 1);
       var childTopic = Topic.Create("ChildTopic", "Page", 5);
@@ -201,7 +201,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that IsVisible returns expected values based on IsHidden and IsDisabled.
     /// </summary>
     [TestMethod]
-    public void IsVisibleTest() {
+    public void Topic_IsVisibleTest() {
 
       var hiddenTopic = Topic.Create("HiddenTopic", "Page");
       var disabledTopic = Topic.Create("DisabledTopic", "Page");
@@ -226,7 +226,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that the title falls back appropriately.
     /// </summary>
     [TestMethod]
-    public void TitleTest() {
+    public void Topic_TitleTest() {
 
       var untitledTopic = Topic.Create("UntitledTopic", "Page");
       var titledTopic = Topic.Create("TitledTopic", "Page");
@@ -245,7 +245,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets a derived topic, and ensures it is referenced correctly.
     /// </summary>
     [TestMethod]
-    public void DerivedTopicTest() {
+    public void Topic_DerivedTopicTest() {
 
       var topic = Topic.Create("Topic", "Page");
       var derivedTopic = Topic.Create("DerivedTopic", "Page");
