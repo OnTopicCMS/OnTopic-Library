@@ -72,9 +72,8 @@ namespace Ignia.Topics.Tests {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
       }
 
-      Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+      Assert.AreEqual<int>(5, relationships.Keys.Count);
+      Assert.IsTrue(relationships.Keys.Contains("Relationship3"));
 
     }
 
@@ -90,12 +89,35 @@ namespace Ignia.Topics.Tests {
       var parent = new Topic();
       var relationships = new RelatedTopicCollection(parent);
 
-      for(var i=0; i<5; i++) {
+      for (var i = 0; i < 5; i++) {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
       }
 
-      Assert.AreEqual<int>(5, relationships.Keys.Count);
-      Assert.IsTrue(relationships.Keys.Contains("Relationship3"));
+      Assert.AreEqual<int>(5, relationships.Count);
+      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
+      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ALL CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
+    ///   <see cref="RelatedTopicCollection.GetAllTopics(string)"/> by content type.
+    /// </summary>
+    [TestMethod]
+    public void RelatedTopicCollection_GetAllContentTypesTest() {
+
+      var parent = new Topic();
+      var relationships = new RelatedTopicCollection(parent);
+
+      for (var i = 0; i < 5; i++) {
+        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "ContentType" + i));
+      }
+
+      Assert.AreEqual<int>(5, relationships.Count);
+      Assert.AreEqual<int>(5, relationships.GetAllTopics("ContentType3").Count());
 
     }
 
