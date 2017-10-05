@@ -56,6 +56,9 @@ namespace Ignia.Topics.Tests {
     public void Topic_Change_IdTest() {
       var topic = Topic.Create("Test", "ContentType", 123);
       topic.Id = 124;
+
+      Assert.AreEqual<int>(123, topic.Id);
+      Assert.AreNotEqual<int>(124, topic.Id);
     }
 
     /*==========================================================================================================================
