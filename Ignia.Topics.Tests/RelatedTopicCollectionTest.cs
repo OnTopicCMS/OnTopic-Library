@@ -27,6 +27,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void SetAttributeValueTest() {
+
       var parent = new Topic();
       var related = Topic.Create("Related", "Page");
       var relationships = new RelatedTopicCollection(parent);
@@ -45,6 +46,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void ReciprocalRelationshipTest() {
+
       var parent = new Topic();
       var related = Topic.Create("Related", "Page");
       var relationships = new RelatedTopicCollection(parent);
@@ -56,6 +58,27 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: KEYS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets relationships in multiple namespaces, and the correct number of keys are returned.
+    /// </summary>
+    [TestMethod]
+    public void KeysTest() {
+
+      var parent = new Topic();
+      var relationships = new RelatedTopicCollection(parent);
+
+      for (var i = 0; i < 5; i++) {
+        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
+      }
+
+      Assert.AreEqual<int>(5, relationships.Count);
+      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
+      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+
+    }
+    /*==========================================================================================================================
     | TEST: GET ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -63,6 +86,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void GetAllTopicsTest() {
+
       var parent = new Topic();
       var relationships = new RelatedTopicCollection(parent);
 
@@ -70,9 +94,8 @@ namespace Ignia.Topics.Tests {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
       }
 
-      Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+      Assert.AreEqual<int>(5, relationships.Keys.Count);
+      Assert.IsTrue(relationships.Keys.Contains("Relationship3"));
 
     }
 
