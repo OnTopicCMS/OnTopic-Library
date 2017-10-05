@@ -105,6 +105,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TopicCollectionTest.cs" />
     <Compile Include="RelatedTopicCollectionTest.cs" />
     <Compile Include="TopicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
