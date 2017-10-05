@@ -55,5 +55,26 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET ALL TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets relationships in multiple namespaces, and ensures they are all returned via GetAllTopics().
+    /// </summary>
+    [TestMethod]
+    public void GetAllTopicsTest() {
+      var parent = new Topic();
+      var relationships = new RelatedTopicCollection(parent);
+
+      for(var i=0; i<5; i++) {
+        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
+      }
+
+      Assert.AreEqual<int>(5, relationships.Count);
+      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
+      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+
+    }
+
   } //Class
 } //Namespace
