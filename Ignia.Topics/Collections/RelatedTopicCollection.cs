@@ -19,7 +19,7 @@ namespace Ignia.Topics.Collections {
   /// <summary>
   ///   Provides a simple interface for accessing collections of topic collections.
   /// </summary>
-  public class RelatedTopicCollection : KeyedCollection<string, TopicCollection> {
+  public class RelatedTopicCollection : KeyedCollection<string, NamedTopicCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -207,7 +207,7 @@ namespace Ignia.Topics.Collections {
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!Contains(scope)) {
-        Add(new TopicCollection(_parent, scope));
+        Add(new NamedTopicCollection(scope));
       }
       var topics = this[scope];
       topics.Add(topic);
@@ -229,11 +229,11 @@ namespace Ignia.Topics.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a method for the <see cref="KeyedCollection{TKey, TItem}"/> to retrieve the key from the underlying
-    ///   collection of objects, in this case <see cref="TopicCollection"/>s.
+    ///   collection of objects, in this case <see cref="NamedTopicCollection"/>s.
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(TopicCollection item) {
+    protected override string GetKeyForItem(NamedTopicCollection item) {
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
       return item.Name;
     }
