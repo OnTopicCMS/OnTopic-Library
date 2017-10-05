@@ -75,8 +75,8 @@ namespace Ignia.Topics.Tests {
       topics[0].Attributes.SetValue("Foo", "Bar");
 
       Assert.IsNull(topics[4].Attributes.GetValue("Foo", null));
-      Assert.AreEqual<string>("Bar", topics[4].Attributes.GetValue("Foo", true));
-      Assert.AreNotEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", true));
+      Assert.AreEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", true));
+      Assert.AreNotEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", false));
 
     }
 

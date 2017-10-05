@@ -117,7 +117,7 @@ namespace Ignia.Topics.Tests {
       }
 
       Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics("ContentType3").Count());
+      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count());
 
     }
 
