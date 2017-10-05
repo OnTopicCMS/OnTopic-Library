@@ -76,7 +76,11 @@ namespace Ignia.Topics.Collections {
     public ReadOnlyTopicCollection GetAllTopics() {
       var topics = new TopicCollection();
       foreach (var topicCollection in this) {
-        topics.Union<Topic>(topicCollection);
+        foreach (var topic in topicCollection) {
+          if (topicCollection.Contains(topic)) {
+            topics.Add(topic);
+          }
+        }
       }
       return new ReadOnlyTopicCollection(topics);
     }
