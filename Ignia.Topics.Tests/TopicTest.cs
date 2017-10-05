@@ -54,11 +54,13 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Topic_Change_IdTest() {
-      var topic = Topic.Create("Test", "ContentType", 123);
-      topic.Id = 124;
+
+      var topic                 = Topic.Create("Test", "ContentType", 123);
+      topic.Id                  = 124;
 
       Assert.AreEqual<int>(123, topic.Id);
       Assert.AreNotEqual<int>(124, topic.Id);
+
     }
 
     /*==========================================================================================================================
@@ -70,6 +72,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void Topic_IsContentTypeOf() {
+
       var contentType = new ContentType("Root");
       for (var i=0; i<5; i++) {
         var childContentType = new ContentType("ContentType" + i) {
@@ -77,7 +80,9 @@ namespace Ignia.Topics.Tests {
         };
         contentType             = childContentType;
       }
+
       Assert.IsTrue(contentType.IsTypeOf("Root"));
+
     }
 
     /*==========================================================================================================================
@@ -134,12 +139,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_UniqueKeyTest() {
 
-      var parentTopic = Topic.Create("ParentTopic", "Page");
-      var childTopic = Topic.Create("ChildTopic", "Page");
-      var grandChildTopic = Topic.Create("GrandChildTopic", "Page");
+      var parentTopic           = Topic.Create("ParentTopic", "Page");
+      var childTopic            = Topic.Create("ChildTopic", "Page");
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page");
 
-      childTopic.Parent = parentTopic;
-      grandChildTopic.Parent = childTopic;
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
 
       Assert.AreEqual<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.UniqueKey);
       Assert.AreEqual<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.WebPath);
@@ -155,12 +160,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_FindAllByAttributeValueTest() {
 
-      var parentTopic = Topic.Create("ParentTopic", "Page");
-      var childTopic = Topic.Create("ChildTopic", "Page");
-      var grandChildTopic = Topic.Create("GrandChildTopic", "Page");
+      var parentTopic           = Topic.Create("ParentTopic", "Page");
+      var childTopic            = Topic.Create("ChildTopic", "Page");
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page");
 
-      childTopic.Parent = parentTopic;
-      grandChildTopic.Parent = childTopic;
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
 
       grandChildTopic.Attributes.SetValue("Foo", "Bar");
 
@@ -178,12 +183,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_GetTopicTest() {
 
-      var parentTopic = Topic.Create("ParentTopic", "Page", 1);
-      var childTopic = Topic.Create("ChildTopic", "Page", 5);
-      var grandChildTopic = Topic.Create("GrandChildTopic", "Page", 2);
+      var parentTopic           = Topic.Create("ParentTopic", "Page", 1);
+      var childTopic            = Topic.Create("ChildTopic", "Page", 5);
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page", 2);
 
-      childTopic.Parent = parentTopic;
-      grandChildTopic.Parent = childTopic;
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
 
       Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic"), parentTopic);
       Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic:ChildTopic"), childTopic);
@@ -206,12 +211,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_IsVisibleTest() {
 
-      var hiddenTopic = Topic.Create("HiddenTopic", "Page");
-      var disabledTopic = Topic.Create("DisabledTopic", "Page");
-      var visibleTopic = Topic.Create("VisibleTopic", "Page");
+      var hiddenTopic           = Topic.Create("HiddenTopic", "Page");
+      var disabledTopic         = Topic.Create("DisabledTopic", "Page");
+      var visibleTopic          = Topic.Create("VisibleTopic", "Page");
 
-      hiddenTopic.IsHidden = true;
-      disabledTopic.IsDisabled = true;
+      hiddenTopic.IsHidden      = true;
+      disabledTopic.IsDisabled  = true;
 
       Assert.IsFalse(hiddenTopic.IsVisible());
       Assert.IsFalse(hiddenTopic.IsVisible(true));
@@ -231,10 +236,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_TitleTest() {
 
-      var untitledTopic = Topic.Create("UntitledTopic", "Page");
-      var titledTopic = Topic.Create("TitledTopic", "Page");
+      var untitledTopic         = Topic.Create("UntitledTopic", "Page");
+      var titledTopic           = Topic.Create("TitledTopic", "Page");
 
-      titledTopic.Title = "Titled Topic";
+      titledTopic.Title         = "Titled Topic";
 
       Assert.AreEqual<string>(untitledTopic.Title, "UntitledTopic");
       Assert.AreEqual<string>(titledTopic.Title, "Titled Topic");
@@ -250,14 +255,15 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_DerivedTopicTest() {
 
-      var topic = Topic.Create("Topic", "Page");
-      var derivedTopic = Topic.Create("DerivedTopic", "Page");
+      var topic                 = Topic.Create("Topic", "Page");
+      var derivedTopic          = Topic.Create("DerivedTopic", "Page");
 
-      topic.DerivedTopic = derivedTopic;
+      topic.DerivedTopic        = derivedTopic;
 
       Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
 
     }
 
   } //Class
+
 } //Namespace

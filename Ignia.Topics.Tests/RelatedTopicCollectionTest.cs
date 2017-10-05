@@ -28,8 +28,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_SetTopic() {
 
-      var parent = new Topic();
-      var related = new Topic();
+      var parent                = new Topic();
+      var related               = new Topic();
 
       parent.Relationships.SetTopic("Friends", related);
 
@@ -46,9 +46,9 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_IncomingRelationshipTest() {
 
-      var parent = new Topic();
-      var related = Topic.Create("Related", "Page");
-      var relationships = new RelatedTopicCollection(parent);
+      var parent                = new Topic();
+      var related               = Topic.Create("Related", "Page");
+      var relationships         = new RelatedTopicCollection(parent);
 
       relationships.SetTopic("Friends", related);
 
@@ -65,8 +65,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_KeysTest() {
 
-      var parent = new Topic();
-      var relationships = new RelatedTopicCollection(parent);
+      var parent                = new Topic();
+      var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
@@ -86,8 +86,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllTopicsTest() {
 
-      var parent = new Topic();
-      var relationships = new RelatedTopicCollection(parent);
+      var parent                = new Topic();
+      var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
@@ -109,8 +109,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllContentTypesTest() {
 
-      var parent = new Topic();
-      var relationships = new RelatedTopicCollection(parent);
+      var parent                = new Topic();
+      var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
         relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "ContentType" + i));
@@ -122,4 +122,5 @@ namespace Ignia.Topics.Tests {
     }
 
   } //Class
+
 } //Namespace
