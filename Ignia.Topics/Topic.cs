@@ -377,7 +377,11 @@ namespace Ignia.Topics {
     public string WebPath {
       get {
         Contract.Ensures(Contract.Result<string>() != null);
-        return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
+        var uniqueKey = UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
+        if (!uniqueKey.StartsWith("/")) {
+          uniqueKey = "/" + uniqueKey;
+        }
+        return uniqueKey;
       }
     }
 
