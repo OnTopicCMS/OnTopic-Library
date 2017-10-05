@@ -44,7 +44,9 @@ namespace Ignia.Topics.Collections {
     public TopicCollection(Topic parent, IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
       if (topics != null) {
-        CopyTo(topics.ToArray(), 0);
+        foreach (Topic topic in topics) {
+          Add(topic);
+        }
       }
     }
 
