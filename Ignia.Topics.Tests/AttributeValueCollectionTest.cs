@@ -19,75 +19,54 @@ namespace Ignia.Topics.Tests {
   public class AttributeValueCollectionTest {
 
     /*==========================================================================================================================
-    | TEST: GET ATTRIBUTE
+    | TEST: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a new topic and ensures that the key can be returned as an attribute.
     /// </summary>
     [TestMethod]
-    public void GetAttributeTest() {
+    public void AttributeValueCollection_GetValueTest() {
       var topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
     }
 
     /*==========================================================================================================================
-    | TEST: DEFAULT ATTRIBUTE
+    | TEST: DEFAULT VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
     /// </summary>
     [TestMethod]
-    public void DefaultAttributeTest() {
+    public void AttributeValueCollection_DefaultValueTest() {
       var topic = Topic.Create("Test", "Container");
       Assert.AreEqual<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
 
     /*==========================================================================================================================
-    | TEST: SET ATTRIBUTE
+    | TEST: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a custom attribute on a topic and ensures it can be retrieved.
     /// </summary>
     [TestMethod]
-    public void SetAttributeTest() {
+    public void AttributeValueCollection_SetValueTest() {
       var topic = Topic.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
     }
 
     /*==========================================================================================================================
-    | TEST: ATTRIBUTE INHERITANCE
+    | TEST: INHERIT FROM PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
     /// </summary>
     [TestMethod]
-    public void AttributeInheritanceTest() {
+    public void AttributeValueCollection_InheritFromParentTest() {
 
-      var childTopic = Topic.Create("Child", "Container");
-      var parentTopic = Topic.Create("Parent", "Container");
+      var topics = new Topic[8];
 
-      childTopic.Parent = parentTopic;
-
-      parentTopic.Attributes.SetValue("Foo", "Bar");
-
-      Assert.IsNull(childTopic.Attributes.GetValue("Foo", null));
-      Assert.AreEqual<string>(childTopic.Attributes.GetValue("Foo", null, true), "Bar");
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: LIMIT ATTRIBUTE INHERITANCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets an attribute on a descendent and ensures that it is correctly retrieved via inheritance.
-    /// </summary>
-    [TestMethod]
-    public void LimitAttributeInheritanceTest() {
-
-      var topics = new Topic[5];
-
-      for (var i = 0; i <= 4; i++) {
+      for (var i = 0; i <= 7; i++) {
         var topic = Topic.Create("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
@@ -96,9 +75,37 @@ namespace Ignia.Topics.Tests {
       topics[0].Attributes.SetValue("Foo", "Bar");
 
       Assert.IsNull(topics[4].Attributes.GetValue("Foo", null));
-      Assert.AreEqual<string>(topics[4].Attributes.GetValue("Foo", true), "Bar");
+      Assert.AreEqual<string>("Bar", topics[4].Attributes.GetValue("Foo", true));
+      Assert.AreNotEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", true));
 
     }
+
+    /*==========================================================================================================================
+    | TEST: MAX HOPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a long tree of derives topics, and ensures that inheritance will pursue no more than five hops.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_MaxHopsTest() {
+
+      var topics = new Topic[8];
+
+      for (var i = 0; i <= 7; i++) {
+        var topic = Topic.Create("Topic" + i, "Container");
+        if (i > 0) topics[i - 1].DerivedTopic = topic;
+        topics[i] = topic;
+      }
+
+      topics[7].Attributes.SetValue("Foo", "Bar");
+
+      Assert.IsNull(topics[0].Attributes.GetValue("Foo", null, true, false));
+      Assert.AreEqual<string>("Bar", topics[2].Attributes.GetValue("Foo", null, true, true));
+      Assert.AreNotEqual<string>("Bar", topics[1].Attributes.GetValue("Foo", null, true, true));
+      Assert.AreNotEqual<string>("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
+
+    }
+
 
   } //Class
 } //Namespace
