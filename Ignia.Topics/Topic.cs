@@ -26,15 +26,15 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _parent                         = null;
-    private                     TopicCollection                 _children                       = null;
-    private                     AttributeValueCollection        _attributes                     = null;
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
+    private                     int                             _sortOrder                      = 25;
+    private                     Topic                           _parent                         = null;
+    private                     TopicCollection                 _children                       = null;
+    private                     AttributeValueCollection        _attributes                     = null;
     private                     RelatedTopicCollection          _relationships                  = null;
     private                     RelatedTopicCollection          _incomingRelationships          = null;
-    private                     int                             _sortOrder                      = 25;
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
 
