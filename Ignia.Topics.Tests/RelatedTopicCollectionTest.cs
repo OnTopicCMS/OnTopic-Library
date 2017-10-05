@@ -26,15 +26,14 @@ namespace Ignia.Topics.Tests {
     ///   Sets a relationship and confirms that it is accessible.
     /// </summary>
     [TestMethod]
-    public void SetAttributeValueTest() {
+    public void SetRelationshipTest() {
 
       var parent = new Topic();
-      var related = Topic.Create("Related", "Page");
-      var relationships = new RelatedTopicCollection(parent);
+      var related = new Topic();
 
-      relationships.SetTopic("Friends", related);
+      parent.Relationships.SetTopic("Friends", related);
 
-      Assert.ReferenceEquals(relationships.GetTopics("Friends").First(), related);
+      Assert.ReferenceEquals(parent.Relationships.GetTopics("Friends").First(), related);
 
     }
 
