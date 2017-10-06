@@ -29,6 +29,7 @@ namespace Ignia.Topics.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Topic                           _associatedTopic                = null;
     static                      TypeCollection                  _typeCache                      = new TypeCollection();
+    private                     int                             _setCounter                     = 0;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -366,9 +367,17 @@ namespace Ignia.Topics.Collections {
         return true;
       }
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
+        _setCounter++;
+        if (_setCounter > 3) {
+          throw new Exception(
+            "An infinite loop has occurred when setting `" + originalAttribute.Key +
+            "`; be sure to call `Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
+          );
+        }
         Debug.WriteLine("Enforcing business logic on " + originalAttribute.Key);
         _typeCache.SetProperty(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
+        _setCounter = 0;
         return false;
       }
       return true;
