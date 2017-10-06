@@ -68,7 +68,7 @@ namespace Ignia.Topics.Tests {
     | TEST: GET PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetProperty(Type, string)"/>
+    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetProperty(Type, String)"/>
     ///   correctly returns the expected properties.
     /// </summary>
     [TestMethod]
@@ -88,7 +88,7 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
-    ///   <see cref="TypeCollection.SetProperty(object, string, string)"/> method.
+    ///   <see cref="TypeCollection.SetProperty(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void TypeCollection_SetPropertyTest() {

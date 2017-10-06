@@ -205,9 +205,7 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetValue(string key, string value, bool? isDirty = null) {
-      SetValue(key, value, isDirty, true);
-    }
+    public void SetValue(string key, string value, bool? isDirty = null) => SetValue(key, value, isDirty, true);
 
     /// <summary>
     ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
@@ -261,8 +259,8 @@ namespace Ignia.Topics.Collections {
       | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
       | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the "__"
       | prefix on the key name. If it exists, they assume the property set the value (e.g., by calling the protected SetValue
-      | method with enforceBusinessLogic set to false). Otherwise, the property will be set. The "__" prefix thus avoids a redirect
-      | loop. This, of course, assumes that properties are correctly written to call enforceBusinessLogic.
+      | method with enforceBusinessLogic set to false). Otherwise, the property will be set. The "__" prefix thus avoids a
+      | redirect loop. This, of course, assumes that properties are correctly written to call enforceBusinessLogic.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key)) {
         secretKey = "__" + key;
@@ -276,8 +274,9 @@ namespace Ignia.Topics.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Contains(key)) {
         var originalAttribute = this[key];
-        var newAttribute = new AttributeValue(secretKey, originalAttribute.Value, originalAttribute.IsDirty);
-        newAttribute.Value = value;
+        var newAttribute = new AttributeValue(secretKey, originalAttribute.Value, originalAttribute.IsDirty) {
+          Value = value
+        };
         this[IndexOf(originalAttribute)] = newAttribute;
       }
 

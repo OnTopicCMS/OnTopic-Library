@@ -32,7 +32,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TypeCollection"/> class. Assumes no parent topic is available.
     /// </summary>
-    /// <param name="callableTypes">An optional list of supported types.</param>
+    /// <param name="settableTypes">An optional list of supported types.</param>
     internal TypeCollection(List<Type> settableTypes = null) : base() {
       _settableTypes = settableTypes;
     }
@@ -41,15 +41,16 @@ namespace Ignia.Topics.Collections {
     | PROPERTY: SETTABLE TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A list of types that are allowed to be set using <see cref="SetProperty(object, string, string)"/>.
+    ///   A list of types that are allowed to be set using <see cref="SetProperty(Object, String, String)"/>.
     /// </summary>
     internal List<Type> SettableTypes {
       get {
         if (_settableTypes == null) {
-          _settableTypes = new List<Type>();
-          _settableTypes.Add(typeof(bool));
-          _settableTypes.Add(typeof(int));
-          _settableTypes.Add(typeof(string));
+          _settableTypes = new List<Type> {
+            typeof(bool),
+            typeof(int),
+            typeof(string)
+          };
         }
         return _settableTypes;
       }
@@ -126,14 +127,14 @@ namespace Ignia.Topics.Collections {
 
       object valueObject;
 
-      if (property.PropertyType.Equals(typeof(Boolean))) {
+      if (property.PropertyType.Equals(typeof(bool))) {
         valueObject = value.Equals("1");
       }
-      else if (property.PropertyType.Equals(typeof(Int32))) {
+      else if (property.PropertyType.Equals(typeof(int))) {
         Int32.TryParse(value, out int intValue);
         valueObject = intValue;
       }
-      else if (property.PropertyType.Equals(typeof(String))) {
+      else if (property.PropertyType.Equals(typeof(string))) {
         valueObject = value;
       }
       else {
