@@ -77,7 +77,7 @@ namespace Ignia.Topics {
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.SetValue("Type", value, null, false);
+        SetAttributeValue("Type", value);
       }
     }
 
@@ -100,7 +100,7 @@ namespace Ignia.Topics {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Attributes.SetValue("DisplayGroup", value, null, false);
+        SetAttributeValue("DisplayGroup", value);
       }
     }
 
@@ -123,7 +123,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string DefaultConfiguration {
       get => Attributes.GetValue("DefaultConfiguration", "");
-      set => Attributes.SetValue("DefaultConfiguration", value, null, false);
+      set => SetAttributeValue("DefaultConfiguration", value);
     }
 
     /*==========================================================================================================================
@@ -149,7 +149,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public new bool IsHidden {
       get => Attributes.GetValue("IsHidden", "0").Equals("1");
-      set => Attributes.SetValue("IsHidden", value.ToString(), null, false);
+      set => SetAttributeValue("IsHidden", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -164,7 +164,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public bool IsRequired {
       get => Attributes.GetValue("IsRequired", "0").Equals("1");
-      set => Attributes.SetValue("IsRequired", value.ToString(), null, false);
+      set => SetAttributeValue("IsRequired", value.ToString());
     }
 
     /*==========================================================================================================================
@@ -180,7 +180,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string DefaultValue {
       get => Attributes.GetValue("DefaultValue", "");
-      set => Attributes.SetValue("DefaultValue", value, null, false);
+      set => SetAttributeValue("DefaultValue", value);
     }
 
     /*==========================================================================================================================
@@ -204,7 +204,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public bool StoreInBlob {
       get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
-      set => Attributes.SetValue("StoreInBlob", value.ToString(), null, false);
+      set => SetAttributeValue("StoreInBlob", value.ToString());
     }
 
   } // Class

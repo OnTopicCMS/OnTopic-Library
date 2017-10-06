@@ -196,7 +196,7 @@ namespace Ignia.Topics {
 
         _parent = value;
 
-        Attributes.SetValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
+        SetAttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
 
       }
     }
@@ -258,7 +258,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string ContentType {
       get => Attributes.GetValue("ContentType");
-      set => Attributes.SetValue("ContentType", value, null, false);
+      set => SetAttributeValue("ContentType", value);
     }
 
     /*==========================================================================================================================
@@ -287,7 +287,7 @@ namespace Ignia.Topics {
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
           Parent.Children.ChangeKey(this, value);
         }
-        Attributes.SetValue("Key", value, null, false);
+        SetAttributeValue("Key", value);
         _key = value;
       }
     }
@@ -414,7 +414,7 @@ namespace Ignia.Topics {
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.SetValue("View", value, null, false);
+        SetAttributeValue("View", value);
       }
     }
 
@@ -426,7 +426,7 @@ namespace Ignia.Topics {
     /// </summary>
     public bool IsHidden {
       get => Attributes.GetValue("IsHidden", "0").Equals("1");
-      set => Attributes.SetValue("IsHidden", value ? "1" : "0", null, false);
+      set => SetAttributeValue("IsHidden", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -437,7 +437,7 @@ namespace Ignia.Topics {
     /// </summary>
     public bool IsDisabled {
       get => Attributes.GetValue("IsDisabled", "0").Equals("1");
-      set => Attributes.SetValue("IsDisabled", value ? "1" : "0", null, false);
+      set => SetAttributeValue("IsDisabled", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -469,7 +469,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string Title {
       get => Attributes.GetValue("Title", Key);
-      set => Attributes.SetValue("Title", value, null, false);
+      set => SetAttributeValue("Title", value);
     }
 
     /*==========================================================================================================================
@@ -487,7 +487,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string Description {
       get => Attributes.GetValue("Description");
-      set => Attributes.SetValue("Description", value, null, false);
+      set => SetAttributeValue("Description", value);
     }
 
     /*==========================================================================================================================
@@ -549,7 +549,7 @@ namespace Ignia.Topics {
         }
 
       }
-      set => Attributes.SetValue("LastModified", value.ToString(), null, false);
+      set => SetAttributeValue("LastModified", value.ToString());
     }
 
     #endregion
@@ -585,7 +585,7 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          Attributes.SetValue("TopicID", value.Id.ToString(), null, false);
+          SetAttributeValue("TopicID", value.Id.ToString());
         }
         else {
           Attributes.Remove("TopicID");
@@ -910,6 +910,47 @@ namespace Ignia.Topics {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: SET ATTRIBUTE VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
+    ///   one, depending on whether that value already exists.
+    /// </summary>
+    /// <remarks>
+    ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
+    ///   called by the AttributeValueCollection.This is intended to enforce local business logic, and prevent callers from
+    ///   introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
+    ///   AttributeValueCollection that the business logic has already been enforced.To do that, they must either call
+    ///   SetValue() with the enforceBusinessLogic flag set to false, or, if they're in a separate assembly, call this overload.
+    /// </remarks>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    protected void SetAttributeValue(string key, string value, bool? isDirty = null) {
+      Attributes.SetValue(key, value, isDirty, false);
+    }
+
     #endregion
 
     #region Static Methods
@@ -1095,8 +1136,8 @@ namespace Ignia.Topics {
       Contract.Assume(topic.Key != null);
       Contract.Assume(topic.ContentType != null);
 
-      topic.Attributes.SetValue("Key", key, false, false);
-      topic.Attributes.SetValue("ContentType", contentType, false, false);
+      topic.SetAttributeValue("Key", key, false);
+      topic.SetAttributeValue("ContentType", contentType, false);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object
