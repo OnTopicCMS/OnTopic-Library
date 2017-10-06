@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Collections {
@@ -27,6 +28,7 @@ namespace Ignia.Topics.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Topic                           _associatedTopic                = null;
+    static                      TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -204,25 +206,86 @@ namespace Ignia.Topics.Collections {
     ///   !value.Contains(" ")
     /// </requires>
     public void SetValue(string key, string value, bool? isDirty = null) {
+      SetValue(key, value, isDirty, true);
+    }
+
+    /// <summary>
+    ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
+    ///   one, depending on whether that value already exists.
+    /// </summary>
+    /// <remarks>
+    ///   When this overload is called, no attempt will be made to route the call through corresponding properties, if
+    ///   available. As such, this is intended specifically to be called by internal properties as a means of avoiding a
+    ///   feedback loop.
+    /// </remarks>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    /// </param>
+    /// <param name="enforceBusinessLogic">
+    ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
+    ///   This should be set to false if setting attributes from internal properties in order to avoid an infinite loop.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    protected void SetValue(string key, string value, bool? isDirty, bool enforceBusinessLogic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
+      var secretKey = key;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish secret handshake for later enforcement of properties
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
+      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
+      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the "__"
+      | prefix on the key name. If it exists, they assume the property set the value (e.g., by calling the protected SetValue
+      | method with enforceBusinessLogic set to false). Otherwise, the property will be set. The "__" prefix thus avoids a redirect
+      | loop. This, of course, assumes that properties are correctly written to call enforceBusinessLogic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key)) {
+        secretKey = "__" + key;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
+      >-----------------------------------------------------------------------------------------------------------------------—
+      | ###HACK JJC100617: Force the item to be updated in order to ensure SetItem() is called (and, thus, business logic is
+      | appropriately enforced.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Contains(key)) {
-        this[key].Value = value;
+        var attribute = this[key];
+        var newAttribute = new AttributeValue(attribute.Key, attribute.Value, attribute.IsDirty);
+        attribute.Value = value;
+        this[IndexOf(attribute)] = newAttribute;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(key, value));
+        Add(new AttributeValue(secretKey, value));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -232,6 +295,85 @@ namespace Ignia.Topics.Collections {
         this[key].IsDirty = isDirty.Value;
       }
     }
+
+    /*==========================================================================================================================
+    | OVERRIDE: INSERT ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to insert a new <see cref="AttributeValue"/> into the collection, to ensure that local
+    ///   business logic is enforced.
+    /// </summary>
+    /// <remarks>
+    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
+    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
+    ///   loop, internal setters _must_ call this overload.
+    /// </remarks>
+    /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
+    /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
+    /// <returns>The key for the specified collection item.</returns>
+    protected override void InsertItem(int index, AttributeValue item) {
+      if (EnforceBusinessLogic(item, out item)) {
+        base.InsertItem(index, item);
+      }
+    }
+
+    /*==========================================================================================================================
+    | OVERRIDE: SET ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to update a <see cref="AttributeValue"/> in the collection, to ensure that local business
+    ///   logic is enforced.
+    /// </summary>
+    /// <remarks>
+    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
+    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
+    ///   loop, internal setters _must_ call this overload.
+    /// </remarks>
+    /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
+    /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
+    /// <returns>The key for the specified collection item.</returns>
+    protected override void SetItem(int index, AttributeValue item) {
+      if (EnforceBusinessLogic(item, out item)) {
+        base.SetItem(index, item);
+      }
+    }
+
+    /*==========================================================================================================================
+    | METHOD: ENFORCE BUSINESS LOGIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Inspects a provided <see cref="AttributeValue"/> to determine if the value should be routed through local business
+    ///   logic.
+    /// </summary>
+    /// <remarks>
+    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
+    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
+    ///   loop, internal setters _must_ call this overload.
+    /// </remarks>
+    /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
+    /// <param name="settableAttribute">
+    ///   Outputs the <see cref="AttributeValue"/> that should be set; will return null if it should not be set.
+    /// </param>
+    /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
+    private bool EnforceBusinessLogic(AttributeValue originalAttribute, out AttributeValue settableAttribute) {
+      settableAttribute = originalAttribute;
+      if (originalAttribute.Key.StartsWith("__")) {
+        Debug.WriteLine("Bypassing business logic on " + originalAttribute.Key);
+        originalAttribute.Key = originalAttribute.Key.Substring(2);
+        return true;
+      }
+      else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
+        Debug.WriteLine("Enforcing business logic on " + originalAttribute.Key);
+        _typeCache.SetProperty(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
+        this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
+        return false;
+      }
+      return true;
+    }
+
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM

@@ -76,7 +76,7 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
       Key = key;
-      Attributes.SetValue("ContentType", GetType().Name);
+      ContentType = GetType().Name;
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ namespace Ignia.Topics {
     /// </remarks>
     public string ContentType {
       get => Attributes.GetValue("ContentType");
-      set => Attributes.SetValue("ContentType", value);
+      set => Attributes.SetValue("ContentType", value, null, false);
     }
 
     /*==========================================================================================================================
@@ -287,7 +287,7 @@ namespace Ignia.Topics {
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
           Parent.Children.ChangeKey(this, value);
         }
-        Attributes.SetValue("Key", value);
+        Attributes.SetValue("Key", value, null, false);
         _key = value;
       }
     }
@@ -414,7 +414,7 @@ namespace Ignia.Topics {
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.SetValue("View", value);
+        Attributes.SetValue("View", value, null, false);
       }
     }
 
@@ -426,7 +426,7 @@ namespace Ignia.Topics {
     /// </summary>
     public bool IsHidden {
       get => Attributes.GetValue("IsHidden", "0").Equals("1");
-      set => Attributes.SetValue("IsHidden", value ? "1" : "0");
+      set => Attributes.SetValue("IsHidden", value ? "1" : "0", null, false);
     }
 
     /*==========================================================================================================================
@@ -437,7 +437,7 @@ namespace Ignia.Topics {
     /// </summary>
     public bool IsDisabled {
       get => Attributes.GetValue("IsDisabled", "0").Equals("1");
-      set => Attributes.SetValue("IsDisabled", value ? "1" : "0");
+      set => Attributes.SetValue("IsDisabled", value ? "1" : "0", null, false);
     }
 
     /*==========================================================================================================================
@@ -469,7 +469,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string Title {
       get => Attributes.GetValue("Title", Key);
-      set => Attributes.SetValue("Title", value);
+      set => Attributes.SetValue("Title", value, null, false);
     }
 
     /*==========================================================================================================================
@@ -487,7 +487,7 @@ namespace Ignia.Topics {
     /// </requires>
     public string Description {
       get => Attributes.GetValue("Description");
-      set => Attributes.SetValue("Description", value);
+      set => Attributes.SetValue("Description", value, null, false);
     }
 
     /*==========================================================================================================================
@@ -549,7 +549,7 @@ namespace Ignia.Topics {
         }
 
       }
-      set => Attributes.SetValue("LastModified", value.ToString());
+      set => Attributes.SetValue("LastModified", value.ToString(), null, false);
     }
 
     #endregion
@@ -585,7 +585,7 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          Attributes.SetValue("TopicID", value.Id.ToString());
+          Attributes.SetValue("TopicID", value.Id.ToString(), null, false);
         }
         else {
           Attributes.Remove("TopicID");
@@ -1044,7 +1044,7 @@ namespace Ignia.Topics {
       | Set the topic's Key and Content Type
       \---------------------------------------------------------------------------------------------------------------------*/
       topic.Key = key;
-      topic.Attributes.SetValue("ContentType", contentType);
+      topic.ContentType = contentType;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
@@ -1095,8 +1095,8 @@ namespace Ignia.Topics {
       Contract.Assume(topic.Key != null);
       Contract.Assume(topic.ContentType != null);
 
-      topic.Attributes.SetValue("Key", key, false);
-      topic.Attributes.SetValue("ContentType", contentType, false);
+      topic.Attributes.SetValue("Key", key, false, false);
+      topic.Attributes.SetValue("ContentType", contentType, false, false);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object

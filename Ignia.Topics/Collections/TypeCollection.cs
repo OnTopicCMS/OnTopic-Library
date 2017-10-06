@@ -118,7 +118,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     internal bool SetProperty(object target, string name, string value) {
 
-      if (HasSettableProperty(target.GetType(), name) {
+      if (!HasSettableProperty(target.GetType(), name)) {
         return false;
       }
 

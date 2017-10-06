@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Reflection;
 using Ignia.Topics.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -53,6 +54,19 @@ namespace Ignia.Topics.Tests {
       var topic = Topic.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: ENFORCE BUSINESS LOGIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to violate the business logic by bypassing the property setter; ensures that business logic is enforced.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
+    public void AttributeValueCollection_EnforceBusinessLogicTest() {
+      var topic = Topic.Create("Test", "Container");
+      topic.Attributes.SetValue("Key", "# ?");
     }
 
     /*==========================================================================================================================
