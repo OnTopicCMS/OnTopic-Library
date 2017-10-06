@@ -245,7 +245,7 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    protected void SetValue(string key, string value, bool? isDirty, bool enforceBusinessLogic) {
+    internal void SetValue(string key, string value, bool? isDirty, bool enforceBusinessLogic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -275,10 +275,10 @@ namespace Ignia.Topics.Collections {
       | appropriately enforced.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Contains(key)) {
-        var attribute = this[key];
-        var newAttribute = new AttributeValue(attribute.Key, attribute.Value, attribute.IsDirty);
-        attribute.Value = value;
-        this[IndexOf(attribute)] = newAttribute;
+        var originalAttribute = this[key];
+        var newAttribute = new AttributeValue(secretKey, originalAttribute.Value, originalAttribute.IsDirty);
+        newAttribute.Value = value;
+        this[IndexOf(originalAttribute)] = newAttribute;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -294,6 +294,7 @@ namespace Ignia.Topics.Collections {
       if (isDirty.HasValue && this[key] != null) {
         this[key].IsDirty = isDirty.Value;
       }
+
     }
 
     /*==========================================================================================================================
@@ -306,8 +307,8 @@ namespace Ignia.Topics.Collections {
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
-    ///   loop, internal setters _must_ call this overload.
+    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
+    ///   infinite loop, internal setters _must_ call this overload.
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
@@ -328,8 +329,8 @@ namespace Ignia.Topics.Collections {
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
-    ///   loop, internal setters _must_ call this overload.
+    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
+    ///   infinite loop, internal setters _must_ call this overload.
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
@@ -350,8 +351,8 @@ namespace Ignia.Topics.Collections {
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(string, string, bool?, bool)"/>'s enforceBusinessLogic parameter. To avoid an infinite
-    ///   loop, internal setters _must_ call this overload.
+    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
+    ///   infinite loop, internal setters _must_ call this overload.
     /// </remarks>
     /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
     /// <param name="settableAttribute">
