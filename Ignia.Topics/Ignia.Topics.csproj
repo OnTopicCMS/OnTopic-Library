@@ -194,6 +194,8 @@
     <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
     <Compile Include="Collections\RelatedTopicCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
+    <Compile Include="Collections\TypeCollection.cs" />
+    <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
