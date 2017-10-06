@@ -24,7 +24,7 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Type>                  _callableTypes                  = null;
+    List<Type>                  _settableTypes                  = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -33,25 +33,25 @@ namespace Ignia.Topics.Collections {
     ///   Initializes a new instance of the <see cref="TypeCollection"/> class. Assumes no parent topic is available.
     /// </summary>
     /// <param name="callableTypes">An optional list of supported types.</param>
-    internal TypeCollection(List<Type> callableTypes = null) : base() {
-      _callableTypes = callableTypes;
+    internal TypeCollection(List<Type> settableTypes = null) : base() {
+      _settableTypes = settableTypes;
     }
 
     /*==========================================================================================================================
-    | PROPERTY: CALLABLE TYPES
+    | PROPERTY: SETTABLE TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A list of types that are allowed to be called.
+    ///   A list of types that are allowed to be set using <see cref="SetProperty(object, string, string)"/>.
     /// </summary>
-    internal List<Type> CallableTypes {
+    internal List<Type> SettableTypes {
       get {
-        if (_callableTypes == null) {
-          _callableTypes = new List<Type>();
-          _callableTypes.Add(typeof(bool));
-          _callableTypes.Add(typeof(int));
-          _callableTypes.Add(typeof(string));
+        if (_settableTypes == null) {
+          _settableTypes = new List<Type>();
+          _settableTypes.Add(typeof(bool));
+          _settableTypes.Add(typeof(int));
+          _settableTypes.Add(typeof(string));
         }
-        return _callableTypes;
+        return _settableTypes;
       }
     }
 
@@ -88,6 +88,28 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
+    | METHOD: HAS PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local property is available.
+    /// </summary>
+    internal bool HasProperty(Type type, string name) => GetProperty(type, name) != null;
+
+    /*==========================================================================================================================
+    | METHOD: HAS SETTABLE PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local property is available and settable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the property is not available.
+    /// </remarks>
+    internal bool HasSettableProperty(Type type, string name) {
+      var property = GetProperty(type, name);
+      return (property != null && property.CanWrite && SettableTypes.Contains(property.PropertyType));
+    }
+
+    /*==========================================================================================================================
     | METHOD: SET PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -96,11 +118,11 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     internal bool SetProperty(object target, string name, string value) {
 
-      var property = GetProperty(target.GetType(), name);
-
-      if (property == null || !property.CanWrite || !CallableTypes.Contains(property.PropertyType)) {
+      if (HasSettableProperty(target.GetType(), name) {
         return false;
       }
+
+      var property = GetProperty(target.GetType(), name);
 
       object valueObject;
 
@@ -115,7 +137,6 @@ namespace Ignia.Topics.Collections {
         valueObject = value;
       }
       else {
-        throw new Exception(target.GetType().ToString() + ", " + name + ", " + property.PropertyType);
         return false;
       }
 
