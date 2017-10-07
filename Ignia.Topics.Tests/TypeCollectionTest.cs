@@ -97,10 +97,13 @@ namespace Ignia.Topics.Tests {
       var topic = Topic.Create("Test", "ContentType");
 
       types.SetProperty(topic, "Id", "555");
-      types.SetProperty(topic, "Key", "NewKey");
       types.SetProperty(topic, "IsHidden", "1");
-      types.SetProperty(topic, "InvalidProperty", "Invalid");
 
+      var isKeySet = types.SetProperty(topic, "Key", "NewKey");
+      var isInvalidPropertySet = types.SetProperty(topic, "InvalidProperty", "Invalid");
+
+      Assert.IsTrue(isKeySet);
+      Assert.IsFalse(isInvalidPropertySet);
       Assert.AreEqual<int>(555, topic.Id);
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.IsTrue(topic.IsHidden);
