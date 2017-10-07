@@ -36,10 +36,10 @@ namespace Ignia.Topics.Tests {
 
       var properties = new PropertyInfoCollection(typeof(ContentType));
 
-      Assert.IsTrue(properties.Contains("Key"));
-      Assert.IsTrue(properties.Contains("SupportedAttributes"));
-      Assert.IsFalse(properties.Contains("IsTypeOf"));
-      Assert.IsFalse(properties.Contains("InvalidPropertyName"));
+      Assert.IsTrue(properties.Contains("Key")); //Inherited string property
+      Assert.IsTrue(properties.Contains("SupportedAttributes")); //First class collection property
+      Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+      Assert.IsFalse(properties.Contains("InvalidPropertyName")); //Invalid property
 
     }
 
@@ -107,6 +107,34 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<int>(555, topic.Id);
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.IsTrue(topic.IsHidden);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REFLECTION PERFORMANCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets properties via reflection n number of times; quick way of evaluating the relative performance impact of changes.
+    /// </summary>
+    /// <remarks>
+    ///   Unit tests should run quickly, so this isn't an optimal place to test performance. As such, the counter should be set
+    ///   to a small number when not being actively tested. Nevertheless, this provides a convenient test harness for quickly
+    ///   evaluating the performance impact of changes or optimizations without setting up a fully performance test. To adjust
+    ///   the number of iterations, simply increment the "totalIterations" variable.
+    /// </remarks>
+    [TestMethod]
+    public void TypeCollection_ReflectionPerformanceTest() {
+
+      var totalIterations = 1;
+      var types = new TypeCollection();
+      var topic = Topic.Create("Test", "ContentType");
+
+      int i = 0;
+      for (i = 0; i < totalIterations; i++) {
+        types.SetProperty(topic, "Key", "Key" + i);
+      }
+
+      Assert.AreEqual<string>("Key" + (i-1), topic.Key);
 
     }
 
