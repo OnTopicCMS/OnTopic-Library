@@ -251,33 +251,35 @@ namespace Ignia.Topics.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
-      var secretKey = key;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish secret handshake for later enforcement of properties
       >-------------------------------------------------------------------------------------------------------------------------
       | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
       | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
-      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the "__"
-      | prefix on the key name. If it exists, they assume the property set the value (e.g., by calling the protected SetValue
-      | method with enforceBusinessLogic set to false). Otherwise, the property will be set. The "__" prefix thus avoids a
-      | redirect loop. This, of course, assumes that properties are correctly written to call enforceBusinessLogic.
+      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
+      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
+      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
+      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
+      | correctly written to call the enforceBusinessLogic parameter.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key)) {
-        secretKey = "__" + key;
-      }
+      enforceBusinessLogic = (enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       >-----------------------------------------------------------------------------------------------------------------------—
-      | ###HACK JJC100617: Force the item to be updated in order to ensure SetItem() is called (and, thus, business logic is
-      | appropriately enforced.
+      | Because AttributeValue is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Contains(key)) {
         var originalAttribute = this[key];
-        var newAttribute = new AttributeValue(secretKey, originalAttribute.Value, originalAttribute.IsDirty) {
-          Value = value
-        };
+        var markAsDirty = originalAttribute.IsDirty;
+        if (isDirty.HasValue) {
+          markAsDirty = isDirty.Value;
+        }
+        else if (!originalAttribute.Value.Equals(value)) {
+          markAsDirty = true;
+        }
+        var newAttribute = new AttributeValue(key, value, originalAttribute.IsDirty, enforceBusinessLogic);
         this[IndexOf(originalAttribute)] = newAttribute;
       }
 
@@ -285,14 +287,7 @@ namespace Ignia.Topics.Collections {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(secretKey, value));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Optionally override IsDirty, regardless of the default behavior
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty.HasValue && this[key] != null) {
-        this[key].IsDirty = isDirty.Value;
+        Add(new AttributeValue(key, value, isDirty.HasValue? isDirty.Value : true, enforceBusinessLogic));
       }
 
     }
@@ -361,9 +356,8 @@ namespace Ignia.Topics.Collections {
     /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
     private bool EnforceBusinessLogic(AttributeValue originalAttribute, out AttributeValue settableAttribute) {
       settableAttribute = originalAttribute;
-      if (originalAttribute.Key.StartsWith("__")) {
-        Debug.WriteLine("Bypassing business logic on " + originalAttribute.Key);
-        originalAttribute.Key = originalAttribute.Key.Substring(2);
+      if (!originalAttribute.EnforceBusinessLogic) {
+        originalAttribute.EnforceBusinessLogic = true;
         return true;
       }
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
