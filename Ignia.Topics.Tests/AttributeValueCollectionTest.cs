@@ -54,6 +54,27 @@ namespace Ignia.Topics.Tests {
       var topic = Topic.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE BACKDOOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeValue"/> instance; ensures it can be
+    ///   retrieved.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_SetValue_BackdoorTest() {
+
+      var topic = Topic.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Key", "NewKey");
+      topic.Attributes.SetValue("Foo", "Bar");
+
+      Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+
     }
 
     /*==========================================================================================================================
@@ -67,6 +88,20 @@ namespace Ignia.Topics.Tests {
     public void AttributeValueCollection_EnforceBusinessLogicTest() {
       var topic = Topic.Create("Test", "Container");
       topic.Attributes.SetValue("Key", "# ?");
+    }
+
+    /*==========================================================================================================================
+    | TEST: ENFORCE BUSINESS LOGIC BACKDOOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to violate the business logic by bypassing SetValue() entirely; ensures that business logic is enforced.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
+    public void AttributeValueCollection_EnforceBusinessLogic_BackdoorTest() {
+      var topic = Topic.Create("Test", "Container");
+      topic.Attributes.Remove("Key");
+      topic.Attributes.Add(new AttributeValue("Key", "# ?"));
     }
 
     /*==========================================================================================================================
