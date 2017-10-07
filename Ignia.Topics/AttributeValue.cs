@@ -102,7 +102,7 @@ namespace Ignia.Topics {
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    internal AttributeValue(string key, string value, bool isDirty = true, bool enforceBusinessLogic = true) : this(key, value, isDirty) {
+    internal AttributeValue(string key, string value, bool isDirty, bool enforceBusinessLogic) : this(key, value, isDirty) {
       EnforceBusinessLogic = enforceBusinessLogic;
     }
 
