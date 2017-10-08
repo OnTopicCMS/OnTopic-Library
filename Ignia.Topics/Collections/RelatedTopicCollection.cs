@@ -210,7 +210,9 @@ namespace Ignia.Topics.Collections {
         Add(new NamedTopicCollection(scope));
       }
       var topics = this[scope];
-      topics.Add(topic);
+      if (!topics.Contains(topic.Key)) {
+        topics.Add(topic);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create reciprocal relationship, if appropriate
