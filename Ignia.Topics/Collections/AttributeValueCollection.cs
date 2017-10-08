@@ -30,6 +30,7 @@ namespace Ignia.Topics.Collections {
     private                     Topic                           _associatedTopic                = null;
     static                      TypeCollection                  _typeCache                      = new TypeCollection();
     private                     int                             _setCounter                     = 0;
+    static                      List<string>                    _bypassBusinessLogicList        = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -293,6 +294,33 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
+    | BYPASS BUSINESS LOGIC LIST
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###HACK JJC100817: This isn't an especially elegant solution. A more elegant approach would be to create an attribute that
+    | can be used to decorate attribute accessors, and use that to determine if a property is an appropriate candidate for
+    | enforcing the business logic.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A list of attributes that do not require business logic to be enforced.
+    /// </summary>
+    /// <remarks>
+    ///   Some attributes have keys that happen to be used by properties on <see cref="Topic"/>, or its derivatives, but which
+    ///   don't actually represent attribute accessors. This interferes with the code that handles
+    ///   <see cref="AttributeValue.EnforceBusinessLogic"/>, since it assumes a property with the same name will properly set an
+    ///   attribute's value. To get around this, a white list is maintained of attributes that don't require the enforcement of
+    ///   business logic.
+    /// </remarks>
+    /// <returns>A white list of attribute keys not requiring the enforcement of business logic.</returns>
+    private List<string> BypassBusinessLogicList {
+      get {
+        if (_bypassBusinessLogicList == null) {
+          _bypassBusinessLogicList = new List<string>() { "SortOrder" };
+        }
+        return _bypassBusinessLogicList;
+      }
+    }
+
+    /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -360,6 +388,9 @@ namespace Ignia.Topics.Collections {
         originalAttribute.EnforceBusinessLogic = true;
         return true;
       }
+      else if (BypassBusinessLogicList.Contains(originalAttribute.Key)) {
+        return true;
+      }
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
         _setCounter++;
         if (_setCounter > 3) {
@@ -376,7 +407,6 @@ namespace Ignia.Topics.Collections {
       }
       return true;
     }
-
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
