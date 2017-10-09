@@ -53,7 +53,9 @@ namespace Ignia.Topics {
       RequestContext            requestContext,
       string                    viewsDirectory                  = "~/Views/",
       string                    viewExtension                   = "cshtml"
-     ) : base(requestContext.HttpContext.Request.Url.ToString()) {
+     ) : base(
+       requestContext.HttpContext.Request.Url.ToString()
+     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

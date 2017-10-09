@@ -42,7 +42,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public abstract ContentTypeCollection GetContentTypes();
+    public abstract TopicCollection<ContentType> GetContentTypes();
 
     /*==========================================================================================================================
     | METHOD: LOAD

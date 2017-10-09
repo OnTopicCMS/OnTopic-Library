@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
 
@@ -37,8 +38,8 @@ namespace Ignia.Topics {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private   Dictionary<string, Attribute>             _supportedAttributes            = null;
-    private   ReadOnlyCollection<ContentType>           _permittedContentTypes          = null;
+    private   TopicCollection<Attribute>                        _supportedAttributes            = null;
+    private   ReadOnlyTopicCollection<ContentType>              _permittedContentTypes          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -107,7 +108,7 @@ namespace Ignia.Topics {
     ///     cref="Topic.SetRelationship(String, Topic, Boolean)"/>.
     ///   </para>
     /// </remarks>
-    public ReadOnlyCollection<ContentType> PermittedContentTypes {
+    public ReadOnlyTopicCollection<ContentType> PermittedContentTypes {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -119,12 +120,12 @@ namespace Ignia.Topics {
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes == null) {
-          var permittedContentTypes = new List<ContentType>();
+          var permittedContentTypes = new TopicCollection<ContentType>();
           var contentTypes = Relationships.GetTopics("ContentTypes");
           foreach (ContentType contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
-          _permittedContentTypes = new ReadOnlyCollection<ContentType>(permittedContentTypes);
+          _permittedContentTypes = new ReadOnlyTopicCollection<ContentType>(permittedContentTypes);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -147,20 +148,20 @@ namespace Ignia.Topics {
     ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="SupportedAttributes"/> property
     ///   must crawl through each parent Content Type to collate the list of supported attributes.
     /// </remarks>
-    public Dictionary<string, Attribute> SupportedAttributes {
+    public TopicCollection<Attribute> SupportedAttributes {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<Dictionary<string, Attribute>>() != null);
+        Contract.Ensures(Contract.Result<TopicCollection<Attribute>>() != null);
 
         if (_supportedAttributes == null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _supportedAttributes = new Dictionary<string, Attribute>();
+          _supportedAttributes = new TopicCollection<Attribute>();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
@@ -182,7 +183,7 @@ namespace Ignia.Topics {
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
           foreach (Attribute attribute in Children["Attributes"].Children) {
-            _supportedAttributes.Add(attribute.Key, attribute);
+            _supportedAttributes.Add(attribute);
           }
 
           /*--------------------------------------------------------------------------------------------------------------------
@@ -190,9 +191,9 @@ namespace Ignia.Topics {
           \-------------------------------------------------------------------------------------------------------------------*/
           var parent = Parent as ContentType;
           if (parent?.SupportedAttributes != null) {
-            foreach (var attribute in parent.SupportedAttributes.Values) {
-              if (!_supportedAttributes.ContainsKey(attribute.Key)) {
-                _supportedAttributes.Add(attribute.Key, attribute);
+            foreach (var attribute in parent.SupportedAttributes) {
+              if (!_supportedAttributes.Contains(attribute.Key)) {
+                _supportedAttributes.Add(attribute);
               }
             }
           }

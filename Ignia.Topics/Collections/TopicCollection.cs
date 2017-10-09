@@ -13,13 +13,12 @@ using System.Text;
 namespace Ignia.Topics.Collections {
 
   /*============================================================================================================================
-  | CLASS: TOPIC
+  | CLASS: TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
-  ///   with the particular node, a list of children, etc.
+  ///   Provides a strongly-typed collection of <see cref="Topic"/> instances, or a derived type.
   /// </summary>
-  public class TopicCollection: KeyedCollection<string, Topic>, IEnumerable<Topic> {
+  public class TopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -30,26 +29,32 @@ namespace Ignia.Topics.Collections {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection"/> class. Assumes no parent topic is available.
+    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/> class with a parent <see cref="Topic"/>.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic> topics = null) : this(new Topic(), topics) {
-    }
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection"/> class with a parent <see cref="Topic"/>.
-    /// </summary>
-    /// <param name="parent">Provides a reference to the parent topic.</param>
-    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(Topic parent, IEnumerable<Topic> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+    public TopicCollection(Topic parent, IEnumerable<T> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
       if (topics != null) {
-        foreach (Topic topic in topics) {
+        foreach (var topic in topics) {
           Add(topic);
         }
       }
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
+    /// </summary>
+    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
+    public TopicCollection(IEnumerable<T> topics = null) : this(new Topic(), topics) {
+    }
+
+    /*==========================================================================================================================
+    | METHOD: AS READ ONLY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a read-only version of this <see cref="TopicCollection{T}"/>.
+    /// </summary>
+    public ReadOnlyTopicCollection<T> AsReadOnly() => new ReadOnlyTopicCollection<T>(this);
 
     /*==========================================================================================================================
     | PROPERTY: SORTED
@@ -62,21 +67,11 @@ namespace Ignia.Topics.Collections {
     ///   topics in the database. Simply calling <see cref="Collection{T}.Items"/> may return topics in the correct order, but
     ///   this cannot be assumed.
     /// </remarks>
-    public IEnumerable<Topic> Sorted {
+    public IEnumerable<T> Sorted {
       get {
         Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
         return Items.OrderBy(topic => topic.SortOrder);
       }
-    }
-
-    /*==========================================================================================================================
-    | METHOD: AS READ ONLY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a read-only version of this <see cref="TopicCollection"/>.
-    /// </summary>
-    public ReadOnlyTopicCollection AsReadOnly() {
-      return new ReadOnlyTopicCollection(this);
     }
 
     /*==========================================================================================================================
@@ -92,7 +87,7 @@ namespace Ignia.Topics.Collections {
     ///   to set the order on a <see cref="KeyedCollection{TKey, TItem}"/>. As such, this overrides the
     ///   <see cref="IEnumerable{T}.GetEnumerator"/> method to ensure the correct sort order is honored.
     /// </remarks>
-    public new IEnumerator<Topic> GetEnumerator() => Sorted.GetEnumerator();
+    public new IEnumerator<T> GetEnumerator() => Sorted.GetEnumerator();
 
     /*==========================================================================================================================
     | METHOD: CHANGE KEY
@@ -107,7 +102,7 @@ namespace Ignia.Topics.Collections {
     /// </remarks>
     /// <param name="topic">The topic object for which the <see cref="Topic.Key"/> should be changed.</param>
     /// <param name="newKey">The string value for the new key.</param>
-    internal void ChangeKey(Topic topic, string newKey) => base.ChangeItemKey(topic, newKey);
+    internal void ChangeKey(T topic, string newKey) => base.ChangeItemKey(topic, newKey);
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
@@ -117,7 +112,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(Topic item) {
+    protected override string GetKeyForItem(T item) {
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
       return item.Key;
     }

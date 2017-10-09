@@ -73,8 +73,8 @@ namespace Ignia.Topics.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics() {
-      var topics = new TopicCollection();
+    public ReadOnlyTopicCollection<Topic> GetAllTopics() {
+      var topics = new TopicCollection<Topic>();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
           if (topicCollection.Contains(topic)) {
@@ -82,7 +82,7 @@ namespace Ignia.Topics.Collections {
           }
         }
       }
-      return new ReadOnlyTopicCollection(topics);
+      return new ReadOnlyTopicCollection<Topic>(topics);
     }
 
     /// <summary>
@@ -91,9 +91,9 @@ namespace Ignia.Topics.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics(string contentType) {
+    public ReadOnlyTopicCollection<Topic> GetAllTopics(string contentType) {
       var topics = GetAllTopics().Where(t => t.ContentType == contentType);
-      return ReadOnlyTopicCollection.FromList(topics.ToList());
+      return ReadOnlyTopicCollection<Topic>.FromList(topics.ToList());
     }
 
     /*==========================================================================================================================
@@ -107,12 +107,12 @@ namespace Ignia.Topics.Collections {
     ///   <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
     /// </remarks>
     /// <param name="scope">The scope of the relationship to be returned.</param>
-    public TopicCollection GetTopics(string scope) {
+    public TopicCollection<Topic> GetTopics(string scope) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
       if (Contains(scope)) {
         return this[scope];
       }
-      return new TopicCollection();
+      return new TopicCollection<Topic>();
     }
 
     /*==========================================================================================================================

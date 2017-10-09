@@ -31,7 +31,7 @@ namespace Ignia.Topics {
     private                     string                          _originalKey                    = null;
     private                     int                             _sortOrder                      = 25;
     private                     Topic                           _parent                         = null;
-    private                     TopicCollection                 _children                       = null;
+    private                     TopicCollection<Topic>          _children                       = null;
     private                     AttributeValueCollection        _attributes                     = null;
     private                     RelatedTopicCollection          _relationships                  = null;
     private                     RelatedTopicCollection          _incomingRelationships          = null;
@@ -207,10 +207,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
     /// </summary>
-    public TopicCollection Children {
+    public TopicCollection<Topic> Children {
       get {
         if (_children == null) {
-          _children = new TopicCollection(this);
+          _children = new TopicCollection<Topic>(this);
         }
         return _children;
       }
@@ -724,20 +724,20 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public ReadOnlyTopicCollection FindAllByAttribute(string name, string value) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection>() != null);
+      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
       Topic.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \---------------------------------------------------------------------------------------------------------------------*/
-      var results = new TopicCollection();
+      var results = new TopicCollection<Topic>();
 
       if (
         !String.IsNullOrEmpty(Attributes.GetValue(name)) &&
@@ -773,7 +773,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
-    public ReadOnlyTopicCollection FindAllByAttribute(string name, string value, bool isRecursive = false) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate input

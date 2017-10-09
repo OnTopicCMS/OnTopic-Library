@@ -29,7 +29,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_SetTopicTest() {
 
-      var topics = new TopicCollection();
+      var topics = new TopicCollection<Topic>();
 
       for(var i=0; i<10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));
@@ -43,7 +43,7 @@ namespace Ignia.Topics.Tests {
     | TEST: PREPOPULATE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a number of topics, then seeds a new <see cref="TopicCollection"/> with them.
+    ///   Establishes a number of topics, then seeds a new <see cref="TopicCollection{T}"/> with them.
     /// </summary>
     [TestMethod]
     public void TopicCollection_PrepopulateTest() {
@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests {
         topics.Add(Topic.Create("Topic" + i, "Page"));
       }
 
-      var topicsCollection = new TopicCollection(topics);
+      var topicsCollection = new TopicCollection<Topic>(topics);
 
       Assert.AreEqual<int>(10, topicsCollection.Count);
 
@@ -69,7 +69,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_AsReadOnlyTest() {
 
-      var topics = new TopicCollection();
+      var topics = new TopicCollection<Topic>();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));
@@ -91,7 +91,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_SortedTest() {
 
-      var topics = new TopicCollection();
+      var topics = new TopicCollection<Topic>();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));

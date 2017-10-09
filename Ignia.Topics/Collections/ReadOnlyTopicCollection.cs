@@ -18,21 +18,21 @@ namespace Ignia.Topics.Collections {
   /// <summary>
   ///   Provides a read-only keyed collection of topics.
   /// </summary>
-  public class ReadOnlyTopicCollection : ReadOnlyCollection<Topic> {
+  public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicCollection _innerCollection;
+    TopicCollection<T> _innerCollection;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="TopicCollection"/>.
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="TopicCollection{T}"/>.
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection"/>.</param>
-    public ReadOnlyTopicCollection(TopicCollection innerCollection) : base(innerCollection) {
+    public ReadOnlyTopicCollection(TopicCollection<T> innerCollection) : base(innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
       _innerCollection = innerCollection;
     }
@@ -41,16 +41,16 @@ namespace Ignia.Topics.Collections {
     | FACTORY METHOD: FROM LIST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="List{Topic}"/>.
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="List{T}"/>.
     /// </summary>
     /// <remarks>
-    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection"/>.
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
-    /// <param name="innerCollection">The underlying <see cref="TopicCollection"/>.</param>
-    public static ReadOnlyTopicCollection FromList(List<Topic> innerCollection) {
+    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    public static ReadOnlyTopicCollection<T> FromList(List<T> innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
-      var topicCollection = new TopicCollection(innerCollection);
-      return new ReadOnlyTopicCollection(topicCollection);
+      var topicCollection = new TopicCollection<T>(innerCollection);
+      return new ReadOnlyTopicCollection<T>(topicCollection);
     }
 
     /*==========================================================================================================================

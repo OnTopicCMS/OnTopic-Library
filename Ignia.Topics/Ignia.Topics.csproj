@@ -190,7 +190,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\AttributeValueCollection.cs" />
-    <Compile Include="Collections\ContentTypeCollection.cs" />
     <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
     <Compile Include="Collections\RelatedTopicCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />

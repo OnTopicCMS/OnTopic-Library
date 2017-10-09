@@ -399,7 +399,6 @@ namespace Ignia.Topics.Collections {
             "`; be sure to call `Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
-        Debug.WriteLine("Enforcing business logic on " + originalAttribute.Key);
         _typeCache.SetProperty(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
         _setCounter = 0;

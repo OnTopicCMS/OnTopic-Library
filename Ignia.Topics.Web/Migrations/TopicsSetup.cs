@@ -21,9 +21,9 @@ namespace Ignia.Topics.Web.Migrations {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     static  Topic                   _rootTopic      = null;
-    private     static  Topic                   _configuration  = null;
-    private     static  ContentTypeCollection   _contentTypes   = null;
+    private     static          Topic                           _rootTopic                      = null;
+    private     static          Topic                           _configuration                  = null;
+    private     static          TopicCollection<ContentType>    _contentTypes                   = null;
 
     /*==========================================================================================================================
     | PROPERTY: ROOT TOPIC
@@ -75,11 +75,11 @@ namespace Ignia.Topics.Web.Migrations {
     ///   <see cref="ContentType"/> topics must operationally be available before executing other portions of the setup
     ///   configuration script.
     /// </remarks>
-    public static ContentTypeCollection ContentTypes {
+    public static TopicCollection<ContentType> ContentTypes {
       get {
         if (_contentTypes == null) {
 
-          _contentTypes = new ContentTypeCollection();
+          _contentTypes = new TopicCollection<ContentType>();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Add any available Content Types to the collection
