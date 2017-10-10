@@ -132,7 +132,10 @@ namespace Ignia.Topics {
     /// </remarks>
     public string DefaultConfiguration {
       get => Attributes.GetValue("DefaultConfiguration", "");
-      set => SetAttributeValue("DefaultConfiguration", value);
+      set {
+        SetAttributeValue("DefaultConfiguration", value);
+        _configuration = null;
+      }
     }
 
     /*==========================================================================================================================
