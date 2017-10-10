@@ -28,8 +28,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_SetTopic() {
 
-      var parent                = new Topic();
-      var related               = new Topic();
+      var parent                = Topic.Create("Parent", "Page");
+      var related               = Topic.Create("Related", "Page");
 
       parent.Relationships.SetTopic("Friends", related);
 
@@ -46,7 +46,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_IncomingRelationshipTest() {
 
-      var parent                = new Topic();
+      var parent                = Topic.Create("Parent", "Page");
       var related               = Topic.Create("Related", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
@@ -65,7 +65,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_KeysTest() {
 
-      var parent                = new Topic();
+      var parent                = Topic.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
@@ -86,7 +86,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllTopicsTest() {
 
-      var parent                = new Topic();
+      var parent                = Topic.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
@@ -109,7 +109,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllContentTypesTest() {
 
-      var parent                = new Topic();
+      var parent                = Topic.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
