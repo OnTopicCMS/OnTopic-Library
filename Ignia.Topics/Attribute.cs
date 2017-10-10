@@ -157,6 +157,20 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: GET CONFIGURATION VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a configuration value from the <see cref="Configuration"/> dictionary; if the value doesn't exist, then
+    ///   optionally returns a default value.
+    /// </summary>
+    public string GetConfigurationValue(string key, string defaultValue = null) {
+      if (Configuration.ContainsKey(key) && Configuration[key] != null) {
+        return Configuration[key];
+      }
+      return defaultValue;
+    }
+
+    /*==========================================================================================================================
     | PROPERTY: IS HIDDEN?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

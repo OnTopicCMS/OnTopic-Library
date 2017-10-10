@@ -282,6 +282,8 @@ namespace Ignia.Topics.Tests {
       Assert.IsTrue(attribute.Configuration.ContainsKey("DisplayName"));
       Assert.ReferenceEquals("True", attribute.Configuration["IsRequired"]);
       Assert.ReferenceEquals("Display Name", attribute.Configuration["DisplayName"]);
+      Assert.ReferenceEquals("True", attribute.GetConfigurationValue("DisplayName"));
+      Assert.ReferenceEquals("NotFound", attribute.GetConfigurationValue("MissingAttribute", "NotFound"));
 
     }
 
