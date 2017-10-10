@@ -24,6 +24,7 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    static                      List<Type>                      _settableTypes                  = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -85,7 +86,12 @@ namespace Ignia.Topics.Collections {
     /// </remarks>
     internal bool HasSettableProperty(Type type, string name) {
       var property = GetProperty(type, name);
-      return (property != null && property.CanWrite && System.Attribute.IsDefined(property, typeof(AttributeSetterAttribute)));
+      return (
+        property != null &&
+        property.CanWrite &&
+        SettableTypes.Contains(property.PropertyType) &&
+        System.Attribute.IsDefined(property, typeof(AttributeSetterAttribute))
+      );
     }
 
     /*==========================================================================================================================
@@ -122,6 +128,25 @@ namespace Ignia.Topics.Collections {
       property.SetValue(target, valueObject);
       return true;
 
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: SETTABLE TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A list of types that are allowed to be set using <see cref="SetProperty(Object, String, String)"/>.
+    /// </summary>
+    internal List<Type> SettableTypes {
+      get {
+        if (_settableTypes == null) {
+          _settableTypes = new List<Type> {
+            typeof(bool),
+            typeof(int),
+            typeof(string)
+          };
+        }
+        return _settableTypes;
+      }
     }
 
     /*==========================================================================================================================
