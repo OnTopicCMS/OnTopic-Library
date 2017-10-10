@@ -24,36 +24,14 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    List<Type>                  _settableTypes                  = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TypeCollection"/> class. Assumes no parent topic is available.
+    ///   Initializes a new instance of the <see cref="TypeCollection"/> class.
     /// </summary>
-    /// <param name="settableTypes">An optional list of supported types.</param>
-    internal TypeCollection(List<Type> settableTypes = null) : base() {
-      _settableTypes = settableTypes;
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: SETTABLE TYPES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   A list of types that are allowed to be set using <see cref="SetProperty(Object, String, String)"/>.
-    /// </summary>
-    internal List<Type> SettableTypes {
-      get {
-        if (_settableTypes == null) {
-          _settableTypes = new List<Type> {
-            typeof(bool),
-            typeof(int),
-            typeof(string)
-          };
-        }
-        return _settableTypes;
-      }
+    internal TypeCollection() : base() {
     }
 
     /*==========================================================================================================================
@@ -107,7 +85,7 @@ namespace Ignia.Topics.Collections {
     /// </remarks>
     internal bool HasSettableProperty(Type type, string name) {
       var property = GetProperty(type, name);
-      return (property != null && property.CanWrite && SettableTypes.Contains(property.PropertyType));
+      return (property != null && property.CanWrite && System.Attribute.IsDefined(property, typeof(AttributeSetterAttribute)));
     }
 
     /*==========================================================================================================================

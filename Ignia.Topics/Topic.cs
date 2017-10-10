@@ -275,6 +275,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
+    [AttributeSetter]
     public string Key {
       get => _key;
       set {
@@ -407,6 +408,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value?.Contains(" ")?? true
     /// </requires>
+    [AttributeSetter]
     public string View {
       get =>
         // Return current Topic's View Attribute or the default for the ContentType.
@@ -424,6 +426,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
+    [AttributeSetter]
     public bool IsHidden {
       get => Attributes.GetValue("IsHidden", "0").Equals("1");
       set => SetAttributeValue("IsHidden", value ? "1" : "0");
@@ -435,6 +438,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is disabled.
     /// </summary>
+    [AttributeSetter]
     public bool IsDisabled {
       get => Attributes.GetValue("IsDisabled", "0").Equals("1");
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");

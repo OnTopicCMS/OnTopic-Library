@@ -189,6 +189,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
     <Compile Include="Collections\RelatedTopicCollection.cs" />

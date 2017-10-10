@@ -72,6 +72,7 @@ namespace Ignia.Topics {
     /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
+    [AttributeSetter]
     public string Type {
       get => Attributes.GetValue("Type", "");
       set {
@@ -96,6 +97,7 @@ namespace Ignia.Topics {
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
+    [AttributeSetter]
     public string DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
@@ -147,9 +149,10 @@ namespace Ignia.Topics {
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>
+    [AttributeSetter]
     public new bool IsHidden {
       get => Attributes.GetValue("IsHidden", "0").Equals("1");
-      set => SetAttributeValue("IsHidden", value.ToString());
+      set => SetAttributeValue("IsHidden", value? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -162,9 +165,10 @@ namespace Ignia.Topics {
     ///   This is used to establish a required field validator in the editor interface. This should be used by the form
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
+    [AttributeSetter]
     public bool IsRequired {
       get => Attributes.GetValue("IsRequired", "0").Equals("1");
-      set => SetAttributeValue("IsRequired", value.ToString());
+      set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -202,9 +206,10 @@ namespace Ignia.Topics {
     ///     navigation, and should thus be indexed.
     ///   </para>
     /// </remarks>
+    [AttributeSetter]
     public bool StoreInBlob {
       get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
-      set => SetAttributeValue("StoreInBlob", value.ToString());
+      set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
     }
 
   } // Class
