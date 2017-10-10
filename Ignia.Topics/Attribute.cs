@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
 
@@ -37,6 +39,11 @@ namespace Ignia.Topics {
   ///   </para>
   /// </remarks>
   public class Attribute : Topic {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     Dictionary<string, string>      _configuration                  = new Dictionary<string, string>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -126,6 +133,27 @@ namespace Ignia.Topics {
     public string DefaultConfiguration {
       get => Attributes.GetValue("DefaultConfiguration", "");
       set => SetAttributeValue("DefaultConfiguration", value);
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONFIGURATION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a dictionary representing a parsed collection of key/value pairs from the <see cref="DefaultConfiguration"/>.
+    /// </summary>
+    public IDictionary<string, string> Configuration {
+      get {
+        if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
+          _configuration = DefaultConfiguration
+            .Split(' ')
+            .Select(value => value.Split('='))
+            .ToDictionary(
+              pair => pair[0],
+              pair => pair.Count().Equals(2)? pair[1]?.Replace("\"", "") : null
+            );
+        }
+        return _configuration;
+      }
     }
 
     /*==========================================================================================================================
