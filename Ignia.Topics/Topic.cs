@@ -951,9 +951,12 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    protected void SetAttributeValue(string key, string value, bool? isDirty = null) {
-      Attributes.SetValue(key, value, isDirty, false);
-    }
+    protected void SetAttributeValue(string key, string value, bool? isDirty = null) => Attributes.SetValue(
+      key,
+      value,
+      isDirty,
+      false
+    );
 
     #endregion
 
@@ -1164,12 +1167,10 @@ namespace Ignia.Topics {
     /// <param name="topicKey">The topic key that should be validated.</param>
     /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
     [Pure]
-    public static void ValidateKey(string topicKey, bool isOptional = false) {
-      Contract.Requires<ArgumentException>(
-        (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
-        "Key names should only contain letters, numbers, hyphens, and/or underscores."
-      );
-    }
+    public static void ValidateKey(string topicKey, bool isOptional = false) => Contract.Requires<ArgumentException>(
+      (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
+      "Key names should only contain letters, numbers, hyphens, and/or underscores."
+    );
 
     #endregion
 

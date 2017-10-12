@@ -127,7 +127,7 @@ namespace Ignia.Topics.Tests {
       var types = new TypeCollection();
       var topic = Topic.Create("Test", "ContentType");
 
-      int i = 0;
+      var i = 0;
       for (i = 0; i < totalIterations; i++) {
         types.SetProperty(topic, "Key", "Key" + i);
       }

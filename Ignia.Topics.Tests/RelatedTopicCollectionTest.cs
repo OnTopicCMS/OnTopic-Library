@@ -104,7 +104,7 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
-    ///   <see cref="RelatedTopicCollection.GetAllTopics(string)"/> by content type.
+    ///   <see cref="RelatedTopicCollection.GetAllTopics(String)"/> by content type.
     /// </summary>
     [TestMethod]
     public void RelatedTopicCollection_GetAllContentTypesTest() {

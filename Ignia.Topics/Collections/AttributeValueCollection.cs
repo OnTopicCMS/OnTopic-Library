@@ -287,7 +287,7 @@ namespace Ignia.Topics.Collections {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(key, value, isDirty.HasValue? isDirty.Value : true, enforceBusinessLogic));
+        Add(new AttributeValue(key, value, isDirty ?? true, enforceBusinessLogic));
       }
 
     }
