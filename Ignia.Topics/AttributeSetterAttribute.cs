@@ -20,7 +20,7 @@ namespace Ignia.Topics {
   ///   <see cref="AttributeValueCollection.SetValue(String, String, Boolean?)"/>.
   /// </summary>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  class AttributeSetterAttribute : System.Attribute {
+  sealed class AttributeSetterAttribute : System.Attribute {
 
   } //Class
 
