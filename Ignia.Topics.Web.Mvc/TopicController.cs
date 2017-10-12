@@ -28,7 +28,7 @@ namespace Ignia.Topics.Web.Mvc {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
-    private                     T                               _currentTopic                   = null;
+    private                     ITopicRoutingService            _routingService                 = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -37,9 +37,9 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(ITopicRepository topicRepository, T currentTopic) {
+    public TopicController(ITopicRepository topicRepository, ITopicRoutingService routingService) {
       _topicRepository = topicRepository;
-      _currentTopic = currentTopic;
+      _routingService = routingService;
     }
 
     /*==========================================================================================================================
@@ -56,6 +56,19 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
     /*==========================================================================================================================
+    | ROUTING SERVICE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the current routing service associated with the request.
+    /// </summary>
+    /// <returns>The routing service associated with the current request.</returns>
+    protected ITopicRoutingService RoutingService {
+      get {
+        return _routingService;
+      }
+    }
+
+    /*==========================================================================================================================
     | CURRENT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -64,7 +77,7 @@ namespace Ignia.Topics.Web.Mvc {
     /// <returns>The Topic associated with the current request.</returns>
     protected Topic CurrentTopic {
       get {
-        return _currentTopic;
+        return _routingService.Topic;
       }
     }
 
