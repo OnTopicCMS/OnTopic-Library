@@ -134,7 +134,7 @@ namespace Ignia.Topics {
       get => Attributes.GetValue("DefaultConfiguration", "");
       set {
         SetAttributeValue("DefaultConfiguration", value);
-        _configuration = null;
+        _configuration.Clear();
       }
     }
 
