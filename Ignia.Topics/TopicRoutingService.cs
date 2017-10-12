@@ -27,7 +27,7 @@ namespace Ignia.Topics {
   ///   query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName. Inherits from the
   ///   CLR <seealso cref="System.Uri"/> class to provide a familiar interface with additional useful capabilities.
   /// </remarks>
-  public class TopicRoutingService : Uri {
+  public class TopicRoutingService : Uri, ITopicRoutingService {
 
     /*============================================================================================================================
     | PRIVATE VARIABLES

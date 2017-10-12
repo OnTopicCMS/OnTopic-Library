@@ -197,6 +197,7 @@
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="Collections\TopicCollection.cs" />
+    <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\MoveEventArgs.cs" />
