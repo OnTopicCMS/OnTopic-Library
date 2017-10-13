@@ -33,7 +33,7 @@ namespace Ignia.Topics {
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
-    private                     RouteValueDictionary            _routes                         = null;
+    private                     RouteData                       _routes                         = null;
     private                     NameValueCollection             _headers                        = null;
     private                     List<string>                    _views                          = null;
     private                     Uri                             _uri                            = null;
@@ -53,7 +53,7 @@ namespace Ignia.Topics {
     public TopicRoutingService(
       ITopicRepository          topicRepository,
       Uri                       uri,
-      RouteValueDictionary      routes                          = null,
+      RouteData                 routeData                       = null,
       NameValueCollection       headers                         = null,
       string                    localViewsDirectory             = null,
       string                    viewsDirectory                  = "~/Views/",
@@ -73,7 +73,7 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = topicRepository;
       _uri                      = uri;
-      _routes                   = routes?? new RouteValueDictionary();
+      _routes                   = routeData ?? new RouteData();
       _headers                  = headers?? new NameValueCollection(0);
       _localViewsDirectory      = localViewsDirectory;
       _viewsDirectory           = viewsDirectory;
@@ -105,7 +105,7 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = topicRepository;
       _uri                      = requestContext.HttpContext.Request.Url;
-      _routes                   = requestContext.RouteData.Values;
+      _routes                   = requestContext.RouteData;
       _headers                  = requestContext.HttpContext.Request.Headers;
       _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
@@ -134,13 +134,18 @@ namespace Ignia.Topics {
       get {
 
         /*------------------------------------------------------------------------------------------------------------------------
-        | Retrieve Topic via URL
+        | Retrieve topic
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (_topic == null) {
-          var directory = _uri.AbsolutePath;
-          if (directory.StartsWith("/")) directory = directory.Substring(1);
-          if (directory.EndsWith("/")) directory = directory.Substring(0, directory.Length - 1);
-          _topic = _topicRepository.Load().GetTopic(directory.Replace("/", ":"));
+          var path = _uri.AbsolutePath;
+          if (_routes.Values.ContainsKey("path")) {
+            path = _routes.GetRequiredString("path");
+            if (_routes.Values.ContainsKey("rootTopic")) {
+              path = _routes.GetRequiredString("rootTopic") + "/" + path;
+            }
+          }
+          path = path.Trim(new char[] { '/' }).Replace("//", "/");
+          _topic = _topicRepository.Load().GetTopic(path.Replace("/", ":"));
         }
 
         /*------------------------------------------------------------------------------------------------------------------------
