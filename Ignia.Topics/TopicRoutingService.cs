@@ -27,14 +27,16 @@ namespace Ignia.Topics {
   ///   query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName. Inherits from the
   ///   CLR <seealso cref="System.Uri"/> class to provide a familiar interface with additional useful capabilities.
   /// </remarks>
-  public class TopicRoutingService : Uri, ITopicRoutingService {
+  public class TopicRoutingService : ITopicRoutingService {
 
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
-    private                     RequestContext                  _requestContext                 = null;
+    private                     RouteValueDictionary            _routes                         = null;
+    private                     NameValueCollection             _headers                        = null;
     private                     List<string>                    _views                          = null;
+    private                     Uri                             _uri                            = null;
     private                     string                          _view                           = null;
     private                     string                          _viewsDirectory                 = null;
     private                     string                          _localViewsDirectory            = null;
@@ -50,11 +52,44 @@ namespace Ignia.Topics {
     /// </summary>
     public TopicRoutingService(
       ITopicRepository          topicRepository,
+      Uri                       uri,
+      RouteValueDictionary      routes                          = null,
+      NameValueCollection       headers                         = null,
+      string                    localViewsDirectory             = null,
+      string                    viewsDirectory                  = "~/Views/",
+      string                    viewExtension                   = "cshtml"
+     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(uri != null, "An instance of a Uri instantiated to the requested URL is required.");
+      Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
+      Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set values locally
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = topicRepository;
+      _uri                      = uri;
+      _routes                   = routes?? new RouteValueDictionary();
+      _headers                  = headers?? new NameValueCollection(0);
+      _localViewsDirectory      = localViewsDirectory;
+      _viewsDirectory           = viewsDirectory;
+      _viewExtension            = viewExtension;
+
+    }
+
+    /// <summary>
+    ///   Initializes a new instance of the <see cref ="TopicRoutingService"/> class based on a URL instance, a fully qualified
+    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
+    /// </summary>
+    public TopicRoutingService(
+      ITopicRepository          topicRepository,
       RequestContext            requestContext,
       string                    viewsDirectory                  = "~/Views/",
       string                    viewExtension                   = "cshtml"
-     ) : base(
-       requestContext.HttpContext.Request.Url.ToString()
      ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -69,21 +104,13 @@ namespace Ignia.Topics {
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = topicRepository;
-      _requestContext           = requestContext;
+      _uri                      = requestContext.HttpContext.Request.Url;
+      _routes                   = requestContext.RouteData.Values;
+      _headers                  = requestContext.HttpContext.Request.Headers;
+      _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
       _viewExtension            = viewExtension;
 
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: VIEWS DIRECTORY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the expected location for View files. Must be set during the constructor.
-    /// </summary>
-    public string ViewsDirectory {
-      get => _viewsDirectory;
-      private set => _viewsDirectory = value;
     }
 
     /*==========================================================================================================================
@@ -93,25 +120,8 @@ namespace Ignia.Topics {
     ///   Gets the expected location for View files. Must be set during the constructor.
     /// </summary>
     public string LocalViewsDirectory {
-      get {
-        if (_localViewsDirectory == null) {
-          _localViewsDirectory = _requestContext.HttpContext.Request.MapPath(ViewsDirectory);
-        }
-        return _localViewsDirectory;
-      }
+      get => _localViewsDirectory;
       private set => _localViewsDirectory = value;
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: VIEW SUFFIX
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the expected file suffix for View files. Can be set via the appropriate constructor overload. Defaults to
-    ///   ".cshtml".
-    /// </summary>
-    public string ViewExtension {
-      get => _viewExtension;
-      private set => _viewExtension = value;
     }
 
     /*==========================================================================================================================
@@ -127,7 +137,7 @@ namespace Ignia.Topics {
         | Retrieve Topic via URL
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (_topic == null) {
-          var directory = AbsolutePath;
+          var directory = _uri.AbsolutePath;
           if (directory.StartsWith("/")) directory = directory.Substring(1);
           if (directory.EndsWith("/")) directory = directory.Substring(0, directory.Length - 1);
           _topic = _topicRepository.Load().GetTopic(directory.Replace("/", ":"));
@@ -150,17 +160,8 @@ namespace Ignia.Topics {
     /// </summary>
     public string ContentType {
       get {
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Validate Topic
-        \-----------------------------------------------------------------------------------------------------------------------*/
         Contract.Ensures(Topic.ContentType != null, "The current topic is not associated with a valid content type.");
-
-        /*------------------------------------------------------------------------------------------------------------------------
-        | Return Topic
-        \-----------------------------------------------------------------------------------------------------------------------*/
         return Topic.ContentType;
-
       }
     }
 
@@ -206,8 +207,8 @@ namespace Ignia.Topics {
         | incompatibilities with the context (e.g., do ASP.NET MVC and ASP.NET Web Forms expose the same HttpContext objects?
         | Preferrably, this would be handled by each environment as appropriate, but that might muddle the logic.
         \-----------------------------------------------------------------------------------------------------------------------*/
-        if (viewName == null && _requestContext.HttpContext.Request.Headers["Accept"] != null) {
-          var acceptHeaders = _requestContext.HttpContext.Request.Headers["Accept"].ToString();
+        if (viewName == null && _headers["Accept"] != null) {
+          var acceptHeaders = _headers["Accept"].ToString();
           var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
           // Validate the content-type after the slash, then validate it against available views
           for (var i = 0; i < splitHeaders.Length; i++) {
@@ -267,7 +268,7 @@ namespace Ignia.Topics {
           | Define view template search variables
           \-------------------------------------------------------------------------------------------------------------------*/
           var views = new List<string>();
-          var searchPattern = "*." + ViewExtension;
+          var searchPattern = "*." + _viewExtension;
           var viewsDirectoryInfo = new DirectoryInfo(LocalViewsDirectory);
           var searchOption = SearchOption.TopDirectoryOnly;
           var subDirectories = viewsDirectoryInfo?.GetDirectories("*", SearchOption.AllDirectories);
@@ -278,14 +279,14 @@ namespace Ignia.Topics {
           // Get top-level (generic) view files
           foreach (var file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {
             // Strip off the extension (must do even for the FileInfo instance)
-            var fileName = file.Name.ToLower().Replace("." + ViewExtension, "");
+            var fileName = file.Name.ToLower().Replace("." + _viewExtension, "");
             views.Add(fileName);
           }
           // Get view files specific to Content Type
           foreach (var subDirectory in subDirectories) {
             var subDirectoryName = subDirectory.Name;
             foreach (var file in subDirectory.GetFiles(searchPattern, searchOption)) {
-              var fileName = file.Name.ToLower().Replace("." + ViewExtension, "");
+              var fileName = file.Name.ToLower().Replace("." + _viewExtension, "");
               views.Add(subDirectoryName + "/" + fileName);
             }
           }
@@ -309,11 +310,11 @@ namespace Ignia.Topics {
     | PROPERTY: VIEW PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns the full path to the target view, including the <see cref="ViewsDirectory"/> and the <see cref="ViewExtension"/>.
+    ///   Returns the full path to the target view, including the views directory extension.
     /// </summary>
     public string ViewPath {
       get {
-        return ViewsDirectory + View + "." + ViewExtension;
+        return _viewsDirectory + View + "." + _viewExtension;
       }
 
     }
@@ -377,9 +378,9 @@ namespace Ignia.Topics {
     ///   <see cref="Dictionary{String, String}"/> object.
     /// </summary>
     /// <returns>An <see cref="Dictionary{String, String}"/> instance of key/value pairs.</returns>
-    public NameValueCollection QueryParameters {
+    private NameValueCollection QueryParameters {
       get {
-        return HttpUtility.ParseQueryString(Query);
+        return HttpUtility.ParseQueryString(_uri.Query);
       }
     }
 
