@@ -160,8 +160,7 @@ namespace Ignia.Topics {
     /// </summary>
     public string ContentType {
       get {
-        Contract.Ensures(Topic.ContentType != null, "The current topic is not associated with a valid content type.");
-        return Topic.ContentType;
+        return Topic?.ContentType;
       }
     }
 

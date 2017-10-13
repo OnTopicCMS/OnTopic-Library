@@ -166,7 +166,7 @@ namespace Ignia.Topics.Web.Mvc {
       var routeData             = controllerContext.RouteData;
       var area                  = "";
       var controller            = "Topic";
-      var contentType           = "Page";
+      var contentType           = (object)null;
       var searchPaths           = new List<string>();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -179,18 +179,17 @@ namespace Ignia.Topics.Web.Mvc {
         area = routeData.GetRequiredString("controller");
       }
       if (routeData.Values.ContainsKey("contenttype")) {
-        contentType = routeData.GetRequiredString("contenttype");
-      }
-      else {
-        throw new Exception("The route `contenttype` was not found. This should be defined in the `IControllerFactory`.");
+        routeData.Values.TryGetValue("contenttype", out contentType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through patterns to identify views
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var pathPattern in locationFormats) {
-        var path = String.Format(pathPattern, controller, viewName, area, contentType);
-        searchPaths.Add(path);
+        if (!pathPattern.Contains("{3}") || !String.IsNullOrEmpty((string)contentType)) {
+          var path = String.Format(pathPattern, controller, viewName, area, contentType);
+          searchPaths.Add(path);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
