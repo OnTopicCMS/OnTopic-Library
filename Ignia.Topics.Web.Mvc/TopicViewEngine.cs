@@ -65,10 +65,50 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
     /*==========================================================================================================================
+    | METHOD: FIND PARTIAL VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provided a partial view name, determines if the view exists and, if it does, returns a new instance of it.
+    /// </summary>
+    /// <remarks>
+    ///   Compared to the base <see cref="RazorViewEngine"/>, this override will look for <code>{3}</code> in the path pattern
+    ///   and attempt to replace it with the <code>contenttype</code> <see cref="RouteDataCollection"/>.
+    /// </remarks>
+    /// <param name="controllerContext">The current <see cref="ControllerContext"/>.</param>
+    /// <param name="viewName">The requested name of the view.</param>
+    /// <param name="masterName">The requested name of the master (layout) view.</param>
+    /// <param name="useCache">Determines whether the request is appropriate for caching.</param>
+    public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify search paths
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var searchPaths = GetSearchPaths(controllerContext, partialViewName, PartialViewLocationFormats, useCache);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through patterns to identify views
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var path in searchPaths) {
+        if (FileExists(controllerContext, path)) {
+          return new ViewEngineResult(
+            CreatePartialView(controllerContext, path),
+            this
+          );
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide base processing, if view was not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return new ViewEngineResult(searchPaths.ToArray());
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: FIND VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a view name, determines if the view exists and, if it does, returns a new instance of it.
+    ///   Provided a view name, determines if the view exists and, if it does, returns a new instance of it.
     /// </summary>
     /// <remarks>
     ///   Compared to the base <see cref="RazorViewEngine"/>, this override will look for <code>{3}</code> in the path pattern
@@ -81,13 +121,53 @@ namespace Ignia.Topics.Web.Mvc {
     public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Identify search paths
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var searchPaths = GetSearchPaths(controllerContext, viewName, ViewLocationFormats, useCache);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through patterns to identify views
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var path in searchPaths) {
+        if (FileExists(controllerContext, path)) {
+          return new ViewEngineResult(
+            CreateView(controllerContext, path, masterName),
+            this
+          );
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide base processing, if view was not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return new ViewEngineResult(searchPaths.ToArray());
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET SEARCH PATHS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provided the name of the view, and the context of the controller, identifies the paths that should be searched.
+    /// </summary>
+    /// <remarks>
+    ///   Compared to the base <see cref="RazorViewEngine"/>, this override will look for <code>{3}</code> in the path pattern
+    ///   and attempt to replace it with the <code>contenttype</code> <see cref="RouteDataCollection"/>.
+    /// </remarks>
+    /// <param name="controllerContext">The current <see cref="ControllerContext"/>.</param>
+    /// <param name="viewName">The requested name of the view.</param>
+    /// <param name="locationFormats">The list of path format patterns.</param>
+    /// <param name="useCache">Determines whether the request is appropriate for caching.</param>
+    private List<string> GetSearchPaths(ControllerContext controllerContext, string viewName, string[] locationFormats, bool useCache) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var routeData             = controllerContext.RouteData;
       var area                  = "";
       var controller            = "Topic";
       var contentType           = "Page";
-      var searchedPaths         = new List<string>();
+      var searchPaths           = new List<string>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
@@ -108,22 +188,15 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through patterns to identify views
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var pathPattern in ViewLocationFormats) {
+      foreach (var pathPattern in locationFormats) {
         var path = String.Format(pathPattern, controller, viewName, area, contentType);
-        searchedPaths.Add(path);
-        if (FileExists(controllerContext, path)) {
-          return new ViewEngineResult(
-            CreateView(controllerContext, path, masterName),
-            this
-          );
-        }
+        searchPaths.Add(path);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Provide base processing, if view was not found
+      | Return list of views
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //return base.FindView(controllerContext, viewName, masterName, useCache);
-      return new ViewEngineResult(searchedPaths.ToArray());
+      return searchPaths;
 
     }
 
