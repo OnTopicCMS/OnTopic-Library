@@ -31,6 +31,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicCollection{T}"/> class with a parent <see cref="Topic"/>.
     /// </summary>
+    /// <param name="parent">A reference to the parent <see cref="Topic"/>.</param>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicCollection(Topic parent, IEnumerable<T> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;

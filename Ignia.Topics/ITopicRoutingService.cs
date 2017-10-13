@@ -61,7 +61,7 @@ namespace Ignia.Topics {
     | METHOD: IS VALID VIEW?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Checks the specified view name against its availability in the <see cref="Views"/> collection.
+    ///   Checks the specified view name against its availability in the views collection.
     /// </summary>
     /// <param name="contentType">The name of the topic's <see cref="Ignia.Topics.ContentType"/>.</param>
     /// <param name="viewName">The filename (minus extension) of the view.</param>

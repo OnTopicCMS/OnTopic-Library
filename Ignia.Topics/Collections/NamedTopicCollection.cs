@@ -48,8 +48,8 @@ namespace Ignia.Topics.Collections {
     ///   Provides an optional name for the collection.
     /// </summary>
     /// <remarks>
-    ///   The Name property is optional, and primary intended to differentiate multiple <see cref="TopicCollection"/> instances
-    ///   being referenced in a single collection, such as the <see cref="RelatedTopicCollection"/>.
+    ///   The Name property is optional, and primary intended to differentiate multiple <see cref="TopicCollection{T}"/>
+    ///   instances being referenced in a single collection, such as the <see cref="RelatedTopicCollection"/>.
     /// </remarks>
     public string Name {
       get => _name;

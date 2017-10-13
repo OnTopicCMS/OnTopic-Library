@@ -10,10 +10,10 @@ using Ignia.Topics.Collections;
 namespace Ignia.Topics.Repositories {
 
   /*============================================================================================================================
-  | CLASS: TOPIC DATA PROVIDER BASE
+  | INTERFACE: TOPIC REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a base abstract class for taxonomy data providers.
+  ///   Defines the interface for reading and writing topics from a data storage repository.
   /// </summary>
   public interface ITopicRepository {
 

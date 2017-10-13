@@ -103,8 +103,8 @@ namespace Ignia.Topics.Collections {
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship scope.
     /// </summary>
     /// <remarks>
-    ///   Returns a reference to the underlying <see cref="TopicCollection"/>; modifications to this collection will modify the
-    ///   <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
+    ///   Returns a reference to the underlying <see cref="TopicCollection{T}"/>; modifications to this collection will modify
+    ///   the <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
     /// </remarks>
     /// <param name="scope">The scope of the relationship to be returned.</param>
     public TopicCollection<Topic> GetTopics(string scope) {

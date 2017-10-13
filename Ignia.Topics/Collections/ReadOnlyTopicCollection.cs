@@ -31,7 +31,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="TopicCollection{T}"/>.
     /// </summary>
-    /// <param name="innerCollection">The underlying <see cref="TopicCollection"/>.</param>
+    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
     public ReadOnlyTopicCollection(TopicCollection<T> innerCollection) : base(innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
       _innerCollection = innerCollection;
