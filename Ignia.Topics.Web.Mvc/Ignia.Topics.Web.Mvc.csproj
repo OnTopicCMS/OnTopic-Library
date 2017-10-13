@@ -52,6 +52,7 @@
     <Compile Include="TopicController.cs" />
     <Compile Include="TopicViewEngine.cs" />
     <Compile Include="TopicViewModel.cs" />
+    <Compile Include="TopicViewResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">
