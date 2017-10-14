@@ -77,7 +77,7 @@ namespace Ignia.Topics.Collections {
       var topics = new TopicCollection<Topic>();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
-          if (topicCollection.Contains(topic)) {
+          if (topicCollection.Contains(topic) && !topics.Contains(topic)) {
             topics.Add(topic);
           }
         }
