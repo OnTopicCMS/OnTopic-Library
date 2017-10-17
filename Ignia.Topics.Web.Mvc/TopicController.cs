@@ -82,11 +82,11 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
     /*==========================================================================================================================
-    | GET: /PATH/PATH/PATH
+    | GET: INDEX (VIEW TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the query
-    ///   string or topic's view.
+    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the
+    ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     public ActionResult Index(string path) {
