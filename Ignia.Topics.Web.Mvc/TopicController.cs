@@ -89,7 +89,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    public async Task<ActionResult> Index(string path) {
+    public ActionResult Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish Page Topic
