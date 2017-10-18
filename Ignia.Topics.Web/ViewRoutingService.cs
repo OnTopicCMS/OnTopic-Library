@@ -55,7 +55,7 @@ namespace Ignia.Topics {
       string                    localViewsDirectory             = null,
       string                    viewsDirectory                  = "~/Views/",
       string                    viewExtension                   = "cshtml"
-     ) : base(topicRepository, uri.AbsolutePath, routeData) {
+     ) : base(topicRepository, uri, routeData) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -85,7 +85,7 @@ namespace Ignia.Topics {
       RequestContext            requestContext,
       string                    viewsDirectory                  = "~/Views/",
       string                    viewExtension                   = "cshtml"
-     ) : base(topicRepository, requestContext.HttpContext.Request.Url.AbsolutePath, requestContext.RouteData) {
+     ) : base(topicRepository, requestContext.HttpContext.Request.Url, requestContext.RouteData) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

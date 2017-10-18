@@ -28,7 +28,7 @@ namespace Ignia.Topics {
     \---------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
     private                     RouteData                       _routes                         = null;
-    private                     string                          _url                            = null;
+    private                     Uri                             _uri                            = null;
     private                     Topic                           _topic                          = null;
 
     /*==========================================================================================================================
@@ -40,21 +40,21 @@ namespace Ignia.Topics {
     /// </summary>
     public TopicRoutingService(
       ITopicRepository          topicRepository,
-      string                    url,
-      RouteData                 routeData                       = null
+      Uri                       uri,
+      RouteData                 routeData
      ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(url != null, "An instance of a Uri instantiated to the requested URL is required.");
+      Contract.Requires(uri != null, "An instance of a Uri instantiated to the requested URL is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = topicRepository;
-      _url                      = url;
+      _uri                      = uri;
       _routes                   = routeData ?? new RouteData();
 
     }
@@ -72,7 +72,7 @@ namespace Ignia.Topics {
         | Retrieve topic
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (_topic == null) {
-          var path = _url;
+          var path = _uri.AbsolutePath;
           if (_routes.Values.ContainsKey("path")) {
             path = _routes.GetRequiredString("path");
             if (_routes.Values.ContainsKey("rootTopic")) {
