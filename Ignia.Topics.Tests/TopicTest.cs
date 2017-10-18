@@ -160,17 +160,24 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_FindAllByAttributeValueTest() {
 
-      var parentTopic           = Topic.Create("ParentTopic", "Page");
-      var childTopic            = Topic.Create("ChildTopic", "Page");
-      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page");
+      var parentTopic           = Topic.Create("ParentTopic", "Page", 1);
+      var childTopic            = Topic.Create("ChildTopic", "Page", 5);
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page", 20);
+      var grandNieceTopic       = Topic.Create("GrandNieceTopic", "Page", 3);
+      var greatGrandChildTopic  = Topic.Create("GreatGrandChildTopic", "Page", 7);
 
       childTopic.Parent         = parentTopic;
       grandChildTopic.Parent    = childTopic;
+      grandNieceTopic.Parent    = childTopic;
+      greatGrandChildTopic.Parent = grandChildTopic;
 
-      grandChildTopic.Attributes.SetValue("Foo", "Bar");
+      grandChildTopic.Attributes.SetValue("Foo", "Baz");
+      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
+      grandNieceTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandChildTopic);
-      Assert.AreEqual<int>(1, parentTopic.FindAllByAttribute("Foo", "Bar").Count());
+      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
+      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count());
+      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
 
     }
 
