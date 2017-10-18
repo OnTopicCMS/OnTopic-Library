@@ -40,40 +40,5 @@ namespace Ignia.Topics {
     /// </summary>
     string ContentType { get; }
 
-    /*==========================================================================================================================
-    | PROPERTY: VIEW
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines the view name based on the content type, in combination with the query string, headers, and
-    ///   topic attributes.
-    /// </summary>
-    string View { get; }
-
-    /*==========================================================================================================================
-    | PROPERTY: VIEW PATH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Returns the full path to the target view, including the view directory and extension.
-    /// </summary>
-    string ViewPath { get; }
-
-    /*==========================================================================================================================
-    | METHOD: IS VALID VIEW?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Checks the specified view name against its availability in the views collection.
-    /// </summary>
-    /// <param name="contentType">The name of the topic's <see cref="Ignia.Topics.ContentType"/>.</param>
-    /// <param name="viewName">The filename (minus extension) of the view.</param>
-    /// <param name="matchedView">The string identifier for the matched view.</param>
-    /// <returns>
-    ///   A boolean value representing the view's validity as well as the output variable 'matchedView', indicating the
-    ///   <see cref="Topic.View"/> name.
-    /// </returns>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   contentType != null
-    /// </requires>
-    bool IsValidView(string contentType, string viewName, out string matchedView);
-
     }
   }

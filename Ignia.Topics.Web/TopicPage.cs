@@ -69,7 +69,7 @@ namespace Ignia.Topics.Web {
             _topic = TopicRepository.RootTopic.GetTopic(path);
           }
           else {
-            var topicRoutingService = new TopicRoutingService(TopicRepository.DataProvider, Request.RequestContext);
+            var topicRoutingService = new ViewRoutingService(TopicRepository.DataProvider, Request.RequestContext);
             _topic = topicRoutingService.Topic;
           }
         }

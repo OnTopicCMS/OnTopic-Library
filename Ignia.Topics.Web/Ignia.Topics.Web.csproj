@@ -109,6 +109,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TopicRepository.cs" />
+    <Compile Include="ViewRoutingService.cs" />
     <Compile Include="TopicsRouteHandler.cs" />
     <Compile Include="TypedTopicPage.cs">
       <SubType>ASPXCodeBehind</SubType>
