@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Repositories {
 
@@ -41,7 +42,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public abstract ContentTypeCollection GetContentTypes();
+    public abstract TopicCollection<ContentType> GetContentTypes();
 
     /*==========================================================================================================================
     | METHOD: LOAD
@@ -137,7 +138,7 @@ namespace Ignia.Topics.Repositories {
       | Mark each attribute as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var attribute in originalVersion.Attributes) {
-        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.Get(attribute.Key) != attribute.Value) {
+        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
           attribute.IsDirty = true;
         }
       }
@@ -154,7 +155,7 @@ namespace Ignia.Topics.Repositories {
       | Rename topic, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Key == originalVersion.Key) {
-        topic.Attributes.Set("Key", topic.Key, false);
+        topic.Attributes.SetValue("Key", topic.Key, false);
       }
       else {
         topic.Key = originalVersion.Key;
@@ -163,8 +164,8 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure Parent, ContentType are maintained
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Set("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
-      topic.Attributes.Set("ParentId", topic.Parent.Id.ToString(), false);
+      topic.Attributes.SetValue("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
+      topic.Attributes.SetValue("ParentId", topic.Parent.Id.ToString(), false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
@@ -205,10 +206,10 @@ namespace Ignia.Topics.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes["ParentId"].IsDirty) {
-        var topicIndex = topic.Parent.IndexOf(topic);
+      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId")) {
+        var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
-          ReorderSiblings(topic, topic.Parent[topicIndex-1]);
+          ReorderSiblings(topic, topic.Parent.Children[topicIndex-1]);
         }
         else {
           ReorderSiblings(topic);
@@ -310,7 +311,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through each topic to assign a new priority order
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in parent.SortedChildren) {
+      foreach (var topic in parent.Children.Sorted) {
         // Assuming the topic isn't the source, or no sibling is present, increment the sortOrder
         if (topic != source || sibling == null) {
           topic.SortOrder = sortOrder++;
@@ -352,7 +353,7 @@ namespace Ignia.Topics.Repositories {
       | Remove from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null) {
-        topic.Parent.Remove(topic.Key);
+        topic.Parent.Children.Remove(topic.Key);
       }
 
     }

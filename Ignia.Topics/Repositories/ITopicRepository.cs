@@ -5,14 +5,15 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Repositories {
 
   /*============================================================================================================================
-  | CLASS: TOPIC DATA PROVIDER BASE
+  | INTERFACE: TOPIC REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a base abstract class for taxonomy data providers.
+  ///   Defines the interface for reading and writing topics from a data storage repository.
   /// </summary>
   public interface ITopicRepository {
 
@@ -40,7 +41,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    ContentTypeCollection GetContentTypes();
+    TopicCollection<ContentType> GetContentTypes();
 
     /*==========================================================================================================================
     | METHOD: LOAD

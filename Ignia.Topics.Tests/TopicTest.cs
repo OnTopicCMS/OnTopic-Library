@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
@@ -18,18 +19,48 @@ namespace Ignia.Topics.Tests {
   public class TopicTest {
 
     /*==========================================================================================================================
-    | TEST: CREATE TOPIC
+    | TEST: CREATE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
     [TestMethod]
-    public void CreateTopicTest() {
+    public void Topic_CreateTest() {
       var topic = Topic.Create("Test", "ContentType");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentType));
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.Get("ContentType"), "ContentType");
+      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "ContentType");
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS EMPTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a topic using the default constructor, and ensures it's returned as empty.
+    /// </summary>
+    [TestMethod]
+    public void Topic_IsEmptyTest() {
+      var topic = new Topic();
+      Assert.IsTrue(topic.IsEmpty);
+    }
+
+    /*==========================================================================================================================
+    | TEST: CHANGE ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
+    public void Topic_Change_IdTest() {
+
+      var topic                 = Topic.Create("Test", "ContentType", 123);
+      topic.Id                  = 124;
+
+      Assert.AreEqual<int>(123, topic.Id);
+      Assert.AreNotEqual<int>(124, topic.Id);
+
     }
 
     /*==========================================================================================================================
@@ -40,7 +71,8 @@ namespace Ignia.Topics.Tests {
     ///   types.
     /// </summary>
     [TestMethod]
-    public void IsContentTypeOf() {
+    public void Topic_IsContentTypeOf() {
+
       var contentType = new ContentType("Root");
       for (var i=0; i<5; i++) {
         var childContentType = new ContentType("ContentType" + i) {
@@ -48,88 +80,8 @@ namespace Ignia.Topics.Tests {
         };
         contentType             = childContentType;
       }
+
       Assert.IsTrue(contentType.IsTypeOf("Root"));
-    }
-
-    /*==========================================================================================================================
-    | TEST: GET ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a new topic and ensures that the key can be returned as an attribute.
-    /// </summary>
-    [TestMethod]
-    public void GetAttributeTest() {
-      var topic = Topic.Create("Test", "Container");
-      Assert.AreEqual<string>("Test", topic.Attributes.Get("Key"));
-    }
-
-    /*==========================================================================================================================
-    | TEST: DEFAULT ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
-    /// </summary>
-    [TestMethod]
-    public void DefaultAttributeTest() {
-      var topic = Topic.Create("Test", "Container");
-      Assert.AreEqual<string>("Foo", topic.Attributes.Get("InvalidAttribute", "Foo"));
-    }
-
-    /*==========================================================================================================================
-    | TEST: SET ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a custom attribute on a topic and ensures it can be retrieved.
-    /// </summary>
-    [TestMethod]
-    public void SetAttributeTest() {
-      var topic = Topic.Create("Test", "Container");
-      topic.Attributes.Set("Foo", "Bar");
-      Assert.AreEqual<string>("Bar", topic.Attributes.Get("Foo"));
-    }
-
-    /*==========================================================================================================================
-    | TEST: ATTRIBUTE INHERITANCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
-    /// </summary>
-    [TestMethod]
-    public void AttributeInheritanceTest() {
-
-      var childTopic            = Topic.Create("Child", "Container");
-      var parentTopic           = Topic.Create("Parent", "Container");
-
-      childTopic.Parent         = parentTopic;
-
-      parentTopic.Attributes.Set("Foo", "Bar");
-
-      Assert.IsNull(childTopic.Attributes.Get("Foo", null));
-      Assert.AreEqual<string>(childTopic.Attributes.Get("Foo", null, true), "Bar");
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: LIMIT ATTRIBUTE INHERITANCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets an attribute on a descendent and ensures that it is correctly retrieved via inheritance.
-    /// </summary>
-    [TestMethod]
-    public void LimitAttributeInheritanceTest() {
-
-      var topics = new Topic[5];
-
-      for (var i=0; i<=4; i++) {
-        var topic = Topic.Create("Topic" + i, "Container");
-        if (i > 0) topic.Parent = topics[i - 1];
-        topics[i] = topic;
-      }
-
-      topics[0].Attributes.Set("Foo", "Bar");
-
-      Assert.IsNull(topics[4].Attributes.Get("Foo", null));
-      Assert.AreEqual<string>(topics[4].Attributes.Get("Foo", true), "Bar");
 
     }
 
@@ -140,7 +92,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void SetParentTest() {
+    public void Topic_Set_ParentTest() {
 
       var parentTopic           = Topic.Create("Parent", "ContentType");
       var childTopic            = Topic.Create("Child", "ContentType");
@@ -148,8 +100,8 @@ namespace Ignia.Topics.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.ReferenceEquals(parentTopic["Child"], childTopic);
-      Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
+      Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
+      Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0")));
 
     }
 
@@ -161,7 +113,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     // ### TODO JJC20150816: This invokes dependencies on the TopicDataProvider and, in turn, the Configuration namespace.  This
     // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
-    public void ChangeParentTest() {
+    public void Topic_Change_ParentTest() {
 
       var sourceParent          = Topic.Create("SourceParent", "ContentType");
       var targetParent          = Topic.Create("TargetParent", "ContentType");
@@ -172,11 +124,176 @@ namespace Ignia.Topics.Tests {
       childTopic.Parent         = sourceParent;
       childTopic.Parent         = targetParent;
 
-      Assert.ReferenceEquals(targetParent["ChildTopic"], childTopic);
-      Assert.IsFalse(sourceParent.Contains("ChildTopic"));
-      Assert.AreEqual<int>(10, Int32.Parse(childTopic.Attributes.Get("ParentId", "0")));
+      Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
+      Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
+      Assert.AreEqual<int>(10, Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0")));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures the Unique Key is correct for a deeply nested child.
+    /// </summary>
+    [TestMethod]
+    public void Topic_UniqueKeyTest() {
+
+      var parentTopic           = Topic.Create("ParentTopic", "Page");
+      var childTopic            = Topic.Create("ChildTopic", "Page");
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page");
+
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
+
+      Assert.AreEqual<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.UniqueKey);
+      Assert.AreEqual<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.WebPath);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: FIND ALL BY ATTRIBUTE VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Looks for a deeply nested child topic using only the attribute value.
+    /// </summary>
+    [TestMethod]
+    public void Topic_FindAllByAttributeValueTest() {
+
+      var parentTopic           = Topic.Create("ParentTopic", "Page", 1);
+      var childTopic            = Topic.Create("ChildTopic", "Page", 5);
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page", 20);
+      var grandNieceTopic       = Topic.Create("GrandNieceTopic", "Page", 3);
+      var greatGrandChildTopic  = Topic.Create("GreatGrandChildTopic", "Page", 7);
+
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
+      grandNieceTopic.Parent    = childTopic;
+      greatGrandChildTopic.Parent = grandChildTopic;
+
+      grandChildTopic.Attributes.SetValue("Foo", "Baz");
+      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
+      grandNieceTopic.Attributes.SetValue("Foo", "Bar");
+
+      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
+      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count());
+      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Looks for a deeply nested child topic using the GetTopic() methods.
+    /// </summary>
+    [TestMethod]
+    public void Topic_GetTopicTest() {
+
+      var parentTopic           = Topic.Create("ParentTopic", "Page", 1);
+      var childTopic            = Topic.Create("ChildTopic", "Page", 5);
+      var grandChildTopic       = Topic.Create("GrandChildTopic", "Page", 2);
+
+      childTopic.Parent         = parentTopic;
+      grandChildTopic.Parent    = childTopic;
+
+      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic"), parentTopic);
+      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic:ChildTopic"), childTopic);
+      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic:ChildTopic:GrandChildTopic"), grandChildTopic);
+
+      Assert.ReferenceEquals(childTopic.GetTopic("GrandChildTopic"), grandChildTopic);
+
+      Assert.ReferenceEquals(parentTopic.GetTopic(1), parentTopic);
+      Assert.ReferenceEquals(parentTopic.GetTopic(5), childTopic);
+      Assert.ReferenceEquals(parentTopic.GetTopic(2), grandChildTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS VISIBLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that IsVisible returns expected values based on IsHidden and IsDisabled.
+    /// </summary>
+    [TestMethod]
+    public void Topic_IsVisibleTest() {
+
+      var hiddenTopic           = Topic.Create("HiddenTopic", "Page");
+      var disabledTopic         = Topic.Create("DisabledTopic", "Page");
+      var visibleTopic          = Topic.Create("VisibleTopic", "Page");
+
+      hiddenTopic.IsHidden      = true;
+      disabledTopic.IsDisabled  = true;
+
+      Assert.IsFalse(hiddenTopic.IsVisible());
+      Assert.IsFalse(hiddenTopic.IsVisible(true));
+      Assert.IsFalse(disabledTopic.IsVisible());
+      Assert.IsTrue(disabledTopic.IsVisible(true));
+      Assert.IsTrue(visibleTopic.IsVisible());
+      Assert.IsTrue(visibleTopic.IsVisible(true));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that the title falls back appropriately.
+    /// </summary>
+    [TestMethod]
+    public void Topic_TitleTest() {
+
+      var untitledTopic         = Topic.Create("UntitledTopic", "Page");
+      var titledTopic           = Topic.Create("TitledTopic", "Page");
+
+      titledTopic.Title         = "Titled Topic";
+
+      Assert.AreEqual<string>(untitledTopic.Title, "UntitledTopic");
+      Assert.AreEqual<string>(titledTopic.Title, "Titled Topic");
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DERIVED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a derived topic, and ensures it is referenced correctly.
+    /// </summary>
+    [TestMethod]
+    public void Topic_DerivedTopicTest() {
+
+      var topic                 = Topic.Create("Topic", "Page");
+      var derivedTopic          = Topic.Create("DerivedTopic", "Page");
+
+      topic.DerivedTopic        = derivedTopic;
+
+      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ATTRIBUTE CONFIGURATION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="Ignia.Topics.Attribute.DefaultConfiguration"/> property, then confirms that it is correctly
+    ///   parsed via the <see cref="Ignia.Topics.Attribute.Configuration"/> property.
+    /// </summary>
+    [TestMethod]
+    public void Topic_AttributeConfigurationTest() {
+
+      Attribute attribute = (Attribute)Topic.Create("Topic", "Attribute");
+      attribute.DefaultConfiguration = "IsRequired=\"True\" DisplayName=\"Display Name\"";
+
+      Assert.IsFalse(attribute.Configuration.ContainsKey("MissingAttribute"));
+      Assert.IsTrue(attribute.Configuration.ContainsKey("IsRequired"));
+      Assert.IsTrue(attribute.Configuration.ContainsKey("DisplayName"));
+      Assert.ReferenceEquals("True", attribute.Configuration["IsRequired"]);
+      Assert.ReferenceEquals("Display Name", attribute.Configuration["DisplayName"]);
+      Assert.ReferenceEquals("True", attribute.GetConfigurationValue("DisplayName"));
+      Assert.ReferenceEquals("NotFound", attribute.GetConfigurationValue("MissingAttribute", "NotFound"));
 
     }
 
   } //Class
+
 } //Namespace

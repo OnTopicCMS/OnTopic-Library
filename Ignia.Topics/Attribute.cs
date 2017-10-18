@@ -4,7 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
 
@@ -36,6 +39,11 @@ namespace Ignia.Topics {
   ///   </para>
   /// </remarks>
   public class Attribute : Topic {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     Dictionary<string, string>      _configuration                  = new Dictionary<string, string>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -71,12 +79,13 @@ namespace Ignia.Topics {
     /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
+    [AttributeSetter]
     public string Type {
-      get => Attributes.Get("Type", "");
+      get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.Set("Type", value);
+        SetAttributeValue("Type", value);
       }
     }
 
@@ -95,11 +104,12 @@ namespace Ignia.Topics {
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
+    [AttributeSetter]
     public string DisplayGroup {
-      get => Attributes.Get("DisplayGroup", "");
+      get => Attributes.GetValue("DisplayGroup", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Attributes.Set("DisplayGroup", value);
+        SetAttributeValue("DisplayGroup", value);
       }
     }
 
@@ -121,8 +131,46 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
-      get => Attributes.Get("DefaultConfiguration", "");
-      set => Attributes.Set("DefaultConfiguration", value);
+      get => Attributes.GetValue("DefaultConfiguration", "");
+      set {
+        SetAttributeValue("DefaultConfiguration", value);
+        _configuration.Clear();
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONFIGURATION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a dictionary representing a parsed collection of key/value pairs from the <see cref="DefaultConfiguration"/>.
+    /// </summary>
+    public IDictionary<string, string> Configuration {
+      get {
+        if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
+          _configuration = DefaultConfiguration
+            .Split(' ')
+            .Select(value => value.Split('='))
+            .ToDictionary(
+              pair => pair[0],
+              pair => pair.Count().Equals(2)? pair[1]?.Replace("\"", "") : null
+            );
+        }
+        return _configuration;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: GET CONFIGURATION VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a configuration value from the <see cref="Configuration"/> dictionary; if the value doesn't exist, then
+    ///   optionally returns a default value.
+    /// </summary>
+    public string GetConfigurationValue(string key, string defaultValue = null) {
+      if (Configuration.ContainsKey(key) && Configuration[key] != null) {
+        return Configuration[key];
+      }
+      return defaultValue;
     }
 
     /*==========================================================================================================================
@@ -142,13 +190,14 @@ namespace Ignia.Topics {
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view
     ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see
-    ///     cref="AttributeValueCollection.Get(String, Boolean)"/>) then the attribute will be displayed on the page. The <see
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/>) then the attribute will be displayed on the page. The <see
     ///     cref="IsHidden"/> property is used exclusively by the editor.
     ///   </para>
     /// </remarks>
+    [AttributeSetter]
     public new bool IsHidden {
-      get => Attributes.Get("IsHidden", "0").Equals("1");
-      set => Attributes.Set("IsHidden", value.ToString());
+      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      set => SetAttributeValue("IsHidden", value? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -161,9 +210,10 @@ namespace Ignia.Topics {
     ///   This is used to establish a required field validator in the editor interface. This should be used by the form
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
+    [AttributeSetter]
     public bool IsRequired {
-      get => Attributes.Get("IsRequired", "0").Equals("1");
-      set => Attributes.Set("IsRequired", value.ToString());
+      get => Attributes.GetValue("IsRequired", "0").Equals("1");
+      set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -178,8 +228,8 @@ namespace Ignia.Topics {
     ///   default value only affects the topic when it is first being created via the editor.
     /// </remarks>
     public string DefaultValue {
-      get => Attributes.Get("DefaultValue", "");
-      set => Attributes.Set("DefaultValue", value);
+      get => Attributes.GetValue("DefaultValue", "");
+      set => SetAttributeValue("DefaultValue", value);
     }
 
     /*==========================================================================================================================
@@ -201,9 +251,10 @@ namespace Ignia.Topics {
     ///     navigation, and should thus be indexed.
     ///   </para>
     /// </remarks>
+    [AttributeSetter]
     public bool StoreInBlob {
-      get => Attributes.Get("StoreInBlob", "1").Equals("1");
-      set => Attributes.Set("StoreInBlob", value.ToString());
+      get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
+      set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
     }
 
   } // Class

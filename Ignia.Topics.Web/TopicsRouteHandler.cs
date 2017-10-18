@@ -84,9 +84,9 @@ namespace Ignia.Topics.Web {
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var routeData             = requestContext.RouteData;
-      var topicRoutingService   = new TopicRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
-      var topic                 = topicRoutingService.Topic;
-      var viewName              = topicRoutingService.View;
+      var viewRoutingService   = new ViewRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
+      var topic                 = viewRoutingService.Topic;
+      var viewName              = viewRoutingService.View;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate path
@@ -105,7 +105,7 @@ namespace Ignia.Topics.Web {
       \-----------------------------------------------------------------------------------------------------------------------*/
       routeData.Values          ["targetPath"]                  = targetPath;
       routeData.Values          ["contentType"]                 = topic.ContentType;
-      routeData.Values          ["directory"]                   = topicRoutingService.AbsolutePath;
+      routeData.Values          ["directory"]                   = requestContext.HttpContext.Request.Url.AbsolutePath;
       routeData.Values          ["path"]                        = topic.UniqueKey;
 
       /*------------------------------------------------------------------------------------------------------------------------

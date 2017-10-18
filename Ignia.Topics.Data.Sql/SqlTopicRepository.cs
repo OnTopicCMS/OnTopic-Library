@@ -15,6 +15,8 @@ using System.Data;
 using System.Xml;
 using System.Web;
 using System.Globalization;
+using Ignia.Topics.Collections;
+using System.Diagnostics;
 
 namespace Ignia.Topics.Data.Sql {
 
@@ -32,7 +34,7 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     ContentTypeCollection           _contentTypes                   = null;
+    private                     TopicCollection<ContentType>    _contentTypes                   = null;
     private                     string                          _connectionString               = null;
 
     /*==========================================================================================================================
@@ -96,7 +98,7 @@ namespace Ignia.Topics.Data.Sql {
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.Set("ParentID", parentId.ToString(), false);
+        current.Attributes.SetValue("ParentID", parentId.ToString(), false);
         current.Parent = topics[parentId];
       }
 
@@ -127,9 +129,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!current.Attributes.Contains(name)) {
-        current.Attributes.Add(new AttributeValue(name, value, false));
-      }
+      current.Attributes.SetValue(name, value, false);
 
     }
 
@@ -187,15 +187,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
-        // Treat empty as null
         if (String.IsNullOrEmpty(value)) continue;
-
-        if (!current.Attributes.Contains(name)) {
-          current.Attributes.Add(new AttributeValue(name, value, false));
-        }
-        else {
-          // System.Web.HttpContext.Current.Response.Write("Attribute '" + name + "(" + value + ") already exists. It was not added.");
-        }
+        current.Attributes.SetValue(name, value, false);
 
       }
     }
@@ -243,7 +236,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.SetRelationship(relationshipTypeId, related);
+      current.Relationships.SetTopic(relationshipTypeId, related);
 
     }
 
@@ -270,7 +263,7 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var topic in topics.Values) {
-        var success = Int32.TryParse(topic.Attributes.Get("TopicId", "-1", false, false), out var derivedTopicId);
+        var success = Int32.TryParse(topic.Attributes.GetValue("TopicId", "-1", false, false), out var derivedTopicId);
         if (!success || derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
           topic.DerivedTopic = topics[derivedTopicId];
@@ -286,14 +279,12 @@ namespace Ignia.Topics.Data.Sql {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public override ContentTypeCollection GetContentTypes() {
+    public override TopicCollection<ContentType> GetContentTypes() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypes == null) {
-
-        _contentTypes = new ContentTypeCollection();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
@@ -303,7 +294,7 @@ namespace Ignia.Topics.Data.Sql {
         /*--------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \-------------------------------------------------------------------------------------------------------------------*/
-        _contentTypes = new ContentTypeCollection();
+        _contentTypes = new TopicCollection<ContentType>();
 
         /*--------------------------------------------------------------------------------------------------------------------
         | Ensure the parent ContentTypes topic is available to iterate over
@@ -494,11 +485,13 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): ExecuteNonQuery [" + DateTime.Now + "]");
         reader = command.ExecuteReader();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate topics
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
         while (reader.Read()) {
           AddTopic(reader, topics, out sortOrder);
         }
@@ -506,6 +499,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read attributes
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): SetIndexedAttributes() [" + DateTime.Now + "]");
 
         // Move to TopicAttributes dataset
         reader.NextResult();
@@ -517,6 +511,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read blob
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): SetBlobAttributes() [" + DateTime.Now + "]");
 
         // Move to blob dataset
         reader.NextResult();
@@ -529,6 +524,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read related items
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): SetRelationships() [" + DateTime.Now + "]");
 
         // Move to the relationships dataset
         reader.NextResult();
@@ -541,6 +537,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read version history
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
 
         // Move to the version history dataset
         reader.NextResult();
@@ -553,6 +550,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate strongly typed references
         \---------------------------------------------------------------------------------------------------------------------*/
+        Debug.WriteLine("SqlTopicRepository.Load(): SetDerivedTopics() [" + DateTime.Now + "]");
+
         SetDerivedTopics(topics);
 
       }
@@ -745,7 +744,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
     /// </exception>
     /// <exception cref="Exception">
@@ -762,10 +761,10 @@ namespace Ignia.Topics.Data.Sql {
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypes = GetContentTypes();
-      if (!contentTypes.Contains(topic.Attributes.Get("ContentType"))) {
-        throw new Exception("The Content Type \"" + topic.Attributes.Get("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
+      if (!contentTypes.Contains(topic.Attributes.GetValue("ContentType"))) {
+        throw new Exception("The Content Type \"" + topic.Attributes.GetValue("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
       }
-      var contentType = contentTypes[topic.Attributes.Get("ContentType", "Page")];
+      var contentType = contentTypes[topic.Attributes.GetValue("ContentType", "Page")];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
@@ -795,7 +794,7 @@ namespace Ignia.Topics.Data.Sql {
         var key = attributeValue.Key;
         Attribute attribute = null;
 
-        if (contentType.SupportedAttributes.Keys.Contains(key)) {
+        if (contentType.SupportedAttributes.Contains(key)) {
           attribute = contentType.SupportedAttributes[key];
         }
 
@@ -817,18 +816,17 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attributeKey in contentType.SupportedAttributes.Keys) {
+      foreach (var attribute in contentType.SupportedAttributes) {
 
         // Set preconditions
-        var attribute           = contentType.SupportedAttributes[attributeKey];
-        var topicHasAttribute   = (topic.Attributes.Contains(attributeKey) && !String.IsNullOrEmpty(topic.Attributes[attributeKey].Value));
-        var isPrimaryAttribute  = (attributeKey.Equals("Key") || attributeKey.Equals("ContentType") || attributeKey.Equals("ParentID"));
-        var isRelationships     = (contentType.SupportedAttributes[attributeKey].Type.Equals("Relationships.ascx"));
-        var isNestedTopic       = (contentType.SupportedAttributes[attributeKey].Type.Equals("TopicList.ascx"));
+        var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));
+        var isPrimaryAttribute  = (attribute.Key.Equals("Key") || attribute.Key.Equals("ContentType") || attribute.Key.Equals("ParentID"));
+        var isRelationships     = (attribute.Type.Equals("Relationships.ascx"));
+        var isNestedTopic       = (attribute.Type.Equals("TopicList.ascx"));
         var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
-          nullAttributes.Append(attributeKey + ",");
+          nullAttributes.Append(attribute.Key + ",");
         }
 
       }
@@ -932,9 +930,9 @@ namespace Ignia.Topics.Data.Sql {
       | Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (var childTopic in topic) {
-          Contract.Assume(childTopic.Attributes["ParentID"] != null, "Assumes the Parent ID AttributeValue is available.");
-          childTopic.Attributes["ParentID"].Value = returnVal.ToString();
+        foreach (var childTopic in topic.Children) {
+          Contract.Assume(childTopic.Attributes.GetValue("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
+          childTopic.Attributes.SetValue("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
         }
       }
@@ -1017,7 +1015,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes["ParentId"].IsDirty = false;
+      topic.Attributes.SetValue("ParentId", target.Id.ToString(), false);
 
       //return true;
 
@@ -1123,7 +1121,7 @@ namespace Ignia.Topics.Data.Sql {
       | Return blank if the topic has no relations.
       \-----------------------------------------------------------------------------------------------------------------------*/
       // return "" if the topic has no relations
-      if (topic.Relationships.Count <= 0) {
+      if (topic.Relationships.Keys.Count() <= 0) {
         return "";
       }
       SqlCommand command = null;
@@ -1133,13 +1131,15 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Iterate through each scope and persist to SQL
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (var scope in topic.Relationships) {
+        foreach (var key in topic.Relationships.Keys) {
+
+          var scope = topic.Relationships.GetTopics(key);
 
           command = new SqlCommand("topics_PersistRelations", connection) {
             CommandType = CommandType.StoredProcedure
           };
 
-          var targetIds         = new string[scope.Count];
+          var targetIds         = new string[scope.Count()];
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
           var count             = 0;
 
@@ -1149,7 +1149,7 @@ namespace Ignia.Topics.Data.Sql {
           }
 
           // Add Parameters
-          AddSqlParameter(command, "RelationshipTypeID", scope.Key, SqlDbType.VarChar);
+          AddSqlParameter(command, "RelationshipTypeID", key, SqlDbType.VarChar);
           AddSqlParameter(command, "Source_TopicID", topicId, SqlDbType.Int);
           AddSqlParameter(command, "Target_TopicIDs", String.Join(",", targetIds), SqlDbType.VarChar);
 
@@ -1207,13 +1207,14 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var scope in topic.Relationships) {
+      foreach (var key in topic.Relationships.Keys) {
+        var scope = topic.Relationships.GetTopics(key);
         blob.Append("<related scope=\"");
-        blob.Append(scope.Key);
+        blob.Append(key);
         blob.Append("\">");
 
         // Build out string array of related items in this scope
-        var targetIds = new string[scope.Count];
+        var targetIds = new string[scope.Count()];
         var count = 0;
         foreach (var relTopic in scope) {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);

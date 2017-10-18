@@ -8,6 +8,7 @@ using Ignia.Topics.Web.Configuration;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using System.Configuration;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Web {
 
@@ -26,7 +27,7 @@ namespace Ignia.Topics.Web {
     private static              TopicsSection                   _configuration                  = null;
     private static              ITopicRepository                _topicRepository                = null;
     private static              Topic                           _rootTopic                      = null;
-    private static              ContentTypeCollection           _contentTypes                   = null;
+    private static              TopicCollection<ContentType>    _contentTypes                   = null;
 
     /*==========================================================================================================================
     | CONTENT TYPES
@@ -38,7 +39,7 @@ namespace Ignia.Topics.Web {
     ///   Gets a list of available <see cref="ContentType"/> objects from the Configuration.
     /// </summary>
     [Obsolete("The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
-    public static ContentTypeCollection ContentTypes {
+    public static TopicCollection<ContentType> ContentTypes {
       get {
         if (_contentTypes != null) {
           return _contentTypes;

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Web.Migrations {
 
@@ -20,9 +21,9 @@ namespace Ignia.Topics.Web.Migrations {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     static  Topic                   _rootTopic      = null;
-    private     static  Topic                   _configuration  = null;
-    private     static  ContentTypeCollection   _contentTypes   = null;
+    private     static          Topic                           _rootTopic                      = null;
+    private     static          Topic                           _configuration                  = null;
+    private     static          TopicCollection<ContentType>    _contentTypes                   = null;
 
     /*==========================================================================================================================
     | PROPERTY: ROOT TOPIC
@@ -40,9 +41,7 @@ namespace Ignia.Topics.Web.Migrations {
         }
         return _rootTopic;
       }
-      set {
-        _rootTopic = value;
-      }
+      set => _rootTopic = value;
     }
 
     /*==========================================================================================================================
@@ -58,9 +57,7 @@ namespace Ignia.Topics.Web.Migrations {
         }
         return _configuration;
       }
-      set {
-        _configuration = value;
-      }
+      set => _configuration = value;
     }
 
     /*==========================================================================================================================
@@ -78,23 +75,20 @@ namespace Ignia.Topics.Web.Migrations {
     ///   <see cref="ContentType"/> topics must operationally be available before executing other portions of the setup
     ///   configuration script.
     /// </remarks>
-    public static ContentTypeCollection ContentTypes {
+    public static TopicCollection<ContentType> ContentTypes {
       get {
         if (_contentTypes == null) {
 
-          _contentTypes = new ContentTypeCollection();
+          _contentTypes = new TopicCollection<ContentType>();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Add any available Content Types to the collection
           \-------------------------------------------------------------------------------------------------------------------*/
           if (RootTopic.GetTopic("Configuration:ContentTypes") != null) {
-            foreach (Topic topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+            foreach (var topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
 
-              // Make sure the Topic is used as the strongly-typed ContentType
-              ContentType contentType = topic as ContentType;
-              
               // Add ContentType Topic to collection if not already added
-              if (contentType != null && !_contentTypes.Contains(contentType.Key)) {
+              if (topic is ContentType contentType && !_contentTypes.Contains(contentType.Key)) {
                 _contentTypes.Add(contentType);
               }
 
@@ -114,9 +108,9 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     In addition to acting as a pass-through for <see cref="Topic.Save(bool, bool)"/>, this also ensures that a) the 
-    ///     topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see 
-    ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the 
+    ///     In addition to acting as a pass-through for <see cref="Topic.Save(Boolean, Boolean)"/>, this also ensures that
+    ///     a) the topic is saved twice (to account for serialized topic references, such as <c>ParentId</c>), and b) the <see
+    ///     cref="ContentTypes"/> collection is first synchronized with the <see cref="TopicRepository"/>, and then the
     ///     TopicRepository state is restored to its original.
     ///   </para>
     ///   <para>
@@ -199,7 +193,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (Topic childTopic in topic) {
+        foreach (var childTopic in topic.Children) {
           UpdateDerivedTopics(childTopic, isRecursive);
         }
       }
@@ -216,7 +210,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   The <see cref="Topic.UniqueKey"/> or <see cref="Topic.Key"/> for the topic to be deleted.
     /// </param>
     public void DeleteTopic(string topicName) {
-      Topic topic = RootTopic.GetTopic(topicName);
+      var topic = RootTopic.GetTopic(topicName);
       if (topic != null) {
         TopicRepository.DataProvider.Delete(topic);
       }
@@ -242,7 +236,7 @@ namespace Ignia.Topics.Web.Migrations {
       Topic.ValidateKey(key);
 
       Topic topic = null;
-      if (!parentTopic.Contains(key)) {
+      if (!parentTopic.Children.Contains(key)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
@@ -269,26 +263,26 @@ namespace Ignia.Topics.Web.Migrations {
         | Set the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
         topic.Key = key;
-        topic.Attributes.Set("Key", key);
+        topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
-        topic.Attributes.Set("ContentType", contentType);
+        topic.Attributes.SetValue("ContentType", contentType);
         topic.Parent = parentTopic;
-        topic.Attributes.Set("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
       }
       else {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Update the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
-        topic = parentTopic[key];
+        topic = parentTopic.Children[key];
         topic.Key = key;
-        topic.Attributes.Set("Key", key);
+        topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
-        topic.Attributes.Set("ContentType", contentType);
-        topic.Attributes.Set("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ContentType", contentType);
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
 
       }
-      return parentTopic[key];
+      return parentTopic.Children[key];
     }
 
     /*==========================================================================================================================
@@ -310,8 +304,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create content type, if not already present
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentType contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
-      Topic attributes = SetTopic(contentType, "Attributes", "List");
+      var contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
+      var attributes = SetTopic(contentType, "Attributes", "List");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure content type is in ContentTypes collection
@@ -342,11 +336,11 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(parentContentType), 
+        !String.IsNullOrWhiteSpace(parentContentType),
         "The parentContentType is required"
       );
       Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(childContentType), 
+        !String.IsNullOrWhiteSpace(childContentType),
         "The childContentType is required"
       );
       Topic.ValidateKey(parentContentType);
@@ -392,7 +386,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     /// <param name="childContentType">The ContentType topic for the child topic.</param>
     public void AllowContentType(Topic parentContentType, Topic childContentType) {
-      parentContentType?.SetRelationship("ContentTypes", childContentType);
+      parentContentType?.Relationships.SetTopic("ContentTypes", childContentType);
     }
 
 
@@ -442,7 +436,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     public void DisableChildTopics(Topic parentContentType) {
       Contract.Requires<ArgumentNullException>(parentContentType != null, "The parent ContentType must be specified.");
-      parentContentType.Attributes.Set("DisableChildTopics", "1");
+      parentContentType.Attributes.SetValue("DisableChildTopics", "1");
     }
 
     /*==========================================================================================================================
@@ -466,15 +460,15 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
       Topic.ValidateKey(key);
 
-      if (!attributes.Contains(key)) {
+      if (!attributes.Children.Contains(key)) {
         throw new Exception("The attribute with the key '" + key + "' does not exist in the '" + attributes.Key + "' Topic.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish the derived and target attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic attribute = attributes[key];
-      Topic attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.Get("ContentType"));
+      var attribute = attributes.Children[key];
+      var attributeReference = SetTopic(contentType, attribute.Key, attribute.Attributes.GetValue("ContentType"));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the attribute reference/derivation
@@ -509,8 +503,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic properties string and primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string output = ""
-      + "  <h2>" + topic.Key + " <span class=\"ContentType\">(" + topic.Attributes.Get("ContentType") + ")</span></h2>"
+      var output = ""
+      + "  <h2>" + topic.Key + " <span class=\"ContentType\">(" + topic.Attributes.GetValue("ContentType") + ")</span></h2>"
       + "  <div>"
       + "    <h3>Attributes:</h3>"
       + "    <ul class=\"Attributes\">"
@@ -519,14 +513,14 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Write out additional attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (AttributeValue attribute in topic.Attributes) {
+      foreach (var attribute in topic.Attributes) {
         output += "<li><span class=\"Attribute\">" + attribute.Key + ":</span> " + attribute.Value + "</li>";
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Write out derived topic information
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(topic.Attributes.Get("TopicID"))) {
+      if (!String.IsNullOrEmpty(topic.Attributes.GetValue("TopicID"))) {
         output += "<li><span class=\"Attribute\">DerivedTopic? " + (topic.DerivedTopic != null) + "</li>";
       }
       if (topic.DerivedTopic != null) {
@@ -540,7 +534,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Topic childTopic in topic) {
+      foreach (var childTopic in topic.Children) {
         output = output + WriteTopic(childTopic);
       }
 

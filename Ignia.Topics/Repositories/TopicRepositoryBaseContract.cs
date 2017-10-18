@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Repositories {
 
@@ -27,19 +28,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      //No contractual requirements
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide dummy return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return new Topic();
-
-    }
+    public override Topic Load(int topicId, bool isRecursive = true) => new Topic();
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
@@ -92,17 +81,17 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public override ContentTypeCollection GetContentTypes() {
+    public override TopicCollection<ContentType> GetContentTypes() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<ContentTypeCollection>() != null);
+      Contract.Ensures(Contract.Result<TopicCollection<ContentType>>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return new ContentTypeCollection();
+      return new TopicCollection<ContentType>();
 
     }
 

@@ -14,6 +14,7 @@ using System.Configuration;
 using System.Data;
 using System.Xml;
 using System.Globalization;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Data.Caching {
 
@@ -54,9 +55,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <summary>
     ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
     /// </summary>
-    public override ContentTypeCollection GetContentTypes() {
-      return _dataProvider.GetContentTypes();
-    }
+    public override TopicCollection<ContentType> GetContentTypes() => _dataProvider.GetContentTypes();
 
     /*==========================================================================================================================
     | METHOD: LOAD
@@ -135,9 +134,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, DateTime version) {
-      return _dataProvider.Load(topicId, version);
-    }
+    public override Topic Load(int topicId, DateTime version) => _dataProvider.Load(topicId, version);
 
     /*==========================================================================================================================
     | METHOD: SAVE
@@ -152,7 +149,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.Get(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
@@ -181,9 +178,7 @@ namespace Ignia.Topics.Data.Caching {
       "TestAlwaysEvaluatingToAConstant",
       Justification = "Sibling may be null from overloaded caller."
       )]
-    public override void Move(Topic topic, Topic target, Topic sibling) {
-      _dataProvider.Move(topic, target, sibling);
-    }
+    public override void Move(Topic topic, Topic target, Topic sibling) => _dataProvider.Move(topic, target, sibling);
 
     /*==========================================================================================================================
     | METHOD: DELETE
@@ -199,9 +194,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
-    public override void Delete(Topic topic, bool isRecursive = false) {
-      _dataProvider.Delete(topic, isRecursive);
-    }
+    public override void Delete(Topic topic, bool isRecursive = false) => _dataProvider.Delete(topic, isRecursive);
 
   } //Class
 

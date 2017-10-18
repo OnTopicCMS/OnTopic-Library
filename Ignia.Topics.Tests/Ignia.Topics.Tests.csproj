@@ -105,8 +105,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TypeCollectionTest.cs" />
+    <Compile Include="TopicCollectionTest.cs" />
+    <Compile Include="RelatedTopicCollectionTest.cs" />
     <Compile Include="TopicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AttributeValueCollectionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">

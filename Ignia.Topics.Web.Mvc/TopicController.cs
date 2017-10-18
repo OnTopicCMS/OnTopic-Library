@@ -28,7 +28,7 @@ namespace Ignia.Topics.Web.Mvc {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
-    private                     T                               _currentTopic                   = null;
+    private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -37,7 +37,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(ITopicRepository topicRepository, T currentTopic) {
+    public TopicController(ITopicRepository topicRepository, Topic currentTopic) {
       _topicRepository = topicRepository;
       _currentTopic = currentTopic;
     }
@@ -69,24 +69,19 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
     /*==========================================================================================================================
-    | GET: /PATH/PATH/PATH
+    | GET: INDEX (VIEW TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the query
-    ///   string or topic's view.
+    ///   Provides access to a view associated with the current topic's Content Type, if appropriate, view (as defined by the
+    ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    public async Task<ActionResult> Index(string path) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish Page Topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicRoutingService = new TopicRoutingService(_topicRepository, HttpContext.Request.RequestContext);
+    public ActionResult Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicRoutingService.Topic == null) {
+      if (CurrentTopic == null) {
         return HttpNotFound("There is no topic associated with this path.");
       }
 
@@ -95,15 +90,15 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
-      if (topicRoutingService.Topic.IsDisabled) {
+      if (CurrentTopic.IsDisabled) {
         return new HttpUnauthorizedResult("The topic at this location is disabled.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(topicRoutingService.Topic.Attributes.Get("URL"))) {
-        return RedirectPermanent(topicRoutingService.Topic.Attributes.Get("URL"));
+      if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
+        return RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -112,30 +107,19 @@ namespace Ignia.Topics.Web.Mvc {
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicRoutingService.Topic.ContentType.Equals("PageGroup")) {
-        return Redirect(topicRoutingService.Topic.SortedChildren.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+      if (CurrentTopic.ContentType.Equals("PageGroup")) {
+        return Redirect(CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = new TopicViewModel(_topicRepository, topicRoutingService.Topic);
+      var topicViewModel = new TopicViewModel(_topicRepository, CurrentTopic);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Identify associated razor view
+      | Return topic view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var view = new RazorView(
-        ControllerContext,
-        topicRoutingService.ViewPath,
-        null,
-        true,
-        null
-       );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return view
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return View(view, topicViewModel);
+      return new TopicViewResult(topicViewModel);
 
     }
 

@@ -25,6 +25,7 @@
 \--------------------------------------------------------------------------------------------------------------------------*/
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 /*===========================================================================================================================
@@ -40,7 +41,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("3.1.0.0")]
-
+[assembly: InternalsVisibleTo("Ignia.Topics.Tests")]
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: GuidAttribute("3CA9F6CB-B45A-4E74-AAA4-0C87CAA2704F")]

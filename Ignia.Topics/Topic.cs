@@ -10,6 +10,7 @@ using System.Linq;
 using System.Globalization;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
 
@@ -20,19 +21,20 @@ namespace Ignia.Topics {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
-  public class Topic : KeyedCollection<string, Topic>, IDisposable {
+  public class Topic : IDisposable {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _parent                         = null;
-    private                     AttributeValueCollection        _attributes                     = null;
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
-    private                     Topic                           _relationships                  = null;
-    private                     Topic                           _incomingRelationships          = null;
     private                     int                             _sortOrder                      = 25;
+    private                     Topic                           _parent                         = null;
+    private                     TopicCollection<Topic>          _children                       = null;
+    private                     AttributeValueCollection        _attributes                     = null;
+    private                     RelatedTopicCollection          _relationships                  = null;
+    private                     RelatedTopicCollection          _incomingRelationships          = null;
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
 
@@ -40,6 +42,8 @@ namespace Ignia.Topics {
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
+
+    #region Constructor
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,7 +54,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
-    public Topic() : base(StringComparer.OrdinalIgnoreCase) { }
+    public Topic() { }
 
     /// <summary>
     ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text
@@ -68,11 +72,11 @@ namespace Ignia.Topics {
     /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(topic)
     /// </requires>
-    protected Topic(string key) : base(StringComparer.OrdinalIgnoreCase) {
+    protected Topic(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);
       Key = key;
-      Attributes.Set("ContentType", GetType().Name);
+      ContentType = GetType().Name;
     }
 
     /// <summary>
@@ -98,14 +102,24 @@ namespace Ignia.Topics {
     ///   !contentType.Contains(" ")
     /// </requires>
     [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
-    public Topic(string key, string contentType) : base(StringComparer.OrdinalIgnoreCase) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), "contentType");
-      Topic.ValidateKey(key);
-      Topic.ValidateKey(contentType);
-      Key = key;
-      Attributes.Add(new AttributeValue("ContentType", contentType));
+    public Topic(string key, string contentType) {
     }
+
+    /*==========================================================================================================================
+    | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
+    | proposed Import/Export schema.
+    >---------------------------------------------------------------------------------------------------------------------------
+      public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
+      //Process XML
+      //Construct children objects
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
+      //available.
+      }
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    #endregion
+
+    #region Core Properties
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -163,8 +177,8 @@ namespace Ignia.Topics {
         if (_parent == value) {
           return;
           }
-        if (!value.Contains(Key)) {
-          value.Add(this);
+        if (!value.Children.Contains(Key)) {
+          value.Children.Add(this);
           }
         else {
           throw new Exception(
@@ -177,15 +191,50 @@ namespace Ignia.Topics {
         | Perform reordering and/or move
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_parent != null) {
-          _parent.Remove(Key);
+          _parent.Children.Remove(Key);
         }
 
         _parent = value;
 
-        Attributes.Set("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
+        SetAttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
 
       }
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
+    /// </summary>
+    public TopicCollection<Topic> Children {
+      get {
+        if (_children == null) {
+          _children = new TopicCollection<Topic>(this);
+        }
+        return _children;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: NESTED TOPICS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
+    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
+    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
+    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
+    | parent collection.
+    >---------------------------------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
+    ///   represent Nested Topics.
+    /// </summary>
+    public Topic NestedTopics {
+      get {
+        throw new NotImplementedException();
+      }
+    }
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: IS EMPTY
@@ -208,8 +257,8 @@ namespace Ignia.Topics {
     ///   the pipe).
     /// </remarks>
     public string ContentType {
-      get => Attributes.Get("ContentType");
-      set => Attributes.Set("ContentType", value);
+      get => Attributes.GetValue("ContentType");
+      set => SetAttributeValue("ContentType", value);
     }
 
     /*==========================================================================================================================
@@ -226,19 +275,20 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
+    [AttributeSetter]
     public string Key {
       get => _key;
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
         if (_originalKey == null) {
-          _originalKey = Attributes.Get("Key", false);
+          _originalKey = Attributes.GetValue("Key", false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
-          Parent.ChangeKey(this, value);
+          Parent.Children.ChangeKey(this, value);
         }
-        Attributes.Set("Key", value);
+        SetAttributeValue("Key", value);
         _key = value;
       }
     }
@@ -310,6 +360,10 @@ namespace Ignia.Topics {
       }
     }
 
+    #endregion
+
+    #region Convenience Properties
+
     /*==========================================================================================================================
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -324,7 +378,11 @@ namespace Ignia.Topics {
     public string WebPath {
       get {
         Contract.Ensures(Contract.Result<string>() != null);
-        return UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
+        var uniqueKey = UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
+        if (!uniqueKey.StartsWith("/")) {
+          uniqueKey = "/" + uniqueKey;
+        }
+        return uniqueKey;
       }
     }
 
@@ -350,14 +408,15 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value?.Contains(" ")?? true
     /// </requires>
+    [AttributeSetter]
     public string View {
       get =>
         // Return current Topic's View Attribute or the default for the ContentType.
-        Attributes.Get("View", Attributes.Get("View", ""));
+        Attributes.GetValue("View", Attributes.GetValue("View", ""));
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         Topic.ValidateKey(value);
-        Attributes.Set("View", value);
+        SetAttributeValue("View", value);
       }
     }
 
@@ -367,9 +426,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
+    [AttributeSetter]
     public bool IsHidden {
-      get => Attributes.Get("IsHidden", "0").Equals("1");
-      set => Attributes.Set("IsHidden", value ? "1" : "0");
+      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      set => SetAttributeValue("IsHidden", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -378,9 +438,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is disabled.
     /// </summary>
+    [AttributeSetter]
     public bool IsDisabled {
-      get => Attributes.Get("IsDisabled", "0").Equals("1");
-      set => Attributes.Set("IsDisabled", value ? "1" : "0");
+      get => Attributes.GetValue("IsDisabled", "0").Equals("1");
+      set => SetAttributeValue("IsDisabled", value ? "1" : "0");
     }
 
     /*==========================================================================================================================
@@ -411,8 +472,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get => Attributes.Get("Title", Key);
-      set => Attributes.Set("Title", value);
+      get => Attributes.GetValue("Title", Key);
+      set => SetAttributeValue("Title", value);
     }
 
     /*==========================================================================================================================
@@ -429,8 +490,8 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Description {
-      get => Attributes.Get("Description");
-      set => Attributes.Set("Description", value);
+      get => Attributes.GetValue("Description");
+      set => SetAttributeValue("Description", value);
     }
 
     /*==========================================================================================================================
@@ -470,14 +531,14 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return minimum date value, if LastModified is not already populated
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrWhiteSpace(Attributes.Get("LastModified", ""))) {
+        if (String.IsNullOrWhiteSpace(Attributes.GetValue("LastModified", ""))) {
           return DateTime.MinValue;
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
-        var lastModified = Attributes.Get("LastModified");
+        var lastModified = Attributes.GetValue("LastModified");
 
         // Return converted DateTime
         if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
@@ -492,8 +553,12 @@ namespace Ignia.Topics {
         }
 
       }
-      set => Attributes.Set("LastModified", value.ToString());
+      set => SetAttributeValue("LastModified", value.ToString());
     }
+
+    #endregion
+
+    #region Relationship and Collection Properties
 
     /*==========================================================================================================================
     | PROPERTY: DERIVED TOPIC
@@ -504,12 +569,12 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.Get(String,
+    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.GetValue(String,
     ///     Boolean)"/> method unable to find a local value for the attribute.
     ///   </para>
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method defaults to a maximum level of five "hops".
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -524,25 +589,13 @@ namespace Ignia.Topics {
         );
         _derivedTopic = value;
         if (value != null) {
-          Attributes.Set("TopicID", value.Id.ToString());
+          SetAttributeValue("TopicID", value.Id.ToString());
         }
-        else if (Attributes.Contains("TopicID")) {
+        else {
           Attributes.Remove("TopicID");
         }
       }
     }
-
-    /*==========================================================================================================================
-    | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
-    | proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
@@ -584,24 +637,20 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082515: We need to create a more appropriate data type for Relationships. While, yes, Topic is a collection
-    | of Topics, it also contains a lot of functionality that isn't needed here, while preventing the ability to add features
-    | that a relationship collection would benefit from (such as a custom Set() and Get() method).
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships to other topics; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g.,
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    public Topic Relationships {
+    public RelatedTopicCollection Relationships {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
+        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
         if (_relationships == null) {
-          _relationships = new Topic();
+          _relationships = new RelatedTopicCollection(this, false);
         }
         return _relationships;
       }
@@ -611,7 +660,7 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A dictionary of namespaced relationships from other topics; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The incoming relationships property provides a reverse index of the <see cref="Relationships"/> property, in order to
@@ -619,84 +668,15 @@ namespace Ignia.Topics {
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
-    public Topic IncomingRelationships {
+    public RelatedTopicCollection IncomingRelationships {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
+        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
         if (_incomingRelationships == null) {
-          _incomingRelationships = new Topic();
+          _incomingRelationships = new RelatedTopicCollection(this, true);
         }
         return _incomingRelationships;
       }
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: SORTED CHILDREN
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a reference to the values collection, sorted by the <see cref="SortOrder"/> property.
-    /// </summary>
-    /// <remarks>
-    ///   Since Dictionaries do not guarantee sort order, this is necessary for any code that expects to honor the order of
-    ///   topics in the database. Simply calling <see cref="Collection{T}.Items"/> may return topics in the correct order, but
-    ///   this cannot be assumed.
-    /// </remarks>
-    public IEnumerable<Topic> SortedChildren {
-      get {
-        Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
-        return Items.OrderBy(topic => topic.SortOrder);
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: NESTED TOPICS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
-    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
-    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
-    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
-    | parent collection.
-    >---------------------------------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
-    ///   represent Nested Topics.
-    /// </summary>
-    public Topic NestedTopics {
-      get {
-        throw new NotImplementedException();
-      }
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | PROPERTY: CHILD TOPICS
-    >---------------------------------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics that are NOT of the <see cref="ContentType"/>
-    ///   TopicList, which represent Child Topics. This provides a complement to the <see cref="NestedTopics"/> collection.
-    /// </summary>
-    public Topic ChildTopics {
-      get {
-        throw new NotImplementedException();
-      }
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | PROPERTY: VERSIONS
-    >===========================================================================================================================
-    | Getter for collection of previous versions that can be rolled back to.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: The Versions property simply exposes a list of Versions that can be rolled back to. Each Version object
-    | will contain the version date, and may contain the author's name and version notes.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public VersionCollection Versions {
-        get {
-        //Since versions won't normally be required, except during rollback scenarios, may alternatively configure these to load
-        //on demand.
-          return _versions;
-        }
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
@@ -724,68 +704,9 @@ namespace Ignia.Topics {
       }
     }
 
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a new relationship based on the relationship type, target topic and direction.
-    /// </summary>
-    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
-    /// <param name="related">The target topic object for which to set the relationship.</param>
-    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
-    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(scope)
-    /// </requires>
-    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
-    ///   related != null
-    /// </requires>
-    /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !scope.Contains(" ")
-    /// </requires>
-    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
-    public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
+    #endregion
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      Contract.Requires<ArgumentNullException>(related != null);
-      Topic.ValidateKey(scope);
-      // Contract.Requires<ArgumentException>(related != this, "A topic cannot be related to itself.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var relationships = Relationships;
-
-      if (isIncoming) {
-        relationships = IncomingRelationships;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Create new namespace, if not present
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!relationships.Contains(scope)) {
-        relationships.Add(Topic.Create(scope, "Container"));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add the relationship to the correct scoped key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!relationships[scope]?.Contains(related.Key)?? false) {
-        relationships[scope].Add(related);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set incoming relationship
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!isIncoming) {
-        related.SetRelationship(scope, this, true);
-      }
-
-    }
+    #region Collection Methods
 
     /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
@@ -807,24 +728,24 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public Collection<Topic> FindAllByAttribute(string name, string value) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<Collection<Topic>>() != null);
+      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
       Topic.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \---------------------------------------------------------------------------------------------------------------------*/
-      var results = new Collection<Topic>();
+      var results = new TopicCollection<Topic>();
 
       if (
-        !String.IsNullOrEmpty(Attributes.Get(name)) &&
-        Attributes.Get(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        !String.IsNullOrEmpty(Attributes.GetValue(name)) &&
+        Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
         ) {
         results.Add(this);
       }
@@ -832,7 +753,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Search children, if recursive
       \---------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in this) {
+      foreach (var topic in Children) {
         var nestedResults = topic.FindAllByAttribute(name, value);
         foreach (var matchedTopic in nestedResults) {
           results.Add(matchedTopic);
@@ -842,7 +763,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return results
       \---------------------------------------------------------------------------------------------------------------------*/
-      return results;
+      return results.AsReadOnly();
 
     }
 
@@ -856,7 +777,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
-    public Collection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -873,6 +794,173 @@ namespace Ignia.Topics {
 
       return FindAllByAttribute(name, value);
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
+    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
+    /// </summary>
+    /// <remarks>
+    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
+    /// </remarks>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
+    ///   topicId &lt;= 0
+    /// </requires>
+    public Topic GetTopic(int topicId) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return if current
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (Id == topicId) return this;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Iterate through children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopic in Children) {
+        var topic = childTopic.GetTopic(topicId);
+        if (topic != null) return topic;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return null if not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /// <summary>
+    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
+    /// </summary>
+    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
+    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    public Topic GetTopic(string namespaceKey, string topic) {
+      return GetTopic(String.IsNullOrEmpty(namespaceKey) ? topic : namespaceKey + ":" + topic);
+    }
+
+    /// <summary>
+    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
+    /// </summary>
+    /// <param name="uniqueKey">
+    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
+    /// </param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    public Topic GetTopic(string uniqueKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide shortcut for local calls
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
+        if (Children.Contains(uniqueKey)) {
+          return Children[uniqueKey];
+        }
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide implicit root
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
+      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
+      | needing to be aware of the root.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
+        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
+        ) {
+        uniqueKey = "Root:" + uniqueKey;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
+      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var remainder = uniqueKey.Substring(UniqueKey.Length + 1);
+      var marker = remainder.IndexOf(":", StringComparison.Ordinal);
+      var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!Children.Contains(nextChild)) return null;
+
+      if (nextChild == remainder) return Children[nextChild];
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return Children[nextChild]?.GetTopic(uniqueKey);
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET ATTRIBUTE VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
+    ///   one, depending on whether that value already exists.
+    /// </summary>
+    /// <remarks>
+    ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
+    ///   called by the AttributeValueCollection.This is intended to enforce local business logic, and prevent callers from
+    ///   introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
+    ///   AttributeValueCollection that the business logic has already been enforced.To do that, they must either call
+    ///   SetValue() with the enforceBusinessLogic flag set to false, or, if they're in a separate assembly, call this overload.
+    /// </remarks>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    protected void SetAttributeValue(string key, string value, bool? isDirty = null) => Attributes.SetValue(
+      key,
+      value,
+      isDirty,
+      false
+    );
+
+    #endregion
+
+    #region Static Methods
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC TYPE
@@ -1004,7 +1092,7 @@ namespace Ignia.Topics {
       | Set the topic's Key and Content Type
       \---------------------------------------------------------------------------------------------------------------------*/
       topic.Key = key;
-      topic.Attributes.Set("ContentType", contentType);
+      topic.ContentType = contentType;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
@@ -1052,11 +1140,11 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Set dirty state to false
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(topic.Attributes["Key"] != null);
-      Contract.Assume(topic.Attributes["ContentType"] != null);
+      Contract.Assume(topic.Key != null);
+      Contract.Assume(topic.ContentType != null);
 
-      topic.Attributes["Key"].IsDirty = false;
-      topic.Attributes["ContentType"].IsDirty = false;
+      topic.SetAttributeValue("Key", key, false);
+      topic.SetAttributeValue("ContentType", contentType, false);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object
@@ -1066,155 +1154,37 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: MERGE
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Similar to Load(), but should merge values with existing Topic rather than creating a new TOpic. Should
-    | accept an XmlDocument or XmlNode based on the proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | METHOD: ROLLBACK
+    | METHOD: VALIDATE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
-    ///   saving the new version.
-    /// </summary>
-    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires
-    ///   description="The version requested for rollback does not exist in the version history."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !VersionHistory.Contains(version)
-    /// </requires>
-    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
-    public void Rollback(DateTime version) {
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET TOPIC
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
-    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
+    ///   Validates the format of a key used for an individual topic.
     /// </summary>
     /// <remarks>
-    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
+    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
+    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
+    ///   Contract Checker.
     /// </remarks>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
-    ///   topicId &lt;= 0
-    /// </requires>
-    public Topic GetTopic(int topicId) {
+    /// <param name="topicKey">The topic key that should be validated.</param>
+    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
+    [Pure]
+    public static void ValidateKey(string topicKey, bool isOptional = false) => Contract.Requires<ArgumentException>(
+      (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
+      "Key names should only contain letters, numbers, hyphens, and/or underscores."
+    );
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
+    #endregion
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return if current
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Id == topicId) return this;
+    #region Obsolete methods
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Iterate through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in this) {
-        var topic = childTopic.GetTopic(topicId);
-        if (topic != null) return topic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return null if not found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
-
-    /// <summary>
-    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
-    /// </summary>
-    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
-    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string namespaceKey, string topic) {
-      return GetTopic(String.IsNullOrEmpty(namespaceKey)? topic : namespaceKey + ":" + topic);
-    }
-
-    /// <summary>
-    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
-    /// </summary>
-    /// <param name="uniqueKey">
-    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
-    /// </param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string uniqueKey) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide shortcut for local calls
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
-        if (Contains(uniqueKey)) {
-          return this[uniqueKey];
-        }
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide implicit root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
-      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
-      | needing to be aware of the root.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
-        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
-        ) {
-        uniqueKey = "Root:" + uniqueKey;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
-      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var   remainder           = uniqueKey.Substring(UniqueKey.Length + 1);
-      var   marker              = remainder.IndexOf(":", StringComparison.Ordinal);
-      var   nextChild           = (marker < 0)? remainder : remainder.Substring(0, marker);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Find topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Contains(nextChild)) return null;
-
-      if (nextChild == remainder) return this[nextChild];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return this[nextChild]?.GetTopic(uniqueKey);
-
-    }
+    /*==========================================================================================================================
+    | OBSOLETE METHODS
+    >---------------------------------------------------------------------------------------------------------------------------
+    | In a legacy version of the Topic Library, CRUD shortcuts were provided directly on the Topic class, for convenience. This
+    | meant the Topic (an Entity) needed to be aware of the ITopicRepository (a Repository). Not only is this not a best
+    | practice, but it also introduces issues with the introduction of dependency injection, since it would have required that
+    | each and every Topic persist a reference to the Repository that created it. To mitigate this, these were removed with the
+    | dependency injection update.
+    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: SAVE
@@ -1314,53 +1284,64 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | METHOD: VALIDATE KEY
+    | METHOD: MERGE
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ###TODO JJC080314: Similar to Load(), but should merge values with existing Topic rather than creating a new TOpic. Should
+    | accept an XmlDocument or XmlNode based on the proposed Import/Export schema.
+    >---------------------------------------------------------------------------------------------------------------------------
+      public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
+      //Process XML
+      //Construct children objects
+      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
+      //available.
+      }
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /*==========================================================================================================================
+    | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Validates the format of a key used for an individual topic.
+    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
+    ///   saving the new version.
     /// </summary>
-    /// <remarks>
-    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
-    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
-    ///   Contract Checker.
-    /// </remarks>
-    /// <param name="topicKey">The topic key that should be validated.</param>
-    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    [Pure]
-    public static void ValidateKey(string topicKey, bool isOptional = false) {
-      Contract.Requires<ArgumentException>(
-        (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
-        "Key names should only contain letters, numbers, hyphens, and/or underscores."
-      );
+    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
+    /// <requires
+    ///   description="The version requested for rollback does not exist in the version history."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !VersionHistory.Contains(version)
+    /// </requires>
+    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
+    public void Rollback(DateTime version) {
     }
 
     /*==========================================================================================================================
-    | METHOD: CHANGE KEY
+    | METHOD: SET RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Changes the key associated with a topic to maintain referential integrity.
+    ///   Sets a new relationship based on the relationship type, target topic and direction.
     /// </summary>
-    /// <remarks>
-    ///   By default, <see cref="KeyedCollection{TKey, TItem}"/> doesn't permit mutable keys; this mitigates that issue by
-    ///   allowing the collection's lookup dictionary to be updated whenever the key is updated in the corresponding topic
-    ///   object.
-    /// </remarks>
-    /// <param name="topic">The topic object for which the <see cref="Key"/> should be changed.</param>
-    /// <param name="newKey">The string value for the new key.</param>
-    internal void ChangeKey(Topic topic, string newKey) => base.ChangeItemKey(topic, newKey);
-
-    /*==========================================================================================================================
-    | OVERRIDE: GET KEY FOR ITEM
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Method must be overridden for the EntityCollection to extract the keys from the items.
-    /// </summary>
-    /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
-    /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(Topic item) {
-      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
-      return item.Key;
+    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
+    /// <param name="related">The target topic object for which to set the relationship.</param>
+    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
+    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(scope)
+    /// </requires>
+    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
+    ///   related != null
+    /// </requires>
+    /// <requires
+    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !scope.Contains(" ")
+    /// </requires>
+    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
+    [Obsolete("The SetRelationship() method is obsolete; use Relationship.Set() instead.", true)]
+    public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
     }
+
+    #endregion
+
+    #region Interface Implementations
 
     /*==========================================================================================================================
     | METHOD: DISPOSE
@@ -1369,11 +1350,9 @@ namespace Ignia.Topics {
     ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
-    public virtual void Dispose() {
-      _incomingRelationships?.Dispose();
-      _relationships?.Dispose();
-      GC.SuppressFinalize(this);
-    }
+    public virtual void Dispose() => GC.SuppressFinalize(this);
+
+    #endregion
 
   } // Class
 
