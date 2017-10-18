@@ -275,13 +275,13 @@ namespace Ignia.Topics.Tests {
     | TEST: ATTRIBUTE CONFIGURATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the <see cref="Ignia.Topics.Attribute.DefaultConfiguration"/> property, then confirms that it is correctly
-    ///   parsed via the <see cref="Ignia.Topics.Attribute.Configuration"/> property.
+    ///   Sets the <see cref="Ignia.Topics.AttributeDescriptor.DefaultConfiguration"/> property, then confirms that it is
+    ///   correctly parsed via the <see cref="Ignia.Topics.AttributeDescriptor.Configuration"/> property.
     /// </summary>
     [TestMethod]
     public void Topic_AttributeConfigurationTest() {
 
-      Attribute attribute = (Attribute)Topic.Create("Topic", "Attribute");
+      var attribute = (AttributeDescriptor)Topic.Create("Topic", "AttributeDescriptor");
       attribute.DefaultConfiguration = "IsRequired=\"True\" DisplayName=\"Display Name\"";
 
       Assert.IsFalse(attribute.Configuration.ContainsKey("MissingAttribute"));

@@ -792,7 +792,7 @@ namespace Ignia.Topics.Data.Sql {
       foreach (var attributeValue in topic.Attributes) {
 
         var key = attributeValue.Key;
-        Attribute attribute = null;
+        var attribute = (AttributeDescriptor)null;
 
         if (contentType.SupportedAttributes.Contains(key)) {
           attribute = contentType.SupportedAttributes[key];

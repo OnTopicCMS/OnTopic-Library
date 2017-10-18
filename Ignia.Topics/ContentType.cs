@@ -38,7 +38,7 @@ namespace Ignia.Topics {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private   TopicCollection<Attribute>                        _supportedAttributes            = null;
+    private   TopicCollection<AttributeDescriptor>                        _supportedAttributes            = null;
     private   ReadOnlyTopicCollection<ContentType>              _permittedContentTypes          = null;
 
     /*==========================================================================================================================
@@ -141,7 +141,8 @@ namespace Ignia.Topics {
     | PROPERTY: SUPPORTED ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a list of <see cref="Attribute"/> objects that are supported for objects implementing this ContentType.
+    ///   Provides a list of <see cref="AttributeDescriptor"/> objects that are supported for objects implementing this
+    ///   ContentType.
     /// </summary>
     /// <remarks>
     ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from
@@ -149,20 +150,20 @@ namespace Ignia.Topics {
     ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="SupportedAttributes"/> property
     ///   must crawl through each parent Content Type to collate the list of supported attributes.
     /// </remarks>
-    public TopicCollection<Attribute> SupportedAttributes {
+    public TopicCollection<AttributeDescriptor> SupportedAttributes {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<TopicCollection<Attribute>>() != null);
+        Contract.Ensures(Contract.Result<TopicCollection<AttributeDescriptor>>() != null);
 
         if (_supportedAttributes == null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _supportedAttributes = new TopicCollection<Attribute>();
+          _supportedAttributes = new TopicCollection<AttributeDescriptor>();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
@@ -183,7 +184,7 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (Attribute attribute in Children["Attributes"].Children) {
+          foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
             _supportedAttributes.Add(attribute);
           }
 

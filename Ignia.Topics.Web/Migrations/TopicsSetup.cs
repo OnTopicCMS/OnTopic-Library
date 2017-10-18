@@ -246,10 +246,11 @@ namespace Ignia.Topics.Web.Migrations {
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Create a strongly-typed Attribute object if the contentType key is set to "Attribute"
+        | Create a strongly-typed AttributeDescriptor object if the contentType key is set to either "Attribute" or
+        | "AttributeDescriptor".
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (contentType.Equals("Attribute")) {
-          topic = new Attribute();
+        else if (contentType.Equals("Attribute") || contentType.Equals("AttributeDescriptor")) {
+          topic = new AttributeDescriptor();
         }
 
         /*----------------------------------------------------------------------------------------------------------------------

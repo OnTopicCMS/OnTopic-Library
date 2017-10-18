@@ -189,6 +189,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute.cs" />
     <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
@@ -204,7 +205,7 @@
     <Compile Include="Repositories\RenameEventArgs.cs" />
     <Compile Include="Repositories\TopicRepositoryBase.cs" />
     <Compile Include="Repositories\TopicRepositoryBaseContract.cs" />
-    <Compile Include="Attribute.cs" />
+    <Compile Include="AttributeDescriptor.cs" />
     <Compile Include="AttributeValue.cs" />
     <Compile Include="ContentType.cs" />
     <Compile Include="Topic.cs" />

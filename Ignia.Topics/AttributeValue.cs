@@ -28,7 +28,7 @@ namespace Ignia.Topics {
   ///   <para>
   ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for
   ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see
-  ///     cref="Attribute"/> class.
+  ///     cref="AttributeDescriptor"/> class.
   ///   </para>
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
