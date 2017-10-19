@@ -728,14 +728,14 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public ReadOnlyTopicCollection FindAllByAttribute(string name, string value) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection>() != null);
+      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
       Topic.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -763,7 +763,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return results
       \---------------------------------------------------------------------------------------------------------------------*/
-      return (ReadOnlyTopicCollection)results.AsReadOnly();
+      return results.AsReadOnly();
 
     }
 
@@ -777,7 +777,7 @@ namespace Ignia.Topics {
     /// </param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
-    public ReadOnlyTopicCollection FindAllByAttribute(string name, string value, bool isRecursive = false) {
+    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate input
