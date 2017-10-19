@@ -105,6 +105,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />
     <Compile Include="TypeCollectionTest.cs" />
     <Compile Include="TopicCollectionTest.cs" />
