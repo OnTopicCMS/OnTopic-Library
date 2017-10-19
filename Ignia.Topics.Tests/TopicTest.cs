@@ -28,7 +28,7 @@ namespace Ignia.Topics.Tests {
     public void Topic_CreateTest() {
       var topic = Topic.Create("Test", "ContentType");
       Assert.IsNotNull(topic);
-      Assert.IsInstanceOfType(topic, typeof(ContentType));
+      Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
       Assert.AreEqual<string>(topic.Key, "Test");
       Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "ContentType");
     }
@@ -73,9 +73,9 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_IsContentTypeOf() {
 
-      var contentType = new ContentType("Root");
+      var contentType = new ContentTypeDescriptor("Root");
       for (var i=0; i<5; i++) {
-        var childContentType = new ContentType("ContentType" + i) {
+        var childContentType = new ContentTypeDescriptor("ContentType" + i) {
           Parent = contentType
         };
         contentType             = childContentType;

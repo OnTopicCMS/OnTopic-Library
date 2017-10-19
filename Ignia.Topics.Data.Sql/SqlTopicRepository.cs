@@ -34,7 +34,7 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     TopicCollection<ContentType>    _contentTypes                   = null;
+    private                     ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
     private                     string                          _connectionString               = null;
 
     /*==========================================================================================================================
@@ -274,17 +274,17 @@ namespace Ignia.Topics.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPES
+    | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
+    ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
-    public override TopicCollection<ContentType> GetContentTypes() {
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypes == null) {
+      if (_contentTypeDescriptors == null) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
@@ -294,7 +294,7 @@ namespace Ignia.Topics.Data.Sql {
         /*--------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \-------------------------------------------------------------------------------------------------------------------*/
-        _contentTypes = new TopicCollection<ContentType>();
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
 
         /*--------------------------------------------------------------------------------------------------------------------
         | Ensure the parent ContentTypes topic is available to iterate over
@@ -309,14 +309,17 @@ namespace Ignia.Topics.Data.Sql {
         foreach (var topic in configuration.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
           // Ensure the Topic is used as the strongly-typed ContentType
           // Add ContentType Topic to collection if not already added
-          if (topic is ContentType contentType && !_contentTypes.Contains(contentType.Key)) {
-            _contentTypes.Add(contentType);
+          if (
+            topic is ContentTypeDescriptor contentTypeDescriptor &&
+            !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
+          ) {
+            _contentTypeDescriptors.Add(contentTypeDescriptor);
           }
         }
 
       }
 
-      return _contentTypes;
+      return _contentTypeDescriptors;
 
     }
 
@@ -760,17 +763,21 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentTypes = GetContentTypes();
+      var contentTypes = GetContentTypeDescriptors();
       if (!contentTypes.Contains(topic.Attributes.GetValue("ContentType"))) {
-        throw new Exception("The Content Type \"" + topic.Attributes.GetValue("ContentType", "Page") + "\" referenced by \"" + topic.Key + "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count + " ContentTypes in the Repository.");
+        throw new Exception(
+          "The Content Type \"" + topic.Attributes.GetValue("ContentType", "Page") + "\" referenced by \"" + topic.Key +
+          "\" could not be found. under \"Configuration:ContentTypes\". There are " + contentTypes.Count +
+          " ContentTypes in the Repository."
+        );
       }
       var contentType = contentTypes[topic.Attributes.GetValue("ContentType", "Page")];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentType && !contentTypes.Contains(topic.Key)) {
-        _contentTypes.Add(topic as ContentType);
+      if (topic is ContentTypeDescriptor && !contentTypes.Contains(topic.Key)) {
+        _contentTypeDescriptors.Add(topic as ContentTypeDescriptor);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

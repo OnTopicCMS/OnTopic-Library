@@ -20,11 +20,12 @@ namespace Ignia.Topics {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Every <see cref="Topic"/> in the Topic Library is associated with a <see cref="ContentType"/>, which determines the
-  ///     expected schema of the topic. That schema is described through the <see cref="ContentType.SupportedAttributes"/>
-  ///     collection, which provides a list of <see cref="AttributeDescriptor"/>s associated with that content type. For
-  ///     instance, the commonly-configured "Page" Content Type has attributes such as "Keywords", "Body", etc. Each of those
-  ///     are individually represented by instances of the <see cref="AttributeDescriptor"/> class.
+  ///     Every <see cref="Topic"/> in the Topic Library is associated with a <see cref="ContentTypeDescriptor"/>, which
+  ///     determines the expected schema of the topic. That schema is described through the
+  ///     <see cref="ContentTypeDescriptor.SupportedAttributes"/> collection, which provides a list of
+  ///     <see cref="AttributeDescriptor"/>s associated with that content type. For instance, the commonly-configured "Page"
+  ///     Content Type has attributes such as "Keywords", "Body", etc. Each of those are individually represented by instances
+  ///     of the <see cref="AttributeDescriptor"/> class.
   ///   </para>
   ///   <para>
   ///     The purpose of the <see cref="AttributeDescriptor"/> class is only to describe the schema of an attribute. For each
@@ -182,11 +183,11 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     By default, all attributes associated with a <see cref="ContentType"/> are rendered in the editor. Optionally,
-    ///     however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content Type, as
-    ///     some parent attributes may not be necessary for child content types (e.g., they may be implicitly assigned). It can
-    ///     also be valuable for attributes that are intended to be managed by the system, and not via the editor (e.g., a
-    ///     timestamp or version).
+    ///     By default, all attributes associated with a <see cref="ContentTypeDescriptor"/> are rendered in the editor.
+    ///     Optionally, however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content
+    ///     Type Descriptor, as some parent attributes may not be necessary for child content types (e.g., they may be
+    ///     implicitly assigned). It c be valuable for attributes that are intended to be managed by the system, and not via the
+    ///     editor (e.g., a timestamp or version).
     ///   </para>
     ///   <para>
     ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view

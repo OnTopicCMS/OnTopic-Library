@@ -277,7 +277,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Checks the specified view name against its availability in the <see cref="Views"/> collection.
     /// </summary>
-    /// <param name="contentType">The name of the topic's <see cref="Ignia.Topics.ContentType"/>.</param>
+    /// <param name="contentType">The name of the topic's <see cref="Ignia.Topics.ContentTypeDescriptor"/>.</param>
     /// <param name="viewName">The filename (minus extension) of the view.</param>
     /// <param name="matchedView">The string identifier for the matched view.</param>
     /// <returns>

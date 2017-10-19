@@ -50,12 +50,12 @@ namespace Ignia.Topics.Data.Caching {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPES
+    | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
+    ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
-    public override TopicCollection<ContentType> GetContentTypes() => _dataProvider.GetContentTypes();
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => _dataProvider.GetContentTypeDescriptors();
 
     /*==========================================================================================================================
     | METHOD: LOAD

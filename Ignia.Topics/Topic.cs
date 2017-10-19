@@ -252,9 +252,9 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentType.SupportedAttributes"/> property). The content type also determines, by default,
-    ///   which view is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't overwritten down
-    ///   the pipe).
+    ///   Editor (via the <see cref="ContentTypeDescriptor.SupportedAttributes"/> property). The content type also determines,
+    ///   by default, which view is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't
+    ///   overwritten down the pipe).
     /// </remarks>
     public string ContentType {
       get => Attributes.GetValue("ContentType");

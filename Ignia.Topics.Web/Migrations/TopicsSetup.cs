@@ -23,7 +23,7 @@ namespace Ignia.Topics.Web.Migrations {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private     static          Topic                           _rootTopic                      = null;
     private     static          Topic                           _configuration                  = null;
-    private     static          TopicCollection<ContentType>    _contentTypes                   = null;
+    private     static          ContentTypeDescriptorCollection _contentTypes                   = null;
 
     /*==========================================================================================================================
     | PROPERTY: ROOT TOPIC
@@ -75,11 +75,11 @@ namespace Ignia.Topics.Web.Migrations {
     ///   <see cref="ContentType"/> topics must operationally be available before executing other portions of the setup
     ///   configuration script.
     /// </remarks>
-    public static TopicCollection<ContentType> ContentTypes {
+    public static ContentTypeDescriptorCollection ContentTypes {
       get {
         if (_contentTypes == null) {
 
-          _contentTypes = new TopicCollection<ContentType>();
+          _contentTypes = new ContentTypeDescriptorCollection();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Add any available Content Types to the collection
@@ -88,7 +88,7 @@ namespace Ignia.Topics.Web.Migrations {
             foreach (var topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
 
               // Add ContentType Topic to collection if not already added
-              if (topic is ContentType contentType && !_contentTypes.Contains(contentType.Key)) {
+              if (topic is ContentTypeDescriptor contentType && !_contentTypes.Contains(contentType.Key)) {
                 _contentTypes.Add(contentType);
               }
 
@@ -120,7 +120,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   </para>
     /// </remarks>
     /// <note>
-    ///   IMPORTANT: If a <see cref="ContentType"/> with the same key exists, it will be overwritten. This ensures any
+    ///   IMPORTANT: If a <see cref="ContentTypeDescriptor"/> with the same key exists, it will be overwritten. This ensures any
     ///   attributes added via the configuration scripts are reflected in the database. It also means, however, that the
     ///   TopicRepository's <see cref="TopicRepository.ContentTypes"/> collection will be orphaned from the TopicRepository's
     ///   configuration namespace. For that reason, the ContentTypes collection must be reset after a Save();
@@ -242,7 +242,7 @@ namespace Ignia.Topics.Web.Migrations {
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
         \---------------------------------------------------------------------------------------------------------------------*/
         if (contentType.Equals("ContentType")) {
-          topic = new ContentType();
+          topic = new ContentTypeDescriptor();
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create content type, if not already present
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType = (ContentType)SetTopic(parentTopic, key, "ContentType");
+      var contentType = (ContentTypeDescriptor)SetTopic(parentTopic, key, "ContentType");
       var attributes = SetTopic(contentType, "Attributes", "List");
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -350,8 +350,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentType parent = null;
-      ContentType child = null;
+      ContentTypeDescriptor parent = null;
+      ContentTypeDescriptor child = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up Parent Content Type
@@ -412,7 +412,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentType parent = null;
+      ContentTypeDescriptor parent = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up parent
@@ -447,7 +447,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   Looks up an Topic (assumed to be an attribute) from the provided Topic collection, finds the attribute with the
     ///   associated name, and creates a Topic Pointer that points to that attribute.
     /// </summary>
-    /// <param name="contentType">The <see cref="ContentType"/>for the attribute topic.</param>
+    /// <param name="contentType">The <see cref="ContentTypeDescriptor"/>for the attribute topic.</param>
     /// <param name="attributes">The collection of attributes for the attribute topic.</param>
     /// <param name="key">The <see cref="Topic.Key"/> for the attribute to be referenced.</param>
     /// <returns>The topic object for the referencing topic.</returns>

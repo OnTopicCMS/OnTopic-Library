@@ -76,22 +76,22 @@ namespace Ignia.Topics.Repositories {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPES
+    | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a collection of Content Type objects from the configuration section of the data provider.
+    ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
-    public override TopicCollection<ContentType> GetContentTypes() {
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<TopicCollection<ContentType>>() != null);
+      Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return new TopicCollection<ContentType>();
+      return new ContentTypeDescriptorCollection();
 
     }
 
