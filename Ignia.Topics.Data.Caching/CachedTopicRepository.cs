@@ -19,13 +19,14 @@ using Ignia.Topics.Collections;
 namespace Ignia.Topics.Data.Caching {
 
   /*============================================================================================================================
-  | CLASS: SQL TOPIC DATA REPOSITORY
+  | CLASS: CACHED TOPIC DATA REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides data access to topics stored in Microsoft SQL Server.
+  ///   Provides data access to topics stored in memory.
   /// </summary>
   /// <remarks>
-  ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.IDataRepository"/> class.
+  ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.IDataRepository"/> class, which provides a wrapper
+  ///   for an actual data access class.
   /// </remarks>
 
   public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
