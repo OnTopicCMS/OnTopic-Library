@@ -37,7 +37,7 @@ namespace Ignia.Topics.Tests {
       var properties = new PropertyInfoCollection(typeof(ContentTypeDescriptor));
 
       Assert.IsTrue(properties.Contains("Key")); //Inherited string property
-      Assert.IsTrue(properties.Contains("SupportedAttributes")); //First class collection property
+      Assert.IsTrue(properties.Contains("AttributeDescriptors")); //First class collection property
       Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
       Assert.IsFalse(properties.Contains("InvalidPropertyName")); //Invalid property
 
@@ -58,7 +58,7 @@ namespace Ignia.Topics.Tests {
       var properties = types.GetProperties(typeof(ContentTypeDescriptor));
 
       Assert.IsTrue(properties.Contains("Key"));
-      Assert.IsTrue(properties.Contains("SupportedAttributes"));
+      Assert.IsTrue(properties.Contains("AttributeDescriptors"));
       Assert.IsFalse(properties.Contains("IsTypeOf"));
       Assert.IsFalse(properties.Contains("InvalidPropertyName"));
 
@@ -77,7 +77,7 @@ namespace Ignia.Topics.Tests {
       var types = new TypeCollection();
 
       Assert.IsTrue(types.GetProperty(typeof(ContentTypeDescriptor), "Key") != null);
-      Assert.IsTrue(types.GetProperty(typeof(ContentTypeDescriptor), "SupportedAttributes") != null);
+      Assert.IsTrue(types.GetProperty(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
       Assert.IsFalse(types.GetProperty(typeof(ContentTypeDescriptor), "IsTypeOf") != null);
       Assert.IsFalse(types.GetProperty(typeof(ContentTypeDescriptor), "InvalidPropertyName") != null);
 
