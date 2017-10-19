@@ -29,7 +29,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_SetTopicTest() {
 
-      var topics = new TopicCollection<Topic>();
+      var topics = new TopicCollection();
 
       for(var i=0; i<10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));
@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests {
         topics.Add(Topic.Create("Topic" + i, "Page"));
       }
 
-      var topicsCollection = new TopicCollection<Topic>(topics);
+      var topicsCollection = new TopicCollection(topics);
 
       Assert.AreEqual<int>(10, topicsCollection.Count);
 
@@ -69,7 +69,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_AsReadOnlyTest() {
 
-      var topics = new TopicCollection<Topic>();
+      var topics = new TopicCollection();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));
@@ -91,7 +91,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicCollection_SortedTest() {
 
-      var topics = new TopicCollection<Topic>();
+      var topics = new TopicCollection();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(Topic.Create("Topic" + i, "Page"));

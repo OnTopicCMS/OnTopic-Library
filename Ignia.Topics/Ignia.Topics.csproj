@@ -189,7 +189,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="Collections\ContentTypeDescriptorCollection.cs" />
+    <Compile Include="Collections\TopicCollection{T}.cs" />
     <Compile Include="ContentType.cs" />
     <Compile Include="Attribute.cs" />
     <Compile Include="AttributeSetterAttribute.cs" />
@@ -199,7 +201,6 @@
     <Compile Include="Collections\NamedTopicCollection.cs" />
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
-    <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />

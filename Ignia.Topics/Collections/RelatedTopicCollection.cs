@@ -74,7 +74,7 @@ namespace Ignia.Topics.Collections {
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
     public ReadOnlyTopicCollection<Topic> GetAllTopics() {
-      var topics = new TopicCollection<Topic>();
+      var topics = new TopicCollection();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
           if (topicCollection.Contains(topic) && !topics.Contains(topic)) {
@@ -103,16 +103,16 @@ namespace Ignia.Topics.Collections {
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship scope.
     /// </summary>
     /// <remarks>
-    ///   Returns a reference to the underlying <see cref="TopicCollection{T}"/>; modifications to this collection will modify
+    ///   Returns a reference to the underlying <see cref="NamedTopicCollection"/>; modifications to this collection will modify
     ///   the <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
     /// </remarks>
     /// <param name="scope">The scope of the relationship to be returned.</param>
-    public TopicCollection<Topic> GetTopics(string scope) {
+    public NamedTopicCollection GetTopics(string scope) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
       if (Contains(scope)) {
         return this[scope];
       }
-      return new TopicCollection<Topic>();
+      return new NamedTopicCollection();
     }
 
     /*==========================================================================================================================

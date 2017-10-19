@@ -31,7 +31,7 @@ namespace Ignia.Topics {
     private                     string                          _originalKey                    = null;
     private                     int                             _sortOrder                      = 25;
     private                     Topic                           _parent                         = null;
-    private                     TopicCollection<Topic>          _children                       = null;
+    private                     TopicCollection                 _children                       = null;
     private                     AttributeValueCollection        _attributes                     = null;
     private                     RelatedTopicCollection          _relationships                  = null;
     private                     RelatedTopicCollection          _incomingRelationships          = null;
@@ -207,10 +207,10 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
     /// </summary>
-    public TopicCollection<Topic> Children {
+    public TopicCollection Children {
       get {
         if (_children == null) {
-          _children = new TopicCollection<Topic>(this);
+          _children = new TopicCollection(this);
         }
         return _children;
       }
@@ -741,7 +741,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \---------------------------------------------------------------------------------------------------------------------*/
-      var results = new TopicCollection<Topic>();
+      var results = new TopicCollection();
 
       if (
         !String.IsNullOrEmpty(Attributes.GetValue(name)) &&

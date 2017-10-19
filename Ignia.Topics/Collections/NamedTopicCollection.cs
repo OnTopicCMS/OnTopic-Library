@@ -16,10 +16,10 @@ namespace Ignia.Topics.Collections {
   | CLASS: TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a named version of the <see cref="TopicCollection{T}"/>, suitable for use in
+  ///   Provides a named version of the <see cref="TopicCollection"/>, suitable for use in
   ///   <see cref="RelatedTopicCollection"/>, or other derivatives of <see cref="KeyedCollection{TKey, TItem}"/>.
   /// </summary>
-  public class NamedTopicCollection: TopicCollection<Topic> {
+  public class NamedTopicCollection: TopicCollection {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
