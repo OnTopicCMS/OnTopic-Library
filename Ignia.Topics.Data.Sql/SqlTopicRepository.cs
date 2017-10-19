@@ -801,8 +801,8 @@ namespace Ignia.Topics.Data.Sql {
         var key = attributeValue.Key;
         var attribute = (AttributeDescriptor)null;
 
-        if (contentType.SupportedAttributes.Contains(key)) {
-          attribute = contentType.SupportedAttributes[key];
+        if (contentType.AttributeDescriptors.Contains(key)) {
+          attribute = contentType.AttributeDescriptors[key];
         }
 
         // For attributes not stored in the Blob, only add the AttributeValue item to store if it has changed
@@ -823,7 +823,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in contentType.SupportedAttributes) {
+      foreach (var attribute in contentType.AttributeDescriptors) {
 
         // Set preconditions
         var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));

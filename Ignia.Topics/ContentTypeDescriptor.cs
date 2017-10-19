@@ -38,7 +38,7 @@ namespace Ignia.Topics {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private   TopicCollection<AttributeDescriptor>              _supportedAttributes            = null;
+    private   AttributeDescriptorCollection                     _attributeDescriptors           = null;
     private   ReadOnlyTopicCollection<ContentTypeDescriptor>    _permittedContentTypes          = null;
 
     /*==========================================================================================================================
@@ -138,7 +138,7 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: SUPPORTED ATTRIBUTE
+    | PROPERTY: ATTRIBUTE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a list of <see cref="AttributeDescriptor"/> objects that are supported for objects implementing this
@@ -147,23 +147,23 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Attributes are not just derived from the specific Content Type topic in the database. They are also inherited from
     ///   any parent content types. For instance, if a Content Type "Page" has an attribute "Body", then all Content Types
-    ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="SupportedAttributes"/> property
+    ///   created underneath "Page" will also have an attribute "Body". As such, the <see cref="AttributeDescriptors"/> property
     ///   must crawl through each parent Content Type to collate the list of supported attributes.
     /// </remarks>
-    public TopicCollection<AttributeDescriptor> SupportedAttributes {
+    public AttributeDescriptorCollection AttributeDescriptors {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<TopicCollection<AttributeDescriptor>>() != null);
+        Contract.Ensures(Contract.Result<AttributeDescriptorCollection>() != null);
 
-        if (_supportedAttributes == null) {
+        if (_attributeDescriptors == null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _supportedAttributes = new TopicCollection<AttributeDescriptor>();
+          _attributeDescriptors = new AttributeDescriptorCollection();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Validate Attributes collection
@@ -185,17 +185,17 @@ namespace Ignia.Topics {
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
           foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
-            _supportedAttributes.Add(attribute);
+            _attributeDescriptors.Add(attribute);
           }
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from parent
           \-------------------------------------------------------------------------------------------------------------------*/
           var parent = Parent as ContentTypeDescriptor;
-          if (parent?.SupportedAttributes != null) {
-            foreach (var attribute in parent.SupportedAttributes) {
-              if (!_supportedAttributes.Contains(attribute.Key)) {
-                _supportedAttributes.Add(attribute);
+          if (parent?.AttributeDescriptors != null) {
+            foreach (var attribute in parent.AttributeDescriptors) {
+              if (!_attributeDescriptors.Contains(attribute.Key)) {
+                _attributeDescriptors.Add(attribute);
               }
             }
           }
@@ -205,7 +205,7 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Return the dictionary object
         \---------------------------------------------------------------------------------------------------------------------*/
-        return _supportedAttributes;
+        return _attributeDescriptors;
 
       }
     }

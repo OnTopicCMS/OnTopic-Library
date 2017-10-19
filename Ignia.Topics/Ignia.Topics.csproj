@@ -189,6 +189,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\AttributeDescriptorCollection.cs" />
     <Compile Include="Collections\ReadOnlyTopicCollection{T}.cs" />
     <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
     <Compile Include="Collections\RelatedTopicCollection.cs" />
