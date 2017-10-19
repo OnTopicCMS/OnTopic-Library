@@ -242,6 +242,7 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      topic.Parent = target;
       ReorderSiblings(topic);
       //return true;
     }
@@ -267,7 +268,9 @@ namespace Ignia.Topics.Repositories {
       | Provide cleanup related to moving topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      topic.Parent = target;
       ReorderSiblings(topic, sibling);
+
     }
 
     /*==========================================================================================================================
