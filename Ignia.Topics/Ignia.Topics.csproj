@@ -189,6 +189,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ReadOnlyTopicCollection{T}.cs" />
+    <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
+    <Compile Include="Collections\RelatedTopicCollection.cs" />
     <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="Collections\ContentTypeDescriptorCollection.cs" />
     <Compile Include="Collections\TopicCollection{T}.cs" />
@@ -196,8 +199,6 @@
     <Compile Include="Attribute.cs" />
     <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
-    <Compile Include="Collections\ReadOnlyTopicCollection.cs" />
-    <Compile Include="Collections\RelatedTopicCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
