@@ -1047,6 +1047,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
     /// <exception cref="ArgumentException">
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
@@ -1067,7 +1068,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public static Topic Create(string key, string contentType) {
+    public static Topic Create(string key, string contentType, Topic parent = null) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -1095,6 +1096,13 @@ namespace Ignia.Topics {
       topic.ContentType = contentType;
 
       /*----------------------------------------------------------------------------------------------------------------------
+      | Set the topic's parent, if supplied
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (parent != null) {
+        topic.Parent = parent;
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \---------------------------------------------------------------------------------------------------------------------*/
       return topic;
@@ -1116,11 +1124,12 @@ namespace Ignia.Topics {
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
     /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
+    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
     /// <exception cref="ArgumentException">
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public static Topic Create(string key, string contentType, int id) {
+    public static Topic Create(string key, string contentType, int id, Topic parent = null) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -1130,7 +1139,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Create object
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = Create(key, contentType);
+      var topic = Create(key, contentType, parent);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Assign identifier
@@ -1145,6 +1154,10 @@ namespace Ignia.Topics {
 
       topic.SetAttributeValue("Key", key, false);
       topic.SetAttributeValue("ContentType", contentType, false);
+
+      if (parent != null) {
+        topic.SetAttributeValue("ParentId", parent.Id.ToString(), false);
+      }
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object
