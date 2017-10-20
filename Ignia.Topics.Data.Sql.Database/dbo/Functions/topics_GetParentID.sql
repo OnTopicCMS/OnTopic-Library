@@ -14,5 +14,5 @@ BEGIN
   FROM		topics_Topics t1
   WHERE		TopicID = @TopicID
   ORDER BY	RangeRight-RangeLeft DESC
-  RETURN	@TopicID
+  RETURN	@CurrentParentID
 END
