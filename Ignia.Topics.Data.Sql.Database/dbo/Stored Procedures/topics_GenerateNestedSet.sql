@@ -57,15 +57,17 @@ DELETE FROM topics_Hierarchy
 WHILE (@RangeLeft_RangeRight < @max_RangeLeft_RangeRight)
 BEGIN
  IF EXISTS (SELECT *
-              FROM topics_Topics AS S1, topics_Hierarchy AS T1
-             WHERE S1.TopicID = T1.Parent_TopicID
+             FROM topics_Topics AS S1
+	     JOIN topics_Hierarchy AS T1
+	     ON S1.TopicID = T1.Parent_TopicID
                AND S1.Stack_Top = @topics_topics_pointer)
     BEGIN -- push when Stack_Top has subordinates and set RangeLeft value
       INSERT INTO topics_Topics (Stack_Top, TopicID, RangeLeft, RangeRight)
       SELECT (@topics_topics_pointer + 1), MIN(T1.TopicID), @RangeLeft_RangeRight, NULL
-        FROM topics_Topics AS S1, topics_Hierarchy AS T1
-       WHERE S1.TopicID = T1.Parent_TopicID
-         AND S1.Stack_Top = @topics_topics_pointer;
+        FROM topics_Topics AS S1
+        JOIN topics_Hierarchy AS T1
+        ON S1.TopicID = T1.Parent_TopicID
+          AND S1.Stack_Top = @topics_topics_pointer;
 
       -- remove this row from topics_hierarchy
       DELETE FROM topics_hierarchy

@@ -71,9 +71,9 @@ IF @DeepLoad = 1
 		)
     SELECT	T1.TopicID,
 		T1.RangeLeft
-    FROM	topics_Topics		AS T1,
-		topics_Topics		AS T2
-    WHERE	T1.RangeLeft
+    FROM	topics_Topics		AS T1
+    INNER JOIN	topics_Topics		AS T2
+    ON		T1.RangeLeft
       BETWEEN	T2.RangeLeft
         AND	ISNULL(T2.RangeRight, 0)
       AND	T2.TopicID		= @TopicID
