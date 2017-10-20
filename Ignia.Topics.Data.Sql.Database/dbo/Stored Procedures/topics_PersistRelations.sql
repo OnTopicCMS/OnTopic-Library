@@ -54,7 +54,7 @@ WHILE		@@FETCH_STATUS		= 0
       FROM	[dbo].[topics_Relationships]
       WHERE (	RelationshipTypeID	= @RelationshipTypeID
         AND	Source_TopicID		= @Source_TopicID
-        AND	Target_TopicID		= @TgtId
+        AND	Target_TopicID		= CONVERT(Int, @TgtId)
       )
     )		<= 0)
       BEGIN
@@ -64,7 +64,7 @@ WHILE		@@FETCH_STATUS		= 0
         VALUES (
 		@RelationshipTypeID,
 		@Source_TopicID,
-		@TgtId
+		CONVERT(Int, @TgtId)
 	)
       END
 

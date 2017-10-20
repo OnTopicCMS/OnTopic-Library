@@ -82,7 +82,7 @@ ELSE -- move down!
 -----------------------------------------------------------------------------------------------------------------------------------------------
 DECLARE		@CurrentParentID	INT
 
-SELECT		@CurrentParentID        = AttributeValue
+SELECT		@CurrentParentID        = CONVERT(Int, AttributeValue)
 FROM		topics_TopicAttributes
 WHERE		TopicID			= @TopicID
 And		AttributeKey		= 'ParentID'
@@ -183,7 +183,7 @@ IF		@SiblingID		>= 0 -- SiblingID is who we want to be in BEHIND of....
 -- UPDATE PARENT ID
 -----------------------------------------------------------------------------------------------------------------------------------------------
 UPDATE		topics_TopicAttributes
-SET		AttributeValue		= @ParentID
+SET		AttributeValue		= CONVERT(NVarChar(255), @ParentID)
 WHERE		TopicID			= @TopicID
   AND		AttributeKey		= 'ParentID'
 

@@ -22,9 +22,9 @@ topics_Hierarchy
 -- Insert data from topics_TopicAttributes
 INSERT
 INTO		topics_Hierarchy
-SELECT		TopicID			AS TopicID,
-		AttributeValue		AS ParentID,
-		GETDATE()		AS DateAdded
+SELECT		TopicID				AS TopicID,
+		CONVERT(Int, AttributeValue)	AS ParentID,
+		GETDATE()			AS DateAdded
 FROM		topics_TopicAttributes
 WHERE		ISNULL(AttributeID, 0)		= 2
 

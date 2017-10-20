@@ -115,7 +115,7 @@ INSERT INTO	topics_TopicAttributes (
 )
 VALUES (	@TopicID		,
 		'ParentID'		,
-		@ParentID		,
+		CONVERT(NVarChar(255), @ParentID),
 		@Version
 )
 

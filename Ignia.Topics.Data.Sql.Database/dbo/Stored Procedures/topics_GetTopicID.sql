@@ -23,7 +23,7 @@ SELECT		TOP 1
 		@TopicID = TopicID
 FROM		topics_TopicAttributes
 WHERE		AttributeKey = 'Key'
-  AND		AttributeValue like @TopicKey
+  AND		AttributeValue like CONVERT(NVarChar(255), @TopicKey)
 ORDER BY	TopicID desc
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
