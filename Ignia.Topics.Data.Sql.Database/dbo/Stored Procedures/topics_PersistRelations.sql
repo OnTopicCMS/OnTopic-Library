@@ -32,7 +32,7 @@ DECLARE		@TgtId			NCHAR(5)
 DECLARE		@RowNum			INT
 DECLARE		SourceIdList
   CURSOR FOR
-    SELECT	*
+    SELECT	number
     FROM	topics_SimpleIntListToTbl(@Target_TopicIDs);
 
 OPEN		SourceIdList

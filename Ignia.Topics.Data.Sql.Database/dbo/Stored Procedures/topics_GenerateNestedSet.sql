@@ -88,6 +88,6 @@ BEGIN
   END; -- if
 END; -- while
 
-SELECT * FROM topics_Topics ORDER BY RangeLeft;
+SELECT Stack_Top, TopicId, RangeLeft, RangeRight FROM topics_Topics ORDER BY RangeLeft;
 
 SET IDENTITY_INSERT topics_Topics OFF
