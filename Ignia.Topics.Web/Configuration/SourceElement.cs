@@ -91,7 +91,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>The matching source configuration element, or null if not found.</returns>
     public static SourceElement GetElement(ConfigurationElement parent, string key) {
       if (parent == null) return null;
-      return (SourceElement)parent.ElementInformation.Properties?[key]?.Value;
+      return (SourceElement)parent.ElementInformation.Properties[key]?.Value;
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ namespace Ignia.Topics.Web.Configuration {
     }
 
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and 
+    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and
     ///   the target element's key, identifies the source value, and verifies whether the element is available, enabled, or
     ///   set to true.
     /// </summary>
@@ -238,7 +238,7 @@ namespace Ignia.Topics.Web.Configuration {
     }
 
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and 
+    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and
     ///   the target element's key, identifies the source value, and verifies whether the element is available, enabled, or
     ///   set to true.
     /// </summary>

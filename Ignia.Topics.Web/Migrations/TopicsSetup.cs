@@ -36,6 +36,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// </remarks>
     public static Topic RootTopic {
       get {
+        Contract.Ensures(Contract.Result<Topic>() != null);
         if (_rootTopic == null) {
           _rootTopic = TopicRepository.RootTopic;
         }
@@ -52,6 +53,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     public static Topic Configuration {
       get {
+        Contract.Ensures(Contract.Result<Topic>() != null);
         if (_configuration == null) {
           _configuration = RootTopic.GetTopic("Configuration");
         }
@@ -77,6 +79,9 @@ namespace Ignia.Topics.Web.Migrations {
     /// </remarks>
     public static ContentTypeDescriptorCollection ContentTypes {
       get {
+
+        Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
+
         if (_contentTypes == null) {
 
           _contentTypes = new ContentTypeDescriptorCollection();
@@ -263,6 +268,7 @@ namespace Ignia.Topics.Web.Migrations {
         /*----------------------------------------------------------------------------------------------------------------------
         | Set the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
+        Contract.Assume(topic != parentTopic);
         topic.Key = key;
         topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
@@ -459,6 +465,7 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires<ArgumentNullException>(attributes != null, "The attributes topic must be specified.");
       Contract.Requires<ArgumentNullException>(contentType != null, "The contentTYpe topic must be specified.");
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
+      Contract.Ensures(Contract.Result<Topic>() != null);
       Topic.ValidateKey(key);
 
       if (!attributes.Children.Contains(key)) {
@@ -500,6 +507,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+      Contract.Ensures(Contract.Result<string>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic properties string and primary properties

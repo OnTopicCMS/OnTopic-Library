@@ -62,6 +62,8 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(uri != null, "An instance of a Uri instantiated to the requested URL is required.");
+      Contract.Requires(viewsDirectory != null, "A value for the viewsDirectory is required. Will default to '~/Views/'");
+      Contract.Requires(viewExtension != null, "A value for the viewExtension is required. Will default to 'cshtml'");
       Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
       Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
 
@@ -92,6 +94,8 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(requestContext != null, "An instance of a RequestContext is required.");
+      Contract.Requires(viewsDirectory != null, "A value for the viewsDirectory is required. Will default to '~/Views/'");
+      Contract.Requires(viewExtension != null, "A value for the viewExtension is required. Will default to 'cshtml'");
       Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
       Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
 
@@ -223,7 +227,7 @@ namespace Ignia.Topics {
           var searchPattern = "*." + _viewExtension;
           var viewsDirectoryInfo = new DirectoryInfo(LocalViewsDirectory);
           var searchOption = SearchOption.TopDirectoryOnly;
-          var subDirectories = viewsDirectoryInfo?.GetDirectories("*", SearchOption.AllDirectories);
+          var subDirectories = viewsDirectoryInfo.GetDirectories("*", SearchOption.AllDirectories);
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Disvoer all view templates available via the configured path
@@ -266,6 +270,7 @@ namespace Ignia.Topics {
     /// </summary>
     public string ViewPath {
       get {
+        Contract.Ensures(Contract.Result<string>() != null);
         return _viewsDirectory + View + "." + _viewExtension;
       }
 
