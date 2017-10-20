@@ -8,7 +8,7 @@ BEGIN
 		TopicID
     FROM	topics_Topics t2
     WHERE	t2.RangeLeft < t1.RangeLeft
-      AND	t2.RangeRight > t1.RangeRight
+      AND	ISNULL(t2.RangeRight, 0) > ISNULL(t1.RangeRight, 0)
     ORDER BY	t2.RangeRight-t1.RangeRight ASC
   )
   FROM		topics_Topics t1

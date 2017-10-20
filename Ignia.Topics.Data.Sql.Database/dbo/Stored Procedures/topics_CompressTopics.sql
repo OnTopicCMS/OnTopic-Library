@@ -17,4 +17,4 @@ SET NOCOUNT ON;
 UPDATE		topics_Topics
 SET
   RangeLeft	= (SELECT COUNT(*) FROM topics_LftRgt WHERE seq <= RangeLeft),
-  RangeRight	= (SELECT COUNT(*) FROM topics_LftRgt WHERE seq <= RangeRight);
+  RangeRight	= (SELECT COUNT(*) FROM topics_LftRgt WHERE seq <= ISNULL(RangeRight, 0));

@@ -63,8 +63,8 @@ WHERE		RangeLeft	>= @First
 
 UPDATE		topics_Topics
 SET		RangeRight	= RangeRight + @Delta
-WHERE		RangeRight	>= @First
-  AND		RangeRight	<= @Last
+WHERE		ISNULL(RangeRight, 0) >= @First
+  AND		ISNULL(RangeRight, 0) <= @Last
 
 DECLARE		@NewPosLeft	INT
 DECLARE		@NewPosRight	INT

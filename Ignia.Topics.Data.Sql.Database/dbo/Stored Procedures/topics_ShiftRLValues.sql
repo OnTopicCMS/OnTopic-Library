@@ -15,9 +15,9 @@ AS
 -- UPDATE RANGE
 -----------------------------------------------------------------------------------------------------------------------------------------------
 UPDATE		topics_Topics
-SET		RangeLeft	= RangeLeft + @Delta
-WHERE		RangeLeft	>= @First
+SET		RangeLeft		= RangeLeft + @Delta
+WHERE		RangeLeft		>= @First
 
 UPDATE		topics_Topics
-SET		RangeRight	= RangeRight + @Delta
-WHERE		RangeRight	>= @First
+SET		RangeRight		= RangeRight + @Delta
+WHERE		ISNULL(RangeRight, 0)	>= @First

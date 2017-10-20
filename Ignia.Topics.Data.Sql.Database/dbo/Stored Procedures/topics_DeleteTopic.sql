@@ -84,7 +84,7 @@ WHERE		RangeLeft
 -----------------------------------------------------------------------------------------------------------------------------------------------
 UPDATE		topics_Topics
 SET		RangeRight		= RangeRight - @RangeWidth
-WHERE		RangeRight		> @RangeRight
+WHERE		ISNULL(RangeRight, 0)	> @RangeRight
 
 Update		topics_Topics
 SET		RangeLeft		= RangeLeft - @RangeWidth

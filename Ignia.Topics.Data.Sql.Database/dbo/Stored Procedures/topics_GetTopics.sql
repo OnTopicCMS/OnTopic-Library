@@ -75,7 +75,7 @@ IF @DeepLoad = 1
 		topics_Topics		AS T2
     WHERE	T1.RangeLeft
       BETWEEN	T2.RangeLeft
-        AND	T2.RangeRight
+        AND	ISNULL(T2.RangeRight, 0)
       AND	T2.TopicID		= @TopicID
     ORDER BY	T1.RangeLeft
     OPTION	(OPTIMIZE FOR		(@TopicID = 1))

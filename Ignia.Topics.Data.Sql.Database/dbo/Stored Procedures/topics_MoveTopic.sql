@@ -152,8 +152,8 @@ ELSE
         THEN		RangeRight		+ @OffSET
         ELSE		RangeRight
       END
-    WHERE		RangeLeft		< @leftrange
-      OR		RangeRight		> @rightrange
+    WHERE		ISNULL(RangeLeft, 0)	< @leftrange
+      OR		ISNULL(RangeRight, 0)	> @rightrange
   END
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- MOVE BEHIND SIBLING

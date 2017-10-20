@@ -26,12 +26,12 @@ SELECT		TopicID			AS TopicID,
 		AttributeValue		AS ParentID,
 		GETDATE()		AS DateAdded
 FROM		topics_TopicAttributes
-WHERE		AttributeID		= 2
+WHERE		ISNULL(AttributeID, 0)		= 2
 
 -- Address root node
 UPDATE		topics_Hierarchy
-SET		Parent_TopicID		= null
-WHERE		Parent_TopicID		= -1
+SET		Parent_TopicID			= null
+WHERE		ISNULL(Parent_TopicID, -1)	= -1
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- Celko's conversion model (not properly formatted; copied from Celko)
