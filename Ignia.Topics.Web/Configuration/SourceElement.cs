@@ -120,9 +120,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
     /// <param name="key">The string key (expected name).</param>
     /// <returns>The target value, or null if one is not found.</returns>
-    public static string GetValue(ConfigurationElement parent, string key) {
-      return GetValue(GetElement(parent, key));
-    }
+    public static string GetValue(ConfigurationElement parent, string key) => GetValue(GetElement(parent, key));
 
     /// <summary>
     ///   Looks up a source element given the parent element collection and expected name and, assuming it's enabled,
@@ -131,9 +129,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <param name="parent">The parent <see cref="ConfigurationElementCollection"/>.</param>
     /// <param name="key">The string key (expected name).</param>
     /// <returns>The target value, or null if one is not found.</returns>
-    public static string GetValue(ConfigurationElementCollection parent, string key) {
-      return GetValue(GetElement(parent, key));
-    }
+    public static string GetValue(ConfigurationElementCollection parent, string key) => GetValue(GetElement(parent, key));
 
     /// <summary>
     ///   Gets the value for the specified element, assuming it's enabled, and based on the type of specified element's source,
@@ -205,9 +201,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   A boolean value representing whether or not the source is available, enabled or set to true.
     /// </returns>
-    public static bool IsEnabled(ConfigurationElement parent, string key) {
-      return IsEnabled(parent, key, true);
-    }
+    public static bool IsEnabled(ConfigurationElement parent, string key) => IsEnabled(parent, key, true);
 
     /// <summary>
     ///   Looks up a source element at a given location and based on a specified parent configuration elemnt and the target
@@ -233,9 +227,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   A boolean value representing whether or not the source is available, enabled or set to true.
     /// </returns>
-    public static bool IsEnabled(ConfigurationElementCollection parent, string key) {
-      return IsEnabled(parent, key, false);
-    }
+    public static bool IsEnabled(ConfigurationElementCollection parent, string key) => IsEnabled(parent, key, false);
 
     /// <summary>
     ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and
@@ -273,7 +265,7 @@ namespace Ignia.Topics.Web.Configuration {
         return true;
       }
 
-      string value = GetValue(element);
+      var value = GetValue(element);
 
       if (String.IsNullOrEmpty(value)) return false;
 
@@ -293,9 +285,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   Boolean value representing whether the specified element is available.
     /// </returns>
-    public static bool IsTrusted(ConfigurationElement parent, string key) {
-      return IsTrusted(GetElement(parent, key));
-    }
+    public static bool IsTrusted(ConfigurationElement parent, string key) => IsTrusted(GetElement(parent, key));
 
     /// <summary>
     ///   Determines whether the specified element is trusted, using the parent element collection and expected element name to
@@ -306,9 +296,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   Boolean value representing whether the specified element is available.
     /// </returns>
-    public static bool IsTrusted(ConfigurationElementCollection parent, string key) {
-      return IsTrusted(GetElement(parent, key));
-    }
+    public static bool IsTrusted(ConfigurationElementCollection parent, string key) => IsTrusted(GetElement(parent, key));
 
     /// <summary>
     ///   Determines whether the specified element is trusted via its availability.
@@ -317,9 +305,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   Boolean value representing whether the specified element is available.
     /// </returns>
-    public static bool IsTrusted(SourceElement element) {
-      return (element == null)? false : element.Trusted;
-    }
+    public static bool IsTrusted(SourceElement element) => (element == null)? false : element.Trusted;
 
   } // Class
 
