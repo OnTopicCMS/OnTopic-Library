@@ -15,6 +15,7 @@ namespace Ignia.Topics.Repositories {
   /// <summary>
   ///   Defines the interface for reading and writing topics from a data storage repository.
   /// </summary>
+  [ContractClass(typeof(ITopicRepositoryContract))]
   public interface ITopicRepository {
 
     /*==========================================================================================================================

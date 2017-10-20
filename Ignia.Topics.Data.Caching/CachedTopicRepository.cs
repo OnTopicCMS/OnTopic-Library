@@ -29,7 +29,7 @@ namespace Ignia.Topics.Data.Caching {
   ///   for an actual data access class.
   /// </remarks>
 
-  public class CachedTopicRepository : TopicRepositoryBase {
+  public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES

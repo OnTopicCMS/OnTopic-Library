@@ -15,8 +15,7 @@ namespace Ignia.Topics.Repositories {
   /// <summary>
   ///   Defines a base abstract class for taxonomy data providers.
   /// </summary>
-  [ContractClass(typeof(TopicRepositoryBaseContract))]
-  public abstract class TopicRepositoryBase {
+  public abstract class TopicRepositoryBase : ITopicRepository {
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -107,28 +106,6 @@ namespace Ignia.Topics.Repositories {
     public void Rollback(Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topic != null);
-      Contract.Requires<ArgumentException>(version != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE JJC071417: We should use a code contract for this, but due to an intermittent error are throwing a standard
-      | exception so we can include the version in the error message.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      /*
-      Contract.Requires<ArgumentException>(
-        !topic.VersionHistory.Contains(version),
-        "The version requested for rollback does not exist in the version history"
-      );
-      */
-      if (!topic.VersionHistory.Contains(version)) {
-        throw new ArgumentException("The version requested for rollback ('" + version + "') does not exist in the version history", "version");
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var originalVersion = Load(topic.Id, version);
@@ -191,11 +168,6 @@ namespace Ignia.Topics.Repositories {
     public virtual int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
@@ -234,18 +206,10 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    /// <requires description="The topic to move must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
-    /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
-    ///   topic != null
-    /// </requires>
     public virtual void Move(Topic topic, Topic target) {
-      Contract.Requires(target != topic);
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
-      Contract.Requires<ArgumentNullException>(target != null, "target");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.Parent = target;
       ReorderSiblings(topic);
-      //return true;
     }
 
     /// <summary>
@@ -256,23 +220,9 @@ namespace Ignia.Topics.Repositories {
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target != topic);
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
-      Contract.Requires<ArgumentNullException>(target != null, "target");
-      Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");
-      Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide cleanup related to moving topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.Parent = target;
       ReorderSiblings(topic, sibling);
-
     }
 
     /*==========================================================================================================================
@@ -346,7 +296,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+    //Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event

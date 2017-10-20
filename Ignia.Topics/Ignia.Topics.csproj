@@ -144,10 +144,10 @@
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
+    <Compile Include="Repositories\ITopicRepositoryContract.cs" />
     <Compile Include="Repositories\MoveEventArgs.cs" />
     <Compile Include="Repositories\RenameEventArgs.cs" />
     <Compile Include="Repositories\TopicRepositoryBase.cs" />
-    <Compile Include="Repositories\TopicRepositoryBaseContract.cs" />
     <Compile Include="AttributeDescriptor.cs" />
     <Compile Include="AttributeValue.cs" />
     <Compile Include="Topic.cs" />
