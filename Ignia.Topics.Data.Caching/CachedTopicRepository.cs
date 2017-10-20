@@ -25,11 +25,11 @@ namespace Ignia.Topics.Data.Caching {
   ///   Provides data access to topics stored in memory.
   /// </summary>
   /// <remarks>
-  ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.IDataRepository"/> class, which provides a wrapper
+  ///   Concrete implementation of the <see cref="Ignia.Topics.Repositories.ITopicRepository"/> class, which provides a wrapper
   ///   for an actual data access class.
   /// </remarks>
 
-  public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class CachedTopicRepository : TopicRepositoryBase {
 
     /*==========================================================================================================================
     | VARIABLES
