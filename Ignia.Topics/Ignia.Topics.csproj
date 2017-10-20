@@ -60,7 +60,7 @@
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions>
     </CodeContractsExtraAnalysisOptions>
-    <CodeContractsSQLServerOption />
+    <CodeContractsSQLServerOption>(localdb)\ProjectsV13</CodeContractsSQLServerOption>
     <CodeContractsBaseLineFile>..\..\baseline.xml</CodeContractsBaseLineFile>
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
@@ -112,7 +112,7 @@
     <CodeContractsLibPaths />
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions />
-    <CodeContractsSQLServerOption />
+    <CodeContractsSQLServerOption>(localdb)\ProjectsV13</CodeContractsSQLServerOption>
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
@@ -167,7 +167,7 @@
     <CodeContractsLibPaths />
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions />
-    <CodeContractsSQLServerOption />
+    <CodeContractsSQLServerOption>(localdb)\ProjectsV13</CodeContractsSQLServerOption>
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
