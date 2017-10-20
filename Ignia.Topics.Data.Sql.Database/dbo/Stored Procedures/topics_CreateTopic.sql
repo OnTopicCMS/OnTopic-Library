@@ -68,7 +68,7 @@ Values (
 
 DECLARE		@TopicID	INT
 
-SELECT		@TopicID	= @@IDENTITY
+SELECT		@TopicID	= SCOPE_IDENTITY()
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- CREATE ATTRIBUTES FROM STRING
