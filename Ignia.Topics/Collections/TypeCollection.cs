@@ -111,6 +111,8 @@ namespace Ignia.Topics.Collections {
 
       object valueObject;
 
+      Contract.Assume(property != null);
+
       if (property.PropertyType.Equals(typeof(bool))) {
         valueObject = value.Equals("1");
       }

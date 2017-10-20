@@ -239,6 +239,7 @@ namespace Ignia.Topics.Repositories {
     ///   topic != null
     /// </requires>
     public virtual void Move(Topic topic, Topic target) {
+      Contract.Requires(target != topic);
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
@@ -259,6 +260,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target != topic);
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
       Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");

@@ -35,6 +35,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
     public PropertyInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
+      Contract.Requires(type != null);
       _type = type;
       foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public)) {
         Add(property);

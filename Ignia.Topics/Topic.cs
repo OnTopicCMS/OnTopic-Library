@@ -209,6 +209,7 @@ namespace Ignia.Topics {
     /// </summary>
     public TopicCollection Children {
       get {
+        Contract.Ensures(Contract.Result<TopicCollection>() != null);
         if (_children == null) {
           _children = new TopicCollection(this);
         }
@@ -784,6 +785,7 @@ namespace Ignia.Topics {
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
+      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide a warning if the isRecursive parameter is used
@@ -951,12 +953,10 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    protected void SetAttributeValue(string key, string value, bool? isDirty = null) => Attributes.SetValue(
-      key,
-      value,
-      isDirty,
-      false
-    );
+    protected void SetAttributeValue(string key, string value, bool? isDirty = null) {
+      Contract.Requires(!String.IsNullOrWhiteSpace(key));
+      Attributes.SetValue(key, value, isDirty, false);
+    }
 
     #endregion
 
@@ -1135,6 +1135,7 @@ namespace Ignia.Topics {
       | Validate input
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(id > 0);
+      Contract.Ensures(Contract.Result<Topic>() != null);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Create object

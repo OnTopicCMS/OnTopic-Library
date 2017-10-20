@@ -60,7 +60,9 @@ namespace Ignia.Topics {
     /// <param name="key">
     ///   The string identifier for the <see cref="AttributeDescriptor"/> Topic.
     /// </param>
-    public AttributeDescriptor(string key) : base(key) { }
+    public AttributeDescriptor(string key) : base(key) {
+      Contract.Requires(!String.IsNullOrWhiteSpace(key));
+    }
 
     /*==========================================================================================================================
     | PROPERTY: TYPE
@@ -148,6 +150,7 @@ namespace Ignia.Topics {
     /// </summary>
     public IDictionary<string, string> Configuration {
       get {
+        Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
         if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
           _configuration = DefaultConfiguration
             .Split(' ')
@@ -169,6 +172,7 @@ namespace Ignia.Topics {
     ///   optionally returns a default value.
     /// </summary>
     public string GetConfigurationValue(string key, string defaultValue = null) {
+      Contract.Requires(!String.IsNullOrWhiteSpace(key));
       if (Configuration.ContainsKey(key) && Configuration[key] != null) {
         return Configuration[key];
       }
