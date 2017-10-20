@@ -578,7 +578,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) return null;
+      if (topics.Count == 0) return new Topic();
       return topics[topics.Keys.ElementAt(0)];
 
     }
@@ -1261,9 +1261,8 @@ namespace Ignia.Topics.Data.Sql {
         case "char"             : return SqlDbType.Char;
         case "varchar"          : return SqlDbType.VarChar;
         case "datetime"         : return SqlDbType.DateTime;
+        default                 : return SqlDbType.VarChar;
       }
-
-      return SqlDbType.VarChar;
 
     }
 
