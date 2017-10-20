@@ -71,7 +71,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\CodeContracts.MSBuild.1.9.10714.3\build\CodeContracts.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CodeContracts.MSBuild.1.9.10714.3\build\CodeContracts.MSBuild.targets'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
