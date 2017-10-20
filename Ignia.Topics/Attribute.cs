@@ -17,8 +17,8 @@ namespace Ignia.Topics {
   /// </summary>
   /// <remarks>
   ///   The <see cref="Attribute"/> class is provided exclusively for backward compatibility with attributes of the content type
-  ///   "Attribute" so that the <see cref="Topic.Create(String, String)"/> factory method can find a match. Databases should be
-  ///   updated to instead use "AttributeDescriptor", which better differentiates the metadata from the
+  ///   "Attribute" so that the <see cref="Topic.Create(String, String, Topic)"/> factory method can find a match. Databases
+  ///   should be updated to instead use "AttributeDescriptor", which better differentiates the metadata from the
   ///   <see cref="AttributeValue"/>. The <see cref="Attribute"/> class derives from <see cref="AttributeDescriptor"/> to ensure
   ///   they support the same functionality.
   /// </remarks>

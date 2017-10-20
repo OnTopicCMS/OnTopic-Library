@@ -22,7 +22,7 @@ namespace Ignia.Topics {
   ///   <para>
   ///     Every <see cref="Topic"/> in the Topic Library is associated with a <see cref="ContentTypeDescriptor"/>, which
   ///     determines the expected schema of the topic. That schema is described through the
-  ///     <see cref="ContentTypeDescriptor.SupportedAttributes"/> collection, which provides a list of
+  ///     <see cref="ContentTypeDescriptor.AttributeDescriptors"/> collection, which provides a list of
   ///     <see cref="AttributeDescriptor"/>s associated with that content type. For instance, the commonly-configured "Page"
   ///     Content Type has attributes such as "Keywords", "Body", etc. Each of those are individually represented by instances
   ///     of the <see cref="AttributeDescriptor"/> class.

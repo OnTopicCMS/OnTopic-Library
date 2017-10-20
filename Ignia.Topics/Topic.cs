@@ -62,9 +62,9 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="Create(String, String)"/> factory method. When constructing derived types directly,
-    ///   however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and calls
-    ///   this base constructor; it will automatically set the content type based on the derived class's type.
+    ///   is ensured by using the <see cref="Create(String, String, Topic)"/> factory method. When constructing derived types
+    ///   directly, however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and
+    ///   calls this base constructor; it will automatically set the content type based on the derived class's type.
     /// </remarks>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -81,8 +81,8 @@ namespace Ignia.Topics {
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(String, String)"/> factory method instead, as this will
-    ///   return a strongly-typed version.
+    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(String, String, Topic)"/> factory method instead, as
+    ///   this will return a strongly-typed version.
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -252,7 +252,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.SupportedAttributes"/> property). The content type also determines,
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
     ///   by default, which view is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't
     ///   overwritten down the pipe).
     /// </remarks>
