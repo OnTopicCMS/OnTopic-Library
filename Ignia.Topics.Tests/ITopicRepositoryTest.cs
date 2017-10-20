@@ -50,9 +50,9 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void ITopicRepository_LoadTest() {
 
-      var rootTopic = _topicRepository.Load();
-      var topic = rootTopic.GetTopic("Root:Configuration:ContentTypes:Page");
-      var child = Topic.Create("Child", "ContentType", Int32.MaxValue, topic);
+      var rootTopic             = _topicRepository.Load();
+      var topic                 = rootTopic.GetTopic("Root:Configuration:ContentTypes:Page");
+      var child                 = Topic.Create("Child", "ContentType", Int32.MaxValue, topic);
 
       Assert.AreEqual<int>(2, rootTopic.Children.Count);
       Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);
@@ -69,9 +69,9 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void ITopicRepository_SaveTest() {
 
-      var rootTopic = _topicRepository.Load();
-      var web = rootTopic.GetTopic("Root:Web");
-      var configuration = rootTopic.GetTopic("Root:Configuration");
+      var rootTopic             = _topicRepository.Load();
+      var web                   = rootTopic.GetTopic("Root:Web");
+      var configuration         = rootTopic.GetTopic("Root:Configuration");
 
       Assert.AreEqual<int>(-1, web.Id);
       Assert.AreEqual<int>(-1, configuration.Id);
@@ -97,11 +97,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void ITopicRepository_MoveTest() {
 
-      var rootTopic = _topicRepository.Load();
-
-      var source = rootTopic.GetTopic("Root:Web:Web_0");
-      var destination = rootTopic.GetTopic("Root:Web:Web_1");
-      var topic = rootTopic.GetTopic("Root:Web:Web_0:Web_0_2");
+      var rootTopic             = _topicRepository.Load();
+      var source                = rootTopic.GetTopic("Root:Web:Web_0");
+      var destination           = rootTopic.GetTopic("Root:Web:Web_1");
+      var topic                 = rootTopic.GetTopic("Root:Web:Web_0:Web_0_2");
 
       Assert.ReferenceEquals(topic.Parent, source);
       Assert.AreEqual<int>(3, destination.Children.Count());
@@ -124,11 +123,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void ITopicRepository_DeleteTest() {
 
-      var rootTopic = _topicRepository.Load();
-
-      var parent = rootTopic.GetTopic("Root:Web:Web_2");
-      var topic = rootTopic.GetTopic("Root:Web:Web_2:Web_2_2");
-      var child = rootTopic.GetTopic("Root:Web:Web_2:Web_2_2:Web_2_2_0");
+      var rootTopic             = _topicRepository.Load();
+      var parent                = rootTopic.GetTopic("Root:Web:Web_2");
+      var topic                 = rootTopic.GetTopic("Root:Web:Web_2:Web_2_2");
+      var child                 = rootTopic.GetTopic("Root:Web:Web_2:Web_2_2:Web_2_2_0");
 
       Assert.AreEqual<int>(3, parent.Children.Count());
 
