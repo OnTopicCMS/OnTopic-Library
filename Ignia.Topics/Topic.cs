@@ -143,9 +143,6 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: PARENT
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Currently, calling Parent forces an immediate Save(). This should instead be done manually at the
-    | discretion of client code. This is a potentially breaking change that will require updating any code that sets Parent.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
@@ -335,9 +332,6 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: ORIGINAL KEY
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC081115: Is it necessary for this to have a setter? I would assume this would only be set internally by, for
-    | instance, changing the Key property. If so, allowing external access may cause problems.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets or sets the topic's original key.
@@ -600,17 +594,6 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE JJC080313: The Attributes type should be changed to use either KeyedCollection (ideally, with the
-    | INotifyCollectionChanged interface) or ObservableCollection(with a string indexer and duplicate key check). To
-    | begin, it is recommended that this be converted to use the more standard KeyedCollection, which can be upgraded to
-    | use INotifyCollectionChanged at a later date. When it is made observable, this can (and should) be used specifically
-    | to intercept changes to either ParentID or Key, since they have specific implications in terms of the data integrity
-    | of the collection.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE KLT081314: Attributes is now of type AttributeValueCollection
-    | (KeyedCollection<string, AttributeValue">). Extending the collection to incorporate the
-    | INotifyCollectionChanged interface or converting it to an ObservableCollection remains an item for future development.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Attributes is a generic property bag for keeping track of either named or arbitrary attributes, thus providing
@@ -681,12 +664,6 @@ namespace Ignia.Topics {
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Consider changing the version history behavior so that version is instead saved as a property on
-    | AttributeValue and then the VersionHistory method simply provides a rollup of those versions. This would increase memory
-    | requirements by adding metadata to AttributeValue, but ensure VersionHistory doesn't need to be maintained in parallel to
-    | AttributeValue. It would potentially also allow new functionality with regard to merging or additional metadata in the
-    | editor.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
