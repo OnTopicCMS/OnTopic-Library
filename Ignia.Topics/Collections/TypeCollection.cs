@@ -114,7 +114,7 @@ namespace Ignia.Topics.Collections {
       Contract.Assume(property != null);
 
       if (property.PropertyType.Equals(typeof(bool))) {
-        valueObject = value.Equals("1");
+        valueObject = value.Equals("1") || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
       }
       else if (property.PropertyType.Equals(typeof(int))) {
         Int32.TryParse(value, out int intValue);
