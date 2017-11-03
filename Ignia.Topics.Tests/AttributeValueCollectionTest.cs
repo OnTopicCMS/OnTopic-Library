@@ -54,6 +54,28 @@ namespace Ignia.Topics.Tests {
       var topic = Topic.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Modifies the value of a custom attribute on a topic and ensures it is marked as IsDirty.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_SetValue_IsDirtyTest() {
+
+      var topic = Topic.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+      topic.Attributes.SetValue("Fah", "Bar", false);
+      topic.Attributes.SetValue("Foo", "Baz");
+      topic.Attributes.SetValue("Fah", "Bar");
+
+      Assert.AreEqual<string>("Baz", topic.Attributes.GetValue("Foo"));
+      Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Fah"));
+      Assert.AreEqual<bool>(true, topic.Attributes["Foo"].IsDirty);
+      Assert.AreEqual<bool>(false, topic.Attributes["Fah"].IsDirty);
 
     }
 
