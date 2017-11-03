@@ -279,7 +279,7 @@ namespace Ignia.Topics.Collections {
         else if (!originalAttribute.Value.Equals(value)) {
           markAsDirty = true;
         }
-        var newAttribute = new AttributeValue(key, value, originalAttribute.IsDirty, enforceBusinessLogic);
+        var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic);
         this[IndexOf(originalAttribute)] = newAttribute;
       }
 
