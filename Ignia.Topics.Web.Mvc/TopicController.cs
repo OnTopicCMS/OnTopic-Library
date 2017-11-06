@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Ignia.Topics;
 using Ignia.Topics.Repositories;
@@ -83,7 +82,7 @@ namespace Ignia.Topics.Web.Mvc {
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic == null) {
-        throw new HttpException(404, "There is no topic associated with this path.");
+        return HttpNotFound("There is no topic associated with this path.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -92,7 +91,7 @@ namespace Ignia.Topics.Web.Mvc {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (CurrentTopic.IsDisabled) {
-        throw new HttpException(301, "The topic at this location is disabled.");
+        return new HttpUnauthorizedResult("The topic at this location is disabled.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
