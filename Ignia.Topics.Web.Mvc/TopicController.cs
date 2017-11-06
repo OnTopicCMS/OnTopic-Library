@@ -22,7 +22,7 @@ namespace Ignia.Topics.Web.Mvc {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
-  public class TopicController<T> : AsyncController where T : Topic {
+  public class TopicController : AsyncController {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
