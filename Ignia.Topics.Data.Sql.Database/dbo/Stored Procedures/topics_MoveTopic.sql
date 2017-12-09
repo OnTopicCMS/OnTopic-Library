@@ -11,8 +11,7 @@
 --						  and parentid has not changed
 --              Hedley Robertson	08172010  Rebuilt with externalized MoveSubTree function
 --		Jeremy Caney		09222014  Updated logic for ParentID attribute to be based on Key, not ID
------------------------------------------------------------------------------------------------------------------------------------------------
--- See EOF for inline manual test cases
+--		Jeremy Caney		12092017  Refactored based on Celko's alternative formulation.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_MoveTopic]
@@ -22,181 +21,265 @@ CREATE PROCEDURE [dbo].[topics_MoveTopic]
 AS
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- DECLARE AND DEFINE VARIABLES
+-- DECLARE VARIABLES
 -----------------------------------------------------------------------------------------------------------------------------------------------
-DECLARE		@RangeLeft		INT
-DECLARE		@RangeRight		INT
-DECLARE		@RangeWidth		INT
-DECLARE		@ParentRangeLeft	INT
-DECLARE		@ParentRangeRight	INT
-DECLARE		@LeftBoundary		INT
-DECLARE		@RightBoundary		INT
-DECLARE		@OffSET			INT
-DECLARE		@leftrange		INT
-DECLARE		@rightrange		INT
-DECLARE		@SiblingLeft		INT		= -1
-DECLARE		@SiblingRight		INT		= -1
-DECLARE		@SiblingIDLeft		INT		= -1
-DECLARE		@SiblingOffSET		INT
-
-
-SET NOCOUNT ON;
+DECLARE		@OriginalLeft		int
+DECLARE		@OriginalRight		int
+DECLARE		@InsertionPoint		int
+DECLARE		@OriginalRange		int
+DECLARE		@Offset			int
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- DEFINE RANGE AND PARENT RANGE
+-- DEFINE SOURCE RANGE
 -----------------------------------------------------------------------------------------------------------------------------------------------
-SELECT		@RangeLeft		= RangeLeft,
-		@RangeRight		= RangeRight
+-- The source range defines the original boundaries (@OriginalLeft, @OriginalRight) and the width (@OriginalRange) of the source subtree
+-- (@TopicID), which will be used to determine what nodes to move.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+SELECT		@OriginalRange		= RangeRight - RangeLeft + 1,
+		@OriginalLeft		= RangeLeft,
+		@OriginalRight		= RangeRight
 FROM		topics_Topics
 WHERE		TopicID			= @TopicID
 
-SELECT		@ParentRangeLeft	= RangeLeft,
-		@ParentRangeRight	= RangeRight
-FROM		topics_Topics
-WHERE		TopicID			= @ParentID
-
-
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- DETERMINE DIRECTION AND BOUNDARY OFFSET
+-- DEFINE INSERTION POINT
 -----------------------------------------------------------------------------------------------------------------------------------------------
-If @RangeLeft > @ParentRangeLeft -- move up!
-  BEGIN
-    SET		@OffSET			= @ParentRangeLeft - @RangeLeft + 1; -- 2 - 42 + 1 = -39
-    SET		@LeftBoundary		= @ParentRangeLeft + 1;              -- 3
-    SET		@RightBoundary		= @RangeLeft - 1;                    -- 41
-    SET		@RangeWidth		= @RangeRight - @RangeLeft + 1;      -- 57 - 42 + 1 = 16
-    SET		@leftrange		= @RangeRight;                       -- 57
-    SET		@rightrange		= @ParentRangeLeft;                  --  2
-  END
-ELSE -- move down!
-  BEGIN
-    SET		@OffSET			= @ParentRangeLeft - @RangeRight;
-    SET		@LeftBoundary		= @RangeRight + 1;
-    SET		@RightBoundary		= @ParentRangeLeft;
-    SET		@RangeWidth		= @RangeLeft - @RangeRight - 1;
-    SET		@leftrange		= @ParentRangeLeft + 1;
-    SET		@rightrange		= @RangeLeft;
-  END
+-- The insertion point (@InsertionPoint) is the location where the source subtree is to be moved to. If a sibling (@SiblingID) is defined then
+-- the insertion point is immediately to the right of the sibling's right edge; if no sibling is defined, then the insertion point is the first
+-- location within the parent (@ParentID)'s range.
 -----------------------------------------------------------------------------------------------------------------------------------------------
--- UPDATE BOUNDARIES TO REFLECT OFFSET, UNLESS WE ARE JUST MOVING WITHIN SAME PARENT AND SIBLING REQUESTED!
+-- EXAMPLE: If a sibling (@SiblingID) lives between 12 and 24, then the insertion point (@InsertionPoint) will be 25; if there is no sibling,
+-- but a parent lives between 6 and 26, then the insertion point (@InsertionPoint) will be 7.
 -----------------------------------------------------------------------------------------------------------------------------------------------
-DECLARE		@CurrentParentID	INT
-
-SELECT		@CurrentParentID        = CONVERT(Int, AttributeValue)
-FROM		topics_TopicAttributes
-WHERE		TopicID			= @TopicID
-And		AttributeKey		= 'ParentID'
-
--- Try to find missing parent ID
-IF		@CurrentParentID	IS null
-  OR		@CurrentParentID	< 0
-BEGIN
-  SELECT	@CurrentParentID	= dbo.topics_GetParentID(@TopicID)
-END
-
-IF		@CurrentParentID	IS null
-  OR		@CurrentParentID	< 0
-BEGIN
-  RAISERROR (	N'FAILED TO FIND PARENT ID!',
-		15,			-- Severity.
-		1			-- State.
-  );
-END
-
-IF		(@CurrentParentID	IS null)
-  OR (		@CurrentParentID	= @ParentID
-    AND		@SiblingID		> -1
-  )
-  BEGIN
-    RAISERROR (	N'The Parent is the same (%d) and sibling ID (%d) requested, do NOT reparent item.  Moving a tree that contains a sibling to be under that same ... sibling... :S',
-		10,			-- Severity.
-		1,			-- State.
-		@ParentID,
-		@SiblingID
-    );
-  END
+IF @SiblingID < 0
+  -- Place as the first sibling if a sibling isn't specified
+  SELECT	@InsertionPoint		= RangeLeft + 1
+  FROM		topics_Topics
+  WHERE		TopicID			= @ParentID
 ELSE
-  BEGIN
+  -- Place immediately to the right of a sibling, if specified
+  SELECT	@InsertionPoint		= RangeRight + 1
+  FROM		topics_Topics
+  WHERE		TopicID			= @SiblingID
 
-    RAISERROR (		N'Reparenting item',
-			10,			-- Severity.
-			1			-- State.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- VALIDATE REQUEST
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- Ensure that the source tree (@TopicID) exists (thus resulting in a valid @OriginalLeft and @OriginalRight) and that the target location
+-- (@InsertionPoint) is not within the scope of the source tree (@TargetID); a tree cannot be moved to a child of itself.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+IF @TopicID is null or @OriginalLeft is null or @OriginalRight is null
+  BEGIN
+    RAISERROR (
+      N'The topic ("%n") could not be found.',
+      15, -- Severity,
+      1, -- State,
+      @TopicID
     );
-
-    UPDATE		topics_Topics
-    SET			RangeLeft		=
-      CASE
-        WHEN (		RangeLeft
-          BETWEEN	@LeftBoundary
-          AND		@RightBoundary
-        )
-        THEN		RangeLeft		+ @RangeWidth
-        WHEN  (		RangeLeft
-          BETWEEN	@RangeLeft
-          AND		@RangeRight
-        )
-        THEN		RangeLeft		+ @OffSET
-        ELSE		RangeLeft
-      END,
-			RangeRight		=
-      CASE
-        WHEN (		RangeRight
-          BETWEEN	@LeftBoundary
-          AND		@RightBoundary
-        )
-        THEN		RangeRight		+ @RangeWidth
-        WHEN (		RangeRight
-          BETWEEN	@RangeLeft
-          AND		@RangeRight
-        )
-        THEN		RangeRight		+ @OffSET
-        ELSE		RangeRight
-      END
-    WHERE		ISNULL(RangeLeft, 0)	< @leftrange
-      OR		ISNULL(RangeRight, 0)	> @rightrange
+    RETURN
   END
------------------------------------------------------------------------------------------------------------------------------------------------
--- MOVE BEHIND SIBLING
------------------------------------------------------------------------------------------------------------------------------------------------
-IF		@SiblingID		>= 0 -- SiblingID is who we want to be in BEHIND of....
+
+IF @ParentID is null or @InsertionPoint is null
   BEGIN
+    RAISERROR (
+      N'The parent ("%n") could not be found.',
+      15, -- Severity,
+      1, -- State,
+      @ParentID
+    );
+    RETURN
+  END
 
-	-- Determine sibling details
-    SELECT	@SiblingLeft		= RangeLeft,
-		@SiblingRight		= RangeRight
-    FROM	topics_Topics
-    WHERE	TopicID			= @SiblingID
+IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
+  BEGIN
+    RAISERROR (
+      N'A topic ("%n") cannot be moved within a child of itself ("%n").',
+      10, -- Severity,
+      1, -- State,
+      @TopicID,
+      @ParentID
+    );
+    RETURN
+  END
 
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- DEFINE OFFSET
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- The offset is the space between the source (@TopicID) and the target (@InsertionPoint), excluding the range (@OriginalRange) itself. If a
+-- subtree is being moved to the left, then that's the gap between the target (@InsertionPoint) and the subtree's left boundary
+-- (@OriginalLeft); if a subtree is being moved to the right, then that's the gap between the subtree's right boundary (@OriginalRight) and the
+-- target (@InsertionPoint).
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- EXAMPLE: If you have a source subtree (@TopicID) with a range of (52-58) and you're moving it to a start position of 25, then the @Offset
+-- will be 27 (i.e., 52-25). If you are moving it to a start position of 75, however, then the @Offset will be 17 (75-58).
+-----------------------------------------------------------------------------------------------------------------------------------------------
+SET			@Offset =
+  CASE
+  WHEN			@InsertionPoint < @OriginalLeft
+  THEN			@OriginalLeft - @InsertionPoint
+  ELSE			@InsertionPoint - @OriginalRight
+  END
 
-    DECLARE	@TargetLeft		INT
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- MOVE SOURCE RANGE TO INSERTION POINT
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- The basic idea behind moving nodes is that we're going to a) shift the target subtree (@Parent) by the delta (@Offset) between its original
+-- position (@OriginalLeft, @OriginalRight) and the the target location (@InsertionPoint), while b) closing the gap left behind by shifting all
+-- intermediate nodes by the width of the target subtree (@OriginalRange).
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- EXAMPLE: If we're moving a target subtree of width 12 down 26 nodes, then we'd a) subtract 26 (the @Offset) from all nodes between RangeLeft
+-- (@OriginalLeft) and RangeRight (@OriginalRight) of the subtree (to move it to its new position), while b) adding 12 (the @OriginalRange)
+-- to all nodes between the target location (@InsertionPoint) and the original subtree location (either @OriginalLeft or @OriginalRight,
+-- depending on whether the tree has been moved up or down).
+-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    SET		@TargetLeft		= @SiblingRight + 1;
+UPDATE			topics_Topics
+SET			RangeLeft = RangeLeft +
+  CASE
 
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+  -- MOVE SOURCE TOPIC TO ITS LEFT
+  ---------------------------------------------------------------------------------------------------------------------------------------------
 
-    EXEC	topics_MoveSubtree	@TopicID, @TargetLeft
+  WHEN			@InsertionPoint < @OriginalLeft
+  THEN
+    CASE
 
-    EXEC	topics_CompressTopics;
+    -- Shift source topic (and children) left to its new location
+
+    WHEN (		RangeLeft
+      BETWEEN		@OriginalLeft
+      AND		@OriginalRight
+    )
+    THEN		- @Offset
+
+    -- Shift items between the destination and source topic to the right
+    -- This pushes everything back by the width of the source topic, filling the gap it left behind
+    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
+
+    WHEN (		RangeLeft
+      BETWEEN		@InsertionPoint
+      AND		@OriginalLeft
+    )
+    THEN		@OriginalRange
+    ELSE		0
+
+    END
+
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+  -- MOVE SOURCE TOPIC TO ITS RIGHT
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  WHEN			@InsertionPoint > @OriginalRight
+  THEN
+    CASE
+
+    -- Shift source topic (and children) right to its new location
+    -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
+
+    WHEN (		RangeLeft
+      BETWEEN		@OriginalLeft
+      AND		@OriginalRight
+    )
+    THEN		@Offset - 1
+
+    -- Shift items between the source topic and the destination to the left
+    -- This pulls everything back by the width of the source topic, filling the gap it left behind
+    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
+    -- Because between is inclusive, includes offsets to only cover intermediate records
+
+    WHEN (		RangeLeft
+      BETWEEN		@OriginalRight + 1
+      AND		@InsertionPoint - 1
+    )
+    THEN		- @OriginalRange
+    ELSE		0
+
+    END
+
+  END,
+
+			RangeRight = RangeRight +
+  CASE
+
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+  -- MOVE SOURCE TOPIC TO ITS LEFT
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  WHEN			@InsertionPoint < @OriginalLeft
+  THEN
+    CASE
+
+    -- Shift source topic (and children) left to its new location
+
+    WHEN (		RangeRight
+      BETWEEN		@OriginalLeft
+      AND		@OriginalRight
+    )
+    THEN		- @Offset
+
+    -- Shift items between the destination and source topic to the right
+    -- This pushes everything back by the width of the source topic, filling the gap it left behind
+    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
+
+    WHEN (		RangeRight
+      BETWEEN		@InsertionPoint
+      AND		@OriginalLeft - 1
+    )
+    THEN		@OriginalRange
+    ELSE		0
+
+    END
+
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+  -- MOVE SOURCE TOPIC TO ITS RIGHT
+  ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  WHEN			@InsertionPoint > @OriginalRight
+  THEN
+    CASE
+
+    -- Shift source topic (and children) right to its new location
+    -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
+
+    WHEN (		RangeRight
+      BETWEEN		@OriginalLeft
+      AND		@OriginalRight
+    )
+    THEN		@Offset - 1
+
+    -- Shift items between the source topic and the destination to the left
+    -- This pulls everything back by the width of the source topic, filling the gap it left behind
+    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
+    -- Because between is inclusive, includes offsets to only cover intermediate records
+
+    WHEN (		RangeRight
+      BETWEEN		@OriginalRight + 1
+      AND		@InsertionPoint - 1
+    )
+    THEN		- @OriginalRange
+    ELSE		0
+
+    END
 
   END
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
 -----------------------------------------------------------------------------------------------------------------------------------------------
-UPDATE		topics_TopicAttributes
-SET		AttributeValue		= CONVERT(NVarChar(255), @ParentID)
-WHERE		TopicID			= @TopicID
-  AND		AttributeKey		= 'ParentID'
+UPDATE			topics_TopicAttributes
+SET			AttributeValue		= CONVERT(NVarChar(255), @ParentID)
+WHERE			TopicID			= @TopicID
+  AND			AttributeKey		= 'ParentID'
 
--- for debugging remove this later:
-
-SELECT		@SiblingID		SiblingID,
-		@LeftBoundary		LeftBoundary,
-		@RightBoundary		RightBoundary,
-		@ParentRangeLeft	ParentRangeLeft,
-		@ParentRangeRight	ParentRangeRight,
-		@RangeLeft		RangeLeft,
-		@RangeRight		RangeRight,
-		@leftrange		leftrange,
-		@rightrange		rightrange,
-		@SiblingOffSET		SiblingOffSET,
-		@CurrentParentID	CurrentParentID
+-----------------------------------------------------------------------------------------------------------------------------------------------
+-- DEBUGGING DATA
+-----------------------------------------------------------------------------------------------------------------------------------------------
+SELECT			@TopicID		TopicID,
+			@ParentID		ParentID,
+			@SiblingID		SiblingID,
+			@OriginalLeft		OriginalLeft,
+			@OriginalRight		OriginalRight,
+			@InsertionPoint		InsertionPoint,
+			@OriginalRange		OriginalRange,
+			@Offset			Offset
