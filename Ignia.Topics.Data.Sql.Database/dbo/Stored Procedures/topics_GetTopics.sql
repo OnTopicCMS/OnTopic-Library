@@ -12,7 +12,7 @@
 --		Jeremy Cane		09272013  Removed dependency on Attributes, in favor of Oroboros Configuration.
 --		Jeremy Caney		09282013  Injected separate data set for key attribute values.
 --		Katherine Trunkey	08072014  Added ROW_NUMBER functionality to (indexed) Attributes selection and TOP 1 selection to Blob
---																							  to support versioning of Topic Attributes.
+--					to support versioning of Topic Attributes.
 --		Jeremy Caney		07232017  Restricted blob results to latest version, and only non-empty results
 --		Jeremy Caney		07232017  Restricted versions to last five versions
 --		Jeremy Caney		07242017  Removed unnecessary sorts; added indexes to temporary table
