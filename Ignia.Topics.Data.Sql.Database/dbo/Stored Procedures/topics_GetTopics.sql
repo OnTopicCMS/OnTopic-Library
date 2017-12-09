@@ -160,4 +160,4 @@ SELECT		DISTINCT
 		TopicId,
 		Version
 FROM		TopicVersions
-WHERE		RowNumber >= 6
+WHERE		RowNumber <= 6
