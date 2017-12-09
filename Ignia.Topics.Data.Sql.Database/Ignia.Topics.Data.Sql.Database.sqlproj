@@ -84,10 +84,7 @@
     <Build Include="dbo\Functions\topics_SimpleIntListToTbl.sql" />
     <Build Include="dbo\Functions\Split.sql" />
     <Build Include="dbo\Stored Procedures\topics_MoveTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_MoveSubtree.sql" />
     <Build Include="dbo\Stored Procedures\topics_UpdateTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_SwapSiblings.sql" />
-    <Build Include="dbo\Stored Procedures\topics_ShiftRLValues.sql" />
     <Build Include="dbo\Stored Procedures\topics_SetAttribute.sql" />
     <Build Include="dbo\Stored Procedures\topics_PersistRelations.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetTopics.sql" />
