@@ -734,7 +734,9 @@ namespace Ignia.Topics {
       foreach (var topic in Children) {
         var nestedResults = topic.FindAllByAttribute(name, value);
         foreach (var matchedTopic in nestedResults) {
-          results.Add(matchedTopic);
+          if (!results.Contains(matchedTopic.Key)) {
+            results.Add(matchedTopic);
+          }
         }
       }
 
