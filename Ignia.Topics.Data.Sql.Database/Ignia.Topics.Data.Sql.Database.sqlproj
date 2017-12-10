@@ -69,8 +69,6 @@
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\topics_Attributes.sql" />
-    <Build Include="dbo\Tables\topics_AttributeTypes.sql" />
     <Build Include="dbo\Tables\topics_Blob.sql" />
     <Build Include="dbo\Tables\topics_Hierarchy.sql" />
     <Build Include="dbo\Tables\topics_Relationships.sql" />
@@ -85,11 +83,9 @@
     <Build Include="dbo\Functions\Split.sql" />
     <Build Include="dbo\Stored Procedures\topics_MoveTopic.sql" />
     <Build Include="dbo\Stored Procedures\topics_UpdateTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_SetAttribute.sql" />
     <Build Include="dbo\Stored Procedures\topics_PersistRelations.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetTopics.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetTopicAttributes.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GetAttributes.sql" />
     <Build Include="dbo\Stored Procedures\topics_GenerateNestedSet.sql" />
     <Build Include="dbo\Stored Procedures\topics_DeleteTopic.sql" />
     <Build Include="dbo\Stored Procedures\topics_CreateTopic.sql" />
