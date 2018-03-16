@@ -143,11 +143,11 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TopicRepository.cs" />
-    <Compile Include="ViewRoutingService.cs" />
     <Compile Include="TopicsRouteHandler.cs" />
     <Compile Include="TypedTopicPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="WebFormsTopicRoutingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">

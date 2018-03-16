@@ -18,7 +18,7 @@ namespace Ignia.Topics.Tests {
   | CLASS: TOPIC ROUTING SERVICE TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicRoutingService"/> class.
+  ///   Provides unit tests for the <see cref="MvcTopicRoutingService"/> class.
   /// </summary>
   [TestClass]
   public class TopicRoutingServiceTest {
@@ -55,11 +55,12 @@ namespace Ignia.Topics.Tests {
       routes.Values.Add("rootTopic", "Web");
       routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_2");
 
-      var topicRoutingService   = new TopicRoutingService(_topicRepository, uri, routes);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var currentTopic          = topicRoutingService.GetCurrentTopic();
 
-      Assert.IsNotNull(topicRoutingService.Topic);
-      Assert.ReferenceEquals(topic, topicRoutingService.Topic);
-      Assert.AreEqual<string>("Web_0_1_2", topicRoutingService.Topic.Key);
+      Assert.IsNotNull(currentTopic);
+      Assert.ReferenceEquals(topic, currentTopic);
+      Assert.AreEqual<string>("Web_0_1_2", currentTopic.Key);
 
     }
 
@@ -77,11 +78,12 @@ namespace Ignia.Topics.Tests {
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
       var topic                 = rootTopic.GetTopic("Root:Web:Web_0:Web_0_1:Web_0_1_1");
 
-      var topicRoutingService   = new TopicRoutingService(_topicRepository, uri, routes);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var currentTopic          = topicRoutingService.GetCurrentTopic();
 
-      Assert.IsNotNull(topicRoutingService.Topic);
-      Assert.ReferenceEquals(topic, topicRoutingService.Topic);
-      Assert.AreEqual<string>("Web_0_1_1", topicRoutingService.Topic.Key);
+      Assert.IsNotNull(currentTopic);
+      Assert.ReferenceEquals(topic, currentTopic);
+      Assert.AreEqual<string>("Web_0_1_1", currentTopic.Key);
 
     }
 
@@ -90,7 +92,7 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes route data and ensures that those routes are available after initializing a new instance of the
-    ///   <see cref="TopicRoutingService"/>.
+    ///   <see cref="MvcTopicRoutingService"/>.
     /// </summary>
     [TestMethod]
     public void TopicRoutingService_RoutesTest() {
@@ -102,9 +104,10 @@ namespace Ignia.Topics.Tests {
       routes.Values.Add("rootTopic", "Web");
       routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_2");
 
-      var topicRoutingService   = new TopicRoutingService(_topicRepository, uri, routes);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var currentTopic          = topicRoutingService.GetCurrentTopic();
 
-      Assert.IsNotNull(topicRoutingService.Topic);
+      Assert.IsNotNull(currentTopic);
       Assert.AreEqual<string>("Web", routes.GetRequiredString("rootTopic"));
       Assert.AreEqual<string>("Web_0/Web_0_1/Web_0_1_2", routes.GetRequiredString("path"));
       Assert.AreEqual<string>("Page", routes.GetRequiredString("contenttype"));
