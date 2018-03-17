@@ -47,7 +47,7 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET ATTRIBUTE
+    | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determine if a given attribute is marked as dirty. Will return false if the attribute key cannot be found.
@@ -174,7 +174,7 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
-    | METHOD: SET ATTRIBUTE VALUE
+    | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
