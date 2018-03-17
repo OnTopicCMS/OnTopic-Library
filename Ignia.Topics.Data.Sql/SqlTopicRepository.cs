@@ -17,6 +17,7 @@ using System.Web;
 using System.Globalization;
 using Ignia.Topics.Collections;
 using System.Diagnostics;
+using Ignia.Topics.Querying;
 
 namespace Ignia.Topics.Data.Sql {
 
