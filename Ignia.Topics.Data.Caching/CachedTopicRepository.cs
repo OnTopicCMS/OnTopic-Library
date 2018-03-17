@@ -47,7 +47,17 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="dataProvider">A concrete instance of an ITopicRepository, which will be used for data access.</param>
     /// <returns>A new instance of the CachedTopicRepository.</returns>
     public CachedTopicRepository(ITopicRepository dataProvider) : base() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(dataProvider != null, "A concrete implementation of an ITopicRepository is required.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set values locally
+      \-----------------------------------------------------------------------------------------------------------------------*/
       _dataProvider = dataProvider;
+
     }
 
     /*==========================================================================================================================
