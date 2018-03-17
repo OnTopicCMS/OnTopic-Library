@@ -84,9 +84,9 @@ namespace Ignia.Topics.Web {
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var routeData             = requestContext.RouteData;
-      var viewRoutingService   = new ViewRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath, "aspx");
-      var topic                 = viewRoutingService.Topic;
-      var viewName              = viewRoutingService.View;
+      var routingService        = new WebFormsTopicRoutingService(TopicRepository.DataProvider, requestContext, ViewsPath);
+      var topic                 = routingService.GetCurrentTopic();
+      var viewName              = routingService.View;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate path

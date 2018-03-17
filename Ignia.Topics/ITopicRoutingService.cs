@@ -15,30 +15,22 @@ namespace Ignia.Topics {
   | INTERFACE: TOPIC ROUTING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given contextual information (such as URL) will determine the current Topic, View, etc.
+  ///   Given contextual information (such as URL) will determine the current Topic.
   /// </summary>
   /// <remarks>
-  ///   The view location will change based on the environment. That said, in all cases, the view will factor in the topic's
-  ///   Content Type and (if set) View properties, and optionally the view determined via the URL (as either a URL part, or a
-  ///   query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName.
+  ///   Each environment (e.g., ASP.NET MVC) will require a platform-specific <see cref="ITopicRoutingService"/> to act as an
+  ///   adapter to framework-specific libraries (e.g., <code>HttpContext</code>). In addition, custom versions may be created
+  ///   in order to establish custom mappings between URL or route data and the hierarchy of topics, should the need arise.
   /// </remarks>
   public interface ITopicRoutingService {
 
     /*==========================================================================================================================
-    | METHOD: TOPIC
+    | METHOD: GET CURRENT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets the topic associated with the current URL.
     /// </summary>
-    Topic Topic { get; }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONTENT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the content type associated with the topic associated with the current URL.
-    /// </summary>
-    string ContentType { get; }
+    Topic GetCurrentTopic();
 
     }
   }

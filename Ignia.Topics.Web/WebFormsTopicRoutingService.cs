@@ -19,22 +19,36 @@ namespace Ignia.Topics {
   | CLASS: TOPIC ROUTING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Given a URL, ITopicProvider, and views directory, will determine the associated Topic, as well as the appropriate view.
+  ///   Given an ITopicRepository, URL, and views directory, will determine the associated Topic, as well as the appropriate
+  ///   view.
   /// </summary>
   /// <remarks>
-  ///   The view location will change based on the environment. That said, in all cases, the view will factor in the topic's
-  ///   Content Type and (if set) View properties, and optionally the view determined via the URL (as either a URL part, or a
-  ///   query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName. Inherits from the
-  ///   CLR <seealso cref="System.Uri"/> class to provide a familiar interface with additional useful capabilities.
+  ///   <para>
+  ///     The view location will change based on the environment. That said, in all cases, the view will factor in the topic's
+  ///     Content Type and (if set) View properties, and optionally the view determined via the URL (as either a URL part, or a
+  ///     query string parameter. For instance, a view can be set as /a/b/c/viewName/ or /a/b/c/?View=viewName. Inherits from
+  ///     the CLR <seealso cref="System.Uri"/> class to provide a familiar interface with additional useful capabilities.
+  ///   </para>
+  ///   <para>
+  ///     The <see cref="WebFormsRoutingService"/> is distributed with, and intended exclusively for use with, the ASP.NET
+  ///     WebForms version of OnTopic. Since this version is intended exclusively for maintaining backward compatibility with
+  ///     legacy websites, testability is not a priority; legacy applications requiring updates should be updated to supported
+  ///     versions of OnTopic. In addition, since Dependency Injection is not utilized by the legacy version, it adheres to the
+  ///     <see cref="ITopicRoutingService"/> interface, but also exposes additional properties used exclusively by the ASP.NET
+  ///     WebForms version. For instance, it additionally provides view routing capabilities.
+  ///   </para>
   /// </remarks>
-  public class ViewRoutingService : TopicRoutingService {
+  public class WebFormsTopicRoutingService : ITopicRoutingService {
 
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
+    private                     ITopicRepository                _topicRepository                = null;
+    private                     RouteData                       _routes                         = null;
+    private                     Uri                             _uri                            = null;
+    private                     Topic                           _topic                          = null;
     private                     NameValueCollection             _headers                        = null;
     private                     List<string>                    _views                          = null;
-    private                     Uri                             _uri                            = null;
     private                     string                          _view                           = null;
     private                     string                          _viewsDirectory                 = null;
     private                     string                          _localViewsDirectory            = null;
@@ -47,47 +61,18 @@ namespace Ignia.Topics {
     ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified
     ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
     /// </summary>
-    public ViewRoutingService(
-      ITopicRepository          topicRepository,
-      Uri                       uri,
-      RouteData                 routeData                       = null,
-      NameValueCollection       headers                         = null,
-      string                    localViewsDirectory             = null,
-      string                    viewsDirectory                  = "~/Views/",
-      string                    viewExtension                   = "cshtml"
-     ) : base(topicRepository, uri, routeData) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(uri != null, "An instance of a Uri instantiated to the requested URL is required.");
-      Contract.Requires(viewsDirectory != null, "A value for the viewsDirectory is required. Will default to '~/Views/'");
-      Contract.Requires(viewExtension != null, "A value for the viewExtension is required. Will default to 'cshtml'");
-      Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
-      Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set values locally
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _uri                      = uri;
-      _headers                  = headers?? new NameValueCollection(0);
-      _localViewsDirectory      = localViewsDirectory;
-      _viewsDirectory           = viewsDirectory;
-      _viewExtension            = viewExtension;
-
-    }
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref ="TopicRoutingService"/> class based on a URL instance, a fully qualified
-    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
-    /// </summary>
-    public ViewRoutingService(
+    /// <remarks>
+    ///   Because the <see cref="ViewRoutingService"/> is distributed with, and intended exclusively for use with, the ASP.NET
+    ///   WebForms version of OnTopic, it does not adhere to strict Dependency Injection rules; it is considered an
+    ///   infrastructure component, and not an application library. As a result, it not only includes optional parameters, but
+    ///   also makes no effort to abstract out the <see cref="RequestContext"/>.
+    /// </remarks>
+    public WebFormsTopicRoutingService(
       ITopicRepository          topicRepository,
       RequestContext            requestContext,
-      string                    viewsDirectory                  = "~/Views/",
-      string                    viewExtension                   = "cshtml"
-     ) : base(topicRepository, requestContext.HttpContext.Request.Url, requestContext.RouteData) {
+      string                    viewsDirectory                  = "~/Common/Templates/",
+      string                    viewExtension                   = "ascx"
+     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -107,6 +92,46 @@ namespace Ignia.Topics {
       _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
       _viewExtension            = viewExtension;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET CURRENT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the topic associated with the current URL.
+    /// </summary>
+    public Topic GetCurrentTopic() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_topic == null) {
+        var path = _uri.AbsolutePath;
+        if (_routes.Values.ContainsKey("path")) {
+          path = _routes.GetRequiredString("path");
+          if (_routes.Values.ContainsKey("rootTopic")) {
+            path = _routes.GetRequiredString("rootTopic") + "/" + path;
+          }
+        }
+        path = path.Trim(new char[] { '/' }).Replace("//", "/");
+        _topic = _topicRepository.Load().GetTopic(path.Replace("/", ":"));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set route data
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_topic != null) {
+        if (_routes.Values.ContainsKey("contenttype")) {
+          _routes.Values.Remove("contenttype");
+        }
+        _routes.Values.Add("contenttype", _topic.ContentType);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return Topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return _topic;
 
     }
 
@@ -139,8 +164,8 @@ namespace Ignia.Topics {
         /*------------------------------------------------------------------------------------------------------------------------
         | Set variables
         \-----------------------------------------------------------------------------------------------------------------------*/
-        var topic = Topic;
-        var contentType = ContentType;
+        var topic = GetCurrentTopic();
+        var contentType = topic.ContentType;
 
         /*------------------------------------------------------------------------------------------------------------------------
         | Derive expected view

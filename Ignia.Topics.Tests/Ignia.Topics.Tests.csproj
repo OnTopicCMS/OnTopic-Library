@@ -79,6 +79,10 @@
     <Compile Include="AttributeValueCollectionTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ignia.Topics.Web.Mvc\Ignia.Topics.Web.Mvc.csproj">
+      <Project>{3b3ce34d-b5e5-47ca-bfef-e6740650f378}</Project>
+      <Name>Ignia.Topics.Web.Mvc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">
       <Project>{b8d5b290-4451-4c3b-ae9e-0ff075958a74}</Project>
       <Name>Ignia.Topics</Name>

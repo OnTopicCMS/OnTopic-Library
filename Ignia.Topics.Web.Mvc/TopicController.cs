@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Diagnostics.Contracts;
 using Ignia.Topics;
 using Ignia.Topics.Repositories;
 
@@ -28,6 +29,7 @@ namespace Ignia.Topics.Web.Mvc {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
+    private                     ITopicRoutingService            _topicRoutingService            = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -37,9 +39,20 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(ITopicRepository topicRepository, Topic currentTopic) {
+    public TopicController(ITopicRepository topicRepository, ITopicRoutingService topicRoutingService) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(topicRoutingService != null, "A concrete implementation of an ITopicRoutingService is required.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set values locally
+      \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository = topicRepository;
-      _currentTopic = currentTopic;
+      _topicRoutingService = topicRoutingService;
+
     }
 
     /*==========================================================================================================================
@@ -64,6 +77,9 @@ namespace Ignia.Topics.Web.Mvc {
     /// <returns>The Topic associated with the current request.</returns>
     protected Topic CurrentTopic {
       get {
+        if (_currentTopic == null) {
+          _currentTopic = _topicRoutingService.GetCurrentTopic();
+        }
         return _currentTopic;
       }
     }
