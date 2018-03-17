@@ -21,15 +21,15 @@ namespace Ignia.Topics {
   ///   <para>
   ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
   ///     Editor (via the <see cref="AttributeDescriptors"/> property). The content type also determines, by default, which view
-  ///     is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't overwritten down the pipe).
+  ///     is rendered by the <see cref="Topics.ITopicRoutingService"/> (assuming the value isn't overwritten down the pipe).
   ///   </para>
   ///   <para>
   ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of
   ///     "Content Type". The attributes of the "Content Type" Content Type represent the metadata associated with every content
   ///     type. For example, the "Content Type" Content Type has attributes such as <see cref="AttributeDescriptors"/> which
-  ///     represents which attributes should be associated with each instance of a <see cref="ContentTypeDescriptor"/>. To represent this,
-  ///     the <see cref="ContentTypeDescriptor"/> class provides a strongly-typed derivation of the <see cref="Topic"/> class, with
-  ///     properties mapping to attributes specific to the "Content Type" Content Type.
+  ///     represents which attributes should be associated with each instance of a <see cref="ContentTypeDescriptor"/>. To
+  ///     represent this, the <see cref="ContentTypeDescriptor"/> class provides a strongly-typed derivation of the <see
+  ///     cref="Topic"/> class, with properties mapping to attributes specific to the "Content Type" Content Type.
   ///   </para>
   /// </remarks>
   //  ### TODO JJC082515: Should add a Get() to simply checks against the collection (e.g., via Contains() then indexer[]).
