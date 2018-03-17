@@ -37,7 +37,15 @@ namespace Ignia.Topics.Collections {
     public PropertyInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type != null);
       _type = type;
-      foreach (var property in type.GetProperties(BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public)) {
+      foreach (
+        var property
+        in type.GetProperties(
+          BindingFlags.Instance |
+          BindingFlags.FlattenHierarchy |
+          BindingFlags.NonPublic |
+          BindingFlags.Public
+        )
+      ) {
         Add(property);
       }
     }
