@@ -33,14 +33,6 @@ namespace Ignia.Topics {
     /// </summary>
     public ContentType() : base() { }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="ContentType"/> class based on the specified <see cref="Topic.Key"/>.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="ContentType"/> Topic.
-    /// </param>
-    public ContentType(string key) : base(key) { }
-
   } //Class
 
 } //Namespace

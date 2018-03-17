@@ -73,11 +73,9 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_IsContentTypeOf() {
 
-      var contentType = new ContentTypeDescriptor("Root");
+      var contentType = (ContentTypeDescriptor)Topic.Create("Root", "ContentTypeDescriptor");
       for (var i=0; i<5; i++) {
-        var childContentType = new ContentTypeDescriptor("ContentType" + i) {
-          Parent = contentType
-        };
+        var childContentType = (ContentTypeDescriptor)Topic.Create("ContentType" + i, "ContentTypeDescriptor", contentType);
         contentType             = childContentType;
       }
 

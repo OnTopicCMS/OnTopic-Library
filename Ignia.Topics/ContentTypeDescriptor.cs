@@ -49,14 +49,6 @@ namespace Ignia.Topics {
     /// </summary>
     public ContentTypeDescriptor() : base() { }
 
-    /// <summary>
-    ///  Initializes a new instance of the <see cref="ContentTypeDescriptor"/> class based on the specified <see cref="Topic.Key"/>.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="ContentTypeDescriptor"/> Topic.
-    /// </param>
-    public ContentTypeDescriptor(string key) : base(key) { }
-
     /*==========================================================================================================================
     | PROPERTY: DISABLE CHILD TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/

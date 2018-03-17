@@ -33,14 +33,6 @@ namespace Ignia.Topics {
     /// </summary>
     public Attribute() : base() { }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="Attribute"/> class based on the specified <see cref="Topic.Key"/>.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="Attribute"/> Topic.
-    /// </param>
-    public Attribute(string key) : base(key) { }
-
   } //Class
 
 } //Namespace

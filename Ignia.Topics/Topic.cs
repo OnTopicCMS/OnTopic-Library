@@ -72,6 +72,7 @@ namespace Ignia.Topics {
     /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(topic)
     /// </requires>
+    [Obsolete("The Topic(string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     protected Topic(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       Topic.ValidateKey(key);

@@ -54,16 +54,6 @@ namespace Ignia.Topics {
     /// </summary>
     public AttributeDescriptor() : base() { }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeDescriptor"/> class based on the specified <see cref="Topic.Key"/>.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="AttributeDescriptor"/> Topic.
-    /// </param>
-    public AttributeDescriptor(string key) : base(key) {
-      Contract.Requires(!String.IsNullOrWhiteSpace(key));
-    }
-
     /*==========================================================================================================================
     | PROPERTY: TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
