@@ -38,11 +38,6 @@ namespace Ignia.Topics {
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
 
-    /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
-
     #region Constructor
 
     /*==========================================================================================================================
@@ -62,9 +57,10 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="Create(String, String, Topic)"/> factory method. When constructing derived types
-    ///   directly, however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and
-    ///   calls this base constructor; it will automatically set the content type based on the derived class's type.
+    ///   is ensured by using the <see cref="TopicFactory.Create(String, String, Topic)"/> factory method. When constructing
+    ///   derived types directly, however, this is implicit. In those cases, the derived class may create a constructor that
+    ///   accepts "key" and calls this base constructor; it will automatically set the content type based on the derived class's
+    ///   type.
     /// </remarks>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -75,15 +71,15 @@ namespace Ignia.Topics {
     [Obsolete("The Topic(string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     protected Topic(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
       Key = key;
       ContentType = GetType().Name;
     }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(String, String, Topic)"/> factory method instead, as
-    ///   this will return a strongly-typed version.
+    ///   <see cref="ContentType"/> name. Use the new <see cref="TopicFactory.Create(String, String, Topic)"/> factory method
+    ///   instead, as this will return a strongly-typed version.
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -247,7 +243,7 @@ namespace Ignia.Topics {
       get => _key;
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         if (_originalKey == null) {
           _originalKey = Attributes.GetValue("Key", false);
         }
@@ -319,7 +315,7 @@ namespace Ignia.Topics {
     internal string OriginalKey {
       get => _originalKey;
       set {
-        Topic.ValidateKey(value, true);
+        TopicFactory.ValidateKey(value, true);
         _originalKey = value;
       }
     }
@@ -379,7 +375,7 @@ namespace Ignia.Topics {
         Attributes.GetValue("View", Attributes.GetValue("View", ""));
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         SetAttributeValue("View", value);
       }
     }
@@ -683,7 +679,7 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
       Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
-      Topic.ValidateKey(name);
+      TopicFactory.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -905,234 +901,6 @@ namespace Ignia.Topics {
       Contract.Requires(!String.IsNullOrWhiteSpace(key));
       Attributes.SetValue(key, value, isDirty, false);
     }
-
-    #endregion
-
-    #region Static Methods
-
-    /*==========================================================================================================================
-    | METHOD: GET TOPIC TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static helper method for looking up a class type based on a string name.
-    /// </summary>
-    /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType()"/>, which can be non-performant. As such, this helper method
-    ///   caches its results in a static lookup table keyed by the string value.
-    /// </remarks>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <returns>A class type corresponding to a derived class of <see cref="Topic"/>.</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public static Type GetTopicType(string contentType) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Type>() != null);
-      Topic.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup.Keys.Contains(contentType)) {
-        return _typeLookup[contentType];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Determine if there is a matched type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var baseType = typeof(Topic);
-      var targetType = Type.GetType("Ignia.Topics." + contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (targetType == null) {
-        targetType = baseType;
-      }
-      else if (!targetType.IsSubclassOf(baseType)) {
-        targetType = baseType;
-        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Cache findings
-      \---------------------------------------------------------------------------------------------------------------------*/
-      lock (_typeLookup) {
-        if (_typeLookup.Keys.Contains(contentType)) {
-          _typeLookup.Add(contentType, targetType);
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return result
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return targetType;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: CREATE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
-    ///   available.
-    /// </summary>
-    /// <remarks>
-    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For
-    ///   instance, if the content type is "Page", it will look for an "Ignia.Topics.Page" class. If found, it will confirm that
-    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class
-    ///   exists but does not derive from <see cref="Topic"/>, then an exception will be thrown. And otherwise, a new instance
-    ///   of the generic <see cref="Topic"/> class will be created.
-    /// </remarks>
-    /// <param name="key">A string representing the key for the new topic instance.</param>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
-    /// <exception cref="ArgumentException">
-    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
-    /// </exception>
-    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    /// <requires
-    ///   decription="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !key.Contains(" ")
-    /// </requires>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public static Topic Create(string key, string contentType, Topic parent = null) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Topic>() != null);
-      Topic.ValidateKey(key);
-      Topic.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Determine target type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = Topic.GetTopicType(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Identify the appropriate topic
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's Key and Content Type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Key = key;
-      topic.ContentType = contentType;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's parent, if supplied
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (parent != null) {
-        topic.Parent = parent;
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return topic;
-
-    }
-
-    /// <summary>
-    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
-    ///   available. Used for cases where a <see cref="Topic"/> is being deserialized from an existing instance, as indicated
-    ///   by the <paramref name="id"/> parameter.
-    /// </summary>
-    /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
-    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database.
-    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Key"/> and <see cref="ContentType"/> on the
-    ///   new <see cref="Topic"/> are set to false, as it is assumed these are being set to the same values currently used in
-    ///   the persistance store.
-    /// </remarks>
-    /// <param name="key">A string representing the key for the new topic instance.</param>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
-    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
-    /// <exception cref="ArgumentException">
-    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
-    /// </exception>
-    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public static Topic Create(string key, string contentType, int id, Topic parent = null) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(id > 0);
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Create object
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = Create(key, contentType, parent);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Assign identifier
-      \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Id = id;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set dirty state to false
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(topic.Key != null);
-      Contract.Assume(topic.ContentType != null);
-
-      topic.SetAttributeValue("Key", key, false);
-      topic.SetAttributeValue("ContentType", contentType, false);
-
-      if (parent != null) {
-        topic.SetAttributeValue("ParentId", parent.Id.ToString(), false);
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return object
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return topic;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: VALIDATE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Validates the format of a key used for an individual topic.
-    /// </summary>
-    /// <remarks>
-    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
-    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
-    ///   Contract Checker.
-    /// </remarks>
-    /// <param name="topicKey">The topic key that should be validated.</param>
-    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    [Pure]
-    public static void ValidateKey(string topicKey, bool isOptional = false) => Contract.Requires<ArgumentException>(
-      (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
-      "Key names should only contain letters, numbers, hyphens, and/or underscores."
-    );
 
     #endregion
 

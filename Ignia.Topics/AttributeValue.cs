@@ -69,7 +69,7 @@ namespace Ignia.Topics {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set local values
@@ -124,7 +124,7 @@ namespace Ignia.Topics {
       get => _key;
       private set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         _key = value;
       }
     }

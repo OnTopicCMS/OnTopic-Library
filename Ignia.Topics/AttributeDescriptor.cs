@@ -77,7 +77,7 @@ namespace Ignia.Topics {
       get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         SetAttributeValue("Type", value);
       }
     }

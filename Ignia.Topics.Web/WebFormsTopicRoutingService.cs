@@ -323,7 +323,7 @@ namespace Ignia.Topics {
       | Validate parameters
       \------------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(contentType != null, "contentType");
-      Topic.ValidateKey(contentType);
+      TopicFactory.ValidateKey(contentType);
 
       /*-------------------------------------------------------------------------------------------------------------------------
       | Check for content type specific view

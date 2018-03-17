@@ -151,6 +151,7 @@
     <Compile Include="AttributeValue.cs" />
     <Compile Include="Topic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TopicFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

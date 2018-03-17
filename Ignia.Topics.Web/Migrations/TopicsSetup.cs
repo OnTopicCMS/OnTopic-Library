@@ -238,7 +238,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       Topic topic = null;
       if (!parentTopic.Children.Contains(key)) {
@@ -262,7 +262,7 @@ namespace Ignia.Topics.Web.Migrations {
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
         \---------------------------------------------------------------------------------------------------------------------*/
         else {
-          topic = Topic.Create(key, contentType);
+          topic = TopicFactory.Create(key, contentType);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -306,7 +306,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create content type, if not already present
@@ -350,8 +350,8 @@ namespace Ignia.Topics.Web.Migrations {
         !String.IsNullOrWhiteSpace(childContentType),
         "The childContentType is required"
       );
-      Topic.ValidateKey(parentContentType);
-      Topic.ValidateKey(childContentType);
+      TopicFactory.ValidateKey(parentContentType);
+      TopicFactory.ValidateKey(childContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -413,7 +413,7 @@ namespace Ignia.Topics.Web.Migrations {
         !String.IsNullOrWhiteSpace(parentContentType),
         "The parent ContentType key must be specified."
       );
-      Topic.ValidateKey(parentContentType);
+      TopicFactory.ValidateKey(parentContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -466,7 +466,7 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires<ArgumentNullException>(contentType != null, "The contentTYpe topic must be specified.");
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
       Contract.Ensures(Contract.Result<Topic>() != null);
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       if (!attributes.Children.Contains(key)) {
         throw new Exception("The attribute with the key '" + key + "' does not exist in the '" + attributes.Key + "' Topic.");

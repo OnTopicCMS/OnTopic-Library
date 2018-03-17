@@ -204,7 +204,7 @@ namespace Ignia.Topics.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
       Contract.Requires<ArgumentNullException>(topic != null);
-      Topic.ValidateKey(scope);
+      TopicFactory.ValidateKey(scope);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add relationship

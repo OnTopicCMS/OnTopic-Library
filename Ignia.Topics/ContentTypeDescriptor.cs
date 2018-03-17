@@ -219,7 +219,7 @@ namespace Ignia.Topics {
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentTypeName), "The attribute contentTypeName must be specified.");
-      Topic.ValidateKey(contentTypeName);
+      TopicFactory.ValidateKey(contentTypeName);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine match

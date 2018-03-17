@@ -94,7 +94,7 @@ namespace Ignia.Topics.Tests {
     public void TypeCollection_SetPropertyTest() {
 
       var types = new TypeCollection();
-      var topic = Topic.Create("Test", "ContentType");
+      var topic = TopicFactory.Create("Test", "ContentType");
 
       types.SetProperty(topic, "IsHidden", "1");
 
@@ -125,7 +125,7 @@ namespace Ignia.Topics.Tests {
 
       var totalIterations = 1;
       var types = new TypeCollection();
-      var topic = Topic.Create("Test", "ContentType");
+      var topic = TopicFactory.Create("Test", "ContentType");
 
       var i = 0;
       for (i = 0; i < totalIterations; i++) {

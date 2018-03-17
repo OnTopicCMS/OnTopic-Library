@@ -52,7 +52,7 @@ namespace Ignia.Topics.Tests {
 
       var rootTopic             = _topicRepository.Load();
       var topic                 = rootTopic.GetTopic("Root:Configuration:ContentTypes:Page");
-      var child                 = Topic.Create("Child", "ContentType", Int32.MaxValue, topic);
+      var child                 = TopicFactory.Create("Child", "ContentType", Int32.MaxValue, topic);
 
       Assert.AreEqual<int>(2, rootTopic.Children.Count);
       Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);

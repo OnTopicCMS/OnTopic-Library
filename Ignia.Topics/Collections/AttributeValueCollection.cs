@@ -134,7 +134,7 @@ namespace Ignia.Topics.Collections {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
       Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
-      Topic.ValidateKey(name);
+      TopicFactory.ValidateKey(name);
 
       string value = null;
 
@@ -250,7 +250,7 @@ namespace Ignia.Topics.Collections {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish secret handshake for later enforcement of properties

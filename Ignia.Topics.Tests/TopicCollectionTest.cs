@@ -32,7 +32,7 @@ namespace Ignia.Topics.Tests {
       var topics = new TopicCollection();
 
       for(var i=0; i<10; i++) {
-        topics.Add(Topic.Create("Topic" + i, "Page"));
+        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
       Assert.AreEqual<string>("Topic3", topics["Topic3"].Key);
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Tests {
       var topics = new List<Topic>();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(Topic.Create("Topic" + i, "Page"));
+        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
       var topicsCollection = new TopicCollection(topics);
@@ -72,7 +72,7 @@ namespace Ignia.Topics.Tests {
       var topics = new TopicCollection();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(Topic.Create("Topic" + i, "Page"));
+        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
       var readOnlyCollection = topics.AsReadOnly();
@@ -94,7 +94,7 @@ namespace Ignia.Topics.Tests {
       var topics = new TopicCollection();
 
       for (var i = 0; i < 10; i++) {
-        topics.Add(Topic.Create("Topic" + i, "Page"));
+        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
       for (var i = 0; i < 10; i++) {
