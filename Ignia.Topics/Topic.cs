@@ -105,18 +105,6 @@ namespace Ignia.Topics {
     public Topic(string key, string contentType) {
     }
 
-    /*==========================================================================================================================
-    | ###TODO JJC080314: An overload of the constructor should be created to accept an XmlDocument or XmlNode based on the
-    | proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) : base(StringComparer.OrdinalIgnoreCase) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
     #endregion
 
     #region Core Properties
@@ -213,26 +201,6 @@ namespace Ignia.Topics {
         return _children;
       }
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: NESTED TOPICS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Ideally, this property should return a KeyedCollection of the underlying Topics filtered by
-    | ContentType, but with the key removing the preceding underscore.This would need to be a specialized version of the
-    | KeyedCollection class, possibly a derivitive of the NestedTopics class. Preferrably, this will be dynamically created
-    | based on a reference back to the parent class (this), in order to ensure synchronization between NestedTopics and the
-    | parent collection.
-    >---------------------------------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///   Provides a reference to the values collection, filtered by Topics of the <see cref="ContentType"/> TopicsList, which
-    ///   represent Nested Topics.
-    /// </summary>
-    public Topic NestedTopics {
-      get {
-        throw new NotImplementedException();
-      }
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | PROPERTY: IS EMPTY
@@ -1198,29 +1166,6 @@ namespace Ignia.Topics {
     public int Save(bool isRecursive = false, bool isDraft = false) => -1;
 
     /*==========================================================================================================================
-    | METHOD: REFRESH
-    >---------------------------------------------------------------------------------------------------------------------------
-    /// <summary>
-    ///   Reloads the topic data from the provider and the data for all of the topic's descendants.
-    /// </summary>
-    /// <returns>Boolean value representing whether the topic has been refreshed/reloaded.</returns>
-    public bool Refresh() {
-      return Refresh(true);
-    }
-
-    /// <summary>
-    ///   Reloads the topic data from the provider, optionally reloading all of the topic's descendants.
-    /// </summary>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's descendants and refresh them as well.
-    /// </param>
-    /// <returns>Boolean value representing whether the topic has been refreshed/reloaded.</returns>
-    public bool Refresh(bool isRecursive) {
-      throw new NotSupportedException("The Refresh() method is a placeholder for future functionality and is not yet supported.");
-    }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -1275,20 +1220,6 @@ namespace Ignia.Topics {
     [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
     public void Move(Topic target, Topic sibling) {
     }
-
-    /*==========================================================================================================================
-    | METHOD: MERGE
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###TODO JJC080314: Similar to Load(), but should merge values with existing Topic rather than creating a new TOpic. Should
-    | accept an XmlDocument or XmlNode based on the proposed Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public Topic Merge(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() to validate against whatever objects are already created and
-      //available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
