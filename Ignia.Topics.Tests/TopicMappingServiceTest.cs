@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
@@ -23,50 +24,63 @@ namespace Ignia.Topics.Tests {
   public class TopicMappingServiceTest {
 
     /*==========================================================================================================================
-    | TEST: PROPERTY INFO COLLECTION CONSTRUCTOR
+    | TEST: MAP (INSTANCE)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="PropertyInfoCollection"/> based on a type, and confirms that the property collection is
-    ///   returning expected types.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by providing it with an already
+    ///   constructed instance of a DTO.
     /// </summary>
     [TestMethod]
     public void TopicMappingService_MapGeneric() {
 
       var mappingService = new TopicMappingService();
-      var grandParent = TopicFactory.Create("Grandparent", "Page");
-      var parent = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic = TopicFactory.Create("Test", "Page", parent);
+      var topic = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
-
-      parent.Attributes.SetValue("Title", "Value2");
-      parent.Attributes.SetValue("IsHidden", "1");
-
-      grandParent.Attributes.SetValue("Title", "Value3");
-      grandParent.Attributes.SetValue("IsHidden", "1");
 
       var target = (PageTopicViewModel)mappingService.Map(topic, new PageTopicViewModel());
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
       Assert.AreEqual<bool>(true, target.IsHidden);
-      Assert.AreEqual<string>("Value2", target.Parent.Title);
-      Assert.AreEqual<string>("Value3", target.Parent.Parent.Title);
 
     }
 
     /*==========================================================================================================================
-    | TEST: PROPERTY INFO COLLECTION CONSTRUCTOR
+    | TEST: MAP (DYNAMIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="PropertyInfoCollection"/> based on a type, and confirms that the property collection is
-    ///   returning expected types. This includes both types found in the <see cref="Models"/> namespace as well as a custom
-    ///   class defined only in this test.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by allowing it to dynamically
+    ///   determine the instance type.
     /// </summary>
     [TestMethod]
     public void TopicMappingService_MapDynamic() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Test", "Page");
+
+      topic.Attributes.SetValue("MetaTitle", "ValueA");
+      topic.Attributes.SetValue("Title", "Value1");
+      topic.Attributes.SetValue("IsHidden", "1");
+
+      var target = (PageTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<string>("ValueA", target.MetaTitle);
+      Assert.AreEqual<string>("Value1", target.Title);
+      Assert.AreEqual<bool>(true, target.IsHidden);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP PARENTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the parent tree.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapParents() {
 
       var mappingService = new TopicMappingService();
       var grandParent = TopicFactory.Create("Grandparent", "Sample");
@@ -85,9 +99,12 @@ namespace Ignia.Topics.Tests {
       grandParent.Attributes.SetValue("Property", "ValueB");
 
       var viewModel = (PageTopicViewModel)mappingService.Map(topic);
-      var parentViewModel = viewModel.Parent;
-      var grandParentViewModel = parentViewModel.Parent as SampleTopicViewModel;
+      var parentViewModel = viewModel?.Parent;
+      var grandParentViewModel = parentViewModel?.Parent as SampleTopicViewModel;
 
+      Assert.IsNotNull(viewModel);
+      Assert.IsNotNull(parentViewModel);
+      Assert.IsNotNull(grandParentViewModel);
       Assert.AreEqual<string>("ValueA", viewModel.MetaTitle);
       Assert.AreEqual<string>("Value1", viewModel.Title);
       Assert.AreEqual<bool>(true, viewModel.IsHidden);
@@ -97,10 +114,66 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the relationships.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapRelationships() {
+
+      var mappingService = new TopicMappingService();
+      var relatedTopic1 = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2 = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3 = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic = TopicFactory.Create("Test", "Sample");
+
+      topic.Relationships.SetTopic("Cousins", relatedTopic1);
+      topic.Relationships.SetTopic("Cousins", relatedTopic2);
+      topic.Relationships.SetTopic("Siblings", relatedTopic3);
+
+      var target = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(2, target.Cousins.Count);
+      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
+      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2")));
+      Assert.IsNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP NESTED TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapNestedTopics() {
+
+      var mappingService = new TopicMappingService();
+      var topic                 = TopicFactory.Create("Test", "Sample");
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", topic);
+      var topicList             = TopicFactory.Create("Categories", "TopicList", topic);
+      var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
+      var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
+
+      var target = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(2, target.Categories.Count);
+      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1")));
+      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic2")));
+      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("Categories")));
+      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic")));
+
+    }
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
     public string Property { get; set; }
+    public Collection<PageTopicViewModel> Cousins { get; set; } = new Collection<PageTopicViewModel>();
+    public Collection<PageTopicViewModel> Categories { get; set; } = new Collection<PageTopicViewModel>();
   } //Class
 
 } //Namespace
