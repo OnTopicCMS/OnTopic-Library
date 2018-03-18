@@ -27,7 +27,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
+    static                      Dictionary<string, Type>        _typeLookup                     = null;
     static                      TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
@@ -60,6 +60,26 @@ namespace Ignia.Topics {
       TopicFactory.ValidateKey(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
+      | Ensure cache is populated
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (_typeLookup == null) {
+        var typeLookup = new Dictionary<string, Type>();
+        var matchedTypes = AppDomain
+          .CurrentDomain
+          .GetAssemblies()
+          .SelectMany(t => t.GetTypes())
+          .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel"))
+          .ToList();
+        foreach (var type in matchedTypes) {
+          var associatedContentType = type.Name.Replace("TopicViewModel", "");
+          if (!typeLookup.ContainsKey(associatedContentType)) {
+            typeLookup.Add(associatedContentType, type);
+          }
+        }
+        _typeLookup = typeLookup;
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
       | Return cached entry
       \---------------------------------------------------------------------------------------------------------------------*/
       if (_typeLookup.Keys.Contains(contentType)) {
@@ -67,35 +87,9 @@ namespace Ignia.Topics {
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Determine if there is a matched type
+      | Return default
       \---------------------------------------------------------------------------------------------------------------------*/
-      var baseType = typeof(Object);
-      var targetType = Type.GetType("Ignia.Topics." + contentType + "TopicViewModel");
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (targetType == null) {
-        targetType = baseType;
-      }
-      else if (!targetType.IsSubclassOf(baseType)) {
-        targetType = baseType;
-        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Cache findings
-      \---------------------------------------------------------------------------------------------------------------------*/
-      lock (_typeLookup) {
-        if (_typeLookup.Keys.Contains(contentType)) {
-          _typeLookup.Add(contentType, targetType);
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return result
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return targetType;
+      return typeof(Object);
 
     }
 
