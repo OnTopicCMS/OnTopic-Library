@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
@@ -32,34 +33,31 @@ namespace Ignia.Topics.Tests {
     public void TopicMappingService_MapGeneric() {
 
       var mappingService = new TopicMappingService();
-      var parent = TopicFactory.Create("Parent", "Sample");
-      var topic = TopicFactory.Create("Test", "Sample", parent);
+      var grandParent = TopicFactory.Create("Grandparent", "Page");
+      var parent = TopicFactory.Create("Parent", "Page", grandParent);
+      var topic = TopicFactory.Create("Test", "Page", parent);
 
+      topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
       parent.Attributes.SetValue("Title", "Value2");
       parent.Attributes.SetValue("IsHidden", "1");
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic, new SampleTopicViewModel());
+      grandParent.Attributes.SetValue("Title", "Value3");
+      grandParent.Attributes.SetValue("IsHidden", "1");
 
+      var target = (PageTopicViewModel)mappingService.Map(topic, new PageTopicViewModel());
+
+      Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
       Assert.AreEqual<bool>(true, target.IsHidden);
       Assert.AreEqual<string>("Value2", target.Parent.Title);
+      Assert.AreEqual<string>("Value3", target.Parent.Parent.Title);
 
     }
 
   } //Class
-
-  /*==========================================================================================================================
-  | SAMPLE TOPIC VIEW MODEL
-  \-------------------------------------------------------------------------------------------------------------------------*/
-  public class SampleTopicViewModel {
-    public string Title { get; set; }
-    public bool IsHidden { get; set; }
-    public SampleTopicViewModel Parent { get; set; }
-  }
-
 
 } //Namespace
 
