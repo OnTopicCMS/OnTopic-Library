@@ -168,6 +168,33 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapChildren() {
+
+      var mappingService        = new TopicMappingService();
+      var topic                 = TopicFactory.Create("Test", "Sample");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(3, target.Children.Count);
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
+      Assert.IsNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
+      Assert.AreEqual<int>(0, ((SampleTopicViewModel)target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"))).Children.Count);
+
+    }
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
