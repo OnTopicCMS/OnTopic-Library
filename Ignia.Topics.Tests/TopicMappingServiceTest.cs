@@ -33,8 +33,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapGeneric() {
 
-      var mappingService = new TopicMappingService();
-      var topic = TopicFactory.Create("Test", "Page");
+      var mappingService        = new TopicMappingService();
+      var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
