@@ -142,6 +142,17 @@
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="ITopicMappingService.cs" />
     <Compile Include="ITopicRoutingService.cs" />
+    <Compile Include="Models\ContentItemTopicViewModel.cs" />
+    <Compile Include="Models\ContentListTopicViewModel.cs" />
+    <Compile Include="Models\IndexTopicViewModel.cs" />
+    <Compile Include="Models\ItemTopicViewModel.cs" />
+    <Compile Include="Models\PageGroupTopicViewModel.cs" />
+    <Compile Include="Models\PageTopicViewModel.cs" />
+    <Compile Include="Models\SectionTopicViewModel.cs" />
+    <Compile Include="Models\SlideshowTopicViewModel.cs" />
+    <Compile Include="Models\SlideTopicViewItem.cs" />
+    <Compile Include="Models\TopicViewModel.cs" />
+    <Compile Include="Models\VideoTopicViewModel.cs" />
     <Compile Include="Querying\Topic.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
