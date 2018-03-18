@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics {
 
@@ -37,8 +38,27 @@ namespace Ignia.Topics {
     ///   Static helper method for looking up a class type based on a string name.
     /// </summary>
     /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType()"/>, which can be non-performant. As such, this helper method
-    ///   caches its results in a static lookup table keyed by the string value.
+    ///   <para>
+    ///     According to the default mapping rules, the following will each be mapped:
+    ///     <list type="bullet">
+    ///       <item>Scalar values of types <see cref="bool"/>, <see cref="int"/>, or <see cref="string"/></item>
+    ///       <item>Properties named <c>Parent</c> (will reference <see cref="Topic.Parent"/>)</item>
+    ///       <item>Collections named <c>Children</c> (will reference <see cref="Topic.Children"/>)</item>
+    ///       <item>
+    ///         Collections starting with <c>Related</c> (will reference corresponding <see cref="Topic.Relationships"/>)
+    ///       </item>
+    ///       <item>
+    ///         Collections corresponding to any <see cref="Topic.Children"/> of the same name, and the type <c>ListItem</c>,
+    ///         representing a nested topic list
+    ///       </item>
+    ///     </list>
+    ///   </para>
+    ///   <para>
+    ///     Currently, this method uses reflection to lookup all types ending with <c>TopicViewModel</c> across all assemblies
+    ///     and namespaces. This is incredibly non-performant, and can take over a second to execute. As such, this data is
+    ///     cached for the duration of the application (it is not expected that new classes will be generated during the scope
+    ///     of the application).
+    ///   </para>
     /// </remarks>
     /// <param name="contentType">A string representing the key of the target content type.</param>
     /// <returns>A class type corresponding to the specified string, and ending with "TopicViewModel".</returns>
@@ -149,7 +169,7 @@ namespace Ignia.Topics {
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a topic and an instance of a DTO, will populate the DTO according to the rules of the mapping implementation.
+    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
