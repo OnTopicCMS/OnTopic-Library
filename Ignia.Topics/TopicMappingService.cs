@@ -189,7 +189,7 @@ namespace Ignia.Topics {
         \---------------------------------------------------------------------------------------------------------------------*/
         else if (property.Name.Equals("Parent")) {
           if (topic.Parent != null) {
-            var parent = Map(topic.Parent, Activator.CreateInstance(property.PropertyType));
+            var parent = Map(topic.Parent);
             property.SetValue(target, parent);
           }
         }
