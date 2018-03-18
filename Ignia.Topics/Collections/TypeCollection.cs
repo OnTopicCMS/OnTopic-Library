@@ -25,14 +25,18 @@ namespace Ignia.Topics.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     static                      List<Type>                      _settableTypes                  = null;
-
+    private                     Type                            _attributeFlag                  = null;
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="TypeCollection"/> class.
     /// </summary>
-    internal TypeCollection() : base() {
+    /// <param name="attributeFlag">
+    ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
+    /// </param>
+    internal TypeCollection(Type attributeFlag = null) : base() {
+      _attributeFlag = attributeFlag;
     }
 
     /*==========================================================================================================================
@@ -90,7 +94,7 @@ namespace Ignia.Topics.Collections {
         property != null &&
         property.CanWrite &&
         SettableTypes.Contains(property.PropertyType) &&
-        System.Attribute.IsDefined(property, typeof(AttributeSetterAttribute))
+        (_attributeFlag == null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
 
