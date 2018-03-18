@@ -62,13 +62,14 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="PropertyInfoCollection"/> based on a type, and confirms that the property collection is
-    ///   returning expected types.
+    ///   returning expected types. This includes both types found in the <see cref="Models"/> namespace as well as a custom
+    ///   class defined only in this test.
     /// </summary>
     [TestMethod]
     public void TopicMappingService_MapDynamic() {
 
       var mappingService = new TopicMappingService();
-      var grandParent = TopicFactory.Create("Grandparent", "Page");
+      var grandParent = TopicFactory.Create("Grandparent", "Sample");
       var parent = TopicFactory.Create("Parent", "Page", grandParent);
       var topic = TopicFactory.Create("Test", "Page", parent);
 
@@ -81,18 +82,25 @@ namespace Ignia.Topics.Tests {
 
       grandParent.Attributes.SetValue("Title", "Value3");
       grandParent.Attributes.SetValue("IsHidden", "1");
+      grandParent.Attributes.SetValue("Property", "ValueB");
 
-      var target = (PageTopicViewModel)mappingService.Map(topic);
+      var viewModel = (PageTopicViewModel)mappingService.Map(topic);
+      var parentViewModel = viewModel.Parent;
+      var grandParentViewModel = parentViewModel.Parent as SampleTopicViewModel;
 
-      Assert.AreEqual<string>("ValueA", target.MetaTitle);
-      Assert.AreEqual<string>("Value1", target.Title);
-      Assert.AreEqual<bool>(true, target.IsHidden);
-      Assert.AreEqual<string>("Value2", target.Parent.Title);
-      Assert.AreEqual<string>("Value3", target.Parent.Parent.Title);
+      Assert.AreEqual<string>("ValueA", viewModel.MetaTitle);
+      Assert.AreEqual<string>("Value1", viewModel.Title);
+      Assert.AreEqual<bool>(true, viewModel.IsHidden);
+      Assert.AreEqual<string>("Value2", parentViewModel.Title);
+      Assert.AreEqual<string>("Value3", grandParentViewModel.Title);
+      Assert.AreEqual<string>("ValueB", grandParentViewModel.Property);
 
     }
 
+  } //Class
 
+  public class SampleTopicViewModel : PageTopicViewModel {
+    public string Property { get; set; }
   } //Class
 
 } //Namespace
