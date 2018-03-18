@@ -164,6 +164,9 @@ namespace Ignia.Topics {
     /// </returns>
     public T Map<T>(Topic topic, bool includeRelationships=true, bool includeParents = true) where T : class, new() {
 
+      if (typeof(Topic).IsAssignableFrom(typeof(T))) {
+        return topic as T;
+      }
       var target = new T();
       return (T)Map(topic, target, includeRelationships, includeParents);
 
@@ -189,6 +192,13 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsDisabled) {
         return target;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (typeof(Topic).IsAssignableFrom(target.GetType())) {
+        return topic;
       }
 
       var targetType = target.GetType();
@@ -246,9 +256,20 @@ namespace Ignia.Topics {
           IList list = (IList)property.GetValue(target, null);
           foreach (Topic childTopic in listSource) {
             if (!childTopic.IsDisabled) {
-              var childDto = Map(childTopic, false, false);
-              if (listType.IsAssignableFrom(childDto.GetType())) {
-                list.Add(childDto);
+              //Handle scenario where the list type derives from Topic
+              if (typeof(Topic).IsAssignableFrom(listType)) {
+                //Ensure the list item derives from the list type (which may be more derived than Topic)
+                if (listType.IsAssignableFrom(childTopic.GetType())) {
+                  list.Add(childTopic);
+                }
+              }
+              //Otherwise, assume the list type is a DTO
+              else {
+                var childDto = Map(childTopic, false, false);
+                //Ensure the mapped type derives from the list type
+                if (listType.IsAssignableFrom(childDto.GetType())) {
+                  list.Add(childDto);
+                }
               }
             }
           }

@@ -195,6 +195,37 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully includes <see cref="Topic"/>
+    ///   instances if called for by the model. This isn't a best practice, but is maintained for edge cases.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapTopics() {
+
+      var mappingService        = new TopicMappingService();
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic                 = TopicFactory.Create("Test", "Sample");
+
+      topic.Relationships.SetTopic("Related", relatedTopic1);
+      topic.Relationships.SetTopic("Related", relatedTopic2);
+      topic.Relationships.SetTopic("Related", relatedTopic3);
+
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+      var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+
+      Assert.AreEqual<int>(3, target.Related.Count);
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2")));
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+      Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy.Key);
+
+    }
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
@@ -202,6 +233,7 @@ namespace Ignia.Topics.Tests {
     public Collection<PageTopicViewModel> Children { get; set; } = new Collection<PageTopicViewModel>();
     public Collection<PageTopicViewModel> Cousins { get; set; } = new Collection<PageTopicViewModel>();
     public Collection<PageTopicViewModel> Categories { get; set; } = new Collection<PageTopicViewModel>();
+    public Collection<Topic> Related { get; set; } = new Collection<Topic>();
   } //Class
 
 } //Namespace
