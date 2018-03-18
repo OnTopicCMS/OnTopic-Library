@@ -21,7 +21,7 @@ namespace Ignia.Topics {
   public interface ITopicMappingService {
 
     /*==========================================================================================================================
-    | METHOD: MAP
+    | METHOD: MAP (DYNAMIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}ViewModel" and populate them
@@ -39,11 +39,12 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    object Map(Topic topic);
+    object Map(Topic topic, bool includeRelationships=true);
 
     /*==========================================================================================================================
-    | METHOD: MAP
+    | METHOD: MAP (GENERIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a topic and a generic type, will instantiate a new instance of the generic type and populate it according to the
@@ -55,10 +56,26 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    T Map<T>(Topic topic);
+    T Map<T>(Topic topic, bool includeRelationships=true);
+
+    /*==========================================================================================================================
+    | METHOD: MAP (INSTANCES)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a topic and an instance of a data transfer object, will populate the latter according to the rules of the
+    ///   mapping implementation.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="target">The data transfer object to populate.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <returns>
+    ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
+    /// </returns>
+    object Map(Topic topic, object target, bool includeRelationships = true);
 
   } //Interface
 } //Namespace

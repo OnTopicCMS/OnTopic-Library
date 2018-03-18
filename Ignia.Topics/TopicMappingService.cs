@@ -132,13 +132,14 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic) {
+    public object Map(Topic topic, bool includeRelationships = true) {
 
       var contentType = topic.ContentType;
       var viewModelType = TopicMappingService.GetViewModelType(contentType);
       var target = Activator.CreateInstance(viewModelType);
-      return Map(topic, target);
+      return Map(topic, target, includeRelationships);
 
     }
 
@@ -155,13 +156,14 @@ namespace Ignia.Topics {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic) where T : class, new() {
+    public T Map<T>(Topic topic, bool includeRelationships=true) where T : class, new() {
 
       var target = new T();
-      return (T)Map(topic, target);
+      return (T)Map(topic, target, includeRelationships);
 
     }
 
@@ -173,10 +175,11 @@ namespace Ignia.Topics {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
+    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target) {
+    public object Map(Topic topic, object target, bool includeRelationships = true) {
 
       var targetType = target.GetType();
 
