@@ -181,8 +181,18 @@ namespace Ignia.Topics {
     /// </returns>
     public object Map(Topic topic, object target, bool includeRelationships = true) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.IsDisabled) {
+        return target;
+      }
+
       var targetType = target.GetType();
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through properties, mapping each one
+      \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (PropertyInfo property in _typeCache.GetProperties(targetType)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -196,47 +206,61 @@ namespace Ignia.Topics {
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Children
+        | Case: Collections
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.Equals("Children")) {
-          IList list = (IList)property.GetValue(target, null);
-          foreach (Topic childTopic in topic.Children) {
-            if (!childTopic.ContentType.Equals("TopicList") && !childTopic.IsDisabled) {
-              list.Add(Map(childTopic));
+        else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
+
+          //Determine the type of item in the list
+          var listType = typeof(TopicViewModel);
+          if (property.PropertyType.IsGenericType) {
+            listType = property.PropertyType.GetGenericArguments()[0];
+          }
+
+          //Get source for list
+          IList listSource = new Topic[] { };
+
+          //Handle children
+          if (property.Name.Equals("Children") && includeRelationships) {
+            listSource = topic.Children;
+          }
+
+          //Handle relationships
+          if (listSource.Count == 0 && includeRelationships) {
+            var relationshipName = property.Name;
+            if (topic.Relationships.Contains(relationshipName)) {
+              listSource = topic.Relationships.GetTopics(relationshipName);
             }
           }
+
+          //Handle nested topics
+          if (listSource.Count == 0) {
+            if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("TopicList")) {
+              listSource = topic.Children[property.Name].Children;
+            }
+          }
+
+          //Validate and populate target collection
+          IList list = (IList)property.GetValue(target, null);
+          foreach (Topic childTopic in listSource) {
+            if (!childTopic.IsDisabled) {
+              var childDto = Map(childTopic, false);
+              if (listType.IsAssignableFrom(childDto.GetType())) {
+                list.Add(childDto);
+              }
+            }
+          }
+
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Case: Parent
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.Equals("Parent")) {
+        else if (property.Name.Equals("Parent") && includeRelationships) {
           if (topic.Parent != null) {
-            var parent = Map(topic.Parent);
-            property.SetValue(target, parent);
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Relationships
-        \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.StartsWith("Related")) {
-          var related = topic.Relationships.GetTopics(property.Name.Replace("Related", ""));
-          if (related != null) {
-            IList list = (IList)property.GetValue(target, null);
-            foreach (Topic relationship in related) {
-              list.Add(Map(relationship));
+            var parent = Map(topic.Parent, false);
+            if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
+              property.SetValue(target, parent);
             }
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Nested Topics
-        \---------------------------------------------------------------------------------------------------------------------*/
-        else if (topic.Children.Contains(property.Name)) {
-          IList list = (IList)property.GetValue(target, null);
-          foreach (Topic nestedTopic in topic.Children[property.Name].Children) {
-            list.Add(Map(nestedTopic));
           }
         }
 
