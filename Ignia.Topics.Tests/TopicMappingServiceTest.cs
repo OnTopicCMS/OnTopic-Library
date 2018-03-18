@@ -58,8 +58,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapDynamic() {
 
-      var mappingService = new TopicMappingService();
-      var topic = TopicFactory.Create("Test", "Page");
+      var mappingService        = new TopicMappingService();
+      var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
@@ -82,10 +82,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapParents() {
 
-      var mappingService = new TopicMappingService();
-      var grandParent = TopicFactory.Create("Grandparent", "Sample");
-      var parent = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic = TopicFactory.Create("Test", "Page", parent);
+      var mappingService        = new TopicMappingService();
+      var grandParent           = TopicFactory.Create("Grandparent", "Sample");
+      var parent                = TopicFactory.Create("Parent", "Page", grandParent);
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
@@ -98,9 +98,9 @@ namespace Ignia.Topics.Tests {
       grandParent.Attributes.SetValue("IsHidden", "1");
       grandParent.Attributes.SetValue("Property", "ValueB");
 
-      var viewModel = (PageTopicViewModel)mappingService.Map(topic);
-      var parentViewModel = viewModel?.Parent;
-      var grandParentViewModel = parentViewModel?.Parent as SampleTopicViewModel;
+      var viewModel             = (PageTopicViewModel)mappingService.Map(topic);
+      var parentViewModel       = viewModel?.Parent;
+      var grandParentViewModel  = parentViewModel?.Parent as SampleTopicViewModel;
 
       Assert.IsNotNull(viewModel);
       Assert.IsNotNull(parentViewModel);
@@ -123,11 +123,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapRelationships() {
 
-      var mappingService = new TopicMappingService();
-      var relatedTopic1 = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2 = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3 = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic = TopicFactory.Create("Test", "Sample");
+      var mappingService        = new TopicMappingService();
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       topic.Relationships.SetTopic("Cousins", relatedTopic1);
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
@@ -151,14 +151,14 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapNestedTopics() {
 
-      var mappingService = new TopicMappingService();
+      var mappingService        = new TopicMappingService();
       var topic                 = TopicFactory.Create("Test", "Sample");
       var childTopic            = TopicFactory.Create("ChildTopic", "Page", topic);
       var topicList             = TopicFactory.Create("Categories", "TopicList", topic);
       var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
       var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
       Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1")));
@@ -172,6 +172,7 @@ namespace Ignia.Topics.Tests {
 
   public class SampleTopicViewModel : PageTopicViewModel {
     public string Property { get; set; }
+    public Collection<PageTopicViewModel> Children { get; set; } = new Collection<PageTopicViewModel>();
     public Collection<PageTopicViewModel> Cousins { get; set; } = new Collection<PageTopicViewModel>();
     public Collection<PageTopicViewModel> Categories { get; set; } = new Collection<PageTopicViewModel>();
   } //Class
