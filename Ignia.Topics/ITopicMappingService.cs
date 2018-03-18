@@ -40,8 +40,9 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    object Map(Topic topic, bool includeRelationships=true);
+    object Map(Topic topic, bool includeRelationships=true, bool includeParents = true);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -57,10 +58,11 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    T Map<T>(Topic topic, bool includeRelationships=true);
+    T Map<T>(Topic topic, bool includeRelationships=true, bool includeParents=true);
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -72,10 +74,11 @@ namespace Ignia.Topics {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The data transfer object to populate.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    object Map(Topic topic, object target, bool includeRelationships = true);
+    object Map(Topic topic, object target, bool includeRelationships = true, bool includeParents = true);
 
   } //Interface
 } //Namespace

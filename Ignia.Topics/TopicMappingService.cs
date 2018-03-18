@@ -133,13 +133,14 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, bool includeRelationships = true) {
+    public object Map(Topic topic, bool includeRelationships = true, bool includeParents = true) {
 
       var contentType = topic.ContentType;
       var viewModelType = TopicMappingService.GetViewModelType(contentType);
       var target = Activator.CreateInstance(viewModelType);
-      return Map(topic, target, includeRelationships);
+      return Map(topic, target, includeRelationships, includeParents);
 
     }
 
@@ -157,13 +158,14 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, bool includeRelationships=true) where T : class, new() {
+    public T Map<T>(Topic topic, bool includeRelationships=true, bool includeParents = true) where T : class, new() {
 
       var target = new T();
-      return (T)Map(topic, target, includeRelationships);
+      return (T)Map(topic, target, includeRelationships, includeParents);
 
     }
 
@@ -176,10 +178,11 @@ namespace Ignia.Topics {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
+    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, bool includeRelationships = true) {
+    public object Map(Topic topic, object target, bool includeRelationships = true, bool includeParents = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -243,7 +246,7 @@ namespace Ignia.Topics {
           IList list = (IList)property.GetValue(target, null);
           foreach (Topic childTopic in listSource) {
             if (!childTopic.IsDisabled) {
-              var childDto = Map(childTopic, false);
+              var childDto = Map(childTopic, false, false);
               if (listType.IsAssignableFrom(childDto.GetType())) {
                 list.Add(childDto);
               }
@@ -257,7 +260,7 @@ namespace Ignia.Topics {
         \---------------------------------------------------------------------------------------------------------------------*/
         else if (property.Name.Equals("Parent") && includeRelationships) {
           if (topic.Parent != null) {
-            var parent = Map(topic.Parent, false);
+            var parent = Map(topic.Parent, false, true);
             if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
               property.SetValue(target, parent);
             }
