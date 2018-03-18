@@ -258,7 +258,7 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Case: Parent
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.Equals("Parent") && includeRelationships) {
+        else if (property.Name.Equals("Parent") && includeParents) {
           if (topic.Parent != null) {
             var parent = Map(topic.Parent, false, true);
             if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
