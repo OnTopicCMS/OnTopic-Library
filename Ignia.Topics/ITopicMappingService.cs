@@ -1,0 +1,64 @@
+﻿/*==============================================================================================================================
+| Author        Ignia, LLC
+| Client        Ignia, LLC
+| Project       Topics Library
+\=============================================================================================================================*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Ignia.Topics {
+
+  /*============================================================================================================================
+  | INTERFACE: TOPIC MAPPING SERVICE
+  \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
+  ///   Data Transfer Objects, such as View Models.
+  /// </summary>
+  public interface ITopicMappingService {
+
+    /*==========================================================================================================================
+    | METHOD: MAP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}ViewModel" and populate them
+    ///   according to the rules of the mapping implementation.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
+    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
+    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
+    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
+    object Map(Topic topic);
+
+    /*==========================================================================================================================
+    | METHOD: MAP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a topic and a generic type, will instantiate a new instance of the generic type and populate it according to the
+    ///   rules of the mapping implementation.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <returns>
+    ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
+    /// </returns>
+    T Map<T>(Topic topic);
+
+  } //Interface
+} //Namespace
