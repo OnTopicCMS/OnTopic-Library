@@ -237,7 +237,7 @@ namespace Ignia.Topics {
             listSource = topic.Children;
           }
 
-          //Handle relationships
+          //Handle (outgoing) relationships
           if (listSource.Count == 0 && includeRelationships) {
             var relationshipName = property.Name;
             if (topic.Relationships.Contains(relationshipName)) {
@@ -249,6 +249,14 @@ namespace Ignia.Topics {
           if (listSource.Count == 0) {
             if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("TopicList")) {
               listSource = topic.Children[property.Name].Children;
+            }
+          }
+
+          //Handle (incoming) relationships
+          if (listSource.Count == 0 && includeRelationships) {
+            var relationshipName = property.Name;
+            if (topic.IncomingRelationships.Contains(relationshipName)) {
+              listSource = topic.IncomingRelationships.GetTopics(relationshipName);
             }
           }
 
