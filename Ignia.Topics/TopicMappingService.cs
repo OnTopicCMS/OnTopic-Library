@@ -245,7 +245,7 @@ namespace Ignia.Topics {
 
           //Handle children
           if (property.Name.Equals("Children") && includeRelationships) {
-            listSource = topic.Children;
+            listSource = (IList)topic.Children.Sorted;
           }
 
           //Handle (outgoing) relationships
@@ -259,7 +259,7 @@ namespace Ignia.Topics {
           //Handle nested topics
           if (listSource.Count == 0) {
             if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("TopicList")) {
-              listSource = topic.Children[property.Name].Children;
+              listSource = (IList)topic.Children[property.Name].Children.Sorted;
             }
           }
 
