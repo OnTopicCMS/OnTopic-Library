@@ -252,8 +252,14 @@ namespace Ignia.Topics {
             }
           }
 
-          //Validate and populate target collection
+          //Ensure list is created
           IList list = (IList)property.GetValue(target, null);
+          if (list == null) {
+            list = (IList)Activator.CreateInstance(property.PropertyType);
+            property.SetValue(target, list);
+          }
+
+          //Validate and populate target collection
           foreach (Topic childTopic in listSource) {
             if (!childTopic.IsDisabled) {
               //Handle scenario where the list type derives from Topic

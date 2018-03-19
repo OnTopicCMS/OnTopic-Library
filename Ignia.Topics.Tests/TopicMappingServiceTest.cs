@@ -230,9 +230,9 @@ namespace Ignia.Topics.Tests {
 
   public class SampleTopicViewModel : PageTopicViewModel {
     public string Property { get; set; }
-    public Collection<PageTopicViewModel> Children { get; set; } = new Collection<PageTopicViewModel>();
-    public Collection<PageTopicViewModel> Cousins { get; set; } = new Collection<PageTopicViewModel>();
-    public Collection<PageTopicViewModel> Categories { get; set; } = new Collection<PageTopicViewModel>();
+    public Collection<PageTopicViewModel> Children { get; set; }
+    public Collection<PageTopicViewModel> Cousins { get; set; }
+    public Collection<PageTopicViewModel> Categories { get; set; }
     public Collection<Topic> Related { get; set; } = new Collection<Topic>();
   } //Class
 
