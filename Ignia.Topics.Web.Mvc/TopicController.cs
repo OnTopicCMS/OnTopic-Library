@@ -131,7 +131,9 @@ namespace Ignia.Topics.Web.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic.ContentType.Equals("PageGroup")) {
-        return Redirect(CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+        return Redirect(
+          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -257,45 +257,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the full, hierarchical identifier for the topic, including parents.
-    /// </summary>
-    /// <remarks>
-    ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
-    ///   Example: "Root:Configuration:ContentTypes:Page".
-    /// </remarks>
-    public string UniqueKey {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<string>() != null);
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Crawl up tree to define uniqueKey
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var uniqueKey = "";
-        var topic = this;
-
-        for (var i = 0; i < 100; i++) {
-          if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
-          uniqueKey = topic.Key + uniqueKey;
-          topic = topic.Parent;
-          if (topic == null) break;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        return uniqueKey;
-
-      }
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: ORIGINAL KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -323,28 +284,6 @@ namespace Ignia.Topics {
     #endregion
 
     #region Convenience Properties
-
-    /*==========================================================================================================================
-    | PROPERTY: WEB PATH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the
-    ///   site.
-    /// </summary>
-    /// <remarks>
-    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
-    ///   that reference the web path (e.g., by providing a prefix).
-    /// </remarks>
-    public string WebPath {
-      get {
-        Contract.Ensures(Contract.Result<string>() != null);
-        var uniqueKey = UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
-        if (!uniqueKey.StartsWith("/")) {
-          uniqueKey = "/" + uniqueKey;
-        }
-        return uniqueKey;
-      }
-    }
 
     /*==========================================================================================================================
     | PROPERTY: VIEW
@@ -513,6 +452,67 @@ namespace Ignia.Topics {
 
       }
       set => SetAttributeValue("LastModified", value.ToString());
+    }
+
+    #endregion
+
+    #region Relationship and Collection Methods
+
+    /*==========================================================================================================================
+    | METHOD: GET UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the full, hierarchical identifier for the topic, including parents.
+    /// </summary>
+    /// <remarks>
+    ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
+    ///   Example: "Root:Configuration:ContentTypes:Page".
+    /// </remarks>
+    public string GetUniqueKey() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<string>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Crawl up tree to define uniqueKey
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var uniqueKey = "";
+      var topic = this;
+
+      for (var i = 0; i < 100; i++) {
+        if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
+        uniqueKey = topic.Key + uniqueKey;
+        topic = topic.Parent;
+        if (topic == null) break;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return uniqueKey;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the
+    ///   site.
+    /// </summary>
+    /// <remarks>
+    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
+    ///   that reference the web path (e.g., by providing a prefix).
+    /// </remarks>
+    public string GetWebPath() {
+      Contract.Ensures(Contract.Result<string>() != null);
+      var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
+      if (!uniqueKey.StartsWith("/")) {
+        uniqueKey = "/" + uniqueKey;
+      }
+      return uniqueKey;
     }
 
     #endregion
@@ -745,13 +745,13 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
-      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
+      if (!uniqueKey.StartsWith(GetUniqueKey(), StringComparison.OrdinalIgnoreCase)) return null;
+      if (uniqueKey.Equals(GetUniqueKey(), StringComparison.OrdinalIgnoreCase)) return this;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var remainder = uniqueKey.Substring(UniqueKey.Length + 1);
+      var remainder = uniqueKey.Substring(GetUniqueKey().Length + 1);
       var marker = remainder.IndexOf(":", StringComparison.Ordinal);
       var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
 
