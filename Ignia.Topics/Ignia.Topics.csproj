@@ -142,6 +142,7 @@
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="ITopicMappingService.cs" />
     <Compile Include="ITopicRoutingService.cs" />
+    <Compile Include="ITopicViewModelCore.cs" />
     <Compile Include="Models\ContentItemTopicViewModel.cs" />
     <Compile Include="Models\ContentListTopicViewModel.cs" />
     <Compile Include="Models\IndexTopicViewModel.cs" />

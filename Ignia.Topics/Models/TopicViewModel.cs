@@ -22,7 +22,7 @@ namespace Ignia.Topics.Models {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentative level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class TopicViewModel {
+  public class TopicViewModel: ITopicViewModelCore {
 
     public int Id { get; set; }
     public string Key { get; set; }
