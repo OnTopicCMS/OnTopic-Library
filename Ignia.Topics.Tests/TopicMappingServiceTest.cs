@@ -226,11 +226,40 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: FILTER BY CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="SampleTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_FilterByContentType() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Test", "Sample");
+      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3 = TopicFactory.Create("ChildTopic3", "Index", topic);
+      var childTopic4 = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+
+      var target = (SampleTopicViewModel)mappingService.Map(topic);
+
+      var indexes = target.Children.GetByContentType("Index");
+
+      Assert.AreEqual<int>(2, indexes.Count);
+      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
+      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
+      Assert.IsNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
+
+    }
+
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
     public string Property { get; set; }
-    public Collection<PageTopicViewModel> Children { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
     public Collection<PageTopicViewModel> Cousins { get; set; }
     public Collection<PageTopicViewModel> Categories { get; set; }
     public Collection<Topic> Related { get; set; } = new Collection<Topic>();

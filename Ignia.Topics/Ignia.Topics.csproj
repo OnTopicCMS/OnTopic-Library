@@ -153,6 +153,7 @@
     <Compile Include="Models\SlideshowTopicViewModel.cs" />
     <Compile Include="Models\SlideTopicViewItem.cs" />
     <Compile Include="Models\TopicViewModel.cs" />
+    <Compile Include="Models\TopicViewModelCollection.cs" />
     <Compile Include="Models\VideoTopicViewModel.cs" />
     <Compile Include="Querying\Topic.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
