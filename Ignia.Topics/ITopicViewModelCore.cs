@@ -33,10 +33,10 @@ namespace Ignia.Topics {
   /// </remarks>
   public interface ITopicViewModelCore {
 
-    public string Key { get; set; }
-    public string ContentType { get; set; }
-    public string View { get; set; }
-    public bool IsHidden { get; set; }
+    string Key { get; set; }
+    string ContentType { get; set; }
+    string View { get; set; }
+    bool IsHidden { get; set; }
 
   } //Class
 } //Namespace
