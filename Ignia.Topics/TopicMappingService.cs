@@ -215,9 +215,11 @@ namespace Ignia.Topics {
         if (_typeCache.HasSettableProperty(targetType, property.Name)) {
           var getterMethod = sourceType.GetRuntimeMethod("Get" + property.Name, new Type[] { });
           var attributeValue = (string)null;
+          //Attempt to get value from topic.Get{Property}()
           if (getterMethod != null) {
             attributeValue = getterMethod.Invoke(topic, new object[] { }).ToString();
           }
+          //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
           if (String.IsNullOrEmpty(attributeValue)) {
             attributeValue = topic.Attributes.GetValue(property.Name);
           }
