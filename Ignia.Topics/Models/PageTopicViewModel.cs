@@ -24,12 +24,13 @@ namespace Ignia.Topics.Models {
   /// </remarks>
   public class PageTopicViewModel: TopicViewModel {
 
-    public string Body { get; set; }
+    public string Subtitle { get; set; }
+    public string WebPath { get; set; }
     public string MetaTitle { get; set; }
     public string MetaDescription { get; set; }
     public string MetaKeywords { get; set; }
     public string ShortTitle { get; set; }
-    public string Subtitle { get; set; }
+    public string Body { get; set; }
 
   } //Class
 } //Namespace
