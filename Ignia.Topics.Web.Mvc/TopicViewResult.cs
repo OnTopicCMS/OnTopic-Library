@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Web.Mvc {
 
@@ -21,18 +22,41 @@ namespace Ignia.Topics.Web.Mvc {
   public class TopicViewResult : ViewResult {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    String                      _contentType                    = "";
+    String                      _topicView                      = "";
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a new instances of a <see cref="TopicViewResult"/> based on a <see cref="TopicViewModel"/>.
+    ///   Constructs a new instances of a <see cref="TopicViewResult"/> based on the <see cref="ITopicViewModelCore.View"/> and
+    ///   <see cref="ITopicViewModelCore.ContentType"/>.
     /// </summary>
     /// <remarks>
-    ///   All topic related views should be strongly typed to a <see cref="TopicViewModel"/> or derivative. This is also
-    ///   necessary to provide the <see cref="FindView(ControllerContext)"/> method with a reference to the <see cref="Topic"/>
-    ///   class, which informs it of the default <see cref="Topic.View"/> for the current topic, if set.
+    ///   If the <see cref="ITopicViewModelCore.ContentType"/> is unavailable, it is assumed to be <c>Page</c>. If the <see
+    ///   cref="ITopicViewModelCore.View"/> is unavailable, it is assumed to be the same as the <see
+    ///   cref="ITopicViewModelCore.ContentType"/>.
     /// </remarks>
-    public TopicViewResult(TopicViewModel viewModel) : base() {
+    public TopicViewResult(ITopicViewModelCore viewModel) : base() {
       ViewData.Model = viewModel;
+      _contentType = viewModel.ContentType ?? "Page";
+      _topicView = viewModel.View ?? _contentType;
+    }
+
+    /// <summary>
+    ///   Constructs a new instances of a <see cref="TopicViewResult"/> based on a supplied <paramref name="contentType"/> and,
+    ///   optionally, <paramref name="view"/>.
+    /// </summary>
+    /// <remarks>
+    ///   If the <paramref name="contentType"/> is not provided, it is assumed to be <c>Page</c>. If the <paramref name="view"/>
+    ///   is not provided, it is assumed to be <paramref name="contentType"/>.
+    /// </remarks>
+    public TopicViewResult(object viewModel, string contentType = "Page", string view = null) : base() {
+      ViewData.Model = viewModel;
+      _contentType = contentType;
+      _topicView = view ?? _contentType;
     }
 
     /*==========================================================================================================================
@@ -52,8 +76,7 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       topic                           = ((TopicViewModel)ViewData.Model).Topic;
-      var                       contentType                     = topic.ContentType;
+      var                       contentType                     = _contentType;
       var                       viewEngine                      = ViewEngines.Engines;
       var                       requestContext                  = context.HttpContext.Request;
       var                       view                            = new ViewEngineResult(new string[] { });
@@ -102,8 +125,8 @@ namespace Ignia.Topics.Web.Mvc {
       | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary
       | as it is set as the default View value for the Topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && !String.IsNullOrEmpty(topic.View)) {
-        view = viewEngine.FindView(context, topic.View, MasterName);
+      if (view.View == null && !String.IsNullOrEmpty(_topicView)) {
+        view = viewEngine.FindView(context, _topicView, MasterName);
         searchedPaths = searchedPaths.Union(view.SearchedLocations ?? new string[] { }).ToList();
       }
 

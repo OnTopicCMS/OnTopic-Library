@@ -30,6 +30,7 @@ namespace Ignia.Topics.Web.Mvc {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     ITopicRepository                _topicRepository                = null;
     private                     ITopicRoutingService            _topicRoutingService            = null;
+    private                     ITopicMappingService            _topicMappingService            = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -39,19 +40,25 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(ITopicRepository topicRepository, ITopicRoutingService topicRoutingService) {
+    public TopicController(
+      ITopicRepository topicRepository,
+      ITopicRoutingService topicRoutingService,
+      ITopicMappingService topicMappingService
+     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(topicRoutingService != null, "A concrete implementation of an ITopicRoutingService is required.");
+      Contract.Requires(topicMappingService!= null, "A concrete implementation of an ITopicMappingService is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository = topicRepository;
       _topicRoutingService = topicRoutingService;
+      _topicMappingService = topicMappingService;
 
     }
 
@@ -130,12 +137,12 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = new TopicViewModel(_topicRepository, CurrentTopic);
+      var topicViewModel = _topicMappingService.Map(CurrentTopic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return new TopicViewResult(topicViewModel);
+      return new TopicViewResult(topicViewModel, CurrentTopic.ContentType, CurrentTopic.View);
 
     }
 
