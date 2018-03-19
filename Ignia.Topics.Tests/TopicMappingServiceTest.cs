@@ -254,6 +254,26 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP GETTER METHODS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a property corresponding to a getter method on <see cref="Topic"/> to ensure that it is
+    ///   correctly populated.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapGetterMethods() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "Sample");
+      var childTopic = TopicFactory.Create("Child", "Page", topic);
+      var grandChildTopic = TopicFactory.Create("GrandChild", "Index", childTopic);
+
+      var target = (IndexTopicViewModel)mappingService.Map(grandChildTopic);
+
+      Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
+
+    }
 
   } //Class
 

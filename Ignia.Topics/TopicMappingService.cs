@@ -201,6 +201,7 @@ namespace Ignia.Topics {
         return topic;
       }
 
+      var sourceType = topic.GetType();
       var targetType = target.GetType();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -212,7 +213,14 @@ namespace Ignia.Topics {
         | Case: Scalar Value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-          var attributeValue = topic.Attributes.GetValue(property.Name);
+          var getterMethod = sourceType.GetRuntimeMethod("Get" + property.Name, new Type[] { });
+          var attributeValue = (string)null;
+          if (getterMethod != null) {
+            attributeValue = getterMethod.Invoke(topic, new object[] { }).ToString();
+          }
+          if (String.IsNullOrEmpty(attributeValue)) {
+            attributeValue = topic.Attributes.GetValue(property.Name);
+          }
           if (attributeValue != null) {
             _typeCache.SetProperty(target, property.Name, attributeValue);
           }
