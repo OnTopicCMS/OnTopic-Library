@@ -275,7 +275,7 @@ namespace Ignia.Topics.Web.Migrations {
         /*----------------------------------------------------------------------------------------------------------------------
         | Set the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(topic != parentTopic);
+        Contract.Assume(topic.Key != parentTopic.Key);
         topic.Key = key;
         topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
