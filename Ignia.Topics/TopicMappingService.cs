@@ -138,9 +138,21 @@ namespace Ignia.Topics {
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     public object Map(Topic topic, bool includeRelationships = true, bool includeParents = true) {
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Instantiate object
+      \---------------------------------------------------------------------------------------------------------------------*/
       var contentType = topic.ContentType;
       var viewModelType = TopicMappingService.GetViewModelType(contentType);
       var target = Activator.CreateInstance(viewModelType);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Provide mapping
+      \---------------------------------------------------------------------------------------------------------------------*/
       return Map(topic, target, includeRelationships, includeParents);
 
     }

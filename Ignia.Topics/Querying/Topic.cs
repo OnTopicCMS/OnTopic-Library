@@ -31,6 +31,7 @@ using Target = Ignia.Topics;
     /// <summary>
     ///   Retrieves a collection of topics based on an attribute name and value.
     /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
     /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
@@ -47,6 +48,7 @@ using Target = Ignia.Topics;
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
       Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Target.Topic>>() != null);
