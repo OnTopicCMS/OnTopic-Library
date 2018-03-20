@@ -87,6 +87,10 @@
       <Project>{206b7f91-ca25-4e9d-9576-60d2e54a2c0a}</Project>
       <Name>Ignia.Topics.Data.Caching</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj">
+      <Project>{e52fc633-b4c5-4a2b-8caf-30e756d7a6a7}</Project>
+      <Name>Ignia.Topics.ViewModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ignia.Topics.Web.Mvc\Ignia.Topics.Web.Mvc.csproj">
       <Project>{3b3ce34d-b5e5-47ca-bfef-e6740650f378}</Project>
       <Name>Ignia.Topics.Web.Mvc</Name>
