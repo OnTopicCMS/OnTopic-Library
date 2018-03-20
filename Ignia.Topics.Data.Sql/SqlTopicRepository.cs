@@ -67,7 +67,7 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | METHOD: ADD TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
+    private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -108,7 +108,7 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | METHOD: SET INDEXED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -146,7 +146,7 @@ namespace Ignia.Topics.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetBlobAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetBlobAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -206,7 +206,7 @@ namespace Ignia.Topics.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -253,7 +253,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   needing to rely on lazy-loading, which would complicate dependency injection.
     /// </remarks>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetDerivedTopics(Dictionary<int, Topic> topics) {
+    private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -337,7 +337,7 @@ namespace Ignia.Topics.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -1277,9 +1277,12 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, string fieldValue, SqlDbType sqlDbType) {
-      AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
-    }
+    private static void AddSqlParameter(
+      SqlCommand commandObject,
+      string sqlParameter,
+      string fieldValue,
+      SqlDbType sqlDbType
+    ) => AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
 
     /// <summary>
     ///   Adds a SQL paramter to a command object, additionally setting the specified parameter direction.
@@ -1288,9 +1291,12 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, ParameterDirection paramDirection, SqlDbType sqlDbType) {
-      AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
-    }
+    private static void AddSqlParameter(
+      SqlCommand commandObject,
+      string sqlParameter,
+      ParameterDirection paramDirection,
+      SqlDbType sqlDbType
+    ) => AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
 
     /// <summary>
     ///   Adds a SQL paramter to a command object, additionally setting the specified SQL data length for the field.
@@ -1304,7 +1310,14 @@ namespace Ignia.Topics.Data.Sql {
     /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
     ///   commandObject != null
     /// </requires>
-    private static void AddSqlParameter(SqlCommand commandObject, string sqlParameter, string fieldValue, SqlDbType sqlDbType, ParameterDirection paramDirection, int sqlLength) {
+    private static void AddSqlParameter(
+      SqlCommand commandObject,
+      string sqlParameter,
+      string fieldValue,
+      SqlDbType sqlDbType,
+      ParameterDirection paramDirection,
+      int sqlLength
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -1327,7 +1340,7 @@ namespace Ignia.Topics.Data.Sql {
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
       if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
-        if (fieldValue == null || fieldValue == "") {
+        if (String.IsNullOrEmpty(fieldValue)) {
           commandObject.Parameters["@" + sqlParameter].Value = null;
         }
         else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {

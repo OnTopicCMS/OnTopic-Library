@@ -14,7 +14,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics.Collections;
-using Ignia.Topics.Models;
 
 namespace Ignia.Topics {
 
@@ -43,7 +42,7 @@ namespace Ignia.Topics {
     ///   <para>
     ///     According to the default mapping rules, the following will each be mapped:
     ///     <list type="bullet">
-    ///       <item>Scalar values of types <see cref="bool"/>, <see cref="int"/>, or <see cref="string"/></item>
+    ///       <item>Scalar values of types <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="String"/></item>
     ///       <item>Properties named <c>Parent</c> (will reference <see cref="Topic.Parent"/>)</item>
     ///       <item>Collections named <c>Children</c> (will reference <see cref="Topic.Children"/>)</item>
     ///       <item>
@@ -111,7 +110,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return default
       \---------------------------------------------------------------------------------------------------------------------*/
-      return typeof(Object);
+      return typeof(object);
 
     }
 
@@ -127,7 +126,7 @@ namespace Ignia.Topics {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, bool, bool)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, Boolean, Boolean)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -209,7 +208,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (PropertyInfo property in _typeCache.GetProperties(targetType)) {
+      foreach (var property in _typeCache.GetProperties(targetType)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Assign default value
@@ -284,7 +283,7 @@ namespace Ignia.Topics {
           }
 
           //Ensure list is created
-          IList list = (IList)property.GetValue(target, null);
+          var list = (IList)property.GetValue(target, null);
           if (list == null) {
             list = (IList)Activator.CreateInstance(property.PropertyType);
             property.SetValue(target, list);

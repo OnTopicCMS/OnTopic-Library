@@ -31,9 +31,9 @@ namespace Ignia.Topics {
   ///     As an example, the <see cref="Topic.Key"/> property is adorned with the <see cref="AttributeSetterAttribute"/>. As a
   ///     result, if a client calls <code>topic.Attributes.SetValue("Key", "NewKey")</code> then that update will be routed
   ///     through <see cref="Topic.Key"/>, thus enforcing key validation, and calling
-  ///     <see cref="TopicCollection{T}.ChangeKey(T, string)"/>. Similarly, if <code>topic.Attributes.SetValue("Key", ":/? ")
+  ///     <see cref="TopicCollection{T}.ChangeKey(T, String)"/>. Similarly, if <code>topic.Attributes.SetValue("Key", ":/? ")
   ///     </code> were called, a contract exception will be thrown since <code>:/? </code> violates
-  ///     <see cref="TopicFactory.ValidateKey(string, bool)"/>.
+  ///     <see cref="TopicFactory.ValidateKey(String, Boolean)"/>.
   ///   </para>
   ///   <para>
   ///     To ensure this logic, it is critical that implementers of <see cref="AttributeSetterAttribute"/> ensure that the

@@ -221,7 +221,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="topicName">
     ///   The <see cref="Topic.UniqueKey"/> or <see cref="Topic.Key"/> for the topic to be deleted.
     /// </param>
-    public void DeleteTopic(string topicName) {
+    public static void DeleteTopic(string topicName) {
       var topic = TopicRepository.DataProvider.Load(topicName);
       if (topic != null) {
         TopicRepository.DataProvider.Delete(topic);
@@ -239,7 +239,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="key">The topic's <see cref="Topic.Key"/>.</param>
     /// <param name="contentType">The topic's <see cref="Topic.ContentType"/> key.</param>
     /// <returns>The configured topic object.</returns>
-    public Topic SetTopic(Topic parentTopic, string key, string contentType) {
+    public static Topic SetTopic(Topic parentTopic, string key, string contentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -307,7 +307,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <param name="parentTopic">The topic's <see cref="Topic.Parent"/>.</param>
     /// <param name="key">The topic's <see cref="Topic.Key"/>.</param>
-    public Topic SetContentType(Topic parentTopic, string key) {
+    public static Topic SetContentType(Topic parentTopic, string key) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -344,7 +344,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <param name="parentContentType">The Content Type key for the parent topic.</param>
     /// <param name="childContentType">The Content Type key for the child topic.</param>
-    public void AllowContentType(string parentContentType, string childContentType) {
+    public static void AllowContentType(string parentContentType, string childContentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -399,10 +399,8 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     /// <param name="childContentType">The ContentType topic for the child topic.</param>
-    public void AllowContentType(Topic parentContentType, Topic childContentType) {
+    public static void AllowContentType(Topic parentContentType, Topic childContentType) =>
       parentContentType?.Relationships.SetTopic("ContentTypes", childContentType);
-    }
-
 
     /*==========================================================================================================================
     | METHOD: DISABLE CHILD TOPICS
@@ -411,7 +409,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   Prevents Topics from being created under Topics of a particular ContentType.
     /// </summary>
     /// <param name="parentContentType">The Content Type key for the parent topic.</param>
-    public void DisableChildTopics(string parentContentType) {
+    public static void DisableChildTopics(string parentContentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -448,7 +446,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   Prevents Topics from being created under Topics of a particular ContentType.
     /// </summary>
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
-    public void DisableChildTopics(Topic parentContentType) {
+    public static void DisableChildTopics(Topic parentContentType) {
       Contract.Requires<ArgumentNullException>(parentContentType != null, "The parent ContentType must be specified.");
       parentContentType.Attributes.SetValue("DisableChildTopics", "1");
     }
@@ -464,7 +462,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// <param name="attributes">The collection of attributes for the attribute topic.</param>
     /// <param name="key">The <see cref="Topic.Key"/> for the attribute to be referenced.</param>
     /// <returns>The topic object for the referencing topic.</returns>
-    public Topic SetAttributeReference(Topic contentType, Topic attributes, string key) {
+    public static Topic SetAttributeReference(Topic contentType, Topic attributes, string key) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
