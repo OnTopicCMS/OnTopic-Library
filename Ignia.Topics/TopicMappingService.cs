@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -311,6 +312,39 @@ namespace Ignia.Topics {
               property.SetValue(target, parent);
             }
           }
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Track required
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (property.GetCustomAttribute(typeof(RequiredAttribute), true) != null) {
+
+          var isNull = false;
+
+          //Check to see if the type is nullable
+          if (Nullable.GetUnderlyingType(property.PropertyType) != null) {
+            if (property.GetValue(target) == null) {
+              isNull = true;
+            }
+          }
+
+          //If the type is a string, explicitly check for whitespace
+          //This is important since Attributes.GetValue() will return "" if no value is found
+          else if (property.PropertyType.IsEquivalentTo(typeof(string))) {
+            if (String.IsNullOrWhiteSpace((string)property.GetValue(target))) {
+              isNull = true;
+            }
+          }
+
+          //Throw an exception if either condition is true
+          if (isNull) {
+            throw new NullReferenceException(
+              "A field on the data transfer object is marked as [Required] but a corresponding value on the topic '" +
+              topic.GetUniqueKey() + "' could not be identified. As a result, the mapping to '" + targetType.Name +
+              "' failed."
+            );
+          }
+
         }
 
       }

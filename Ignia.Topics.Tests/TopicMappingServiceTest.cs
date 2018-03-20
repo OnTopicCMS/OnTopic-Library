@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
@@ -275,6 +276,60 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP REQUIRED PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a required property. Ensures that an error is not thrown if it is set.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapRequiredProperty() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "Required");
+
+      topic.Attributes.SetValue("RequiredAttribute", "Required");
+
+      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<string>("Required", target.RequiredAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP REQUIRED PROPERTY EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void TopicMappingService_MapRequiredPropertyException() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "Required");
+
+      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REQUIRED OBJECT PROPERTY EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void TopicMappingService_MapRequiredObjectPropertyException() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "RequiredObject");
+
+      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+
+    }
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
@@ -284,6 +339,17 @@ namespace Ignia.Topics.Tests {
     public Collection<PageTopicViewModel> Categories { get; set; }
     public Collection<Topic> Related { get; set; } = new Collection<Topic>();
   } //Class
+
+  public class RequiredTopicViewModel : SampleTopicViewModel {
+    [Required]
+    public string RequiredAttribute { get; set; }
+  } //Class
+
+  public class RequiredObjectTopicViewModel : RequiredTopicViewModel {
+    [Required]
+    public Topic RequiredObject { get; set; }
+  } //Class
+
 
 } //Namespace
 
