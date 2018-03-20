@@ -352,6 +352,24 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MINIMUM VALUE PROPERTIES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ValidationException))]
+    public void TopicMappingService_MapMinimumValueProperties() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "MinimumLengthProperty");
+
+      topic.Attributes.SetValue("MinimumLength", "Hello World");
+
+      var target = (MinimumLengthPropertyTopicViewModel)mappingService.Map(topic);
+
+    }
 
   } //Class
 

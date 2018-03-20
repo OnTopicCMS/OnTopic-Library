@@ -83,6 +83,7 @@
     <Compile Include="TopicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AttributeValueCollectionTest.cs" />
+    <Compile Include="ViewModels\MinimumLengthPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\DefaultPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredObjectTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredTopicViewModel.cs" />
