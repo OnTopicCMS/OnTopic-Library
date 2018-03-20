@@ -66,7 +66,7 @@ namespace Ignia.Topics.Web {
         if (_topic == null) {
           var path = Request.QueryString["Path"];
           if (path != null) {
-            _topic = TopicRepository.RootTopic.GetTopic(path);
+            _topic = TopicRepository.DataProvider.Load(path);
           }
           else {
             var topicRoutingService = new WebFormsTopicRoutingService(TopicRepository.DataProvider, Request.RequestContext);

@@ -86,7 +86,7 @@ namespace Ignia.Topics {
           }
         }
         path = path.Trim(new char[] { '/' }).Replace("//", "/");
-        _topic = _topicRepository.Load().GetTopic(path.Replace("/", ":"));
+        _topic = _topicRepository.Load(path.Replace("/", ":"));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

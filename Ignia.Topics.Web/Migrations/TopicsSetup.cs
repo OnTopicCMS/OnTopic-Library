@@ -56,7 +56,7 @@ namespace Ignia.Topics.Web.Migrations {
       get {
         Contract.Ensures(Contract.Result<Topic>() != null);
         if (_configuration == null) {
-          _configuration = RootTopic.GetTopic("Configuration");
+          _configuration = TopicRepository.DataProvider.Load("Configuration");
         }
         return _configuration;
       }
@@ -90,8 +90,14 @@ namespace Ignia.Topics.Web.Migrations {
           /*--------------------------------------------------------------------------------------------------------------------
           | Add any available Content Types to the collection
           \-------------------------------------------------------------------------------------------------------------------*/
-          if (RootTopic.GetTopic("Configuration:ContentTypes") != null) {
-            foreach (var topic in RootTopic.GetTopic("Configuration:ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+          if (TopicRepository.DataProvider.Load("Configuration:ContentTypes") != null) {
+            foreach (
+              var topic in
+              TopicRepository
+                .DataProvider
+                .Load("Configuration:ContentTypes")
+                .FindAllByAttribute("ContentType", "ContentType")
+             ) {
 
               // Add ContentType Topic to collection if not already added
               if (topic is ContentTypeDescriptor contentType && !_contentTypes.Contains(contentType.Key)) {
@@ -216,7 +222,7 @@ namespace Ignia.Topics.Web.Migrations {
     ///   The <see cref="Topic.UniqueKey"/> or <see cref="Topic.Key"/> for the topic to be deleted.
     /// </param>
     public void DeleteTopic(string topicName) {
-      var topic = RootTopic.GetTopic(topicName);
+      var topic = TopicRepository.DataProvider.Load(topicName);
       if (topic != null) {
         TopicRepository.DataProvider.Delete(topic);
       }
