@@ -28,9 +28,9 @@ namespace Ignia.Topics.Web.Mvc {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     ITopicRepository                _topicRepository                = null;
-    private                     ITopicRoutingService            _topicRoutingService            = null;
-    private                     ITopicMappingService            _topicMappingService            = null;
+    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            ITopicRoutingService            _topicRoutingService            = null;
+    private readonly            ITopicMappingService            _topicMappingService            = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================

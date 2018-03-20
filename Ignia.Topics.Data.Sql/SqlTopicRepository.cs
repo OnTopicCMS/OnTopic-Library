@@ -36,7 +36,7 @@ namespace Ignia.Topics.Data.Sql {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
-    private                     string                          _connectionString               = null;
+    private readonly            string                          _connectionString               = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
