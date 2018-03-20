@@ -246,7 +246,7 @@ namespace Ignia.Topics {
         else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
 
           //Determine the type of item in the list
-          var listType = typeof(TopicViewModel);
+          var listType = typeof(ITopicViewModelCore);
           if (property.PropertyType.IsGenericType) {
             //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
             listType = property.PropertyType.GetGenericArguments().Last();
