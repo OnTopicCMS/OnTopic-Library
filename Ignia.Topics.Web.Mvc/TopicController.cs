@@ -23,7 +23,7 @@ namespace Ignia.Topics.Web.Mvc {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
-  public class TopicController : AsyncController {
+  public class TopicController : Controller {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -135,6 +135,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic == null) {
         filterContext.Result = HttpNotFound("There is no topic associated with this path.");
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +145,7 @@ namespace Ignia.Topics.Web.Mvc {
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (CurrentTopic.IsDisabled) {
         filterContext.Result = new HttpUnauthorizedResult("The topic at this location is disabled.");
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -151,6 +153,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
         filterContext.Result = RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -163,10 +166,15 @@ namespace Ignia.Topics.Web.Mvc {
         filterContext.Result = Redirect(
           CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
         );
+        return;
       }
 
-    }
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Base processing
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      base.OnActionExecuting(filterContext);
 
+    }
 
   } //Class
 
