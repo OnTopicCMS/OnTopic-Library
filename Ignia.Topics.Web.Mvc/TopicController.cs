@@ -102,41 +102,6 @@ namespace Ignia.Topics.Web.Mvc {
     public ActionResult Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle exceptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic == null) {
-        return HttpNotFound("There is no topic associated with this path.");
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle disabled topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
-      //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
-      if (CurrentTopic.IsDisabled) {
-        return new HttpUnauthorizedResult("The topic at this location is disabled.");
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle redirect
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
-        return RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle page group
-      >-----------------------------------------------------------------------------------------------------------------------—-
-      | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
-      | redirected to the first (non-hidden, non-disabled) page in the page group.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType.Equals("PageGroup")) {
-        return Redirect(
-          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
-        );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicViewModel = _topicMappingService.Map(CurrentTopic);
@@ -147,6 +112,61 @@ namespace Ignia.Topics.Web.Mvc {
       return new TopicViewResult(topicViewModel, CurrentTopic.ContentType, CurrentTopic.View);
 
     }
+
+    /*==========================================================================================================================
+    | EVENT: ON ACTION EXECUTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides universal validation of calls to any action on <see cref="TopicController"/> or its derivatives.
+    /// </summary>
+    /// <remarks>
+    ///   While the <see cref="OnActionExecuting(ActionExecutingContext)"/> event can be used to provide a wide variety of
+    ///   filters, this specific implementation is focused on validating the state of the <see cref="CurrentTopic"/>. Namely,
+    ///   it will provide error handling (if the <see cref="CurrentTopic"/> is null), a redirect (if the <see
+    ///   cref="CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized response (if the <see cref="CurrentTopic"/>'s
+    ///   <see cref="Topic.IsDisabled"/> flag is set.
+    /// </remarks>
+    /// <returns>A view associated with the requested topic's Content Type and view.</returns>
+    [NonAction]
+    protected override void OnActionExecuting(ActionExecutingContext filterContext) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle exceptions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (CurrentTopic == null) {
+        filterContext.Result = HttpNotFound("There is no topic associated with this path.");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle disabled topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
+      //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
+      if (CurrentTopic.IsDisabled) {
+        filterContext.Result = new HttpUnauthorizedResult("The topic at this location is disabled.");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle redirect
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
+        filterContext.Result = RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle page group
+      >-----------------------------------------------------------------------------------------------------------------------—-
+      | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
+      | redirected to the first (non-hidden, non-disabled) page in the page group.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (CurrentTopic.ContentType.Equals("PageGroup")) {
+        filterContext.Result = Redirect(
+          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
+        );
+      }
+
+    }
+
 
   } //Class
 
