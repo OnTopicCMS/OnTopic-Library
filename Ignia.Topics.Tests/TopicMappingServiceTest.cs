@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Models;
+using Ignia.Topics.Tests.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
@@ -353,34 +354,6 @@ namespace Ignia.Topics.Tests {
 
 
   } //Class
-
-  public class SampleTopicViewModel : PageTopicViewModel {
-    public string Property { get; set; }
-    public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
-    public Collection<PageTopicViewModel> Cousins { get; set; }
-    public Collection<PageTopicViewModel> Categories { get; set; }
-    public Collection<Topic> Related { get; set; } = new Collection<Topic>();
-  } //Class
-
-  public class RequiredTopicViewModel : SampleTopicViewModel {
-    [Required]
-    public string RequiredAttribute { get; set; }
-  } //Class
-
-  public class RequiredObjectTopicViewModel : RequiredTopicViewModel {
-    [Required]
-    public Topic RequiredObject { get; set; }
-  } //Class
-
-  public class DefaultValueTopicViewModel : TopicViewModel {
-    [DefaultValue("Default")]
-    public string DefaultString { get; set; }
-    [DefaultValue(10)]
-    public int DefaultInt { get; set; }
-    [DefaultValue(true)]
-    public bool DefaultBool { get; set; }
-  } //Class
-
 
 } //Namespace
 
