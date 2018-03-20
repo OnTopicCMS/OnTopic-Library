@@ -71,7 +71,6 @@ namespace Ignia.Topics.Data.Caching {
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
-
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
     /// </summary>
@@ -96,7 +95,7 @@ namespace Ignia.Topics.Data.Caching {
       | Lookup by TopicId
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId >= 0) {
-        return _cache.GetTopic(topicId);
+        return GetTopic(_cache, topicId);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +124,7 @@ namespace Ignia.Topics.Data.Caching {
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrWhiteSpace(topicKey)) {
-        return _cache.GetTopic(topicKey);
+        return GetTopic(_cache, topicKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -146,6 +145,116 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
     public override Topic Load(int topicId, DateTime version) => _dataProvider.Load(topicId, version);
+
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
+    /// </summary>
+    /// <remarks>
+    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
+    /// </remarks>
+    /// <param name="sourceTopic">The root topic to search from.</param>
+    /// <param name="topicId">The integer identifier for the topic.</param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
+    ///   topicId &lt;= 0
+    /// </requires>
+    private Topic GetTopic(Topic sourceTopic, int topicId) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return if current
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (sourceTopic.Id == topicId) return sourceTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Iterate through children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopic in sourceTopic.Children) {
+        var foundTopic = GetTopic(childTopic, topicId);
+        if (foundTopic != null) return foundTopic;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return null if not found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /// <summary>
+    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
+    /// </summary>
+    /// <param name="sourceTopic">The root topic to search from.</param>
+    /// <param name="uniqueKey">
+    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
+    /// </param>
+    /// <returns>The topic or null, if the topic is not found.</returns>
+    private Topic GetTopic(Topic sourceTopic, string uniqueKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (sourceTopic == null) return null;
+      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide shortcut for local calls
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
+        if (sourceTopic.Children.Contains(uniqueKey)) {
+          return sourceTopic.Children[uniqueKey];
+        }
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide implicit root
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
+      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
+      | needing to be aware of the root.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
+        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
+        ) {
+        uniqueKey = "Root:" + uniqueKey;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!uniqueKey.StartsWith(sourceTopic.GetUniqueKey(), StringComparison.OrdinalIgnoreCase)) return null;
+      if (uniqueKey.Equals(sourceTopic.GetUniqueKey(), StringComparison.OrdinalIgnoreCase)) return sourceTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var remainder = uniqueKey.Substring(sourceTopic.GetUniqueKey().Length + 1);
+      var marker = remainder.IndexOf(":", StringComparison.Ordinal);
+      var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!sourceTopic.Children.Contains(nextChild)) return null;
+
+      if (nextChild == remainder) return sourceTopic.Children[nextChild];
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return GetTopic(sourceTopic.Children[nextChild], uniqueKey);
+
+    }
 
     /*==========================================================================================================================
     | METHOD: SAVE
