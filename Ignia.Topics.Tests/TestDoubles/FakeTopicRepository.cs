@@ -27,10 +27,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    Topic                       _cache                          = null;
     int                         _identity                       = 1;
-    Dictionary<int, Topic>      _indexById                      = new Dictionary<int, Topic>();
-    Dictionary<string, Topic>   _indexByUniqueKey               = new Dictionary<string, Topic>();
+    Topic                       _cache                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,11 +48,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
     public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
-      var contentTypeDescriptors = new ContentTypeDescriptorCollection();
-      foreach (ContentTypeDescriptor contentTypeDescriptor in _indexByUniqueKey["Root:Configuration:ContentTypes"].Children) {
-        contentTypeDescriptors.Add(contentTypeDescriptor);
-      }
-      return contentTypeDescriptors;
+      throw new NotImplementedException();
     }
 
     /*==========================================================================================================================
@@ -67,20 +61,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
     public override Topic Load(int topicId, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return item by ID
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_indexById.ContainsKey(topicId)) {
-        return _indexById[topicId];
-      }
-      return null;
-
+      throw new NotImplementedException();
     }
 
     /// <summary>
@@ -95,10 +76,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrWhiteSpace(topicKey)) {
-        if (_indexByUniqueKey.ContainsKey(topicKey)) {
-          return _indexByUniqueKey[topicKey];
-        }
-        return null;
+        throw new NotImplementedException();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -258,22 +236,22 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = IndexTopic(TopicFactory.Create("Root", "Container"));
+      var rootTopic = TopicFactory.Create("Root", "Container");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = IndexTopic(TopicFactory.Create("Configuration", "Container", rootTopic));
-      var contentTypes = IndexTopic(TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration));
+      var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
+      var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      IndexTopic(TopicFactory.Create("ContentType", "ContentTypeDescriptor", contentTypes));
-      IndexTopic(TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes));
-      IndexTopic(TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes));
+      TopicFactory.Create("ContentType", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish content
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var web = IndexTopic(TopicFactory.Create("Web", "Page", rootTopic));
+      var web = TopicFactory.Create("Web", "Page", rootTopic);
 
       CreateFakeData(web, 3, 3);
 
@@ -292,7 +270,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = IndexTopic(TopicFactory.Create(parent.Key + "_" + i, "Page", parent));
+        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString());
         if (depth > 0) {
@@ -301,18 +279,6 @@ namespace Ignia.Topics.Tests.TestDoubles {
       }
     }
 
-    /*==========================================================================================================================
-    | METHOD: INDEX TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Ensures that the topic is correctly indexed for lookups.
-    /// </summary>
-    private Topic IndexTopic(Topic topic) {
-      _indexById.Add(topic.Id, topic);
-      _indexByUniqueKey.Add(topic.GetUniqueKey(), topic);
-      return topic;
-    }
-
-    } //Class
+  } //Class
 
 } //Namespace
