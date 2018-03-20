@@ -24,7 +24,7 @@ namespace Ignia.Topics {
   ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
   ///   Data Transfer Objects, such as View Models.
   /// </summary>
-  public class TopicMappingService {
+  public class TopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
     | STATIC VARIABLES

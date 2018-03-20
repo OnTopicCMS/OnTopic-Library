@@ -62,7 +62,7 @@ namespace Ignia.Topics {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    T Map<T>(Topic topic, bool includeRelationships=true, bool includeParents=true);
+    T Map<T>(Topic topic, bool includeRelationships = true, bool includeParents = true) where T : class, new();
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
