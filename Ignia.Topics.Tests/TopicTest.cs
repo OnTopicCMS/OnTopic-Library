@@ -181,34 +181,6 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Looks for a deeply nested child topic using the GetTopic() methods.
-    /// </summary>
-    [TestMethod]
-    public void Topic_GetTopicTest() {
-
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 2);
-
-      childTopic.Parent         = parentTopic;
-      grandChildTopic.Parent    = childTopic;
-
-      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic"), parentTopic);
-      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic:ChildTopic"), childTopic);
-      Assert.ReferenceEquals(parentTopic.GetTopic("ParentTopic:ChildTopic:GrandChildTopic"), grandChildTopic);
-
-      Assert.ReferenceEquals(childTopic.GetTopic("GrandChildTopic"), grandChildTopic);
-
-      Assert.ReferenceEquals(parentTopic.GetTopic(1), parentTopic);
-      Assert.ReferenceEquals(parentTopic.GetTopic(5), childTopic);
-      Assert.ReferenceEquals(parentTopic.GetTopic(2), grandChildTopic);
-
-    }
-
-    /*==========================================================================================================================
     | TEST: IS VISIBLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
