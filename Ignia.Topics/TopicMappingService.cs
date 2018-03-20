@@ -302,21 +302,23 @@ namespace Ignia.Topics {
           }
 
           //Validate and populate target collection
-          foreach (Topic childTopic in listSource) {
-            if (!childTopic.IsDisabled) {
-              //Handle scenario where the list type derives from Topic
-              if (typeof(Topic).IsAssignableFrom(listType)) {
-                //Ensure the list item derives from the list type (which may be more derived than Topic)
-                if (listType.IsAssignableFrom(childTopic.GetType())) {
-                  list.Add(childTopic);
+          if (listSource != null) {
+            foreach (Topic childTopic in listSource) {
+              if (!childTopic.IsDisabled) {
+                //Handle scenario where the list type derives from Topic
+                if (typeof(Topic).IsAssignableFrom(listType)) {
+                  //Ensure the list item derives from the list type (which may be more derived than Topic)
+                  if (listType.IsAssignableFrom(childTopic.GetType())) {
+                    list.Add(childTopic);
+                  }
                 }
-              }
-              //Otherwise, assume the list type is a DTO
-              else {
-                var childDto = Map(childTopic, false, false);
-                //Ensure the mapped type derives from the list type
-                if (listType.IsAssignableFrom(childDto.GetType())) {
-                  list.Add(childDto);
+                //Otherwise, assume the list type is a DTO
+                else {
+                  var childDto = Map(childTopic, false, false);
+                  //Ensure the mapped type derives from the list type
+                  if (listType.IsAssignableFrom(childDto.GetType())) {
+                    list.Add(childDto);
+                  }
                 }
               }
             }
