@@ -139,10 +139,9 @@ namespace Ignia.Topics {
     public object Map(Topic topic, bool includeRelationships = true, bool includeParents = true) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
+      | Handle null source
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(topic.ContentType != null, "The topic parameter must have the ContentType set.");
+      if (topic == null) return null;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
@@ -204,7 +203,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.IsDisabled) {
+      if (topic == null || topic.IsDisabled) {
         return target;
       }
 
