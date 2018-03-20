@@ -304,7 +304,7 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
+    [ExpectedException(typeof(ValidationException))]
     public void TopicMappingService_MapRequiredPropertyException() {
 
       var mappingService = new TopicMappingService();
@@ -321,7 +321,7 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
+    [ExpectedException(typeof(ValidationException))]
     public void TopicMappingService_MapRequiredObjectPropertyException() {
 
       var mappingService = new TopicMappingService();
