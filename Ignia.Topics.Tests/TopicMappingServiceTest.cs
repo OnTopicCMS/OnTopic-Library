@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -330,6 +331,27 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: DEFAULT VALUE PROPERTIES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has default properties. Ensures that each is set appropriately.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapDefaultValueProperties() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Topic", "DefaultValue");
+
+      var target = (DefaultValueTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<string>("Default", target.DefaultString);
+      Assert.AreEqual<int>(10, target.DefaultInt);
+      Assert.IsTrue(target.DefaultBool);
+
+    }
+
+
   } //Class
 
   public class SampleTopicViewModel : PageTopicViewModel {
@@ -348,6 +370,15 @@ namespace Ignia.Topics.Tests {
   public class RequiredObjectTopicViewModel : RequiredTopicViewModel {
     [Required]
     public Topic RequiredObject { get; set; }
+  } //Class
+
+  public class DefaultValueTopicViewModel : TopicViewModel {
+    [DefaultValue("Default")]
+    public string DefaultString { get; set; }
+    [DefaultValue(10)]
+    public int DefaultInt { get; set; }
+    [DefaultValue(true)]
+    public bool DefaultBool { get; set; }
   } //Class
 
 

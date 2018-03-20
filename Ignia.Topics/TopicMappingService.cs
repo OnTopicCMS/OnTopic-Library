@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -211,6 +212,16 @@ namespace Ignia.Topics {
       foreach (PropertyInfo property in _typeCache.GetProperties(targetType)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Assign default value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
+        var defaultValue = "";
+        if (defaultValueAttribute != null) {
+          property.SetValue(target, defaultValueAttribute.Value);
+          defaultValue = defaultValueAttribute.Value.ToString();
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Case: Scalar Value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_typeCache.HasSettableProperty(targetType, property.Name)) {
@@ -222,7 +233,7 @@ namespace Ignia.Topics {
           }
           //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
           if (String.IsNullOrEmpty(attributeValue)) {
-            attributeValue = topic.Attributes.GetValue(property.Name);
+            attributeValue = topic.Attributes.GetValue(property.Name, defaultValue);
           }
           if (attributeValue != null) {
             _typeCache.SetProperty(target, property.Name, attributeValue);
@@ -336,7 +347,7 @@ namespace Ignia.Topics {
             }
           }
 
-          //Throw an exception if either condition is true
+          //Throw an exception if the value isn't set
           if (isNull) {
             throw new NullReferenceException(
               "A field on the data transfer object is marked as [Required] but a corresponding value on the topic '" +
@@ -344,7 +355,6 @@ namespace Ignia.Topics {
               "' failed."
             );
           }
-
         }
 
       }
