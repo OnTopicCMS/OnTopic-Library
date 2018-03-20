@@ -142,6 +142,7 @@ namespace Ignia.Topics {
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Requires<ArgumentNullException>(topic.ContentType != null, "The topic parameter must have the ContentType set.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
