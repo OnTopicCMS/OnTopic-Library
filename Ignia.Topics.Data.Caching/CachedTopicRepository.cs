@@ -194,7 +194,7 @@ namespace Ignia.Topics.Data.Caching {
     /// </summary>
     /// <param name="sourceTopic">The root topic to search from.</param>
     /// <param name="uniqueKey">
-    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
+    ///   The partial or full string value representing the key (or <see cref="Topic.GetUniqueKey"/>) for the topic.
     /// </param>
     /// <returns>The topic or null, if the topic is not found.</returns>
     private Topic GetTopic(Topic sourceTopic, string uniqueKey) {

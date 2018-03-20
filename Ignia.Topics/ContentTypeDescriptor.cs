@@ -98,7 +98,7 @@ namespace Ignia.Topics {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="Topic.SetRelationship(String, Topic, Boolean)"/>.
+    ///     cref="RelatedTopicCollection.SetTopic(string, Topic, bool)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
