@@ -89,7 +89,7 @@ namespace Ignia.Topics {
           .CurrentDomain
           .GetAssemblies()
           .SelectMany(t => t.GetTypes())
-          .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel"))
+          .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase))
           .ToList();
         foreach (var type in matchedTypes) {
           var associatedContentType = type.Name.Replace("TopicViewModel", "");
