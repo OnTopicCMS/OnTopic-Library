@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ignia.Topics.Models;
+using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Tests.ViewModels {
 

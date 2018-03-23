@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
-using Ignia.Topics.Models;
+using Ignia.Topics.ViewModels;
 using Ignia.Topics.Tests.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
