@@ -25,6 +25,7 @@ namespace Ignia.Topics.ViewModels {
   public class ContentListTopicViewModel: PageTopicViewModel {
 
     public TopicViewModelCollection<ContentItemTopicViewModel> ContentItems { get; set; }
+    public TopicViewModelCollection<TopicViewModel> Categories { get; set; }
 
   } //Class
 } //Namespace
