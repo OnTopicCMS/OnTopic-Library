@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ignia.Topics.Models {
+namespace Ignia.Topics.ViewModels {
 
   /*============================================================================================================================
   | VIEW MODEL: VIDEO TOPIC

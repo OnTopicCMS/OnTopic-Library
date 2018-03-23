@@ -159,9 +159,7 @@
     <Compile Include="TopicFactory.cs" />
     <Compile Include="TopicMappingService.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ignia.Topics.Models {
+namespace Ignia.Topics.ViewModels {
 
   /*============================================================================================================================
   | VIEW MODEL: CONTENT ITEM TOPIC

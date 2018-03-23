@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics;
 
-namespace Ignia.Topics.Models {
+namespace Ignia.Topics.ViewModels {
 
   /*============================================================================================================================
   | VIEW MODEL: TOPIC
