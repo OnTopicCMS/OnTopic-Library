@@ -84,7 +84,7 @@ namespace Ignia.Topics {
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
       if (_typeLookup == null) {
-        var typeLookup = new Dictionary<string, Type>();
+        var typeLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         var matchedTypes = AppDomain
           .CurrentDomain
           .GetAssemblies()
