@@ -34,7 +34,7 @@ namespace Ignia.Topics.Mapping {
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  sealed class RecurseAttribute : System.Attribute {
+  public class RecurseAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

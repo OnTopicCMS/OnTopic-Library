@@ -35,7 +35,7 @@ namespace Ignia.Topics.Mapping {
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  sealed class RelationshipAttribute : System.Attribute {
+  public class RelationshipAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

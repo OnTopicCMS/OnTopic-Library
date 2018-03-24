@@ -28,7 +28,7 @@ namespace Ignia.Topics.Mapping {
   ///   useful when an attribute is expected to be inherited by all child topics.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  sealed class InheritAttribute : System.Attribute {
+  public class InheritAttribute : System.Attribute {
 
   } //Class
 
