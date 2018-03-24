@@ -199,6 +199,35 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP SLIDE SHOW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls a <see
+    ///   cref="SlideshowTopicViewModel"/>, even though the <see cref="ContentListTopicViewModel.ContentItems"/> list is a
+    ///   collection of <see cref="ContentItemTopicViewModel"/> objects (from which <see cref="SlideTopicViewModel"/>.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapSlideshow() {
+
+      var mappingService = new TopicMappingService();
+      var topic = TopicFactory.Create("Test", "Slideshow");
+      var slides = TopicFactory.Create("ContentItems", "List", topic);
+      var childTopic1 = TopicFactory.Create("ChildTopic1", "Slide", slides);
+      var childTopic2 = TopicFactory.Create("ChildTopic2", "Slide", slides);
+      var childTopic3 = TopicFactory.Create("ChildTopic3", "Slide", slides);
+      var childTopic4 = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
+
+      var target = (SlideshowTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(4, target.ContentItems.Count);
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
