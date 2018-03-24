@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Mapping {
 
   /*============================================================================================================================
   | CLASS: TOPIC MAPPING SERVICE

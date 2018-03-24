@@ -142,9 +142,10 @@
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
-    <Compile Include="ITopicMappingService.cs" />
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="ITopicViewModelCore.cs" />
+    <Compile Include="Mapping\ITopicMappingService.cs" />
+    <Compile Include="Mapping\TopicMappingService.cs" />
     <Compile Include="Querying\Topic.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
@@ -157,7 +158,6 @@
     <Compile Include="Topic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TopicFactory.cs" />
-    <Compile Include="TopicMappingService.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

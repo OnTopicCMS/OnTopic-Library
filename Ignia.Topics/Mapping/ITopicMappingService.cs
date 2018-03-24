@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Mapping {
 
   /*============================================================================================================================
   | INTERFACE: TOPIC MAPPING SERVICE
