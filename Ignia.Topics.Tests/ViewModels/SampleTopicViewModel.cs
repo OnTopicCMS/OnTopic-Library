@@ -29,9 +29,9 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
 
-    public Collection<PageTopicViewModel> Cousins { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Cousins { get; set; }
 
-    public Collection<PageTopicViewModel> Categories { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Categories { get; set; }
 
     public Collection<Topic> Related { get; set; } = new Collection<Topic>();
 
