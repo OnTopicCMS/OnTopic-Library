@@ -157,7 +157,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService();
       var topic                 = TopicFactory.Create("Test", "Sample");
       var childTopic            = TopicFactory.Create("ChildTopic", "Page", topic);
-      var topicList             = TopicFactory.Create("Categories", "TopicList", topic);
+      var topicList             = TopicFactory.Create("Categories", "List", topic);
       var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
       var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
 

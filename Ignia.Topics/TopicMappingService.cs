@@ -281,7 +281,7 @@ namespace Ignia.Topics {
 
           //Handle nested topics
           if (listSource.Count == 0) {
-            if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("TopicList")) {
+            if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("List")) {
               listSource = topic.Children[property.Name].Children.Sorted.ToList();
             }
           }
