@@ -148,6 +148,8 @@
     <Compile Include="Mapping\InheritAttribute.cs" />
     <Compile Include="Mapping\ITopicMappingService.cs" />
     <Compile Include="Mapping\RecurseAttribute.cs" />
+    <Compile Include="Mapping\RelationshipType.cs" />
+    <Compile Include="Mapping\RelationshipAttribute.cs" />
     <Compile Include="Mapping\Relationships.cs" />
     <Compile Include="Mapping\TopicMappingService.cs" />
     <Compile Include="Querying\Topic.cs" />
