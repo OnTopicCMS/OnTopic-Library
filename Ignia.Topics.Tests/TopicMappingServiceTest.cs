@@ -13,6 +13,7 @@ using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Tests.ViewModels;
+using Ignia.Topics.Mapping;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {

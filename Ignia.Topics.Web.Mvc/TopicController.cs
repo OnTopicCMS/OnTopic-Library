@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Diagnostics.Contracts;
 using Ignia.Topics;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Mapping;
 
 namespace Ignia.Topics.Web.Mvc {
 
