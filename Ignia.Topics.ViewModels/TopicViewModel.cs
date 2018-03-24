@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics;
+using Ignia.Topics.Mapping;
 
 namespace Ignia.Topics.ViewModels {
 
@@ -28,6 +29,7 @@ namespace Ignia.Topics.ViewModels {
     public int Id { get; set; }
     public string Key { get; set; }
     public string ContentType { get; set; }
+    [Recurse(Relationships.Parents)]
     public TopicViewModel Parent { get; set; }
     public string UniqueKey { get; set; }
     public string View { get; set; }
