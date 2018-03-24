@@ -147,6 +147,8 @@
     <Compile Include="Mapping\AttributeKeyAttribute.cs" />
     <Compile Include="Mapping\InheritAttribute.cs" />
     <Compile Include="Mapping\ITopicMappingService.cs" />
+    <Compile Include="Mapping\RecurseAttribute.cs" />
+    <Compile Include="Mapping\Relationships.cs" />
     <Compile Include="Mapping\TopicMappingService.cs" />
     <Compile Include="Querying\Topic.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
