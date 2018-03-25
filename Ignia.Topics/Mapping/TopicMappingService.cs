@@ -133,10 +133,9 @@ namespace Ignia.Topics.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, bool includeRelationships = true, bool includeParents = true) {
+    public object Map(Topic topic, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -153,7 +152,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return Map(topic, target, includeRelationships, includeParents);
+      return Map(topic, target, relationships);
 
     }
 
@@ -170,18 +169,17 @@ namespace Ignia.Topics.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, bool includeRelationships=true, bool includeParents = true) where T : class, new() {
+    public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
 
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
       var target = new T();
-      return (T)Map(topic, target, includeRelationships, includeParents);
+      return (T)Map(topic, target, relationships);
 
     }
 
@@ -193,12 +191,11 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, bool includeRelationships = true, bool includeParents = true) {
+    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -223,20 +220,61 @@ namespace Ignia.Topics.Mapping {
       foreach (var property in _typeCache.GetProperties(targetType)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Establish per-property variables
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var defaultValue        = "";
+        var inheritValue        = false;
+        var attributeKey        = property.Name;
+        var relationshipKey     = property.Name;
+        var relationshipType    = RelationshipType.Any;
+        var crawlRelationships  = Relationships.None;
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Assign default value
         \---------------------------------------------------------------------------------------------------------------------*/
         var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
-        var defaultValue = "";
         if (defaultValueAttribute != null) {
           property.SetValue(target, defaultValueAttribute.Value);
           defaultValue = defaultValueAttribute.Value.ToString();
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Determine inheritance
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (property.GetCustomAttribute(typeof(InheritAttribute), true) != null) {
+          inheritValue = true;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Determine attribute key
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var attributeKeyAttribute = (AttributeKeyAttribute)property.GetCustomAttribute(typeof(AttributeKeyAttribute), true);
+        if (attributeKeyAttribute != null) {
+          attributeKey = attributeKeyAttribute.Value;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Determine relationship key and type
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
+        if (relationshipAttribute != null) {
+          relationshipKey = relationshipAttribute.Key;
+          relationshipType = relationshipAttribute.Type;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Determine recusion settings
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
+        if (recurseAttribute != null) {
+          crawlRelationships = recurseAttribute.Relationships;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Case: Scalar Value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-          var getterMethod = sourceType.GetRuntimeMethod("Get" + property.Name, new Type[] { });
+          var getterMethod = sourceType.GetRuntimeMethod("Get" + attributeKey, new Type[] { });
           var attributeValue = (string)null;
           //Attempt to get value from topic.Get{Property}()
           if (getterMethod != null) {
@@ -244,7 +282,7 @@ namespace Ignia.Topics.Mapping {
           }
           //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
           if (String.IsNullOrEmpty(attributeValue)) {
-            attributeValue = topic.Attributes.GetValue(property.Name, defaultValue);
+            attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
           }
           if (attributeValue != null) {
             _typeCache.SetProperty(target, property.Name, attributeValue);
@@ -267,30 +305,42 @@ namespace Ignia.Topics.Mapping {
           IList listSource = new Topic[] { };
 
           //Handle children
-          if (property.Name.Equals("Children") && includeRelationships) {
+          if (
+            (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
+            relationships.HasFlag(Relationships.Children)
+          ) {
             listSource = topic.Children.Sorted.ToList();
           }
 
           //Handle (outgoing) relationships
-          if (listSource.Count == 0 && includeRelationships) {
-            var relationshipName = property.Name;
-            if (topic.Relationships.Contains(relationshipName)) {
-              listSource = topic.Relationships.GetTopics(relationshipName);
+          if (
+            listSource.Count == 0 &&
+            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.Relationship)) &&
+            relationships.HasFlag(Relationships.Relationships)
+          ) {
+            if (topic.Relationships.Contains(relationshipKey)) {
+              listSource = topic.Relationships.GetTopics(relationshipKey);
             }
           }
 
           //Handle nested topics
-          if (listSource.Count == 0) {
+          if (
+            listSource.Count == 0 &&
+            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
+          ) {
             if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("List")) {
               listSource = topic.Children[property.Name].Children.Sorted.ToList();
             }
           }
 
           //Handle (incoming) relationships
-          if (listSource.Count == 0 && includeRelationships) {
-            var relationshipName = property.Name;
-            if (topic.IncomingRelationships.Contains(relationshipName)) {
-              listSource = topic.IncomingRelationships.GetTopics(relationshipName);
+          if (
+            listSource.Count == 0 &&
+            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.IncomingRelationship)) &&
+            relationships.HasFlag(Relationships.IncomingRelationships)
+          ) {
+            if (topic.IncomingRelationships.Contains(relationshipKey)) {
+              listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
             }
           }
 
@@ -314,7 +364,10 @@ namespace Ignia.Topics.Mapping {
                 }
                 //Otherwise, assume the list type is a DTO
                 else {
-                  var childDto = Map(childTopic, false, false);
+                  var childDto = Map(
+                    childTopic,
+                    crawlRelationships
+                  );
                   //Ensure the mapped type derives from the list type
                   if (listType.IsAssignableFrom(childDto.GetType())) {
                     list.Add(childDto);
@@ -329,9 +382,12 @@ namespace Ignia.Topics.Mapping {
         /*----------------------------------------------------------------------------------------------------------------------
         | Case: Parent
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.Equals("Parent") && includeParents) {
+        else if (property.Name.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
           if (topic.Parent != null) {
-            var parent = Map(topic.Parent, false, true);
+            var parent = Map(
+              topic.Parent,
+              crawlRelationships
+              );
             if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
               property.SetValue(target, parent);
             }

@@ -39,10 +39,9 @@ namespace Ignia.Topics.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    object Map(Topic topic, bool includeRelationships=true, bool includeParents = true);
+    object Map(Topic topic, Relationships relationships = Relationships.All);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -57,12 +56,11 @@ namespace Ignia.Topics.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    T Map<T>(Topic topic, bool includeRelationships = true, bool includeParents = true) where T : class, new();
+    T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new();
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -73,12 +71,11 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The data transfer object to populate.</param>
-    /// <param name="includeRelationships">Determines whether the mapping should follow relationships to other topics.</param>
-    /// <param name="includeParents">Determines whether the mapping should follow the ancestry via parents.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model instance with properties appropriately mapped.
     /// </returns>
-    object Map(Topic topic, object target, bool includeRelationships = true, bool includeParents = true);
+    object Map(Topic topic, object target, Relationships relationships = Relationships.All);
 
   } //Interface
 } //Namespace
