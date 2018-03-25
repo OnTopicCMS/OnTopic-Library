@@ -211,196 +211,11 @@ namespace Ignia.Topics.Mapping {
         return topic;
       }
 
-      var sourceType = topic.GetType();
-      var targetType = target.GetType();
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var property in _typeCache.GetProperties(targetType)) {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish per-property variables
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var defaultValue        = "";
-        var inheritValue        = false;
-        var attributeKey        = property.Name;
-        var relationshipKey     = property.Name;
-        var relationshipType    = RelationshipType.Any;
-        var crawlRelationships  = Relationships.None;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Assign default value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
-        if (defaultValueAttribute != null) {
-          property.SetValue(target, defaultValueAttribute.Value);
-          defaultValue = defaultValueAttribute.Value.ToString();
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Determine inheritance
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (property.GetCustomAttribute(typeof(InheritAttribute), true) != null) {
-          inheritValue = true;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Determine attribute key
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var attributeKeyAttribute = (AttributeKeyAttribute)property.GetCustomAttribute(typeof(AttributeKeyAttribute), true);
-        if (attributeKeyAttribute != null) {
-          attributeKey = attributeKeyAttribute.Value;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Determine relationship key and type
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
-        if (relationshipAttribute != null) {
-          relationshipKey = relationshipAttribute.Key;
-          relationshipType = relationshipAttribute.Type;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Determine recusion settings
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
-        if (recurseAttribute != null) {
-          crawlRelationships = recurseAttribute.Relationships;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Scalar Value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-          var getterMethod = sourceType.GetRuntimeMethod("Get" + attributeKey, new Type[] { });
-          var attributeValue = (string)null;
-          //Attempt to get value from topic.Get{Property}()
-          if (getterMethod != null) {
-            attributeValue = getterMethod.Invoke(topic, new object[] { }).ToString();
-          }
-          //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
-          if (String.IsNullOrEmpty(attributeValue)) {
-            attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
-          }
-          if (attributeValue != null) {
-            _typeCache.SetProperty(target, property.Name, attributeValue);
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Collections
-        \---------------------------------------------------------------------------------------------------------------------*/
-        else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-
-          //Determine the type of item in the list
-          var listType = typeof(ITopicViewModelCore);
-          if (property.PropertyType.IsGenericType) {
-            //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-            listType = property.PropertyType.GetGenericArguments().Last();
-          }
-
-          //Get source for list
-          IList listSource = new Topic[] { };
-
-          //Handle children
-          if (
-            (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
-            relationships.HasFlag(Relationships.Children)
-          ) {
-            listSource = topic.Children.Sorted.ToList();
-          }
-
-          //Handle (outgoing) relationships
-          if (
-            listSource.Count == 0 &&
-            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.Relationship)) &&
-            relationships.HasFlag(Relationships.Relationships)
-          ) {
-            if (topic.Relationships.Contains(relationshipKey)) {
-              listSource = topic.Relationships.GetTopics(relationshipKey);
-            }
-          }
-
-          //Handle nested topics
-          if (
-            listSource.Count == 0 &&
-            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
-          ) {
-            if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("List")) {
-              listSource = topic.Children[property.Name].Children.Sorted.ToList();
-            }
-          }
-
-          //Handle (incoming) relationships
-          if (
-            listSource.Count == 0 &&
-            (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.IncomingRelationship)) &&
-            relationships.HasFlag(Relationships.IncomingRelationships)
-          ) {
-            if (topic.IncomingRelationships.Contains(relationshipKey)) {
-              listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
-            }
-          }
-
-          //Ensure list is created
-          var list = (IList)property.GetValue(target, null);
-          if (list == null) {
-            list = (IList)Activator.CreateInstance(property.PropertyType);
-            property.SetValue(target, list);
-          }
-
-          //Validate and populate target collection
-          if (listSource != null) {
-            foreach (Topic childTopic in listSource) {
-              if (!childTopic.IsDisabled) {
-                //Handle scenario where the list type derives from Topic
-                if (typeof(Topic).IsAssignableFrom(listType)) {
-                  //Ensure the list item derives from the list type (which may be more derived than Topic)
-                  if (listType.IsAssignableFrom(childTopic.GetType())) {
-                    list.Add(childTopic);
-                  }
-                }
-                //Otherwise, assume the list type is a DTO
-                else {
-                  var childDto = Map(
-                    childTopic,
-                    crawlRelationships
-                  );
-                  //Ensure the mapped type derives from the list type
-                  if (listType.IsAssignableFrom(childDto.GetType())) {
-                    list.Add(childDto);
-                  }
-                }
-              }
-            }
-          }
-
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Case: Parent
-        \---------------------------------------------------------------------------------------------------------------------*/
-        else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
-          if (topic.Parent != null) {
-            var parent = Map(
-              topic.Parent,
-              crawlRelationships
-              );
-            if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
-              property.SetValue(target, parent);
-            }
-          }
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate fields
-        \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (ValidationAttribute validator in property.GetCustomAttributes(typeof(ValidationAttribute))) {
-          validator.Validate(property.GetValue(target), property.Name);
-        }
-
+      foreach (var property in _typeCache.GetProperties(target.GetType())) {
+        SetProperty(topic, target, relationships, property);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -410,5 +225,204 @@ namespace Ignia.Topics.Mapping {
 
     }
 
-  } //Interface
+    /*==========================================================================================================================
+    | PRIVATE: SET PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
+    ///   <see cref="Topic"/> based on predetermined conventions.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="target">The target object to map the data to.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="property">Information related to the current property.</param>
+    private void SetProperty(Topic topic, object target, Relationships relationships, PropertyInfo property) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish per-property variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var defaultValue          = "";
+      var inheritValue          = false;
+      var attributeKey          = property.Name;
+      var relationshipKey       = property.Name;
+      var relationshipType      = RelationshipType.Any;
+      var crawlRelationships    = Relationships.None;
+      var sourceType            = topic.GetType();
+      var targetType            = target.GetType();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Assign default value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
+      if (defaultValueAttribute != null) {
+        property.SetValue(target, defaultValueAttribute.Value);
+        defaultValue = defaultValueAttribute.Value.ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine inheritance
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (property.GetCustomAttribute(typeof(InheritAttribute), true) != null) {
+        inheritValue = true;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine attribute key
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributeKeyAttribute = (AttributeKeyAttribute)property.GetCustomAttribute(typeof(AttributeKeyAttribute), true);
+      if (attributeKeyAttribute != null) {
+        attributeKey = attributeKeyAttribute.Value;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine relationship key and type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
+      if (relationshipAttribute != null) {
+        relationshipKey = relationshipAttribute.Key;
+        relationshipType = relationshipAttribute.Type;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine recusion settings
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
+      if (recurseAttribute != null) {
+        crawlRelationships = recurseAttribute.Relationships;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Property: Scalar Value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_typeCache.HasSettableProperty(targetType, property.Name)) {
+        var getterMethod = sourceType.GetRuntimeMethod("Get" + attributeKey, new Type[] { });
+        var attributeValue = (string)null;
+        //Attempt to get value from topic.Get{Property}()
+        if (getterMethod != null) {
+          attributeValue = getterMethod.Invoke(topic, new object[] { }).ToString();
+        }
+        //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
+        if (String.IsNullOrEmpty(attributeValue)) {
+          attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
+        }
+        if (attributeValue != null) {
+          _typeCache.SetProperty(target, property.Name, attributeValue);
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Property: Collections
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
+
+        //Determine the type of item in the list
+        var listType = typeof(ITopicViewModelCore);
+        if (property.PropertyType.IsGenericType) {
+          //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+          listType = property.PropertyType.GetGenericArguments().Last();
+        }
+
+        //Get source for list
+        IList listSource = new Topic[] { };
+
+        //Handle children
+        if (
+          (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
+          relationships.HasFlag(Relationships.Children)
+        ) {
+          listSource = topic.Children.Sorted.ToList();
+        }
+
+        //Handle (outgoing) relationships
+        if (
+          listSource.Count == 0 &&
+          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.Relationship)) &&
+          relationships.HasFlag(Relationships.Relationships)
+        ) {
+          if (topic.Relationships.Contains(relationshipKey)) {
+            listSource = topic.Relationships.GetTopics(relationshipKey);
+          }
+        }
+
+        //Handle nested topics
+        if (
+          listSource.Count == 0 &&
+          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
+        ) {
+          if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("List")) {
+            listSource = topic.Children[property.Name].Children.Sorted.ToList();
+          }
+        }
+
+        //Handle (incoming) relationships
+        if (
+          listSource.Count == 0 &&
+          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.IncomingRelationship)) &&
+          relationships.HasFlag(Relationships.IncomingRelationships)
+        ) {
+          if (topic.IncomingRelationships.Contains(relationshipKey)) {
+            listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
+          }
+        }
+
+        //Ensure list is created
+        var list = (IList)property.GetValue(target, null);
+        if (list == null) {
+          list = (IList)Activator.CreateInstance(property.PropertyType);
+          property.SetValue(target, list);
+        }
+
+        //Validate and populate target collection
+        if (listSource != null) {
+          foreach (Topic childTopic in listSource) {
+            if (!childTopic.IsDisabled) {
+              //Handle scenario where the list type derives from Topic
+              if (typeof(Topic).IsAssignableFrom(listType)) {
+                //Ensure the list item derives from the list type (which may be more derived than Topic)
+                if (listType.IsAssignableFrom(childTopic.GetType())) {
+                  list.Add(childTopic);
+                }
+              }
+              //Otherwise, assume the list type is a DTO
+              else {
+                var childDto = Map(
+                  childTopic,
+                  crawlRelationships
+                );
+                //Ensure the mapped type derives from the list type
+                if (listType.IsAssignableFrom(childDto.GetType())) {
+                  list.Add(childDto);
+                }
+              }
+            }
+          }
+        }
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Property: Parent
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
+        if (topic.Parent != null) {
+          var parent = Map(
+            topic.Parent,
+            crawlRelationships
+            );
+          if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
+            property.SetValue(target, parent);
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate fields
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (ValidationAttribute validator in property.GetCustomAttributes(typeof(ValidationAttribute))) {
+        validator.Validate(property.GetValue(target), property.Name);
+      }
+
+    }
+
+  } //Class
 } //Namespace
