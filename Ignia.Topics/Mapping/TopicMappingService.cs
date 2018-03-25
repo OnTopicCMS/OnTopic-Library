@@ -393,7 +393,7 @@ namespace Ignia.Topics.Mapping {
 
         //Handle Metadata relationship
         if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(metadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey)?.Children.Sorted.ToList();
+          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.Sorted.ToList();
         }
 
         //Ensure list is created

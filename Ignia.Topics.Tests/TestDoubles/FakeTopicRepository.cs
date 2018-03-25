@@ -252,7 +252,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
       | Establish metadata
       \-----------------------------------------------------------------------------------------------------------------------*/
       var metadata = TopicFactory.Create("Metadata", "Container", configuration);
-      var lookup = TopicFactory.Create("Categories", "Lookup", metadata);
+      var categories = TopicFactory.Create("Categories", "Lookup", metadata);
+      var lookup = TopicFactory.Create("LookupList", "List", categories);
 
       for (var i=1; i<=5; i++) {
         TopicFactory.Create("Category" + i, "LookupListItem", lookup);
