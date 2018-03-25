@@ -382,7 +382,7 @@ namespace Ignia.Topics.Mapping {
         /*----------------------------------------------------------------------------------------------------------------------
         | Case: Parent
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (property.Name.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
+        else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
           if (topic.Parent != null) {
             var parent = Map(
               topic.Parent,
