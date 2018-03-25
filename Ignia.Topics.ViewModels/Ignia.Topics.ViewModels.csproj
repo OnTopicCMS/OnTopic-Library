@@ -46,6 +46,7 @@
     <Compile Include="ContentListTopicViewModel.cs" />
     <Compile Include="IndexTopicViewModel.cs" />
     <Compile Include="ItemTopicViewModel.cs" />
+    <Compile Include="LookupListItemTopicViewModel.cs" />
     <Compile Include="PageGroupTopicViewModel.cs" />
     <Compile Include="PageTopicViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
