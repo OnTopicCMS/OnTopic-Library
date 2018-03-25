@@ -249,6 +249,16 @@ namespace Ignia.Topics.Tests.TestDoubles {
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish metadata
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var metadata = TopicFactory.Create("Metadata", "Container", configuration);
+      var lookup = TopicFactory.Create("Categories", "Lookup", metadata);
+
+      for (var i=1; i<=5; i++) {
+        TopicFactory.Create("Category" + i, "LookupListItem", lookup);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish content
       \-----------------------------------------------------------------------------------------------------------------------*/
       var web = TopicFactory.Create("Web", "Page", rootTopic);

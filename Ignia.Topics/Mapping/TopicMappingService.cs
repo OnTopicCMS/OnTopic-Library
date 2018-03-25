@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Mapping {
 
@@ -31,6 +32,22 @@ namespace Ignia.Topics.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     static                      Dictionary<string, Type>        _typeLookup                     = null;
     static                      TypeCollection                  _typeCache                      = new TypeCollection();
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITopicRepository                _topicRepository                = null;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
+    /// </summary>
+    public TopicMappingService(ITopicRepository topicRepository) {
+      Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
+      _topicRepository = topicRepository;
+    }
 
     /*==========================================================================================================================
     | METHOD: GET VIEW MODEL TYPE
@@ -241,14 +258,15 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var sourceType            = topic.GetType();
+      var targetType            = target.GetType();
       var defaultValue          = "";
       var inheritValue          = false;
       var attributeKey          = property.Name;
       var relationshipKey       = property.Name;
       var relationshipType      = RelationshipType.Any;
       var crawlRelationships    = Relationships.None;
-      var sourceType            = topic.GetType();
-      var targetType            = target.GetType();
+      var metadataKey           = (string)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
@@ -289,6 +307,14 @@ namespace Ignia.Topics.Mapping {
       var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
       if (recurseAttribute != null) {
         crawlRelationships = recurseAttribute.Relationships;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine metadata key, if present
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var metadataAttribute = (MetadataAttribute)property.GetCustomAttribute(typeof(MetadataAttribute), true);
+      if (metadataAttribute != null) {
+        metadataKey = metadataAttribute.Key;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -363,6 +389,11 @@ namespace Ignia.Topics.Mapping {
           if (topic.IncomingRelationships.Contains(relationshipKey)) {
             listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
           }
+        }
+
+        //Handle Metadata relationship
+        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(metadataKey)) {
+          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey)?.Children.Sorted.ToList();
         }
 
         //Ensure list is created
