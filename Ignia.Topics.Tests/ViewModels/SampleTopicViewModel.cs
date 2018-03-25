@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ignia.Topics.Mapping;
 using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Tests.ViewModels {
@@ -27,13 +28,24 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public string Property { get; set; }
 
+    [Inherit]
+    public string InheritedProperty { get; set; }
+
+    [AttributeKey("Property")]
+    public string PropertyAlias { get; set; }
+
+    [Recurse(Relationships.Relationships)]
     public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
 
+    [Recurse(Relationships.Children)]
     public TopicViewModelCollection<PageTopicViewModel> Cousins { get; set; }
 
     public TopicViewModelCollection<PageTopicViewModel> Categories { get; set; }
 
-    public Collection<Topic> Related { get; set; } = new Collection<Topic>();
+    public Collection<Topic> Related { get; set; }
+
+    [Relationship("AmbiguousRelationship", RelationshipType.IncomingRelationship)]
+    public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; } 
 
   } //Class
 

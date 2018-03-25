@@ -119,6 +119,55 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: INHERIT VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully inherits values as specified by
+    ///   <see cref="InheritAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_InheritValues() {
+
+      var mappingService = new TopicMappingService();
+
+      var grandParent = TopicFactory.Create("Grandparent", "Page");
+      var parent = TopicFactory.Create("Parent", "Page", grandParent);
+      var topic = TopicFactory.Create("Test", "Sample", parent);
+
+      grandParent.Attributes.SetValue("Property", "ValueA");
+      grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
+
+      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<string>("", viewModel.Property);
+      Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ALTERNATE ATTRIBUTE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key
+    ///   specified by <see cref="AttributeKeyAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_AlternateAttributeKey() {
+
+      var mappingService = new TopicMappingService();
+
+      var topic = TopicFactory.Create("Test", "Sample");
+
+      topic.Attributes.SetValue("Property", "ValueA");
+      topic.Attributes.SetValue("PropertyAlias", "ValueB");
+
+      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -127,11 +176,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapRelationships() {
 
-      var mappingService        = new TopicMappingService();
-      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var mappingService = new TopicMappingService();
+      var relatedTopic1 = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2 = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3 = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic = TopicFactory.Create("Test", "Sample");
 
       topic.Relationships.SetTopic("Cousins", relatedTopic1);
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
@@ -143,6 +192,50 @@ namespace Ignia.Topics.Tests {
       Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
       Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2")));
       Assert.IsNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ALTERNATE RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
+    ///   type specified by <see cref="RelationshipAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses a <see cref="RelationshipAttribute"/> to set the
+    ///   relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
+    ///   cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
+    ///   outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
+    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
+    /// </remarks>
+    [TestMethod]
+    public void TopicMappingService_AlternateRelationship() {
+
+      var mappingService        = new TopicMappingService();
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
+      var relatedTopic4         = TopicFactory.Create("RelatedTopic4", "Page");
+      var relatedTopic5         = TopicFactory.Create("RelatedTopic5", "Page");
+      var relatedTopic6         = TopicFactory.Create("RelatedTopic6", "Page");
+      var topic                 = TopicFactory.Create("Test", "Sample");
+
+      //Set outgoing relationships
+      topic.Relationships.SetTopic("RelationshipAlias", relatedTopic1);
+      topic.Relationships.SetTopic("AmbiguousRelationship", relatedTopic2);
+      topic.Relationships.SetTopic("AmbiguousRelationship", relatedTopic3);
+
+      //Set incoming relationships
+      relatedTopic4.Relationships.SetTopic("RelationshipAlias", topic);
+      relatedTopic5.Relationships.SetTopic("AmbiguousRelationship", topic);
+      relatedTopic6.Relationships.SetTopic("AmbiguousRelationship", topic);
+
+      var target = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(2, target.RelationshipAlias.Count);
+      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5")));
+      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic6")));
 
     }
 
@@ -198,6 +291,59 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<int>(0, ((SampleTopicViewModel)target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"))).Children.Count);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: RECURSIVE RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully follows relationships per the
+    ///   instructions of each model class.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_RecursiveRelationships() {
+
+      var mappingService = new TopicMappingService();
+
+      //Self
+      var topic = TopicFactory.Create("Test", "Sample");
+
+      //First cousins
+      var cousinTopic1 = TopicFactory.Create("CousinTopic1", "Page");
+      var cousinTopic2 = TopicFactory.Create("CousinTopic2", "Index");
+      var cousinTopic3 = TopicFactory.Create("CousinTopic3", "Sample");
+
+      //Children of cousins
+      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
+      var childTopic2 = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
+      var childTopic3 = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
+
+      //Other cousins
+      var secondCousin = TopicFactory.Create("SecondCousin", "Page");
+      var cousinTwiceRemoved = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
+
+      //Set first cousins
+      topic.Relationships.SetTopic("Cousins", cousinTopic1);
+      topic.Relationships.SetTopic("Cousins", cousinTopic2);
+      topic.Relationships.SetTopic("Cousins", cousinTopic3);
+
+      //Set ancillary relationships
+      cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
+
+      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var cousinTarget = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
+      var distantCousinTarget = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
+
+      //Because Cousins is set to recurse over Children, its children should be set
+      Assert.AreEqual<int>(3, cousinTarget.Children.Count);
+
+      //Because Cousins is not set to recurse over Cousins, its cousins should NOT be set (even though there is one cousin)
+      Assert.AreEqual<int>(0, cousinTarget.Cousins.Count);
+
+      //Because Children is not set to recurse over Children, the grandchildren of a cousin should NOT be set
+      Assert.AreEqual<int>(0, distantCousinTarget.Children.Count);
+
+    }
+
 
     /*==========================================================================================================================
     | TEST: MAP SLIDE SHOW
@@ -400,6 +546,7 @@ namespace Ignia.Topics.Tests {
       var target = (MinimumLengthPropertyTopicViewModel)mappingService.Map(topic);
 
     }
+
 
   } //Class
 
