@@ -370,12 +370,12 @@ namespace Ignia.Topics.Mapping {
           }
         }
 
-        //Handle nested topics
+        //Handle nested topics, or children corresponding to the property name
         if (
           listSource.Count == 0 &&
           (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
         ) {
-          if (topic.Children.Contains(property.Name) && topic.Children[property.Name].ContentType.Equals("List")) {
+          if (topic.Children.Contains(property.Name)) {
             listSource = topic.Children[property.Name].Children.Sorted.ToList();
           }
         }
