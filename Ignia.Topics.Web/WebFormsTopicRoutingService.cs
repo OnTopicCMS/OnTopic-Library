@@ -71,7 +71,7 @@ namespace Ignia.Topics {
       ITopicRepository          topicRepository,
       RequestContext            requestContext,
       string                    viewsDirectory                  = "~/Common/Templates/",
-      string                    viewExtension                   = "ascx"
+      string                    viewExtension                   = "aspx"
      ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
