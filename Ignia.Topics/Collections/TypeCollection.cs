@@ -113,7 +113,7 @@ namespace Ignia.Topics.Collections {
 
       var property = GetProperty(target.GetType(), name);
 
-      object valueObject;
+      object valueObject = null;
 
       Contract.Assume(property != null);
 
@@ -121,13 +121,19 @@ namespace Ignia.Topics.Collections {
         valueObject = value.Equals("1") || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
       }
       else if (property.PropertyType.Equals(typeof(int))) {
-        Int32.TryParse(value, out int intValue);
+        Int32.TryParse(value, out var intValue);
         valueObject = intValue;
       }
       else if (property.PropertyType.Equals(typeof(string))) {
         valueObject = value;
       }
-      else {
+      else if (property.PropertyType.Equals(typeof(DateTime))) {
+        if (DateTime.TryParse(value, out var date)) {
+          valueObject = date;
+        }
+      }
+
+      if (valueObject == null) {
         return false;
       }
 
@@ -148,7 +154,8 @@ namespace Ignia.Topics.Collections {
           _settableTypes = new List<Type> {
             typeof(bool),
             typeof(int),
-            typeof(string)
+            typeof(string),
+            typeof(DateTime)
           };
         }
         return _settableTypes;
