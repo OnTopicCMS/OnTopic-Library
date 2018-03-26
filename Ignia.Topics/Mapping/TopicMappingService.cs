@@ -297,7 +297,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
       if (relationshipAttribute != null) {
-        relationshipKey = relationshipAttribute.Key;
+        relationshipKey = relationshipAttribute.Key?? relationshipKey;
         relationshipType = relationshipAttribute.Type;
       }
 

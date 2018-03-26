@@ -58,6 +58,14 @@ namespace Ignia.Topics.Mapping {
       _type = type;
     }
 
+    /// <summary>
+    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing the <see cref="RelationshipType"/>.
+    /// </summary>
+    /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
+    public RelationshipAttribute(RelationshipType type = RelationshipType.Any) {
+      _type = type;
+    }
+
     /*==========================================================================================================================
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
