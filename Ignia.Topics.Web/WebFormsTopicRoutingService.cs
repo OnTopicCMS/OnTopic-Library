@@ -89,6 +89,7 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _uri                      = requestContext.HttpContext.Request.Url;
       _headers                  = requestContext.HttpContext.Request.Headers;
+      _routes                   = requestContext.RouteData;
       _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
       _viewExtension            = viewExtension;
