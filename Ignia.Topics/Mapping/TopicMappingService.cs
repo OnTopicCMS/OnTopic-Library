@@ -375,8 +375,8 @@ namespace Ignia.Topics.Mapping {
           listSource.Count == 0 &&
           (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
         ) {
-          if (topic.Children.Contains(property.Name)) {
-            listSource = topic.Children[property.Name].Children.Sorted.ToList();
+          if (topic.Children.Contains(relationshipKey)) {
+            listSource = topic.Children[relationshipKey].Children.Sorted.ToList();
           }
         }
 
