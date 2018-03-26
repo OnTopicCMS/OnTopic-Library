@@ -268,6 +268,7 @@ namespace Ignia.Topics.Mapping {
       var relationshipType      = RelationshipType.Any;
       var crawlRelationships    = Relationships.None;
       var metadataKey           = (string)null;
+      var attributeFilters      = new Dictionary<string, string>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
@@ -316,6 +317,16 @@ namespace Ignia.Topics.Mapping {
       var metadataAttribute = (MetadataAttribute)property.GetCustomAttribute(typeof(MetadataAttribute), true);
       if (metadataAttribute != null) {
         metadataKey = metadataAttribute.Key;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Set attribute filters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
+      if (filterByAttribute != null && filterByAttribute.Count() > 0) {
+        foreach (var filter in filterByAttribute) {
+          attributeFilters.Add(filter.Key, filter.Value);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -407,6 +418,9 @@ namespace Ignia.Topics.Mapping {
         //Validate and populate target collection
         if (listSource != null) {
           foreach (Topic childTopic in listSource) {
+            if (filterByAttribute.Any(f => !childTopic.Attributes.GetValue(f.Key, "").Equals(f.Value))) {
+              continue;
+            }
             if (!childTopic.IsDisabled) {
               //Handle scenario where the list type derives from Topic
               if (typeof(Topic).IsAssignableFrom(listType)) {

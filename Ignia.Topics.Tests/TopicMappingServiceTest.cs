@@ -589,6 +589,34 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: FILTER BY ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="SampleTopicViewModel.Children"/> property can be filtered using stacked <see cref="FilterByAttributeAttribute"/>
+    ///   instances.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_FilterByAttribute() {
+
+      var mappingService = new TopicMappingService(_topicRepository);
+      var topic = TopicFactory.Create("Test", "Filtered");
+      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3 = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4 = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+
+      childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
+      childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
+      childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
+      childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
+
+      var target = (FilteredTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
 
   } //Class
 
