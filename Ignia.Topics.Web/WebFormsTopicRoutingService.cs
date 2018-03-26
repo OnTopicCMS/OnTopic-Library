@@ -87,6 +87,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = topicRepository;
       _uri                      = requestContext.HttpContext.Request.Url;
       _headers                  = requestContext.HttpContext.Request.Headers;
       _routes                   = requestContext.RouteData;
