@@ -163,7 +163,7 @@ namespace Ignia.Topics.Tests {
 
       var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
 
-      Assert.AreEqual<string>("", viewModel.Property);
+      Assert.AreEqual<string>(null, viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
 
     }

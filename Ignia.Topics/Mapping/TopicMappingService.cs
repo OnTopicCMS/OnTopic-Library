@@ -260,7 +260,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceType            = topic.GetType();
       var targetType            = target.GetType();
-      var defaultValue          = "";
+      var defaultValue          = (string)null;
       var inheritValue          = false;
       var attributeKey          = property.Name;
       var relationshipKey       = property.Name;
