@@ -66,7 +66,7 @@ namespace Ignia.Topics.Web {
         if (_topic == null) {
           var path = Request.QueryString["Path"];
           if (path != null) {
-            _topic = TopicRepository.RootTopic.GetTopic(path);
+            _topic = TopicRepository.DataProvider.Load(path);
           }
           else {
             var topicRoutingService = new WebFormsTopicRoutingService(TopicRepository.DataProvider, Request.RequestContext);
@@ -149,7 +149,7 @@ namespace Ignia.Topics.Web {
       get {
         Contract.Requires(Topic != null, "Assumes the page topic is not null.");
         Contract.Ensures(Contract.Result<string>() != null);
-        return "/!Admin/Topics/Default.aspx?Path=" + Topic.UniqueKey;
+        return "/!Admin/Topics/Default.aspx?Path=" + Topic.GetUniqueKey();
       }
     }
 

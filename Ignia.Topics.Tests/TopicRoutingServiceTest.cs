@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Routing;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,8 +35,14 @@ namespace Ignia.Topics.Tests {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicRoutingServiceTest"/> with shared resources.
     /// </summary>
+    /// <remarks>
+    ///   This uses the <see cref="FakeTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
+    ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
+    ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
+    ///   crawling the object graph.
+    /// </remarks>
     public TopicRoutingServiceTest() {
-      _topicRepository = new FakeTopicRepository();
+      _topicRepository = new CachedTopicRepository(new FakeTopicRepository());
     }
 
     /*==========================================================================================================================
@@ -48,9 +55,8 @@ namespace Ignia.Topics.Tests {
     public void TopicRoutingService_TopicRouteTest() {
 
       var routes                = new RouteData();
-      var rootTopic             = _topicRepository.Load();
       var uri                   = new Uri("http://localhost/Topics/Web/Web_0/Web_0_1/Web_0_1_1");
-      var topic                 = rootTopic.GetTopic("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
 
       routes.Values.Add("rootTopic", "Web");
       routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_2");
@@ -74,9 +80,8 @@ namespace Ignia.Topics.Tests {
     public void TopicRoutingService_TopicUriTest() {
 
       var routes                = new RouteData();
-      var rootTopic             = _topicRepository.Load();
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
-      var topic                 = rootTopic.GetTopic("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
       var currentTopic          = topicRoutingService.GetCurrentTopic();

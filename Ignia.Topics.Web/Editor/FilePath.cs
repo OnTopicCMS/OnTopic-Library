@@ -77,10 +77,10 @@ namespace Ignia.Topics.Web.Editor {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (startTopic != null) {
         Contract.Assume(
-          startTopic.WebPath.Length <= endTopic.WebPath.Length,
+          startTopic.GetWebPath().Length <= endTopic.GetWebPath().Length,
           "Assumes the startTopic path length is shorter than the endTopic path length."
           );
-        relativePath                    = endTopic.WebPath.Substring(startTopic.WebPath.Length);
+        relativePath                    = endTopic.GetWebPath().Substring(startTopic.GetWebPath().Length);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

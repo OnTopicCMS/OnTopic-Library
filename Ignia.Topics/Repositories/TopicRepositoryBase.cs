@@ -207,6 +207,8 @@ namespace Ignia.Topics.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target) {
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Requires<ArgumentNullException>(target != null, "The target parameter must be specified.");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.Parent = target;
       ReorderSiblings(topic);
@@ -243,7 +245,7 @@ namespace Ignia.Topics.Repositories {
     /// <requires description="The source topic cannot be reordered relative to itself." exception="T:System.ArgumentException">
     ///   source != sibling
     /// </requires>
-    private void ReorderSiblings(Topic source, Topic sibling = null) {
+    private static void ReorderSiblings(Topic source, Topic sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

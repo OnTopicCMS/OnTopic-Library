@@ -28,8 +28,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_SetTopic() {
 
-      var parent                = Topic.Create("Parent", "Page");
-      var related               = Topic.Create("Related", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
 
       parent.Relationships.SetTopic("Friends", related);
 
@@ -46,8 +46,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_IncomingRelationshipTest() {
 
-      var parent                = Topic.Create("Parent", "Page");
-      var related               = Topic.Create("Related", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       relationships.SetTopic("Friends", related);
@@ -65,11 +65,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_KeysTest() {
 
-      var parent                = Topic.Create("Parent", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
+        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
       Assert.AreEqual<int>(5, relationships.Keys.Count);
@@ -86,11 +86,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllTopicsTest() {
 
-      var parent                = Topic.Create("Parent", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "Page"));
+        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
       Assert.AreEqual<int>(5, relationships.Count);
@@ -109,11 +109,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RelatedTopicCollection_GetAllContentTypesTest() {
 
-      var parent                = Topic.Create("Parent", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, Topic.Create("Related" + i, "ContentType" + i));
+        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
       }
 
       Assert.AreEqual<int>(5, relationships.Count);

@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Ignia.Topics.Tests.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +48,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -56,6 +58,9 @@
       <HintPath>..\packages\MSTest.TestFramework.1.2.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.ComponentModel.DataAnnotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
   </ItemGroup>
@@ -71,14 +76,30 @@
     <Compile Include="TopicRoutingServiceTest.cs" />
     <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />
+    <Compile Include="TopicMappingServiceTest.cs" />
     <Compile Include="TypeCollectionTest.cs" />
     <Compile Include="TopicCollectionTest.cs" />
     <Compile Include="RelatedTopicCollectionTest.cs" />
     <Compile Include="TopicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AttributeValueCollectionTest.cs" />
+    <Compile Include="ViewModels\FilteredTopicViewModel.cs" />
+    <Compile Include="ViewModels\MetadataLookupTopicViewModel.cs" />
+    <Compile Include="ViewModels\MinimumLengthPropertyTopicViewModel.cs" />
+    <Compile Include="ViewModels\DefaultPropertyTopicViewModel.cs" />
+    <Compile Include="ViewModels\RequiredObjectTopicViewModel.cs" />
+    <Compile Include="ViewModels\RequiredTopicViewModel.cs" />
+    <Compile Include="ViewModels\SampleTopicViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj">
+      <Project>{206b7f91-ca25-4e9d-9576-60d2e54a2c0a}</Project>
+      <Name>Ignia.Topics.Data.Caching</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj">
+      <Project>{e52fc633-b4c5-4a2b-8caf-30e756d7a6a7}</Project>
+      <Name>Ignia.Topics.ViewModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ignia.Topics.Web.Mvc\Ignia.Topics.Web.Mvc.csproj">
       <Project>{3b3ce34d-b5e5-47ca-bfef-e6740650f378}</Project>
       <Name>Ignia.Topics.Web.Mvc</Name>

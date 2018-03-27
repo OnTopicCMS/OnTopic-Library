@@ -17,7 +17,7 @@ namespace Ignia.Topics {
   /// </summary>
   /// <remarks>
   ///   The <see cref="ContentType"/> class is provided exclusively for backward compatibility with topics of the content type
-  ///   "ContentType" so that the <see cref="Topic.Create(String, String, Topic)"/> factory method can find a match. Databases
+  ///   "ContentType" so that the <see cref="TopicFactory.Create(String, String, Topic)"/> factory method can find a match. Databases
   ///   should be updated to instead use "ContentTypeDescriptor", which better differentiates the metadata from e.g.
   ///   <see cref="Topic.ContentType"/>. The <see cref="ContentType"/> class derives from <see cref="ContentTypeDescriptor"/> to
   ///   ensure they support the same functionality.

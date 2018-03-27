@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using System.Diagnostics.Contracts;
 using Ignia.Topics;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Mapping;
 
 namespace Ignia.Topics.Web.Mvc {
 
@@ -23,13 +24,14 @@ namespace Ignia.Topics.Web.Mvc {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
-  public class TopicController : AsyncController {
+  public class TopicController : Controller {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     ITopicRepository                _topicRepository                = null;
-    private                     ITopicRoutingService            _topicRoutingService            = null;
+    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            ITopicRoutingService            _topicRoutingService            = null;
+    private readonly            ITopicMappingService            _topicMappingService            = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -39,19 +41,25 @@ namespace Ignia.Topics.Web.Mvc {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public TopicController(ITopicRepository topicRepository, ITopicRoutingService topicRoutingService) {
+    public TopicController(
+      ITopicRepository topicRepository,
+      ITopicRoutingService topicRoutingService,
+      ITopicMappingService topicMappingService
+     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(topicRoutingService != null, "A concrete implementation of an ITopicRoutingService is required.");
+      Contract.Requires(topicMappingService!= null, "A concrete implementation of an ITopicMappingService is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository = topicRepository;
       _topicRoutingService = topicRoutingService;
+      _topicMappingService = topicMappingService;
 
     }
 
@@ -95,10 +103,40 @@ namespace Ignia.Topics.Web.Mvc {
     public ActionResult Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish default view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topicViewModel = _topicMappingService.Map(CurrentTopic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return topic view
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return new TopicViewResult(topicViewModel, CurrentTopic.ContentType, CurrentTopic.View);
+
+    }
+
+    /*==========================================================================================================================
+    | EVENT: ON ACTION EXECUTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides universal validation of calls to any action on <see cref="TopicController"/> or its derivatives.
+    /// </summary>
+    /// <remarks>
+    ///   While the <see cref="OnActionExecuting(ActionExecutingContext)"/> event can be used to provide a wide variety of
+    ///   filters, this specific implementation is focused on validating the state of the <see cref="CurrentTopic"/>. Namely,
+    ///   it will provide error handling (if the <see cref="CurrentTopic"/> is null), a redirect (if the <see
+    ///   cref="CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized response (if the <see cref="CurrentTopic"/>'s
+    ///   <see cref="Topic.IsDisabled"/> flag is set.
+    /// </remarks>
+    /// <returns>A view associated with the requested topic's Content Type and view.</returns>
+    [NonAction]
+    protected override void OnActionExecuting(ActionExecutingContext filterContext) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic == null) {
-        return HttpNotFound("There is no topic associated with this path.");
+        filterContext.Result = HttpNotFound("There is no topic associated with this path.");
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -107,14 +145,16 @@ namespace Ignia.Topics.Web.Mvc {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (CurrentTopic.IsDisabled) {
-        return new HttpUnauthorizedResult("The topic at this location is disabled.");
+        filterContext.Result = new HttpUnauthorizedResult("The topic at this location is disabled.");
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
-        return RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
+        filterContext.Result = RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -124,18 +164,16 @@ namespace Ignia.Topics.Web.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic.ContentType.Equals("PageGroup")) {
-        return Redirect(CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().WebPath);
+        filterContext.Result = Redirect(
+          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
+        );
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish default view model
+      | Base processing
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = new TopicViewModel(_topicRepository, CurrentTopic);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return topic view
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return new TopicViewResult(topicViewModel);
+      base.OnActionExecuting(filterContext);
 
     }
 

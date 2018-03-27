@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Collections {
 
@@ -28,7 +29,7 @@ namespace Ignia.Topics.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     Topic                           _associatedTopic                = null;
-    static                      TypeCollection                  _typeCache                      = new TypeCollection();
+    static                      TypeCollection                  _typeCache                      = new TypeCollection(typeof(AttributeSetterAttribute));
     private                     int                             _setCounter                     = 0;
 
     /*==========================================================================================================================
@@ -134,7 +135,7 @@ namespace Ignia.Topics.Collections {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
       Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
-      Topic.ValidateKey(name);
+      TopicFactory.ValidateKey(name);
 
       string value = null;
 
@@ -189,7 +190,7 @@ namespace Ignia.Topics.Collections {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -223,7 +224,7 @@ namespace Ignia.Topics.Collections {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
     /// </param>
     /// <param name="enforceBusinessLogic">
     ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
@@ -250,7 +251,7 @@ namespace Ignia.Topics.Collections {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish secret handshake for later enforcement of properties

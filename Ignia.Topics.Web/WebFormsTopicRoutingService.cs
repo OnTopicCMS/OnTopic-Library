@@ -71,7 +71,7 @@ namespace Ignia.Topics {
       ITopicRepository          topicRepository,
       RequestContext            requestContext,
       string                    viewsDirectory                  = "~/Common/Templates/",
-      string                    viewExtension                   = "ascx"
+      string                    viewExtension                   = "aspx"
      ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -87,8 +87,10 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = topicRepository;
       _uri                      = requestContext.HttpContext.Request.Url;
       _headers                  = requestContext.HttpContext.Request.Headers;
+      _routes                   = requestContext.RouteData;
       _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
       _viewExtension            = viewExtension;
@@ -115,7 +117,7 @@ namespace Ignia.Topics {
           }
         }
         path = path.Trim(new char[] { '/' }).Replace("//", "/");
-        _topic = _topicRepository.Load().GetTopic(path.Replace("/", ":"));
+        _topic = _topicRepository.Load(path.Replace("/", ":"));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -323,7 +325,7 @@ namespace Ignia.Topics {
       | Validate parameters
       \------------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(contentType != null, "contentType");
-      Topic.ValidateKey(contentType);
+      TopicFactory.ValidateKey(contentType);
 
       /*-------------------------------------------------------------------------------------------------------------------------
       | Check for content type specific view

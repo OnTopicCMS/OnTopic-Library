@@ -98,7 +98,7 @@ namespace Ignia.Topics {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="Topic.SetRelationship(String, Topic, Boolean)"/>.
+    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
@@ -219,7 +219,7 @@ namespace Ignia.Topics {
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentTypeName), "The attribute contentTypeName must be specified.");
-      Topic.ValidateKey(contentTypeName);
+      TopicFactory.ValidateKey(contentTypeName);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine match

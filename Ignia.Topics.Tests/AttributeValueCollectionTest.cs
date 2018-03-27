@@ -27,7 +27,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void AttributeValueCollection_GetValueTest() {
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
     }
 
@@ -39,7 +39,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void AttributeValueCollection_DefaultValueTest() {
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
 
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void AttributeValueCollection_SetValueTest() {
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
     }
@@ -65,7 +65,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void AttributeValueCollection_SetValue_IsDirtyTest() {
 
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar", false);
@@ -89,7 +89,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void AttributeValueCollection_SetValue_BackdoorTest() {
 
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
 
       topic.Attributes.SetValue("Key", "NewKey");
       topic.Attributes.SetValue("Foo", "Bar");
@@ -108,7 +108,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
     public void AttributeValueCollection_EnforceBusinessLogicTest() {
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Key", "# ?");
     }
 
@@ -121,7 +121,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
     public void AttributeValueCollection_EnforceBusinessLogic_BackdoorTest() {
-      var topic = Topic.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");
       topic.Attributes.Add(new AttributeValue("Key", "# ?"));
     }
@@ -138,7 +138,7 @@ namespace Ignia.Topics.Tests {
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = Topic.Create("Topic" + i, "Container");
+        var topic = TopicFactory.Create("Topic" + i, "Container");
         if (i > 0) topic.Parent = topics[i - 1];
         topics[i] = topic;
       }
@@ -163,7 +163,7 @@ namespace Ignia.Topics.Tests {
       var topics = new Topic[8];
 
       for (var i = 0; i <= 7; i++) {
-        var topic = Topic.Create("Topic" + i, "Container");
+        var topic = TopicFactory.Create("Topic" + i, "Container");
         if (i > 0) topics[i - 1].DerivedTopic = topic;
         topics[i] = topic;
       }

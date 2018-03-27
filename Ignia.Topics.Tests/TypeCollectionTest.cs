@@ -93,17 +93,22 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TypeCollection_SetPropertyTest() {
 
-      var types = new TypeCollection();
-      var topic = Topic.Create("Test", "ContentType");
+      var types                 = new TypeCollection();
+      var topic                 = TopicFactory.Create("Test", "ContentType");
 
       types.SetProperty(topic, "IsHidden", "1");
 
-      var isKeySet = types.SetProperty(topic, "Key", "NewKey");
-      var isInvalidPropertySet = types.SetProperty(topic, "InvalidProperty", "Invalid");
+      var isDateSet             = types.SetProperty(topic, "LastModified", "June 3, 2008");
+          isDateSet             = types.SetProperty(topic, "LastModified", "2008-06-03") && isDateSet;
+          isDateSet             = types.SetProperty(topic, "LastModified", "06/03/2008") && isDateSet;
+      var isKeySet              = types.SetProperty(topic, "Key", "NewKey");
+      var isInvalidPropertySet  = types.SetProperty(topic, "InvalidProperty", "Invalid");
 
+      Assert.IsTrue(isDateSet);
       Assert.IsTrue(isKeySet);
       Assert.IsFalse(isInvalidPropertySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
       Assert.IsTrue(topic.IsHidden);
 
     }
@@ -125,7 +130,7 @@ namespace Ignia.Topics.Tests {
 
       var totalIterations = 1;
       var types = new TypeCollection();
-      var topic = Topic.Create("Test", "ContentType");
+      var topic = TopicFactory.Create("Test", "ContentType");
 
       var i = 0;
       for (i = 0; i < totalIterations; i++) {

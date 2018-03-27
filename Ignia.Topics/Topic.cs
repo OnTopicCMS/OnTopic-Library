@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics {
 
@@ -38,11 +39,6 @@ namespace Ignia.Topics {
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
 
-    /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
-
     #region Constructor
 
     /*==========================================================================================================================
@@ -62,9 +58,10 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="Create(String, String, Topic)"/> factory method. When constructing derived types
-    ///   directly, however, this is implicit. In those cases, the derived class may create a constructor that accepts "key" and
-    ///   calls this base constructor; it will automatically set the content type based on the derived class's type.
+    ///   is ensured by using the <see cref="TopicFactory.Create(String, String, Topic)"/> factory method. When constructing
+    ///   derived types directly, however, this is implicit. In those cases, the derived class may create a constructor that
+    ///   accepts "key" and calls this base constructor; it will automatically set the content type based on the derived class's
+    ///   type.
     /// </remarks>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -75,15 +72,15 @@ namespace Ignia.Topics {
     [Obsolete("The Topic(string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
     protected Topic(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      Topic.ValidateKey(key);
+      TopicFactory.ValidateKey(key);
       Key = key;
       ContentType = GetType().Name;
     }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="Create(String, String, Topic)"/> factory method instead, as
-    ///   this will return a strongly-typed version.
+    ///   <see cref="ContentType"/> name. Use the new <see cref="TopicFactory.Create(String, String, Topic)"/> factory method
+    ///   instead, as this will return a strongly-typed version.
     /// </summary>
     /// <param name="key">
     ///   The string identifier for the <see cref="Topic"/>.
@@ -220,7 +217,7 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
     ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="Topics.TopicRoutingService"/> (assuming the value isn't
+    ///   by default, which view is rendered by the <see cref="Topics.ITopicRoutingService"/> (assuming the value isn't
     ///   overwritten down the pipe).
     /// </remarks>
     public string ContentType {
@@ -247,7 +244,7 @@ namespace Ignia.Topics {
       get => _key;
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         if (_originalKey == null) {
           _originalKey = Attributes.GetValue("Key", false);
         }
@@ -257,45 +254,6 @@ namespace Ignia.Topics {
         }
         SetAttributeValue("Key", value);
         _key = value;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the full, hierarchical identifier for the topic, including parents.
-    /// </summary>
-    /// <remarks>
-    ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
-    ///   Example: "Root:Configuration:ContentTypes:Page".
-    /// </remarks>
-    public string UniqueKey {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<string>() != null);
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Crawl up tree to define uniqueKey
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var uniqueKey = "";
-        var topic = this;
-
-        for (var i = 0; i < 100; i++) {
-          if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
-          uniqueKey = topic.Key + uniqueKey;
-          topic = topic.Parent;
-          if (topic == null) break;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        return uniqueKey;
-
       }
     }
 
@@ -319,7 +277,7 @@ namespace Ignia.Topics {
     internal string OriginalKey {
       get => _originalKey;
       set {
-        Topic.ValidateKey(value, true);
+        TopicFactory.ValidateKey(value, true);
         _originalKey = value;
       }
     }
@@ -329,40 +287,17 @@ namespace Ignia.Topics {
     #region Convenience Properties
 
     /*==========================================================================================================================
-    | PROPERTY: WEB PATH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the
-    ///   site.
-    /// </summary>
-    /// <remarks>
-    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
-    ///   that reference the web path (e.g., by providing a prefix).
-    /// </remarks>
-    public string WebPath {
-      get {
-        Contract.Ensures(Contract.Result<string>() != null);
-        var uniqueKey = UniqueKey.Replace("Root:", "/").Replace(":", "/") + "/";
-        if (!uniqueKey.StartsWith("/")) {
-          uniqueKey = "/" + uniqueKey;
-        }
-        return uniqueKey;
-      }
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="Ignia.Topics.TopicRoutingService"/> class), via the
-    ///   Accepts header (also via the <see cref="Ignia.Topics.TopicRoutingService"/> class), on the topic itself (via this
-    ///   property), or via the <see cref="ContentType"/>. By default, it will be set to the name of the
-    ///   <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be "Page". This will cause the
-    ///   <see cref="Ignia.Topics.TopicRoutingService"/> to look for a view at, for instance,
-    ///   /Common/Templates/Page/Page.aspx.
+    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
+    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property), or via the
+    ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
+    ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
+    ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
@@ -379,7 +314,7 @@ namespace Ignia.Topics {
         Attributes.GetValue("View", Attributes.GetValue("View", ""));
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        Topic.ValidateKey(value);
+        TopicFactory.ValidateKey(value);
         SetAttributeValue("View", value);
       }
     }
@@ -522,6 +457,67 @@ namespace Ignia.Topics {
 
     #endregion
 
+    #region Relationship and Collection Methods
+
+    /*==========================================================================================================================
+    | METHOD: GET UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the full, hierarchical identifier for the topic, including parents.
+    /// </summary>
+    /// <remarks>
+    ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
+    ///   Example: "Root:Configuration:ContentTypes:Page".
+    /// </remarks>
+    public string GetUniqueKey() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<string>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Crawl up tree to define uniqueKey
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var uniqueKey = "";
+      var topic = this;
+
+      for (var i = 0; i < 100; i++) {
+        if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
+        uniqueKey = topic.Key + uniqueKey;
+        topic = topic.Parent;
+        if (topic == null) break;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return uniqueKey;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the root-relative web path of the Topic, based on an assumption that the root topic is bound to the root of the
+    ///   site.
+    /// </summary>
+    /// <remarks>
+    ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
+    ///   that reference the web path (e.g., by providing a prefix).
+    /// </remarks>
+    public string GetWebPath() {
+      Contract.Ensures(Contract.Result<string>() != null);
+      var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
+      if (!uniqueKey.StartsWith("/")) {
+        uniqueKey = "/" + uniqueKey;
+      }
+      return uniqueKey;
+    }
+
+    #endregion
+
     #region Relationship and Collection Properties
 
     /*==========================================================================================================================
@@ -656,215 +652,6 @@ namespace Ignia.Topics {
     #region Collection Methods
 
     /*==========================================================================================================================
-    | METHOD: FIND ALL BY ATTRIBUTE
-    >===========================================================================================================================
-    | ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
-    | allowing a search by any criteria - including attributes.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a collection of topics based on an attribute name and value.
-    /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <returns>A collection of topics matching the input parameters.</returns>
-    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(name)
-    /// </requires>
-    /// <requires
-    ///   decription="The name should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !name.Contains(" ")
-    /// </requires>
-    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
-      Topic.ValidateKey(name);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Search attributes
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var results = new TopicCollection();
-
-      if (
-        !String.IsNullOrEmpty(Attributes.GetValue(name)) &&
-        Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
-        ) {
-        results.Add(this);
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Search children, if recursive
-      \---------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in Children) {
-        var nestedResults = topic.FindAllByAttribute(name, value);
-        foreach (var matchedTopic in nestedResults) {
-          if (!results.Contains(matchedTopic.Key)) {
-            results.Add(matchedTopic);
-          }
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return results
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return results.AsReadOnly();
-
-    }
-
-    /// <summary>
-    ///   Retrieves a collection of topics based on an attribute name and value, optionally recursively.
-    /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse over the topic's children when performing the find operation.
-    /// </param>
-    /// <returns>A collection of topics matching the input parameters.</returns>
-    [Obsolete("The isRecursive parameter is obsolete. Use FindAllByAttribute(string, string) instead.", true)]
-    public ReadOnlyTopicCollection<Topic> FindAllByAttribute(string name, string value, bool isRecursive = false) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Topic>>() != null);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Provide a warning if the isRecursive parameter is used
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (!isRecursive) {
-        throw new NotImplementedException("The isRecursive flag is obsolete and should not be used");
-      }
-
-      return FindAllByAttribute(name, value);
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET TOPIC
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC082715: Ultimately, the topicId overload should be used exclusively on a RootTopic class, and this version
-    | should be made internal or protected. It generally only makes sense to grab a topic by ID starting from the root.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
-    /// </summary>
-    /// <remarks>
-    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
-    /// </remarks>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
-    ///   topicId &lt;= 0
-    /// </requires>
-    public Topic GetTopic(int topicId) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return if current
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Id == topicId) return this;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Iterate through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in Children) {
-        var topic = childTopic.GetTopic(topicId);
-        if (topic != null) return topic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return null if not found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
-
-    /// <summary>
-    ///   Retrieves a topic object based on the specified namespace (<see cref="UniqueKey"/>) prefix and topic key.
-    /// </summary>
-    /// <param name="namespaceKey">The string value for the (uniqueKey prefixing) namespace for the topic.</param>
-    /// <param name="topic">The partial or full string value representing the uniqueKey for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string namespaceKey, string topic) {
-      return GetTopic(String.IsNullOrEmpty(namespaceKey) ? topic : namespaceKey + ":" + topic);
-    }
-
-    /// <summary>
-    ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
-    /// </summary>
-    /// <param name="uniqueKey">
-    ///   The partial or full string value representing the key (or <see cref="UniqueKey"/>) for the topic.
-    /// </param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    public Topic GetTopic(string uniqueKey) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrWhiteSpace(uniqueKey)) return null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide shortcut for local calls
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
-        if (Children.Contains(uniqueKey)) {
-          return Children[uniqueKey];
-        }
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide implicit root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
-      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
-      | needing to be aware of the root.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        !uniqueKey.StartsWith("Root:", StringComparison.OrdinalIgnoreCase) &&
-        !uniqueKey.Equals("Root", StringComparison.OrdinalIgnoreCase)
-        ) {
-        uniqueKey = "Root:" + uniqueKey;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!uniqueKey.StartsWith(UniqueKey, StringComparison.OrdinalIgnoreCase)) return null;
-      if (uniqueKey.Equals(UniqueKey, StringComparison.OrdinalIgnoreCase)) return this;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var remainder = uniqueKey.Substring(UniqueKey.Length + 1);
-      var marker = remainder.IndexOf(":", StringComparison.Ordinal);
-      var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Find topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Children.Contains(nextChild)) return null;
-
-      if (nextChild == remainder) return Children[nextChild];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return Children[nextChild]?.GetTopic(uniqueKey);
-
-    }
-
-    /*==========================================================================================================================
     | METHOD: SET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -884,7 +671,7 @@ namespace Ignia.Topics {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Topic.Save(Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -908,364 +695,6 @@ namespace Ignia.Topics {
 
     #endregion
 
-    #region Static Methods
-
-    /*==========================================================================================================================
-    | METHOD: GET TOPIC TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static helper method for looking up a class type based on a string name.
-    /// </summary>
-    /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType()"/>, which can be non-performant. As such, this helper method
-    ///   caches its results in a static lookup table keyed by the string value.
-    /// </remarks>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <returns>A class type corresponding to a derived class of <see cref="Topic"/>.</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public static Type GetTopicType(string contentType) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Type>() != null);
-      Topic.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup.Keys.Contains(contentType)) {
-        return _typeLookup[contentType];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Determine if there is a matched type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var baseType = typeof(Topic);
-      var targetType = Type.GetType("Ignia.Topics." + contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (targetType == null) {
-        targetType = baseType;
-      }
-      else if (!targetType.IsSubclassOf(baseType)) {
-        targetType = baseType;
-        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Cache findings
-      \---------------------------------------------------------------------------------------------------------------------*/
-      lock (_typeLookup) {
-        if (_typeLookup.Keys.Contains(contentType)) {
-          _typeLookup.Add(contentType, targetType);
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return result
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return targetType;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: CREATE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
-    ///   available.
-    /// </summary>
-    /// <remarks>
-    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For
-    ///   instance, if the content type is "Page", it will look for an "Ignia.Topics.Page" class. If found, it will confirm that
-    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class
-    ///   exists but does not derive from <see cref="Topic"/>, then an exception will be thrown. And otherwise, a new instance
-    ///   of the generic <see cref="Topic"/> class will be created.
-    /// </remarks>
-    /// <param name="key">A string representing the key for the new topic instance.</param>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
-    /// <exception cref="ArgumentException">
-    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
-    /// </exception>
-    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    /// <requires
-    ///   decription="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !key.Contains(" ")
-    /// </requires>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public static Topic Create(string key, string contentType, Topic parent = null) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Topic>() != null);
-      Topic.ValidateKey(key);
-      Topic.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Determine target type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = Topic.GetTopicType(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Identify the appropriate topic
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's Key and Content Type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Key = key;
-      topic.ContentType = contentType;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's parent, if supplied
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (parent != null) {
-        topic.Parent = parent;
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return topic;
-
-    }
-
-    /// <summary>
-    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
-    ///   available. Used for cases where a <see cref="Topic"/> is being deserialized from an existing instance, as indicated
-    ///   by the <paramref name="id"/> parameter.
-    /// </summary>
-    /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
-    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database.
-    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Key"/> and <see cref="ContentType"/> on the
-    ///   new <see cref="Topic"/> are set to false, as it is assumed these are being set to the same values currently used in
-    ///   the persistance store.
-    /// </remarks>
-    /// <param name="key">A string representing the key for the new topic instance.</param>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
-    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
-    /// <exception cref="ArgumentException">
-    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
-    /// </exception>
-    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public static Topic Create(string key, string contentType, int id, Topic parent = null) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(id > 0);
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Create object
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = Create(key, contentType, parent);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Assign identifier
-      \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Id = id;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set dirty state to false
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(topic.Key != null);
-      Contract.Assume(topic.ContentType != null);
-
-      topic.SetAttributeValue("Key", key, false);
-      topic.SetAttributeValue("ContentType", contentType, false);
-
-      if (parent != null) {
-        topic.SetAttributeValue("ParentId", parent.Id.ToString(), false);
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return object
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return topic;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: VALIDATE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Validates the format of a key used for an individual topic.
-    /// </summary>
-    /// <remarks>
-    ///   Topic keys may be exposed as, for example, virtual routes and, thus, should not contain spaces, slashes, question
-    ///   marks or other symbols reserved for URLs. This method is marked static so that it can also be used by the static Code
-    ///   Contract Checker.
-    /// </remarks>
-    /// <param name="topicKey">The topic key that should be validated.</param>
-    /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    [Pure]
-    public static void ValidateKey(string topicKey, bool isOptional = false) => Contract.Requires<ArgumentException>(
-      (isOptional || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$")),
-      "Key names should only contain letters, numbers, hyphens, and/or underscores."
-    );
-
-    #endregion
-
-    #region Obsolete methods
-
-    /*==========================================================================================================================
-    | OBSOLETE METHODS
-    >---------------------------------------------------------------------------------------------------------------------------
-    | In a legacy version of the Topic Library, CRUD shortcuts were provided directly on the Topic class, for convenience. This
-    | meant the Topic (an Entity) needed to be aware of the ITopicRepository (a Repository). Not only is this not a best
-    | practice, but it also introduces issues with the introduction of dependency injection, since it would have required that
-    | each and every Topic persist a reference to the Repository that created it. To mitigate this, these were removed with the
-    | dependency injection update.
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
-    | METHOD: SAVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Saves the topic information, optionally including all descendants, and optionally marking as draft.
-    /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for specifying whether all children should also be saved, as well as whether the topic should
-    ///   be marked as having Draft status.
-    /// </remarks>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
-    /// </param>
-    /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
-    /// <returns>The topic's integer identifier.</returns>
-    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Save() instead.", true)]
-    public int Save(bool isRecursive = false, bool isDraft = false) => -1;
-
-    /*==========================================================================================================================
-    | METHOD: DELETE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Deletes the current topic (as well as all children).
-    /// </summary>
-    //  ### NOTE JJC050512: We may want to rethink this at some point and have functionality to delete a node and elavate it's
-    //  children or delete and reassign children or something.
-    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
-    public void Delete() => Delete(true);
-
-    /// <summary>
-    ///   Deletes the current topic, optionally deleting all of the topic's descendants.
-    /// </summary>
-    /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse over the topic's children and delete them as well.
-    /// </param>
-    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Delete() instead.", true)]
-    public void Delete(bool isRecursive) {
-    }
-
-    /*==========================================================================================================================
-    | METHOD: MOVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Moves the topic to a new parent.
-    /// </summary>
-    /// <remarks>
-    ///   For ordering: Optionally accepts the sibling topic to place topic behind. Defaults to placing topic in front of
-    ///   existing siblings.
-    /// </remarks>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
-    public void Move(Topic target) {
-    }
-
-    /// <summary>
-    ///   Moves the topic to a new parent, using one of the target topic's children as a reference point adjacent to which the
-    ///   source topic should be moved.
-    /// </summary>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
-    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    /// <requires
-    ///   description="The topic may not be its own parent." exception="T:System.ArgumentException">
-    ///   topic != target
-    /// </requires>
-    /// <requires
-    ///   description="The topic cannot be moved or reordered relative to itself." exception="T:System.ArgumentException">
-    ///   topic != sibling
-    /// </requires>
-    [ObsoleteAttribute("This property is obsolete. Use ITopicRepository.Move() instead.", true)]
-    public void Move(Topic target, Topic sibling) {
-    }
-
-    /*==========================================================================================================================
-    | METHOD: ROLLBACK
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
-    ///   saving the new version.
-    /// </summary>
-    /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
-    /// <requires
-    ///   description="The version requested for rollback does not exist in the version history."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !VersionHistory.Contains(version)
-    /// </requires>
-    [ObsoleteAttribute("This property is obsolete. Use the new IRepository.Rollback instead.", true)]
-    public void Rollback(DateTime version) {
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a new relationship based on the relationship type, target topic and direction.
-    /// </summary>
-    /// <param name="scope">The string identifier describing the type of relationship (e.g., "Related").</param>
-    /// <param name="related">The target topic object for which to set the relationship.</param>
-    /// <param name="isIncoming">Boolean value indicating the direction of the relationship.</param>
-    /// <requires description="The scope must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(scope)
-    /// </requires>
-    /// <requires description="The related topic must be specified." exception="T:System.ArgumentNullException">
-    ///   related != null
-    /// </requires>
-    /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !scope.Contains(" ")
-    /// </requires>
-    /// <requires description="A topic cannot be related to itself." exception="T:System.ArgumentException">related != this</requires>
-    [Obsolete("The SetRelationship() method is obsolete; use Relationship.Set() instead.", true)]
-    public void SetRelationship(string scope, Topic related, bool isIncoming = false) {
-    }
-
-    #endregion
-
     #region Interface Implementations
 
     /*==========================================================================================================================
@@ -1275,9 +704,21 @@ namespace Ignia.Topics {
     ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
     ///   properties) to be set using a using statement, which is syntactically convenient.
     /// </summary>
-    public virtual void Dispose() => GC.SuppressFinalize(this);
+    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
+    public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
 
-    #endregion
+    /// <summary>
+    ///   Protected implementation of <see cref="Dispose(Boolean)"/> for derived types.
+    /// </summary>
+    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
+    protected virtual void Dispose(bool disposing) {
+      return;
+    }
+
+  #endregion
 
   } // Class
 
