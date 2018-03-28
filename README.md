@@ -34,8 +34,8 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 - [`Ignia.Topics.Tests`](Ignia.Topics.Tests): .NET Unit Tests, broken down by target class.
 
 ### Editor
-- [`Ignia.Topics.Editor`](../Topic-Editor/): ASP.NET WebForms implementation of the editor interface.
-- [`Ignia.Topics.Editor.Mvc`](../Topic-Editor-MVC/): ASP.NET MVC implementation of the editor interface.
+- [`Ignia.Topics.Editor`](https://github.com/Ignia/Topic-Editor/): ASP.NET WebForms implementation of the editor interface.
+- [`Ignia.Topics.Editor.Mvc`](https://github.com/Ignia/Topic-Editor-MVC/): ASP.NET MVC implementation of the editor interface.
 
 
 ## Credits
