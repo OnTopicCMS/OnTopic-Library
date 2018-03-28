@@ -16,26 +16,26 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 ## Library
 
 ### Domain Layer
-- [`Ignia.Topics`]("Ignia.Topics"): Core domain model including `Topic` entity and service abstractions.
+- [`Ignia.Topics`](Ignia.Topics): Core domain model including `Topic` entity and service abstractions.
 
 ### Data Access Layer
-- [`Ignia.Topics.Data.Caching`]("Ignia.Topics.Data.Caching"): [`ITopicRepository`]("Ignia.Topics/Repositories/ITopicRepository.cs") façade that caches data accessed in memory for fast subsequent retrieval.
-- [`Ignia.Topics.Data.Sql`]("Ignia.Topics.Data.Sql"): [`ITopicRepository`]("Ignia.Topics/Repositories/ITopicRepository.cs") implementation for storing and retrieving [`Topic`]("Ignia.Topics/Topic.cs") entities in a Microsoft SQL Server database.
-  - [`Ignia.Topics.Data.Sql.Database`]("Ignia.Topics.Data.Sql.Database"): Microsoft SQL Server database definition, including tables, views, and stored procedures needed to support the [`Ignia.Topics.Data.Sql`]("Ignia.Topics.Data.Sql") library.
+- [`Ignia.Topics.Data.Caching`](Ignia.Topics.Data.Caching): [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) façade that caches data accessed in memory for fast subsequent retrieval.
+- [`Ignia.Topics.Data.Sql`](Ignia.Topics.Data.Sql): [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) implementation for storing and retrieving [`Topic`](Ignia.Topics/Topic.cs) entities in a Microsoft SQL Server database.
+  - [`Ignia.Topics.Data.Sql.Database`](Ignia.Topics.Data.Sql.Database): Microsoft SQL Server database definition, including tables, views, and stored procedures needed to support the [`Ignia.Topics.Data.Sql`](Ignia.Topics.Data.Sql) library.
 
-> *Note*: Additional data access layers can be created by implementing the [`ITopicRepository`]("Ignia.Topics/Repositories/ITopicRepository.cs") interface. 
+> *Note*: Additional data access layers can be created by implementing the [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) interface. 
 
 ### Presentation Layer
-- [`Ignia.Topics.Web`]("Ignia.Topics.Web"): ASP.NET WebForms implementation, allowing templates to be created using `*.aspx` pages. This is considered deprecated, and intended exclusively for backward compatibility.
-- [`Ignia.Topics.Web.Mvc`]("Ignia.Topics.Web.Mvc"): ASP.NET MVC 5.x implementation, including a default [`TopicController`]("Ignia.Topics.Web.Mvc/TopicController.cs") implementation, allowing templates to be created using `*.cshtml` pages.
-- [`Ignia.Topics.ViewModels`]("Ignia.Topics.ViewModels"): Standard view models for exposing factory default schemas of shared content types. These can be extended, overwritten, or ignored entirely by the presentation layer implementation; they are provided for convenience.
+- [`Ignia.Topics.Web`](Ignia.Topics.Web): ASP.NET WebForms implementation, allowing templates to be created using `*.aspx` pages. This is considered deprecated, and intended exclusively for backward compatibility.
+- [`Ignia.Topics.Web.Mvc`](Ignia.Topics.Web.Mvc): ASP.NET MVC 5.x implementation, including a default [`TopicController`](Ignia.Topics.Web.Mvc/TopicController.cs) implementation, allowing templates to be created using `*.cshtml` pages.
+- [`Ignia.Topics.ViewModels`](Ignia.Topics.ViewModels): Standard view models for exposing factory default schemas of shared content types. These can be extended, overwritten, or ignored entirely by the presentation layer implementation; they are provided for convenience.
 
 ### Unit Tests
-- [`Ignia.Topics.Tests`]("Ignia.Topics.Tests"): .NET Unit Tests, broken down by target class.
+- [`Ignia.Topics.Tests`](Ignia.Topics.Tests): .NET Unit Tests, broken down by target class.
 
 ### Editor
-- [`Ignia.Topics.Editor`]("../Topic-Editor/"): ASP.NET WebForms implementation of the editor interface.
-- [`Ignia.Topics.Editor.Mvc`]("../Topic-Editor-MVC/"): ASP.NET MVC implementation of the editor interface.
+- [`Ignia.Topics.Editor`](../Topic-Editor/): ASP.NET WebForms implementation of the editor interface.
+- [`Ignia.Topics.Editor.Mvc`](../Topic-Editor-MVC/): ASP.NET MVC implementation of the editor interface.
 
 
 ## Credits
