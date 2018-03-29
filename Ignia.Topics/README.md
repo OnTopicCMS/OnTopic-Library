@@ -18,7 +18,7 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 - [`ITopicMappingService`](Mapping): Defines the interface for a service that can convert a `Topic` class into any arbitrary data transfer object based on predetermined conventions.
 
 ## Implementations
-- [`TopicMappingService`](Mapping/TopicMappingService.cs): Provides a default implementation of the `ITopicMappingService`, with built-in conventions that should address that majority of mapping requirements. This also includes a number of attributes for annotating view models with hints that the `TopicMappingService` can use in populating target objects.
+- [`TopicMappingService`](Mapping): Provides a default implementation of the `ITopicMappingService`, with built-in conventions that should address that majority of mapping requirements. This also includes a number of attributes for annotating view models with hints that the `TopicMappingService` can use in populating target objects.
 
 ## Extension Methods
 - [`Querying`](Querying/Topic.cs): The `Topic` class exposes optional extension methods for querying a topic (and its descendants) based on attribute values. 
