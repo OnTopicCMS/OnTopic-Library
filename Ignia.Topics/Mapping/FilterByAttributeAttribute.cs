@@ -26,7 +26,7 @@ namespace Ignia.Topics.Mapping {
   ///   assigned.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple=true, Inherited=true)]
-  public class FilterByAttributeAttribute : System.Attribute {
+  public sealed class FilterByAttributeAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
