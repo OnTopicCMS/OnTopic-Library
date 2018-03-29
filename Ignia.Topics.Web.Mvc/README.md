@@ -59,6 +59,7 @@ In the `global.asax.cs`, the following components should be registered under the
 ControllerBuilder.Current.SetControllerFactory(new OrganizationNameControllerFactory());
 ViewEngines.Engines.Insert(0, new TopicViewEngine());
 ```
+> *Note:* The controller factory name is arbitrary, and should follow the conventions appropriate for the site. Ignia typically uses `{OrganizationName}ControllerFactory` (e.g., `IgniaControllerFactory`), but OnTopic doesn't need to know or care what the name is; that is between your application and the ASP.NET MVC Framework.
 
 ### Route Configuration
 When registering routes via `RouteConfig.RegisterRoutes()` (typically via the `RouteConfig` class), register a route for any OnTopic routes:
