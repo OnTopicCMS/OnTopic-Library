@@ -18,6 +18,11 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Ignia.Topics.Data.Sql.Datab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.ViewModels", "Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj", "{E52FC633-B4C5-4A2B-8CAF-30E756D7A6A7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D5A35CE-F5A4-4DDF-8938-8B1116CDF58E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug CC|Any CPU = Debug CC|Any CPU
