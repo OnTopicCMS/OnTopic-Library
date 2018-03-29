@@ -27,6 +27,7 @@ namespace Ignia.Topics.Mapping {
   ///     will first look in <see cref="Topic.Relationships"/> for a relationship named "Categories", then it will search <see
   ///     cref="Topic.Children"/> for a set of nested topics, and finally <see cref="Topic.IncomingRelationships"/>.
   ///   </para>
+  ///   <para>
   ///     This attribute instructs the <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the
   ///     target property name to be decoupled from the source's relationship key. In addition, this attribute can be used to
   ///     specify the type of relationship expected, which is useful if there might be ambiguity between relationship names (for

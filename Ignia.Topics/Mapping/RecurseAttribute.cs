@@ -27,6 +27,7 @@ namespace Ignia.Topics.Mapping {
   ///     but won't continue to do so on related objects. So, for instance, a <c>Children</c> collection will cause all children
   ///     to be loaded, but the mapper won't populate their <c>Children</c> (assuming that property is set).
   ///   </para>
+  ///   <para>
   ///     The <see cref="RecurseAttribute"/> overrides this behavior. If set, the <see cref="ITopicMappingService"/> will
   ///     populate the <see cref="Relationships"/> specified on the related topics. By default, it will crawl <i>all</i>
   ///     relationships, but the <see cref="Relationships"/> flag can optionally be used to specify one or multiple
@@ -45,8 +46,7 @@ namespace Ignia.Topics.Mapping {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="RecurseAttribute"/> by providing an <paramref name="key"/>. Optionally
-    ///   specifies the <see cref="RelationshipType"/> as well.
+    ///   Annotates a property with the <see cref="RecurseAttribute"/> by providing an <paramref name="relationships"/>.
     /// </summary>
     /// <param name="relationships">The specific relationships that should be crawled.</param>
     public RecurseAttribute(Relationships relationships = Relationships.All) {
