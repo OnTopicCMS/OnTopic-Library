@@ -3,9 +3,9 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
 
 ### Contents
 - [`TopicMappingService`](#topicmappingservice)
-  - [Target Object](#targetobject)
+  - [Target Object](#target-object)
   - [Properties](#properties)
-    - [Scalar Values](#scalarvalues)
+    - [Scalar Values](#scalar-values)
     - [Collections](#collections)
     - [Parent](#parent)
   - [Example](#example-1) 
