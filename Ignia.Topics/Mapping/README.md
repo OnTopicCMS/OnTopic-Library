@@ -8,9 +8,9 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
     - [Scalar Values](#scalar-values)
     - [Collections](#collections)
     - [Parent](#parent)
-  - [Example](#example-1) 
+  - [Example](#example) 
 - [Attributes](#attributes)
-  - [Example](#example-2) 
+  - [Example](#example-1) 
 - [Polymorphism](#polymorphism)
 
 ## `TopicMappingService`
