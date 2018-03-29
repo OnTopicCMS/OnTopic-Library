@@ -1,16 +1,50 @@
 ﻿# Topic Mapping Service
 The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract interface for a service that maps `Topic` entities to any arbitrary data transfer object. It is intended primarily to aid in mapping the `Topic` entity to view model instances, such as the ones provided in the [`ViewModels` assembly](../../Ignia.Topics.ViewModels)
 
+### Contents
+- [`TopicMappingService`](#topicmappingservice)
+  - [Target Object](#targetobject)
+  - [Properties](#properties)
+    - [Scalar Values](#scalarvalues)
+    - [Collections](#collections)
+    - [Parent](#parent)
+  - [Example](#example-1) 
+- [Attributes](#attributes)
+  - [Example](#example-2) 
+- [Polymorphism](#polymorphism)
+
 ## `TopicMappingService`
 The [`TopicMappingService`](TopicMappingService.cs) provides a concrete implementation that is expected to satisfy the requirements of most consumers. This supports the following conventions.
 
-- The data transfer object is either explicitly provided to the `ITopicMappingService.Map<>()` method, or is of the naming convention `ContentTypeTopicViewModel` (where `ContentType` is the `ContentType` of the source `Topic`).
+### Target Object
+- The data transfer object type can be explicitly specified via the `ITopicMappingService.Map<>()` method.
+  - E.g., `topicMappingService.Map<TopicViewModel>(topic)` will map the `topic` to the `TopicViewModel` class.
+- The data transfer object can also be assigned by convention via the `ITopicMappingService.Map()` method.
+  - The target type must be named `ContentTypeTopicViewModel`, based on the `ContentType` of the source `Topic`.
   - E.g., If the source topic's `ContentType` is "Example", it will look for `ExampleTopicViewModel`.
-- A property is a scalar value of type `bool`, `int`, `string`, or `DateTime` and maps to either an attribute (via `topic.Attributes.GetAttribute(propertyName)`) or a getter method (`GetPropertyName()`) of the same name. 
-  - E.g., If a property is named `Author`, it will call `topic.Attributes.GetValue("Author")` or call a `GetAuthor()` method, if available.
-- A property is a collection whose name maps to an outgoing relationship, incoming relationship, nested topic set, or the children collection.
-  - E.g., If a `List<>` property is named `Cousins` then it would match, for instance, `topic.Relationships.GetTopics("Cousins")`, if available.
-- A property is named `Parent` and references a view model; this will be populated with a reference to the parent topic.
+> *Note:* Data transfer objects must have a default constructor so that either of the above methods can dynamically construct a new instance of them.
+
+### Properties
+The mapping service will automatically attempt to map any properties on a data transfer object to values on the source `Topic`. To do so, it uses the following conventions:
+
+#### Scalar Values
+If a property is of the type `bool`, `int`, `string`, or `DateTime`, then:
+- Will pull the value from a parameterless getter method with the same name.
+  - E.g., if a property is named "Author" it will pull from a `topic.GetAuthor()` method.
+- Otherwise, will pull the value from the `topic.Attributes.GetValue()` method. 
+  - E.g., If a property is named `Author`, it will call `topic.Attributes.GetValue("Author")`.
+
+#### Collections
+If a property implements `IList` (e.g., `List<>`, `Collection<>`, `TopicViewModelCollection<>`), then: 
+- Will pull the value from a collection with the same name as the property.
+- If the property is explicitly named `Children` then it will load the `topic.Children`.
+- Will search, in order, `topic.Relationships`, `topic.IncomingRelationships`, `topic.Children`.
+- E.g., If a `List<>` property is named `Cousins` then it might match `topic.Relationships.GetTopics("Cousins")`.
+
+#### Parent
+If a property is named `Parent`, then the `TopicMappingService` will pull the value from `topic.Parent`.
+
+> *Note:* By default, collections and reference properties of related topics will not be pulled. For instance, if a `TopicViewModel` has a `Children` collection, then the relationships, nested topics, and children of those instances will not be populated. This is meant to constrain the size of the object graph delivered.
 
 ### Example
 The following is an example of a data transfer object (specifically, a view model) that `TopicMappingService` might consume:
@@ -26,32 +60,29 @@ public class CustomTopicViewModel {
 }
 ```
 In this example, the properties would map to:
-- `Parent`: The parent `Topic`.
-- `CustomPropertyA`: An attribute named `CustomPropertyA` or a method named `GetCustomPropertyA()`.
-- `CustomPropertyB`: An attribute named `CustomPropertyB` or a method named `GetCustomPropertyB()`.
-- `LastModified`: An attribute named `LastModified` or a property named `GetLastModified`.
-- `Children`: The `Children` collection.
-- `Cousins`: A relationship or nested topic set with named `Cousins`.
-- `NestedTopics`: A relationship or nested topic set named `NestedTopics`.
-
-## Polymorphism
-If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collection property (e.g., `List<TopicViewModel>`) are defined, then all any target instances must be assignable by the base type (in these cases, `TopicViewModel`). If they cannot be, then they will not be included. 
-
-This can be useful for filtering a collection. For instance, if a `CompanyTopicViewModel` includes an `Employees` collection of type `List<ManagerTopicViewModel>` then it will only be populated by topics that can be mapped to either `ManagerTopicViewModel` or a derivative (say, `ExecutiveTopicViewModel`). Other types (e.g., `EmployeeTopicViewModel`) will be excluded, even though they might otherwise be referenced by the relationship.
-
-> *Note:* For this reason, it is recommended that view models use inheritance based on the content type hierarchy. This provides an intuitive mapping to content type definitions, avoids needing to redefine base properties, and allows for polymorphism in assigning derived types.
+- `Parent`: The parent `Topic` as a `TopicViewModel`.
+- `CustomPropertyA`: A `string` attribute named `CustomPropertyA` or a method named `GetCustomPropertyA()`.
+- `CustomPropertyB`: An `int` attribute named `CustomPropertyB` or a method named `GetCustomPropertyB()`.
+- `LastModified`: A `DateTime` attribute named `LastModified` or a method named `GetLastModified()`.
+- `Children`: The `Children` collection, with each child mapped to a `TopicViewModel`.
+- `Cousins`: A relationship or nested topic set named `Cousins`, with each relationship mapped to a `TopicViewModel`.
+- `NestedTopics`: A relationship or nested topic set named `NestedTopics` (the name doesn't have any special meaning).
 
 ## Attributes 
 To support the mapping, a variety of `Attribute` classes are provided for decorating data transfer objects.
 
-- `[Validation]`: Ensures the property value follows the rules established by any of the [`ValidationAttribute`](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.validationattribute%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396) subclasses (e.g., `[Required]`, `[MaxLength()]`, `[RegularExpression()]`, &c.)
-- `[DefaultValue()]`: Sets the default value for the property.
-- `[Inherit]`: If the corresponding call to `topic.Attributes.GetValue()` comes back null, checks parent topics until a value is found.
-- `[Metadata(key)]`: Populates a collection with a list of `LookupItem` values from the `Root:Configuration:Metadata` namespace.
-- `[AttributeKey(key)]`: Instructs the `TopicMappingService` to use the specified `key` instead of the property name when calling `topic.Attributes.GetValue()`.
-- `[FilterByAttribute(key, value)]`: Ensures that all items in a collection have an attribute named "Key" with a value of "Value"; all else will be excluded. Multiple instances can be stacked.
-- `[Relationship(key, type)]`: For a collection, optionally specifies the name of the key to look for, instead of the property name, and the relationship type, in case the key name is ambiguous.
-- `[Recurse(relationships)]`: Instructs the code to populate the specified relationships on any view models within a collection. 
+- **`[Validation]`**: Enforces the rules established by any of the [`ValidationAttribute`](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.validationattribute%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396) subclasses.
+  - This includes e.g., `[Required]`, `[MaxLength()]`, `[RegularExpression()]`, &c.
+- **`[DefaultValue()]`**: Sets the default value for the property.
+- **`[Inherit]`**: If the corresponding call comes back null, checks parent topics until a value is found.
+  - This is the equivalent of calling `topic.Attributes.GetValue(attributeKey, true)`. 
+- **`[Metadata(key)]`**: Populates a collection with a list of `LookupItem` values from `Root:Configuration:Metadata`.
+  - This is useful for including a list of items to filter collections by.
+  - E.g., If child objects have a `TopicLookup` referencing the `Countries` metadata collection. 
+- **`[AttributeKey(key)]`**: Instructs the `TopicMappingService` to use the specified `key` instead of the property name when calling `topic.Attributes.GetValue()`.
+- **`[FilterByAttribute(key, value)]`**: Ensures that all items in a collection have an attribute named "Key" with a value of "Value"; all else will be excluded. Multiple instances can be stacked.
+- **`[Relationship(key, type)]`**: For a collection, optionally specifies the name of the key to look for, instead of the property name, and the relationship type, in case the key name is ambiguous.
+- **`[Recurse(relationships)]`**: Instructs the code to populate the specified relationships on any view models within a collection. 
 
 ### Example
 The following is an example of a data transfer object that implements the above attributes:
@@ -94,3 +125,9 @@ In this example, the properties would map to:
 
 > *Note*: Often times, data transfer objects won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional help. For instance, the `[Relationship(…)]` attribute is useful if the relationship key is ambigious between outgoing relationships and incoming relationships. 
 
+## Polymorphism
+If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collection property (e.g., `List<TopicViewModel>`) are defined, then any target instances must be assignable by the base type (in these cases, `TopicViewModel`). If they cannot be, then they will not be included; no error will occur.
+
+This can be useful for filtering a collection. For instance, if a `CompanyTopicViewModel` includes an `Employees` collection of type `List<ManagerTopicViewModel>` then it will only be populated by topics that can be mapped to either `ManagerTopicViewModel` or a derivative (perhaps, `ExecutiveTopicViewModel`). Other types (e.g., `EmployeeTopicViewModel`) will be excluded, even though they might otherwise be referenced by the `Employees` relationship.
+
+> *Note:* For this reason, it is recommended that view models use inheritance based on the content type hierarchy. This provides an intuitive mapping to content type definitions, avoids needing to redefine base properties, and allows for polymorphism in assigning derived types.
