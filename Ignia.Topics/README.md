@@ -15,7 +15,7 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 ## Key Abstractions
 - [`ITopicRoutingService`](ITopicRoutingService.cs): Given contextual information, such as a URL and routing information, will identify the current `Topic` instance. What contextual information is required is environment-specific; for instance, the `MvcTopicRoutingService` requires an `ITopicRepository`, `Uri`, and `RouteData` collection.
 - [`ITopicRepository`](Repositories/ITopicRepository.cs): Defines the interface to a data access layer, including methods like `Load()`, `Save()`, `Delete()`, and `Move()`.
-- [`ITopicMappingService`](Mapping/ITopicMappingService.cs): Defines the interface for a service that can convert a `Topic` class into any arbitrary data transfer object based on predetermined conventions.
+- [`ITopicMappingService`](Mapping): Defines the interface for a service that can convert a `Topic` class into any arbitrary data transfer object based on predetermined conventions.
 
 ## Implementations
 - [`TopicMappingService`](Mapping/TopicMappingService.cs): Provides a default implementation of the `ITopicMappingService`, with built-in conventions that should address that majority of mapping requirements. This also includes a number of attributes for annotating view models with hints that the `TopicMappingService` can use in populating target objects.
