@@ -16,16 +16,16 @@ The following is a summary of the most relevant tables.
 The following is a summary of the most relevant stored procedures. 
 
 ### Querying
-- [`topics_GetTopics`](dbo/Stored+Procedures/topics_GetTopics.sql): Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `topics_TopicAttributes`, `topics_Blob`, `topics_Relationships`, and version history. Only retrieves the latest version of each attribute.
-- [`topics_GetGetTopicID`](dbo/Stored+Procedures/topics_GetTopicID.sql): Retrieves a topic's `Id` based on a corresponding `Key`. 
-- [`topics_GetVersion`](dbo/Stored+Procedures/topics_GetVersion.sql): Retrieves a single instance of a topic based on an `@Id` and `@Version`.
+- [`topics_GetTopics`](dbo/Stored%20Procedures/topics_GetTopics.sql): Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `topics_TopicAttributes`, `topics_Blob`, `topics_Relationships`, and version history. Only retrieves the latest version of each attribute.
+- [`topics_GetGetTopicID`](dbo/Stored%20Procedures/topics_GetTopicID.sql): Retrieves a topic's `Id` based on a corresponding `Key`. 
+- [`topics_GetVersion`](dbo/Stored%20Procedures/topics_GetVersion.sql): Retrieves a single instance of a topic based on an `@Id` and `@Version`.
 
 ### Updating
-- [`topics_CreateTopic`](dbo/Stored+Procedures/topics_CreateTopic.sql): Creates a new topic based on a `@ParentId`, an array of `@Attributes`, and an XML `@Blob`. Returns a new `@@Identity`.
-- [`topics_DeleteTopic`](dbo/Stored+Procedures/topics_DeleteTopic.sql): Deletes an existing topic based on a `@Id`.
-- [`topics_MoveTopic`](dbo/Stored+Procedures/topics_MoveTopic.sql): Moves an existing topic based on an `@Id`, `@ParentId`, and `@SiblingId`.
-- [`topics_UpdateTopic`](dbo/Stored+Procedures/topics_UpdateTopic.sql): Updates an existing topic based on an `@Id`, an array of `@Attributes`, and a `@Blob`. Optionally deletes all relationships; these will need to be readded using `topics_PersistRelations`. Old attributes are persisted as previous versions.
-- [`topics_PersistRelations`](dbo/Stored+Procedures/topics_PersistRelations.sql): Associates a relationship with a topic based on a `@Source_TopicId`, array of `@Target_TopicIds`, and `@RelationshipTypeID` (which can be any string label).
+- [`topics_CreateTopic`](dbo/Stored%20Procedures/topics_CreateTopic.sql): Creates a new topic based on a `@ParentId`, an array of `@Attributes`, and an XML `@Blob`. Returns a new `@@Identity`.
+- [`topics_DeleteTopic`](dbo/Stored%20Procedures/topics_DeleteTopic.sql): Deletes an existing topic based on a `@Id`.
+- [`topics_MoveTopic`](dbo/Stored%20Procedures/topics_MoveTopic.sql): Moves an existing topic based on an `@Id`, `@ParentId`, and `@SiblingId`.
+- [`topics_UpdateTopic`](dbo/Stored%20Procedures/topics_UpdateTopic.sql): Updates an existing topic based on an `@Id`, an array of `@Attributes`, and a `@Blob`. Optionally deletes all relationships; these will need to be readded using `topics_PersistRelations`. Old attributes are persisted as previous versions.
+- [`topics_PersistRelations`](dbo/Stored%20Procedures/topics_PersistRelations.sql): Associates a relationship with a topic based on a `@Source_TopicId`, array of `@Target_TopicIds`, and `@RelationshipTypeID` (which can be any string label).
 
 ## Views
 The majority of the views provide records corresponding to the latest version of records for each topic. These include:
