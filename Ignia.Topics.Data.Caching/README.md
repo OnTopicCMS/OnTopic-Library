@@ -7,3 +7,4 @@ var sqlTopicRepository = new SqlTopicRepository(connectionString);
 var cachedTopicRepository = new CachedTopicRepository(sqlTopicRepository);
 
 var rootTopic = cachedTopicRepository.Load();
+```
