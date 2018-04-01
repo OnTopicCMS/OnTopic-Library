@@ -73,53 +73,28 @@ routes.MapRoute(
 > *Note:* Because OnTopic relies on wildcard pathnames, a new route should be configured for every root namespace (e.g., `/Web`). While it's possible to configure OnTopic to evaluate _all_ paths, this makes it difficult to delegate control to other controllers and handlers, when necessary.
 
 ### Controller Factory
-As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET MVC, that means a custom controller factory. This might look like, for exmample:
+As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET MVC, that means a custom controller factory. The basic structure of this might look like:
 ```
-namespace OrganizationName.Web {
- 
- class OrganizationNameControllerFactory : DefaultControllerFactory {
-
-    static readonly ITopicRepository _topicRepository = null;
-
-    protected override IController GetControllerInstance(RequestContext requestContext, Type controllerType) {
-
-      /*----------------------------------------------------------------------------------------------------------
-      | Register
-      \---------------------------------------------------------------------------------------------------------*/
-      if (_topicRepository == null) {
-        var connectionString            = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
-        var sqlTopicRepository          = new SqlTopicRepository(connectionString);
-        var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
-        _topicRepository                = cachedTopicRepository;
-      }
+var connectionString            = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
+var sqlTopicRepository          = new SqlTopicRepository(connectionString);
+var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
       
-      var mvcTopicRoutingService        = new MvcTopicRoutingService(
-        _topicRepository,
-        requestContext.HttpContext.Request.Url,
-        requestContext.RouteData
-      );
+var mvcTopicRoutingService      = new MvcTopicRoutingService(
+  cachedTopicRepository,
+  requestContext.HttpContext.Request.Url,
+  requestContext.RouteData
+);
 
-      var topicMappingService           = new TopicMappingService(_topicRepository);
+var topicMappingService         = new TopicMappingService(cachedTopicRepository);
 
-      /*----------------------------------------------------------------------------------------------------------
-      | Resolve
-      \---------------------------------------------------------------------------------------------------------*/
-      if (controllerType == typeof(TopicController)) {
-        return new TopicController(_topicRepository, mvcTopicRoutingService, topicMappingService);
-      }
+if (controllerType == typeof(TopicController)) {
+  return new TopicController(cachedTopicRepository, mvcTopicRoutingService, topicMappingService);
+}
 
-      return base.GetControllerInstance(requestContext, controllerType);
+return base.GetControllerInstance(requestContext, controllerType);
 
-      /*----------------------------------------------------------------------------------------------------------
-      | Release
-      \---------------------------------------------------------------------------------------------------------*/
-      // There are no resources to release
-
-    }
-
-  } // Class
-} //Namespace
 ```
+For a complete reference template, see [ControllerFactory.md](ControllerFactory.md).
 > *Note:* The default `TopicController` will automatically identify the current topic (based on e.g. the URL), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../Ignia.Topics/Mapping/)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`. 
 
 

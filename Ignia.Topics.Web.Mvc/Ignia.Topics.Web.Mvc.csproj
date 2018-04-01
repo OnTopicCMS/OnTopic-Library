@@ -76,6 +76,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ControllerFactory.md" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
