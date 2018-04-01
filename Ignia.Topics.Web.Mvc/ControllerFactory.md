@@ -4,20 +4,19 @@ The following is a reference Controller Factory for use with the `Ignia.Topics.W
 ```
 /*==============================================================================================================================
 | Author        Ignia, LLC
-| Client        GoldSim
+| Client        OrganizationName
 | Project       Website
 \=============================================================================================================================*/
 using System;
 using System.Web.Mvc;
 using System.Web.Routing;
-using GoldSim.Web.Controllers;
 using Ignia.Topics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Web;
 using Ignia.Topics.Web.Mvc;
 
-namespace GoldSim.Web {
+namespace OrganizationName.Web {
 
   /*============================================================================================================================
   | CLASS: CONTROLLER FACTORY
