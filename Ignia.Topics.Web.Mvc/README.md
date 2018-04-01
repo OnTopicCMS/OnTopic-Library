@@ -94,7 +94,8 @@ if (controllerType == typeof(TopicController)) {
 return base.GetControllerInstance(requestContext, controllerType);
 
 ```
-For a complete reference template, see [ControllerFactory.md](ControllerFactory.md).
+For a complete reference template, see the [`OrganizationNameControllerFactory.cs`](https://gist.github.com/JeremyCaney/6ba4bb0465b7dd1992a7ffdaa1ebf813) Gist.
+
 > *Note:* The default `TopicController` will automatically identify the current topic (based on e.g. the URL), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../Ignia.Topics/Mapping/)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`. 
 
 
