@@ -1,5 +1,5 @@
 ﻿# `Ignia.Topics.Web.Mvc`
-The `Ignia.Topics.Web.Mvc` assembly provides a default implementation for utilizing OnTopic with the ASP.NET MVC 5.x Framework. 
+The `Ignia.Topics.Web.Mvc` assembly provides a default implementation for utilizing OnTopic with the ASP.NET MVC 5.x Framework.
 
 ### Contents
 - [Components](#components)
@@ -19,7 +19,7 @@ There are three key components at the heart of the MVC implementation.
 - **`TopicViewEngine`**: The `TopicViewEngine` is called every time a view is requested. It works in conjunction with `TopicViewResult` to identify matching MVC views based on predetermined locations and conventions. These are discussed below.
 
 ## View Conventions
-By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`. 
+By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
 
 ### View Matching
 There are multiple ways for a view to be set. The `TopicViewResult` will automatically evaluate views based on the following locations. The first one to match a valid view name is selected.
@@ -35,8 +35,8 @@ For each of the above [View Matching](#view-matching) rules, the `TopicViewEngin
 - `~/Views/ContentTypes/{ContentType}.cshtml`
 - `~/Views/Shared/{View}.cshtml`
 
-> *Note:* After searching each of these locations for each of the [View Matching](#view-matching) rules, control will be handed over to the [`RazorViewEngine`](https://msdn.microsoft.com/en-us/library/system.web.mvc.razorviewengine%28v=vs.118%29.aspx?f=255&MSPPError=-2147217396), which will search the out-of-the-box default locations for ASP.NET MVC. 
-   
+> *Note:* After searching each of these locations for each of the [View Matching](#view-matching) rules, control will be handed over to the [`RazorViewEngine`](https://msdn.microsoft.com/en-us/library/system.web.mvc.razorviewengine%28v=vs.118%29.aspx?f=255&MSPPError=-2147217396), which will search the out-of-the-box default locations for ASP.NET MVC.
+
 ### Example
 If the `topic.ContentType` is `ContentList` and the `Accept` header is `application/json` then the `TopicViewResult` and `TopicViewEngine` would coordinate to search the following paths:
 - `~/Views/ContentList/JSON.cshtml`
@@ -78,7 +78,7 @@ As OnTopic relies on constructor injection, the application must be configured i
 var connectionString            = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
-      
+
 var mvcTopicRoutingService      = new MvcTopicRoutingService(
   cachedTopicRepository,
   requestContext.HttpContext.Request.Url,
@@ -87,15 +87,19 @@ var mvcTopicRoutingService      = new MvcTopicRoutingService(
 
 var topicMappingService         = new TopicMappingService(cachedTopicRepository);
 
-if (controllerType == typeof(TopicController)) {
-  return new TopicController(cachedTopicRepository, mvcTopicRoutingService, topicMappingService);
-}
+switch (controllerType.Name) {
 
-return base.GetControllerInstance(requestContext, controllerType);
+  case nameof(TopicController):
+    return new TopicController(_topicRepository, mvcTopicRoutingService, _topicMappingService);
+
+  case default:
+    return base.GetControllerInstance(requestContext, controllerType);
+
+}
 
 ```
 For a complete reference template, see the [`OrganizationNameControllerFactory.cs`](https://gist.github.com/JeremyCaney/6ba4bb0465b7dd1992a7ffdaa1ebf813) Gist.
 
-> *Note:* The default `TopicController` will automatically identify the current topic (based on e.g. the URL), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../Ignia.Topics/Mapping/)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`. 
+> *Note:* The default `TopicController` will automatically identify the current topic (based on e.g. the URL), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../Ignia.Topics/Mapping/)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`.
 
 
