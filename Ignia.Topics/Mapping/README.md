@@ -12,6 +12,7 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
 - [Attributes](#attributes)
   - [Example](#example-1) 
 - [Polymorphism](#polymorphism)
+- [Caching](#caching)
 
 ## `TopicMappingService`
 The [`TopicMappingService`](TopicMappingService.cs) provides a concrete implementation that is expected to satisfy the requirements of most consumers. This supports the following conventions.
@@ -131,3 +132,20 @@ If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collecti
 This can be useful for filtering a collection. For instance, if a `CompanyTopicViewModel` includes an `Employees` collection of type `List<ManagerTopicViewModel>` then it will only be populated by topics that can be mapped to either `ManagerTopicViewModel` or a derivative (perhaps, `ExecutiveTopicViewModel`). Other types (e.g., `EmployeeTopicViewModel`) will be excluded, even though they might otherwise be referenced by the `Employees` relationship.
 
 > *Note:* For this reason, it is recommended that view models use inheritance based on the content type hierarchy. This provides an intuitive mapping to content type definitions, avoids needing to redefine base properties, and allows for polymorphism in assigning derived types.
+
+## Caching
+By default, the `TopicMappingService` will cache all types discovered that end with `TopicViewModel`, as well as all `PropertyInfo` objects associated with each of those types. That mitigates much of the performance hit associated with the use of reflection. Despite that, simply setting properties—and, especially, on large object graphs—can require a lot of processing time. To mitigate this, OnTopic also offers the [`CachedTopicMappingService`](CachedTopicMappingService.cs) Decorator, which accepts a concrete implementation of an `ITopicMappingService` and provides caching based on `topic.Id`, `Type`, and `Relationships`. Because the cache is based on all three of these, it will differentiate between the results of e.g.,
+- `topicMappingService.Map<TopicViewModel>(topic, Relationships.All)`
+- `topicMappingService.Map<TopicViewModel>(topic, Relationships.Children)`
+- `topicMappingService.Map<PageTopicViewModel>(topic, Relationships.Children)`
+
+To implement the caching decorator, use the following construction as a Singleton lifecycle in your composer:
+```
+var topicRepository = new SqlTopicRepository(…);
+var topicMappingService = new TopicMappingService(topicRepository);
+var cachedTopicMappingService = new CachedTopicMappingService(topicMappingService);
+```
+
+> *Note:* Be aware that the `CachedTopicMappingService` may take up considerable memory, depending on how many permutations of mapped objects the application has. This is especially true since it caches each unique object graph; no effort is made to centralize references to e.g. relationships that reference the same object instance.
+
+> *Note:* The `CachedTopicMappingService` makes no effort to validate or evict cache entries. Topics whose values change during the lifetyime of the `CachedTopicMappingService` will not be reflected in the mapped responses.

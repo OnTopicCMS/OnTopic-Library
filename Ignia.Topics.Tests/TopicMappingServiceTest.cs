@@ -618,6 +618,29 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CACHING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
+    ///   the same instance of a mapped object is turned after two calls.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_Caching() {
+
+      var mappingService = new TopicMappingService(_topicRepository);
+      var cachedMappingService = new CachedTopicMappingService(mappingService);
+
+      var topic = TopicFactory.Create("Test", "Filtered", 5);
+
+      var target1 = (FilteredTopicViewModel)cachedMappingService.Map(topic);
+      var target2 = (FilteredTopicViewModel)cachedMappingService.Map(topic);
+
+      Assert.AreEqual<FilteredTopicViewModel>(target1, target2);
+
+    }
+
+
   } //Class
 
 } //Namespace
