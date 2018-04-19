@@ -63,13 +63,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\ErrorControllerBase.cs" />
+    <Compile Include="Controllers\ErrorControllerBase{T}.cs" />
     <Compile Include="Controllers\FallbackController.cs" />
-    <Compile Include="Controllers\LayoutControllerBase.cs" />
+    <Compile Include="Controllers\LayoutControllerBase{T}.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\SitemapController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
-    <Compile Include="Models\NavigationViewModel.cs" />
+    <Compile Include="Models\NavigationViewModel{T}.cs" />
     <Compile Include="Models\TopicEntityViewModel.cs" />
     <Compile Include="MvcTopicRoutingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
