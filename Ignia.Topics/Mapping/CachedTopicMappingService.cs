@@ -186,7 +186,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A <see cref="Tuple<int, Type, Relationships"/> representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
-    private Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) {
+    private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) {
       return new Tuple<int, Type, Relationships>(topicId, type, relationships);
     }
 
