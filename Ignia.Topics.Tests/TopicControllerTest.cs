@@ -138,6 +138,32 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SITEMAP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action.
+    /// </summary>
+    /// <remarks>
+    ///   Because the <see cref="SitemapController.Index()"/> method references the <see cref="Controller.Response"/> property,
+    ///   which is not set during unit testing, this test is <i>expected</i> to throw an exception. This is not ideal. In the
+    ///   future, this may be modified to instead use a mock <see cref="ControllerContext"/> for a more sophisticated test.
+    /// </remarks>
+    [TestMethod]
+    [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
+    public void SitemapController_Index() {
+
+      var controller            = new SitemapController(_topicRepository);
+      var result                = controller.Index() as ViewResult;
+      var model                 = result.Model as TopicEntityViewModel;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<ITopicRepository>(_topicRepository, model.TopicRepository);
+      Assert.AreEqual<string>("Root", model.RootTopic.Key);
+      Assert.AreEqual<string>("Root", model.Topic.Key);
+
+    }
+
   } //Class
 
 } //Namespace

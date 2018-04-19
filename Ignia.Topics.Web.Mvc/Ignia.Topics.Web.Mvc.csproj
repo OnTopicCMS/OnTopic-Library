@@ -66,6 +66,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FallbackController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\SitemapController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Models\NavigationViewModel.cs" />
     <Compile Include="Models\TopicEntityViewModel.cs" />
