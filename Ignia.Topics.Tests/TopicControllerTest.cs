@@ -133,7 +133,7 @@ namespace Ignia.Topics.Tests {
     public void RedirectController_TopicRedirectTest() {
 
       var controller            = new RedirectController(_topicRepository);
-      var result                = controller.TopicRedirect(11110) as RedirectResult;
+      var result                = controller.Redirect(11110) as RedirectResult;
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Permanent);
