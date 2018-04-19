@@ -58,7 +58,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="ErrorController{T}.Error(string)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_Error() {
+    public void ErrorController_ErrorTest() {
 
       var controller            = new ErrorController<PageTopicViewModel>();
       var result                = controller.Error("ErrorPage") as ViewResult;
@@ -76,7 +76,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="ErrorController{T}.NotFound(string)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_NotFound() {
+    public void ErrorController_NotFoundTest() {
 
       var controller            = new ErrorController<PageTopicViewModel>();
       var result                = controller.Error("NotFoundPage") as ViewResult;
@@ -94,7 +94,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="ErrorController{T}.InternalServer(string)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_InternalServer() {
+    public void ErrorController_InternalServerTest() {
 
       var controller            = new ErrorController<PageTopicViewModel>();
       var result                = controller.Error("InternalServer") as ViewResult;
@@ -112,7 +112,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void FallbackController_Index() {
+    public void FallbackController_IndexTest() {
 
       var controller            = new FallbackController();
       var result                = controller.Index() as HttpNotFoundResult;
@@ -130,7 +130,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void RedirectController_TopicRedirect() {
+    public void RedirectController_TopicRedirectTest() {
 
       var controller            = new RedirectController(_topicRepository);
       var result                = controller.TopicRedirect(11110) as RedirectResult;
@@ -154,7 +154,7 @@ namespace Ignia.Topics.Tests {
     /// </remarks>
     [TestMethod]
     [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
-    public void SitemapController_Index() {
+    public void SitemapController_IndexTest() {
 
       var controller            = new SitemapController(_topicRepository);
       var result                = controller.Index() as ViewResult;
@@ -174,7 +174,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void LayoutController_Menu() {
+    public void LayoutController_MenuTest() {
 
       var routes                = new RouteData();
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
