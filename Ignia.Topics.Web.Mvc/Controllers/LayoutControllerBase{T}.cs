@@ -194,7 +194,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ) {
       tiers--;
       if (sourceTopic == null) {
-        return null as T;
+        return null;
       }
       var viewModel = _topicMappingService.Map<T>(sourceTopic, Relationships.None);
       if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
