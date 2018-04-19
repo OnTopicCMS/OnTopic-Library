@@ -55,12 +55,12 @@ namespace Ignia.Topics.Tests {
     | TEST: ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorController{T}.Error(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_ErrorTest() {
 
-      var controller            = new ErrorController<PageTopicViewModel>();
+      var controller            = new ErrorController();
       var result                = controller.Error("ErrorPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
@@ -73,12 +73,12 @@ namespace Ignia.Topics.Tests {
     | TEST: NOT FOUND ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorController{T}.NotFound(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.NotFound(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_NotFoundTest() {
 
-      var controller            = new ErrorController<PageTopicViewModel>();
+      var controller            = new ErrorController();
       var result                = controller.Error("NotFoundPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
@@ -91,12 +91,12 @@ namespace Ignia.Topics.Tests {
     | TEST: INTERNAL SERVER ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorController{T}.InternalServer(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.InternalServer(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_InternalServerTest() {
 
-      var controller            = new ErrorController<PageTopicViewModel>();
+      var controller            = new ErrorController();
       var result                = controller.Error("InternalServer") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
@@ -183,7 +183,7 @@ namespace Ignia.Topics.Tests {
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
       var mappingService        = new TopicMappingService(_topicRepository);
 
-      var controller            = new LayoutController<NavigationTopicViewModel>(_topicRepository, topicRoutingService, mappingService);
+      var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
       var result                = controller.Menu() as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 

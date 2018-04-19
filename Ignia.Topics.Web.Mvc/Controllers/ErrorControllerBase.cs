@@ -14,10 +14,20 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///   Provides access to the views associated with 400 and 500 error results.
   /// </summary>
   /// <remarks>
-  ///   Implementers may wish to provide derived classes which return more specific error messages. This class provides a
-  ///   generic implementation that should suit most requirements.
+  ///   <para>
+  ///     Implementers may wish to provide derived classes which return more specific error messages. This class provides a
+  ///     generic implementation that should suit most requirements.
+  ///   </para>
+  ///   <para>
+  ///     In order to remain view model agnostic, the <see cref="ErrorController{T}"/> does not assume that a particular view
+  ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
+  ///     cref="IPageTopicViewModelCore"/>. Since generic controllers cannot be effectively routed to, however, that means that
+  ///     implementors must, at minimum, provide a local instance of <see cref="ErrorController{T}"/> which sets the generic
+  ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
+  ///     <c>abstract</c> and suffixed with <b>Base</b>.
+  ///   </para>
   /// </remarks>
-  public class ErrorController<T> : Controller where T : IPageTopicViewModelCore, new() {
+  public abstract class ErrorControllerBase<T> : Controller where T : IPageTopicViewModelCore, new() {
 
     /*==========================================================================================================================
     | GET: /Error/Error

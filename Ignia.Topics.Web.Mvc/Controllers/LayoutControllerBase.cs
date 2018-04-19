@@ -30,8 +30,16 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
   ///     specific layout elements.
   ///   </para>
+  ///   <para>
+  ///     In order to remain view model agnostic, the <see cref="LayoutController{T}"/> does not assume that a particular view
+  ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
+  ///     cref="INavigationTopicViewModelCore"/>. Since generic controllers cannot be effectively routed to, however, that means
+  ///     implementors must, at minimum, provide a local instance of <see cref="LayoutController{T}"/> which sets the generic
+  ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
+  ///     <c>abstract</c> and suffixed with <c>Base</c>.
+  ///   </para>
   /// </remarks>
-  public class LayoutController<T> : Controller where T : class, INavigationTopicViewModelCore<T>, new() {
+  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModelCore<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -48,7 +56,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    public LayoutController(
+    protected LayoutControllerBase(
       ITopicRepository topicRepository,
       ITopicRoutingService topicRoutingService,
       ITopicMappingService topicMappingService

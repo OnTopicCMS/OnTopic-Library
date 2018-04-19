@@ -94,6 +94,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\LayoutController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="TopicRoutingServiceTest.cs" />
     <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />
