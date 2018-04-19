@@ -14,6 +14,9 @@ using Ignia.Topics.Tests.TestDoubles;
 using Ignia.Topics.Web.Mvc.Controllers;
 using Ignia.Topics.ViewModels;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Ignia.Topics.Mapping;
+using Ignia.Topics.Web.Mvc.Models;
 
 namespace Ignia.Topics.Tests {
 
@@ -163,6 +166,35 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Root", model.Topic.Key);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: MENU
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the <see cref="FallbackController.Index()" /> action.
+    /// </summary>
+    [TestMethod]
+    public void LayoutController_Menu() {
+
+      var routes                = new RouteData();
+      var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var mappingService        = new TopicMappingService(_topicRepository);
+
+      var controller            = new LayoutController<NavigationTopicViewModel>(_topicRepository, topicRoutingService, mappingService);
+      var result                = controller.Menu() as PartialViewResult;
+      var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string>(topic.GetUniqueKey(), model.CurrentKey);
+      Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
+      Assert.AreEqual<int>(3, model.NavigationRoot.Children.Count());
+      Assert.IsTrue(model.NavigationRoot.IsSelected(topic.GetUniqueKey()));
+
+    }
+
 
   } //Class
 
