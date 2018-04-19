@@ -98,6 +98,7 @@
     <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />
     <Compile Include="TopicMappingServiceTest.cs" />
+    <Compile Include="TopicControllerTest.cs" />
     <Compile Include="TypeCollectionTest.cs" />
     <Compile Include="TopicCollectionTest.cs" />
     <Compile Include="RelatedTopicCollectionTest.cs" />
