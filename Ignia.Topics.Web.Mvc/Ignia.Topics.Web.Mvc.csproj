@@ -63,9 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\ErrorControllerBase.cs" />
     <Compile Include="Controllers\FallbackController.cs" />
-    <Compile Include="Controllers\LayoutController.cs" />
+    <Compile Include="Controllers\LayoutControllerBase.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\SitemapController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
