@@ -120,6 +120,25 @@ namespace Ignia.Topics.Tests {
 
     }
 
+
+    /*==========================================================================================================================
+    | TEST: REDIRECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="FallbackController.Index()" /> action.
+    /// </summary>
+    [TestMethod]
+    public void RedirectController_TopicRedirect() {
+
+      var controller            = new RedirectController(_topicRepository);
+      var result                = controller.TopicRedirect(11110) as RedirectResult;
+
+      Assert.IsNotNull(result);
+      Assert.IsTrue(result.Permanent);
+      Assert.AreEqual<string>("/Web/Web_1/Web_1_1/Web_1_1_1/", result.Url);
+
+    }
+
   } //Class
 
 } //Namespace

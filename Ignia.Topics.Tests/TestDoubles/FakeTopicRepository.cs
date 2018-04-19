@@ -262,7 +262,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish content
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var web = TopicFactory.Create("Web", "Page", rootTopic);
+      var web = TopicFactory.Create("Web", "Page", 10000, rootTopic);
 
       CreateFakeData(web, 3, 3);
 
@@ -281,7 +281,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent);
+        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent.Id + (int)Math.Pow(10, depth) * i, parent);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString());
         if (depth > 0) {
