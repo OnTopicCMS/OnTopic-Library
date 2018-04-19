@@ -21,14 +21,17 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///   Provides access to views for populating specific layout dependencies, such as the <see cref="Menu"/>.
   /// </summary>
   /// <remarks>
-  ///   As a best practice, global data required by the layout view are requested independently of the current page. This allows
-  ///   each layout element to be provided with its own layout data, in the form of <see cref="NavigationViewModel{T}"/>s,
-  ///   instead of needing to add this data to every view model returned by <see cref="TopicController"/>. The <see
-  ///   cref="LayoutController{T}"/> facilitates this by not only providing a default implementation for <see cref="Menu"/>, but
-  ///   additionally providing protected helper methods that aid in locating and assembling <see cref="Topic"/> and <see
-  ///   cref="INavigationTopicViewModelCore"/> references that are relevant to specific layout elements.
+  ///   <para>
+  ///     As a best practice, global data required by the layout view are requested independently of the current page. This
+  ///     allows each layout element to be provided with its own layout data, in the form of <see
+  ///     cref="NavigationViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
+  ///     cref="TopicController"/>. The <see cref="LayoutController{T}"/> facilitates this by not only providing a default
+  ///     implementation for <see cref="Menu"/>, but additionally providing protected helper methods that aid in locating and
+  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
+  ///     specific layout elements.
+  ///   </para>
   /// </remarks>
-  public class LayoutController<T> : Controller where T : class, INavigationTopicViewModelCore, new() {
+  public class LayoutController<T> : Controller where T : class, INavigationTopicViewModelCore<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

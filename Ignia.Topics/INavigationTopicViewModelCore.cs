@@ -18,15 +18,15 @@ namespace Ignia.Topics {
   ///   No topics are expected to have a <c>Navigation</c> content type. Instead, implementers of this view model are expected
   ///   to manually construct instances.
   /// </remarks>
-  public interface INavigationTopicViewModelCore : IPageTopicViewModelCore {
+  public interface INavigationTopicViewModelCore<T> : IPageTopicViewModelCore where T: INavigationTopicViewModelCore<T> {
 
     /*==========================================================================================================================
     | PROPERTY: CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Represents a collection of child <see cref="INavigationTopicViewModelCore"/> instances.
+    ///   Represents a collection of child <see cref="INavigationTopicViewModelCore{T}"/> instances.
     /// </summary>
-    Collection<INavigationTopicViewModelCore> Children { get; set; }
+    Collection<T> Children { get; set; }
 
     /*==========================================================================================================================
     | METHOD: ISSELECTED
@@ -35,7 +35,7 @@ namespace Ignia.Topics {
     ///   Determines if the current item is selected based on the provided <paramref name="uniqueKey"/>.
     /// </summary>
     /// <param name="uniqueKey">
-    ///   The unique key to compare against the current <see cref="INavigationTopicViewModelCore"/>
+    ///   The unique key to compare against the current <see cref="INavigationTopicViewModelCore{T}"/>
     /// </param>
     bool IsSelected(string uniqueKey);
 
