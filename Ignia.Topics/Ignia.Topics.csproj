@@ -142,7 +142,9 @@
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
+    <Compile Include="INavigationTopicViewModelCore.cs" />
     <Compile Include="ITopicRoutingService.cs" />
+    <Compile Include="IPageTopicViewModelCore.cs" />
     <Compile Include="ITopicViewModelCore.cs" />
     <Compile Include="Mapping\CachedTopicMappingService.cs" />
     <Compile Include="Mapping\FilterByAttributeAttribute.cs" />
