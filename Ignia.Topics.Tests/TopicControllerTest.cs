@@ -52,7 +52,7 @@ namespace Ignia.Topics.Tests {
     | TEST: ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the error action of the <see cref="ErrorController{T}.Error(string)" /> action.
+    ///   Triggers the <see cref="ErrorController{T}.Error(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_Error() {
@@ -70,7 +70,7 @@ namespace Ignia.Topics.Tests {
     | TEST: NOT FOUND ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the error action of the <see cref="ErrorController{T}.NotFound(string)" /> action.
+    ///   Triggers the <see cref="ErrorController{T}.NotFound(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_NotFound() {
@@ -88,7 +88,7 @@ namespace Ignia.Topics.Tests {
     | TEST: INTERNAL SERVER ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the error action of the <see cref="ErrorController{T}.InternalServer(string)" /> action.
+    ///   Triggers the <see cref="ErrorController{T}.InternalServer(string)" /> action.
     /// </summary>
     [TestMethod]
     public void ErrorController_InternalServer() {
@@ -106,7 +106,7 @@ namespace Ignia.Topics.Tests {
     | TEST: FALLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="FallbackController.Index()" /> action.
+    ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
     public void FallbackController_Index() {
@@ -120,12 +120,11 @@ namespace Ignia.Topics.Tests {
 
     }
 
-
     /*==========================================================================================================================
     | TEST: REDIRECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="FallbackController.Index()" /> action.
+    ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
     public void RedirectController_TopicRedirect() {
