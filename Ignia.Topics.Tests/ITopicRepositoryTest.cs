@@ -80,18 +80,17 @@ namespace Ignia.Topics.Tests {
       var web                   = _topicRepository.Load("Root:Web");
       var configuration         = _topicRepository.Load("Root:Configuration");
 
-      Assert.AreEqual<int>(-1, web.Id);
+      Assert.AreEqual<int>(10000, web.Id);
       Assert.AreEqual<int>(-1, configuration.Id);
 
-      _topicRepository.Save(web);
+      _topicRepository.Save(configuration);
 
-      Assert.AreNotEqual<int>(-1, web.Id);
-      Assert.AreEqual<int>(-1, web.Children.First().Id);
+      Assert.AreNotEqual<int>(-1, configuration.Id);
+      Assert.AreEqual<int>(-1, configuration.Children.First().Id);
 
-      _topicRepository.Save(web, true);
+      _topicRepository.Save(configuration, true);
 
-      Assert.AreNotEqual<int>(-1, web.Children.First().Id);
-      Assert.AreEqual<int>(-1, configuration.Id);
+      Assert.AreNotEqual<int>(-1, configuration.Children.First().Id);
 
     }
 
