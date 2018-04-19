@@ -189,7 +189,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
         return null as T;
       }
       var viewModel = _topicMappingService.Map<T>(sourceTopic, Relationships.None);
-      if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup"))) {
+      if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Sorted.Where(t => t.IsVisible())) {
           viewModel.Children.Add(
             AddNestedTopics(
