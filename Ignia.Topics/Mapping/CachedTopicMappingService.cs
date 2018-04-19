@@ -86,7 +86,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic), cacheKey);
+      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
 
     }
 
@@ -121,7 +121,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return (T)CacheViewModel(topic.ContentType, _topicMappingService.Map(topic), cacheKey);
+      return CacheViewModel(topic.ContentType, _topicMappingService.Map<T>(topic, relationships), cacheKey) as T;
 
     }
 
@@ -150,7 +150,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic), cacheKey);
+      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
 
     }
 
