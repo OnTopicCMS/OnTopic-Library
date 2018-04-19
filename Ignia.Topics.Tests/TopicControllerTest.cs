@@ -102,6 +102,24 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: FALLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="FallbackController.Index()" /> action.
+    /// </summary>
+    [TestMethod]
+    public void FallbackController_Index() {
+
+      var controller            = new FallbackController();
+      var result                = controller.Index() as HttpNotFoundResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual<int>(404, result.StatusCode);
+      Assert.AreEqual<string>("No controller available to handle this request.", result.StatusDescription);
+
+    }
+
   } //Class
 
 } //Namespace

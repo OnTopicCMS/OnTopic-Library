@@ -63,6 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\FallbackController.cs" />
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Models\NavigationViewModel.cs" />
     <Compile Include="Models\TopicEntityViewModel.cs" />
