@@ -100,7 +100,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    public ActionResult Index(string path) {
+    public virtual ActionResult Index(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model

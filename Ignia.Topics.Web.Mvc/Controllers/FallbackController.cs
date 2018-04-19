@@ -38,7 +38,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the default page for the site.
     /// </summary>
     /// <returns>The site's default view.</returns>
-    public ActionResult Index() => HttpNotFound("No controller available to handle this request.");
+    public virtual ActionResult Index() => HttpNotFound("No controller available to handle this request.");
 
   } //Class
 

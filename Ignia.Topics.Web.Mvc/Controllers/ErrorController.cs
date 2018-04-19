@@ -26,7 +26,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the default custom error page for the site.
     /// </summary>
     /// <returns>The site's default error view.</returns>
-    public ActionResult Error(string title = "General Error") {
+    public virtual ActionResult Error(string title = "General Error") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate view model
@@ -53,7 +53,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the custom 404 error page for the site.
     /// </summary>
     /// <returns>The site's 404 (not found) error view.</returns>
-    public ActionResult NotFound(string title = "Page Not Found") {
+    public virtual ActionResult NotFound(string title = "Page Not Found") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the proper status code
@@ -85,7 +85,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the custom 500 error page for the site.
     /// </summary>
     /// <returns>The site's 500 (internal server) error view.</returns>
-    public ActionResult InternalServer(string title = "Internal Server Error") {
+    public virtual ActionResult InternalServer(string title = "Internal Server Error") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the proper status code

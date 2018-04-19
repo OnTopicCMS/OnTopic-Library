@@ -49,7 +49,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Redirect based on TopicID
     /// </summary>
     /// <param name="topicId">The <see cref="Topic.Id"/> to lookup in the <see cref="ITopicRepository"/>.</param>
-    public ActionResult TopicRedirect(int topicId) {
+    public virtual ActionResult TopicRedirect(int topicId) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find the topic with the correct PageID.

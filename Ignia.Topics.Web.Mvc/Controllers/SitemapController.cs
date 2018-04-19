@@ -43,7 +43,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the Sitemap.org sitemap for the site.
     /// </summary>
     /// <returns>The site's homepage view.</returns>
-    public ActionResult Index() {
+    public virtual ActionResult Index() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish Page Topic
