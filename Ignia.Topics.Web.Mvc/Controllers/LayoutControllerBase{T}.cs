@@ -149,15 +149,25 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="fromRoot">The distance that the navigation root should be from the root of the topic graph.</param>
     /// <param name="defaultRoot">If a root cannot be identified, the default root that should be returned.</param>
     protected Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find navigation root
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationRootTopic = currentTopic;
       while (DistanceFromRoot(navigationRootTopic) > fromRoot) {
         navigationRootTopic = navigationRootTopic.Parent;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle default, if necessary
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic == null && !String.IsNullOrWhiteSpace(defaultRoot)) {
         navigationRootTopic = TopicRepository.Load(defaultRoot);
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return navigation root
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return navigationRootTopic;
 
     }
