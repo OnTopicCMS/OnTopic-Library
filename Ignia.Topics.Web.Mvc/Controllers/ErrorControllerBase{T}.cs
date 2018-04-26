@@ -41,13 +41,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel             = new T();
-      viewModel.Key             = "Error";
-      viewModel.WebPath         = "/Error/Error";
-      viewModel.ContentType     = "Page";
-      viewModel.Title           = title;
-      viewModel.MetaKeywords    = "";
-      viewModel.MetaDescription = "";
+      var viewModel             = CreateErrorViewModel("Error", title);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the view
@@ -73,13 +67,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel             = new T();
-      viewModel.Key             = "NotFound";
-      viewModel.WebPath         = "/Error/NotFound";
-      viewModel.ContentType     = "Page";
-      viewModel.Title           = title;
-      viewModel.MetaKeywords    = "";
-      viewModel.MetaDescription = "";
+      var viewModel             = CreateErrorViewModel("NotFound", title);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the view
@@ -105,18 +93,44 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel             = new T();
-      viewModel.Key             = "InternalServer";
-      viewModel.WebPath         = "/Error/InternalServer";
-      viewModel.ContentType     = "Page";
-      viewModel.Title           = title;
-      viewModel.MetaKeywords    = "";
-      viewModel.MetaDescription = "";
+      var viewModel             = CreateErrorViewModel("InternalServer", title);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the view
       \-----------------------------------------------------------------------------------------------------------------------*/
       return View("InternalServer", viewModel);
+
+    }
+
+    /*==========================================================================================================================
+    | CREATE ERROR VIEW MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes an empty view model, populates it with appropriate values based on the method parameters, and returns it
+    ///   for use in one of the actions.
+    /// </summary>
+    /// <param name="key">
+    ///   The key name to use for the <see cref="IPageTopicViewModelCore"/>'s <c>Key</c> and <c>WebPath</c> properties.
+    /// </param>
+    /// <param name="title">The title of the error page.</param>
+    /// <returns>A view model representing an error message.</returns>
+    public virtual T CreateErrorViewModel(string key, string title) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Instantiate model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var viewModel = new T();
+      viewModel.Key = key;
+      viewModel.WebPath = "/Error/" + key;
+      viewModel.ContentType = "Page";
+      viewModel.Title = title;
+      viewModel.MetaKeywords = "";
+      viewModel.MetaDescription = "";
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return the view
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return viewModel;
 
     }
 
