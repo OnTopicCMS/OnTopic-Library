@@ -43,9 +43,9 @@ namespace Ignia.Topics {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what
-    ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
-    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>.
+    ///   While the <see cref="ITopicViewModelCore.Key"/> may not contain, for instance, spaces or symbols, there are no
+    ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
+    ///   referencing topics.
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
