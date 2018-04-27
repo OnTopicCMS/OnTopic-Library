@@ -188,7 +188,6 @@ namespace Ignia.Topics {
     public string Key {
       get => _key;
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         TopicFactory.ValidateKey(value);
         if (_originalKey == null) {
           _originalKey = Attributes.GetValue("Key", false);

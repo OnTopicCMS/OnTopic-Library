@@ -143,6 +143,7 @@
     <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="INavigationTopicViewModelCore{T}.cs" />
+    <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="IPageTopicViewModelCore.cs" />
     <Compile Include="ITopicViewModelCore.cs" />
