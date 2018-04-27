@@ -31,12 +31,7 @@ namespace Ignia.Topics {
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
     private                     Topic                           _parent                         = null;
-    private                     TopicCollection                 _children                       = null;
-    private                     AttributeValueCollection        _attributes                     = null;
-    private                     RelatedTopicCollection          _relationships                  = null;
-    private                     RelatedTopicCollection          _incomingRelationships          = null;
     private                     Topic                           _derivedTopic                   = null;
-    private                     List<DateTime>                  _versionHistory                 = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -47,7 +42,14 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
-    public Topic() { }
+    public Topic() {
+      Children                  = new TopicCollection(this);
+      Attributes                = new AttributeValueCollection(this);
+      IncomingRelationships     = new RelatedTopicCollection(this, true);
+      Relationships             = new RelatedTopicCollection(this, false);
+      VersionHistory            = new List<DateTime>();
+
+    }
 
     #region Core Properties
 
@@ -103,15 +105,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
     /// </summary>
-    public TopicCollection Children {
-      get {
-        Contract.Ensures(Contract.Result<TopicCollection>() != null);
-        if (_children == null) {
-          _children = new TopicCollection(this);
-        }
-        return _children;
-      }
-    }
+    public TopicCollection Children { get; }
 
     /*==========================================================================================================================
     | PROPERTY: IS EMPTY
@@ -516,14 +510,7 @@ namespace Ignia.Topics {
     ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/>
     ///   property).
     /// </remarks>
-    public AttributeValueCollection Attributes {
-      get {
-        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
-        if (_attributes == null) {
-          _attributes = new AttributeValueCollection(this);
-        }
-        return _attributes;
-      }
+    public AttributeValueCollection Attributes { get; }
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
@@ -536,15 +523,7 @@ namespace Ignia.Topics {
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    public RelatedTopicCollection Relationships {
-      get {
-        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
-        if (_relationships == null) {
-          _relationships = new RelatedTopicCollection(this, false);
-        }
-        return _relationships;
-      }
-    }
+    public RelatedTopicCollection Relationships { get; }
 
     /*===========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS
@@ -558,15 +537,7 @@ namespace Ignia.Topics {
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
-    public RelatedTopicCollection IncomingRelationships {
-      get {
-        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
-        if (_incomingRelationships == null) {
-          _incomingRelationships = new RelatedTopicCollection(this, true);
-        }
-        return _incomingRelationships;
-      }
-    }
+    public RelatedTopicCollection IncomingRelationships { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
@@ -578,15 +549,7 @@ namespace Ignia.Topics {
     ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
     ///   its derived providers).
     /// </remarks>
-    public List<DateTime> VersionHistory {
-      get {
-        Contract.Ensures(Contract.Result<List<DateTime>>() != null);
-        if (_versionHistory == null) {
-          _versionHistory = new List<DateTime>();
-        }
-        return _versionHistory;
-      }
-    }
+    public List<DateTime> VersionHistory { get; }
 
     #endregion
 
