@@ -524,11 +524,6 @@ namespace Ignia.Topics {
         }
         return _attributes;
       }
-      internal set {
-        Contract.Requires<ArgumentNullException>(value != null, "A topic's AttributeValue collection cannot be null.");
-        _attributes = value;
-      }
-    }
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
