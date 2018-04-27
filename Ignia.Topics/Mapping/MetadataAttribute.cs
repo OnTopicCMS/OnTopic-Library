@@ -19,7 +19,7 @@ namespace Ignia.Topics.Mapping {
   ///   value property) or a collection of the metadata (in the case of a collection).
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public class MetadataAttribute : System.Attribute {
+  public sealed class MetadataAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

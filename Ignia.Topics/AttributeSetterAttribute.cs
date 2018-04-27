@@ -41,7 +41,7 @@ namespace Ignia.Topics {
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  sealed class AttributeSetterAttribute : System.Attribute {
+  public sealed class AttributeSetterAttribute : System.Attribute {
 
   } //Class
 

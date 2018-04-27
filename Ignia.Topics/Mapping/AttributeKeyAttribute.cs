@@ -22,7 +22,7 @@ namespace Ignia.Topics.Mapping {
   ///   decoupled from the source attribute key.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public class AttributeKeyAttribute : System.Attribute {
+  public sealed class AttributeKeyAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
