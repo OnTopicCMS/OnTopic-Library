@@ -368,7 +368,7 @@ namespace Ignia.Topics.Mapping {
           (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
           relationships.HasFlag(Relationships.Children)
         ) {
-          listSource = topic.Children.Sorted.ToList();
+          listSource = topic.Children.ToList();
         }
 
         //Handle (outgoing) relationships
@@ -388,7 +388,7 @@ namespace Ignia.Topics.Mapping {
           (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
         ) {
           if (topic.Children.Contains(relationshipKey)) {
-            listSource = topic.Children[relationshipKey].Children.Sorted.ToList();
+            listSource = topic.Children[relationshipKey].Children.ToList();
           }
         }
 
@@ -405,7 +405,7 @@ namespace Ignia.Topics.Mapping {
 
         //Handle Metadata relationship
         if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(metadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.Sorted.ToList();
+          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.ToList();
         }
 
         //Ensure list is created

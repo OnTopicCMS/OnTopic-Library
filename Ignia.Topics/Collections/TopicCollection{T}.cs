@@ -75,39 +75,6 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: SORTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a reference to the values collection, sorted by the <see cref="Topic.SortOrder"/> property.
-    /// </summary>
-    /// <remarks>
-    ///   Since Dictionaries do not guarantee sort order, this is necessary for any code that expects to honor the order of
-    ///   topics in the database. Simply calling <see cref="Collection{T}.Items"/> may return topics in the correct order, but
-    ///   this cannot be assumed.
-    /// </remarks>
-    public IEnumerable<T> Sorted {
-      get {
-        Contract.Ensures(Contract.Result<IEnumerable<Topic>>() != null);
-        return Items.OrderBy(topic => topic.SortOrder);
-      }
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET ENUMERATOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Returns an enumerable of the current <see cref="Topic"/> collection, sorted by <see cref="Topic.SortOrder"/>.
-    /// </summary>
-    /// <remarks>
-    ///   By default, the enumerator will return <see cref="Topic"/> instances in the order they are stored internally. For
-    ///   small collections loaded directly from the database, the sort order will be correct. If the collection has been
-    ///   modified programmatically (e.g., via the editor), however, then the order will be incorrect since there is not a way
-    ///   to set the order on a <see cref="KeyedCollection{TKey, TItem}"/>. As such, this overrides the
-    ///   <see cref="IEnumerable{T}.GetEnumerator"/> method to ensure the correct sort order is honored.
-    /// </remarks>
-    public new IEnumerator<T> GetEnumerator() => Sorted.GetEnumerator();
-
-    /*==========================================================================================================================
     | METHOD: CHANGE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

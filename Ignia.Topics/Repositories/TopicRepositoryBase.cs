@@ -181,11 +181,9 @@ namespace Ignia.Topics.Repositories {
       if (topic.Parent != null && topic.Attributes.IsDirty("ParentId")) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
-          ReorderSiblings(topic, topic.Parent.Children[topicIndex-1]);
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
         }
         else {
-          ReorderSiblings(topic);
           Move(topic, topic.Parent);
         }
       }
@@ -211,7 +209,6 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(target != null, "The target parameter must be specified.");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.SetParent(target);
       ReorderSiblings(topic);
     }
 
@@ -224,55 +221,7 @@ namespace Ignia.Topics.Repositories {
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.SetParent(target, sibling);
-      ReorderSiblings(topic, sibling);
-    }
-
-    /*==========================================================================================================================
-    | METHOD: REORDER SIBLINGS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static method that updates the sort order of topics at a particular level.
-    /// </summary>
-    /// <param name="source">
-    ///   The topic which is being moved.
-    /// </param>
-    /// <param name="sibling">
-    ///   The topic object that if provided, represents the topic after which the source topic should be ordered.
-    /// </param>
-    /// <requires description="The source topic must be specified." exception="T:System.ArgumentNullException">
-    ///   source != null
-    /// </requires>
-    /// <requires description="The source topic cannot be reordered relative to itself." exception="T:System.ArgumentException">
-    ///   source != sibling
-    /// </requires>
-    private static void ReorderSiblings(Topic source, Topic sibling = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(source != sibling, "The source cannot be reordered relative to itself.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var parent = source.Parent;
-      var sortOrder = 0;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | If there is no sibling, inject the source at the beginning of the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sibling == null) {
-        source.SortOrder = Int32.MaxValue;
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through each topic to assign a new priority order
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in parent.Children.Sorted) {
-        // Assuming the topic isn't the source, or no sibling is present, increment the sortOrder
-        if (topic != source || sibling == null) {
-          topic.SortOrder = sortOrder++;
         }
         // If the topic is the sibling, then assign the next sortOrder to the source
         if (topic == sibling) {

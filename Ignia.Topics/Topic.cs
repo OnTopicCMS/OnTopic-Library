@@ -30,7 +30,6 @@ namespace Ignia.Topics {
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
-    private                     int                             _sortOrder                      = 25;
     private                     Topic                           _parent                         = null;
     private                     TopicCollection                 _children                       = null;
     private                     AttributeValueCollection        _attributes                     = null;
@@ -299,22 +298,6 @@ namespace Ignia.Topics {
     public string Description {
       get => Attributes.GetValue("Description");
       set => SetAttributeValue("Description", value);
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: SORT ORDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's sort order.
-    /// </summary>
-    /// <remarks>
-    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers);
-    ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the
-    ///   capabilities of the storage provider.
-    /// </remarks>
-    public int SortOrder {
-      get => _sortOrder;
-      set => _sortOrder = value;
     }
 
     /*==========================================================================================================================
