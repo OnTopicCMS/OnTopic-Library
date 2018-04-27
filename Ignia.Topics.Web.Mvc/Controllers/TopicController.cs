@@ -165,7 +165,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic.ContentType.Equals("PageGroup")) {
         filterContext.Result = Redirect(
-          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
+          CurrentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );
         return;
       }
