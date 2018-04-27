@@ -65,7 +65,7 @@ namespace Ignia.Topics {
       get => _id;
       set {
         Contract.Requires<ArgumentException>(value > 0, "The id is expected to be a positive value.");
-        if (_id >= 0 && !_id.Equals(value)) {
+        if (_id > 0 && !_id.Equals(value)) {
           throw new ArgumentException("The value of this topic has already been set to " + _id + "; it cannot be changed.");
         }
         _id = value;
