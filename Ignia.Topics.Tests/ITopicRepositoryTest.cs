@@ -121,6 +121,33 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MOVE TO SIBLING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
+    /// </summary>
+    [TestMethod]
+    public void ITopicRepository_MoveToSiblingTest() {
+
+      var rootTopic             = _topicRepository.Load();
+      var parent                = _topicRepository.Load("Root:Web:Web_0");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
+      var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
+
+      Assert.ReferenceEquals(topic.Parent, parent);
+      Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
+      Assert.AreEqual<int>(3, parent.Children.Count());
+
+      _topicRepository.Move(topic, parent, sibling);
+
+      Assert.ReferenceEquals(topic.Parent, parent);
+      Assert.AreEqual<int>(3, parent.Children.Count());
+      Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
+      Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

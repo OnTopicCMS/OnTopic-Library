@@ -182,11 +182,12 @@ namespace Ignia.Topics.Repositories {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           ReorderSiblings(topic, topic.Parent.Children[topicIndex-1]);
+          Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
         }
         else {
           ReorderSiblings(topic);
+          Move(topic, topic.Parent);
         }
-        Move(topic, topic.Parent);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -210,7 +211,7 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(target != null, "The target parameter must be specified.");
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.Parent = target;
+      topic.SetParent(target);
       ReorderSiblings(topic);
     }
 
@@ -223,7 +224,7 @@ namespace Ignia.Topics.Repositories {
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.Parent = target;
+      topic.SetParent(target, sibling);
       ReorderSiblings(topic, sibling);
     }
 

@@ -92,44 +92,9 @@ namespace Ignia.Topics {
     public Topic Parent {
       get => _parent;
       set {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Check preconditions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
-        Contract.Requires<ArgumentOutOfRangeException>(value != this, "A topic cannot be its own parent.");
-        Contract.Requires<ArgumentOutOfRangeException>(
-          !value.GetUniqueKey().StartsWith(GetUniqueKey()),
-          "A descendant cannot be its own parent."
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Check that the topic's Parent is not the same before resetting it
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_parent == value) {
-          return;
-          }
-        if (!value.Children.Contains(Key)) {
-          value.Children.Add(this);
-          }
-        else {
-          throw new InvalidKeyException(
-            "Duplicate key when setting Parent property: the topic with the name '" + Key +
-            "' already exists in the '" + value.Key + "' topic."
-            );
-          }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Perform reordering and/or move
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_parent != null) {
-          _parent.Children.Remove(Key);
+        if (_parent != value) {
+          SetParent(value, value?.Children?.LastOrDefault());
         }
-
-        _parent = value;
-
-        SetAttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
-
       }
     }
 
@@ -401,6 +366,62 @@ namespace Ignia.Topics {
     #endregion
 
     #region Relationship and Collection Methods
+
+    /*==========================================================================================================================
+    | METHOD: SET PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Changes the current <see cref="Parent"/> while simultenaously ensuring that the sort order of the topics is
+    ///   maintained, assuming a <paramref name="sibling"/> is set.
+    /// </summary>
+    /// <remarks>
+    ///   If no <paramref name="sibling"/> is provided, then the item is added to the <i>beginning</i> of the collection. If
+    ///   the intent is to add it to the <i>end</i> of the collection, then set the <paramref name="sibling"/> to e.g.
+    ///   <c>parent.Children.LastOrDefault()</c>.
+    /// </remarks>
+    /// <param name="parent">The <see cref="Topic"/> to move this <see cref="Topic"/> under.</param>
+    /// <param name="sibling">The <see cref="Topic"/> to mvoe this <see cref="Topic"/> to the right of.</param>
+    public void SetParent(Topic parent, Topic sibling = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Check preconditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(parent != null, "The value for Parent must not be null.");
+      Contract.Requires<ArgumentOutOfRangeException>(parent != this, "A topic cannot be its own parent.");
+      Contract.Requires<ArgumentOutOfRangeException>(
+        !parent.GetUniqueKey().StartsWith(GetUniqueKey()),
+        "A descendant cannot be its own parent."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Check to ensure that the topic isn't being moved to a parent with a duplicate key
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (parent != _parent && parent.Children.Contains(Key)) {
+        throw new InvalidKeyException(
+          "Duplicate key when setting Parent property: the topic with the name '" + Key +
+          "' already exists in the '" + parent.Key + "' topic."
+          );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Move topic to new location
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_parent != null) {
+        _parent.Children.Remove(Key);
+      }
+      var insertAt = (sibling != null)? parent.Children.IndexOf(sibling)+1 : 0;
+      parent.Children.Insert(insertAt, this);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set parent values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_parent != parent) {
+        _parent = parent;
+        SetAttributeValue("ParentID", parent.Id.ToString(CultureInfo.InvariantCulture));
+      }
+
+
+    }
 
     /*==========================================================================================================================
     | METHOD: GET UNIQUE KEY
