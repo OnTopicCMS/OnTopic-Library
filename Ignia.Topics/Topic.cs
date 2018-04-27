@@ -238,14 +238,11 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property), or via the
-    ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
-    ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
-    ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
+    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property). By default, it will
+    ///   be set to the name of the <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be
+    ///   "Page". This will cause the <see cref="ITopicRoutingService"/> to look for a view at, for instance,
+    ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
-    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(value)
-    /// </requires>
     /// <requires
     ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentException">
@@ -254,8 +251,7 @@ namespace Ignia.Topics {
     [AttributeSetter]
     public string View {
       get =>
-        // Return current Topic's View Attribute or the default for the ContentType.
-        Attributes.GetValue("View", Attributes.GetValue("View", ""));
+        Attributes.GetValue("View", "");
       set {
         TopicFactory.ValidateKey(value, true);
         SetAttributeValue("View", value);
