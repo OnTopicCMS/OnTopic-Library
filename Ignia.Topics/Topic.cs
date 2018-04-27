@@ -109,7 +109,7 @@ namespace Ignia.Topics {
           value.Children.Add(this);
           }
         else {
-          throw new Exception(
+          throw new ArgumentException(
             "Duplicate key when setting Parent property: the topic with the name '" + Key +
             "' already exists in the '" + value.Key + "' topic."
             );
