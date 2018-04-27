@@ -249,7 +249,7 @@ namespace Ignia.Topics {
     public static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }
