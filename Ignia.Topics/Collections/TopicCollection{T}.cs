@@ -46,7 +46,7 @@ namespace Ignia.Topics.Collections {
     ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<T> topics = null) : this(new Topic(), topics) {
+    public TopicCollection(IEnumerable<T> topics = null) : this(null, topics) {
     }
 
     /*==========================================================================================================================
