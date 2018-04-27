@@ -22,7 +22,7 @@ namespace Ignia.Topics {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
-  public class Topic : IDisposable {
+  public class Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -598,31 +598,6 @@ namespace Ignia.Topics {
     }
 
     #endregion
-
-    #region Interface Implementations
-
-    /*==========================================================================================================================
-    | METHOD: DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
-    ///   properties) to be set using a using statement, which is syntactically convenient.
-    /// </summary>
-    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    ///   Protected implementation of <see cref="Dispose(Boolean)"/> for derived types.
-    /// </summary>
-    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
-    protected virtual void Dispose(bool disposing) {
-      return;
-    }
-
-  #endregion
 
   } // Class
 
