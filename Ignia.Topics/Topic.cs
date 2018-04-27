@@ -319,16 +319,14 @@ namespace Ignia.Topics {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Return minimum date value, if LastModified is not already populated
+        | Establish default value
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrWhiteSpace(Attributes.GetValue("LastModified", ""))) {
-          return DateTime.MinValue;
-        }
+        var defaultValue = VersionHistory.Count > 0 ? VersionHistory.LastOrDefault() : DateTime.MinValue;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Return converted string attribute value, if available
         \---------------------------------------------------------------------------------------------------------------------*/
-        var lastModified = Attributes.GetValue("LastModified");
+        var lastModified = Attributes.GetValue("LastModified", defaultValue.ToString());
 
         // Return converted DateTime
         if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
@@ -338,9 +336,7 @@ namespace Ignia.Topics {
         /*----------------------------------------------------------------------------------------------------------------------
         | Otherwise, return default of minimum value
         \---------------------------------------------------------------------------------------------------------------------*/
-        else {
-          return DateTime.MinValue;
-        }
+        return defaultValue;
 
       }
       set => SetAttributeValue("LastModified", value.ToString());

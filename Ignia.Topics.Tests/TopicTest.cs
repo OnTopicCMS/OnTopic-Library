@@ -225,6 +225,32 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the last modified date using a couple of techniques, and ensures it's returned correctly.
+    /// </summary>
+    [TestMethod]
+    public void Topic_LastModifiedTest() {
+
+      var topic1                = TopicFactory.Create("Topic1", "Page");
+      var topic2                = TopicFactory.Create("Topic2", "Page");
+      var topic3                = TopicFactory.Create("Topic3", "Page");
+
+      var lastModified          = new DateTime(1976, 10, 15);
+
+      topic1.LastModified       = lastModified;
+
+      topic2.VersionHistory.Add(lastModified);
+      topic3.Attributes.SetValue("LastModified", lastModified.ToShortDateString());
+
+      Assert.AreEqual<DateTime>(lastModified, topic1.LastModified);
+      Assert.AreEqual<DateTime>(lastModified, topic2.LastModified);
+      Assert.AreEqual<DateTime>(lastModified, topic3.LastModified);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
