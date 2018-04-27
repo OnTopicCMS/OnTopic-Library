@@ -222,13 +222,6 @@ namespace Ignia.Topics.Repositories {
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       }
-        }
-        // If the topic is the sibling, then assign the next sortOrder to the source
-        if (topic == sibling) {
-          source.SortOrder = sortOrder++;
-        }
-      }
-
     }
 
     /*==========================================================================================================================
