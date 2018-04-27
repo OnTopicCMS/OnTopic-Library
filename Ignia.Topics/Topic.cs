@@ -39,8 +39,6 @@ namespace Ignia.Topics {
     private                     Topic                           _derivedTopic                   = null;
     private                     List<DateTime>                  _versionHistory                 = null;
 
-    #region Constructor
-
     /*==========================================================================================================================
     | CONSTRUCTOR
     >-----------=---------------------------------------------------------------------------------------------------------------
@@ -51,59 +49,6 @@ namespace Ignia.Topics {
     ///   Initializes a new instance of the <see cref="Topic"/> class.
     /// </summary>
     public Topic() { }
-
-    /// <summary>
-    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text
-    ///   identifier.
-    /// </summary>
-    /// <remarks>
-    ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="TopicFactory.Create(String, String, Topic)"/> factory method. When constructing
-    ///   derived types directly, however, this is implicit. In those cases, the derived class may create a constructor that
-    ///   accepts "key" and calls this base constructor; it will automatically set the content type based on the derived class's
-    ///   type.
-    /// </remarks>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="Topic"/>.
-    /// </param>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(topic)
-    /// </requires>
-    [Obsolete("The Topic(string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
-    protected Topic(string key) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      TopicFactory.ValidateKey(key);
-      Key = key;
-      ContentType = GetType().Name;
-    }
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="TopicFactory.Create(String, String, Topic)"/> factory method
-    ///   instead, as this will return a strongly-typed version.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="Topic"/>.
-    /// </param>
-    /// <param name="contentType">
-    ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
-    /// </param>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(topic)
-    /// </requires>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   description="The contentType key should be an alphanumeric sequence; it should not contain spaces or symbols"
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
-    public Topic(string key, string contentType) {
-    }
-
-    #endregion
 
     #region Core Properties
 
