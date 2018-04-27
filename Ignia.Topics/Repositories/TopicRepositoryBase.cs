@@ -208,8 +208,10 @@ namespace Ignia.Topics.Repositories {
     public virtual void Move(Topic topic, Topic target) {
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(target != null, "The target parameter must be specified.");
-      MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      ReorderSiblings(topic);
+      if (topic.Parent != target) {
+        MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+        topic.SetParent(target);
+      }
     }
 
     /// <summary>
@@ -220,7 +222,9 @@ namespace Ignia.Topics.Repositories {
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
-      MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      if (topic.Parent != target || topic.Parent.Children.IndexOf(sibling) != topic.Parent.Children.IndexOf(topic)-1) {
+        MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+        topic.SetParent(target, sibling);
       }
     }
 
