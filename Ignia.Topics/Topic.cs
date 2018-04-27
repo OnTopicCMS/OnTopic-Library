@@ -485,6 +485,9 @@ namespace Ignia.Topics {
           value != this,
           "A topic may not derive from itself."
         );
+        if (!_derivedTopic.Equals(value)) {
+          return;
+        }
         _derivedTopic = value;
         if (value != null) {
           SetAttributeValue("TopicID", value.Id.ToString());
