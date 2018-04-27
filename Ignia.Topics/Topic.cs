@@ -64,7 +64,7 @@ namespace Ignia.Topics {
     public int Id {
       get => _id;
       set {
-        Contract.Requires<ArgumentException>(value > 0, "The id is expected to be a positive value.");
+        Contract.Requires<ArgumentOutOfRangeException>(value > 0, "The id is expected to be a positive value.");
         if (_id > 0 && !_id.Equals(value)) {
           throw new ArgumentException("The value of this topic has already been set to " + _id + "; it cannot be changed.");
         }
@@ -97,7 +97,7 @@ namespace Ignia.Topics {
         | Check preconditions
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
-        Contract.Requires<ArgumentException>(value != this, "A topic cannot be its own parent.");
+        Contract.Requires<ArgumentOutOfRangeException>(value != this, "A topic cannot be its own parent.");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Check that the topic's Parent is not the same before resetting it
@@ -109,7 +109,7 @@ namespace Ignia.Topics {
           value.Children.Add(this);
           }
         else {
-          throw new ArgumentException(
+          throw new InvalidKeyException(
             "Duplicate key when setting Parent property: the topic with the name '" + Key +
             "' already exists in the '" + value.Key + "' topic."
             );
