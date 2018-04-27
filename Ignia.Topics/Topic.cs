@@ -98,6 +98,10 @@ namespace Ignia.Topics {
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
         Contract.Requires<ArgumentOutOfRangeException>(value != this, "A topic cannot be its own parent.");
+        Contract.Requires<ArgumentOutOfRangeException>(
+          !value.GetUniqueKey().StartsWith(GetUniqueKey()),
+          "A descendant cannot be its own parent."
+        );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Check that the topic's Parent is not the same before resetting it
