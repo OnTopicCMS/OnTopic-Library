@@ -3,7 +3,6 @@
 | Client        Ignia
 | Project       Website
 \=============================================================================================================================*/
-
 using System.Collections.ObjectModel;
 
 namespace Ignia.Topics.ViewModels {

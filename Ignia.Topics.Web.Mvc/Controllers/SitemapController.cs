@@ -4,10 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Web.Mvc;
-using Ignia.Topics;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Web;
-using Ignia.Topics.Web.Mvc;
+using Ignia.Topics.Web.Mvc.Models;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {
 

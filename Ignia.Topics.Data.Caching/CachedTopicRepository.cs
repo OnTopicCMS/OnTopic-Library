@@ -4,17 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
-using System.Configuration;
-using System.Data;
-using System.Xml;
-using System.Globalization;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Data.Caching {
 

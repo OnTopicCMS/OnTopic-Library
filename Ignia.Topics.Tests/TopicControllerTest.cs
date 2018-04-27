@@ -5,18 +5,17 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Ignia.Topics.Querying;
-using Ignia.Topics.Web.Mvc;
-using Ignia.Topics.Repositories;
-using Ignia.Topics.Data.Caching;
-using Ignia.Topics.Tests.TestDoubles;
-using Ignia.Topics.Web.Mvc.Controllers;
-using Ignia.Topics.ViewModels;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Repositories;
+using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.ViewModels;
+using Ignia.Topics.Web.Mvc;
+using Ignia.Topics.Web.Mvc.Controllers;
 using Ignia.Topics.Web.Mvc.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 

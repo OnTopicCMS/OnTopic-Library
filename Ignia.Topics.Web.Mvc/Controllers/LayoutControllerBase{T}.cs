@@ -4,10 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using Ignia.Topics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Web.Mvc.Models;

@@ -4,11 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics;
 using Ignia.Topics.Mapping;
 
 namespace Ignia.Topics.ViewModels {

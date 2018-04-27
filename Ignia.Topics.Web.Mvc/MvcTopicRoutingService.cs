@@ -4,16 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
-using System.Web.Routing;
 using System.Diagnostics.Contracts;
+using System.Web.Routing;
 using Ignia.Topics.Repositories;
-using System.Collections.Specialized;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Web.Mvc {
 
   /*============================================================================================================================
   | CLASS: MVC TOPIC ROUTING SERVICE

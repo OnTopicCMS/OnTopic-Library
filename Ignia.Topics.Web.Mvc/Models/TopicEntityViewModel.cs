@@ -3,10 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics;
 using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.Web.Mvc.Models {
 
   /*============================================================================================================================
   | CLASS: TOPIC VIEW MODEL

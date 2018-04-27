@@ -5,11 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Globalization;
 using System.Diagnostics.Contracts;
-using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Linq;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 

@@ -5,19 +5,18 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Repositories;
-using System.Diagnostics.Contracts;
-using System.Data.SqlClient;
-using System.Data;
-using System.Xml;
 using System.Web;
-using System.Globalization;
+using System.Xml;
 using Ignia.Topics.Collections;
-using System.Diagnostics;
 using Ignia.Topics.Querying;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Data.Sql {
 

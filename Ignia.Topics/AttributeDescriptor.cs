@@ -4,9 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {

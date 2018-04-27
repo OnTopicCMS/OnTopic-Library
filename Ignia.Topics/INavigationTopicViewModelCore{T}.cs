@@ -4,7 +4,6 @@
 | Project       Website
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using Ignia.Topics;
 
 namespace Ignia.Topics {
 

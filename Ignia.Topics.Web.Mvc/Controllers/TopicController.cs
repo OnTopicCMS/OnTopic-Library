@@ -4,17 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using System.Diagnostics.Contracts;
-using Ignia.Topics;
-using Ignia.Topics.Repositories;
+using System.Linq;
+using System.Web.Mvc;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.Web.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: TOPIC TEST

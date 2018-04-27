@@ -3,16 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics;
 using Ignia.Topics.Collections;
 using Target = Ignia.Topics;
 
-  namespace Ignia.Topics.Querying {
+namespace Ignia.Topics.Querying {
 
   /*============================================================================================================================
   | CLASS: TOPIC

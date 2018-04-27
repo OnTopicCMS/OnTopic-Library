@@ -4,18 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Collections;
-using Ignia.Topics.Repositories;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Mapping {
 

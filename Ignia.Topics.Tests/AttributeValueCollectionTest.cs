@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

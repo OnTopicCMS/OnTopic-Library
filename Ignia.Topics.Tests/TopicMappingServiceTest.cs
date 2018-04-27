@@ -3,21 +3,15 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
-using Ignia.Topics.Collections;
-using Ignia.Topics.ViewModels;
-using Ignia.Topics.Tests.ViewModels;
-using Ignia.Topics.Mapping;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Ignia.Topics.Repositories;
 using Ignia.Topics.Data.Caching;
+using Ignia.Topics.Mapping;
+using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.Tests.ViewModels;
+using Ignia.Topics.ViewModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 

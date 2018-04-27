@@ -11,8 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 
