@@ -158,7 +158,7 @@ namespace Ignia.Topics {
       set {
         TopicFactory.ValidateKey(value);
         if (_originalKey == null) {
-          _originalKey = Attributes.GetValue("Key", false);
+          _originalKey = Attributes.GetValue("Key", _key, false, false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
