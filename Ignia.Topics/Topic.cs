@@ -56,6 +56,15 @@ namespace Ignia.Topics {
     public Topic(string key, string contentType, Topic parent, int id = -1) {
 
       /*----------------------------------------------------------------------------------------------------------------------
+      | Set relationships
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Children                  = new TopicCollection(this);
+      Attributes                = new AttributeValueCollection(this);
+      IncomingRelationships     = new RelatedTopicCollection(this, true);
+      Relationships             = new RelatedTopicCollection(this, false);
+      VersionHistory            = new List<DateTime>();
+
+      /*----------------------------------------------------------------------------------------------------------------------
       | Set core properties
       \---------------------------------------------------------------------------------------------------------------------*/
       Key                       = key;
@@ -73,15 +82,6 @@ namespace Ignia.Topics {
           Attributes.SetValue("ParentId", parent.Id.ToString(), false, false);
         }
       }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set relationships
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Children                  = new TopicCollection(this);
-      Attributes                = new AttributeValueCollection(this);
-      IncomingRelationships     = new RelatedTopicCollection(this, true);
-      Relationships             = new RelatedTopicCollection(this, false);
-      VersionHistory            = new List<DateTime>();
 
     }
 

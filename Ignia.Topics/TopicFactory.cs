@@ -148,7 +148,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent);
+      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
