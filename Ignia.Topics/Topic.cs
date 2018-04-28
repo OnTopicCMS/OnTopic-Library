@@ -513,7 +513,7 @@ namespace Ignia.Topics {
           value != this,
           "A topic may not derive from itself."
         );
-        if (!_derivedTopic.Equals(value)) {
+        if (!_derivedTopic?.Equals(value)?? false) {
           return;
         }
         _derivedTopic = value;
