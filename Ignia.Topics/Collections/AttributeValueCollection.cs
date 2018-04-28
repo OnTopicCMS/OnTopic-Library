@@ -173,6 +173,81 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET BOOLEAN VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a boolean.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    /// </param>
+    /// <param name="inheritFromDerived">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    ///   order to get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
+    public bool GetBoolean(string name, bool defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      return Int32.TryParse(
+        GetValue(name, defaultValue ? "1" : "0", inheritFromParent, (inheritFromDerived ? 5 : 0)),
+        out var result
+      ) ? result.Equals(1) : defaultValue;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET INTEGER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a integer.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    /// </param>
+    /// <param name="inheritFromDerived">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    ///   order to get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
+    public int GetInteger(string name, int defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      return Int32.TryParse(
+        GetValue(name, defaultValue.ToString(), inheritFromParent, (inheritFromDerived ? 5 : 0)),
+        out var result
+      )? result : defaultValue;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET DATETIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a datetime.
+    /// </summary>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    /// </param>
+    /// <param name="inheritFromDerived">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    ///   order to get the value.
+    /// </param>
+    /// <returns>The string value for the Attribute.</returns>
+    public DateTime GetDateTime(string name, DateTime defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      return DateTime.TryParse(
+        GetValue(name, defaultValue.ToString(), inheritFromParent, (inheritFromDerived ? 5 : 0)),
+        out var result
+      )? result : defaultValue;
+    }
+
+    /*==========================================================================================================================
     | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -290,6 +365,102 @@ namespace Ignia.Topics.Collections {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: SET BOOLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
+    /// </summary>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public void SetBoolean(string key, bool value, bool? isDirty = null) => SetValue(key, value? "1" : "0", isDirty, true);
+
+    /*==========================================================================================================================
+    | METHOD: SET INTEGER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
+    /// </summary>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public void SetInteger(string key, int value, bool? isDirty = null) => SetValue(key, value.ToString(), isDirty, true);
+
+    /*==========================================================================================================================
+    | METHOD: SET DATETIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
+    /// </summary>
+    /// <param name="key">The string identifier for the AttributeValue.</param>
+    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public void SetDateTime(string key, DateTime value, bool? isDirty = null) => SetValue(key, value.ToString(), isDirty, true);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

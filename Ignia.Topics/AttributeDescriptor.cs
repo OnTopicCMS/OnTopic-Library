@@ -218,7 +218,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public new bool IsHidden {
-      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      get => Attributes.GetBoolean("IsHidden", false);
       set => SetAttributeValue("IsHidden", value? "1" : "0");
     }
 
@@ -234,7 +234,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public bool IsRequired {
-      get => Attributes.GetValue("IsRequired", "0").Equals("1");
+      get => Attributes.GetBoolean("IsRequired", false);
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
@@ -275,7 +275,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public bool StoreInBlob {
-      get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
+      get => Attributes.GetBoolean("StoreInBlob", true);
       set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
     }
 

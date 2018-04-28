@@ -254,7 +254,7 @@ namespace Ignia.Topics {
     /// </summary>
     [AttributeSetter]
     public bool IsHidden {
-      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      get => Attributes.GetBoolean("IsHidden", false);
       set => SetAttributeValue("IsHidden", value ? "1" : "0");
     }
 
@@ -266,7 +266,7 @@ namespace Ignia.Topics {
     /// </summary>
     [AttributeSetter]
     public bool IsDisabled {
-      get => Attributes.GetValue("IsDisabled", "0").Equals("1");
+      get => Attributes.GetBoolean("IsDisabled", false);
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
     }
 
@@ -336,29 +336,7 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value.ToString())
     /// </requires>
     public DateTime LastModified {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish default value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var defaultValue = VersionHistory.Count > 0 ? VersionHistory.LastOrDefault() : DateTime.MinValue;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return converted string attribute value, if available
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var lastModified = Attributes.GetValue("LastModified", defaultValue.ToString());
-
-        // Return converted DateTime
-        if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
-          return dateTimeValue;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Otherwise, return default of minimum value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        return defaultValue;
-
-      }
+      get => Attributes.GetDateTime("LastModified", VersionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
       set => SetAttributeValue("LastModified", value.ToString());
     }
 

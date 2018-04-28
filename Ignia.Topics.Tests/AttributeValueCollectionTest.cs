@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,6 +30,78 @@ namespace Ignia.Topics.Tests {
       var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
     }
+
+    /*==========================================================================================================================
+    | TEST: GET INTEGER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that integer values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_GetIntegerTest() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetInteger("Number1", 1);
+      topic.Attributes.SetInteger("Number2", 2);
+      topic.Attributes.SetValue("Number3", "Invalid");
+
+      Assert.AreEqual<int>(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.AreEqual<int>(2, topic.Attributes.GetInteger("Number2", 5));
+      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("Number3", 5));
+      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DATETIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that integer values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_GetDateTimeTest() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var dateTime1             = new DateTime(1976, 10, 15);
+      var dateTime2             = new DateTime(1981, 06, 03);
+
+      topic.Attributes.SetDateTime("DateTime1", dateTime1);
+      topic.Attributes.SetDateTime("DateTime2", dateTime2);
+      topic.Attributes.SetValue("DateTime3", "Invalid");
+
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
+      Assert.AreEqual<DateTime>(dateTime2, topic.Attributes.GetDateTime("DateTime2", DateTime.MinValue));
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
+      Assert.AreEqual<DateTime>(dateTime2, topic.Attributes.GetDateTime("InvalidKey", dateTime2));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET BOOLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that boolean values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValueCollection_GetBooleanTest() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetBoolean("IsValue1", true);
+      topic.Attributes.SetBoolean("IsValue2", false);
+      topic.Attributes.SetValue("IsValue3", "Invalid");
+
+      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1", false));
+      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue2", true));
+      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue3", true));
+      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue3", false));
+      Assert.IsTrue(topic.Attributes.GetBoolean("InvalidKey", true));
+      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey", false));
+
+    }
+
+
 
     /*==========================================================================================================================
     | TEST: DEFAULT VALUE

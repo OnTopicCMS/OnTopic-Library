@@ -97,7 +97,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public bool DisableChildTopics {
-      get => (Attributes.GetValue("DisableChildTopics", "0").Equals("1"));
+      get => Attributes.GetBoolean("DisableChildTopics", false);
       set => SetAttributeValue("DisableChildTopics", value ? "1" : "0");
     }
 
