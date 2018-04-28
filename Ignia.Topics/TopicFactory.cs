@@ -102,11 +102,9 @@ namespace Ignia.Topics {
     ///   available.
     /// </summary>
     /// <remarks>
-    ///   The create method will look in the Ignia.Topics namespace for a class with the same name as the content type. For
-    ///   instance, if the content type is "Page", it will look for an "Ignia.Topics.Page" class. If found, it will confirm that
-    ///   the class derives from the <see cref="Topic"/> class and, if so, return a new instance of that class. If the class
-    ///   exists but does not derive from <see cref="Topic"/>, then an exception will be thrown. And otherwise, a new instance
-    ///   of the generic <see cref="Topic"/> class will be created.
+    ///   When creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
+    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
+    ///   correctly save new topics to the database.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -150,20 +148,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's Key and Content Type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Key = key;
-      topic.ContentType = contentType;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set the topic's parent, if supplied
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (parent != null) {
-        topic.Parent = parent;
-      }
+      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return the topic
@@ -178,11 +163,9 @@ namespace Ignia.Topics {
     ///   by the <paramref name="id"/> parameter.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="ContentType"/> will be set to true, which is required in order to correctly save new topics to the database.
-    ///   When the <paramref name="id"/> parameter is set, however, the <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> on the new <see cref="Topic"/> are set to false, as it is assumed these are being set to
-    ///   the same values currently used in the persistance store.
+    ///   When the <paramref name="id"/> parameter is set the <see cref="AttributeValue.IsDirty"/> property is set to
+    ///   <c>false</c> on <see cref="Topic.Key"/> as well as on <see cref="Topic.ContentType"/>, since it is assumed these are
+    ///   being set to the same values currently used in the persistance store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -197,31 +180,22 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate input
       \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
       Contract.Requires<ArgumentNullException>(id > 0);
       Contract.Ensures(Contract.Result<Topic>() != null);
+      TopicFactory.ValidateKey(key);
+      TopicFactory.ValidateKey(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Create object
+      | Determine target type
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = Create(key, contentType, parent);
+      var targetType = TopicFactory.GetTopicType(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Assign identifier
+      | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      topic.Id = id;
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set dirty state to false
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(topic.Key != null);
-      Contract.Assume(topic.ContentType != null);
-
-      topic.Attributes.SetValue("Key", key, false, false);
-      topic.Attributes.SetValue("ContentType", contentType, false, false);
-
-      if (parent != null) {
-        topic.Attributes.SetValue("ParentId", parent.Id.ToString(), false, false);
-      }
+      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return object

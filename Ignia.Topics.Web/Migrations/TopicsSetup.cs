@@ -254,7 +254,7 @@ namespace Ignia.Topics.Web.Migrations {
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
         \---------------------------------------------------------------------------------------------------------------------*/
         if (contentType.Equals("ContentType")) {
-          topic = new ContentTypeDescriptor();
+          topic = TopicFactory.Create(key, "ContentTypeDescriptor");
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -262,7 +262,7 @@ namespace Ignia.Topics.Web.Migrations {
         | "AttributeDescriptor".
         \---------------------------------------------------------------------------------------------------------------------*/
         else if (contentType.Equals("Attribute") || contentType.Equals("AttributeDescriptor")) {
-          topic = new AttributeDescriptor();
+          topic = TopicFactory.Create(key, "AttributeDescriptor");
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
