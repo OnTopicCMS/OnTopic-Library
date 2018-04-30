@@ -178,7 +178,7 @@ namespace Ignia.Topics.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId")) {
+      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && topic.Id >= 0) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
