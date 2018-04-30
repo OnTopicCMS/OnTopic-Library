@@ -27,11 +27,11 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     public void Topic_CreateTest() {
-      var topic = TopicFactory.Create("Test", "ContentType");
+      var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "ContentType");
+      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "ContentTypeDescriptor");
     }
 
     /*==========================================================================================================================
@@ -44,7 +44,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Topic_Change_IdTest() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentType", 123);
+      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
 
       Assert.AreEqual<int>(123, topic.Id);
@@ -81,8 +81,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Topic_Set_ParentTest() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "ContentType");
-      var childTopic            = TopicFactory.Create("Child", "ContentType");
+      var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
+      var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
 
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
@@ -102,9 +102,9 @@ namespace Ignia.Topics.Tests {
     // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
     public void Topic_Change_ParentTest() {
 
-      var sourceParent          = TopicFactory.Create("SourceParent", "ContentType");
-      var targetParent          = TopicFactory.Create("TargetParent", "ContentType");
-      var childTopic            = TopicFactory.Create("ChildTopic", "ContentType");
+      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
+      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor");
+      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor");
 
       sourceParent.Id           = 5;
       targetParent.Id           = 10;
