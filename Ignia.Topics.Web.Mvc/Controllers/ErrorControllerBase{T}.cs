@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Web.Mvc;
+using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {
 
@@ -27,7 +28,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     <c>abstract</c> and suffixed with <b>Base</b>.
   ///   </para>
   /// </remarks>
-  public abstract class ErrorControllerBase<T> : Controller where T : IPageTopicViewModelCore, new() {
+  public abstract class ErrorControllerBase<T> : Controller where T : IPageTopicViewModel, new() {
 
     /*==========================================================================================================================
     | GET: /Error/Error

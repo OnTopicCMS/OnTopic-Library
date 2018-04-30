@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Models;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {
@@ -37,7 +38,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModelCore<T>, new() {
+  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
+using Ignia.Topics.ViewModels;
+
 namespace Ignia.Topics.Web.Mvc.Models {
 
   /*============================================================================================================================
@@ -24,7 +26,7 @@ namespace Ignia.Topics.Web.Mvc.Models {
   ///     topic. Implementations may support additional properties, as appropriate.
   ///   </para>
   /// </remarks>
-  public class NavigationViewModel<T> where T: IPageTopicViewModelCore {
+  public class NavigationViewModel<T> where T: IPageTopicViewModel {
 
     public T NavigationRoot { get; set; }
     public string CurrentKey { get; set; }

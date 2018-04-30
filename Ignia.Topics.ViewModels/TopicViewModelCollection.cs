@@ -23,7 +23,7 @@ namespace Ignia.Topics.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentative level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class TopicViewModelCollection<TItem>: KeyedCollection<string, TItem> where TItem: ITopicViewModelCore {
+  public class TopicViewModelCollection<TItem>: KeyedCollection<string, TItem> where TItem: ITopicViewModel {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

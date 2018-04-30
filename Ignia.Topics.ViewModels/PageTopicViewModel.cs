@@ -17,7 +17,7 @@ namespace Ignia.Topics.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentative level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class PageTopicViewModel: TopicViewModel, IPageTopicViewModelCore {
+  public class PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
 
     public string Subtitle { get; set; }
     public string WebPath { get; set; }

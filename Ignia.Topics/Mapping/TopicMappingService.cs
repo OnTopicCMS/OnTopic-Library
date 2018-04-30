@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Mapping {
 
@@ -352,7 +353,7 @@ namespace Ignia.Topics.Mapping {
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
 
         //Determine the type of item in the list
-        var listType = typeof(ITopicViewModelCore);
+        var listType = typeof(ITopicViewModel);
         if (property.PropertyType.IsGenericType) {
           //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
           listType = property.PropertyType.GetGenericArguments().Last();
