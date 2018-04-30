@@ -4,11 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Mapping {
@@ -27,7 +22,7 @@ namespace Ignia.Topics.Mapping {
   ///   decoupled from the source attribute key.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public class AttributeKeyAttribute : System.Attribute {
+  public sealed class AttributeKeyAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

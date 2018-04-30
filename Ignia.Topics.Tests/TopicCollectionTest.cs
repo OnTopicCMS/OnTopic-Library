@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ignia.Topics.Collections;
@@ -79,29 +78,6 @@ namespace Ignia.Topics.Tests {
 
       Assert.AreEqual<int>(10, readOnlyCollection.Count);
       Assert.AreEqual<string>("Topic0", readOnlyCollection.First().Key);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: SORTED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a number of topics, with varying <see cref="Topic.SortOrder"/>s, and ensures the results are sorted.
-    /// </summary>
-    [TestMethod]
-    public void TopicCollection_SortedTest() {
-
-      var topics = new TopicCollection();
-
-      for (var i = 0; i < 10; i++) {
-        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
-      }
-
-      for (var i = 0; i < 10; i++) {
-        topics[i].SortOrder = 50-i;
-      }
-
-      Assert.AreEqual<string>("Topic9", topics.Sorted.First().Key);
 
     }
 

@@ -4,11 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Mapping {
@@ -28,7 +23,7 @@ namespace Ignia.Topics.Mapping {
   ///   useful when an attribute is expected to be inherited by all child topics.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public class InheritAttribute : System.Attribute {
+  public sealed class InheritAttribute : System.Attribute {
 
   } //Class
 

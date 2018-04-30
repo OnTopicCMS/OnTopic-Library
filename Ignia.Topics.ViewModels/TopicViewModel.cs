@@ -4,11 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics;
 using Ignia.Topics.Mapping;
 
 namespace Ignia.Topics.ViewModels {
@@ -24,7 +19,7 @@ namespace Ignia.Topics.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentative level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class TopicViewModel: ITopicViewModelCore {
+  public class TopicViewModel: ITopicViewModel {
 
     public int Id { get; set; }
     public string Key { get; set; }

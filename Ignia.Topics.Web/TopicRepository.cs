@@ -4,11 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Web.Configuration;
-using Ignia.Topics.Repositories;
-using System.Diagnostics.Contracts;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Repositories;
+using Ignia.Topics.Web.Configuration;
 
 namespace Ignia.Topics.Web {
 

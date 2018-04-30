@@ -4,10 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
@@ -45,7 +41,7 @@ namespace Ignia.Topics {
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  sealed class AttributeSetterAttribute : System.Attribute {
+  public sealed class AttributeSetterAttribute : System.Attribute {
 
   } //Class
 

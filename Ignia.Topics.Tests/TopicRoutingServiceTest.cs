@@ -4,13 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Web.Routing;
-using Ignia.Topics.Collections;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {

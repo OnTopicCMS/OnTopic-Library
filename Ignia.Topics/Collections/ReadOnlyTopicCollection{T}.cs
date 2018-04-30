@@ -2,11 +2,7 @@
 | Author        Ignia, LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-\=============================================================================================================================*/using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+\=============================================================================================================================*/using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 
@@ -23,18 +19,18 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    TopicCollection<T> _innerCollection;
+    private readonly            TopicCollection<T>              _innerCollection;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="TopicCollection{T}"/>.
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    public ReadOnlyTopicCollection(TopicCollection<T> innerCollection) : base(innerCollection) {
+    public ReadOnlyTopicCollection(IList<T> innerCollection) : base(innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
-      _innerCollection = innerCollection;
+      _innerCollection = innerCollection as TopicCollection<T>?? new TopicCollection<T>(innerCollection);
     }
 
     /*==========================================================================================================================
@@ -61,11 +57,10 @@ namespace Ignia.Topics.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    public static ReadOnlyTopicCollection<T> FromList(List<T> innerCollection) {
+    public static ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
       Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<T>>() != null);
-      var topicCollection = new TopicCollection<T>(innerCollection);
-      return new ReadOnlyTopicCollection<T>(topicCollection);
+      return new ReadOnlyTopicCollection<T>(innerCollection);
     }
 
     /*==========================================================================================================================

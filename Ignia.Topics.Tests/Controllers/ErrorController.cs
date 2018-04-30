@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Web.Mvc;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Controllers;
 

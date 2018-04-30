@@ -5,11 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Globalization;
 using System.Diagnostics.Contracts;
-using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Linq;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 
@@ -22,7 +20,7 @@ namespace Ignia.Topics {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
-  public class Topic : IDisposable {
+  public class Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -30,80 +28,62 @@ namespace Ignia.Topics {
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
     private                     string                          _originalKey                    = null;
-    private                     int                             _sortOrder                      = 25;
     private                     Topic                           _parent                         = null;
-    private                     TopicCollection                 _children                       = null;
-    private                     AttributeValueCollection        _attributes                     = null;
-    private                     RelatedTopicCollection          _relationships                  = null;
-    private                     RelatedTopicCollection          _incomingRelationships          = null;
     private                     Topic                           _derivedTopic                   = null;
-    private                     List<DateTime>                  _versionHistory                 = null;
-
-    #region Constructor
 
     /*==========================================================================================================================
     | CONSTRUCTOR
-    >-----------=---------------------------------------------------------------------------------------------------------------
-    | ### NOTE JJC082715: The empty constructor is a prerequisite of the factory method, which relies on Activator to create a
-    | new instance of the object.
-    \-----------=-------------------------------------------------------------------------------------------------------------*/
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Topic"/> class.
-    /// </summary>
-    public Topic() { }
-
-    /// <summary>
-    ///   Deprecated. Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text
-    ///   identifier.
+    ///   Initializes a new instance of a <see cref="Topic"/> class with a <see cref="Key"/>, <see cref="ContentType"/>, and,
+    ///   optionally, <see cref="Parent"/>, <see cref="Id"/>.
     /// </summary>
     /// <remarks>
-    ///   If available, topics should always be created using a strongly-typed derivative of the <see cref="Topic"/> class. This
-    ///   is ensured by using the <see cref="TopicFactory.Create(String, String, Topic)"/> factory method. When constructing
-    ///   derived types directly, however, this is implicit. In those cases, the derived class may create a constructor that
-    ///   accepts "key" and calls this base constructor; it will automatically set the content type based on the derived class's
-    ///   type.
+    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
+    ///   cref="ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to correctly save
+    ///   new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
+    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
+    ///   it is assumed these are being set to the same values currently used in the persistance store.
     /// </remarks>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="Topic"/>.
-    /// </param>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(topic)
-    /// </requires>
-    [Obsolete("The Topic(string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
-    protected Topic(string key) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
-      TopicFactory.ValidateKey(key);
-      Key = key;
-      ContentType = GetType().Name;
-    }
+    /// <param name="key">A string representing the key for the new topic instance.</param>
+    /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
+    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
+    /// </exception>
+    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    public Topic(string key, string contentType, Topic parent, int id = -1) {
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="Topic"/> class with the specified <see cref="Key"/> text identifier and
-    ///   <see cref="ContentType"/> name. Use the new <see cref="TopicFactory.Create(String, String, Topic)"/> factory method
-    ///   instead, as this will return a strongly-typed version.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="Topic"/>.
-    /// </param>
-    /// <param name="contentType">
-    ///   The text identifier for the Topic's <see cref="ContentType"/> Attribute.
-    /// </param>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(topic)
-    /// </requires>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   description="The contentType key should be an alphanumeric sequence; it should not contain spaces or symbols"
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    [Obsolete("The Topic(string, string) constructor is deprecated. Please use the static Create(string, string) factory method instead.", true)]
-    public Topic(string key, string contentType) {
-    }
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set relationships
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Children                  = new TopicCollection(this);
+      Attributes                = new AttributeValueCollection(this);
+      IncomingRelationships     = new RelatedTopicCollection(this, true);
+      Relationships             = new RelatedTopicCollection(this, false);
+      VersionHistory            = new List<DateTime>();
 
-    #endregion
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set core properties
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Key                       = key;
+      ContentType               = contentType;
+      Parent                    = parent;
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | If ID is set, ensure attributes are not marked as IsDirty
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (id >= 0) {
+        Id                      = id;
+        Attributes.SetValue("Key", key, false, false);
+        Attributes.SetValue("ContentType", contentType, false, false);
+        if (parent != null) {
+          Attributes.SetValue("ParentId", parent.Id.ToString(), false, false);
+        }
+      }
+
+    }
 
     #region Core Properties
 
@@ -119,8 +99,8 @@ namespace Ignia.Topics {
     public int Id {
       get => _id;
       set {
-        Contract.Requires<ArgumentException>(value > 0, "The id is expected to be a positive value.");
-        if (_id >= 0 && !_id.Equals(value)) {
+        Contract.Requires<ArgumentOutOfRangeException>(value > 0, "The id is expected to be a positive value.");
+        if (_id > 0 && !_id.Equals(value)) {
           throw new ArgumentException("The value of this topic has already been set to " + _id + "; it cannot be changed.");
         }
         _id = value;
@@ -147,40 +127,9 @@ namespace Ignia.Topics {
     public Topic Parent {
       get => _parent;
       set {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Check preconditions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Requires<ArgumentNullException>(value != null, "The value for Parent must not be null.");
-        Contract.Requires<ArgumentException>(value != this, "A topic cannot be its own parent.");
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Check that the topic's Parent is not the same before resetting it
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_parent == value) {
-          return;
-          }
-        if (!value.Children.Contains(Key)) {
-          value.Children.Add(this);
-          }
-        else {
-          throw new Exception(
-            "Duplicate key when setting Parent property: the topic with the name '" + Key +
-            "' already exists in the '" + value.Key + "' topic."
-            );
-          }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Perform reordering and/or move
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_parent != null) {
-          _parent.Children.Remove(Key);
+        if (_parent != value) {
+          SetParent(value, value?.Children?.LastOrDefault());
         }
-
-        _parent = value;
-
-        SetAttributeValue("ParentID", value.Id.ToString(CultureInfo.InvariantCulture));
-
       }
     }
 
@@ -190,23 +139,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
     /// </summary>
-    public TopicCollection Children {
-      get {
-        Contract.Ensures(Contract.Result<TopicCollection>() != null);
-        if (_children == null) {
-          _children = new TopicCollection(this);
-        }
-        return _children;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: IS EMPTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets whether the Topic's Key is invalid (null or empty).
-    /// </summary>
-    public bool IsEmpty => String.IsNullOrEmpty(Key);
+    public TopicCollection Children { get; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -243,10 +176,9 @@ namespace Ignia.Topics {
     public string Key {
       get => _key;
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         TopicFactory.ValidateKey(value);
         if (_originalKey == null) {
-          _originalKey = Attributes.GetValue("Key", false);
+          _originalKey = Attributes.GetValue("Key", _key, false, false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey != null && !value.Equals(_key) && Parent != null) {
@@ -294,14 +226,11 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property), or via the
-    ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
-    ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
-    ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
+    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property). By default, it will
+    ///   be set to the name of the <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be
+    ///   "Page". This will cause the <see cref="ITopicRoutingService"/> to look for a view at, for instance,
+    ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
-    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(value)
-    /// </requires>
     /// <requires
     ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentException">
@@ -310,11 +239,9 @@ namespace Ignia.Topics {
     [AttributeSetter]
     public string View {
       get =>
-        // Return current Topic's View Attribute or the default for the ContentType.
-        Attributes.GetValue("View", Attributes.GetValue("View", ""));
+        Attributes.GetValue("View", "");
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        TopicFactory.ValidateKey(value);
+        TopicFactory.ValidateKey(value, true);
         SetAttributeValue("View", value);
       }
     }
@@ -327,7 +254,7 @@ namespace Ignia.Topics {
     /// </summary>
     [AttributeSetter]
     public bool IsHidden {
-      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      get => Attributes.GetBoolean("IsHidden", false);
       set => SetAttributeValue("IsHidden", value ? "1" : "0");
     }
 
@@ -339,7 +266,7 @@ namespace Ignia.Topics {
     /// </summary>
     [AttributeSetter]
     public bool IsDisabled {
-      get => Attributes.GetValue("IsDisabled", "0").Equals("1");
+      get => Attributes.GetBoolean("IsDisabled", false);
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
     }
 
@@ -394,22 +321,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: SORT ORDER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's sort order.
-    /// </summary>
-    /// <remarks>
-    ///   Sort order should be assigned by the <see cref="Repositories.ITopicRepository"/> (or one of its derived providers);
-    ///   it may be based on an attribute or based on the physical order of records from the data source, depending on the
-    ///   capabilities of the storage provider.
-    /// </remarks>
-    public int SortOrder {
-      get => _sortOrder;
-      set => _sortOrder = value;
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: LAST MODIFIED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -425,39 +336,72 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value.ToString())
     /// </requires>
     public DateTime LastModified {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return minimum date value, if LastModified is not already populated
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrWhiteSpace(Attributes.GetValue("LastModified", ""))) {
-          return DateTime.MinValue;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return converted string attribute value, if available
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var lastModified = Attributes.GetValue("LastModified");
-
-        // Return converted DateTime
-        if (DateTime.TryParse(lastModified, out var dateTimeValue)) {
-          return dateTimeValue;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Otherwise, return default of minimum value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        else {
-          return DateTime.MinValue;
-        }
-
-      }
+      get => Attributes.GetDateTime("LastModified", VersionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
       set => SetAttributeValue("LastModified", value.ToString());
     }
 
     #endregion
 
     #region Relationship and Collection Methods
+
+    /*==========================================================================================================================
+    | METHOD: SET PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Changes the current <see cref="Parent"/> while simultenaously ensuring that the sort order of the topics is
+    ///   maintained, assuming a <paramref name="sibling"/> is set.
+    /// </summary>
+    /// <remarks>
+    ///   If no <paramref name="sibling"/> is provided, then the item is added to the <i>beginning</i> of the collection. If
+    ///   the intent is to add it to the <i>end</i> of the collection, then set the <paramref name="sibling"/> to e.g.
+    ///   <c>parent.Children.LastOrDefault()</c>.
+    /// </remarks>
+    /// <param name="parent">The <see cref="Topic"/> to move this <see cref="Topic"/> under.</param>
+    /// <param name="sibling">The <see cref="Topic"/> to mvoe this <see cref="Topic"/> to the right of.</param>
+    public void SetParent(Topic parent, Topic sibling = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Check preconditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(parent != null, "The value for Parent must not be null.");
+      Contract.Requires<ArgumentOutOfRangeException>(parent != this, "A topic cannot be its own parent.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Check to ensure that the topic isn't being moved to a descendant (topics cannot be their own grandpa)
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (parent.GetUniqueKey().StartsWith(GetUniqueKey())) {
+        throw new ArgumentOutOfRangeException(nameof(parent), "A descendant cannot be its own parent.");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Check to ensure that the topic isn't being moved to a parent with a duplicate key
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (parent != _parent && parent.Children.Contains(Key)) {
+        throw new InvalidKeyException(
+          "Duplicate key when setting Parent property: the topic with the name '" + Key +
+          "' already exists in the '" + parent.Key + "' topic."
+          );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Move topic to new location
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_parent != null) {
+        _parent.Children.Remove(Key);
+      }
+      var insertAt = (sibling != null)? parent.Children.IndexOf(sibling)+1 : 0;
+      parent.Children.Insert(insertAt, this);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set parent values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_parent != parent) {
+        _parent = parent;
+        SetAttributeValue("ParentID", parent.Id.ToString(CultureInfo.InvariantCulture));
+      }
+
+
+    }
 
     /*==========================================================================================================================
     | METHOD: GET UNIQUE KEY
@@ -547,6 +491,9 @@ namespace Ignia.Topics {
           value != this,
           "A topic may not derive from itself."
         );
+        if (!_derivedTopic?.Equals(value)?? false) {
+          return;
+        }
         _derivedTopic = value;
         if (value != null) {
           SetAttributeValue("TopicID", value.Id.ToString());
@@ -570,19 +517,7 @@ namespace Ignia.Topics {
     ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/>
     ///   property).
     /// </remarks>
-    public AttributeValueCollection Attributes {
-      get {
-        Contract.Ensures(Contract.Result<AttributeValueCollection>() != null);
-        if (_attributes == null) {
-          _attributes = new AttributeValueCollection(this);
-        }
-        return _attributes;
-      }
-      internal set {
-        Contract.Requires<ArgumentNullException>(value != null, "A topic's AttributeValue collection cannot be null.");
-        _attributes = value;
-      }
-    }
+    public AttributeValueCollection Attributes { get; }
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
@@ -595,15 +530,7 @@ namespace Ignia.Topics {
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
-    public RelatedTopicCollection Relationships {
-      get {
-        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
-        if (_relationships == null) {
-          _relationships = new RelatedTopicCollection(this, false);
-        }
-        return _relationships;
-      }
-    }
+    public RelatedTopicCollection Relationships { get; }
 
     /*===========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS
@@ -617,15 +544,7 @@ namespace Ignia.Topics {
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
-    public RelatedTopicCollection IncomingRelationships {
-      get {
-        Contract.Ensures(Contract.Result<RelatedTopicCollection>() != null);
-        if (_incomingRelationships == null) {
-          _incomingRelationships = new RelatedTopicCollection(this, true);
-        }
-        return _incomingRelationships;
-      }
-    }
+    public RelatedTopicCollection IncomingRelationships { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY
@@ -637,15 +556,7 @@ namespace Ignia.Topics {
     ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
     ///   its derived providers).
     /// </remarks>
-    public List<DateTime> VersionHistory {
-      get {
-        Contract.Ensures(Contract.Result<List<DateTime>>() != null);
-        if (_versionHistory == null) {
-          _versionHistory = new List<DateTime>();
-        }
-        return _versionHistory;
-      }
-    }
+    public List<DateTime> VersionHistory { get; }
 
     #endregion
 
@@ -694,31 +605,6 @@ namespace Ignia.Topics {
     }
 
     #endregion
-
-    #region Interface Implementations
-
-    /*==========================================================================================================================
-    | METHOD: DISPOSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Technically, there's nothing to be done when disposing a Topic. However, this allows the topic attributes (and
-    ///   properties) to be set using a using statement, which is syntactically convenient.
-    /// </summary>
-    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    ///   Protected implementation of <see cref="Dispose(Boolean)"/> for derived types.
-    /// </summary>
-    [Obsolete("There is no need to dispose of the Topic class, and reliance on this should be removed.", false)]
-    protected virtual void Dispose(bool disposing) {
-      return;
-    }
-
-  #endregion
 
   } // Class
 

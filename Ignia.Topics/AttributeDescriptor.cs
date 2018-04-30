@@ -4,9 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Ignia.Topics.Collections;
 
 namespace Ignia.Topics {
@@ -50,9 +50,36 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeDescriptor"/> class.
+    ///   Initializes a new instance of a <see cref="AttributeDescriptor"/> class with a <see cref="Topic.Key"/>, <see
+    ///   cref="Topic.ContentType"/>, and, optionally, <see cref="Topic.Parent"/>, <see cref="Topic.Id"/>.
     /// </summary>
-    public AttributeDescriptor() : base() { }
+    /// <remarks>
+    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
+    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
+    ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
+    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
+    ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
+    ///   persistance store.
+    /// </remarks>
+    /// <param name="key">A string representing the key for the new topic instance.</param>
+    /// <param name="contentType">A string representing the key of the target content type.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
+    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
+    /// </exception>
+    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    public AttributeDescriptor(
+      string key,
+      string contentType,
+      Topic parent,
+      int id = -1
+    ) : base(
+      key,
+      contentType,
+      parent,
+      id
+    ) { }
 
     /*==========================================================================================================================
     | PROPERTY: TYPE
@@ -91,8 +118,7 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   When attributes are displayed in the editor, they are grouped by tabs. The tabs are not predetermined, but rather set
     ///   by individual attributes. If five attributes, for instance, have a display group of "Settings", then a tab will be
-    ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>)
-    ///   according to their <see cref="Topic.SortOrder"/> values.
+    ///   rendered called "Settings" and will list those five attributes (assuming none are set to <see cref="IsHidden"/>).
     /// </remarks>
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
@@ -192,7 +218,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public new bool IsHidden {
-      get => Attributes.GetValue("IsHidden", "0").Equals("1");
+      get => Attributes.GetBoolean("IsHidden", false);
       set => SetAttributeValue("IsHidden", value? "1" : "0");
     }
 
@@ -208,7 +234,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public bool IsRequired {
-      get => Attributes.GetValue("IsRequired", "0").Equals("1");
+      get => Attributes.GetBoolean("IsRequired", false);
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
@@ -249,7 +275,7 @@ namespace Ignia.Topics {
     /// </remarks>
     [AttributeSetter]
     public bool StoreInBlob {
-      get => Attributes.GetValue("StoreInBlob", "1").Equals("1");
+      get => Attributes.GetBoolean("StoreInBlob", true);
       set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
     }
 

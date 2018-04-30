@@ -4,10 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Repositories;
 using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
-using System.Collections.Generic;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Tests.TestDoubles {
 

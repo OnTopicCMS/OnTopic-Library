@@ -3,13 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Mapping {
 
@@ -26,7 +19,7 @@ namespace Ignia.Topics.Mapping {
   ///   value property) or a collection of the metadata (in the case of a collection).
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public class MetadataAttribute : System.Attribute {
+  public sealed class MetadataAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

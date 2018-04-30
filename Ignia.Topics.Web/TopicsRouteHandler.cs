@@ -4,16 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.Routing;
-using System.Web.Compilation;
-using Ignia.Topics.Web.Configuration;
 using System.Diagnostics.Contracts;
+using System.Web;
+using System.Web.Compilation;
+using System.Web.Routing;
+using System.Web.UI;
+using Ignia.Topics.Web.Configuration;
 
 namespace Ignia.Topics.Web {
 

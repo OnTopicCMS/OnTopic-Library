@@ -4,17 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using System.Diagnostics.Contracts;
-using Ignia.Topics;
-using Ignia.Topics.Repositories;
+using System.Linq;
+using System.Web.Mvc;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.Web.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: TOPIC TEST
@@ -165,7 +161,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic.ContentType.Equals("PageGroup")) {
         filterContext.Result = Redirect(
-          CurrentTopic.Children.Where(t => t.IsVisible()).DefaultIfEmpty(new Topic()).FirstOrDefault().GetWebPath()
+          CurrentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );
         return;
       }

@@ -6,9 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
+using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Web.Mvc {
 
@@ -38,7 +37,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   cref="ITopicViewModelCore.View"/> is unavailable, it is assumed to be the same as the <see
     ///   cref="ITopicViewModelCore.ContentType"/>.
     /// </remarks>
-    public TopicViewResult(ITopicViewModelCore viewModel) : base() {
+    public TopicViewResult(ITopicViewModel viewModel) : base() {
       ViewData.Model = viewModel;
       _contentType = viewModel.ContentType ?? "Page";
       _topicView = viewModel.View ?? _contentType;

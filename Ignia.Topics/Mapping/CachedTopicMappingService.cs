@@ -4,18 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Collections;
-using Ignia.Topics.Repositories;
+using System.Diagnostics.Contracts;
 
 namespace Ignia.Topics.Mapping {
 
@@ -182,10 +172,10 @@ namespace Ignia.Topics.Mapping {
     ///   Given a <see cref="Topic.Id"/>, <see cref="Type"/>, and <see cref="Relationships"/> reference, produces a cache key of
     ///   type <see cref="Tuple{T1, T2, T3}"/>
     /// </summary>
-    /// <param name="contentType">The content type associated with the associated <see cref="Topic"/>.</param>
-    /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
-    /// <param name="cacheKey">A <see cref="Tuple<int, Type, Relationships"/> representing the cache key.</param>
-    /// <returns>The <paramref name="viewModel"/>.</returns>
+    /// <param name="topicId">The <see cref="Topic.Id"/> of the entity to derive the data from.</param>
+    /// <param name="type">The type of the target object that the <see cref="Topic"/> will be mapped to.</param>
+    /// <param name="relationships">The relationships the mapping will follow, if any.</param>
+    /// <returns>A <see cref="Tuple{Int32, Type, Relationships}"/> representing the unique cache key.</returns>
     private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) {
       return new Tuple<int, Type, Relationships>(topicId, type, relationships);
     }

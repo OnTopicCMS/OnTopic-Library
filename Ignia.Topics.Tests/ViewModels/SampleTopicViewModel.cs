@@ -3,12 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.ViewModels;
 
@@ -45,7 +40,7 @@ namespace Ignia.Topics.Tests.ViewModels {
     public Collection<Topic> Related { get; set; }
 
     [Relationship("AmbiguousRelationship", RelationshipType.IncomingRelationship)]
-    public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; } 
+    public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; }
 
   } //Class
 

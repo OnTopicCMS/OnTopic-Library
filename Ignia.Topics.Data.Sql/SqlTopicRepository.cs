@@ -5,19 +5,18 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Ignia.Topics.Repositories;
-using System.Diagnostics.Contracts;
-using System.Data.SqlClient;
-using System.Data;
-using System.Xml;
 using System.Web;
-using System.Globalization;
+using System.Xml;
 using Ignia.Topics.Collections;
-using System.Diagnostics;
 using Ignia.Topics.Querying;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Data.Sql {
 
@@ -67,7 +66,7 @@ namespace Ignia.Topics.Data.Sql {
     /*==========================================================================================================================
     | METHOD: ADD TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics, out int sortOrder) {
+    private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -77,8 +76,6 @@ namespace Ignia.Topics.Data.Sql {
       var contentType           = reader?["ContentType"]?.ToString();
       var key                   = reader?["TopicKey"]?.ToString();
 
-      sortOrder                 = Int32.Parse(reader?["SortOrder"]?.ToString(), CultureInfo.InvariantCulture);
-
       // Handle ParentID (could be null for root topic)
       Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId);
 
@@ -87,13 +84,6 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var current = TopicFactory.Create(key, contentType, id);
       topics.Add(current.Id, current);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Assign sort order, based on database order
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (current.SortOrder < 0) {
-        current.SortOrder = sortOrder++;
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
@@ -467,7 +457,6 @@ namespace Ignia.Topics.Data.Sql {
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("topics_GetTopics", connection);
-      var sortOrder             = 0;
 
       command.CommandType       = CommandType.StoredProcedure;
       command.CommandTimeout    = 120;
@@ -497,7 +486,7 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
         while (reader.Read()) {
-          AddTopic(reader, topics, out sortOrder);
+          AddTopic(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -579,7 +568,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) return new Topic();
+      if (topics.Count == 0) return null;
       return topics[topics.Keys.ElementAt(0)];
 
     }
@@ -607,7 +596,6 @@ namespace Ignia.Topics.Data.Sql {
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("topics_GetVersion", connection);
-      var sortOrder             = 0;
 
       command.CommandType       = CommandType.StoredProcedure;
       command.CommandTimeout    = 120;
@@ -637,7 +625,7 @@ namespace Ignia.Topics.Data.Sql {
         | Populate topics
         \---------------------------------------------------------------------------------------------------------------------*/
         while (reader.Read()) {
-          AddTopic(reader, topics, out sortOrder);
+          AddTopic(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------

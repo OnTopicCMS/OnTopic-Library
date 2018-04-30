@@ -3,11 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ignia.Topics.Collections {
 
@@ -34,7 +30,7 @@ namespace Ignia.Topics.Collections {
     ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic> topics = null) : this(new Topic(), topics) {
+    public TopicCollection(IEnumerable<Topic> topics = null) : this(null, topics) {
     }
 
   }

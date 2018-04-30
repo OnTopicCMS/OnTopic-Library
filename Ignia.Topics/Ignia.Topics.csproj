@@ -134,18 +134,14 @@
     <Compile Include="Collections\TopicCollection.cs" />
     <Compile Include="Collections\ContentTypeDescriptorCollection.cs" />
     <Compile Include="Collections\TopicCollection{T}.cs" />
-    <Compile Include="ContentType.cs" />
-    <Compile Include="Attribute.cs" />
     <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
     <Compile Include="Collections\TypeCollection.cs" />
     <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
-    <Compile Include="INavigationTopicViewModelCore{T}.cs" />
+    <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
-    <Compile Include="IPageTopicViewModelCore.cs" />
-    <Compile Include="ITopicViewModelCore.cs" />
     <Compile Include="Mapping\CachedTopicMappingService.cs" />
     <Compile Include="Mapping\FilterByAttributeAttribute.cs" />
     <Compile Include="Mapping\AttributeKeyAttribute.cs" />
@@ -169,6 +165,9 @@
     <Compile Include="Topic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TopicFactory.cs" />
+    <Compile Include="ViewModels\INavigationTopicViewModel{T}.cs" />
+    <Compile Include="ViewModels\IPageTopicViewModel.cs" />
+    <Compile Include="ViewModels\ITopicViewModel.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
