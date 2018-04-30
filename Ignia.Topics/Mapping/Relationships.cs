@@ -26,7 +26,8 @@ namespace Ignia.Topics.Mapping {
     Children                    = 1 << 1,
     Relationships               = 1 << 2,
     IncomingRelationships       = 1 << 3,
-    All                         = Parents | Children | Relationships | IncomingRelationships
+    References                  = 1 << 4,
+    All = Parents | Children | Relationships | IncomingRelationships | References
 
     #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 

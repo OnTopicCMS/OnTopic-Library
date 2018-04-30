@@ -268,6 +268,7 @@ namespace Ignia.Topics.Mapping {
       var crawlRelationships    = Relationships.None;
       var metadataKey           = (string)null;
       var attributeFilters      = new Dictionary<string, string>();
+      var topicReferenceId      = topic.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
@@ -340,7 +341,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_typeCache.HasSettableProperty(targetType, property.Name)) {
+      else if (_typeCache.HasSettableProperty(targetType, property.Name)) {
         var getterMethod = sourceType.GetRuntimeMethod("Get" + attributeKey, new Type[] { });
         var attributeValue = (string)null;
         //Attempt to get value from topic.Get{Property}()
@@ -466,6 +467,17 @@ namespace Ignia.Topics.Mapping {
           if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
             property.SetValue(target, parent);
           }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Property: Topic Reference
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
+        var topicReference = _topicRepository.Load(topicReferenceId);
+        var viewModelReference = Map(topicReference, crawlRelationships);
+        if (property.PropertyType.IsAssignableFrom(viewModelReference.GetType())) {
+          property.SetValue(target, viewModelReference);
         }
       }
 

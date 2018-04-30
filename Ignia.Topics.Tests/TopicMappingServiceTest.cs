@@ -309,6 +309,28 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP TOPIC REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapTopicReferences() {
+
+      var mappingService        = new TopicMappingService(_topicRepository);
+
+      var topic                 = TopicFactory.Create("Test", "Sample");
+
+      topic.Attributes.SetInteger("TopicReferenceId", 11111);
+
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+
+      Assert.IsNotNull(target.TopicReference);
+      Assert.AreEqual<int>(11111, target.TopicReference.Id);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: RECURSIVE RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

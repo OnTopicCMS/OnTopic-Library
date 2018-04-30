@@ -29,6 +29,8 @@ namespace Ignia.Topics.Tests.ViewModels {
     [AttributeKey("Property")]
     public string PropertyAlias { get; set; }
 
+    public TopicViewModel TopicReference { get; set; }
+
     [Recurse(Relationships.Relationships)]
     public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
 
