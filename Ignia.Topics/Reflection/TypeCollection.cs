@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 
 namespace Ignia.Topics.Reflection {
@@ -15,15 +16,16 @@ namespace Ignia.Topics.Reflection {
   | CLASS: TYPE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   A collection of <see cref="PropertyInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
+  ///   A collection of <see cref="MemberInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
   /// </summary>
-  internal class TypeCollection : KeyedCollection<Type, PropertyInfoCollection> {
+  internal class TypeCollection : KeyedCollection<Type, MemberInfoCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     static                      List<Type>                      _settableTypes                  = null;
     private                     Type                            _attributeFlag                  = null;
+
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -38,20 +40,34 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET PROPERTIES
+    | METHOD: GET MEMBERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns a collection of <see cref="PropertyInfo"/> objects associated with a specific type.
+    ///   Returns a collection of <see cref="MemberInfo"/> objects associated with a specific type.
     /// </summary>
     /// <remarks>
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
-    /// <param name="type">The type for which the properties should be retrieved.</param>
-    internal PropertyInfoCollection GetProperties(Type type) {
+    /// <param name="type">The type for which the members should be retrieved.</param>
+    internal MemberInfoCollection GetMembers(Type type) {
       if (!Contains(type)) {
-        Add(new PropertyInfoCollection(type));
+        Add(new MemberInfoCollection(type));
       }
       return this[type];
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET MEMBERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns a collection of <typeparamref name="T"/> objects associated with a specific type.
+    /// </summary>
+    /// <remarks>
+    ///   If the collection cannot be found locally, it will be created.
+    /// </remarks>
+    /// <param name="type">The type for which the members should be retrieved.</param>
+    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo {
+      return new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
     }
 
     /*==========================================================================================================================
@@ -62,9 +78,9 @@ namespace Ignia.Topics.Reflection {
     ///   instance.
     /// </summary>
     internal PropertyInfo GetProperty(Type type, string name) {
-      var properties = GetProperties(type);
-      if (properties.Contains(name)) {
-        return properties[name];
+      var properties = GetMembers<PropertyInfo>(type);
+      if (properties.Contains(name) && properties[name].MemberType.Equals(MemberTypes.Property)) {
+        return properties[name] as PropertyInfo;
       }
       return null;
     }
@@ -168,7 +184,7 @@ namespace Ignia.Topics.Reflection {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override Type GetKeyForItem(PropertyInfoCollection item) {
+    protected override Type GetKeyForItem(MemberInfoCollection item) {
       Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
       return item.Type;
     }

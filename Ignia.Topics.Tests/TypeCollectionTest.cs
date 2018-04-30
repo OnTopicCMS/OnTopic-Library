@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,7 +15,7 @@ namespace Ignia.Topics.Tests {
   | CLASS: TYPE COLLECTION TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeCollection"/> and <see cref="PropertyInfoCollection"/> classes.
+  ///   Provides unit tests for the <see cref="TypeCollection"/> and <see cref="MemberInfoCollection"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
@@ -26,13 +27,13 @@ namespace Ignia.Topics.Tests {
     | TEST: PROPERTY INFO COLLECTION CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="PropertyInfoCollection"/> based on a type, and confirms that the property collection is
+    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection is
     ///   returning expected types.
     /// </summary>
     [TestMethod]
     public void PropertyInfoCollection_ConstructorTest() {
 
-      var properties = new PropertyInfoCollection(typeof(ContentTypeDescriptor));
+      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
       Assert.IsTrue(properties.Contains("Key")); //Inherited string property
       Assert.IsTrue(properties.Contains("AttributeDescriptors")); //First class collection property
@@ -45,7 +46,7 @@ namespace Ignia.Topics.Tests {
     | TEST: GET TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetProperties(Type)"/>
+    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetMembers{T}(Type)"/>
     ///   functions.
     /// </summary>
     [TestMethod]
@@ -53,7 +54,7 @@ namespace Ignia.Topics.Tests {
 
       var types = new TypeCollection();
 
-      var properties = types.GetProperties(typeof(ContentTypeDescriptor));
+      var properties = types.GetMembers<PropertyInfo>(typeof(ContentTypeDescriptor));
 
       Assert.IsTrue(properties.Contains("Key"));
       Assert.IsTrue(properties.Contains("AttributeDescriptors"));

@@ -232,7 +232,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var property in _typeCache.GetProperties(target.GetType())) {
+      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
         SetProperty(topic, target, relationships, property);
       }
 
