@@ -329,6 +329,15 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Property: Identity
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC043018: The identity property requires special handling since it isn't stored as an attribute on topic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (property.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase)) {
+        _typeCache.SetProperty(target, property.Name, topic.Id.ToString());
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_typeCache.HasSettableProperty(targetType, property.Name)) {
