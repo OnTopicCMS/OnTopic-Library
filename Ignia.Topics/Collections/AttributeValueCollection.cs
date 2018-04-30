@@ -6,6 +6,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Collections {

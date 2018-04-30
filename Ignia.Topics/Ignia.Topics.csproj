@@ -137,8 +137,6 @@
     <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
-    <Compile Include="Collections\TypeCollection.cs" />
-    <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
@@ -154,6 +152,8 @@
     <Compile Include="Mapping\Relationships.cs" />
     <Compile Include="Mapping\TopicMappingService.cs" />
     <Compile Include="Querying\Topic.cs" />
+    <Compile Include="Reflection\PropertyInfoCollection.cs" />
+    <Compile Include="Reflection\TypeCollection.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\ITopicRepositoryContract.cs" />

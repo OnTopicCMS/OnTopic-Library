@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
-namespace Ignia.Topics.Collections {
+namespace Ignia.Topics.Reflection {
 
   /*============================================================================================================================
   | CLASS: TYPE COLLECTION
