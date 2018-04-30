@@ -62,7 +62,7 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target = (PageTopicViewModel)mappingService.Map(topic, new PageTopicViewModel());
+      var target                = (PageTopicViewModel)mappingService.Map(topic, new PageTopicViewModel());
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -87,7 +87,7 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target = (PageTopicViewModel)mappingService.Map(topic);
+      var target                = (PageTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -146,16 +146,15 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_InheritValues() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-
-      var grandParent = TopicFactory.Create("Grandparent", "Page");
-      var parent = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic = TopicFactory.Create("Test", "Sample", parent);
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var grandParent           = TopicFactory.Create("Grandparent", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page", grandParent);
+      var topic                 = TopicFactory.Create("Test", "Sample", parent);
 
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+      var viewModel             = (SampleTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<string>(null, viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
@@ -172,14 +171,13 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_AlternateAttributeKey() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-
-      var topic = TopicFactory.Create("Test", "Sample");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+      var viewModel             = (SampleTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
@@ -194,17 +192,17 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapRelationships() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var relatedTopic1 = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2 = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3 = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic = TopicFactory.Create("Test", "Sample");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       topic.Relationships.SetTopic("Cousins", relatedTopic1);
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
       Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
@@ -320,24 +318,24 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_RecursiveRelationships() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository);
 
       //Self
-      var topic = TopicFactory.Create("Test", "Sample");
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       //First cousins
-      var cousinTopic1 = TopicFactory.Create("CousinTopic1", "Page");
-      var cousinTopic2 = TopicFactory.Create("CousinTopic2", "Index");
-      var cousinTopic3 = TopicFactory.Create("CousinTopic3", "Sample");
+      var cousinTopic1          = TopicFactory.Create("CousinTopic1", "Page");
+      var cousinTopic2          = TopicFactory.Create("CousinTopic2", "Index");
+      var cousinTopic3          = TopicFactory.Create("CousinTopic3", "Sample");
 
       //Children of cousins
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
 
       //Other cousins
-      var secondCousin = TopicFactory.Create("SecondCousin", "Page");
-      var cousinTwiceRemoved = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
+      var secondCousin          = TopicFactory.Create("SecondCousin", "Page");
+      var cousinTwiceRemoved    = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
 
       //Set first cousins
       topic.Relationships.SetTopic("Cousins", cousinTopic1);
@@ -347,9 +345,9 @@ namespace Ignia.Topics.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
-      var cousinTarget = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
-      var distantCousinTarget = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+      var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
+      var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
 
       //Because Cousins is set to recurse over Children, its children should be set
       Assert.AreEqual<int>(3, cousinTarget.Children.Count);
@@ -373,15 +371,15 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapSlideshow() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Slideshow");
-      var slides = TopicFactory.Create("ContentItems", "List", topic);
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Slide", slides);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Slide", slides);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Slide", slides);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Test", "Slideshow");
+      var slides                = TopicFactory.Create("ContentItems", "List", topic);
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Slide", slides);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Slide", slides);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Slide", slides);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
 
-      var target = (SlideshowTopicViewModel)mappingService.Map(topic);
+      var target                = (SlideshowTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
       Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
@@ -432,10 +430,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapMetadata() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "MetadataLookup");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
-      var target = (MetadataLookupTopicViewModel)mappingService.Map(topic);
+      var target                = (MetadataLookupTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<int>(5, target.Categories.Count);
 
@@ -451,16 +449,16 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_FilterByContentType() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Sample");
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Index", topic);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Test", "Sample");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Index", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)mappingService.Map(topic);
 
-      var indexes = target.Children.GetByContentType("Index");
+      var indexes               = target.Children.GetByContentType("Index");
 
       Assert.AreEqual<int>(2, indexes.Count);
       Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
@@ -479,10 +477,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapGetterMethods() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Sample");
-      var childTopic = TopicFactory.Create("Child", "Page", topic);
-      var grandChildTopic = TopicFactory.Create("GrandChild", "Index", childTopic);
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "Sample");
+      var childTopic            = TopicFactory.Create("Child", "Page", topic);
+      var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
 
       var target = (IndexTopicViewModel)mappingService.Map(grandChildTopic);
 
@@ -499,8 +497,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapRequiredProperty() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Required");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "Required");
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
@@ -520,8 +518,8 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ValidationException))]
     public void TopicMappingService_MapRequiredPropertyException() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Required");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "Required");
 
       var target = (RequiredTopicViewModel)mappingService.Map(topic);
 
@@ -537,8 +535,8 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ValidationException))]
     public void TopicMappingService_MapRequiredObjectPropertyException() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "RequiredObject");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
       var target = (RequiredTopicViewModel)mappingService.Map(topic);
 
@@ -553,10 +551,10 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_MapDefaultValueProperties() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "DefaultValue");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
-      var target = (DefaultValueTopicViewModel)mappingService.Map(topic);
+      var target                = (DefaultValueTopicViewModel)mappingService.Map(topic);
 
       Assert.AreEqual<string>("Default", target.DefaultString);
       Assert.AreEqual<int>(10, target.DefaultInt);
@@ -574,8 +572,8 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ValidationException))]
     public void TopicMappingService_MapMinimumValueProperties() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "MinimumLengthProperty");
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
@@ -594,12 +592,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void TopicMappingService_FilterByAttribute() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Filtered");
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Page", topic);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+      var mappingService        = new TopicMappingService(_topicRepository);
+      var topic                 = TopicFactory.Create("Test", "Filtered");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
 
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
