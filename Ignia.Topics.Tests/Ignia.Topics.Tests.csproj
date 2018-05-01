@@ -114,6 +114,7 @@
     <Compile Include="ViewModels\RequiredObjectTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredTopicViewModel.cs" />
     <Compile Include="ViewModels\SampleTopicViewModel.cs" />
+    <Compile Include="ViewModels\MethodBasedViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj">

@@ -7,6 +7,7 @@ using System;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
+using Ignia.Topics.Tests.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
@@ -111,6 +112,31 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
       Assert.IsTrue(topic.IsHidden);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET MEMBER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
+    ///   <see cref="TypeCollection.SetMethod(object, string, string)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void TypeCollection_SetMemberTest() {
+
+      var types                 = new TypeCollection();
+      var source                = new MethodBasedViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
+      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
+
+      var value                 = types.GetMethodValue(source, "GetMethod");
+
+      Assert.IsTrue(isValueSet);
+      Assert.IsFalse(isInvalidSet);
+      Assert.IsTrue(value is int);
+      Assert.AreEqual<int>(123, (int)value);
 
     }
 

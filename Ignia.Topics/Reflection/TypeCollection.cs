@@ -152,21 +152,7 @@ namespace Ignia.Topics.Reflection {
 
       Contract.Assume(property != null);
 
-      if (property.PropertyType.Equals(typeof(bool))) {
-        valueObject = value.Equals("1") || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-      }
-      else if (property.PropertyType.Equals(typeof(int))) {
-        Int32.TryParse(value, out var intValue);
-        valueObject = intValue;
-      }
-      else if (property.PropertyType.Equals(typeof(string))) {
-        valueObject = value;
-      }
-      else if (property.PropertyType.Equals(typeof(DateTime))) {
-        if (DateTime.TryParse(value, out var date)) {
-          valueObject = date;
-        }
-      }
+      object valueObject = GetValueObject(property.PropertyType, value);
 
       if (valueObject == null) {
         return false;
@@ -174,6 +160,103 @@ namespace Ignia.Topics.Reflection {
 
       property.SetValue(target, valueObject);
       return true;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: HAS SETTABLE METHOD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local method is available and settable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
+    ///   a settable type.
+    /// </remarks>
+    internal bool HasSettableMethod(Type type, string name) {
+      var method = GetMember<MethodInfo>(type, name);
+      return (
+        method != null &&
+        method.GetParameters().Count().Equals(1) &&
+        SettableTypes.Contains(method.GetParameters().First().ParameterType) &&
+        (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
+      );
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET METHOD VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Uses reflection to call a method, assuming that it is a) writable, and b) of type <see cref="String"/>,
+    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
+    /// </summary>
+    internal bool SetMethodValue(object target, string name, string value) {
+
+      if (!HasSettableMethod(target.GetType(), name)) {
+        return false;
+      }
+
+      var method = GetMember<MethodInfo>(target.GetType(), name);
+
+      Contract.Assume(method != null);
+
+      object valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
+
+      if (valueObject == null) {
+        return false;
+      }
+
+      method.Invoke(target, new object[] {valueObject});
+
+      return true;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET METHOD VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Uses reflection to call a method, assuming that it has no parameters.
+    /// </summary>
+    internal object GetMethodValue(object target, string name, Type type = null) {
+
+      var getter = GetMember<MethodInfo>(target.GetType(), name);
+
+      if (getter != null && getter.GetParameters().Length.Equals(0)) {
+        return (object)getter.Invoke(target, new object[] { });
+      }
+
+      return null;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET VALUE OBJECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Converts a string value to an object of the target type.
+    /// </summary>
+    private object GetValueObject(Type type, string value) {
+
+      var valueObject = (object)null;
+
+      if (type.Equals(typeof(bool))) {
+        valueObject = value.Equals("1") || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+      }
+      else if (type.Equals(typeof(int))) {
+        Int32.TryParse(value, out var intValue);
+        valueObject = intValue;
+      }
+      else if (type.Equals(typeof(string))) {
+        valueObject = value;
+      }
+      else if (type.Equals(typeof(DateTime))) {
+        if (DateTime.TryParse(value, out var date)) {
+          valueObject = date;
+        }
+      }
+
+      return valueObject;
 
     }
 
