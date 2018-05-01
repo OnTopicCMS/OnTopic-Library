@@ -116,14 +116,14 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET MEMBER
+    | TEST: SET METHOD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
     ///   <see cref="TypeCollection.SetMethodValue(object, string, string)"/> method.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_SetMemberTest() {
+    public void TypeCollection_SetMethodTest() {
 
       var types                 = new TypeCollection();
       var source                = new MethodBasedViewModel();
