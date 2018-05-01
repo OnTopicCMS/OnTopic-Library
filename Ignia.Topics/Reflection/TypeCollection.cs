@@ -130,7 +130,7 @@ namespace Ignia.Topics.Reflection {
       return (
         property != null &&
         property.CanWrite &&
-        SettableTypes.Contains(property.PropertyType) &&
+        IsSettableType(property.PropertyType) &&
         (_attributeFlag == null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
@@ -178,7 +178,7 @@ namespace Ignia.Topics.Reflection {
       return (
         method != null &&
         method.GetParameters().Count().Equals(1) &&
-        SettableTypes.Contains(method.GetParameters().First().ParameterType) &&
+        IsSettableType(method.GetParameters().First().ParameterType) &&
         (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
       );
     }
@@ -227,6 +227,20 @@ namespace Ignia.Topics.Reflection {
       }
 
       return null;
+
+    /*==========================================================================================================================
+    | METHOD: IS SETTABLE TYPE?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether a given type is settable, either assuming the list of <see cref="SettableTypes"/>, or provided a
+    ///   specific <paramref name="targetType"/>.
+    /// </summary>
+    private bool IsSettableType(Type sourceType, Type targetType = null) {
+
+      if (targetType != null) {
+        return sourceType.Equals(targetType);
+      }
+      return SettableTypes.Contains(sourceType);
 
     }
 
