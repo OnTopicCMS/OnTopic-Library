@@ -411,27 +411,28 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Identity
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE JJC043018: The identity property requires special handling since it isn't stored as an attribute on topic.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (property.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase)) {
-        _typeCache.SetPropertyValue(target, property.Name, topic.Id.ToString());
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (_typeCache.HasSettableProperty(targetType, property.Name)) {
+      if (_typeCache.HasSettableProperty(targetType, property.Name)) {
+
         //Attempt to get value from topic.Get{Property}()
         var attributeValue = _typeCache.GetMethodValue(topic, "Get" + property.Name)?.ToString();
+
+        //Otherwise, attempts to get value from topic.{Property}
+        if (String.IsNullOrEmpty(attributeValue)) {
+          attributeValue = _typeCache.GetPropertyValue(topic, property.Name)?.ToString();
+        }
+
         //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
         if (String.IsNullOrEmpty(attributeValue)) {
           attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
         }
+
+        //Sets the value, assuming it is defined
         if (attributeValue != null) {
           _typeCache.SetPropertyValue(target, property.Name, attributeValue);
         }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
