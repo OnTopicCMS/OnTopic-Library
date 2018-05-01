@@ -20,10 +20,10 @@ namespace Ignia.Topics.Tests.ViewModels {
   /// </remarks>
   public class CircularTopicViewModel {
 
-    [Recurse(Relationships.Parents)]
+    [Follow(Relationships.Parents)]
     public CircularTopicViewModel Parent { get; set; }
 
-    [Recurse(Relationships.Children | Relationships.Parents)]
+    [Follow(Relationships.Children | Relationships.Parents)]
     public List<CircularTopicViewModel> Children { get; set; }
 
   } //Class

@@ -31,10 +31,10 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public TopicViewModel TopicReference { get; set; }
 
-    [Recurse(Relationships.Relationships)]
+    [Follow(Relationships.Relationships)]
     public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
 
-    [Recurse(Relationships.Children)]
+    [Follow(Relationships.Children)]
     public TopicViewModelCollection<PageTopicViewModel> Cousins { get; set; }
 
     public TopicViewModelCollection<PageTopicViewModel> Categories { get; set; }

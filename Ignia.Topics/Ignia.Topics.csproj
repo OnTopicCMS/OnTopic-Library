@@ -143,10 +143,10 @@
     <Compile Include="Mapping\CachedTopicMappingService.cs" />
     <Compile Include="Mapping\FilterByAttributeAttribute.cs" />
     <Compile Include="Mapping\AttributeKeyAttribute.cs" />
+    <Compile Include="Mapping\FollowAttribute.cs" />
     <Compile Include="Mapping\InheritAttribute.cs" />
     <Compile Include="Mapping\ITopicMappingService.cs" />
     <Compile Include="Mapping\MetadataAttribute.cs" />
-    <Compile Include="Mapping\RecurseAttribute.cs" />
     <Compile Include="Mapping\RelationshipType.cs" />
     <Compile Include="Mapping\RelationshipAttribute.cs" />
     <Compile Include="Mapping\Relationships.cs" />
