@@ -125,6 +125,8 @@ namespace Ignia.Topics.Reflection {
     /// <remarks>
     ///   Will return false if the property is not available.
     /// </remarks>
+    /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
     internal bool HasSettableProperty(Type type, string name) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
@@ -142,6 +144,9 @@ namespace Ignia.Topics.Reflection {
     ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>,
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
+    /// <param name="target">The object on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    /// <param name="value">The value to set on the property.</param>
     internal bool SetPropertyValue(object target, string name, string value) {
 
       if (!HasSettableProperty(target.GetType(), name)) {
@@ -173,6 +178,8 @@ namespace Ignia.Topics.Reflection {
     ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
     ///   a settable type.
     /// </remarks>
+    /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
     internal bool HasSettableMethod(Type type, string name) {
       var method = GetMember<MethodInfo>(type, name);
       return (
@@ -190,6 +197,9 @@ namespace Ignia.Topics.Reflection {
     ///   Uses reflection to call a method, assuming that it is a) writable, and b) of type <see cref="String"/>,
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
+    /// <param name="target">The object instance on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    /// <param name="value">The value to set the method to.</param>
     internal bool SetMethodValue(object target, string name, string value) {
 
       if (!HasSettableMethod(target.GetType(), name)) {
@@ -219,6 +229,8 @@ namespace Ignia.Topics.Reflection {
     ///   Uses reflection to call a method, assuming that it has no parameters.
     /// </summary>
     internal object GetMethodValue(object target, string name) {
+    /// <param name="target">The object instance on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
 
       var getter = GetMember<MethodInfo>(target.GetType(), name);
 
