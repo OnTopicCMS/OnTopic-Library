@@ -269,22 +269,48 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
+    | METHOD: HAS GETTABLE METHOD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local method is available and gettable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the method is not available. Methods are only considered gettable if they have no parameters and
+    ///   their return value is a settable type.
+    /// </remarks>
+    /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    internal bool HasGettableMethod(Type type, string name, Type targetType = null) {
+      var method = GetMember<MethodInfo>(type, name);
+      return (
+        method != null &&
+        method.GetParameters().Count().Equals(0) &&
+        IsSettableType(method.ReturnType, targetType) &&
+        (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
+      );
+    }
+
+    /*==========================================================================================================================
     | METHOD: GET METHOD VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Uses reflection to call a method, assuming that it has no parameters.
     /// </summary>
-    internal object GetMethodValue(object target, string name) {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    internal object GetMethodValue(object target, string name, Type targetType = null) {
 
-      var getter = GetMember<MethodInfo>(target.GetType(), name);
-
-      if (getter != null && getter.GetParameters().Length.Equals(0)) {
-        return (object)getter.Invoke(target, new object[] { });
+      if (!HasGettableMethod(target.GetType(), name, targetType)) {
+        return null;
       }
 
-      return null;
+      var method = GetMember<MethodInfo>(target.GetType(), name);
+
+      return method.Invoke(target, new object[] { });
+
+    }
 
     /*==========================================================================================================================
     | METHOD: IS SETTABLE TYPE?
