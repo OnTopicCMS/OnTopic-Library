@@ -385,7 +385,7 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine recusion settings
+      | Attributes: Determine recursion settings
       \-----------------------------------------------------------------------------------------------------------------------*/
       var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
       if (recurseAttribute != null) {
