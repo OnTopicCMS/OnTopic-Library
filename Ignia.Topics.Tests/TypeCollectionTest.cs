@@ -64,21 +64,23 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET PROPERTY
+    | TEST: GET MEMBER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetProperty(Type, String)"/>
+    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetMember(Type, String)"/>
     ///   correctly returns the expected properties.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_GetPropertyTest() {
+    public void TypeCollection_GetMemberTest() {
 
       var types = new TypeCollection();
 
-      Assert.IsTrue(types.GetProperty(typeof(ContentTypeDescriptor), "Key") != null);
-      Assert.IsTrue(types.GetProperty(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
-      Assert.IsFalse(types.GetProperty(typeof(ContentTypeDescriptor), "IsTypeOf") != null);
-      Assert.IsFalse(types.GetProperty(typeof(ContentTypeDescriptor), "InvalidPropertyName") != null);
+      Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key") != null);
+      Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
+      Assert.IsFalse(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf") != null);
+      Assert.IsFalse(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName") != null);
+      Assert.IsTrue(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath") != null);
+      Assert.IsFalse(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
 
     }
 

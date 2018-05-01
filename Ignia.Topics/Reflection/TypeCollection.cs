@@ -57,7 +57,7 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET MEMBERS
+    | METHOD: GET MEMBERS {T}
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Returns a collection of <typeparamref name="T"/> objects associated with a specific type.
@@ -71,27 +71,50 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET PROPERTY
+    | METHOD: GET MEMBER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Used reflection to identify a local property by a given name, and returns the associated <see cref="PropertyInfo"/>
+    ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
     ///   instance.
     /// </summary>
-    internal PropertyInfo GetProperty(Type type, string name) {
-      var properties = GetMembers<PropertyInfo>(type);
-      if (properties.Contains(name) && properties[name].MemberType.Equals(MemberTypes.Property)) {
-        return properties[name] as PropertyInfo;
+    internal MemberInfo GetMember(Type type, string name)  {
+      var members = GetMembers(type);
+      if (members.Contains(name)) {
+        return members[name];
       }
       return null;
     }
 
     /*==========================================================================================================================
-    | METHOD: HAS PROPERTY
+    | METHOD: GET MEMBER {T}
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Used reflection to identify if a local property is available.
+    ///   Used reflection to identify a local member by a given name, and returns the associated <typeparamref name="T"/>
+    ///   instance.
     /// </summary>
-    internal bool HasProperty(Type type, string name) => GetProperty(type, name) != null;
+    internal T GetMember<T>(Type type, string name) where T : MemberInfo {
+      var members = GetMembers(type);
+      if (members.Contains(name) && typeof(T).IsAssignableFrom(members[name].GetType())) {
+        return members[name] as T;
+      }
+      return null;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: HAS MEMBER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local member is available.
+    /// </summary>
+    internal bool HasMember(Type type, string name) => GetMember(type, name) != null;
+
+    /*==========================================================================================================================
+    | METHOD: HAS MEMBER {T}
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
+    /// </summary>
+    internal bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) != null;
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
@@ -103,7 +126,7 @@ namespace Ignia.Topics.Reflection {
     ///   Will return false if the property is not available.
     /// </remarks>
     internal bool HasSettableProperty(Type type, string name) {
-      var property = GetProperty(type, name);
+      var property = GetMember<PropertyInfo>(type, name);
       return (
         property != null &&
         property.CanWrite &&
@@ -125,9 +148,7 @@ namespace Ignia.Topics.Reflection {
         return false;
       }
 
-      var property = GetProperty(target.GetType(), name);
-
-      object valueObject = null;
+      var property = GetMember<PropertyInfo>(target.GetType(), name);
 
       Contract.Assume(property != null);
 
