@@ -424,7 +424,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (_typeCache.HasSettableProperty(targetType, property.Name)) {
         //Attempt to get value from topic.Get{Property}()
-        var attributeValue = _typeCache.GetMethodValue(topic, "Get" + property.Name) as string;
+        var attributeValue = _typeCache.GetMethodValue(topic, "Get" + property.Name)?.ToString();
         //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
         if (String.IsNullOrEmpty(attributeValue)) {
           attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
