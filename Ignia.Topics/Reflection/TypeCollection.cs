@@ -218,7 +218,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Uses reflection to call a method, assuming that it has no parameters.
     /// </summary>
-    internal object GetMethodValue(object target, string name, Type type = null) {
+    internal object GetMethodValue(object target, string name) {
 
       var getter = GetMember<MethodInfo>(target.GetType(), name);
 
