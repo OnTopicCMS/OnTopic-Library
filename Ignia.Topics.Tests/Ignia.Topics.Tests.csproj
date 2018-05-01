@@ -112,6 +112,7 @@
     <Compile Include="ViewModels\MinimumLengthPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\DefaultPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredObjectTopicViewModel.cs" />
+    <Compile Include="ViewModels\CircularTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredTopicViewModel.cs" />
     <Compile Include="ViewModels\SampleTopicViewModel.cs" />
     <Compile Include="ViewModels\MethodBasedViewModel.cs" />

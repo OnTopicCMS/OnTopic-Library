@@ -462,6 +462,27 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP CIRCULAR REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully handles a circular reference by
+    ///   taking advantage of its internal caching mechanism.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_MapCircularReference() {
+
+      var mappingService        = new TopicMappingService(_topicRepository);
+
+      var topic                 = TopicFactory.Create("Test", "Circular", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
+
+      var mappedTopic           = (CircularTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<CircularTopicViewModel>(mappedTopic, mappedTopic.Children.First().Parent);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: FILTER BY CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -11,7 +11,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
@@ -154,11 +153,47 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     public object Map(Topic topic, Relationships relationships = Relationships.All) {
+      return Map(topic, relationships, new Dictionary<int, object>());
+
+    }
+
+    /// <summary>
+    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
+    ///   according to the rules of the mapping implementation.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
+    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
+    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
+    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, Relationships)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
+    ///   </para>
+    ///   <para>
+    ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
+    ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
+    ///     <see cref="RecurseAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
+    private object Map(Topic topic, Relationships relationships, Dictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \---------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) return null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle cached objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (cache.ContainsKey(topic.Id)) {
+        return cache[topic.Id];
+      }
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
@@ -170,7 +205,12 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return Map(topic, target, relationships);
+      var mappedTarget = Map(topic, target, relationships, cache);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Provide mapping
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return mappedTarget;
 
     }
 
@@ -214,6 +254,25 @@ namespace Ignia.Topics.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
+      return Map(topic, target, relationships, new Dictionary<int, object>());
+    }
+
+    /// <summary>
+    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="target">The target object to map the data to.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <remarks>
+    ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
+    ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
+    ///   <see cref="RecurseAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    /// </remarks>
+    /// <returns>
+    ///   The target view model with the properties appropriately mapped.
+    /// </returns>
+    private object Map(Topic topic, object target, Relationships relationships, Dictionary<int, object> cache) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -230,10 +289,24 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle cached objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (cache.ContainsKey(topic.Id)) {
+        return cache[topic.Id];
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Cache results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Id > 0 && !cache.ContainsKey(topic.Id)) {
+        cache.Add(topic.Id, target);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        SetProperty(topic, target, relationships, property);
+        SetProperty(topic, target, relationships, property, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -254,7 +327,14 @@ namespace Ignia.Topics.Mapping {
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
-    private void SetProperty(Topic topic, object target, Relationships relationships, PropertyInfo property) {
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    private void SetProperty(
+      Topic topic,
+      object target,
+      Relationships relationships,
+      PropertyInfo property,
+      Dictionary<int, object> cache
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
@@ -437,10 +517,7 @@ namespace Ignia.Topics.Mapping {
               }
               //Otherwise, assume the list type is a DTO
               else {
-                var childDto = Map(
-                  childTopic,
-                  crawlRelationships
-                );
+                var childDto = Map(childTopic, crawlRelationships, cache);
                 //Ensure the mapped type derives from the list type
                 if (listType.IsAssignableFrom(childDto.GetType())) {
                   list.Add(childDto);
@@ -457,10 +534,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
         if (topic.Parent != null) {
-          var parent = Map(
-            topic.Parent,
-            crawlRelationships
-            );
+          var parent = Map(topic.Parent, crawlRelationships, cache);
           if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
             property.SetValue(target, parent);
           }
@@ -472,7 +546,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        var viewModelReference = Map(topicReference, crawlRelationships);
+        var viewModelReference = Map(topicReference, crawlRelationships, cache);
         if (property.PropertyType.IsAssignableFrom(viewModelReference.GetType())) {
           property.SetValue(target, viewModelReference);
         }
