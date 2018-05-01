@@ -539,7 +539,7 @@ namespace Ignia.Topics.Collections {
             "`; be sure to call `Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
-        _typeCache.SetProperty(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
+        _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
         _setCounter = 0;
         return false;

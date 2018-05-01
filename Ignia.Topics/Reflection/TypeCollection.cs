@@ -136,13 +136,13 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: SET PROPERTY
+    | METHOD: SET PROPERTY VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>,
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
-    internal bool SetProperty(object target, string name, string value) {
+    internal bool SetPropertyValue(object target, string name, string value) {
 
       if (!HasSettableProperty(target.GetType(), name)) {
         return false;
@@ -181,7 +181,7 @@ namespace Ignia.Topics.Reflection {
     | PROPERTY: SETTABLE TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A list of types that are allowed to be set using <see cref="SetProperty(Object, String, String)"/>.
+    ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
     internal List<Type> SettableTypes {
       get {
