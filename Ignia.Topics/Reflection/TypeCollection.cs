@@ -169,6 +169,52 @@ namespace Ignia.Topics.Reflection {
     }
 
     /*==========================================================================================================================
+    | METHOD: HAS GETTABLE PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local property is available and gettable.
+    /// </summary>
+    /// <remarks>
+    ///   Will return false if the property is not available.
+    /// </remarks>
+    /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    internal bool HasGettableProperty(Type type, string name, Type targetType = null) {
+      var property = GetMember<PropertyInfo>(type, name);
+      return (
+        property != null &&
+        property.CanRead &&
+        IsSettableType(property.PropertyType, targetType) &&
+        (_attributeFlag == null || System.Attribute.IsDefined(property, _attributeFlag))
+      );
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET PROPERTY VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Uses reflection to call a property, assuming that it is a) readable, and b) of type <see cref="String"/>,
+    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
+    /// </summary>
+    /// <param name="target">The object instance on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    internal object GetPropertyValue(object target, string name, Type targetType = null) {
+
+      if (!HasGettableProperty(target.GetType(), name, targetType)) {
+        return null;
+      }
+
+      var property = GetMember<PropertyInfo>(target.GetType(), name);
+
+      Contract.Assume(property != null);
+
+      return property.GetValue(target);
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: HAS SETTABLE METHOD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
