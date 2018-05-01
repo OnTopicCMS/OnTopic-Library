@@ -106,11 +106,16 @@ namespace Ignia.Topics.Tests {
       var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
       var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
 
+      var lastModified          = DateTime.Parse(types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString());
+      var key                   = types.GetPropertyValue(topic, "Key", typeof(string)).ToString();
+
       Assert.IsTrue(isDateSet);
       Assert.IsTrue(isKeySet);
       Assert.IsFalse(isInvalidPropertySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<string>("NewKey", key);
       Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
+      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), lastModified);
       Assert.IsTrue(topic.IsHidden);
 
     }
