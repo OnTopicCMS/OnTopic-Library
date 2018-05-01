@@ -654,6 +654,33 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: FLATTEN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
+    /// </summary>
+    [TestMethod]
+    public void TopicMappingService_Flatten() {
+
+      var mappingService        = new TopicMappingService(_topicRepository);
+
+      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+
+      for (var i=0; i<5; i++) {
+        var childTopic          = TopicFactory.Create("Child" + i, "Page", topic);
+        for (var j=0; j<5; j++) {
+          TopicFactory.Create("GrandChild" + i + j, "FlattenChildren", childTopic);
+        }
+      }
+
+      var target = (FlattenChildrenTopicViewModel)mappingService.Map(topic);
+
+      Assert.AreEqual<int>(25, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: CACHING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

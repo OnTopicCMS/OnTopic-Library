@@ -143,6 +143,7 @@
     <Compile Include="Mapping\CachedTopicMappingService.cs" />
     <Compile Include="Mapping\FilterByAttributeAttribute.cs" />
     <Compile Include="Mapping\AttributeKeyAttribute.cs" />
+    <Compile Include="Mapping\FlattenAttribute.cs" />
     <Compile Include="Mapping\FollowAttribute.cs" />
     <Compile Include="Mapping\InheritAttribute.cs" />
     <Compile Include="Mapping\ITopicMappingService.cs" />

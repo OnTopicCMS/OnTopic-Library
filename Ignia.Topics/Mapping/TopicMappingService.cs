@@ -174,7 +174,7 @@ namespace Ignia.Topics.Mapping {
     ///   <para>
     ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///     <see cref="RecurseAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///     <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
@@ -267,7 +267,7 @@ namespace Ignia.Topics.Mapping {
     /// <remarks>
     ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///   <see cref="RecurseAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///   <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
     /// </remarks>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
@@ -349,6 +349,7 @@ namespace Ignia.Topics.Mapping {
       var crawlRelationships    = Relationships.None;
       var metadataKey           = (string)null;
       var attributeFilters      = new Dictionary<string, string>();
+      var flattenChildren       = false;
       var topicReferenceId      = topic.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -385,12 +386,17 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine recursion settings
+      | Attributes: Determine follow settings
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
+      var recurseAttribute = (FollowAttribute)property.GetCustomAttribute(typeof(FollowAttribute), true);
       if (recurseAttribute != null) {
         crawlRelationships = recurseAttribute.Relationships;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Determine flatten settings
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      flattenChildren = property.GetCustomAttribute(typeof(FlattenAttribute), true) != null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine metadata key, if present
@@ -448,7 +454,7 @@ namespace Ignia.Topics.Mapping {
         }
 
         //Get source for list
-        IList listSource = new Topic[] { };
+        IList<Topic> listSource = new Topic[] { };
 
         //Handle children
         if (
@@ -495,6 +501,15 @@ namespace Ignia.Topics.Mapping {
           listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.ToList();
         }
 
+        //Handle flattening of children
+        if (flattenChildren) {
+          List<Topic> flattenedList = new List<Topic>();
+          foreach (var childTopic in listSource) {
+            AddChildren(childTopic, flattenedList);
+          }
+          listSource = flattenedList;
+        }
+
         //Ensure list is created
         var list = (IList)property.GetValue(target, null);
         if (list == null) {
@@ -508,20 +523,31 @@ namespace Ignia.Topics.Mapping {
             if (filterByAttribute.Any(f => !childTopic.Attributes.GetValue(f.Key, "").Equals(f.Value))) {
               continue;
             }
-            if (!childTopic.IsDisabled) {
-              //Handle scenario where the list type derives from Topic
-              if (typeof(Topic).IsAssignableFrom(listType)) {
-                //Ensure the list item derives from the list type (which may be more derived than Topic)
-                if (listType.IsAssignableFrom(childTopic.GetType())) {
+            if (childTopic.IsDisabled) {
+              continue;
+            }
+            //Handle scenario where the list type derives from Topic
+            if (typeof(Topic).IsAssignableFrom(listType)) {
+              //Ensure the list item derives from the list type (which may be more derived than Topic)
+              if (listType.IsAssignableFrom(childTopic.GetType())) {
+                try {
                   list.Add(childTopic);
                 }
+                catch (ArgumentException exception) {
+                  //Ignore exceptions caused by duplicate keys
+                }
               }
-              //Otherwise, assume the list type is a DTO
-              else {
-                var childDto = Map(childTopic, crawlRelationships, cache);
-                //Ensure the mapped type derives from the list type
-                if (listType.IsAssignableFrom(childDto.GetType())) {
+            }
+            //Otherwise, assume the list type is a DTO
+            else {
+              var childDto = Map(childTopic, crawlRelationships, cache);
+              //Ensure the mapped type derives from the list type
+              if (listType.IsAssignableFrom(childDto.GetType())) {
+                try {
                   list.Add(childDto);
+                }
+                catch (ArgumentException exception) {
+                  //Ignore exceptions caused by duplicate keys
                 }
               }
             }
@@ -560,6 +586,25 @@ namespace Ignia.Topics.Mapping {
         validator.Validate(property.GetValue(target), property.Name);
       }
 
+    }
+
+    /*==========================================================================================================================
+    | PRIVATE: ADD CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function recursively iterates through children and adds each to a collection.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> entity pull the data from.</param>
+    /// <param name="topics">The list of <see cref="Topic"/> instances to add each child to.</param>
+    /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
+    private IList<Topic> AddChildren(Topic topic, IList<Topic> topics, bool includeNestedTopics = false) {
+      if (topic.IsDisabled) return topics;
+      if (topic.ContentType.Equals("List") && !includeNestedTopics) return topics;
+      topics.Add(topic);
+      foreach (var child in topic.Children) {
+        AddChildren(child, topics);
+      }
+      return topics;
     }
 
   } //Class
