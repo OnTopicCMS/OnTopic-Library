@@ -355,56 +355,24 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
-      if (defaultValueAttribute != null) {
-        property.SetValue(target, defaultValueAttribute.Value);
-        defaultValue = defaultValueAttribute.Value.ToString();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine inheritance
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (property.GetCustomAttribute(typeof(InheritAttribute), true) != null) {
-        inheritValue = true;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine attribute key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeKeyAttribute = (AttributeKeyAttribute)property.GetCustomAttribute(typeof(AttributeKeyAttribute), true);
-      if (attributeKeyAttribute != null) {
-        attributeKey = attributeKeyAttribute.Value;
-      }
+      GetAttributeValue<DefaultValueAttribute>(
+        property,
+        a => {
+          property.SetValue(target, a.Value);
+          defaultValue = a.Value.ToString();
+        }
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
-      if (relationshipAttribute != null) {
-        relationshipKey = relationshipAttribute.Key?? relationshipKey;
-        relationshipType = relationshipAttribute.Type;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine follow settings
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var recurseAttribute = (FollowAttribute)property.GetCustomAttribute(typeof(FollowAttribute), true);
-      if (recurseAttribute != null) {
-        crawlRelationships = recurseAttribute.Relationships;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine flatten settings
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      flattenChildren = property.GetCustomAttribute(typeof(FlattenAttribute), true) != null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine metadata key, if present
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var metadataAttribute = (MetadataAttribute)property.GetCustomAttribute(typeof(MetadataAttribute), true);
-      if (metadataAttribute != null) {
-        metadataKey = metadataAttribute.Key;
-      }
+      GetAttributeValue<RelationshipAttribute>(
+        property,
+        a => {
+          relationshipKey = a.Key ?? relationshipKey;
+          relationshipType = a.Type;
+        }
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
@@ -415,6 +383,15 @@ namespace Ignia.Topics.Mapping {
           attributeFilters.Add(filter.Key, filter.Value);
         }
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attributes: Retrieve basic attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      GetAttributeValue<InheritAttribute>(property, a => inheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(property, a => attributeKey = a.Value);
+      GetAttributeValue<FollowAttribute>(property, a => crawlRelationships = a.Relationships);
+      GetAttributeValue<FlattenAttribute>(property, a => flattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(property, a => metadataKey = a.Key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
@@ -586,6 +563,23 @@ namespace Ignia.Topics.Mapping {
         validator.Validate(property.GetValue(target), property.Name);
       }
 
+    }
+
+    /*==========================================================================================================================
+    | PRIVATE: GET ATTRIBUTE VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function evaluates an attribute and then, if it exists, executes an <see cref="Action{T1}"/> to process the
+    ///   results.
+    /// </summary>
+    /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
+    /// <param name="property">The <see cref="PropertyInfo"/> instance to pull the attribute from.</param>
+    /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
+    private void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T: Attribute {
+      var attribute = (T)property.GetCustomAttribute(typeof(T), true);
+      if (attribute != null) {
+        action(attribute);
+      }
     }
 
     /*==========================================================================================================================
