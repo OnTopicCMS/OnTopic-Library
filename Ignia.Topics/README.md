@@ -36,4 +36,10 @@ In addition to the above key classes, the `Ignia.Topics` assembly contains a num
 The following are intended to provide support for the Editor domain objects, `ContentTypeDescriptor` and `AttributeDescriptor`. 
 - **[`ContentTypeDescriptorCollection`](Collections/ContentTypeDescriptorCollection.cs)**: A `KeyedCollection` of `ContentTypeDescriptor` objects keyed by `Id` and `Key`.
 - **[`AttributeDescriptorCollection`](Collections/AttributeDescriptorCollection.cs)**: A `KeyedCollection` of `AttributeDescriptor` objects keyed by `Id` and `Key`.
-  
+
+## View Models
+The core Topic library has been designed to be view model agnostic; i.e., view models should be defined for the specific presentation framework (e.g., ASP.NET MVC) and customer. That said, to facilitate reusability of features that work with view models, several interfaces are defined which can be applied as appropriate. These include:
+- **[`ITopicViewModel`](ViewModels/ITopicViewModel.cs)**: Includes universal properties such as `Key`, `Id`, and `ContentType`.
+- **[`IPageTopicViewModel`](ViewModels/IPageTopicViewModel.cs)**: Includes page-specific properties such as `Title`, `MetaKeywords`, and `WebPath`.
+- **[`INavigationTopicViewModel<T>`](ViewModels/INavigationTopicViewModel{T}.cs)**: Includes `IPageTopicViewModel`, `Children`, and an `IsSelected()` view logic handler, for use with navigation menus.
+ 
