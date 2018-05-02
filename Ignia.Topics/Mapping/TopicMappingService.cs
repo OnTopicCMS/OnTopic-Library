@@ -510,7 +510,7 @@ namespace Ignia.Topics.Mapping {
                 try {
                   list.Add(childTopic);
                 }
-                catch (ArgumentException exception) {
+                catch (ArgumentException) {
                   //Ignore exceptions caused by duplicate keys
                 }
               }
@@ -523,7 +523,7 @@ namespace Ignia.Topics.Mapping {
                 try {
                   list.Add(childDto);
                 }
-                catch (ArgumentException exception) {
+                catch (ArgumentException) {
                   //Ignore exceptions caused by duplicate keys
                 }
               }
