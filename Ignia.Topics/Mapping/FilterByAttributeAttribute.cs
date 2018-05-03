@@ -22,12 +22,6 @@ namespace Ignia.Topics.Mapping {
   public sealed class FilterByAttributeAttribute : System.Attribute {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _attributeKey                   = null;
-    private                     string                          _attributeValue                 = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -38,8 +32,8 @@ namespace Ignia.Topics.Mapping {
     /// <param name="attributeValue">The value of the attribute to filter by.</param>
     public FilterByAttributeAttribute(string attributeKey, string attributeValue) {
       TopicFactory.ValidateKey(attributeKey, false);
-      _attributeKey = attributeKey;
-      _attributeValue = attributeValue;
+      Key = attributeKey;
+      Value = attributeValue;
     }
 
     /*==========================================================================================================================
@@ -48,11 +42,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the attribute key.
     /// </summary>
-    public string Key {
-      get {
-        return _attributeKey;
-      }
-    }
+    public string Key { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VALUE
@@ -60,11 +50,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the attribute.
     /// </summary>
-    public string Value {
-      get {
-        return _attributeValue;
-      }
-    }
+    public string Value { get; }
 
   } //Class
 

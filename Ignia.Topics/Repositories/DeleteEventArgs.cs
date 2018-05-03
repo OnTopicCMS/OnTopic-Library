@@ -16,11 +16,6 @@ namespace Ignia.Topics.Repositories {
   public class DeleteEventArgs : EventArgs {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private     Topic   _topic  = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY DELETE EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -28,7 +23,7 @@ namespace Ignia.Topics.Repositories {
     /// </summary>
     /// <param name="topic">The topic.</param>
     public DeleteEventArgs(Topic topic) : base() {
-      _topic = topic;
+      Topic = topic;
     }
 
     /*==========================================================================================================================
@@ -37,10 +32,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Getter that returns the Topic object associated with the event
     /// </summary>
-    public Topic Topic {
-      get => _topic;
-      set => _topic = value;
-    }
+    public Topic Topic { get; set; }
 
   } // Class
 

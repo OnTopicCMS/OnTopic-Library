@@ -21,11 +21,6 @@ namespace Ignia.Topics.Reflection {
   internal class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    Type _type = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -35,7 +30,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
     internal MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type != null);
-      _type = type;
+      Type = type;
       foreach (
         var member
         in type.GetMembers(
@@ -60,7 +55,7 @@ namespace Ignia.Topics.Reflection {
     internal MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type != null);
       Contract.Requires(members != null);
-      _type = type;
+      Type = type;
       foreach (var member in members) {
         Add(member);
       }
@@ -72,7 +67,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Returns the type associated with this collection.
     /// </summary>
-    internal Type Type => _type;
+    internal Type Type { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM

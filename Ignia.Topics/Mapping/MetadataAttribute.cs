@@ -22,11 +22,6 @@ namespace Ignia.Topics.Mapping {
   public sealed class MetadataAttribute : System.Attribute {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _key                            = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -35,7 +30,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="key">The key represents the name of the Metadata topic that should be mapped to.</param>
     public MetadataAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
-      _key = key;
+      Key = key;
     }
 
     /*==========================================================================================================================
@@ -44,12 +39,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the key.
     /// </summary>
-    public string Key {
-      get {
-        return _key;
-      }
-    }
+    public string Key { get; }
 
   } //Class
-
 } //Namespace

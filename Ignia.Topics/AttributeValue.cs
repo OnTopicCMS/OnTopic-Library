@@ -39,11 +39,6 @@ namespace Ignia.Topics {
   public class AttributeValue {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _key                            = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -68,16 +63,15 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      TopicFactory.ValidateKey(key);
+      TopicFactory.ValidateKey(key, false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set local values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Key = key;
-      Value = value;
-      IsDirty = isDirty;
-      EnforceBusinessLogic = true;
+      Key                       = key;
+      Value                     = value;
+      IsDirty                   = isDirty;
+      EnforceBusinessLogic      = true;
 
     }
 
@@ -120,14 +114,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public string Key {
-      get => _key;
-      private set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        TopicFactory.ValidateKey(value);
-        _key = value;
-      }
-    }
+    public string Key { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VALUE
@@ -135,10 +122,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets the current value of the attribute.
     /// </summary>
-    public string Value {
-      get;
-      private set;
-    }
+    public string Value { get; }
 
     /*==========================================================================================================================
     | PROPERTY: IS DIRTY
@@ -152,10 +136,7 @@ namespace Ignia.Topics {
     ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/> is called. Otherwise, it is ignored,
     ///   thus preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
     /// </remarks>
-    public bool IsDirty {
-      get;
-      set;
-    }
+    public bool IsDirty { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: ENFORCE BUSINESS LOGIC
@@ -182,10 +163,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    internal bool EnforceBusinessLogic {
-      get;
-      set;
-    }
+    internal bool EnforceBusinessLogic { get; set; }
 
     /*=========================================================================================================================
     | PROPERTY: LAST MODIFIED
@@ -193,7 +171,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
-    public readonly DateTime LastModified = DateTime.Now;
+    public DateTime LastModified { get; } = DateTime.Now;
 
   } // Class
 

@@ -27,6 +27,22 @@ namespace Ignia.Topics.Reflection {
     private                     Type                            _attributeFlag                  = null;
 
     /*==========================================================================================================================
+    | CONSTRUCTOR (STATIC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes static properties on <see cref="TypeCollection"/>.
+    /// </summary>
+    static TypeCollection() {
+      SettableTypes = new List<Type> {
+        typeof(bool),
+        typeof(int),
+        typeof(string),
+        typeof(DateTime)
+      };
+    }
+
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -364,19 +380,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
-    internal List<Type> SettableTypes {
-      get {
-        if (_settableTypes == null) {
-          _settableTypes = new List<Type> {
-            typeof(bool),
-            typeof(int),
-            typeof(string),
-            typeof(DateTime)
-          };
-        }
-        return _settableTypes;
-      }
-    }
+    static internal List<Type> SettableTypes { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
