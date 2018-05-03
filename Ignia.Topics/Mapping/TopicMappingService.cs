@@ -341,57 +341,15 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceType            = topic.GetType();
       var targetType            = target.GetType();
-      var defaultValue          = (string)null;
-      var inheritValue          = false;
-      var attributeKey          = property.Name;
-      var relationshipKey       = property.Name;
-      var relationshipType      = RelationshipType.Any;
-      var crawlRelationships    = Relationships.None;
-      var metadataKey           = (string)null;
-      var attributeFilters      = new Dictionary<string, string>();
-      var flattenChildren       = false;
+      var attributes            = new PropertyConfiguration(property);
       var topicReferenceId      = topic.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<DefaultValueAttribute>(
-        property,
-        a => {
-          property.SetValue(target, a.Value);
-          defaultValue = a.Value.ToString();
-        }
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine relationship key and type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<RelationshipAttribute>(
-        property,
-        a => {
-          relationshipKey = a.Key ?? relationshipKey;
-          relationshipType = a.Type;
-        }
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Set attribute filters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute != null && filterByAttribute.Count() > 0) {
-        foreach (var filter in filterByAttribute) {
-          attributeFilters.Add(filter.Key, filter.Value);
-        }
+      if (attributes.DefaultValue != null) {
+        property.SetValue(target, attributes.DefaultValue);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Retrieve basic attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<InheritAttribute>(property, a => inheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property, a => attributeKey = a.Value);
-      GetAttributeValue<FollowAttribute>(property, a => crawlRelationships = a.Relationships);
-      GetAttributeValue<FlattenAttribute>(property, a => flattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(property, a => metadataKey = a.Key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
@@ -408,7 +366,11 @@ namespace Ignia.Topics.Mapping {
 
         //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
         if (String.IsNullOrEmpty(attributeValue)) {
-          attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
+          attributeValue = topic.Attributes.GetValue(
+            attributes.AttributeKey,
+            attributes.DefaultValue?.ToString(),
+            attributes.InheritValue
+          );
         }
 
         //Sets the value, assuming it is defined
@@ -435,40 +397,41 @@ namespace Ignia.Topics.Mapping {
 
         //Handle children
         if (
-          (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
-          IsCurrentRelationship(RelationshipType.Children, relationshipType, relationships, listSource)
+          (attributes.RelationshipKey.Equals("Children") || attributes.RelationshipType.Equals(RelationshipType.Children)) &&
+          IsCurrentRelationship(RelationshipType.Children, attributes.RelationshipType, relationships, listSource)
         ) {
           listSource = topic.Children.ToList();
         }
 
         //Handle (outgoing) relationships
-        if (IsCurrentRelationship(RelationshipType.Relationship, relationshipType, relationships, listSource)) {
-          if (topic.Relationships.Contains(relationshipKey)) {
-            listSource = topic.Relationships.GetTopics(relationshipKey);
+        if (IsCurrentRelationship(RelationshipType.Relationship, attributes.RelationshipType, relationships, listSource)) {
+          if (topic.Relationships.Contains(attributes.RelationshipKey)) {
+            listSource = topic.Relationships.GetTopics(attributes.RelationshipKey);
           }
         }
 
         //Handle nested topics, or children corresponding to the property name
-        if (IsCurrentRelationship(RelationshipType.NestedTopics, relationshipType, relationships, listSource)) {
-          if (topic.Children.Contains(relationshipKey)) {
-            listSource = topic.Children[relationshipKey].Children.ToList();
+        if (IsCurrentRelationship(RelationshipType.NestedTopics, attributes.RelationshipType, relationships, listSource)) {
+          if (topic.Children.Contains(attributes.RelationshipKey)) {
+            listSource = topic.Children[attributes.RelationshipKey].Children.ToList();
           }
         }
 
         //Handle (incoming) relationships
-        if (IsCurrentRelationship(RelationshipType.IncomingRelationship, relationshipType, relationships, listSource)) {
-          if (topic.IncomingRelationships.Contains(relationshipKey)) {
-            listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
+        if (IsCurrentRelationship(RelationshipType.IncomingRelationship, attributes.RelationshipType, relationships, listSource)) {
+          if (topic.IncomingRelationships.Contains(attributes.RelationshipKey)) {
+            listSource = topic.IncomingRelationships.GetTopics(attributes.RelationshipKey);
           }
         }
 
         //Handle Metadata relationship
-        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(metadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.ToList();
+        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(attributes.MetadataKey)) {
+          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + attributes.MetadataKey + ":LookupList")?
+            .Children.ToList();
         }
 
         //Handle flattening of children
-        if (flattenChildren) {
+        if (attributes.FlattenChildren) {
           List<Topic> flattenedList = new List<Topic>();
           foreach (var childTopic in listSource) {
             AddChildren(childTopic, flattenedList);
@@ -486,7 +449,7 @@ namespace Ignia.Topics.Mapping {
         //Validate and populate target collection
         if (listSource != null) {
           foreach (Topic childTopic in listSource) {
-            if (filterByAttribute.Any(f => !childTopic.Attributes.GetValue(f.Key, "").Equals(f.Value))) {
+            if (!attributes.SatisfiesAttributeFilters(childTopic)) {
               continue;
             }
             if (childTopic.IsDisabled) {
@@ -506,7 +469,7 @@ namespace Ignia.Topics.Mapping {
             }
             //Otherwise, assume the list type is a DTO
             else {
-              var childDto = Map(childTopic, crawlRelationships, cache);
+              var childDto = Map(childTopic, attributes.CrawlRelationships, cache);
               //Ensure the mapped type derives from the list type
               if (listType.IsAssignableFrom(childDto.GetType())) {
                 try {
@@ -525,9 +488,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
+      else if (attributes.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
         if (topic.Parent != null) {
-          var parent = Map(topic.Parent, crawlRelationships, cache);
+          var parent = Map(topic.Parent, attributes.CrawlRelationships, cache);
           if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
             property.SetValue(target, parent);
           }
@@ -539,7 +502,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        var viewModelReference = Map(topicReference, crawlRelationships, cache);
+        var viewModelReference = Map(topicReference, attributes.CrawlRelationships, cache);
         if (property.PropertyType.IsAssignableFrom(viewModelReference.GetType())) {
           property.SetValue(target, viewModelReference);
         }
@@ -548,9 +511,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (ValidationAttribute validator in property.GetCustomAttributes(typeof(ValidationAttribute))) {
-        validator.Validate(property.GetValue(target), property.Name);
-      }
+      attributes.Validate(target);
 
     }
 
@@ -580,23 +541,6 @@ namespace Ignia.Topics.Mapping {
         sourceRelationships.HasFlag(RelationshipMap.Mappings[targetRelationshipType])
       )
     );
-
-    /*==========================================================================================================================
-    | PRIVATE: GET ATTRIBUTE VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Helper function evaluates an attribute and then, if it exists, executes an <see cref="Action{T1}"/> to process the
-    ///   results.
-    /// </summary>
-    /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
-    /// <param name="property">The <see cref="PropertyInfo"/> instance to pull the attribute from.</param>
-    /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
-    private void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T: Attribute {
-      var attribute = (T)property.GetCustomAttribute(typeof(T), true);
-      if (attribute != null) {
-        action(attribute);
-      }
-    }
 
     /*==========================================================================================================================
     | PRIVATE: ADD CHILDREN
