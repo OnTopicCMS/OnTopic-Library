@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Ignia.Topics.Tests.XML</DocumentationFile>
     <NoWarn>CS1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

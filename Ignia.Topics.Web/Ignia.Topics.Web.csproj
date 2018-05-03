@@ -69,6 +69,7 @@
     <CodeContractsNecessaryEnsures>False</CodeContractsNecessaryEnsures>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
