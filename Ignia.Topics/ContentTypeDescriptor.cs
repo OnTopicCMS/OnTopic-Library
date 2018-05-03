@@ -73,7 +73,8 @@ namespace Ignia.Topics {
       contentType,
       parent,
       id
-    ) { }
+    ) {
+    }
 
     /*==========================================================================================================================
     | PROPERTY: DISABLE CHILD TOPICS
@@ -184,15 +185,6 @@ namespace Ignia.Topics {
           _attributeDescriptors = new AttributeDescriptorCollection();
 
           /*--------------------------------------------------------------------------------------------------------------------
-          | Validate Attributes collection
-          \-------------------------------------------------------------------------------------------------------------------*/
-          if (!Children.Contains("Attributes") || Children["Attributes"] == null) {
-            throw new Exception(
-              "The ContentType '" + Title + "' does not contain a nested topic named 'Attributes' as expected."
-            );
-          }
-
-          /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
           >---------------------------------------------------------------------------------------------------------------------
           | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
@@ -202,8 +194,10 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
-            _attributeDescriptors.Add(attribute);
+          if (Children.Contains("Attributes")) {
+            foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
+              _attributeDescriptors.Add(attribute);
+            }
           }
 
           /*--------------------------------------------------------------------------------------------------------------------
