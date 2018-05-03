@@ -23,7 +23,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
+    static readonly             Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC TYPE

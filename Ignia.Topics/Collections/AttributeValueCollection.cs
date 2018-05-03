@@ -27,8 +27,8 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _associatedTopic                = null;
     static                      TypeCollection                  _typeCache                      = new TypeCollection(typeof(AttributeSetterAttribute));
+    private readonly            Topic                           _associatedTopic                = null;
     private                     int                             _setCounter                     = 0;
 
     /*==========================================================================================================================
