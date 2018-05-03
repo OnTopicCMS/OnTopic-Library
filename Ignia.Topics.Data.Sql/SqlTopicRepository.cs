@@ -456,11 +456,11 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("topics_GetTopics", connection);
-
-      command.CommandType       = CommandType.StoredProcedure;
-      command.CommandTimeout    = 120;
-      SqlDataReader reader      = null;
+      var command               = new SqlCommand("topics_GetTopics", connection) {
+        CommandType             = CommandType.StoredProcedure,
+        CommandTimeout          = 120
+      };
+      var reader                = (SqlDataReader)null;
 
       try {
 
@@ -595,13 +595,13 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("topics_GetVersion", connection);
+      var command               = new SqlCommand("topics_GetVersion", connection) {
+        CommandType             = CommandType.StoredProcedure,
+        CommandTimeout          = 120
+      };
+      var reader                = (SqlDataReader)null;
 
       command.CommandType       = CommandType.StoredProcedure;
-      command.CommandTimeout    = 120;
-      SqlDataReader reader      = null;
-
-      command.CommandType = CommandType.StoredProcedure;
 
       try {
 
