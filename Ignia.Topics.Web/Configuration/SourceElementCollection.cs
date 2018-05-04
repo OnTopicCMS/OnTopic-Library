@@ -39,7 +39,7 @@ namespace Ignia.Topics.Web.Configuration {
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }
-        this.BaseAdd(index, value);
+        BaseAdd(index, value);
       }
     }
 
