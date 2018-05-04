@@ -41,7 +41,7 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public Collection<Topic> Related { get; set; }
 
-    [Relationship("AmbiguousRelationship", RelationshipType.IncomingRelationship)]
+    [Relationship("AmbiguousRelationship", Type=RelationshipType.IncomingRelationship)]
     public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; }
 
   } //Class

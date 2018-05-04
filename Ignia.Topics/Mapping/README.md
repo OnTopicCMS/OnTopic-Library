@@ -118,14 +118,14 @@ public class CompanyTopicViewModel {
   [Metadata("Countries")]
   public TopicViewModelCollection<LookupListItemTopicViewModel> Countries { get; set; }
 
-  [Relationship("Companies", RelationshipType.IncomingRelationship)]
+  [Relationship("Companies", Type=RelationshipType.IncomingRelationship)]
   [Follow(Relationships.Children)]
   public TopicViewModelCollection<CaseStudyTopicViewModel> CaseStudies { get; set; }
 
   [Follow(Relationships.Relationships)]
   public TopicViewModelCollection<TopicViewModel> Children { get; set; }
 
-  [Relationship("Employees", RelationshipType.NestedTopics)]
+  [Relationship("Employees", Type=RelationshipType.NestedTopics)]
   [FilterByAttribute("IsActive", "1")]
   [FilterByAttribute("Role", "Account Manager")]
   [Flatten]

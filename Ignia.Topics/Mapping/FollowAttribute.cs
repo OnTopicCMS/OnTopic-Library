@@ -36,7 +36,7 @@ namespace Ignia.Topics.Mapping {
     ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="relationships"/>.
     /// </summary>
     /// <param name="relationships">The specific relationships that should be crawled.</param>
-    public FollowAttribute(Relationships relationships = Relationships.All) {
+    public FollowAttribute(Relationships relationships) {
       Relationships = relationships;
     }
 
@@ -46,7 +46,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the type(s) of relationships that should be recursed over.
     /// </summary>
-    public Relationships Relationships { get; } = Relationships.All;
+    public Relationships Relationships { get; }
 
   } //Class
 

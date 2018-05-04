@@ -34,15 +34,12 @@ namespace Ignia.Topics.Mapping {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>. Optionally
-    ///   specifies the <see cref="RelationshipType"/> as well.
+    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key value of the relationships associated with the current property.</param>
-    /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
-    public RelationshipAttribute(string key, RelationshipType type = RelationshipType.Any) {
+    public RelationshipAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
       Key = key;
-      Type = type;
     }
 
     /// <summary>
@@ -67,7 +64,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the relationship type.
     /// </summary>
-    public RelationshipType Type { get; }
+    public RelationshipType Type { get; set; }
 
   } //Class
 
