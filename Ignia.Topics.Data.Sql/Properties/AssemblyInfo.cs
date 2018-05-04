@@ -1,36 +1,28 @@
-﻿using System.Reflection;
+﻿/*==============================================================================================================================
+| Author        Ignia, LLC
+| Client        Ignia, LLC
+| Project       Topics Library
+\=============================================================================================================================*/
+using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Ignia.Topics.Data.Sql")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Ignia.Topics.Data.Sql")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+/*==============================================================================================================================
+| DEFINE ASSEMBLY ATTRIBUTES
+>===============================================================================================================================
+| Declare and define attributes used in the compiling of the finished assembly.
+\-----------------------------------------------------------------------------------------------------------------------------*/
+[assembly: AssemblyCompany("Ignia, LLC")]
+[assembly: AssemblyCopyright("Copyright © 2018 Ignia, LLC")]
+[assembly: AssemblyProduct("Ignia OnTopic Library")]
+[assembly: AssemblyTitle("Ignia SQL Server Repository")]
+[assembly: AssemblyDescription("Provides Microsoft SQL Server support for persisting the OnTopic graph to a database.")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: AssemblyCulture("en")]
+[assembly: AssemblyVersion("3.5.1735.0")]
+[assembly: AssemblyFileVersion("3.5.1735.0")]
+[assembly: System.Runtime.InteropServices.ComVisible(false)]
+[assembly: CLSCompliant(true)]
 [assembly: Guid("1de1f923-c7c2-435b-b49a-975acbcb5ff0")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyConfiguration("")]
