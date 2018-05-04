@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 /*==============================================================================================================================
@@ -18,11 +17,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Ignia OnTopic Library")]
 [assembly: AssemblyTitle("Ignia OnTopic Unit Tests")]
 [assembly: AssemblyDescription("Provides unit tests for the OnTopic library.")]
+[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("en")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
 [assembly: AssemblyVersion("3.5.1735.0")]
 [assembly: AssemblyFileVersion("3.5.1735.0")]
-[assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("27632801-bfe3-41d9-8678-3c4bbe45e6c9")]
-[assembly: AssemblyConfiguration("")]

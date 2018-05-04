@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 /*==============================================================================================================================
@@ -18,12 +17,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Ignia OnTopic Library")]
 [assembly: AssemblyTitle("OnTopic Cached Repository")]
 [assembly: AssemblyDescription("Provides a caching decorator for ITopicRepository implementations.")]
+[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("en")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
 [assembly: AssemblyVersion("3.5.1735.0")]
 [assembly: AssemblyFileVersion("3.5.1735.0")]
-[assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("206b7f91-ca25-4e9d-9576-60d2e54a2c0a")]
-[assembly: AssemblyConfiguration("")]
+
 
