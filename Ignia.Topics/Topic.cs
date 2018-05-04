@@ -93,8 +93,14 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the topic's integer identifier according to the data provider.
     /// </summary>
+    /// <value>
+    ///   The unique identifier for the <see cref="Topic"/>.
+    /// </value>
+    /// <exception cref="ArgumentException">
+    ///   The value of this topic has already been set to " + _id + "; it cannot be changed.
+    /// </exception>
     /// <requires description="The id is expected to be a positive value." exception="T:System.ArgumentException">
-    ///   value > 0
+    ///   value &gt; 0
     /// </requires>
     public int Id {
       get => _id;
@@ -113,6 +119,9 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Reference to the parent topic of this node, allowing code to traverse topics as a linked list.
     /// </summary>
+    /// <value>
+    ///   The current <see cref="Topic"/>'s parent <see cref="Topic"/>.
+    /// </value>
     /// <remarks>
     ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily
     ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the root node will
@@ -137,8 +146,11 @@ namespace Ignia.Topics {
     | PROPERTY: CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a keyed collection of child <see cref="Topic"/> instances associated with the current <see cref="Topic"/>.
+    ///   Provides a keyed collection of child <see cref="Topic" /> instances associated with the current <see cref="Topic" />.
     /// </summary>
+    /// <value>
+    ///   The children of the current <see cref="Topic"/>.
+    /// </value>
     public TopicCollection Children { get; }
 
     /*==========================================================================================================================
@@ -149,10 +161,13 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="Topics.ITopicRoutingService"/> (assuming the value isn't
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors" /> property). The content type also determines,
+    ///   by default, which view is rendered by the <see cref="Topics.ITopicRoutingService" /> (assuming the value isn't
     ///   overwritten down the pipe).
     /// </remarks>
+    /// <value>
+    ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
+    /// </value>
     public string ContentType {
       get => Attributes.GetValue("ContentType");
       set => SetAttributeValue("ContentType", value);
@@ -164,12 +179,16 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
+    /// <value>
+    ///   The current <see cref="Topic"/>'s key, which is guaranteed to be unique among its siblings.
+    /// </value>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value != null
     /// </requires>
     /// <requires
     ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
+    ///   exception="T:System.ArgumentException"
+    /// >
     ///   !value.Contains(" ")
     /// </requires>
     [AttributeSetter]
@@ -196,14 +215,18 @@ namespace Ignia.Topics {
     ///   Gets or sets the topic's original key.
     /// </summary>
     /// <remarks>
-    ///   The original key is automatically set by <see cref="Key"/> when its value is updated (assuming the original key isn't
-    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs"/> to represent the original value,
-    ///   and thus allow the <see cref="Repositories.ITopicRepository"/> (or derived providers) from updating the data store
-    ///   appropriately.
+    ///   The original key is automatically set by <see cref="Key" /> when its value is updated (assuming the original key isn't
+    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs" /> to represent the original
+    ///   value, and thus allow the <see cref="Repositories.ITopicRepository" /> (or derived providers) from updating the data
+    ///   store appropriately.
     /// </remarks>
+    /// <value>
+    ///   The key, as represented in the persistence layer.
+    /// </value>
     /// <requires
     ///   description="The OriginalKey should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
+    ///   exception="T:System.ArgumentException"
+    /// >
     ///   !value?.Contains(" ")?? true
     /// </requires>
     internal string OriginalKey {
@@ -225,15 +248,19 @@ namespace Ignia.Topics {
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property). By default, it will
-    ///   be set to the name of the <see cref="ContentType"/>; e.g., if the Content Type is "Page", then the view will be
-    ///   "Page". This will cause the <see cref="ITopicRoutingService"/> to look for a view at, for instance,
+    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService" /> class), via the Accepts header
+    ///   (also via the <see cref="ITopicRoutingService" /> class), on the topic itself (via this property). By default, it will
+    ///   be set to the name of the <see cref="ContentType" />; e.g., if the Content Type is "Page", then the view will be
+    ///   "Page". This will cause the <see cref="ITopicRoutingService" /> to look for a view at, for instance,
     ///   /Common/Templates/Page/Page.aspx.
     /// </remarks>
+    /// <value>
+    ///   The view, as specified by the current <see cref="Topic"/>.
+    /// </value>
     /// <requires
     ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
+    ///   exception="T:System.ArgumentException"
+    /// >
     ///   !value?.Contains(" ")?? true
     /// </requires>
     [AttributeSetter]
@@ -252,6 +279,9 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is hidden; otherwise, <c>false</c>.
+    /// </value>
     [AttributeSetter]
     public bool IsHidden {
       get => Attributes.GetBoolean("IsHidden", false);
@@ -264,6 +294,9 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets or sets whether the current topic is disabled.
     /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance is disabled; otherwise, <c>false</c>.
+    /// </value>
     [AttributeSetter]
     public bool IsDisabled {
       get => Attributes.GetBoolean("IsDisabled", false);
@@ -281,6 +314,9 @@ namespace Ignia.Topics {
     ///   If an item is not marked as IsVisible, then the item will not be visible independent of whether showDisabled is set.
     /// </remarks>
     /// <param name="showDisabled">Determines whether or not items marked as IsDisabled should be displayed.</param>
+    /// <returns>
+    ///   <c>true</c> if the <see cref="Topic" /> is visible; otherwise, <c>false</c>.
+    /// </returns>
     public bool IsVisible(bool showDisabled = false) => !IsHidden && (showDisabled || !IsDisabled);
 
     /*==========================================================================================================================
@@ -290,10 +326,13 @@ namespace Ignia.Topics {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="Key"/> may not contain, for instance, spaces or symbols, there are no restrictions on what
+    ///   While the <see cref="Key" /> may not contain, for instance, spaces or symbols, there are no restrictions on what
     ///   characters can be used in the title. For this reason, it provides the default public value for referencing topics. If
-    ///   the title is not set, then this property falls back to the topic's <see cref="Key"/>.
+    ///   the title is not set, then this property falls back to the topic's <see cref="Key" />.
     /// </remarks>
+    /// <value>
+    ///   The current <see cref="Topic"/>'s title.
+    /// </value>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -312,6 +351,9 @@ namespace Ignia.Topics {
     ///   The Description attribute is primarily used by the editor to display help content for an attribute topic, noting
     ///   how the attribute is used, what is the expected input format or value, etc.
     /// </remarks>
+    /// <value>
+    ///   The current <see cref="Topic"/>'s description.
+    /// </value>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -332,6 +374,9 @@ namespace Ignia.Topics {
     ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly
     ///   overwrite this value for various reasons (such as backdating a web page).
     /// </remarks>
+    /// <value>
+    ///   The date that the current <see cref="Topic"/> was last modified.
+    /// </value>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value.ToString())
     /// </requires>
@@ -348,16 +393,21 @@ namespace Ignia.Topics {
     | METHOD: SET PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Changes the current <see cref="Parent"/> while simultaneously ensuring that the sort order of the topics is
-    ///   maintained, assuming a <paramref name="sibling"/> is set.
+    ///   Changes the current <see cref="Parent" /> while simultaneously ensuring that the sort order of the topics is
+    ///   maintained, assuming a <paramref name="sibling" /> is set.
     /// </summary>
     /// <remarks>
-    ///   If no <paramref name="sibling"/> is provided, then the item is added to the <i>beginning</i> of the collection. If
-    ///   the intent is to add it to the <i>end</i> of the collection, then set the <paramref name="sibling"/> to e.g.
+    ///   If no <paramref name="sibling" /> is provided, then the item is added to the <i>beginning</i> of the collection. If
+    ///   the intent is to add it to the <i>end</i> of the collection, then set the <paramref name="sibling" /> to e.g.
     ///   <c>parent.Children.LastOrDefault()</c>.
     /// </remarks>
-    /// <param name="parent">The <see cref="Topic"/> to move this <see cref="Topic"/> under.</param>
-    /// <param name="sibling">The <see cref="Topic"/> to move this <see cref="Topic"/> to the right of.</param>
+    /// <param name="parent">The <see cref="Topic" /> to move this <see cref="Topic" /> under.</param>
+    /// <param name="sibling">The <see cref="Topic" /> to move this <see cref="Topic" /> to the right of.</param>
+    /// <exception cref="ArgumentOutOfRangeException">parent - A descendant cannot be its own parent.</exception>
+    /// <exception cref="InvalidKeyException">
+    ///   Duplicate key when setting Parent property: the topic with the name '" + Key + "' already exists in the '" +
+    ///   parent.Key + "' topic.
+    /// </exception>
     public void SetParent(Topic parent, Topic sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -413,6 +463,7 @@ namespace Ignia.Topics {
     ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
+    /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -451,6 +502,7 @@ namespace Ignia.Topics {
     ///   Note: If the topic root is not bound to the root of the site, this needs to specifically accounted for in any views
     ///   that reference the web path (e.g., by providing a prefix).
     /// </remarks>
+    /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
     public string GetWebPath() {
       Contract.Ensures(Contract.Result<string>() != null);
       var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
@@ -474,13 +526,14 @@ namespace Ignia.Topics {
     ///   <para>
     ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
     ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.GetValue(String,
-    ///     Boolean)"/> method unable to find a local value for the attribute.
+    ///     Boolean)" /> method unable to find a local value for the attribute.
     ///   </para>
     ///   <para>
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method defaults to a maximum level of five "hops".
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops".
     ///   </para>
     /// </remarks>
+    /// <value>The <see cref="Topic"/> that values should be derived from, if not otherwise available.</value>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
@@ -512,11 +565,12 @@ namespace Ignia.Topics {
     ///   significant extensibility.
     /// </summary>
     /// <remarks>
-    ///   Attributes are stored via an <see cref="AttributeValue"/> class which, in addition to the Attribute Key and Value,
-    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified"/>
-    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty"/>
+    ///   Attributes are stored via an <see cref="AttributeValue" /> class which, in addition to the Attribute Key and Value,
+    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified" />
+    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty" />
     ///   property).
     /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s attributes.</value>
     public AttributeValueCollection Attributes { get; }
 
     /*==========================================================================================================================
@@ -526,10 +580,11 @@ namespace Ignia.Topics {
     ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
-    ///   The relationships property exposes a <see cref="Topic"/> with child topics representing named relationships (e.g.,
+    ///   The relationships property exposes a <see cref="Topic" /> with child topics representing named relationships (e.g.,
     ///   "Related" for related topics); those child topics in turn have child topics representing references to each related
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s relationships.</value>
     public RelatedTopicCollection Relationships { get; }
 
     /*===========================================================================================================================
@@ -539,11 +594,12 @@ namespace Ignia.Topics {
     ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
-    ///   The incoming relationships property provides a reverse index of the <see cref="Relationships"/> property, in order to
+    ///   The incoming relationships property provides a reverse index of the <see cref="Relationships" /> property, in order to
     ///   indicate which topics point to the current topic. This can be useful for traversing the topic tree as a network graph.
     ///   This is of particular use for tags, where the current topic represents a tag, and the incoming relationships represents
     ///   all topics associated with that tag.
     /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s incoming relationships.</value>
     public RelatedTopicCollection IncomingRelationships { get; }
 
     /*==========================================================================================================================
@@ -553,9 +609,10 @@ namespace Ignia.Topics {
     ///   Provides a collection of dates representing past versions of the topic, which can be rolled back to.
     /// </summary>
     /// <remarks>
-    ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository"/> (or one of
+    ///   It is expected that this collection will be populated by the <see cref="Repositories.ITopicRepository" /> (or one of
     ///   its derived providers).
     /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s version history.</value>
     public List<DateTime> VersionHistory { get; }
 
     #endregion
@@ -566,37 +623,41 @@ namespace Ignia.Topics {
     | METHOD: SET ATTRIBUTE VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
-    ///   one, depending on whether that value already exists.
+    ///   Protected helper method that either adds a new <see cref="AttributeValue" /> object or updates the value of an
+    ///   existing one, depending on whether that value already exists.
     /// </summary>
     /// <remarks>
     ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
-    ///   called by the AttributeValueCollection.This is intended to enforce local business logic, and prevent callers from
-    ///   introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
-    ///   AttributeValueCollection that the business logic has already been enforced.To do that, they must either call
-    ///   SetValue() with the enforceBusinessLogic flag set to false, or, if they're in a separate assembly, call this overload.
+    ///   called by the <see cref="AttributeValueCollection"/>. This is intended to enforce local business logic, and prevent
+    ///   callers from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
+    ///   <see cref="AttributeValueCollection"/> that the business logic has already been enforced. To do that, they must either
+    ///   call <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, Boolean)"/> with the
+    ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty" />. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)" />.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
-    ///   exception="T:System.ArgumentNullException">
+    ///   exception="T:System.ArgumentNullException"
+    /// >
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
     ///   description="The value must be specified for the AttributeValue key/value pair."
-    ///   exception="T:System.ArgumentNullException">
+    ///   exception="T:System.ArgumentNullException"
+    /// >
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
     /// <requires
     ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-    ///   exception="T:System.ArgumentException">
+    ///   exception="T:System.ArgumentException"
+    /// >
     ///   !value.Contains(" ")
     /// </requires>
     protected void SetAttributeValue(string key, string value, bool? isDirty = null) {
