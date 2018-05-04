@@ -178,7 +178,7 @@ namespace Ignia.Topics.Tests {
     ///   Attempts to violate the business logic by bypassing the property setter; ensures that business logic is enforced.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
+    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a back door, without routing it through the Key property.")]
     public void AttributeValueCollection_EnforceBusinessLogicTest() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Key", "# ?");
@@ -191,7 +191,7 @@ namespace Ignia.Topics.Tests {
     ///   Attempts to violate the business logic by bypassing SetValue() entirely; ensures that business logic is enforced.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a backdoor, without routing it through the Key property.")]
+    [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a back door, without routing it through the Key property.")]
     public void AttributeValueCollection_EnforceBusinessLogic_BackdoorTest() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");

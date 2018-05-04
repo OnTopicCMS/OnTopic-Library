@@ -193,7 +193,7 @@ namespace Ignia.Topics.Web.Configuration {
     | METHOD: IS ENABLED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt and the target
+    ///   Looks up a source element at a given location and based on a specified parent configuration element and the target
     ///   element's key, identifies the source value, and verifies whether the element is available, enabled, or set to true.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
@@ -204,7 +204,7 @@ namespace Ignia.Topics.Web.Configuration {
     public static bool IsEnabled(ConfigurationElement parent, string key) => IsEnabled(parent, key, true);
 
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt and the target
+    ///   Looks up a source element at a given location and based on a specified parent configuration element and the target
     ///   element's key, identifies the source value, and verifies whether the element is available, enabled, or set to true.
     /// </summary>
     /// <param name="parent">The parent <see cref="ConfigurationElement"/>.</param>
@@ -218,7 +218,7 @@ namespace Ignia.Topics.Web.Configuration {
     }
 
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and
+    ///   Looks up a source element at a given location and based on a specified parent configuration element collection and
     ///   the target element's key, identifies the source value, and verifies whether the element is available, enabled, or
     ///   set to true.
     /// </summary>
@@ -230,7 +230,7 @@ namespace Ignia.Topics.Web.Configuration {
     public static bool IsEnabled(ConfigurationElementCollection parent, string key) => IsEnabled(parent, key, false);
 
     /// <summary>
-    ///   Looks up a source element at a given location and based on a specified parent configuration elemnt collection and
+    ///   Looks up a source element at a given location and based on a specified parent configuration element collection and
     ///   the target element's key, identifies the source value, and verifies whether the element is available, enabled, or
     ///   set to true.
     /// </summary>

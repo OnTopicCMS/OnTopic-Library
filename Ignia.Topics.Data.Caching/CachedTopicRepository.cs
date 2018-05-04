@@ -64,7 +64,7 @@ namespace Ignia.Topics.Data.Caching {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -98,7 +98,7 @@ namespace Ignia.Topics.Data.Caching {
     }
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -211,7 +211,7 @@ namespace Ignia.Topics.Data.Caching {
       | Provide implicit root
       >-------------------------------------------------------------------------------------------------------------------------
       | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
-      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
+      | the calling application.  A developer should be able to call GetTopic("Namespace:TopicPath") to get to a topic, without
       | needing to be aware of the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (

@@ -43,7 +43,7 @@ namespace Ignia.Topics {
     ///   cref="ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to correctly save
     ///   new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
     ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
-    ///   it is assumed these are being set to the same values currently used in the persistance store.
+    ///   it is assumed these are being set to the same values currently used in the persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -115,7 +115,7 @@ namespace Ignia.Topics {
     /// </summary>
     /// <remarks>
     ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily
-    ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the the root node will
+    ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the root node will
     ///   have a null parent.
     /// </remarks>
     /// <requires description="The value for Parent must not be null." exception="T:System.ArgumentNullException">
@@ -330,7 +330,7 @@ namespace Ignia.Topics {
     ///   The value is stored in the database as a string (Attribute) value, but converted to DateTime for use in the system. It
     ///   is important to note that the last modified attribute is not tied to the system versioning (which operates at an
     ///   attribute level) nor is it guaranteed to be correct for auditing purposes; for example, the author may explicitly
-    ///   overwrite this value for various reasons (such as backdating a webpage).
+    ///   overwrite this value for various reasons (such as backdating a web page).
     /// </remarks>
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value.ToString())
@@ -348,7 +348,7 @@ namespace Ignia.Topics {
     | METHOD: SET PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Changes the current <see cref="Parent"/> while simultenaously ensuring that the sort order of the topics is
+    ///   Changes the current <see cref="Parent"/> while simultaneously ensuring that the sort order of the topics is
     ///   maintained, assuming a <paramref name="sibling"/> is set.
     /// </summary>
     /// <remarks>
@@ -357,7 +357,7 @@ namespace Ignia.Topics {
     ///   <c>parent.Children.LastOrDefault()</c>.
     /// </remarks>
     /// <param name="parent">The <see cref="Topic"/> to move this <see cref="Topic"/> under.</param>
-    /// <param name="sibling">The <see cref="Topic"/> to mvoe this <see cref="Topic"/> to the right of.</param>
+    /// <param name="sibling">The <see cref="Topic"/> to move this <see cref="Topic"/> to the right of.</param>
     public void SetParent(Topic parent, Topic sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -20,7 +20,7 @@ namespace Ignia.Topics.Web.Configuration {
     | FACTORY METHOD: GET CONFIG
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the <c>topics</c> element from the web.config as the configuation section.
+    ///   Gets the <c>topics</c> element from the web.config as the configuration section.
     /// </summary>
     /// <returns>The <c>topics</c> section of the implementing client's configuration.</returns>
     public static TopicsSection GetConfig() {

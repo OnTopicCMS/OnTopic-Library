@@ -37,7 +37,7 @@ namespace Ignia.Topics.Web.Mvc {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified
-    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
+    ///   path to the views Directory, and, optionally, the expected filename suffix of each view file.
     /// </summary>
     public MvcTopicRoutingService(
       ITopicRepository          topicRepository,

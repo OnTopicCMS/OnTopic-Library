@@ -55,7 +55,7 @@ namespace Ignia.Topics.Web.Editor {
       if (topic == null || String.IsNullOrEmpty(attributeKey)) return "";
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Build configured file path string base on values and settings paramters passed to the method
+      | Build configured file path string base on values and settings parameters passed to the method
       \-----------------------------------------------------------------------------------------------------------------------*/
       string    filePath                = "";
       string    relativePath            = null;
@@ -73,7 +73,7 @@ namespace Ignia.Topics.Web.Editor {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add topic keys (directory names) between the start topic and the end topic based on the topic's webpath property
+      | Add topic keys (directory names) between the start topic and the end topic based on the topic's WebPath property
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (startTopic != null) {
         Contract.Assume(
@@ -101,7 +101,7 @@ namespace Ignia.Topics.Web.Editor {
       filePath                         += relativePath;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Replace path slashes with backslahes if the resulting file path value uses a UNC or basic file path format
+      | Replace path slashes with backslashes if the resulting file path value uses a UNC or basic file path format
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (filePath.IndexOf("\\") >= 0) {
         filePath                        = filePath.Replace("/", "\\");

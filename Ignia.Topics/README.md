@@ -26,7 +26,7 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 In addition to the above key classes, the `Ignia.Topics` assembly contains a number of specialized collections. These include:
 - **[`TopicCollection{T}`](Collections/TopicCollection{T}.cs)**: A `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
   - **[`TopicCollection`](Collections/TopicCollection.cs)**: A `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
-    - **[`NamedTopicCollection`](Collections/NamedTopicCollection.cs)**: Proviedes a unique name to a `TopicCollection` so it can be keyed as part of a collection-of-collections.
+    - **[`NamedTopicCollection`](Collections/NamedTopicCollection.cs)**: Provides a unique name to a `TopicCollection` so it can be keyed as part of a collection-of-collections.
 - **[`ReadOnlyTopicCollection{T}`](Collections/ReadOnlyTopicCollection{T}.cs)**: A read-only `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
   - **[`ReadOnlyTopicCollection`](Collections/ReadOnlyTopicCollection.cs)**: A read-only `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
 - **[`RelatedTopicCollection`](Collections/RelatedTopicCollection.cs)**: A `KeyedCollection` of `NamedTopicCollection` objects, keyed by `Name`, thus providing a collection-of-collections. 

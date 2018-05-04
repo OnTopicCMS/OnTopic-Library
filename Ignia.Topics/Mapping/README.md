@@ -142,7 +142,7 @@ In this example, the properties would map to:
 - `Children`: A collection of child topics, with all relationships (but not e.g. grandchildren) loaded. 
 - `Contacts`: A list of `Employee` nested topics, filtered by those with `IsActive` set to `1` (`true`) and `Role` set to "Account Manager". Includes any descendants of the nested topics that meet the previous criteria.
 
-> *Note*: Often times, data transfer objects won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional help. For instance, the `[Relationship(…)]` attribute is useful if the relationship key is ambigious between outgoing relationships and incoming relationships. 
+> *Note*: Often times, data transfer objects won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional help. For instance, the `[Relationship(…)]` attribute is useful if the relationship key is ambiguous between outgoing relationships and incoming relationships. 
 
 ## Polymorphism
 If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collection property (e.g., `List<TopicViewModel>`) are defined, then any target instances must be assignable by the base type (in these cases, `TopicViewModel`). If they cannot be, then they will not be included; no error will occur.
@@ -167,7 +167,7 @@ The [`CachedTopicMappingService`](CachedTopicMappingService.cs) Decorator, which
 - `topicMappingService.Map<TopicViewModel>(topic, Relationships.Children)`
 - `topicMappingService.Map<PageTopicViewModel>(topic, Relationships.Children)`
 
-To implement the caching decorator, use the following construction as a Singleton lifecycle in your composer:
+To implement the caching decorator, use the following construction as a Singleton lifestyle in your composer:
 ```
 var topicRepository = new SqlTopicRepository(…);
 var topicMappingService = new TopicMappingService(topicRepository);
@@ -176,4 +176,4 @@ var cachedTopicMappingService = new CachedTopicMappingService(topicMappingServic
 
 > *Note:* Be aware that the `CachedTopicMappingService` may take up considerable memory, depending on how many permutations of mapped objects the application has. This is especially true since it caches each unique object graph; no effort is made to centralize references to e.g. relationships that reference the same object instance.
 
-> *Note:* The `CachedTopicMappingService` makes no effort to validate or evict cache entries. Topics whose values change during the lifetyime of the `CachedTopicMappingService` will not be reflected in the mapped responses.
+> *Note:* The `CachedTopicMappingService` makes no effort to validate or evict cache entries. Topics whose values change during the lifetime of the `CachedTopicMappingService` will not be reflected in the mapped responses.

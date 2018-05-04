@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -64,7 +64,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     }
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -228,7 +228,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a collection of fake data that loosely mimics a barebones database.
+    ///   Creates a collection of fake data that loosely mimics a bare bones database.
     /// </summary>
     private void CreateFakeData() {
 

@@ -8,7 +8,7 @@
 --              Hedley Robertson	07062010  Added support for SiblingID (Ordering)
 --              Hedley Robertson	08122010  Inline test cases, debugging statements and check for re-parenting;
 --						  now avoids moving item to start of SET when sibling move requested
---						  and parentid has not changed
+--						  and ParentId has not changed
 --              Hedley Robertson	08172010  Rebuilt with externalized MoveSubTree function
 --		Jeremy Caney		09222014  Updated logic for ParentID attribute to be based on Key, not ID
 --		Jeremy Caney		12092017  Refactored based on Celko's alternative formulation.
@@ -124,7 +124,7 @@ SET			@Offset =
 -- MOVE SOURCE RANGE TO INSERTION POINT
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- The basic idea behind moving nodes is that we're going to a) shift the target subtree (@Parent) by the delta (@Offset) between its original
--- position (@OriginalLeft, @OriginalRight) and the the target location (@InsertionPoint), while b) closing the gap left behind by shifting all
+-- position (@OriginalLeft, @OriginalRight) and the target location (@InsertionPoint), while b) closing the gap left behind by shifting all
 -- intermediate nodes by the width of the target subtree (@OriginalRange).
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- EXAMPLE: If we're moving a target subtree of width 12 down 26 nodes, then we'd a) subtract 26 (the @Offset) from all nodes between RangeLeft

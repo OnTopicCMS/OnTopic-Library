@@ -29,7 +29,7 @@ namespace Ignia.Topics.Repositories {
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="MoveEventArgs"/> class and sets the <see cref="Topic"/> and
-    ///   <see cref="Target"/> propreties based on the specified objects.
+    ///   <see cref="Target"/> properties based on the specified objects.
     /// </summary>
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>

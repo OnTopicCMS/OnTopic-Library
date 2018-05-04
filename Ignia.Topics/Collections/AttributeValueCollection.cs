@@ -63,7 +63,7 @@ namespace Ignia.Topics.Collections {
     ///   does not support inheritFromParent or inheritFromDerived (which otherwise default to true).
     /// </remarks>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <returns>True if if the attribute value is marked as dirty; otherwise false.</returns>
+    /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(string name) {
       if (!Contains(name)) {
         return false;
@@ -171,7 +171,7 @@ namespace Ignia.Topics.Collections {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Finaly, return default
+      | Finally, return default
       \-----------------------------------------------------------------------------------------------------------------------*/
       return defaultValue;
 
@@ -232,7 +232,7 @@ namespace Ignia.Topics.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a datetime.
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a DateTime.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>

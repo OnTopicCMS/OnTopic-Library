@@ -357,7 +357,7 @@ namespace Ignia.Topics.Data.Sql {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified topic key.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified topic key.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -433,7 +433,7 @@ namespace Ignia.Topics.Data.Sql {
     }
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic's unique identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -772,7 +772,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute strings
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // Strings are immutable, use a stringbuilder to save memory
+      // Strings are immutable, use a StringBuilder to save memory
       var attributes            = new StringBuilder();
       var nullAttributes        = new StringBuilder();
       var blob                  = new StringBuilder();
@@ -908,7 +908,7 @@ namespace Ignia.Topics.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Catch excewption
+      | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (Exception ex) {
         throw new Exception("Failed to save Topic " + topic.Key + " (" + topic.Id + ") via " + _connectionString + ": " + ex.Message);
@@ -1183,9 +1183,9 @@ namespace Ignia.Topics.Data.Sql {
     | METHOD: CREATE RELATIONSHIPS BLOB
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Internal helper function to build string of related xml nodes for each scope of related items in model.
+    ///   Internal helper function to build string of related XML nodes for each scope of related items in model.
     /// </summary>
-    /// <param name="topic">The topic object for which to create the relationsihps.</param>
+    /// <param name="topic">The topic object for which to create the relationships.</param>
     /// <returns>The blob string.</returns>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string CreateRelationshipsBlob(Topic topic) {
@@ -1196,7 +1196,7 @@ namespace Ignia.Topics.Data.Sql {
       Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Create blog string container
+      | Create blob string container
       \-----------------------------------------------------------------------------------------------------------------------*/
       var blob = new StringBuilder("");
 
@@ -1259,7 +1259,7 @@ namespace Ignia.Topics.Data.Sql {
     | METHOD: ADD SQL PARAMETER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Wrapper function that adds a SQL paramter to a command object.
+    ///   Wrapper function that adds a SQL parameter to a command object.
     /// </summary>
     /// <param name="commandObject">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
@@ -1273,7 +1273,7 @@ namespace Ignia.Topics.Data.Sql {
     ) => AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
 
     /// <summary>
-    ///   Adds a SQL paramter to a command object, additionally setting the specified parameter direction.
+    ///   Adds a SQL parameter to a command object, additionally setting the specified parameter direction.
     /// </summary>
     /// <param name="commandObject">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
@@ -1287,7 +1287,7 @@ namespace Ignia.Topics.Data.Sql {
     ) => AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
 
     /// <summary>
-    ///   Adds a SQL paramter to a command object, additionally setting the specified SQL data length for the field.
+    ///   Adds a SQL parameter to a command object, additionally setting the specified SQL data length for the field.
     /// </summary>
     /// <param name="commandObject">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>

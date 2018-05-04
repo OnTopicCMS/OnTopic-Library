@@ -72,7 +72,7 @@ namespace Ignia.Topics {
     }
 
     /// <summary>
-    ///   Instantiates a new instance of a <see cref="InvalidKeyException"/> class for serlialization.
+    ///   Instantiates a new instance of a <see cref="InvalidKeyException"/> class for serialization.
     /// </summary>
     /// <param name="info">A <see cref="SerializationInfo"/> instance with details about the serialization requirements.</param>
     /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>

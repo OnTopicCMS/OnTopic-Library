@@ -59,7 +59,7 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified
-    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
+    ///   path to the views Directory, and, optionally, the expected filename suffix of each view file.
     /// </summary>
     /// <remarks>
     ///   Because the <see cref="ViewRoutingService"/> is distributed with, and intended exclusively for use with, the ASP.NET
@@ -188,7 +188,7 @@ namespace Ignia.Topics {
         >-------------------------------------------------------------------------------------------------------------------------
         | ### TODO JJC071617: This introduces an unwanted dependency on HttpContext. While this is possible, it may introduce
         | incompatibilities with the context (e.g., do ASP.NET MVC and ASP.NET Web Forms expose the same HttpContext objects?
-        | Preferrably, this would be handled by each environment as appropriate, but that might muddle the logic.
+        | Preferably, this would be handled by each environment as appropriate, but that might muddle the logic.
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (viewName == null && _headers["Accept"] != null) {
           var acceptHeaders = _headers["Accept"].ToString();
@@ -257,7 +257,7 @@ namespace Ignia.Topics {
           var subDirectories = viewsDirectoryInfo.GetDirectories("*", SearchOption.AllDirectories);
 
           /*--------------------------------------------------------------------------------------------------------------------
-          | Disvoer all view templates available via the configured path
+          | Discover all view templates available via the configured path
           \-------------------------------------------------------------------------------------------------------------------*/
           // Get top-level (generic) view files
           foreach (var file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {

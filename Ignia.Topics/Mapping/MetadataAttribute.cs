@@ -13,7 +13,7 @@ namespace Ignia.Topics.Mapping {
   ///   Flags that a property should be mapped to a list of metadata available in the <c>Configuration</c> namespace.
   /// </summary>
   /// <remarks>
-  ///   In the Topic Editor, the <c>TopicLookup</c> allows editors to select values from dropdown lists representing topics.
+  ///   In the Topic Editor, the <c>TopicLookup</c> allows editors to select values from drop-down lists representing topics.
   ///   Those topics, by default, are stored in the <c>Configuration:Metadata</c> namespace. The metadata attribute allows a
   ///   strongly-typed reference to be created, thus pulling either a reference to a specific topic (in the case of a single
   ///   value property) or a collection of the metadata (in the case of a collection).

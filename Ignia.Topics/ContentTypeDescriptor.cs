@@ -53,7 +53,7 @@ namespace Ignia.Topics {
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
     ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
-    ///   persistance store.
+    ///   persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -106,7 +106,7 @@ namespace Ignia.Topics {
     | PROPERTY: PERMITTED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a readonly collection of what types of content types are permitted to be created as children of instances of
+    ///   Provides a read-only collection of what types of content types are permitted to be created as children of instances of
     ///   this content type.
     /// </summary>
     /// <remarks>

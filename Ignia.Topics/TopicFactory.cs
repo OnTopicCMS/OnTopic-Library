@@ -165,7 +165,7 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   When the <paramref name="id"/> parameter is set the <see cref="AttributeValue.IsDirty"/> property is set to
     ///   <c>false</c> on <see cref="Topic.Key"/> as well as on <see cref="Topic.ContentType"/>, since it is assumed these are
-    ///   being set to the same values currently used in the persistance store.
+    ///   being set to the same values currently used in the persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>

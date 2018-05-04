@@ -56,7 +56,7 @@ namespace Ignia.Topics.Tests {
     | TEST: IS (CONTENT) TYPE OF
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Associates a new topic with several contnet types, and confirms that the topic is reported as a type of those content
+    ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
     ///   types.
     /// </summary>
     [TestMethod]

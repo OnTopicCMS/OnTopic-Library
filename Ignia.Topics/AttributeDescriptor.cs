@@ -59,7 +59,7 @@ namespace Ignia.Topics {
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
     ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
-    ///   persistance store.
+    ///   persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -87,7 +87,7 @@ namespace Ignia.Topics {
     | PROPERTY: TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the filename refence to the Attribute Type control associate with the Topic object.
+    ///   Gets or sets the filename reference to the Attribute Type control associate with the Topic object.
     /// </summary>
     /// <remarks>
     ///   The type attribute maps to the name of a control, directive, or partial view in the editor representing the specific
@@ -270,7 +270,7 @@ namespace Ignia.Topics {
     ///   <para>
     ///     Attributes that are needed to provide indexes, sitemaps, navigation, etc. should be indexed so that they're always
     ///     available in memory without requiring an additional database query. These increase the memory requirements of the
-    ///     application, but reduce the number of database roundtrips required for topics that are accessed outside of a single
+    ///     application, but reduce the number of database round-trips required for topics that are accessed outside of a single
     ///     page. For instance, the title and description of a topic may be cross-referenced on other pages or as part of the
     ///     navigation, and should thus be indexed.
     ///   </para>

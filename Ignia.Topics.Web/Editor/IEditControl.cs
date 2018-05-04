@@ -22,7 +22,7 @@ namespace Ignia.Topics.Web.Editor {
     | PROPERTY: INHERITED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the the value of a control, as inherited from any Topic pointers. 
+    ///   Gets or sets the value of a control, as inherited from any Topic pointers. 
     /// </summary>
     /// <remarks>
     ///   If this value is set, then the control should not be marked as required, as it is inheriting its value from a
@@ -37,7 +37,7 @@ namespace Ignia.Topics.Web.Editor {
     ///   Gets or sets the value of a control, ignoring inheritance.
     /// </summary>
     /// <remarks>
-    ///   The value should not be set to an inherited value, as otherwise, that value will end up being duplicatd in the local
+    ///   The value should not be set to an inherited value, as otherwise, that value will end up being duplicated in the local
     ///   Topic.
     /// </remarks>
     string Value { get; set; }
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Web.Editor {
     /// <remarks>
     ///   This allows the type to retrieve configuration or extended attributes specifically from an attribute, as opposed to
     ///   having them set via the DefaultValues attribute. This allows the Attribute Content Type to be subclassed, thus
-    ///   permitting more user-friendly interfaces to be developed for particular attributes when using the Oroborus
+    ///   permitting more user-friendly interfaces to be developed for particular attributes when using the Oroboros
     ///   Configuration. For instance, if an attribute-related control includes a property named Color, then an attribute could
     ///   be added to that Attribute's Content Type allowing the color to be defined, as opposed to the publisher needing to
     ///   know how to set the Color attribute using the DefaultValue attribute.

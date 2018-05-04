@@ -44,7 +44,7 @@ namespace Ignia.Topics.Mapping {
     | PROPERTY: RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the type(s) of relationships that should be recused over.
+    ///   Gets the type(s) of relationships that should be recursed over.
     /// </summary>
     public Relationships Relationships { get; } = Relationships.All;
 

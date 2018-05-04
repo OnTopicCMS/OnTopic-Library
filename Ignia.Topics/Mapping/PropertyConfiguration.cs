@@ -286,7 +286,7 @@ namespace Ignia.Topics.Mapping {
     ///   <para>
     ///     When <see cref="FlattenChildren"/> is specified, <see cref="ITopicMappingService"/> implementations are expected to
     ///     apply all other constraints. For instance, if the target collection is strongly typed, then only DTOs that exhibit
-    ///     polymorphic compatability with that type will be included (i.e., DTOs of the same or a derived type as the target
+    ///     polymorphic compatibility with that type will be included (i.e., DTOs of the same or a derived type as the target
     ///     collection). Similarly, any <see cref="AttributeFilters"/> will be applied to each of the descendants. Finally, if
     ///     the target collection has a unique constraint (e.g., due to implementing <see cref="KeyedCollection{TKey, TItem}"/>)
     ///     then any items that would constitute a duplicate will be filtered out <i>without raising an exception</i>. This
