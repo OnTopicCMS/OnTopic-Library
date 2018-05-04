@@ -334,7 +334,7 @@ namespace Ignia.Topics.Reflection {
     ///   Determines whether a given type is settable, either assuming the list of <see cref="SettableTypes"/>, or provided a
     ///   specific <paramref name="targetType"/>.
     /// </summary>
-    private bool IsSettableType(Type sourceType, Type targetType = null) {
+    private static bool IsSettableType(Type sourceType, Type targetType = null) {
 
       if (targetType != null) {
         return sourceType.Equals(targetType);
@@ -349,7 +349,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Converts a string value to an object of the target type.
     /// </summary>
-    private object GetValueObject(Type type, string value) {
+    private static object GetValueObject(Type type, string value) {
 
       var valueObject = (object)null;
 

@@ -532,7 +532,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="sourceRelationshipType">The <see cref="RelationshipType"/> for the current property.</param>
     /// <param name="sourceRelationships">The <see cref="Relationships"/> for the current property.</param>
     /// <param name="listSource">The existing assignment of <see cref="Topic"/> instances for the relationship.</param>
-    private bool IsCurrentRelationship(
+    private static bool IsCurrentRelationship(
       RelationshipType targetRelationshipType,
       RelationshipType sourceRelationshipType,
       Relationships sourceRelationships,
