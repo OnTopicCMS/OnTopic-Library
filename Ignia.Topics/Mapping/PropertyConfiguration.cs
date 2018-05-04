@@ -337,7 +337,7 @@ namespace Ignia.Topics.Mapping {
     /// <typeparam name="T">An <see cref="Attribute"/> type to evaluate.</typeparam>
     /// <param name="property">The <see cref="PropertyInfo"/> instance to pull the attribute from.</param>
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
-    private void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
+    private static void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
       var attribute = (T)property.GetCustomAttribute(typeof(T), true);
       if (attribute != null) {
         action(attribute);

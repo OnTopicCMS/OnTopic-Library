@@ -37,7 +37,7 @@ namespace Ignia.Topics.Web.Editor {
     /// <param name="includeLeafTopic">Boolean indicator as to whether to include the endpoint/leaf topic in the path.</param>
     /// <param name="truncatePathAtTopic">The assembled topic keys at which to end the path string.</param>
     /// <returns>A constructed file path.</returns>
-    public static string GetPath(
+    public string GetPath(
       Topic     topic,
       string    attributeKey,
       bool      includeLeafTopic        = true,
@@ -47,7 +47,7 @@ namespace Ignia.Topics.Web.Editor {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate return value
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<String>() != null);
+      Contract.Ensures(Contract.Result<string>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Only process the path if both topic and attribtueKey are provided
@@ -57,10 +57,10 @@ namespace Ignia.Topics.Web.Editor {
       /*------------------------------------------------------------------------------------------------------------------------
       | Build configured file path string base on values and settings parameters passed to the method
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    filePath                = "";
-      string    relativePath            = null;
-      Topic     startTopic              = topic;
-      Topic     endTopic                = includeLeafTopic? topic : topic.Parent;
+      var       filePath                = "";
+      var       relativePath            = (string)null;
+      var       startTopic              = topic;
+      var       endTopic                = includeLeafTopic? topic : topic.Parent;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Crawl up the topics tree to find file path values set at a higher level
@@ -87,8 +87,8 @@ namespace Ignia.Topics.Web.Editor {
       | Perform path truncation based on topics included in TruncatePathAtTopic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (truncatePathAtTopic != null) {
-        foreach (string truncationTopic in truncatePathAtTopic) {
-          int truncateTopicLocation     = relativePath.IndexOf(truncationTopic, StringComparison.InvariantCultureIgnoreCase);
+        foreach (var truncationTopic in truncatePathAtTopic) {
+          var truncateTopicLocation     = relativePath.IndexOf(truncationTopic, StringComparison.InvariantCultureIgnoreCase);
           if (truncateTopicLocation >= 0) {
             relativePath                = relativePath.Substring(0, truncateTopicLocation + truncationTopic.Length + 1);
           }

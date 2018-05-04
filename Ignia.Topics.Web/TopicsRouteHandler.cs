@@ -41,7 +41,7 @@ namespace Ignia.Topics.Web {
     ///   Gets the expected location for View files; attempts to retrieve the value from the <c><topics /></c> configuration
     ///   section, but defaults to ~/Common/Templates/.
     /// </summary>
-    private string ViewsPath {
+    private static string ViewsPath {
       get {
         var viewsPath           = "~/Common/Templates/";
         var topicsSection       = (TopicsSection)ConfigurationManager.GetSection("topics");
