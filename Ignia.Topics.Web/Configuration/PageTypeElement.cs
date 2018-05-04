@@ -14,7 +14,7 @@ namespace Ignia.Topics.Web.Configuration {
   | CLASS: PAGE TYPE ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a custom <see cref="ConfigurationElement"/> which represents a page type (default: 
+  ///   Provides a custom <see cref="ConfigurationElement"/> which represents a page type (default:
   ///   <see cref="Ignia.Topics.Web.TopicPage"/>) as developed for the application.
   /// </summary>
   /// <remarks>

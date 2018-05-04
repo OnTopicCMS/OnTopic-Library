@@ -13,7 +13,7 @@ namespace Ignia.Topics.Web.Configuration {
   | CLASS: EDITOR ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a custom <see cref="ConfigurationElement"/> which represents the (default: OnTopic) editor configuration. 
+  ///   Provides a custom <see cref="ConfigurationElement"/> which represents the (default: OnTopic) editor configuration.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -31,7 +31,7 @@ namespace Ignia.Topics.Web.Configuration {
     | PROPRTY: ENABLED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets whether the (CMS) editor is enabled as defined by the configuration attribute. 
+    ///   Gets whether the (CMS) editor is enabled as defined by the configuration attribute.
     /// </summary>
     [ConfigurationProperty("enabled", DefaultValue = "True", IsRequired = false)]
     public bool Enabled => Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
