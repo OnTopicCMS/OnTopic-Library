@@ -116,6 +116,7 @@ namespace Ignia.Topics.Repositories {
 
     }
 
+
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -129,11 +130,13 @@ namespace Ignia.Topics.Repositories {
     /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
     ///   topic != null
     /// </requires>
+    #pragma warning disable CA1822 // Mark members as static
     public void Move(Topic topic, Topic target) {
       Contract.Requires(target != topic);
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
     }
+    #pragma warning restore CA1822 // Mark members as static
 
     /// <summary>
     ///   Interface method that supports moving a topic from one position to another.
@@ -167,6 +170,7 @@ namespace Ignia.Topics.Repositories {
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
+    #pragma warning disable IDE0022 // Use expression body for methods
     public void Delete(Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -175,6 +179,7 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
     }
+    #pragma warning restore IDE0022 // Use expression body for methods
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
