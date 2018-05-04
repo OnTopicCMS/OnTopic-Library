@@ -29,13 +29,44 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = null;
-    static                      TypeCollection                  _typeCache                      = new TypeCollection();
+    static readonly             Dictionary<string, Type>        _typeLookup                     = null;
+    static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository                = null;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR (STATIC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    #pragma warning disable CA1810 // Initialize reference type static fields inline
+    /// <summary>
+    ///   Establishes static variables for the <see cref="TopicMappingService"/>.
+    /// </summary>
+    static TopicMappingService() {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Ensure cache is populated
+      \---------------------------------------------------------------------------------------------------------------------*/
+      var typeLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+      var matchedTypes = AppDomain
+        .CurrentDomain
+        .GetAssemblies()
+        .SelectMany(t => t.GetTypes())
+        .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase))
+        .OrderBy(t => t.Namespace.Equals("Ignia.Topics.ViewModels"))
+        .ToList();
+      foreach (var type in matchedTypes) {
+        var associatedContentType = type.Name.Replace("TopicViewModel", "");
+        if (!typeLookup.ContainsKey(associatedContentType)) {
+          typeLookup.Add(associatedContentType, type);
+        }
+      }
+      _typeLookup               = typeLookup;
+
+    }
+    #pragma warning restore CA1810 // Initialize reference type static fields inline
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -95,27 +126,6 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
       Contract.Ensures(Contract.Result<Type>() != null);
       TopicFactory.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Ensure cache is populated
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup == null) {
-        var typeLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-        var matchedTypes = AppDomain
-          .CurrentDomain
-          .GetAssemblies()
-          .SelectMany(t => t.GetTypes())
-          .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase))
-          .OrderBy(t => t.Namespace.Equals("Ignia.Topics.ViewModels"))
-          .ToList();
-        foreach (var type in matchedTypes) {
-          var associatedContentType = type.Name.Replace("TopicViewModel", "");
-          if (!typeLookup.ContainsKey(associatedContentType)) {
-            typeLookup.Add(associatedContentType, type);
-          }
-        }
-        _typeLookup = typeLookup;
-      }
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached entry

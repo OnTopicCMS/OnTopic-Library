@@ -25,26 +25,25 @@ namespace Ignia.Topics.Mapping {
   static internal class RelationshipMap {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
+    | CONSTRUCTOR (STATIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static Dictionary<RelationshipType, Relationships> _mappings = null;
+    static RelationshipMap() {
+
+      var mappings = new Dictionary<RelationshipType, Relationships> {
+        { RelationshipType.Children, Relationships.Children },
+        { RelationshipType.Relationship, Relationships.Relationships },
+        { RelationshipType.NestedTopics, Relationships.None },
+        { RelationshipType.IncomingRelationship, Relationships.IncomingRelationships }
+      };
+
+      Mappings = mappings;
+
+    }
 
     /*==========================================================================================================================
     | PROPERTY: MAPPINGS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static internal Dictionary<RelationshipType, Relationships> Mappings {
-      get {
-        if (_mappings == null) {
-          var mappings = new Dictionary<RelationshipType, Relationships>();
-          mappings.Add(RelationshipType.Children, Relationships.Children);
-          mappings.Add(RelationshipType.Relationship, Relationships.Relationships);
-          mappings.Add(RelationshipType.NestedTopics, Relationships.None);
-          mappings.Add(RelationshipType.IncomingRelationship, Relationships.IncomingRelationships);
-          _mappings = mappings;
-        }
-        return _mappings;
-      }
-    }
+    static internal Dictionary<RelationshipType, Relationships> Mappings { get; }
 
   }
 }
