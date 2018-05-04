@@ -439,7 +439,7 @@ namespace Ignia.Topics.Mapping {
 
         //Handle flattening of children
         if (attributes.FlattenChildren) {
-          List<Topic> flattenedList = new List<Topic>();
+          var flattenedList = new List<Topic>();
           foreach (var childTopic in listSource) {
             AddChildren(childTopic, flattenedList);
           }
@@ -455,7 +455,7 @@ namespace Ignia.Topics.Mapping {
 
         //Validate and populate target collection
         if (listSource != null) {
-          foreach (Topic childTopic in listSource) {
+          foreach (var childTopic in listSource) {
             if (!attributes.SatisfiesAttributeFilters(childTopic)) {
               continue;
             }

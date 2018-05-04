@@ -172,7 +172,7 @@ namespace Ignia.Topics.Reflection {
 
       Contract.Assume(property != null);
 
-      object valueObject = GetValueObject(property.PropertyType, value);
+      var valueObject = GetValueObject(property.PropertyType, value);
 
       if (valueObject == null) {
         return false;
@@ -271,7 +271,7 @@ namespace Ignia.Topics.Reflection {
 
       Contract.Assume(method != null);
 
-      object valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
+      var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
 
       if (valueObject == null) {
         return false;
