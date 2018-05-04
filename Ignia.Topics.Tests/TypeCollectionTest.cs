@@ -125,7 +125,7 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
-    ///   <see cref="TypeCollection.SetMethodValue(object, string, string)"/> method.
+    ///   <see cref="TypeCollection.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void TypeCollection_SetMethodTest() {
