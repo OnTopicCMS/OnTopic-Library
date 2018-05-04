@@ -82,9 +82,8 @@ namespace Ignia.Topics.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo {
-      return new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
-    }
+    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
+      new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
 
     /*==========================================================================================================================
     | METHOD: GET MEMBER

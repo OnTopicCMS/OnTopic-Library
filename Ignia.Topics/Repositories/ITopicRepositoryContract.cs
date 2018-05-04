@@ -58,19 +58,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(string topicKey = null, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-    //TopicFactory.ValidateKey(topicKey, true);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide dummy return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
+    public Topic Load(string topicKey = null, bool isRecursive = true) => null;
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.

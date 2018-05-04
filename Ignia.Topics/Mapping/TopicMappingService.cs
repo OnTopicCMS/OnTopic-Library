@@ -162,10 +162,8 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, Relationships relationships = Relationships.All) {
-      return Map(topic, relationships, new Dictionary<int, object>());
-
-    }
+    public object Map(Topic topic, Relationships relationships = Relationships.All) =>
+      Map(topic, relationships, new Dictionary<int, object>());
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -263,9 +261,8 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
-      return Map(topic, target, relationships, new Dictionary<int, object>());
-    }
+    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) =>
+      Map(topic, target, relationships, new Dictionary<int, object>());
 
     /// <summary>
     ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
