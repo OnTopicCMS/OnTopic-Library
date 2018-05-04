@@ -44,7 +44,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Dictionary<string, string>      _configuration                  = new Dictionary<string, string>();
+    private                     Dictionary<string, string>      _configuration                  = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -79,7 +79,9 @@ namespace Ignia.Topics {
       contentType,
       parent,
       id
-    ) { }
+    ) {
+      _configuration = new Dictionary<string, string>();
+    }
 
     /*==========================================================================================================================
     | PROPERTY: TYPE
