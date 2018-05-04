@@ -88,7 +88,10 @@ namespace Ignia.Topics.Repositories {
       | Validate return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
-      Contract.Requires(version.Date > new DateTime(2014, 12, 9), "The version is expected to have been created since version support was introduced into the topic library.");
+      Contract.Requires(
+        version.Date > new DateTime(2014, 12, 9),
+        "The version is expected to have been created since version support was introduced into the topic library."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value

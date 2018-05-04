@@ -25,9 +25,13 @@ namespace Ignia.Topics.Collections {
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
+    | STATIC VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    static readonly TypeCollection _typeCache = new TypeCollection(typeof(AttributeSetterAttribute));
+
+    /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      TypeCollection                  _typeCache                      = new TypeCollection(typeof(AttributeSetterAttribute));
     private readonly            Topic                           _associatedTopic                = null;
     private                     int                             _setCounter                     = 0;
 

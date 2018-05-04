@@ -219,7 +219,10 @@ namespace Ignia.Topics.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isIncoming) {
         if (_isIncoming) {
-          throw new ArgumentException("You are attempting to set an incoming relationship on a RelatedTopicCollection that is not flagged as IsIncoming", "isIncoming");
+          throw new ArgumentException(
+            "You are attempting to set an incoming relationship on a RelatedTopicCollection that is not flagged as IsIncoming",
+            nameof(isIncoming)
+          );
         }
         topic.IncomingRelationships.SetTopic(scope, _parent, true);
       }
