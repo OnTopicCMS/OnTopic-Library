@@ -46,11 +46,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// </summary>
     [TypeConverter(typeof(TypeNameConverter))]
     [ConfigurationProperty("type", IsRequired = false)]
-    public Type Type {
-      get {
-        return this["type"] as Type;
-      }
-    }
+    public Type Type => this["type"] as Type;
 
   } // Class
 

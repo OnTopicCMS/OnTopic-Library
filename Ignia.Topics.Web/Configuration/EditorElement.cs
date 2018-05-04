@@ -34,11 +34,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets whether the (CMS) editor is enabled as defined by the configuration attribute. 
     /// </summary>
     [ConfigurationProperty("enabled", DefaultValue = "True", IsRequired = false)]
-    public bool Enabled {
-      get {
-        return Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
-      }
-    }
+    public bool Enabled => Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
 
     /*==========================================================================================================================
     | PROPRTY: LOCATION
@@ -47,11 +43,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the website location of the (CMS) editor as defined by the configuration attribute.
     /// </summary>
     [ConfigurationProperty("location", IsRequired=false)]
-    public string Location {
-      get {
-        return this["source"] as string;
-      }
-    }
+    public string Location => this["source"] as string;
 
     /*==========================================================================================================================
     | ELEMENT: ADMIN
@@ -60,11 +52,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the admin element, which describes administrative rights on the system.
     /// </summary>
     [ConfigurationProperty("admin")]
-    public SourceElement Admin {
-      get {
-        return this["admin"] as SourceElement;
-      }
-    }
+    public SourceElement Admin => this["admin"] as SourceElement;
 
   } // Class
 

@@ -46,9 +46,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <summary>
     ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
-      throw new NotImplementedException();
-    }
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: LOAD
@@ -59,9 +57,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) {
-      throw new NotImplementedException();
-    }
+    public override Topic Load(int topicId, bool isRecursive = true) => throw new NotImplementedException();
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
@@ -215,14 +211,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
-    public override void Delete(Topic topic, bool isRecursive = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Delete(topic, isRecursive);
-
-    }
+    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
 
     /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA

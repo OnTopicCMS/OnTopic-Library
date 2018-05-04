@@ -309,9 +309,8 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public bool SatisfiesAttributeFilters(Topic source) {
-      return (!AttributeFilters.Any(f => !source.Attributes.GetValue(f.Key, "").Equals(f.Value)));
-    }
+    public bool SatisfiesAttributeFilters(Topic source) =>
+      !AttributeFilters.Any(f => !source.Attributes.GetValue(f.Key, "").Equals(f.Value));
 
     /*==========================================================================================================================
     | METHOD: VALIDATE

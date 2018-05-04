@@ -362,11 +362,7 @@ namespace Ignia.Topics {
     ///   <see cref="Dictionary{String, String}"/> object.
     /// </summary>
     /// <returns>An <see cref="Dictionary{String, String}"/> instance of key/value pairs.</returns>
-    private NameValueCollection QueryParameters {
-      get {
-        return HttpUtility.ParseQueryString(_uri.Query);
-      }
-    }
+    private NameValueCollection QueryParameters => HttpUtility.ParseQueryString(_uri.Query);
 
   } // Class
 

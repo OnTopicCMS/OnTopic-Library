@@ -70,11 +70,7 @@ namespace Ignia.Topics.Collections {
     ///   Retrieves an <see cref="Topic"/> by key.
     /// </summary>
     /// <param name="key">The topic key.</param>
-    public Topic this[string key] {
-      get {
-        return _innerCollection[key];
-      }
-    }
+    public Topic this[string key] => _innerCollection[key];
 
   } //Class
 

@@ -34,12 +34,8 @@ namespace Ignia.Topics.Web.Configuration {
     /// <summary>
     ///   Gets the source for the configuration setting.
     /// </summary>
-    [ConfigurationProperty("source", DefaultValue="QueryString", IsRequired=true, IsKey=true)]
-    public string Source {
-      get {
-        return this["source"] as string;
-      }
-    }
+    [ConfigurationProperty("source", DefaultValue = "QueryString", IsRequired = true, IsKey = true)]
+    public string Source => this["source"] as string;
 
     /*==========================================================================================================================
     | ATTRIBUTE: ENABLED
@@ -48,11 +44,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets a value indicating whether this <see cref="SourceElement"/> is enabled.
     /// </summary>
     [ConfigurationProperty("enabled", DefaultValue="True", IsRequired=false)]
-    public bool Enabled {
-      get {
-        return Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
-      }
-    }
+    public bool Enabled => Convert.ToBoolean(this["enabled"], CultureInfo.InvariantCulture);
 
     /*==========================================================================================================================
     | ATTRIBUTE: LOCATION
@@ -61,11 +53,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the location attribute value.
     /// </summary>
     [ConfigurationProperty("location", IsRequired=false)]
-    public string Location {
-      get {
-        return this["location"] as string;
-      }
-    }
+    public string Location => this["location"] as string;
 
     /*==========================================================================================================================
     | ATTRIBUTE: TRUSTED
@@ -74,11 +62,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets a value indicating whether this <see cref="SourceElement"/> is trusted.
     /// </summary>
     [ConfigurationProperty("trusted", DefaultValue="False", IsRequired=false)]
-    public bool Trusted {
-      get {
-        return Convert.ToBoolean(this["trusted"], CultureInfo.InvariantCulture);
-      }
-    }
+    public bool Trusted => Convert.ToBoolean(this["trusted"], CultureInfo.InvariantCulture);
 
     /*==========================================================================================================================
     | METHOD: GET ELEMENT
@@ -213,9 +197,8 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   A boolean value representing whether or not the source is available, enabled or set to true.
     /// </returns>
-    public static bool IsEnabled(ConfigurationElement parent, string key, bool evaluateValue) {
-      return IsEnabled(GetElement(parent, key), evaluateValue);
-    }
+    public static bool IsEnabled(ConfigurationElement parent, string key, bool evaluateValue) =>
+      IsEnabled(GetElement(parent, key), evaluateValue);
 
     /// <summary>
     ///   Looks up a source element at a given location and based on a specified parent configuration element collection and
@@ -240,9 +223,8 @@ namespace Ignia.Topics.Web.Configuration {
     /// <returns>
     ///   Boolean value representing whether or not the source is available, enabled or set to true.
     /// </returns>
-    public static bool IsEnabled(ConfigurationElementCollection parent, string key, bool evaluateValue) {
-      return IsEnabled(GetElement(parent, key), evaluateValue);
-    }
+    public static bool IsEnabled(ConfigurationElementCollection parent, string key, bool evaluateValue) =>
+      IsEnabled(GetElement(parent, key), evaluateValue);
 
     /// <summary>
     ///   Looks up a source element at a given location, identifies the source value, and verifies whether the element is

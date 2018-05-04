@@ -176,9 +176,8 @@ namespace Ignia.Topics.Mapping {
     /// <param name="type">The type of the target object that the <see cref="Topic"/> will be mapped to.</param>
     /// <param name="relationships">The relationships the mapping will follow, if any.</param>
     /// <returns>A <see cref="Tuple{Int32, Type, Relationships}"/> representing the unique cache key.</returns>
-    private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) {
-      return new Tuple<int, Type, Relationships>(topicId, type, relationships);
-    }
+    private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) =>
+      new Tuple<int, Type, Relationships>(topicId, type, relationships);
 
   } //Class
 } //Namespace
