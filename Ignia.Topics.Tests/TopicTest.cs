@@ -98,8 +98,7 @@ namespace Ignia.Topics.Tests {
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
-    // ### TODO JJC20150816: This invokes dependencies on the TopicDataProvider and, in turn, the Configuration namespace.  This
-    // is going to call for the creation of mocks and dependency injection before it will pass. In the meanwhile, it is disabled.
+    [TestMethod]
     public void Topic_Change_ParentTest() {
 
       var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
