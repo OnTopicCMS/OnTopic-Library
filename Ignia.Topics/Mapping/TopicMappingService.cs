@@ -453,7 +453,6 @@ namespace Ignia.Topics.Mapping {
 
     }
 
-
     /*==========================================================================================================================
     | PROTECTED: SET COLLECTION VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -494,11 +493,52 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var list = (IList)configuration.Property.GetValue(target, null);
-      if (list == null) {
-        list = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
-        configuration.Property.SetValue(target, list);
+      var targetList = (IList)configuration.Property.GetValue(target, null);
+      if (targetList == null) {
+        targetList = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
+        configuration.Property.SetValue(target, targetList);
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish source collection to store topics to be mapped
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var sourceList = GetSourceCollection(topic, relationships, configuration);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate that source collection was identified
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (sourceList == null) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Map the topics from the source collection, and add them to the target collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      PopulateTargetCollection(configuration, cache, sourceList, targetList);
+
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: GET SOURCE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a source topic and a property configuration, attempts to identify a source collection that maps to the property.
+    /// </summary>
+    /// <remarks>
+    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
+    ///   collection on the <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   on the target DTO.
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    protected IList<Topic> GetSourceCollection(Topic topic, Relationships relationships, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
@@ -561,12 +601,28 @@ namespace Ignia.Topics.Mapping {
         listSource = flattenedList;
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate that source collection was identified
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (listSource == null) {
-        return;
-      }
+      return listSource;
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: POPULATE TARGET COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a source list, will populate a target list based on the configured behavior of the target property.
+    /// </summary>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
+    /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
+    protected void PopulateTargetCollection(
+      PropertyConfiguration configuration,
+      Dictionary<int, object> cache,
+      IList<Topic> sourceList,
+      IList targetList
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine the type of item in the list
@@ -580,7 +636,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Populate the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in listSource) {
+      foreach (var childTopic in sourceList) {
 
         //Ensure the source topic matches any [FilterByAttribute()] settings
         if (!configuration.SatisfiesAttributeFilters(childTopic)) {
@@ -601,7 +657,7 @@ namespace Ignia.Topics.Mapping {
         //Ensure the list item derives from the list type
         if (listType.IsAssignableFrom(childDto.GetType())) {
           try {
-            list.Add(childDto);
+            targetList.Add(childDto);
           }
           catch (ArgumentException) {
             //Ignore exceptions caused by duplicate keys
@@ -609,7 +665,6 @@ namespace Ignia.Topics.Mapping {
         }
 
       }
-
     }
 
     /*==========================================================================================================================
