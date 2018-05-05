@@ -39,11 +39,6 @@ namespace Ignia.Topics.Mapping {
   public class PropertyConfiguration {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    PropertyInfo                    _property                       = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -56,7 +51,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set backing property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _property                 = property;
+      Property                  = property;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
@@ -103,6 +98,14 @@ namespace Ignia.Topics.Mapping {
       }
 
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The <see cref="PropertyInfo"/> that the current <see cref="PropertyConfiguration"/> is associated with.
+    /// </summary>
+    public PropertyInfo Property { get; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE KEY
@@ -321,8 +324,8 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="target">The target DTO to validate the current property on.</param>
     public void Validate(object target) {
-      foreach (ValidationAttribute validator in _property.GetCustomAttributes(typeof(ValidationAttribute))) {
-        validator.Validate(_property.GetValue(target), _property.Name);
+      foreach (ValidationAttribute validator in Property.GetCustomAttributes(typeof(ValidationAttribute))) {
+        validator.Validate(Property.GetValue(target), Property.Name);
       }
     }
 
