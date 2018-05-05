@@ -597,7 +597,7 @@ namespace Ignia.Topics.Mapping {
       if (configuration.FlattenChildren) {
         var flattenedList = new List<Topic>();
         foreach (var childTopic in listSource) {
-          AddChildren(childTopic, flattenedList);
+          PopulateChildTopics(childTopic, flattenedList);
         }
         listSource = flattenedList;
       }
@@ -709,7 +709,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: ADD CHILDREN
+    | PROTECTED: POPULATE CHILD TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function recursively iterates through children and adds each to a collection.
@@ -717,12 +717,12 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="topics">The list of <see cref="Topic"/> instances to add each child to.</param>
     /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    private IList<Topic> AddChildren(Topic topic, IList<Topic> topics, bool includeNestedTopics = false) {
+    protected IList<Topic> PopulateChildTopics(Topic topic, IList<Topic> topics, bool includeNestedTopics = false) {
       if (topic.IsDisabled) return topics;
       if (topic.ContentType.Equals("List") && !includeNestedTopics) return topics;
       topics.Add(topic);
       foreach (var child in topic.Children) {
-        AddChildren(child, topics);
+        PopulateChildTopics(child, topics);
       }
       return topics;
     }
