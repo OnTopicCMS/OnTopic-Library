@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
@@ -346,43 +347,21 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceType            = topic.GetType();
       var targetType            = target.GetType();
-      var attributes            = new PropertyConfiguration(property);
+      var configuration         = new PropertyConfiguration(property);
       var topicReferenceId      = topic.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributes.DefaultValue != null) {
-        property.SetValue(target, attributes.DefaultValue);
+      if (configuration.DefaultValue != null) {
+        property.SetValue(target, configuration.DefaultValue);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-
-        //Attempt to get value from topic.Get{Property}()
-        var attributeValue = _typeCache.GetMethodValue(topic, "Get" + property.Name)?.ToString();
-
-        //Otherwise, attempts to get value from topic.{Property}
-        if (String.IsNullOrEmpty(attributeValue)) {
-          attributeValue = _typeCache.GetPropertyValue(topic, property.Name)?.ToString();
-        }
-
-        //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
-        if (String.IsNullOrEmpty(attributeValue)) {
-          attributeValue = topic.Attributes.GetValue(
-            attributes.AttributeKey,
-            attributes.DefaultValue?.ToString(),
-            attributes.InheritValue
-          );
-        }
-
-        //Sets the value, assuming it is defined
-        if (attributeValue != null) {
-          _typeCache.SetPropertyValue(target, property.Name, attributeValue);
-        }
-
+        SetScalarValue(topic, target, configuration);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -402,41 +381,41 @@ namespace Ignia.Topics.Mapping {
 
         //Handle children
         if (
-          (attributes.RelationshipKey.Equals("Children") || attributes.RelationshipType.Equals(RelationshipType.Children)) &&
-          IsCurrentRelationship(RelationshipType.Children, attributes.RelationshipType, relationships, listSource)
+          (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
+          IsCurrentRelationship(RelationshipType.Children, configuration.RelationshipType, relationships, listSource)
         ) {
           listSource = topic.Children.ToList();
         }
 
         //Handle (outgoing) relationships
-        if (IsCurrentRelationship(RelationshipType.Relationship, attributes.RelationshipType, relationships, listSource)) {
-          if (topic.Relationships.Contains(attributes.RelationshipKey)) {
-            listSource = topic.Relationships.GetTopics(attributes.RelationshipKey);
+        if (IsCurrentRelationship(RelationshipType.Relationship, configuration.RelationshipType, relationships, listSource)) {
+          if (topic.Relationships.Contains(configuration.RelationshipKey)) {
+            listSource = topic.Relationships.GetTopics(configuration.RelationshipKey);
           }
         }
 
         //Handle nested topics, or children corresponding to the property name
-        if (IsCurrentRelationship(RelationshipType.NestedTopics, attributes.RelationshipType, relationships, listSource)) {
-          if (topic.Children.Contains(attributes.RelationshipKey)) {
-            listSource = topic.Children[attributes.RelationshipKey].Children.ToList();
+        if (IsCurrentRelationship(RelationshipType.NestedTopics, configuration.RelationshipType, relationships, listSource)) {
+          if (topic.Children.Contains(configuration.RelationshipKey)) {
+            listSource = topic.Children[configuration.RelationshipKey].Children.ToList();
           }
         }
 
         //Handle (incoming) relationships
-        if (IsCurrentRelationship(RelationshipType.IncomingRelationship, attributes.RelationshipType, relationships, listSource)) {
-          if (topic.IncomingRelationships.Contains(attributes.RelationshipKey)) {
-            listSource = topic.IncomingRelationships.GetTopics(attributes.RelationshipKey);
+        if (IsCurrentRelationship(RelationshipType.IncomingRelationship, configuration.RelationshipType, relationships, listSource)) {
+          if (topic.IncomingRelationships.Contains(configuration.RelationshipKey)) {
+            listSource = topic.IncomingRelationships.GetTopics(configuration.RelationshipKey);
           }
         }
 
         //Handle Metadata relationship
-        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(attributes.MetadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + attributes.MetadataKey + ":LookupList")?
+        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
+          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList")?
             .Children.ToList();
         }
 
         //Handle flattening of children
-        if (attributes.FlattenChildren) {
+        if (configuration.FlattenChildren) {
           var flattenedList = new List<Topic>();
           foreach (var childTopic in listSource) {
             AddChildren(childTopic, flattenedList);
@@ -454,7 +433,7 @@ namespace Ignia.Topics.Mapping {
         //Validate and populate target collection
         if (listSource != null) {
           foreach (var childTopic in listSource) {
-            if (!attributes.SatisfiesAttributeFilters(childTopic)) {
+            if (!configuration.SatisfiesAttributeFilters(childTopic)) {
               continue;
             }
             if (childTopic.IsDisabled) {
@@ -474,7 +453,7 @@ namespace Ignia.Topics.Mapping {
             }
             //Otherwise, assume the list type is a DTO
             else {
-              var childDto = Map(childTopic, attributes.CrawlRelationships, cache);
+              var childDto = Map(childTopic, configuration.CrawlRelationships, cache);
               //Ensure the mapped type derives from the list type
               if (listType.IsAssignableFrom(childDto.GetType())) {
                 try {
@@ -493,9 +472,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (attributes.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
+      else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
         if (topic.Parent != null) {
-          var parent = Map(topic.Parent, attributes.CrawlRelationships, cache);
+          var parent = Map(topic.Parent, configuration.CrawlRelationships, cache);
           if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
             property.SetValue(target, parent);
           }
@@ -507,7 +486,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        var viewModelReference = Map(topicReference, attributes.CrawlRelationships, cache);
+        var viewModelReference = Map(topicReference, configuration.CrawlRelationships, cache);
         if (property.PropertyType.IsAssignableFrom(viewModelReference.GetType())) {
           property.SetValue(target, viewModelReference);
         }
@@ -516,7 +495,67 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      attributes.Validate(target);
+      configuration.Validate(target);
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET SCALAR VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a scalar property on a target DTO.
+    /// </summary>
+    /// <remarks>
+    ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
+    ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
+    ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
+    ///   name="target"/> based on, in order, the <paramref name="topic"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
+    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
+    ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source
+    ///   value cannot be identified on the <paramref name="topic"/>, then the property is not set.
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
+    /// <autogeneratedoc />
+    protected static void SetScalarValue(Topic topic, object target, PropertyConfiguration configuration) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Escape clause if preconditions are not met
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!_typeCache.HasSettableProperty(target.GetType(), configuration.Property.Name)) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.Get{Property}()
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributeValue = _typeCache.GetMethodValue(topic, "Get" + configuration.AttributeKey)?.ToString();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.{Property}
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(attributeValue)) {
+        attributeValue = _typeCache.GetPropertyValue(topic, configuration.AttributeKey)?.ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(attributeValue)) {
+        attributeValue = topic.Attributes.GetValue(
+          configuration.AttributeKey,
+          configuration.DefaultValue?.ToString(),
+          configuration.InheritValue
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Assuming a value was retrieved, set it
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (attributeValue != null) {
+        _typeCache.SetPropertyValue(target, configuration.Property.Name, attributeValue);
+      }
 
     }
 
