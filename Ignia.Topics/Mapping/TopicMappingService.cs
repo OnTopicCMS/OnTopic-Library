@@ -375,12 +375,7 @@ namespace Ignia.Topics.Mapping {
       | Property: Parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
-        if (topic.Parent != null) {
-          var parent = Map(topic.Parent, configuration.CrawlRelationships, cache);
-          if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
-            property.SetValue(target, parent);
-          }
-        }
+        SetTopicReference(topic.Parent, target, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -388,10 +383,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        var viewModelReference = Map(topicReference, configuration.CrawlRelationships, cache);
-        if (property.PropertyType.IsAssignableFrom(viewModelReference.GetType())) {
-          property.SetValue(target, viewModelReference);
-        }
+        SetTopicReference(topicReference, target, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -618,6 +610,30 @@ namespace Ignia.Topics.Mapping {
 
       }
 
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET TOPIC REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a reference to an external topic, attempts to match it to a matching property.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    protected void SetTopicReference(
+      Topic topic,
+      object target,
+      PropertyConfiguration configuration,
+      Dictionary<int, object> cache
+    ) {
+      var topicDto = Map(topic, configuration.CrawlRelationships, cache);
+      if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
+        configuration.Property.SetValue(target, topicDto);
+      }
     }
 
     /*==========================================================================================================================
