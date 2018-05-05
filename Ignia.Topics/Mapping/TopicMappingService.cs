@@ -550,7 +550,7 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
-        IsCurrentRelationship(RelationshipType.Children, configuration.RelationshipType, relationships, listSource)
+        IsCurrentRelationship(RelationshipType.Children)
       ) {
         listSource = topic.Children.ToList();
       }
@@ -558,7 +558,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.Relationship, configuration.RelationshipType, relationships, listSource)) {
+      if (IsCurrentRelationship(RelationshipType.Relationship)) {
         if (topic.Relationships.Contains(configuration.RelationshipKey)) {
           listSource = topic.Relationships.GetTopics(configuration.RelationshipKey);
         }
@@ -567,7 +567,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.NestedTopics, configuration.RelationshipType, relationships, listSource)) {
+      if (IsCurrentRelationship(RelationshipType.NestedTopics)) {
         if (topic.Children.Contains(configuration.RelationshipKey)) {
           listSource = topic.Children[configuration.RelationshipKey].Children.ToList();
         }
@@ -576,7 +576,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.IncomingRelationship, configuration.RelationshipType, relationships, listSource)) {
+      if (IsCurrentRelationship(RelationshipType.IncomingRelationship)) {
         if (topic.IncomingRelationships.Contains(configuration.RelationshipKey)) {
           listSource = topic.IncomingRelationships.GetTopics(configuration.RelationshipKey);
         }
@@ -590,6 +590,7 @@ namespace Ignia.Topics.Mapping {
           .Children.ToList();
       }
 
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle flattening of children
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -602,6 +603,22 @@ namespace Ignia.Topics.Mapping {
       }
 
       return listSource;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide local function for evaluating current relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      bool IsCurrentRelationship(RelationshipType targetRelationshipType) => (
+        listSource.Count == 0 &&
+        (
+          configuration.RelationshipType.Equals(RelationshipType.Any) ||
+          configuration.RelationshipType.Equals(targetRelationshipType)
+        ) &&
+        (
+          RelationshipMap.Mappings[targetRelationshipType].Equals(Relationships.None) ||
+          relationships.HasFlag(RelationshipMap.Mappings[targetRelationshipType])
+        )
+      );
+
 
     }
 
@@ -692,34 +709,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PRIVATE: IS CURRENT RELATIONSHIP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Helper function evaluates whether a relationship is the active relationship for the current property.
-    /// </summary>
-    /// <param name="targetRelationshipType">The <see cref="RelationshipType"/> currently being evaluated.</param>
-    /// <param name="sourceRelationshipType">The <see cref="RelationshipType"/> for the current property.</param>
-    /// <param name="sourceRelationships">The <see cref="Relationships"/> for the current property.</param>
-    /// <param name="listSource">The existing assignment of <see cref="Topic"/> instances for the relationship.</param>
-    private static bool IsCurrentRelationship(
-      RelationshipType targetRelationshipType,
-      RelationshipType sourceRelationshipType,
-      Relationships sourceRelationships,
-      IList<Topic> listSource
-    ) => (
-      listSource.Count == 0 &&
-      (
-        sourceRelationshipType.Equals(RelationshipType.Any) ||
-        sourceRelationshipType.Equals(targetRelationshipType)
-      ) &&
-      (
-        RelationshipMap.Mappings[targetRelationshipType].Equals(Relationships.None) ||
-        sourceRelationships.HasFlag(RelationshipMap.Mappings[targetRelationshipType])
-      )
-    );
-
-    /*==========================================================================================================================
-    | PRIVATE: ADD CHILDREN
+    | PROTECTED: ADD CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function recursively iterates through children and adds each to a collection.
