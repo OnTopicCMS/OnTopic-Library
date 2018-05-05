@@ -323,7 +323,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PRIVATE: SET PROPERTY
+    | PROTECTED: SET PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
@@ -334,7 +334,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    private void SetProperty(
+    protected void SetProperty(
       Topic topic,
       object target,
       Relationships relationships,
