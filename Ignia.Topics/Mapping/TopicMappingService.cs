@@ -368,105 +368,7 @@ namespace Ignia.Topics.Mapping {
       | Property: Collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-
-        //Determine the type of item in the list
-        var listType = typeof(ITopicViewModel);
-        if (property.PropertyType.IsGenericType) {
-          //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-          listType = property.PropertyType.GetGenericArguments().Last();
-        }
-
-        //Get source for list
-        IList<Topic> listSource = new Topic[] { };
-
-        //Handle children
-        if (
-          (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
-          IsCurrentRelationship(RelationshipType.Children, configuration.RelationshipType, relationships, listSource)
-        ) {
-          listSource = topic.Children.ToList();
-        }
-
-        //Handle (outgoing) relationships
-        if (IsCurrentRelationship(RelationshipType.Relationship, configuration.RelationshipType, relationships, listSource)) {
-          if (topic.Relationships.Contains(configuration.RelationshipKey)) {
-            listSource = topic.Relationships.GetTopics(configuration.RelationshipKey);
-          }
-        }
-
-        //Handle nested topics, or children corresponding to the property name
-        if (IsCurrentRelationship(RelationshipType.NestedTopics, configuration.RelationshipType, relationships, listSource)) {
-          if (topic.Children.Contains(configuration.RelationshipKey)) {
-            listSource = topic.Children[configuration.RelationshipKey].Children.ToList();
-          }
-        }
-
-        //Handle (incoming) relationships
-        if (IsCurrentRelationship(RelationshipType.IncomingRelationship, configuration.RelationshipType, relationships, listSource)) {
-          if (topic.IncomingRelationships.Contains(configuration.RelationshipKey)) {
-            listSource = topic.IncomingRelationships.GetTopics(configuration.RelationshipKey);
-          }
-        }
-
-        //Handle Metadata relationship
-        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList")?
-            .Children.ToList();
-        }
-
-        //Handle flattening of children
-        if (configuration.FlattenChildren) {
-          var flattenedList = new List<Topic>();
-          foreach (var childTopic in listSource) {
-            AddChildren(childTopic, flattenedList);
-          }
-          listSource = flattenedList;
-        }
-
-        //Ensure list is created
-        var list = (IList)property.GetValue(target, null);
-        if (list == null) {
-          list = (IList)Activator.CreateInstance(property.PropertyType);
-          property.SetValue(target, list);
-        }
-
-        //Validate and populate target collection
-        if (listSource != null) {
-          foreach (var childTopic in listSource) {
-            if (!configuration.SatisfiesAttributeFilters(childTopic)) {
-              continue;
-            }
-            if (childTopic.IsDisabled) {
-              continue;
-            }
-            //Handle scenario where the list type derives from Topic
-            if (typeof(Topic).IsAssignableFrom(listType)) {
-              //Ensure the list item derives from the list type (which may be more derived than Topic)
-              if (listType.IsAssignableFrom(childTopic.GetType())) {
-                try {
-                  list.Add(childTopic);
-                }
-                catch (ArgumentException) {
-                  //Ignore exceptions caused by duplicate keys
-                }
-              }
-            }
-            //Otherwise, assume the list type is a DTO
-            else {
-              var childDto = Map(childTopic, configuration.CrawlRelationships, cache);
-              //Ensure the mapped type derives from the list type
-              if (listType.IsAssignableFrom(childDto.GetType())) {
-                try {
-                  list.Add(childDto);
-                }
-                catch (ArgumentException) {
-                  //Ignore exceptions caused by duplicate keys
-                }
-              }
-            }
-          }
-        }
-
+        SetCollectionValue(topic, target, relationships, cache, configuration);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -555,6 +457,165 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeValue != null) {
         _typeCache.SetPropertyValue(target, configuration.Property.Name, attributeValue);
+      }
+
+    }
+
+
+    /*==========================================================================================================================
+    | PROTECTED: SET COLLECTION VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a collection property, identifies a source collection, maps the values to DTOs, and attempts to add them to the
+    ///   target collection.
+    /// </summary>
+    /// <remarks>
+    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
+    ///   collection on the <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   on the <paramref name="target"/> DTO.
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    protected void SetCollectionValue(
+      Topic topic,
+      object target,
+      Relationships relationships,
+      Dictionary<int, object> cache,
+      PropertyConfiguration configuration
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Escape clause if preconditions are not met
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine the type of item in the list
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var listType = typeof(ITopicViewModel);
+      if (configuration.Property.PropertyType.IsGenericType) {
+        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish source collection to store topics to be mapped
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      IList<Topic> listSource = new Topic[] { };
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
+        IsCurrentRelationship(RelationshipType.Children, configuration.RelationshipType, relationships, listSource)
+      ) {
+        listSource = topic.Children.ToList();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle (outgoing) relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (IsCurrentRelationship(RelationshipType.Relationship, configuration.RelationshipType, relationships, listSource)) {
+        if (topic.Relationships.Contains(configuration.RelationshipKey)) {
+          listSource = topic.Relationships.GetTopics(configuration.RelationshipKey);
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle nested topics, or children corresponding to the property name
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (IsCurrentRelationship(RelationshipType.NestedTopics, configuration.RelationshipType, relationships, listSource)) {
+        if (topic.Children.Contains(configuration.RelationshipKey)) {
+          listSource = topic.Children[configuration.RelationshipKey].Children.ToList();
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle (incoming) relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (IsCurrentRelationship(RelationshipType.IncomingRelationship, configuration.RelationshipType, relationships, listSource)) {
+        if (topic.IncomingRelationships.Contains(configuration.RelationshipKey)) {
+          listSource = topic.IncomingRelationships.GetTopics(configuration.RelationshipKey);
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle Metadata relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
+        listSource = _topicRepository.Load("Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList")?
+          .Children.ToList();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle flattening of children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.FlattenChildren) {
+        var flattenedList = new List<Topic>();
+        foreach (var childTopic in listSource) {
+          AddChildren(childTopic, flattenedList);
+        }
+        listSource = flattenedList;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure target list is created
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var list = (IList)configuration.Property.GetValue(target, null);
+      if (list == null) {
+        list = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
+        configuration.Property.SetValue(target, list);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate that source collection was identified
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (listSource == null) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Populate the target collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopic in listSource) {
+
+        //Ensure the source topic matches any [FilterByAttribute()] settings
+        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
+          continue;
+        }
+
+        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
+        if (childTopic.IsDisabled) {
+          continue;
+        }
+
+        //Map child topic to target DTO
+        var childDto = (object)childTopic;
+        if (!typeof(Topic).IsAssignableFrom(listType)) {
+          childDto = Map(childTopic, configuration.CrawlRelationships, cache);
+        }
+
+        //Ensure the list item derives from the list type
+        if (listType.IsAssignableFrom(childDto.GetType())) {
+          try {
+            list.Add(childDto);
+          }
+          catch (ArgumentException) {
+            //Ignore exceptions caused by duplicate keys
+          }
+        }
+
       }
 
     }
