@@ -492,12 +492,12 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Determine the type of item in the list
+      | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var listType = typeof(ITopicViewModel);
-      if (configuration.Property.PropertyType.IsGenericType) {
-        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
+      var list = (IList)configuration.Property.GetValue(target, null);
+      if (list == null) {
+        list = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
+        configuration.Property.SetValue(target, list);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -562,19 +562,19 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure target list is created
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var list = (IList)configuration.Property.GetValue(target, null);
-      if (list == null) {
-        list = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
-        configuration.Property.SetValue(target, list);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource == null) {
         return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine the type of item in the list
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var listType = typeof(ITopicViewModel);
+      if (configuration.Property.PropertyType.IsGenericType) {
+        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
