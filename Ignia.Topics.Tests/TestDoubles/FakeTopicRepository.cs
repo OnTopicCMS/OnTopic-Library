@@ -20,7 +20,6 @@ namespace Ignia.Topics.Tests.TestDoubles {
   ///   Allows testing of services that depend on <see cref="ITopicRepository"/> without maintaining a dependency on a live
   ///   database, or working against actual data. This is faster and safer for test methods.
   /// </remarks>
-
   public class FakeTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
