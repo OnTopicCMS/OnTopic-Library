@@ -18,6 +18,46 @@ namespace Ignia.Topics.Querying {
   public static class Topic {
 
     /*==========================================================================================================================
+    | METHOD: FIND FIRST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Finds the first instance of a <see cref="Target.Topic"/> in the topic tree that satisfies the delegate.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
+    /// <returns>The first instance of the topic to be satisfied.</returns>
+    public static Target.Topic FindFirst(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Search attributes
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (predicate(topic)) {
+        return topic;
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Recurse over children
+      \---------------------------------------------------------------------------------------------------------------------*/
+      foreach (var child in topic.Children) {
+        var nestedResult = child.FindFirst(predicate);
+        if (nestedResult != null) {
+          return nestedResult;
+        }
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Indicate no results found
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: FIND ALL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
