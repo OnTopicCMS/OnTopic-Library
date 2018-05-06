@@ -90,6 +90,7 @@ var connectionString            = ConfigurationManager.ConnectionStrings["OnTopi
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
 var topicViewModelLookupService = new TopicViewModelLookupService();
+var topicMappingService         = new TopicMappingService(cachedTopicRepository, topicViewModelLookupService);
 
 var mvcTopicRoutingService      = new MvcTopicRoutingService(
   cachedTopicRepository,
@@ -97,12 +98,10 @@ var mvcTopicRoutingService      = new MvcTopicRoutingService(
   requestContext.RouteData
 );
 
-var topicMappingService         = new TopicMappingService(cachedTopicRepository, topicViewModelLookupService);
-
 switch (controllerType.Name) {
 
   case nameof(TopicController):
-    return new TopicController(_topicRepository, mvcTopicRoutingService, topicMappingService);
+    return new TopicController(sqlTopicRepository, mvcTopicRoutingService, topicMappingService);
 
   case default:
     return base.GetControllerInstance(requestContext, controllerType);
