@@ -26,7 +26,7 @@ namespace Ignia.Topics.Reflection {
     /// </summary>
     /// <param name="predicate">The search condition to use to identify target classes.</param>
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    internal DynamicTypeLookupService(Func<Type, bool> predicate, Type defaultType = null) : base(null, defaultType) {
+    public DynamicTypeLookupService(Func<Type, bool> predicate, Type defaultType = null) : base(null, defaultType) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Find target classes
