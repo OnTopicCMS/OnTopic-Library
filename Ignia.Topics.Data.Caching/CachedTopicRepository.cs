@@ -73,11 +73,6 @@ namespace Ignia.Topics.Data.Caching {
     public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_cache == null) {
@@ -85,16 +80,16 @@ namespace Ignia.Topics.Data.Caching {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Lookup by TopicId
+      | Handle request for entire tree
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicId >= 0) {
-        return GetTopic(_cache, topicId);
+      if (topicId < 0) {
+        return _cache;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
+      | Recursive search
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      return _cache.FindFirst(t => t.Id.Equals(topicId));
 
     }
 
@@ -143,45 +138,6 @@ namespace Ignia.Topics.Data.Caching {
     /*==========================================================================================================================
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
-    /// </summary>
-    /// <remarks>
-    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
-    /// </remarks>
-    /// <param name="sourceTopic">The root topic to search from.</param>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
-    ///   topicId &lt;= 0
-    /// </requires>
-    private Topic GetTopic(Topic sourceTopic, int topicId) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return if current
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceTopic.Id == topicId) return sourceTopic;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Iterate through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in sourceTopic.Children) {
-        var foundTopic = GetTopic(childTopic, topicId);
-        if (foundTopic != null) return foundTopic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return null if not found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
-
     /// <summary>
     ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
     /// </summary>
