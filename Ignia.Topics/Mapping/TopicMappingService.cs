@@ -28,7 +28,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             Dictionary<string, Type>        _typeLookup                     = null;
+    static readonly             TypeIndex                       _typeLookup                     = null;
     static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
@@ -48,21 +48,10 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var typeLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-      var matchedTypes = AppDomain
-        .CurrentDomain
-        .GetAssemblies()
-        .SelectMany(t => t.GetTypes())
-        .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase))
-        .OrderBy(t => t.Namespace.Equals("Ignia.Topics.ViewModels"))
-        .ToList();
-      foreach (var type in matchedTypes) {
-        var associatedContentType = type.Name.Replace("TopicViewModel", "");
-        if (!typeLookup.ContainsKey(associatedContentType)) {
-          typeLookup.Add(associatedContentType, type);
-        }
-      }
-      _typeLookup               = typeLookup;
+      _typeLookup = new TypeIndex(
+        t => t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase),
+        typeof(object)
+      );
 
     }
     #pragma warning restore CA1810 // Initialize reference type static fields inline
@@ -76,68 +65,6 @@ namespace Ignia.Topics.Mapping {
     public TopicMappingService(ITopicRepository topicRepository) {
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
       _topicRepository = topicRepository;
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET VIEW MODEL TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static helper method for looking up a class type based on a string name.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     According to the default mapping rules, the following will each be mapped:
-    ///     <list type="bullet">
-    ///       <item>Scalar values of types <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="String"/></item>
-    ///       <item>Properties named <c>Parent</c> (will reference <see cref="Topic.Parent"/>)</item>
-    ///       <item>Collections named <c>Children</c> (will reference <see cref="Topic.Children"/>)</item>
-    ///       <item>
-    ///         Collections starting with <c>Related</c> (will reference corresponding <see cref="Topic.Relationships"/>)
-    ///       </item>
-    ///       <item>
-    ///         Collections corresponding to any <see cref="Topic.Children"/> of the same name, and the type <c>ListItem</c>,
-    ///         representing a nested topic list
-    ///       </item>
-    ///     </list>
-    ///   </para>
-    ///   <para>
-    ///     Currently, this method uses reflection to lookup all types ending with <c>TopicViewModel</c> across all assemblies
-    ///     and namespaces. This is incredibly non-performant, and can take over a second to execute. As such, this data is
-    ///     cached for the duration of the application (it is not expected that new classes will be generated during the scope
-    ///     of the application).
-    ///   </para>
-    /// </remarks>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <returns>A class type corresponding to the specified string, and ending with "TopicViewModel".</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    private static Type GetViewModelType(string contentType) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Type>() != null);
-      TopicFactory.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup.Keys.Contains(contentType)) {
-        return _typeLookup[contentType];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return default
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return typeof(object);
-
     }
 
     /*==========================================================================================================================
@@ -206,7 +133,7 @@ namespace Ignia.Topics.Mapping {
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
       var contentType = topic.ContentType;
-      var viewModelType = TopicMappingService.GetViewModelType(contentType);
+      var viewModelType = _typeLookup.GetType(contentType + "TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
