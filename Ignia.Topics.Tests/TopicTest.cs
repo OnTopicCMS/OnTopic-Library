@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Ignia.Topics.Querying;
+using Ignia.Topics.Tests.TestDoubles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
@@ -18,6 +19,11 @@ namespace Ignia.Topics.Tests {
   /// </summary>
   [TestClass]
   public class TopicTest {
+
+    [AssemblyInitialize]
+    public static void AssemblyInit(TestContext context) {
+      TopicFactory.TypeLookupService = new FakeTopicLookupService();
+    }
 
     /*==========================================================================================================================
     | TEST: CREATE

@@ -22,26 +22,16 @@ namespace Ignia.Topics {
   public static class TopicFactory {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
+    | PROPERTY: TYPE LOOKUP SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             ITypeLookupService              _typeLookup                     = null;
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR (STATIC)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-#pragma warning disable CA1810 // Initialize reference type static fields inline
     /// <summary>
     ///   Establishes static variables for the <see cref="TopicFactory"/>.
     /// </summary>
-    static TopicFactory() {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Ensure cache is populated
-      \---------------------------------------------------------------------------------------------------------------------*/
-      _typeLookup = new TopicLookupService();
-
-    }
-    #pragma warning restore CA1810 // Initialize reference type static fields inline
+    public static ITypeLookupService TypeLookupService { get; set; } =
+      new DynamicTypeLookupService(
+        t => typeof(Topic).IsAssignableFrom(t),
+        typeof(Topic)
+      );
 
     /*==========================================================================================================================
     | METHOD: CREATE
@@ -92,7 +82,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine target type
       \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = _typeLookup.GetType(contentType);
+      var targetType = TypeLookupService.GetType(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
@@ -139,7 +129,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine target type
       \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = _typeLookup.GetType(contentType);
+      var targetType = TypeLookupService.GetType(contentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
@@ -170,7 +160,7 @@ namespace Ignia.Topics {
     public static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey ?? "", @"^[a-zA-Z0-9\.\-_]+$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }
