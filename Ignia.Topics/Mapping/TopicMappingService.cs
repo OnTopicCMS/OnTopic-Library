@@ -345,8 +345,6 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceType            = source.GetType();
-      var targetType            = target.GetType();
       var configuration         = new PropertyConfiguration(property);
       var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
 
@@ -360,7 +358,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_typeCache.HasSettableProperty(targetType, property.Name)) {
+      if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
 
