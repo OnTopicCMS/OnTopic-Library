@@ -28,30 +28,13 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             ITypeLookupService              _typeLookup                     = null;
-    static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
+    static readonly TypeCollection _typeCache = new TypeCollection();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository                = null;
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR (STATIC)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    #pragma warning disable CA1810 // Initialize reference type static fields inline
-    /// <summary>
-    ///   Establishes static variables for the <see cref="TopicMappingService"/>.
-    /// </summary>
-    static TopicMappingService() {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Ensure cache is populated
-      \---------------------------------------------------------------------------------------------------------------------*/
-      _typeLookup = new TopicViewModelLookupService();
-
-    }
-    #pragma warning restore CA1810 // Initialize reference type static fields inline
+    readonly ITopicRepository _topicRepository = null;
+    readonly ITypeLookupService _typeLookupService = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -59,9 +42,11 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
     /// </summary>
-    public TopicMappingService(ITopicRepository topicRepository) {
+    public TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
+      Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
       _topicRepository = topicRepository;
+      _typeLookupService = typeLookupService;
     }
 
     /*==========================================================================================================================
@@ -130,7 +115,7 @@ namespace Ignia.Topics.Mapping {
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
       var contentType = topic.ContentType;
-      var viewModelType = _typeLookup.GetType(contentType + "TopicViewModel");
+      var viewModelType = _typeLookupService.GetType(contentType + "TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -269,8 +254,8 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(property);
-      var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
+      var configuration = new PropertyConfiguration(property);
+      var topicReferenceId = source.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value

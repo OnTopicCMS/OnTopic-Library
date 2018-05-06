@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="TestDoubles\FakeViewModelLookupService.cs" />
     <Compile Include="TestDoubles\FakeTopicLookupService.cs" />
     <Compile Include="TopicRoutingServiceTest.cs" />
     <Compile Include="ITopicRepositoryTest.cs" />

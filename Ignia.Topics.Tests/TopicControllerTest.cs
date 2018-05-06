@@ -180,7 +180,7 @@ namespace Ignia.Topics.Tests {
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
       var result                = controller.Menu() as PartialViewResult;
