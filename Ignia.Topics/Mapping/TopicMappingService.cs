@@ -329,13 +329,13 @@ namespace Ignia.Topics.Mapping {
     ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
     ///   <see cref="Topic"/> based on predetermined conventions.
     /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected void SetProperty(
-      Topic topic,
+      Topic source,
       object target,
       Relationships relationships,
       PropertyInfo property,
@@ -345,10 +345,10 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceType            = topic.GetType();
+      var sourceType            = source.GetType();
       var targetType            = target.GetType();
       var configuration         = new PropertyConfiguration(property);
-      var topicReferenceId      = topic.Attributes.GetInteger(property.Name + "Id", 0);
+      var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
@@ -361,21 +361,21 @@ namespace Ignia.Topics.Mapping {
       | Property: Scalar Value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-        SetScalarValue(topic, target, configuration);
+        SetScalarValue(source, target, configuration);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        SetCollectionValue(topic, target, relationships, cache, configuration);
+        SetCollectionValue(source, target, relationships, cache, configuration);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Property: Parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
-        SetTopicReference(topic.Parent, target, configuration, cache);
+        SetTopicReference(source.Parent, target, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -403,16 +403,16 @@ namespace Ignia.Topics.Mapping {
     ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
     ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
-    ///   name="target"/> based on, in order, the <paramref name="topic"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
+    ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
     ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
     ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source
-    ///   value cannot be identified on the <paramref name="topic"/>, then the property is not set.
+    ///   value cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
     /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
     /// <autogeneratedoc />
-    protected static void SetScalarValue(Topic topic, object target, PropertyConfiguration configuration) {
+    protected static void SetScalarValue(Topic source, object target, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
@@ -424,20 +424,20 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValue = _typeCache.GetMethodValue(topic, "Get" + configuration.AttributeKey)?.ToString();
+      var attributeValue = _typeCache.GetMethodValue(source, "Get" + configuration.AttributeKey)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
-        attributeValue = _typeCache.GetPropertyValue(topic, configuration.AttributeKey)?.ToString();
+        attributeValue = _typeCache.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
-        attributeValue = topic.Attributes.GetValue(
+        attributeValue = source.Attributes.GetValue(
           configuration.AttributeKey,
           configuration.DefaultValue?.ToString(),
           configuration.InheritValue
@@ -462,13 +462,13 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <remarks>
     ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
-    ///   collection on the <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   collection on the <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
     ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
     ///   on the <paramref name="target"/> DTO.
     /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
@@ -476,7 +476,7 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     protected void SetCollectionValue(
-      Topic topic,
+      Topic source,
       object target,
       Relationships relationships,
       Dictionary<int, object> cache,
@@ -502,7 +502,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = GetSourceCollection(topic, relationships, configuration);
+      var sourceList = GetSourceCollection(source, relationships, configuration);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
@@ -526,18 +526,18 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <remarks>
     ///   Given a collection <paramref name="configuration"/> on a target DTO, attempts to identify a source collection on the
-    ///   <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
     ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
     ///   on the target DTO.
     /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected IList<Topic> GetSourceCollection(Topic topic, Relationships relationships, PropertyConfiguration configuration) {
+    protected IList<Topic> GetSourceCollection(Topic source, Relationships relationships, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
@@ -551,15 +551,15 @@ namespace Ignia.Topics.Mapping {
         (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
         IsCurrentRelationship(RelationshipType.Children)
       ) {
-        listSource = topic.Children.ToList();
+        listSource = source.Children.ToList();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (IsCurrentRelationship(RelationshipType.Relationship)) {
-        if (topic.Relationships.Contains(configuration.RelationshipKey)) {
-          listSource = topic.Relationships.GetTopics(configuration.RelationshipKey);
+        if (source.Relationships.Contains(configuration.RelationshipKey)) {
+          listSource = source.Relationships.GetTopics(configuration.RelationshipKey);
         }
       }
 
@@ -567,8 +567,8 @@ namespace Ignia.Topics.Mapping {
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (IsCurrentRelationship(RelationshipType.NestedTopics)) {
-        if (topic.Children.Contains(configuration.RelationshipKey)) {
-          listSource = topic.Children[configuration.RelationshipKey].Children.ToList();
+        if (source.Children.Contains(configuration.RelationshipKey)) {
+          listSource = source.Children[configuration.RelationshipKey].Children.ToList();
         }
       }
 
@@ -576,8 +576,8 @@ namespace Ignia.Topics.Mapping {
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (IsCurrentRelationship(RelationshipType.IncomingRelationship)) {
-        if (topic.IncomingRelationships.Contains(configuration.RelationshipKey)) {
-          listSource = topic.IncomingRelationships.GetTopics(configuration.RelationshipKey);
+        if (source.IncomingRelationships.Contains(configuration.RelationshipKey)) {
+          listSource = source.IncomingRelationships.GetTopics(configuration.RelationshipKey);
         }
       }
 
@@ -687,19 +687,19 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Given a reference to an external topic, attempts to match it to a matching property.
     /// </summary>
-    /// <param name="topic">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     protected void SetTopicReference(
-      Topic topic,
+      Topic source,
       object target,
       PropertyConfiguration configuration,
       Dictionary<int, object> cache
     ) {
-      var topicDto = Map(topic, configuration.CrawlRelationships, cache);
+      var topicDto = Map(source, configuration.CrawlRelationships, cache);
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }
@@ -711,14 +711,14 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Helper function recursively iterates through children and adds each to a collection.
     /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity pull the data from.</param>
+    /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="topics">The list of <see cref="Topic"/> instances to add each child to.</param>
     /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    protected IList<Topic> PopulateChildTopics(Topic topic, IList<Topic> topics, bool includeNestedTopics = false) {
-      if (topic.IsDisabled) return topics;
-      if (topic.ContentType.Equals("List") && !includeNestedTopics) return topics;
-      topics.Add(topic);
-      foreach (var child in topic.Children) {
+    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> topics, bool includeNestedTopics = false) {
+      if (source.IsDisabled) return topics;
+      if (source.ContentType.Equals("List") && !includeNestedTopics) return topics;
+      topics.Add(source);
+      foreach (var child in source.Children) {
         PopulateChildTopics(child, topics);
       }
       return topics;
