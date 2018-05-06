@@ -674,7 +674,8 @@ namespace Ignia.Topics.Mapping {
             targetList.Add(childDto);
           }
           catch (ArgumentException) {
-            //Ignore exceptions caused by duplicate keys
+            //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+            //We would defensively check for this, except IList doesn't provide a suitable method to do so
           }
         }
 
