@@ -516,7 +516,6 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       PopulateTargetCollection(configuration, cache, sourceList, targetList);
 
-
     }
 
     /*==========================================================================================================================
@@ -590,7 +589,6 @@ namespace Ignia.Topics.Mapping {
           .Children.ToList();
       }
 
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle flattening of children
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -618,7 +616,6 @@ namespace Ignia.Topics.Mapping {
           relationships.HasFlag(RelationshipMap.Mappings[targetRelationshipType])
         )
       );
-
 
     }
 
