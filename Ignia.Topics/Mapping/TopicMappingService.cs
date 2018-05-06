@@ -28,7 +28,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeIndex                       _typeLookup                     = null;
+    static readonly             ITypeLookupService              _typeLookup                     = null;
     static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
@@ -48,10 +48,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      _typeLookup = new TypeIndex(
-        t => t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase),
-        typeof(object)
-      );
+      _typeLookup = new TopicViewModelLookupService();
 
     }
     #pragma warning restore CA1810 // Initialize reference type static fields inline

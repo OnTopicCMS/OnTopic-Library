@@ -24,7 +24,7 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeIndex                       _typeLookup                     = null;
+    static readonly             ITypeLookupService              _typeLookup                     = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR (STATIC)
@@ -38,10 +38,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      _typeLookup = new TypeIndex(
-        t => typeof(Topic).IsAssignableFrom(t),
-        typeof(Topic)
-      );
+      _typeLookup = new TopicLookupService();
 
     }
     #pragma warning restore CA1810 // Initialize reference type static fields inline
