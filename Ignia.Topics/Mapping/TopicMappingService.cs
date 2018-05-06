@@ -28,13 +28,13 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeCollection _typeCache = new TypeCollection();
+    static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly ITopicRepository _topicRepository = null;
-    readonly ITypeLookupService _typeLookupService = null;
+    readonly                    ITopicRepository                _topicRepository                = null;
+    readonly                    ITypeLookupService              _typeLookupService              = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -254,8 +254,8 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = new PropertyConfiguration(property);
-      var topicReferenceId = source.Attributes.GetInteger(property.Name + "Id", 0);
+      var configuration         = new PropertyConfiguration(property);
+      var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Assign default value
