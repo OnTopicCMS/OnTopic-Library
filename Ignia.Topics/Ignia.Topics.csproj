@@ -160,6 +160,7 @@
     <Compile Include="Reflection\MemberInfoCollection.cs" />
     <Compile Include="Reflection\MemberInfoCollection{T}.cs" />
     <Compile Include="Reflection\TypeCollection.cs" />
+    <Compile Include="Reflection\TypeIndex.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\ITopicRepositoryContract.cs" />
