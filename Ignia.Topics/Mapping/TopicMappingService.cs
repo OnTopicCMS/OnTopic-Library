@@ -525,8 +525,8 @@ namespace Ignia.Topics.Mapping {
     ///   Given a source topic and a property configuration, attempts to identify a source collection that maps to the property.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
-    ///   collection on the <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   Given a collection <paramref name="configuration"/> on a target DTO, attempts to identify a source collection on the
+    ///   <paramref name="topic"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
     ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
