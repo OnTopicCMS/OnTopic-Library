@@ -368,7 +368,7 @@ namespace Ignia.Topics.Mapping {
       | Property: Collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        SetCollectionValue(source, target, relationships, cache, configuration);
+        SetCollectionValue(source, target, relationships, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -471,16 +471,16 @@ namespace Ignia.Topics.Mapping {
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected void SetCollectionValue(
       Topic source,
       object target,
       Relationships relationships,
-      Dictionary<int, object> cache,
-      PropertyConfiguration configuration
+      PropertyConfiguration configuration,
+      Dictionary<int, object> cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -514,7 +514,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      PopulateTargetCollection(configuration, cache, sourceList, targetList);
+      PopulateTargetCollection(sourceList, targetList, configuration, cache);
 
     }
 
@@ -625,17 +625,17 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Given a source list, will populate a target list based on the configured behavior of the target property.
     /// </summary>
+    /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
+    /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
-    /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
     protected void PopulateTargetCollection(
-      PropertyConfiguration configuration,
-      Dictionary<int, object> cache,
       IList<Topic> sourceList,
-      IList targetList
+      IList targetList,
+      PropertyConfiguration configuration,
+      Dictionary<int, object> cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -689,10 +689,10 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected void SetTopicReference(
       Topic source,
       object target,
@@ -712,16 +712,16 @@ namespace Ignia.Topics.Mapping {
     ///   Helper function recursively iterates through children and adds each to a collection.
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
-    /// <param name="topics">The list of <see cref="Topic"/> instances to add each child to.</param>
+    /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
     /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> topics, bool includeNestedTopics = false) {
-      if (source.IsDisabled) return topics;
-      if (source.ContentType.Equals("List") && !includeNestedTopics) return topics;
-      topics.Add(source);
+    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
+      if (source.IsDisabled) return targetList;
+      if (source.ContentType.Equals("List") && !includeNestedTopics) return targetList;
+      targetList.Add(source);
       foreach (var child in source.Children) {
-        PopulateChildTopics(child, topics);
+        PopulateChildTopics(child, targetList);
       }
-      return topics;
+      return targetList;
     }
 
   } //Class
