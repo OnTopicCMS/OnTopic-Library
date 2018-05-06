@@ -89,6 +89,7 @@ As OnTopic relies on constructor injection, the application must be configured i
 var connectionString            = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
+var topicViewModelLookupService = new TopicViewModelLookupService();
 
 var mvcTopicRoutingService      = new MvcTopicRoutingService(
   cachedTopicRepository,
@@ -96,12 +97,12 @@ var mvcTopicRoutingService      = new MvcTopicRoutingService(
   requestContext.RouteData
 );
 
-var topicMappingService         = new TopicMappingService(cachedTopicRepository);
+var topicMappingService         = new TopicMappingService(cachedTopicRepository, topicViewModelLookupService);
 
 switch (controllerType.Name) {
 
   case nameof(TopicController):
-    return new TopicController(_topicRepository, mvcTopicRoutingService, _topicMappingService);
+    return new TopicController(_topicRepository, mvcTopicRoutingService, topicMappingService);
 
   case default:
     return base.GetControllerInstance(requestContext, controllerType);
