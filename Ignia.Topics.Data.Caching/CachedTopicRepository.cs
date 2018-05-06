@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Querying;
 
 namespace Ignia.Topics.Data.Caching {
 
