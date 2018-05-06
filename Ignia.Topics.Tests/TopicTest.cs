@@ -20,10 +20,15 @@ namespace Ignia.Topics.Tests {
   [TestClass]
   public class TopicTest {
 
+    /*==========================================================================================================================
+    | TEST: INITIALIZE ASSEMBLY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Runs before any tests to provide basic initialization. Used to ensure <see cref="TopicFactory"/> uses the
+    ///   <see cref="FakeTopicLookupService"/> for performance reasons.
+    /// </summary>
     [AssemblyInitialize]
-    public static void AssemblyInit(TestContext context) {
-      TopicFactory.TypeLookupService = new FakeTopicLookupService();
-    }
+    public static void AssemblyInit(TestContext context) => TopicFactory.TypeLookupService = new FakeTopicLookupService();
 
     /*==========================================================================================================================
     | TEST: CREATE
