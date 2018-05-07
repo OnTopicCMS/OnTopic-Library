@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
@@ -61,7 +62,7 @@ namespace Ignia.Topics.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, Relationships)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -70,8 +71,8 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, Relationships relationships = Relationships.All) =>
-      Map(topic, relationships, new Dictionary<int, object>());
+    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
+      await MapAsync(topic, relationships, new Dictionary<int, object>());
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -82,7 +83,7 @@ namespace Ignia.Topics.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, Relationships)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -97,7 +98,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private object Map(Topic topic, Relationships relationships, Dictionary<int, object> cache) {
+    private async Task<object> MapAsync(Topic topic, Relationships relationships, Dictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -120,7 +121,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return Map(topic, target, relationships, cache);
+      return await MapAsync(topic, target, relationships, cache);
 
     }
 
@@ -141,11 +142,11 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      return (T)Map(topic, new T(), relationships);
+      return (T)await MapAsync(topic, new T(), relationships);
     }
 
     /*==========================================================================================================================
@@ -160,8 +161,8 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) =>
-      Map(topic, target, relationships, new Dictionary<int, object>());
+    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
+      await MapAsync(topic, target, relationships, new Dictionary<int, object>());
 
     /// <summary>
     ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
@@ -178,7 +179,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    private object Map(Topic topic, object target, Relationships relationships, Dictionary<int, object> cache) {
+    private async Task<object> MapAsync(Topic topic, object target, Relationships relationships, Dictionary<int, object> cache) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -207,9 +208,11 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var taskQueue = new List<Task>();
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        SetProperty(topic, target, relationships, property, cache);
+        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache));
       }
+      await Task.WhenAll(taskQueue.ToArray());
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return result
@@ -219,7 +222,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET PROPERTY
+    | PROTECTED: SET PROPERTY (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
@@ -230,7 +233,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    protected void SetProperty(
+    protected async Task SetPropertyAsync(
       Topic source,
       object target,
       Relationships relationships,
@@ -258,14 +261,14 @@ namespace Ignia.Topics.Mapping {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        SetCollectionValue(source, target, relationships, configuration, cache);
+        await SetCollectionValueAsync(source, target, relationships, configuration, cache);
       }
       else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
-        SetTopicReference(source.Parent, target, configuration, cache);
+        await SetTopicReferenceAsync(source.Parent, target, configuration, cache);
       }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        SetTopicReference(topicReference, target, configuration, cache);
+        await SetTopicReferenceAsync(topicReference, target, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -357,7 +360,7 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    protected void SetCollectionValue(
+    protected async Task SetCollectionValueAsync(
       Topic source,
       object target,
       Relationships relationships,
@@ -392,7 +395,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      PopulateTargetCollection(sourceList, targetList, configuration, cache);
+      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache);
 
     }
 
@@ -507,7 +510,7 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    protected void PopulateTargetCollection(
+    protected async Task PopulateTargetCollectionAsync(
       IList<Topic> sourceList,
       IList targetList,
       PropertyConfiguration configuration,
@@ -524,8 +527,10 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Populate the target collection
+      | Queue up mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var taskQueue = new List<Task<object>>();
+
       foreach (var childTopic in sourceList) {
 
         //Ensure the source topic matches any [FilterByAttribute()] settings
@@ -541,21 +546,37 @@ namespace Ignia.Topics.Mapping {
         //Map child topic to target DTO
         var childDto = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
-          childDto = Map(childTopic, configuration.CrawlRelationships, cache);
+          taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
+        } else {
+          AddToList(childDto);
         }
 
-        //Ensure the list item derives from the list type
-        if (listType.IsAssignableFrom(childDto.GetType())) {
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process mapping tasks
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (taskQueue.Count > 0) {
+        var dtoTask = await Task.WhenAny(taskQueue);
+        taskQueue.Remove(dtoTask);
+        AddToList(await dtoTask);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Function: Add to List
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      void AddToList(object dto) {
+        if (listType.IsAssignableFrom(dto.GetType())) {
           try {
-            targetList.Add(childDto);
+            targetList.Add(dto);
           }
           catch (ArgumentException) {
             //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
             //We would defensively check for this, except IList doesn't provide a suitable method to do so
           }
         }
-
       }
+
     }
 
     /*==========================================================================================================================
@@ -570,13 +591,13 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    protected void SetTopicReference(
+    protected async Task SetTopicReferenceAsync(
       Topic source,
       object target,
       PropertyConfiguration configuration,
       Dictionary<int, object> cache
     ) {
-      var topicDto = Map(source, configuration.CrawlRelationships, cache);
+      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache);
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }

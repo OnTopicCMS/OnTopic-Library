@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
@@ -38,7 +39,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModel<T>, new() {
+  public abstract class LayoutControllerBase<T> : AsyncController where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -96,7 +97,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <summary>
     ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
     /// </summary>
-    public virtual PartialViewResult Menu() {
+    public async virtual Task<PartialViewResult> Menu() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -115,7 +116,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = AddNestedTopics(navigationRootTopic, false, 3),
+        NavigationRoot          = await AddNestedTopicsAsync(navigationRootTopic, false, 3),
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
@@ -192,7 +193,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected T AddNestedTopics(
+    protected async Task<T> AddNestedTopicsAsync(
       Topic sourceTopic,
       bool allowPageGroups      = true,
       int tiers                 = 1
@@ -201,11 +202,11 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       if (sourceTopic == null) {
         return null;
       }
-      var viewModel = _topicMappingService.Map<T>(sourceTopic, Relationships.None);
+      var viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None);
       if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
           viewModel.Children.Add(
-            AddNestedTopics(
+            await AddNestedTopicsAsync(
               topic,
               allowPageGroups,
               tiers

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace Ignia.Topics.Mapping {
 
@@ -53,7 +54,7 @@ namespace Ignia.Topics.Mapping {
     ///     <see cref="Object"/>. These results may need to be cast to a specific type, depending on the context. That said,
     ///     strongly-typed views should be able to cast the object to the appropriate View Model type. If the type of the View
     ///     Model is known upfront, and it is imperative that it be strongly-typed, then prefer <see
-    ///     cref="Map{T}(Topic, Relationships)"/>.
+    ///     cref="MapAsync{T}(Topic, Relationships)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed by the underlying implementation, it must implement a
@@ -63,7 +64,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -76,7 +77,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync(topic, relationships), cacheKey);
 
     }
 
@@ -98,7 +99,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -111,7 +112,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map<T>(topic, relationships), cacheKey) as T;
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync<T>(topic, relationships), cacheKey) as T;
 
     }
 
@@ -127,7 +128,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -140,7 +141,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync(topic, relationships), cacheKey);
 
     }
 

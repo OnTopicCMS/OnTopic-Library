@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
@@ -48,6 +49,31 @@ namespace Ignia.Topics.Tests {
     /// </remarks>
     public TopicControllerTest() {
       _topicRepository = new CachedTopicRepository(new FakeTopicRepository());
+    }
+
+    /*==========================================================================================================================
+    | TEST: TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the <see cref="TopicController.IndexAsync(string)" /> action.
+    /// </summary>
+    [TestMethod]
+    public async Task TopicController_IndexTestAsync() {
+
+      var routes                = new RouteData();
+      var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+
+      var controller            = new TopicController(_topicRepository, topicRoutingService, mappingService);
+      var result                = await controller.IndexAsync(topic.GetWebPath()) as TopicViewResult;
+      var model                 = result.Model as PageTopicViewModel;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string>("Web_0_1_1", model.Title);
+
     }
 
     /*==========================================================================================================================
@@ -173,7 +199,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void LayoutController_MenuTest() {
+    public async Task LayoutController_MenuTest() {
 
       var routes                = new RouteData();
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
@@ -183,7 +209,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
-      var result                = controller.Menu() as PartialViewResult;
+      var result                = await controller.Menu() as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
