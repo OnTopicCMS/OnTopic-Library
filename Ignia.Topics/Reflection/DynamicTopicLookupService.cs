@@ -8,23 +8,23 @@ using System;
 namespace Ignia.Topics.Reflection {
 
   /*============================================================================================================================
-  | CLASS: TOPIC VIEW MODEL LOOKUP SERVICE
+  | CLASS: TOPIC LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="TopicViewModelLookupService"/> will search all assemblies for <see cref="Type"/>s that end with
-  ///   "TopicViewModel"
+  ///   The <see cref="DynamicTopicLookupService"/> will search all assemblies for <see cref="Type"/>s that derive from <see
+  ///   cref="Topic"/>.
   /// </summary>
-  public class TopicViewModelLookupService : DynamicTypeLookupService {
+  public class DynamicTopicLookupService : DynamicTypeLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="TopicLookupService"/>.
+    ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
-    internal TopicViewModelLookupService() : base(
-      t => t.Name.EndsWith("TopicViewModel"),
-      typeof(object)
+    internal DynamicTopicLookupService() : base(
+      t => typeof(Topic).IsAssignableFrom(t),
+      typeof(Topic)
     ) {}
 
   } //Class

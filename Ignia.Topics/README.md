@@ -21,8 +21,8 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 - **[`TopicMappingService`](Mapping)**: A default implementation of the `ITopicMappingService`, with built-in conventions that should address that majority of mapping requirements. This also includes a number of attributes for annotating view models with hints that the `TopicMappingService` can use in populating target objects.
 - **[`StaticTypeLookupService`](StaticTypeLookupService.cs)**: A basic implementation of the `ITypeLookupService` interface that allows types to be explicitly registered; useful when a small number of types are expected.
   - **[`DynamicTypeLookupService`](Reflection\DynamicTypeLookupService.cs)**: A reflection-based implementation of the `ITypeLookupService` interface that looks up types from all loaded assemblies based on a `Func<Type, bool>` delegate.
-    - **[`TopicLookupService`](Reflection\TopicLookupService.cs)**: A version of `DynamicTypeLookupService` that returns all classes that derive from `Topic`; this is the default implementation for `TopicFactory`.
-    - **[`TopicViewModeLookupService`](Reflection\TopicViewModeLookupService.cs)**: A version of `DynamicTypeLookupService` that returns all classes that end with `TopicViewModel`; this is useful for the `TopicMappingService`.
+    - **[`DynamicTopicLookupService`](Reflection\DynamicTopicLookupService.cs)**: A version of `DynamicTypeLookupService` that returns all classes that derive from `Topic`; this is the default implementation for `TopicFactory`.
+    - **[`DynamicTopicViewModeLookupService`](Reflection\DynamicTopicViewModeLookupService.cs)**: A version of `DynamicTypeLookupService` that returns all classes that end with `TopicViewModel`; this is useful for the `TopicMappingService`.
 
 ## Extension Methods
 - **[`Querying`](Querying/Topic.cs)**: The `Topic` class exposes optional extension methods for querying a topic (and its descendants) based on attribute values. This includes the useful `Topic.FindAll(Func<Topic, bool>)` method for querying an entire topic graph and returning topics validated by a predicate.
