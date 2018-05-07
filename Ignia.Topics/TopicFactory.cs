@@ -27,11 +27,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Establishes static variables for the <see cref="TopicFactory"/>.
     /// </summary>
-    public static ITypeLookupService TypeLookupService { get; set; } =
-      new DynamicTypeLookupService(
-        t => typeof(Topic).IsAssignableFrom(t),
-        typeof(Topic)
-      );
+    public static ITypeLookupService TypeLookupService { get; set; } = new DefaultTopicLookupService();
 
     /*==========================================================================================================================
     | METHOD: CREATE
