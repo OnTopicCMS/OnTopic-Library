@@ -455,45 +455,45 @@ namespace Ignia.Topics.Mapping {
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        (configuration.RelationshipKey.Equals("Children") || configuration.RelationshipType.Equals(RelationshipType.Children)) &&
-        IsCurrentRelationship(RelationshipType.Children)
+        configuration.RelationshipKey.Equals("Children") ||
+        configuration.RelationshipType.Equals(RelationshipType.Children)
       ) {
-        listSource = source.Children.ToList();
+        listSource = GetRelationship(RelationshipType.Children, s => true, () => source.Children.ToList());
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.Relationship)) {
-        if (source.Relationships.Contains(configuration.RelationshipKey)) {
-          listSource = source.Relationships.GetTopics(configuration.RelationshipKey);
-        }
-      }
+      listSource = GetRelationship(
+        RelationshipType.Relationship,
+        source.Relationships.Contains,
+        () => source.Relationships.GetTopics(configuration.RelationshipKey)
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.NestedTopics)) {
-        if (source.Children.Contains(configuration.RelationshipKey)) {
-          listSource = source.Children[configuration.RelationshipKey].Children.ToList();
-        }
-      }
+      listSource = GetRelationship(
+        RelationshipType.NestedTopics,
+        source.Children.Contains,
+        () => source.Children[configuration.RelationshipKey].Children.ToList()
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (IsCurrentRelationship(RelationshipType.IncomingRelationship)) {
-        if (source.IncomingRelationships.Contains(configuration.RelationshipKey)) {
-          listSource = source.IncomingRelationships.GetTopics(configuration.RelationshipKey);
-        }
-      }
+      listSource = GetRelationship(
+        RelationshipType.IncomingRelationship,
+        source.IncomingRelationships.Contains,
+        () => source.IncomingRelationships.GetTopics(configuration.RelationshipKey)
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle Metadata relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
-        listSource = _topicRepository.Load("Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList")?
-          .Children.ToList();
+        var metadataKey = "Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList";
+        listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -512,17 +512,16 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide local function for evaluating current relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      bool IsCurrentRelationship(RelationshipType targetRelationshipType) => (
-        listSource.Count == 0 &&
-        (
-          configuration.RelationshipType.Equals(RelationshipType.Any) ||
-          configuration.RelationshipType.Equals(targetRelationshipType)
-        ) &&
-        (
-          RelationshipMap.Mappings[targetRelationshipType].Equals(Relationships.None) ||
-          relationships.HasFlag(RelationshipMap.Mappings[targetRelationshipType])
-        )
-      );
+      IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
+        var targetRelationships = RelationshipMap.Mappings[relationship];
+        var relationshipType    = configuration.RelationshipType;
+        var preconditionsMet    =
+          listSource.Count == 0 &&
+          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
+          (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
+          contains(configuration.RelationshipKey);
+        return preconditionsMet? getTopics() : listSource;
+      }
 
     }
 
