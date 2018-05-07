@@ -87,6 +87,10 @@ namespace Ignia.Topics.Mapping {
         }
       );
 
+      if (RelationshipType.Equals(RelationshipType.Any) && RelationshipKey.Equals("Children")) {
+        RelationshipType = RelationshipType.Children;
+      }
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/

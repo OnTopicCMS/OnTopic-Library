@@ -427,9 +427,11 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) {
-        listSource = GetRelationship(RelationshipType.Children, s => true, () => source.Children.ToList());
-      }
+      listSource = GetRelationship(
+        RelationshipType.Children,
+        s => true,
+        () => source.Children.ToList()
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
@@ -485,6 +487,7 @@ namespace Ignia.Topics.Mapping {
         var preconditionsMet    =
           listSource.Count == 0 &&
           (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
+          (relationshipType.Equals(RelationshipType.Children) || !relationship.Equals(RelationshipType.Children)) &&
           (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
           contains(configuration.RelationshipKey);
         return preconditionsMet? getTopics() : listSource;
