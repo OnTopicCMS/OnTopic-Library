@@ -114,19 +114,13 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
-      var contentType = topic.ContentType;
-      var viewModelType = _typeLookupService.GetType(contentType + "TopicViewModel");
+      var viewModelType = _typeLookupService.GetType(topic.ContentType + "TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      var mappedTarget = Map(topic, target, relationships, cache);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Provide mapping
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return mappedTarget;
+      return Map(topic, target, relationships, cache);
 
     }
 
@@ -148,13 +142,10 @@ namespace Ignia.Topics.Mapping {
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
     public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
-
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      var target = new T();
-      return (T)Map(topic, target, relationships);
-
+      return (T)Map(topic, new T(), relationships);
     }
 
     /*==========================================================================================================================
@@ -209,11 +200,7 @@ namespace Ignia.Topics.Mapping {
       if (cache.ContainsKey(topic.Id)) {
         return cache[topic.Id];
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Cache results
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Id > 0 && !cache.ContainsKey(topic.Id)) {
+      else if (topic.Id > 0) {
         cache.Add(topic.Id, target);
       }
 
@@ -258,36 +245,24 @@ namespace Ignia.Topics.Mapping {
       var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Assign default value
+      | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DefaultValue != null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Scalar Value
+      | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Collections
-      \-----------------------------------------------------------------------------------------------------------------------*/
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         SetCollectionValue(source, target, relationships, configuration, cache);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Parent
-      \-----------------------------------------------------------------------------------------------------------------------*/
       else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
         SetTopicReference(source.Parent, target, configuration, cache);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Topic Reference
-      \-----------------------------------------------------------------------------------------------------------------------*/
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
         SetTopicReference(topicReference, target, configuration, cache);
@@ -393,9 +368,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) {
-        return;
-      }
+      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
@@ -414,9 +387,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceList == null) {
-        return;
-      }
+      if (sourceList == null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
@@ -449,15 +420,14 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IList<Topic> listSource = new Topic[] { };
+      var                       listSource                      = (IList<Topic>)new Topic[] { };
+      var                       relationshipKey                 = configuration.RelationshipKey;
+      var                       relationshipType                = configuration.RelationshipType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        configuration.RelationshipKey.Equals("Children") ||
-        configuration.RelationshipType.Equals(RelationshipType.Children)
-      ) {
+      if (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) {
         listSource = GetRelationship(RelationshipType.Children, s => true, () => source.Children.ToList());
       }
 
@@ -467,7 +437,7 @@ namespace Ignia.Topics.Mapping {
       listSource = GetRelationship(
         RelationshipType.Relationship,
         source.Relationships.Contains,
-        () => source.Relationships.GetTopics(configuration.RelationshipKey)
+        () => source.Relationships.GetTopics(relationshipKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -476,7 +446,7 @@ namespace Ignia.Topics.Mapping {
       listSource = GetRelationship(
         RelationshipType.NestedTopics,
         source.Children.Contains,
-        () => source.Children[configuration.RelationshipKey].Children.ToList()
+        () => source.Children[relationshipKey].Children
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -485,7 +455,7 @@ namespace Ignia.Topics.Mapping {
       listSource = GetRelationship(
         RelationshipType.IncomingRelationship,
         source.IncomingRelationships.Contains,
-        () => source.IncomingRelationships.GetTopics(configuration.RelationshipKey)
+        () => source.IncomingRelationships.GetTopics(relationshipKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -496,14 +466,12 @@ namespace Ignia.Topics.Mapping {
         listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
+       /*------------------------------------------------------------------------------------------------------------------------
       | Handle flattening of children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.FlattenChildren) {
         var flattenedList = new List<Topic>();
-        foreach (var childTopic in listSource) {
-          PopulateChildTopics(childTopic, flattenedList);
-        }
+        listSource.ToList().ForEach(t => PopulateChildTopics(t, flattenedList));
         listSource = flattenedList;
       }
 
@@ -514,7 +482,6 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
         var targetRelationships = RelationshipMap.Mappings[relationship];
-        var relationshipType    = configuration.RelationshipType;
         var preconditionsMet    =
           listSource.Count == 0 &&
           (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
@@ -625,9 +592,7 @@ namespace Ignia.Topics.Mapping {
       if (source.IsDisabled) return targetList;
       if (source.ContentType.Equals("List") && !includeNestedTopics) return targetList;
       targetList.Add(source);
-      foreach (var child in source.Children) {
-        PopulateChildTopics(child, targetList);
-      }
+      source.Children.ToList().ForEach(t => PopulateChildTopics(t, targetList));
       return targetList;
     }
 
