@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("3.5.1739.0")]
-[assembly: AssemblyFileVersion("3.5.1757.0")]
+[assembly: AssemblyFileVersion("3.5.1758.0")]
 [assembly: InternalsVisibleTo("Ignia.Topics.Tests")]
 [assembly: CLSCompliant(true)]
 [assembly: GuidAttribute("3CA9F6CB-B45A-4E74-AAA4-0C87CAA2704F")]
