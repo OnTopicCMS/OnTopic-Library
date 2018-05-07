@@ -322,7 +322,7 @@ namespace Ignia.Topics.Reflection {
 
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
-      return method.Invoke(target, new object[] { });
+      return method.Invoke(target, Array.Empty<object>());
 
     }
 

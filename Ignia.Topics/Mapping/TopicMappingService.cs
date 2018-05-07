@@ -420,7 +420,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       listSource                      = (IList<Topic>)new Topic[] { };
+      var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
       var                       relationshipKey                 = configuration.RelationshipKey;
       var                       relationshipType                = configuration.RelationshipType;
 
