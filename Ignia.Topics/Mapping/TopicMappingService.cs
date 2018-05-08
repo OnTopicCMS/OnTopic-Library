@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -72,7 +73,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new Dictionary<int, object>());
+      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>());
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -98,7 +99,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private async Task<object> MapAsync(Topic topic, Relationships relationships, Dictionary<int, object> cache) {
+    private async Task<object> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -108,8 +109,8 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.ContainsKey(topic.Id)) {
-        return cache[topic.Id];
+      if (cache.TryGetValue(topic.Id, out var dto)) {
+        return dto;
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -162,7 +163,7 @@ namespace Ignia.Topics.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, target, relationships, new Dictionary<int, object>());
+      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>());
 
     /// <summary>
     ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
@@ -179,7 +180,12 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    private async Task<object> MapAsync(Topic topic, object target, Relationships relationships, Dictionary<int, object> cache) {
+    private async Task<object> MapAsync(
+      Topic topic,
+      object target,
+      Relationships relationships,
+      ConcurrentDictionary<int, object> cache
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -198,11 +204,11 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.ContainsKey(topic.Id)) {
-        return cache[topic.Id];
+      if (cache.TryGetValue(topic.Id, out var dto)) {
+        return dto;
       }
       else if (topic.Id > 0) {
-        cache.Add(topic.Id, target);
+        cache.GetOrAdd(topic.Id, target);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -238,7 +244,7 @@ namespace Ignia.Topics.Mapping {
       object target,
       Relationships relationships,
       PropertyInfo property,
-      Dictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -365,7 +371,7 @@ namespace Ignia.Topics.Mapping {
       object target,
       Relationships relationships,
       PropertyConfiguration configuration,
-      Dictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -514,7 +520,7 @@ namespace Ignia.Topics.Mapping {
       IList<Topic> sourceList,
       IList targetList,
       PropertyConfiguration configuration,
-      Dictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -595,7 +601,7 @@ namespace Ignia.Topics.Mapping {
       Topic source,
       object target,
       PropertyConfiguration configuration,
-      Dictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache
     ) {
       var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache);
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
