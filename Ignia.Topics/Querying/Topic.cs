@@ -104,9 +104,6 @@ namespace Ignia.Topics.Querying {
 
     /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
-    >===========================================================================================================================
-    | ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
-    | allowing a search by any criteria - including attributes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a collection of topics based on an attribute name and value.
