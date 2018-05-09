@@ -117,7 +117,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = await AddNestedTopicsAsync(navigationRootTopic, false, 3),
+        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3),
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
@@ -186,15 +186,40 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     }
 
     /*==========================================================================================================================
-    | ADD NESTED TOPICS
+    | GET ROOT VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A helper function that allows a set number of tiers to be added to a <see cref="NavigationViewModel"/> tree.
+    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
+    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
+    ///   <c>ContentType</c> of <c>PageGroup</c>.
+    /// </summary>
+    /// <remarks>
+    ///   In the out-of-the-box implementation, <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/> and <see
+    ///   cref="GetViewModelAsync(Topic, Boolean, Int32)"/> provide the same functionality. It is recommended that actions call
+    ///   <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/>, however, as it allows implementers the flexibility to
+    ///   differentiate between the root view model (which the client application will be binding to) and any child view models
+    ///   (which the client application may optionally iterate over).
+    /// </remarks>
+    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
+    /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
+    /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
+    protected virtual async Task<T> GetRootViewModelAsync(
+      Topic sourceTopic,
+      bool allowPageGroups = true,
+      int tiers = 1
+    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers);
+
+    /*==========================================================================================================================
+    | GET VIEW MODEL (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
+    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
+    ///   <c>ContentType</c> of <c>PageGroup</c>.
     /// </summary>
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected async Task<T> AddNestedTopicsAsync(
+    protected async Task<T> GetViewModelAsync(
       Topic sourceTopic,
       bool allowPageGroups      = true,
       int tiers                 = 1
@@ -225,7 +250,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
-          taskQueue.Add(AddNestedTopicsAsync(topic, allowPageGroups, tiers));
+          taskQueue.Add(GetViewModelAsync(topic, allowPageGroups, tiers));
         }
       }
 

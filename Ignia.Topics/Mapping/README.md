@@ -156,7 +156,7 @@ This can be useful for filtering a collection. For instance, if a `CompanyTopicV
 While it's not a best practice, this also works for strongly-typed collections of `Topic` objects. Typically, collections should return view models, but if the collection is strongly-typed to `Topic` (or a derivative) then the source `Topic` will not be mapped, and will be used as-is assuming it implements (or derives from) the target `Topic` type. This can be useful for scenarios where a view needs full access to the object graph (such as the `SitemapController`). In such cases, it is impractical to map the entirety of an object graph, along with all attributes, to a corresponding view model graph, and makes more sense to simply return the `Topic` graph.
 
 ## Caching
-By default, the `TopicMappingService` will cache a reference to all types discovered that end with `TopicViewModel`, as well as all `MemberInfo` objects associated with each of those types. That mitigates much of the performance hit associated with the use of reflection. Despite that, simply setting properties—and, especially, on large object graphs—can require a lot of processing time. To mitigate this, OnTopic also offers two approaches. 
+By default, the `TopicMappingService` will cache a reference to all `MemberInfo` objects associated with each of view model it maps. That mitigates much of the performance hit associated with the use of reflection. Despite that, simply setting properties—and, especially, on large object graphs—can require a lot of processing time. To address this, OnTopic also offers two approaches. 
 
 ### Internal Caching
 When a request is made to `TopicMappingService`, and internal cache is constructed. If any mapping requests refer to a `Topic` that's already been mapped as part of the _current_ object graph, then that object will be returned. This prevents unnecessary duplication of mapping, and also avoids the potential for infinite loops. For instance, if a view model includes `Children`, and those children are set to `[Follow(Relationships.Parents)]`, the `TopicMappingService` will point back to the originally-mapped `Parent` object, instead of mapping a new instance of that `Topic`.
@@ -174,6 +174,12 @@ var topicMappingService = new TopicMappingService(topicRepository);
 var cachedTopicMappingService = new CachedTopicMappingService(topicMappingService);
 ```
 
-> *Note:* Be aware that the `CachedTopicMappingService` may take up considerable memory, depending on how many permutations of mapped objects the application has. This is especially true since it caches each unique object graph; no effort is made to centralize references to e.g. relationships that reference the same object instance.
+> _**Important**_: Due to limitations discussed below, the application of the `CachedTopicMappingService` is quite restricted. It is likely inapprorpiate for page content, since that wouldn't reflect changes made via the editor. And it isn't appropriate for e.g. the `LayoutControllerBase{T}`, since it manually constructs its tree.
 
-> *Note:* The `CachedTopicMappingService` makes no effort to validate or evict cache entries. Topics whose values change during the lifetime of the `CachedTopicMappingService` will not be reflected in the mapped responses.
+
+#### Limitations
+While the `CachedTopicMappingService` can be useful for particular scenarios, it introduces several limitations that should be accounted for.
+
+1. It may take up considerable memory, depending on how many permutations of mapped objects the application has. This is especially true since it caches each unique object graph; no effort is made to centralize object instances referenced by e.g. relationships in multiple graphs.
+2. It makes no effort to validate or evict cache entries. Topics whose values change during the lifetime of the `CachedTopicMappingService` will not be reflected in the mapped responses.
+3. If a graph is manually constructed (by e.g. programmatically mapping `Children`) then each instance will be separated cached, thus potentially allowing an instance to be shared between multiple graphs. This can introduce concerns if edge maintenance is important.

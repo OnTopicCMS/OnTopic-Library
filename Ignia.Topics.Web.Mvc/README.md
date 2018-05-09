@@ -24,6 +24,7 @@ There are six main controllers that ship with the MVC implementation. In additio
 - **`ErrorControllerBase<T>`**: Provides support for `Error`, `NotFound`, and `InternalServer` actions. Can accept any `IPageTopicViewModel` as a generic argument; that will be used as the view model.
 - **`FallbackController`**: Used in a [Controller Factory](#controller-factory) as a fallback, in case no other controllers can accept the request. Simply returns a `NotFoundResult` with a predefined message.
 - **`LayoutControllerBase<T>`**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance. 
+  - **`CachedLayoutControllerBase<T>`**: Introduces specialized caching of `INavigationTopicViewModel<T>` graphs whenever a call to the `GetNavigationRoot()` is called. This avoids mapping the entirety of the navigation on each request.
 - **`RedirectController`**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`. 
 - **`SitemapController`**: Provides a single `Sitemap` action which returns a reference to the `ITopicRepository`, thus allowing a sitemap view to recurse over the entire Topic graph, including all attributes.
 
