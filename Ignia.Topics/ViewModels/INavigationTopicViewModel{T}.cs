@@ -17,7 +17,24 @@ namespace Ignia.Topics.ViewModels {
   ///   No topics are expected to have a <c>Navigation</c> content type. Instead, implementers of this view model are expected
   ///   to manually construct instances.
   /// </remarks>
-  public interface INavigationTopicViewModel<T> : IPageTopicViewModel where T: INavigationTopicViewModel<T> {
+  public interface INavigationTopicViewModel<T> : ITopicViewModel where T: INavigationTopicViewModel<T> {
+
+    /*==========================================================================================================================
+    | PROPERTY: WEBPATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Represents the HTTP routing path for the corresponding <see cref="Topic"/>.
+    /// </summary>
+    string WebPath { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: SHORT TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   In addition to the Title, a site may opt to define a Short Title used exclusively in the navigation. If present, this
+    ///   value should be used instead of Title.
+    /// </summary>
+    string ShortTitle { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: CHILDREN
