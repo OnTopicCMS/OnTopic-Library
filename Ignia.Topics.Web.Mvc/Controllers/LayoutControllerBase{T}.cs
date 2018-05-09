@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -198,22 +199,59 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       bool allowPageGroups      = true,
       int tiers                 = 1
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate preconditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
       tiers--;
       if (sourceTopic == null) {
         return null;
       }
-      var viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var taskQueue             = new List<Task<T>>();
+      var children              = new List<T>();
+      var viewModel             = (T)null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Map object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Request mapping of children
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
-          viewModel.Children.Add(
-            await AddNestedTopicsAsync(
-              topic,
-              allowPageGroups,
-              tiers
-            )
-          );
+          taskQueue.Add(AddNestedTopicsAsync(topic, allowPageGroups, tiers));
         }
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (taskQueue.Count > 0 && viewModel.Children.Count == 0) {
+        var dtoTask = await Task.WhenAny(taskQueue);
+        taskQueue.Remove(dtoTask);
+        children.Add(await dtoTask);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add children to view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (viewModel.Children.Count == 0) {
+        lock (viewModel) {
+          if (viewModel.Children.Count == 0) {
+            children.ForEach(c => viewModel.Children.Add(c));
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return viewModel;
     }
 
