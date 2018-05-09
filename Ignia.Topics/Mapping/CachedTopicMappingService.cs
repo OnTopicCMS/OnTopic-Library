@@ -27,8 +27,8 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<Tuple<int, Type, Relationships>, object> _cache =
-      new ConcurrentDictionary<Tuple<int, Type, Relationships>, object>();
+    private readonly ConcurrentDictionary<(int, Type, Relationships), object> _cache =
+      new ConcurrentDictionary<(int, Type, Relationships), object>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -69,7 +69,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, null, relationships);
+      var cacheKey = (topic.Id, (Type)null, relationships);
       if(_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -104,7 +104,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, typeof(T), relationships);
+      var cacheKey = (topic.Id, typeof(T), relationships);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return (T)viewModel;
       }
@@ -133,7 +133,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, target.GetType(), relationships);
+      var cacheKey = (topic.Id, target.GetType(), relationships);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -183,32 +183,18 @@ namespace Ignia.Topics.Mapping {
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
-    private object CacheViewModel(string contentType, object viewModel, Tuple<int, Type, Relationships> cacheKey) {
+    private object CacheViewModel(string contentType, object viewModel, (int, Type, Relationships) cacheKey) {
       if (cacheKey.Item1 > 0 && cacheKey.Item2 != null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
       }
       if (cacheKey.Item2 != null) {
-        cacheKey = new Tuple<int, Type, Relationships>(cacheKey.Item1, null, cacheKey.Item3);
+        cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
       }
       if (cacheKey.Item1 > 0 && viewModel.GetType().Name.Equals(contentType + "TopicViewModel")) {
         _cache.TryAdd(cacheKey, viewModel);
       }
       return viewModel;
     }
-
-    /*==========================================================================================================================
-    | METHOD: GET CACHE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a <see cref="Topic.Id"/>, <see cref="Type"/>, and <see cref="Relationships"/> reference, produces a cache key of
-    ///   type <see cref="Tuple{T1, T2, T3}"/>
-    /// </summary>
-    /// <param name="topicId">The <see cref="Topic.Id"/> of the entity to derive the data from.</param>
-    /// <param name="type">The type of the target object that the <see cref="Topic"/> will be mapped to.</param>
-    /// <param name="relationships">The relationships the mapping will follow, if any.</param>
-    /// <returns>A <see cref="Tuple{Int32, Type, Relationships}"/> representing the unique cache key.</returns>
-    private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) =>
-      new Tuple<int, Type, Relationships>(topicId, type, relationships);
 
   } //Class
 } //Namespace
