@@ -152,6 +152,33 @@ namespace Ignia.Topics.Mapping {
     ///   Given a view model, determines if it is appropriate to cache and, if so, adds it to the cache. Regardless, returns the
     ///   view model back to the consumer.
     /// </summary>
+    /// <remarks>
+    ///   The internal will potentially add two entries to the cache for every view model.
+    ///   <list type="number">
+    ///     <item>
+    ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see
+    ///       cref="Relationships"/> mapped.
+    ///     </item>
+    ///     <item>
+    ///       The second will assume a null <see cref="Type"/>, and can be used for scenarios where the <see cref="Type"/> is
+    ///       not known—and, thus, assumed to be the default mapping.
+    ///     </item>
+    ///   </list>
+    ///   In all cases, the <see cref="Topic.Id"/> must be greater than zero, to ensure that it's a saved entity (otherwise,
+    ///   multiple distinct entities will have the default <see cref="Topic.Id"/> of <c>-1</c>). In addition, the following
+    ///   conditions apply, respectively, to each of the caches:
+    ///   <list type="number">
+    ///     <item>
+    ///       The first must have a view model type that is not an <see cref="Object"/>, since it is meant to map to a specific
+    ///       view model type.
+    ///     </item>
+    ///     <item>
+    ///       The second will assume that the view model type of the naming convention <c>{ContentType}TopicViewModel</c>—i.e.,
+    ///       it is the default implementation for the given view model type, and not a specially cast version such as e.g.,
+    ///       <c>NavigationTopicViewModel</c> or <c>TopicViewModel</c>.
+    ///     </item>
+    ///   </list>
+    /// </remarks>
     /// <param name="contentType">The content type associated with the associated <see cref="Topic"/>.</param>
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
@@ -159,6 +186,9 @@ namespace Ignia.Topics.Mapping {
     private object CacheViewModel(string contentType, object viewModel, Tuple<int, Type, Relationships> cacheKey) {
       if (cacheKey.Item1 > 0 && cacheKey.Item2 != null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
+      }
+      if (cacheKey.Item2 != null) {
+        cacheKey = new Tuple<int, Type, Relationships>(cacheKey.Item1, null, cacheKey.Item3);
       }
       if (cacheKey.Item1 > 0 && viewModel.GetType().Name.Equals(contentType + "TopicViewModel")) {
         _cache.TryAdd(cacheKey, viewModel);
