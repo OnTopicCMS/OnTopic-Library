@@ -47,11 +47,10 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (INSTANCE)
+    | TEST: MAP (GENERIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by providing it with an already
-    ///   constructed instance of a DTO.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by specifying an explicit type.
     /// </summary>
     [TestMethod]
     public async Task TopicMappingService_MapGeneric() {
@@ -63,7 +62,7 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target                = (PageTopicViewModel)await mappingService.MapAsync(topic, new PageTopicViewModel());
+      var target                = await mappingService.MapAsync<PageTopicViewModel>(topic);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -115,10 +114,8 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("IsHidden", "1");
 
       parent.Attributes.SetValue("Title", "Value2");
-      parent.Attributes.SetValue("IsHidden", "1");
 
       grandParent.Attributes.SetValue("Title", "Value3");
-      grandParent.Attributes.SetValue("IsHidden", "1");
       grandParent.Attributes.SetValue("Property", "ValueB");
 
       var viewModel             = (PageTopicViewModel) await mappingService.MapAsync(topic);
