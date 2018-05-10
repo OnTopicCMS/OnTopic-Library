@@ -121,17 +121,17 @@ namespace Ignia.Topics.Tests {
       var rootTopic             = _topicRepository.Load();
       var source                = _topicRepository.Load("Root:Web:Web_0");
       var destination           = _topicRepository.Load("Root:Web:Web_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_2");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
 
       Assert.ReferenceEquals(topic.Parent, source);
-      Assert.AreEqual<int>(3, destination.Children.Count());
-      Assert.AreEqual<int>(3, source.Children.Count());
+      Assert.AreEqual<int>(2, destination.Children.Count());
+      Assert.AreEqual<int>(2, source.Children.Count());
 
       _topicRepository.Move(topic, destination);
 
       Assert.ReferenceEquals(topic.Parent, destination);
-      Assert.AreEqual<int>(2, source.Children.Count());
-      Assert.AreEqual<int>(4, destination.Children.Count());
+      Assert.AreEqual<int>(1, source.Children.Count());
+      Assert.AreEqual<int>(3, destination.Children.Count());
 
     }
 
@@ -151,12 +151,12 @@ namespace Ignia.Topics.Tests {
 
       Assert.ReferenceEquals(topic.Parent, parent);
       Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
-      Assert.AreEqual<int>(3, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count());
 
       _topicRepository.Move(topic, parent, sibling);
 
       Assert.ReferenceEquals(topic.Parent, parent);
-      Assert.AreEqual<int>(3, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count());
       Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
       Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
 
@@ -171,18 +171,18 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void ITopicRepository_DeleteTest() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_2");
-      var topic                 = _topicRepository.Load("Root:Web:Web_2:Web_2_2");
-      var child                 = _topicRepository.Load("Root:Web:Web_2:Web_2_2:Web_2_2_0");
-
-      Assert.AreEqual<int>(3, parent.Children.Count());
-
-      _topicRepository.Delete(topic);
+      var parent                = _topicRepository.Load("Root:Web:Web_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
+      var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
 
       Assert.AreEqual<int>(2, parent.Children.Count());
 
-      topic = _topicRepository.Load("Root:Web:Web_2:Web_2_2");
-      child = _topicRepository.Load("Root:Web:Web_2:Web_2_2:Web_2_2_0");
+      _topicRepository.Delete(topic);
+
+      Assert.AreEqual<int>(1, parent.Children.Count());
+
+      topic = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
+      child = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
 
       Assert.IsNull(topic);
       Assert.IsNull(child);

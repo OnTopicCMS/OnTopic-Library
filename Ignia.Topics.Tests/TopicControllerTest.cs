@@ -34,6 +34,9 @@ namespace Ignia.Topics.Tests {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     ITopicRepository            _topicRepository                = null;
+    RouteData                   _routeData                      = new RouteData();
+    Uri                         _uri                            = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
+    Topic                       _topic                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -45,10 +48,12 @@ namespace Ignia.Topics.Tests {
     ///   This uses the <see cref="FakeTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
     ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
-    ///   crawling the object graph.
+    ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
+    ///   tests.
     /// </remarks>
     public TopicControllerTest() {
-      _topicRepository = new CachedTopicRepository(new FakeTopicRepository());
+      _topicRepository          = new CachedTopicRepository(new FakeTopicRepository());
+      _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
     }
 
     /*==========================================================================================================================
@@ -60,15 +65,11 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task TopicController_IndexTestAsync() {
 
-      var routes                = new RouteData();
-      var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
-
-      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new TopicController(_topicRepository, topicRoutingService, mappingService);
-      var result                = await controller.IndexAsync(topic.GetWebPath()) as TopicViewResult;
+      var result                = await controller.IndexAsync(_topic.GetWebPath()) as TopicViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
       Assert.IsNotNull(model);
@@ -201,11 +202,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task LayoutController_MenuTest() {
 
-      var routes                = new RouteData();
-      var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
-
-      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
@@ -213,10 +210,10 @@ namespace Ignia.Topics.Tests {
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string>(topic.GetUniqueKey(), model.CurrentKey);
+      Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
       Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
-      Assert.AreEqual<int>(3, model.NavigationRoot.Children.Count());
-      Assert.IsTrue(model.NavigationRoot.IsSelected(topic.GetUniqueKey()));
+      Assert.AreEqual<int>(2, model.NavigationRoot.Children.Count());
+      Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
 
     }
 

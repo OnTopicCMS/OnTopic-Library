@@ -57,14 +57,14 @@ namespace Ignia.Topics.Tests {
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_2");
+      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
       var currentTopic          = topicRoutingService.GetCurrentTopic();
 
       Assert.IsNotNull(currentTopic);
       Assert.ReferenceEquals(topic, currentTopic);
-      Assert.AreEqual<string>("Web_0_1_2", currentTopic.Key);
+      Assert.AreEqual<string>("Web_0_1_1", currentTopic.Key);
 
     }
 
@@ -105,14 +105,14 @@ namespace Ignia.Topics.Tests {
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_2");
+      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
       var currentTopic          = topicRoutingService.GetCurrentTopic();
 
       Assert.IsNotNull(currentTopic);
       Assert.AreEqual<string>("Web", routes.GetRequiredString("rootTopic"));
-      Assert.AreEqual<string>("Web_0/Web_0_1/Web_0_1_2", routes.GetRequiredString("path"));
+      Assert.AreEqual<string>("Web_0/Web_0_1/Web_0_1_1", routes.GetRequiredString("path"));
       Assert.AreEqual<string>("Page", routes.GetRequiredString("contenttype"));
 
     }

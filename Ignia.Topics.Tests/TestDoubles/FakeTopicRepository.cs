@@ -4,7 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 
@@ -251,7 +253,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var web = TopicFactory.Create("Web", "Page", 10000, rootTopic);
 
-      CreateFakeData(web, 3, 3);
+      CreateFakeData(web, 2, 3);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
