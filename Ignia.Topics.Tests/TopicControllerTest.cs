@@ -60,10 +60,10 @@ namespace Ignia.Topics.Tests {
     | TEST: TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="TopicController.IndexAsync(string)" /> action.
+    ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
     /// </summary>
     [TestMethod]
-    public async Task TopicController_IndexTestAsync() {
+    public async Task TopicController_IndexAsync() {
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
@@ -81,10 +81,10 @@ namespace Ignia.Topics.Tests {
     | TEST: ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_ErrorTest() {
+    public void ErrorController_Error() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("ErrorPage") as ViewResult;
@@ -99,10 +99,10 @@ namespace Ignia.Topics.Tests {
     | TEST: NOT FOUND ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.NotFound(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.NotFound(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_NotFoundTest() {
+    public void ErrorController_NotFound() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("NotFoundPage") as ViewResult;
@@ -117,10 +117,10 @@ namespace Ignia.Topics.Tests {
     | TEST: INTERNAL SERVER ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.InternalServer(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.InternalServer(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_InternalServerTest() {
+    public void ErrorController_InternalServer() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("InternalServer") as ViewResult;
@@ -138,7 +138,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void FallbackController_IndexTest() {
+    public void FallbackController_Index() {
 
       var controller            = new FallbackController();
       var result                = controller.Index() as HttpNotFoundResult;
@@ -156,7 +156,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void RedirectController_TopicRedirectTest() {
+    public void RedirectController_TopicRedirect() {
 
       var controller            = new RedirectController(_topicRepository);
       var result                = controller.Redirect(11110) as RedirectResult;
@@ -180,7 +180,7 @@ namespace Ignia.Topics.Tests {
     /// </remarks>
     [TestMethod]
     [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
-    public void SitemapController_IndexTest() {
+    public void SitemapController_Index() {
 
       var controller            = new SitemapController(_topicRepository);
       var result                = controller.Index() as ViewResult;
@@ -200,7 +200,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public async Task LayoutController_MenuTest() {
+    public async Task Menu() {
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());

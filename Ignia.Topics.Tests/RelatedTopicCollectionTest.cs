@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets a relationship and confirms that it is accessible.
     /// </summary>
     [TestMethod]
-    public void RelatedTopicCollection_SetTopic() {
+    public void SetTopic() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -44,7 +44,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
     /// </summary>
     [TestMethod]
-    public void RelatedTopicCollection_IncomingRelationshipTest() {
+    public void IncomingRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -63,7 +63,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets relationships in multiple namespaces, and the correct number of keys are returned.
     /// </summary>
     [TestMethod]
-    public void RelatedTopicCollection_KeysTest() {
+    public void Keys() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
@@ -84,7 +84,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets relationships in multiple namespaces, and ensures they are all returned via GetAllTopics().
     /// </summary>
     [TestMethod]
-    public void RelatedTopicCollection_GetAllTopicsTest() {
+    public void GetAllTopics() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
@@ -107,7 +107,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="RelatedTopicCollection.GetAllTopics(String)"/> by content type.
     /// </summary>
     [TestMethod]
-    public void RelatedTopicCollection_GetAllContentTypesTest() {
+    public void GetAllContentTypes() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);

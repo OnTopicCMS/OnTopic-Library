@@ -32,7 +32,7 @@ namespace Ignia.Topics.Tests {
     ///   returning expected types.
     /// </summary>
     [TestMethod]
-    public void PropertyInfoCollection_ConstructorTest() {
+    public void Constructor() {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Tests {
     ///   functions.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_GetPropertiesTest() {
+    public void GetProperties() {
 
       var types = new TypeCollection();
 
@@ -72,7 +72,7 @@ namespace Ignia.Topics.Tests {
     ///   correctly returns the expected properties.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_GetMemberTest() {
+    public void GetMember() {
 
       var types = new TypeCollection();
 
@@ -93,7 +93,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="TypeCollection.SetPropertyValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_SetPropertyTest() {
+    public void SetProperty() {
 
       var types                 = new TypeCollection();
       var topic                 = TopicFactory.Create("Test", "ContentType");
@@ -128,7 +128,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="TypeCollection.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void TypeCollection_SetMethodTest() {
+    public void SetMethod() {
 
       var types                 = new TypeCollection();
       var source                = new MethodBasedViewModel();
@@ -158,7 +158,7 @@ namespace Ignia.Topics.Tests {
     ///   the number of iterations, simply increment the "totalIterations" variable.
     /// </remarks>
     [TestMethod]
-    public void TypeCollection_ReflectionPerformanceTest() {
+    public void ReflectionPerformance() {
 
       var totalIterations = 1;
       var types = new TypeCollection();

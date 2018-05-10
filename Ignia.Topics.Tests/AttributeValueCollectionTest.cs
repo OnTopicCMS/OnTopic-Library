@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests {
     ///   Creates a new topic and ensures that the key can be returned as an attribute.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_GetValueTest() {
+    public void GetValue() {
       var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
     }
@@ -38,7 +38,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that integer values can be set and retrieved as expected.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_GetIntegerTest() {
+    public void GetInteger() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -60,7 +60,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that integer values can be set and retrieved as expected.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_GetDateTimeTest() {
+    public void GetDateTime() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
@@ -84,7 +84,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that boolean values can be set and retrieved as expected.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_GetBooleanTest() {
+    public void GetBoolean() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -110,7 +110,7 @@ namespace Ignia.Topics.Tests {
     ///   Creates a new topic and requests an invalid attribute; ensures falls back to the default.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_DefaultValueTest() {
+    public void DefaultValue() {
       var topic = TopicFactory.Create("Test", "Container");
       Assert.AreEqual<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
@@ -122,7 +122,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets a custom attribute on a topic and ensures it can be retrieved.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_SetValueTest() {
+    public void SetValue() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
       Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
@@ -135,7 +135,7 @@ namespace Ignia.Topics.Tests {
     ///   Modifies the value of a custom attribute on a topic and ensures it is marked as IsDirty.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_SetValue_IsDirtyTest() {
+    public void SetValue_IsDirtyTest() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -159,7 +159,7 @@ namespace Ignia.Topics.Tests {
     ///   retrieved.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_SetValue_BackdoorTest() {
+    public void SetValue_BackdoorTest() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -179,7 +179,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a back door, without routing it through the Key property.")]
-    public void AttributeValueCollection_EnforceBusinessLogicTest() {
+    public void EnforceBusinessLogic() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Key", "# ?");
     }
@@ -192,7 +192,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(TargetInvocationException), "The topic allowed a key to be set via a back door, without routing it through the Key property.")]
-    public void AttributeValueCollection_EnforceBusinessLogic_BackdoorTest() {
+    public void EnforceBusinessLogic_Backdoor() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");
       topic.Attributes.Add(new AttributeValue("Key", "# ?"));
@@ -205,7 +205,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets an attribute on the parent of a topic and ensures it can be retrieved using inheritance.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_InheritFromParentTest() {
+    public void InheritFromParent() {
 
       var topics = new Topic[8];
 
@@ -230,7 +230,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a long tree of derives topics, and ensures that inheritance will pursue no more than five hops.
     /// </summary>
     [TestMethod]
-    public void AttributeValueCollection_MaxHopsTest() {
+    public void MaxHops() {
 
       var topics = new Topic[8];
 

@@ -27,7 +27,7 @@ namespace Ignia.Topics.Tests {
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
     [TestMethod]
-    public void Topic_CreateTest() {
+    public void Create() {
       var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
@@ -43,7 +43,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
-    public void Topic_Change_IdTest() {
+    public void Change_IdTest() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
@@ -61,7 +61,7 @@ namespace Ignia.Topics.Tests {
     ///   types.
     /// </summary>
     [TestMethod]
-    public void Topic_IsContentTypeOf() {
+    public void IsContentTypeOf() {
 
       var contentType = (ContentTypeDescriptor)TopicFactory.Create("Root", "ContentTypeDescriptor");
       for (var i=0; i<5; i++) {
@@ -80,7 +80,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Topic_Set_ParentTest() {
+    public void Set_ParentTest() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
       var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
@@ -100,7 +100,7 @@ namespace Ignia.Topics.Tests {
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Topic_Change_ParentTest() {
+    public void Change_ParentTest() {
 
       var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
       var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor");
@@ -124,7 +124,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures the Unique Key is correct for a deeply nested child.
     /// </summary>
     [TestMethod]
-    public void Topic_UniqueKeyTest() {
+    public void UniqueKey() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page");
       var childTopic            = TopicFactory.Create("ChildTopic", "Page");
@@ -145,7 +145,7 @@ namespace Ignia.Topics.Tests {
     ///   Looks for a deeply nested child topic using only the attribute value.
     /// </summary>
     [TestMethod]
-    public void Topic_FindAllByAttributeValueTest() {
+    public void FindAllByAttributeValue() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5);
@@ -175,7 +175,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that IsVisible returns expected values based on IsHidden and IsDisabled.
     /// </summary>
     [TestMethod]
-    public void Topic_IsVisibleTest() {
+    public void IsVisible() {
 
       var hiddenTopic           = TopicFactory.Create("HiddenTopic", "Page");
       var disabledTopic         = TopicFactory.Create("DisabledTopic", "Page");
@@ -200,7 +200,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that the title falls back appropriately.
     /// </summary>
     [TestMethod]
-    public void Topic_TitleTest() {
+    public void Title() {
 
       var untitledTopic         = TopicFactory.Create("UntitledTopic", "Page");
       var titledTopic           = TopicFactory.Create("TitledTopic", "Page");
@@ -219,7 +219,7 @@ namespace Ignia.Topics.Tests {
     ///   Returns the last modified date using a couple of techniques, and ensures it's returned correctly.
     /// </summary>
     [TestMethod]
-    public void Topic_LastModifiedTest() {
+    public void LastModified() {
 
       var topic1                = TopicFactory.Create("Topic1", "Page");
       var topic2                = TopicFactory.Create("Topic2", "Page");
@@ -245,7 +245,7 @@ namespace Ignia.Topics.Tests {
     ///   Sets a derived topic, and ensures it is referenced correctly.
     /// </summary>
     [TestMethod]
-    public void Topic_DerivedTopicTest() {
+    public void DerivedTopic() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
@@ -264,7 +264,7 @@ namespace Ignia.Topics.Tests {
     ///   correctly parsed via the <see cref="Ignia.Topics.AttributeDescriptor.Configuration"/> property.
     /// </summary>
     [TestMethod]
-    public void Topic_AttributeConfigurationTest() {
+    public void AttributeConfiguration() {
 
       var attribute = (AttributeDescriptor)TopicFactory.Create("Topic", "AttributeDescriptor");
       attribute.DefaultConfiguration = "IsRequired=\"True\" DisplayName=\"Display Name\"";

@@ -53,7 +53,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by specifying an explicit type.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapGeneric() {
+    public async Task MapGeneric() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
@@ -78,7 +78,7 @@ namespace Ignia.Topics.Tests {
     ///   determine the instance type.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapDynamic() {
+    public async Task MapDynamic() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
@@ -102,7 +102,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the parent tree.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapParents() {
+    public async Task MapParents() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "Sample");
@@ -142,7 +142,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="InheritAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_InheritValues() {
+    public async Task InheritValues() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "Page");
@@ -167,7 +167,7 @@ namespace Ignia.Topics.Tests {
     ///   specified by <see cref="AttributeKeyAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_AlternateAttributeKey() {
+    public async Task AlternateAttributeKey() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
@@ -188,7 +188,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the relationships.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapRelationships() {
+    public async Task MapRelationships() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
@@ -224,7 +224,7 @@ namespace Ignia.Topics.Tests {
     ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
-    public async Task TopicMappingService_AlternateRelationship() {
+    public async Task AlternateRelationship() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
@@ -260,7 +260,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapNestedTopics() {
+    public async Task MapNestedTopics() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
@@ -286,7 +286,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapChildren() {
+    public async Task MapChildren() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
@@ -313,7 +313,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapTopicReferences() {
+    public async Task MapTopicReferences() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
@@ -336,7 +336,7 @@ namespace Ignia.Topics.Tests {
     ///   instructions of each model class.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_RecursiveRelationships() {
+    public async Task RecursiveRelationships() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
@@ -389,7 +389,7 @@ namespace Ignia.Topics.Tests {
     ///   collection of <see cref="ContentItemTopicViewModel"/> objects (from which <see cref="SlideTopicViewModel"/>.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapSlideshow() {
+    public async Task MapSlideshow() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Slideshow");
@@ -417,7 +417,7 @@ namespace Ignia.Topics.Tests {
     ///   instances if called for by the model. This isn't a best practice, but is maintained for edge cases.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapTopics() {
+    public async Task MapTopics() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
@@ -448,7 +448,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="MetadataAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapMetadata() {
+    public async Task MapMetadata() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
@@ -467,7 +467,7 @@ namespace Ignia.Topics.Tests {
     ///   taking advantage of its internal caching mechanism.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapCircularReference() {
+    public async Task MapCircularReference() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
@@ -488,7 +488,7 @@ namespace Ignia.Topics.Tests {
     ///   cref="SampleTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_FilterByContentType() {
+    public async Task FilterByContentType() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
@@ -516,7 +516,7 @@ namespace Ignia.Topics.Tests {
     ///   correctly populated.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapGetterMethods() {
+    public async Task MapGetterMethods() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Sample");
@@ -536,7 +536,7 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is not thrown if it is set.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapRequiredProperty() {
+    public async Task MapRequiredProperty() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Required");
@@ -557,7 +557,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task TopicMappingService_MapRequiredPropertyException() {
+    public async Task MapRequiredPropertyException() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Required");
@@ -574,7 +574,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task TopicMappingService_MapRequiredObjectPropertyException() {
+    public async Task MapRequiredObjectPropertyException() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
@@ -590,7 +590,7 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has default properties. Ensures that each is set appropriately.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_MapDefaultValueProperties() {
+    public async Task MapDefaultValueProperties() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "DefaultValue");
@@ -611,7 +611,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task TopicMappingService_MapMinimumValueProperties() {
+    public async Task MapMinimumValueProperties() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
@@ -631,7 +631,7 @@ namespace Ignia.Topics.Tests {
     ///   instances.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_FilterByAttribute() {
+    public async Task FilterByAttribute() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Filtered");
@@ -659,7 +659,7 @@ namespace Ignia.Topics.Tests {
     ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_Flatten() {
+    public async Task Flatten() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
@@ -686,7 +686,7 @@ namespace Ignia.Topics.Tests {
     ///   the same instance of a mapped object is turned after two calls.
     /// </summary>
     [TestMethod]
-    public async Task TopicMappingService_Caching() {
+    public async Task Caching() {
 
       var mappingService = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var cachedMappingService = new CachedTopicMappingService(mappingService);

@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a number of topics, then accesses them by key.
     /// </summary>
     [TestMethod]
-    public void TopicCollection_SetTopicTest() {
+    public void SetTopic() {
 
       var topics = new TopicCollection();
 
@@ -45,7 +45,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a number of topics, then seeds a new <see cref="TopicCollection{T}"/> with them.
     /// </summary>
     [TestMethod]
-    public void TopicCollection_PrepopulateTest() {
+    public void Prepopulate() {
 
       var topics = new List<Topic>();
 
@@ -66,7 +66,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
     /// </summary>
     [TestMethod]
-    public void TopicCollection_AsReadOnlyTest() {
+    public void AsReadOnly() {
 
       var topics = new TopicCollection();
 

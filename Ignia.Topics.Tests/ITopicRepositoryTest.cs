@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests {
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_LoadTest() {
+    public void Load() {
 
       var rootTopic             = _topicRepository.Load();
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
@@ -73,7 +73,7 @@ namespace Ignia.Topics.Tests {
     ///   Loads topic by ID and ensures it is found.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_LoadByIdTest() {
+    public void LoadById() {
 
       var topic                 = _topicRepository.Load(11111);
 
@@ -89,7 +89,7 @@ namespace Ignia.Topics.Tests {
     ///   Saves topics and ensures their identifiers are properly set.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_SaveTest() {
+    public void Save() {
 
       var rootTopic             = _topicRepository.Load();
       var web                   = _topicRepository.Load("Root:Web");
@@ -116,7 +116,7 @@ namespace Ignia.Topics.Tests {
     ///   Moves topics and ensures their parents are correctly set.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_MoveTest() {
+    public void Move() {
 
       var rootTopic             = _topicRepository.Load();
       var source                = _topicRepository.Load("Root:Web:Web_0");
@@ -142,7 +142,7 @@ namespace Ignia.Topics.Tests {
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_MoveToSiblingTest() {
+    public void MoveToSibling() {
 
       var rootTopic             = _topicRepository.Load();
       var parent                = _topicRepository.Load("Root:Web:Web_0");
@@ -169,7 +169,7 @@ namespace Ignia.Topics.Tests {
     ///   Deletes a topic to ensure it is properly removed.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_DeleteTest() {
+    public void Delete() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_1");
       var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");

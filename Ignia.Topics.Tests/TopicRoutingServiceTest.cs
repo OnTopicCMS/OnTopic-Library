@@ -50,7 +50,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes route data and ensures that a topic is correctly identified based on that route.
     /// </summary>
     [TestMethod]
-    public void TopicRoutingService_TopicRouteTest() {
+    public void TopicRoute() {
 
       var routes                = new RouteData();
       var uri                   = new Uri("http://localhost/Topics/Web/Web_0/Web_0_1/Web_0_1_1");
@@ -75,7 +75,7 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a URI based on a path and ensures that a topic is correctly identified based on that URI.
     /// </summary>
     [TestMethod]
-    public void TopicRoutingService_TopicUriTest() {
+    public void TopicUri() {
 
       var routes                = new RouteData();
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
@@ -98,7 +98,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="MvcTopicRoutingService"/>.
     /// </summary>
     [TestMethod]
-    public void TopicRoutingService_RoutesTest() {
+    public void Routes() {
 
       var routes                = new RouteData();
       var rootTopic             = _topicRepository.Load();
