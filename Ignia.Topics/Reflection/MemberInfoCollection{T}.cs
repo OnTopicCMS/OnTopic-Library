@@ -40,7 +40,12 @@ namespace Ignia.Topics.Reflection {
           BindingFlags.Public
         ).Where(m => typeof(T).IsAssignableFrom(m.GetType()))
       ) {
-        Add((T)member);
+        if (!Contains(member.Name)) {
+          Add((T)member);
+        }
+        else {
+          throw new ArgumentException("The Type '" + type.Name + "' already contains the MemberInfo '" + member.Name + "'");
+        }
       }
     }
 
