@@ -198,33 +198,6 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: IS HIDDEN?
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets whether the attribute should be hidden in the editor.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     By default, all attributes associated with a <see cref="ContentTypeDescriptor"/> are rendered in the editor.
-    ///     Optionally, however, attributes can be set to be hidden. This is particularly advantageous when subtyping a Content
-    ///     Type Descriptor, as some parent attributes may not be necessary for child content types (e.g., they may be
-    ///     implicitly assigned). It c be valuable for attributes that are intended to be managed by the system, and not via the
-    ///     editor (e.g., a timestamp or version).
-    ///   </para>
-    ///   <para>
-    ///     The <see cref="IsHidden"/> property does not hide the attribute from the library itself or the views. If the view
-    ///     associated with the <see cref="Topic.View"/> property renders the attribute (e.g., via <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/>) then the attribute will be displayed on the page. The
-    ///     <see cref="IsHidden"/> property is used exclusively by the editor.
-    ///   </para>
-    /// </remarks>
-    [AttributeSetter]
-    public new bool IsHidden {
-      get => Attributes.GetBoolean("IsHidden", false);
-      set => SetAttributeValue("IsHidden", value? "1" : "0");
-    }
-
-    /*==========================================================================================================================
     | PROPERTY: IS REQUIRED?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
