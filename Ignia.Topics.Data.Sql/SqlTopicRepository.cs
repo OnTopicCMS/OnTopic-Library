@@ -297,10 +297,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (
-          var topic in
-          configuration.Children.GetTopic("ContentTypes").FindAllByAttribute("ContentType", nameof(ContentTypeDescriptor))
-        ) {
+        foreach (var topic in configuration.Children.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
           // Ensure the Topic is used as the strongly-typed ContentType
           // Add ContentType Topic to collection if not already added
           if (
