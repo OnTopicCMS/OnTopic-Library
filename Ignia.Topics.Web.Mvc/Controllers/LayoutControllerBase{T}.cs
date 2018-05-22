@@ -178,7 +178,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     private static int DistanceFromRoot(Topic sourceTopic) {
       var distance = 1;
-      while (sourceTopic.Parent != null) {
+      while (sourceTopic?.Parent != null) {
         sourceTopic = sourceTopic.Parent;
         distance++;
       }
