@@ -122,6 +122,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var viewModel             = new T {
         Key                     = key,
+        UniqueKey               = "Error:" + key,
         WebPath                 = "/Error/" + key,
         ContentType             = "Page",
         Title                   = title,
