@@ -51,6 +51,11 @@ namespace Ignia.Topics.Data.Caching {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _dataProvider = dataProvider;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure topics are loaded
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _cache = _dataProvider.Load();
+
     }
 
     /*==========================================================================================================================
@@ -73,13 +78,6 @@ namespace Ignia.Topics.Data.Caching {
     public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_cache == null) {
-        _cache = _dataProvider.Load();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for entire tree
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId < 0) {
@@ -100,13 +98,6 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
     public override Topic Load(string topicKey = null, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_cache == null) {
-        _cache = _dataProvider.Load();
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -218,8 +209,8 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
-    ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found
+    ///   under Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via
