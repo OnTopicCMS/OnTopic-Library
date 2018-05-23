@@ -189,6 +189,25 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
+    ///   the expected number (2) are present.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptors() {
+
+      var contentTypes = _topicRepository.GetContentTypeDescriptors();
+
+      Assert.AreEqual<int>(7, contentTypes.Count);
+      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
+      Assert.IsNotNull(contentTypes.GetTopic("Page"));
+      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
+
+    }
+
 
   } //Class
 

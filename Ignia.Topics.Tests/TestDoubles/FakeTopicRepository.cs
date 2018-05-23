@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Tests.TestDoubles {
@@ -42,14 +43,6 @@ namespace Ignia.Topics.Tests.TestDoubles {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPE DESCRIPTORS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
-    /// </summary>
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => throw new NotImplementedException();
-
-    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -58,7 +51,9 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) => throw new NotImplementedException();
+    public override Topic Load(int topicId, bool isRecursive = true) {
+      return (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
+    }
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
@@ -72,7 +67,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrWhiteSpace(topicKey)) {
-        throw new NotImplementedException();
+        topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -233,9 +229,12 @@ namespace Ignia.Topics.Tests.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      TopicFactory.Create("ContentType", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
