@@ -64,15 +64,21 @@ namespace Ignia.Topics.Reflection {
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Returns the type associated with this collection.
-    /// </summary>
+    /// <summary>Fires any time an item is added to the collection.</summary>
+    /// <remarks>
+    ///   Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key is
+    ///   inserted. This conveniently provides the name of the <see cref="Type"/> and the <paramref name="item"/>'s <see
+    ///   cref="MemberInfo.Name"/>, so it's clear what is being duplicated.
+    /// </remarks>
+    /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+    /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
+    /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
     protected override void InsertItem(int index, T item) {
       if (!Contains(item.Name)) {
         base.InsertItem(index, item);
       }
       else {
-        throw new ArgumentException("The Type '" + Type.Name + "' already contains the MemberInfo '" + item.Name + "'");
+        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'");
       }
     }
 
