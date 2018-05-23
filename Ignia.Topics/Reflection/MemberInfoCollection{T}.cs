@@ -40,12 +40,7 @@ namespace Ignia.Topics.Reflection {
           BindingFlags.Public
         ).Where(m => typeof(T).IsAssignableFrom(m.GetType()))
       ) {
-        if (!Contains(member.Name)) {
-          Add((T)member);
-        }
-        else {
-          throw new ArgumentException("The Type '" + type.Name + "' already contains the MemberInfo '" + member.Name + "'");
-        }
+        Add((T)member);
       }
     }
 
@@ -63,6 +58,21 @@ namespace Ignia.Topics.Reflection {
       Type = type;
       foreach (var member in members) {
         Add(member);
+      }
+    }
+
+    /*==========================================================================================================================
+    | OVERRIDE: INSERT ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the type associated with this collection.
+    /// </summary>
+    protected override void InsertItem(int index, T item) {
+      if (!Contains(item.Name)) {
+        base.InsertItem(index, item);
+      }
+      else {
+        throw new ArgumentException("The Type '" + Type.Name + "' already contains the MemberInfo '" + item.Name + "'");
       }
     }
 
