@@ -326,8 +326,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      var command = new SqlCommand("topics_GetTopicID", connection);
+      var connection            = new SqlConnection(_connectionString);
+      var command               = new SqlCommand("topics_GetTopicID", connection);
       int topicId;
 
       command.CommandType = CommandType.StoredProcedure;
