@@ -152,7 +152,7 @@ namespace Ignia.Topics.Repositories {
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
     /// </requires>
-    public void Rollback(Topic topic, DateTime version) {
+    public virtual void Rollback(Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
@@ -238,7 +238,7 @@ namespace Ignia.Topics.Repositories {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
-        var       args    = new RenameEventArgs(topic);
+        var args = new RenameEventArgs(topic);
         RenameEvent?.Invoke(this, args);
       }
 
