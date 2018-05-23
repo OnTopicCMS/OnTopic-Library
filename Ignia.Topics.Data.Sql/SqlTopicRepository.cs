@@ -190,7 +190,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   Adds relationships retrieved from an individual relationship record to their associated topics.
     /// </summary>
     /// <remarks>
-    ///   Topics can be cross-referenced with each other via a many-to-many relationships.Once the topics are populated in
+    ///   Topics can be cross-referenced with each other via a many-to-many relationships. Once the topics are populated in
     ///   memory, loop through the data to create these associations.
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
@@ -213,7 +213,7 @@ namespace Ignia.Topics.Data.Sql {
       | Identify affected topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var current               = topics[sourceTopicId];
-      Topic related             = null;
+      var related               = (Topic)null;
 
       // Fetch the related topic
       if (topics.Keys.Contains(targetTopicId)) {
@@ -253,8 +253,8 @@ namespace Ignia.Topics.Data.Sql {
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var topic in topics.Values) {
-        var success = Int32.TryParse(topic.Attributes.GetValue("TopicId", "-1", false, false), out var derivedTopicId);
-        if (!success || derivedTopicId < 0) continue;
+        var derivedTopicId = topic.Attributes.GetInteger("TopicId", -1, false, false);
+        if (derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
           topic.DerivedTopic = topics[derivedTopicId];
         }
@@ -861,7 +861,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Contract.Assume(childTopic.Attributes.GetValue("ParentID") != null, "Assumes the Parent ID AttributeValue is available.");
+          Contract.Assume(childTopic.Attributes.GetInteger("ParentID", -1) > 0, "Assumes the Parent ID AttributeValue is available.");
           childTopic.Attributes.SetValue("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
         }
