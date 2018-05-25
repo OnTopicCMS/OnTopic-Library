@@ -4,10 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
-using Ignia.Topics.Collections;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 

@@ -4,11 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Ignia.Topics.Reflection;
 
 namespace Ignia.Topics {
 

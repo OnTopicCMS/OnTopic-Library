@@ -9,7 +9,6 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using Ignia.Topics.Collections;
-using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics {
 
