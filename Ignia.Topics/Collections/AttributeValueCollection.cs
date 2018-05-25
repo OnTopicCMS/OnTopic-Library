@@ -558,8 +558,8 @@ namespace Ignia.Topics.Collections {
         _setCounter++;
         if (_setCounter > 3) {
           throw new Exception(
-            "An infinite loop has occurred when setting `" + originalAttribute.Key +
-            "`; be sure to call `Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
+            $"An infinite loop has occurred when setting '{originalAttribute.Key}'; be sure that you are referencing " +
+            $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);

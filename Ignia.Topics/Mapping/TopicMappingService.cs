@@ -116,7 +116,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
-      var viewModelType = _typeLookupService.GetType(topic.ContentType + "TopicViewModel");
+      var viewModelType = _typeLookupService.GetType($"{topic.ContentType}TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ namespace Ignia.Topics.Mapping {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
-      var topicReferenceId      = source.Attributes.GetInteger(property.Name + "Id", 0);
+      var topicReferenceId      = source.Attributes.GetInteger($"{property.Name}Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
@@ -315,7 +315,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValue = _typeCache.GetMethodValue(source, "Get" + configuration.AttributeKey)?.ToString();
+      var attributeValue = _typeCache.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
@@ -473,7 +473,7 @@ namespace Ignia.Topics.Mapping {
       | Handle Metadata relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
-        var metadataKey = "Root:Configuration:Metadata:" + configuration.MetadataKey + ":LookupList";
+        var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
         listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
       }
 

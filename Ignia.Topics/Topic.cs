@@ -97,7 +97,7 @@ namespace Ignia.Topics {
     ///   The unique identifier for the <see cref="Topic"/>.
     /// </value>
     /// <exception cref="ArgumentException">
-    ///   The value of this topic has already been set to " + _id + "; it cannot be changed.
+    ///   The value of this topic has already been set to {_id}; it cannot be changed.
     /// </exception>
     /// <requires description="The id is expected to be a positive value." exception="T:System.ArgumentException">
     ///   value &gt; 0
@@ -107,7 +107,7 @@ namespace Ignia.Topics {
       set {
         Contract.Requires<ArgumentOutOfRangeException>(value > 0, "The id is expected to be a positive value.");
         if (_id > 0 && !_id.Equals(value)) {
-          throw new ArgumentException("The value of this topic has already been set to " + _id + "; it cannot be changed.");
+          throw new ArgumentException($"The value of this topic has already been set to {_id}; it cannot be changed.");
         }
         _id = value;
       }
@@ -405,8 +405,8 @@ namespace Ignia.Topics {
     /// <param name="sibling">The <see cref="Topic" /> to move this <see cref="Topic" /> to the right of.</param>
     /// <exception cref="ArgumentOutOfRangeException">parent - A descendant cannot be its own parent.</exception>
     /// <exception cref="InvalidKeyException">
-    ///   Duplicate key when setting Parent property: the topic with the name '" + Key + "' already exists in the '" +
-    ///   parent.Key + "' topic.
+    ///   Duplicate key when setting Parent property: the topic with the name '{Key}' already exists in the '{parent.Key}'
+    ///   topic.
     /// </exception>
     public void SetParent(Topic parent, Topic sibling = null) {
 
@@ -428,9 +428,9 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (parent != _parent && parent.Children.Contains(Key)) {
         throw new InvalidKeyException(
-          "Duplicate key when setting Parent property: the topic with the name '" + Key +
-          "' already exists in the '" + parent.Key + "' topic."
-          );
+          $"Duplicate key when setting Parent property: the topic with the name '{Key}' already exists in the '{parent.Key}' " +
+          $"topic."
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -478,7 +478,7 @@ namespace Ignia.Topics {
       var topic = this;
 
       for (var i = 0; i < 100; i++) {
-        if (uniqueKey.Length > 0) uniqueKey = ":" + uniqueKey;
+        if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
         uniqueKey = topic.Key + uniqueKey;
         topic = topic.Parent;
         if (topic == null) break;
@@ -507,7 +507,7 @@ namespace Ignia.Topics {
       Contract.Ensures(Contract.Result<string>() != null);
       var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
       if (!uniqueKey.StartsWith("/")) {
-        uniqueKey = "/" + uniqueKey;
+        uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
     }
