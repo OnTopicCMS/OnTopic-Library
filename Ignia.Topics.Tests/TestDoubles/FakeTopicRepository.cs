@@ -51,9 +51,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) {
-      return (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
-    }
+    public override Topic Load(int topicId, bool isRecursive = true) =>
+      (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
