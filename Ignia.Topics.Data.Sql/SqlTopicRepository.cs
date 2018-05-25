@@ -364,7 +364,7 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception($"Topic(s) failed to load: '{exception.Message}'");
+        throw new TopicRepositoryException($"Topic(s) failed to load: '{exception.Message}'", exception);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -503,7 +503,7 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception($"Topics failed to load: '{exception.Message}'");
+        throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -638,7 +638,7 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception($"Topics failed to load: '{exception.Message}'");
+        throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -846,8 +846,9 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception(
-          $"Failed to save Topic '{topic.Key}' ({topic.Id}) via '{_connectionString}': '{exception.Message}'"
+        throw new TopicRepositoryException(
+          $"Failed to save Topic '{topic.Key}' ({topic.Id}) via '{_connectionString}': '{exception.Message}'",
+          exception
         );
       }
 
@@ -934,8 +935,9 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception(
-          $"Failed to move Topic '{topic.Key}' ({topic.Id}) to '{target.Key}' ({target.Id}): '{exception.Message}'"
+        throw new TopicRepositoryException(
+          $"Failed to move Topic '{topic.Key}' ({topic.Id}) to '{target.Key}' ({target.Id}): '{exception.Message}'",
+          exception
         );
       }
 
@@ -1003,7 +1005,10 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception($"Failed to delete Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'");
+        throw new TopicRepositoryException(
+          $"Failed to delete Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
+          exception
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1098,7 +1103,10 @@ namespace Ignia.Topics.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        throw new Exception($"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'");
+        throw new TopicRepositoryException(
+          $"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
+          exception
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

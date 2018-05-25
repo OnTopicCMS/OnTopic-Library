@@ -175,6 +175,7 @@
     <Compile Include="Reflection\MemberInfoCollection{T}.cs" />
     <Compile Include="Reflection\TypeCollection.cs" />
     <Compile Include="DefaultTopicLookupService.cs" />
+    <Compile Include="Repositories\TopicRepositoryException.cs" />
     <Compile Include="StaticTypeLookupService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
