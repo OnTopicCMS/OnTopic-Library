@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -362,8 +363,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Topic(s) failed to load: " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception($"Topic(s) failed to load: '{exception.Message}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -501,8 +502,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Topics failed to load: " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception($"Topics failed to load: '{exception.Message}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -636,8 +637,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Topics failed to load: " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception($"Topics failed to load: '{exception.Message}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -844,8 +845,10 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Failed to save Topic " + topic.Key + " (" + topic.Id + ") via " + _connectionString + ": " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception(
+          $"Failed to save Topic '{topic.Key}' ({topic.Id}) via '{_connectionString}': '{exception.Message}'"
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -930,8 +933,10 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Failed to move Topic " + topic.Key + " (" + topic.Id + ") to " + target.Key + " (" + target.Id + "): " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception(
+          $"Failed to move Topic '{topic.Key}' ({topic.Id}) to '{target.Key}' ({target.Id}): '{exception.Message}'"
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -997,8 +1002,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Failed to delete Topic " + topic.Key + " (" + topic.Id + "): " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception($"Failed to delete Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1092,8 +1097,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
-      catch (Exception ex) {
-        throw new Exception("Failed to persist relationships for Topic " + topic.Key + " (" + topic.Id + "): " + ex.Message);
+      catch (SqlException exception) {
+        throw new Exception($"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
