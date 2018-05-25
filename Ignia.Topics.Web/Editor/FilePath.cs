@@ -15,15 +15,7 @@ namespace Ignia.Topics.Web.Editor {
   ///   Provides a strongly-typed class associated with the FilePath.ascx Attribute Type control and logic associated with
   ///   building a configured file path from values passed to the constructor.
   /// </summary>
-  public class FilePath {
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="FilePath"/> class.
-    /// </summary>
-    public FilePath() { }
+  public static class FilePath {
 
     /*==========================================================================================================================
     | METHOD: GET PATH
@@ -37,7 +29,7 @@ namespace Ignia.Topics.Web.Editor {
     /// <param name="includeLeafTopic">Boolean indicator as to whether to include the endpoint/leaf topic in the path.</param>
     /// <param name="truncatePathAtTopic">The assembled topic keys at which to end the path string.</param>
     /// <returns>A constructed file path.</returns>
-    public string GetPath(
+    public static string GetPath(
       Topic     topic,
       string    attributeKey,
       bool      includeLeafTopic        = true,
