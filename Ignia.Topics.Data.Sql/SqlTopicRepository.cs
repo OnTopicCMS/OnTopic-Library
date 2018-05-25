@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -15,8 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
-using Ignia.Topics.Collections;
-using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Data.Sql {
