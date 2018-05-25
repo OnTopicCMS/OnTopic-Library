@@ -30,6 +30,12 @@ namespace Ignia.Topics.Repositories {
     | CONSTRUCTOR: TAXONOMY DELETE EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Initializes a new <see cref="TopicRepositoryException" /> instance.
+    /// </summary>
+    /// <param name="message">The message to display for this exception.</param>
+    public TopicRepositoryException() : base() { }
+
+    /// <summary>
     ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message.
     /// </summary>
     /// <param name="message">The message to display for this exception.</param>
