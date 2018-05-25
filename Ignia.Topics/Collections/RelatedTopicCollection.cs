@@ -230,6 +230,35 @@ namespace Ignia.Topics.Collections {
     }
 
     /*==========================================================================================================================
+    | OVERRIDE: INSERT ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>Fires any time a <see cref="NamedTopicCollection"/> is added to the collection.</summary>
+    /// <remarks>
+    ///   Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key is
+    ///   inserted. This conveniently provides the name of the <see cref="NamedTopicCollection"/>, so it's clear what key is
+    ///   being duplicated.
+    /// </remarks>
+    /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+    /// <param name="item">The <see cref="NamedTopicCollection"/> instance to insert.</param>
+    /// <exception cref="ArgumentException">
+    ///   A NamedTopicCollection with the Name '{item.Name}' already exists in this RelatedTopicCollection. The existing key is
+    ///   {this[item.Name].Name}'; the new item's is '{item.Name}'. This collection is associated with the '{GetUniqueKey()}'
+    ///   Topic.
+    /// </exception>
+    protected override void InsertItem(int index, NamedTopicCollection item) {
+      if (!Contains(item.Name)) {
+        base.InsertItem(index, item);
+      }
+      else {
+        throw new ArgumentException(
+          $"A {nameof(NamedTopicCollection)} with the Name '{item.Name}' already exists in this " +
+          $"{nameof(RelatedTopicCollection)}. The existing key is '{this[item.Name].Name}'; the new item's is '{item.Name}'. " +
+          $"This collection is associated with the '{_parent.GetUniqueKey()}' Topic."
+        );
+      }
+    }
+
+    /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

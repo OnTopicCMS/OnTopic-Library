@@ -12,7 +12,7 @@ namespace Ignia.Topics.Collections {
   | CLASS: READ ONLY TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a read-only keyed collection of topics.
+  ///   Provides a read-only collection of topics.
   /// </summary>
   public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 

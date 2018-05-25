@@ -475,17 +475,37 @@ namespace Ignia.Topics.Collections {
     ///   business logic is enforced.
     /// </summary>
     /// <remarks>
-    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
-    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
-    ///   infinite loop, internal setters _must_ call this overload.
+    ///   <para>
+    ///     If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///     through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
+    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
+    ///     infinite loop, internal setters _must_ call this overload.
+    ///   </para>
+    ///   <para>
+    ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
+    ///     is inserted. This conveniently provides the name of the <see cref="AttributeValue.Key"/> so it's clear what key is
+    ///     being duplicated.
+    ///   </para>
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     /// <returns>The key for the specified collection item.</returns>
+    /// <exception cref="ArgumentException">
+    ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
+    ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
+    /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
       if (EnforceBusinessLogic(item, out item)) {
-        base.InsertItem(index, item);
+        if (!Contains(item.Key)) {
+          base.InsertItem(index, item);
+        }
+        else {
+          throw new ArgumentException(
+            $"An {nameof(AttributeValue)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
+            $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(AttributeValue)}s are associated " +
+            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'."
+          );
+        }
       }
     }
 
