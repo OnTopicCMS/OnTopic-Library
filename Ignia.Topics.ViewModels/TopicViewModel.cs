@@ -16,7 +16,7 @@ namespace Ignia.Topics.ViewModels {
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains
-  ///   default implementations that can be used directly, used as base classes, or overwritten at the presentative level. They
+  ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
   public class TopicViewModel: ITopicViewModel {
@@ -24,13 +24,14 @@ namespace Ignia.Topics.ViewModels {
     public int Id { get; set; }
     public string Key { get; set; }
     public string ContentType { get; set; }
-    [Recurse(Relationships.Parents)]
-    public TopicViewModel Parent { get; set; }
     public string UniqueKey { get; set; }
     public string View { get; set; }
     public string Title { get; set; }
     public bool IsHidden { get; set; }
     public DateTime LastModified { get; set; }
+
+    [Follow(Relationships.Parents)]
+    public TopicViewModel Parent { get; set; }
 
   } //Class
 } //Namespace

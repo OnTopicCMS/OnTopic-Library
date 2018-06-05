@@ -4,7 +4,7 @@
 -- Purpose	Gets the tree of current topics rooted FROM the provided TopicID.  If no TopicID is provided then the sproc returns everything
 --		under the topic with the lowest id.
 --
--- History      Casey Margell		04062009  Initial Creation baseaed on code FROM Celko's Sql For Smarties.
+-- History      Casey Margell		04062009  Initial Creation based on code FROM Celko's SQL For Smarties.
 --		Jeremy Caney		07192009  Added support for AttributeID lookup.
 --		Jeremy Caney		05282010  Reformatted code AND refactored identifiers for improved readability.
 --		Jeremy Caney		06072010  Added support for blob fields.

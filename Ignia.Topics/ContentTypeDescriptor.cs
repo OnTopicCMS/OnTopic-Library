@@ -53,7 +53,7 @@ namespace Ignia.Topics {
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
     ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
-    ///   persistance store.
+    ///   persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -73,7 +73,8 @@ namespace Ignia.Topics {
       contentType,
       parent,
       id
-    ) { }
+    ) {
+    }
 
     /*==========================================================================================================================
     | PROPERTY: DISABLE CHILD TOPICS
@@ -105,7 +106,7 @@ namespace Ignia.Topics {
     | PROPERTY: PERMITTED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a readonly collection of what types of content types are permitted to be created as children of instances of
+    ///   Provides a read-only collection of what types of content types are permitted to be created as children of instances of
     ///   this content type.
     /// </summary>
     /// <remarks>
@@ -184,15 +185,6 @@ namespace Ignia.Topics {
           _attributeDescriptors = new AttributeDescriptorCollection();
 
           /*--------------------------------------------------------------------------------------------------------------------
-          | Validate Attributes collection
-          \-------------------------------------------------------------------------------------------------------------------*/
-          if (!Children.Contains("Attributes") || Children["Attributes"] == null) {
-            throw new Exception(
-              "The ContentType '" + Title + "' does not contain a nested topic named 'Attributes' as expected."
-            );
-          }
-
-          /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
           >---------------------------------------------------------------------------------------------------------------------
           | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
@@ -202,8 +194,10 @@ namespace Ignia.Topics {
           | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
           | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
           \-------------------------------------------------------------------------------------------------------------------*/
-          foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
-            _attributeDescriptors.Add(attribute);
+          if (Children.Contains("Attributes")) {
+            foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
+              _attributeDescriptors.Add(attribute);
+            }
           }
 
           /*--------------------------------------------------------------------------------------------------------------------

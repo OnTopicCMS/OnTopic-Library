@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ignia.Topics</RootNamespace>
     <AssemblyName>Ignia.Topics</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -47,6 +47,16 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <CodeContractsBaseLineFile />
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.Increment.None</AssemblyVersionSettings>
+    <UpdatePackageVersion>False</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyFileVersionSettings>None.None.Increment.None</AssemblyFileVersionSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +80,8 @@
     <CodeContractsNecessaryEnsures>False</CodeContractsNecessaryEnsures>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -137,23 +149,34 @@
     <Compile Include="AttributeSetterAttribute.cs" />
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
-    <Compile Include="Collections\TypeCollection.cs" />
-    <Compile Include="Collections\PropertyInfoCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
+    <Compile Include="ITypeLookupService.cs" />
     <Compile Include="Mapping\CachedTopicMappingService.cs" />
     <Compile Include="Mapping\FilterByAttributeAttribute.cs" />
     <Compile Include="Mapping\AttributeKeyAttribute.cs" />
+    <Compile Include="Mapping\FlattenAttribute.cs" />
+    <Compile Include="Mapping\FollowAttribute.cs" />
     <Compile Include="Mapping\InheritAttribute.cs" />
     <Compile Include="Mapping\ITopicMappingService.cs" />
+    <Compile Include="Mapping\PropertyConfiguration.cs" />
     <Compile Include="Mapping\MetadataAttribute.cs" />
-    <Compile Include="Mapping\RecurseAttribute.cs" />
+    <Compile Include="Mapping\RelationshipMap.cs" />
     <Compile Include="Mapping\RelationshipType.cs" />
     <Compile Include="Mapping\RelationshipAttribute.cs" />
     <Compile Include="Mapping\Relationships.cs" />
     <Compile Include="Mapping\TopicMappingService.cs" />
     <Compile Include="Querying\Topic.cs" />
+    <Compile Include="Reflection\DynamicTopicLookupService.cs" />
+    <Compile Include="Reflection\DynamicTopicViewModelLookupService.cs" />
+    <Compile Include="Reflection\DynamicTypeLookupService.cs" />
+    <Compile Include="Reflection\MemberInfoCollection.cs" />
+    <Compile Include="Reflection\MemberInfoCollection{T}.cs" />
+    <Compile Include="Reflection\TypeCollection.cs" />
+    <Compile Include="DefaultTopicLookupService.cs" />
+    <Compile Include="Repositories\TopicRepositoryException.cs" />
+    <Compile Include="StaticTypeLookupService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
     <Compile Include="Repositories\ITopicRepositoryContract.cs" />

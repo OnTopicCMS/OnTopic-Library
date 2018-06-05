@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
@@ -46,23 +47,22 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (INSTANCE)
+    | TEST: MAP (GENERIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by providing it with an already
-    ///   constructed instance of a DTO.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by specifying an explicit type.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapGeneric() {
+    public async Task MapGeneric() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target = (PageTopicViewModel)mappingService.Map(topic, new PageTopicViewModel());
+      var target                = await mappingService.MapAsync<PageTopicViewModel>(topic);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -78,16 +78,16 @@ namespace Ignia.Topics.Tests {
     ///   determine the instance type.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapDynamic() {
+    public async Task MapDynamic() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target = (PageTopicViewModel)mappingService.Map(topic);
+      var target                = (PageTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -102,9 +102,9 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the parent tree.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapParents() {
+    public async Task MapParents() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "Sample");
       var parent                = TopicFactory.Create("Parent", "Page", grandParent);
       var topic                 = TopicFactory.Create("Test", "Page", parent);
@@ -114,13 +114,11 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("IsHidden", "1");
 
       parent.Attributes.SetValue("Title", "Value2");
-      parent.Attributes.SetValue("IsHidden", "1");
 
       grandParent.Attributes.SetValue("Title", "Value3");
-      grandParent.Attributes.SetValue("IsHidden", "1");
       grandParent.Attributes.SetValue("Property", "ValueB");
 
-      var viewModel             = (PageTopicViewModel)mappingService.Map(topic);
+      var viewModel             = (PageTopicViewModel) await mappingService.MapAsync(topic);
       var parentViewModel       = viewModel?.Parent;
       var grandParentViewModel  = parentViewModel?.Parent as SampleTopicViewModel;
 
@@ -144,18 +142,17 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="InheritAttribute"/>.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_InheritValues() {
+    public async Task InheritValues() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-
-      var grandParent = TopicFactory.Create("Grandparent", "Page");
-      var parent = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic = TopicFactory.Create("Test", "Sample", parent);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var grandParent           = TopicFactory.Create("Grandparent", "Page");
+      var parent                = TopicFactory.Create("Parent", "Page", grandParent);
+      var topic                 = TopicFactory.Create("Test", "Sample", parent);
 
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+      var viewModel             = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<string>(null, viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
@@ -170,16 +167,15 @@ namespace Ignia.Topics.Tests {
     ///   specified by <see cref="AttributeKeyAttribute"/>.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_AlternateAttributeKey() {
+    public async Task AlternateAttributeKey() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-
-      var topic = TopicFactory.Create("Test", "Sample");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel = (SampleTopicViewModel)mappingService.Map(topic);
+      var viewModel             = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
@@ -192,19 +188,19 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the relationships.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapRelationships() {
+    public async Task MapRelationships() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var relatedTopic1 = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2 = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3 = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic = TopicFactory.Create("Test", "Sample");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       topic.Relationships.SetTopic("Cousins", relatedTopic1);
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
       Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
@@ -228,9 +224,9 @@ namespace Ignia.Topics.Tests {
     ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
-    public void TopicMappingService_AlternateRelationship() {
+    public async Task AlternateRelationship() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
       var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
       var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
@@ -249,7 +245,7 @@ namespace Ignia.Topics.Tests {
       relatedTopic5.Relationships.SetTopic("AmbiguousRelationship", topic);
       relatedTopic6.Relationships.SetTopic("AmbiguousRelationship", topic);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.RelationshipAlias.Count);
       Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5")));
@@ -264,16 +260,16 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapNestedTopics() {
+    public async Task MapNestedTopics() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
       var childTopic            = TopicFactory.Create("ChildTopic", "Page", topic);
       var topicList             = TopicFactory.Create("Categories", "List", topic);
       var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
       var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
 
-      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
       Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1")));
@@ -290,16 +286,16 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapChildren() {
+    public async Task MapChildren() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Sample");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
       var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", topic);
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", topic);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
 
-      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(3, target.Children.Count);
       Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
@@ -311,6 +307,28 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP TOPIC REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
+    /// </summary>
+    [TestMethod]
+    public async Task MapTopicReferences() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+
+      var topic                 = TopicFactory.Create("Test", "Sample");
+
+      topic.Attributes.SetInteger("TopicReferenceId", 11111);
+
+      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
+
+      Assert.IsNotNull(target.TopicReference);
+      Assert.AreEqual<int>(11111, target.TopicReference.Id);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: RECURSIVE RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -318,26 +336,26 @@ namespace Ignia.Topics.Tests {
     ///   instructions of each model class.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_RecursiveRelationships() {
+    public async Task RecursiveRelationships() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       //Self
-      var topic = TopicFactory.Create("Test", "Sample");
+      var topic                 = TopicFactory.Create("Test", "Sample");
 
       //First cousins
-      var cousinTopic1 = TopicFactory.Create("CousinTopic1", "Page");
-      var cousinTopic2 = TopicFactory.Create("CousinTopic2", "Index");
-      var cousinTopic3 = TopicFactory.Create("CousinTopic3", "Sample");
+      var cousinTopic1          = TopicFactory.Create("CousinTopic1", "Page");
+      var cousinTopic2          = TopicFactory.Create("CousinTopic2", "Index");
+      var cousinTopic3          = TopicFactory.Create("CousinTopic3", "Sample");
 
       //Children of cousins
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
 
       //Other cousins
-      var secondCousin = TopicFactory.Create("SecondCousin", "Page");
-      var cousinTwiceRemoved = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
+      var secondCousin          = TopicFactory.Create("SecondCousin", "Page");
+      var cousinTwiceRemoved    = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
 
       //Set first cousins
       topic.Relationships.SetTopic("Cousins", cousinTopic1);
@@ -347,9 +365,9 @@ namespace Ignia.Topics.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
-      var cousinTarget = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
-      var distantCousinTarget = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
+      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic);
+      var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
+      var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
 
       //Because Cousins is set to recurse over Children, its children should be set
       Assert.AreEqual<int>(3, cousinTarget.Children.Count);
@@ -371,17 +389,17 @@ namespace Ignia.Topics.Tests {
     ///   collection of <see cref="ContentItemTopicViewModel"/> objects (from which <see cref="SlideTopicViewModel"/>.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapSlideshow() {
+    public async Task MapSlideshow() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Slideshow");
-      var slides = TopicFactory.Create("ContentItems", "List", topic);
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Slide", slides);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Slide", slides);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Slide", slides);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Slideshow");
+      var slides                = TopicFactory.Create("ContentItems", "List", topic);
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Slide", slides);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Slide", slides);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Slide", slides);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
 
-      var target = (SlideshowTopicViewModel)mappingService.Map(topic);
+      var target                = (SlideshowTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
       Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
@@ -399,9 +417,9 @@ namespace Ignia.Topics.Tests {
     ///   instances if called for by the model. This isn't a best practice, but is maintained for edge cases.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapTopics() {
+    public async Task MapTopics() {
 
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
       var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
       var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
@@ -411,7 +429,7 @@ namespace Ignia.Topics.Tests {
       topic.Relationships.SetTopic("Related", relatedTopic2);
       topic.Relationships.SetTopic("Related", relatedTopic3);
 
-      var target                = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic);
       var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
 
       Assert.AreEqual<int>(3, target.Related.Count);
@@ -430,14 +448,35 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="MetadataAttribute"/>.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapMetadata() {
+    public async Task MapMetadata() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "MetadataLookup");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
-      var target = (MetadataLookupTopicViewModel)mappingService.Map(topic);
+      var target                = (MetadataLookupTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(5, target.Categories.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP CIRCULAR REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully handles a circular reference by
+    ///   taking advantage of its internal caching mechanism.
+    /// </summary>
+    [TestMethod]
+    public async Task MapCircularReference() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+
+      var topic                 = TopicFactory.Create("Test", "Circular", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
+
+      var mappedTopic           = (CircularTopicViewModel) await mappingService.MapAsync(topic);
+
+      Assert.AreEqual<CircularTopicViewModel>(mappedTopic, mappedTopic.Children.First().Parent);
 
     }
 
@@ -449,18 +488,18 @@ namespace Ignia.Topics.Tests {
     ///   cref="SampleTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_FilterByContentType() {
+    public async Task FilterByContentType() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Sample");
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Index", topic);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Sample");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Index", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
 
-      var target = (SampleTopicViewModel)mappingService.Map(topic);
+      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic);
 
-      var indexes = target.Children.GetByContentType("Index");
+      var indexes               = target.Children.GetByContentType("Index");
 
       Assert.AreEqual<int>(2, indexes.Count);
       Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
@@ -477,14 +516,14 @@ namespace Ignia.Topics.Tests {
     ///   correctly populated.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapGetterMethods() {
+    public async Task MapGetterMethods() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Sample");
-      var childTopic = TopicFactory.Create("Child", "Page", topic);
-      var grandChildTopic = TopicFactory.Create("GrandChild", "Index", childTopic);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "Sample");
+      var childTopic            = TopicFactory.Create("Child", "Page", topic);
+      var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
 
-      var target = (IndexTopicViewModel)mappingService.Map(grandChildTopic);
+      var target = (IndexTopicViewModel) await mappingService.MapAsync(grandChildTopic);
 
       Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
 
@@ -497,14 +536,14 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has a required property. Ensures that an error is not thrown if it is set.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapRequiredProperty() {
+    public async Task MapRequiredProperty() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Required");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "Required");
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
-      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<string>("Required", target.RequiredAttribute);
 
@@ -518,12 +557,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public void TopicMappingService_MapRequiredPropertyException() {
+    public async Task MapRequiredPropertyException() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "Required");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "Required");
 
-      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic);
 
     }
 
@@ -535,12 +574,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public void TopicMappingService_MapRequiredObjectPropertyException() {
+    public async Task MapRequiredObjectPropertyException() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "RequiredObject");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
-      var target = (RequiredTopicViewModel)mappingService.Map(topic);
+      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic);
 
     }
 
@@ -551,12 +590,12 @@ namespace Ignia.Topics.Tests {
     ///   Maps a content type that has default properties. Ensures that each is set appropriately.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_MapDefaultValueProperties() {
+    public async Task MapDefaultValueProperties() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "DefaultValue");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
-      var target = (DefaultValueTopicViewModel)mappingService.Map(topic);
+      var target                = (DefaultValueTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<string>("Default", target.DefaultString);
       Assert.AreEqual<int>(10, target.DefaultInt);
@@ -572,14 +611,14 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public void TopicMappingService_MapMinimumValueProperties() {
+    public async Task MapMinimumValueProperties() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Topic", "MinimumLengthProperty");
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
-      var target = (MinimumLengthPropertyTopicViewModel)mappingService.Map(topic);
+      var target = (MinimumLengthPropertyTopicViewModel) await mappingService.MapAsync(topic);
 
     }
 
@@ -592,23 +631,50 @@ namespace Ignia.Topics.Tests {
     ///   instances.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_FilterByAttribute() {
+    public async Task FilterByAttribute() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
-      var topic = TopicFactory.Create("Test", "Filtered");
-      var childTopic1 = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2 = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3 = TopicFactory.Create("ChildTopic3", "Page", topic);
-      var childTopic4 = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Filtered");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
 
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
 
-      var target = (FilteredTopicViewModel)mappingService.Map(topic);
+      var target = (FilteredTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: FLATTEN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
+    /// </summary>
+    [TestMethod]
+    public async Task Flatten() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+
+      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+
+      for (var i=0; i<5; i++) {
+        var childTopic          = TopicFactory.Create("Child" + i, "Page", topic);
+        for (var j=0; j<5; j++) {
+          TopicFactory.Create("GrandChild" + i + j, "FlattenChildren", childTopic);
+        }
+      }
+
+      var target = (FlattenChildrenTopicViewModel) await mappingService.MapAsync(topic);
+
+      Assert.AreEqual<int>(25, target.Children.Count);
 
     }
 
@@ -620,15 +686,15 @@ namespace Ignia.Topics.Tests {
     ///   the same instance of a mapped object is turned after two calls.
     /// </summary>
     [TestMethod]
-    public void TopicMappingService_Caching() {
+    public async Task Caching() {
 
-      var mappingService = new TopicMappingService(_topicRepository);
+      var mappingService = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var cachedMappingService = new CachedTopicMappingService(mappingService);
 
       var topic = TopicFactory.Create("Test", "Filtered", 5);
 
-      var target1 = (FilteredTopicViewModel)cachedMappingService.Map(topic);
-      var target2 = (FilteredTopicViewModel)cachedMappingService.Map(topic);
+      var target1 = (FilteredTopicViewModel)await cachedMappingService.MapAsync(topic);
+      var target2 = (FilteredTopicViewModel)await cachedMappingService.MapAsync(topic);
 
       Assert.AreEqual<FilteredTopicViewModel>(target1, target2);
 

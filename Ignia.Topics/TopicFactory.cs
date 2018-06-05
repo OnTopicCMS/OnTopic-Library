@@ -4,9 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Ignia.Topics {
@@ -21,78 +19,12 @@ namespace Ignia.Topics {
   public static class TopicFactory {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = new Dictionary<string, Type>();
-
-    /*==========================================================================================================================
-    | METHOD: GET TOPIC TYPE
+    | PROPERTY: TYPE LOOKUP SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Static helper method for looking up a class type based on a string name.
+    ///   Establishes static variables for the <see cref="TopicFactory"/>.
     /// </summary>
-    /// <remarks>
-    ///   Currently, this method uses <see cref="Type.GetType()"/>, which can be non-performant. As such, this helper method
-    ///   caches its results in a static lookup table keyed by the string value.
-    /// </remarks>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <returns>A class type corresponding to a derived class of <see cref="Topic"/>.</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    private static Type GetTopicType(string contentType) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Type>() != null);
-      TopicFactory.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup.Keys.Contains(contentType)) {
-        return _typeLookup[contentType];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Determine if there is a matched type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var baseType = typeof(Topic);
-      var targetType = Type.GetType("Ignia.Topics." + contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (targetType == null) {
-        targetType = baseType;
-      }
-      else if (!targetType.IsSubclassOf(baseType)) {
-        targetType = baseType;
-        throw new ArgumentException("The topic \"Ignia.Topics." + contentType + "\" does not derive from \"Ignia.Topics.Topic\".");
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Cache findings
-      \---------------------------------------------------------------------------------------------------------------------*/
-      lock (_typeLookup) {
-        if (_typeLookup.Keys.Contains(contentType)) {
-          _typeLookup.Add(contentType, targetType);
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return result
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return targetType;
-
-    }
+    public static ITypeLookupService TypeLookupService { get; set; } = new DefaultTopicLookupService();
 
     /*==========================================================================================================================
     | METHOD: CREATE
@@ -131,28 +63,28 @@ namespace Ignia.Topics {
     /// </requires>
     public static Topic Create(string key, string contentType, Topic parent = null) {
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
       Contract.Ensures(Contract.Result<Topic>() != null);
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Determine target type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = TopicFactory.GetTopicType(contentType);
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var targetType = TypeLookupService.GetType(contentType);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
-      \---------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
-      \---------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return topic;
 
     }
@@ -165,7 +97,7 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   When the <paramref name="id"/> parameter is set the <see cref="AttributeValue.IsDirty"/> property is set to
     ///   <c>false</c> on <see cref="Topic.Key"/> as well as on <see cref="Topic.ContentType"/>, since it is assumed these are
-    ///   being set to the same values currently used in the persistance store.
+    ///   being set to the same values currently used in the persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
@@ -177,9 +109,9 @@ namespace Ignia.Topics {
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
     public static Topic Create(string key, string contentType, int id, Topic parent = null) {
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
-      \---------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
       Contract.Requires<ArgumentNullException>(id > 0);
@@ -187,19 +119,19 @@ namespace Ignia.Topics {
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Determine target type
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var targetType = TopicFactory.GetTopicType(contentType);
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var targetType = TypeLookupService.GetType(contentType);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
       var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
 
-      /*----------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return object
-      \---------------------------------------------------------------------------------------------------------------------*/
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return topic;
 
     }
@@ -221,7 +153,7 @@ namespace Ignia.Topics {
     public static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey?? "", @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey ?? "", @"^[a-zA-Z0-9\.\-_]+$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }

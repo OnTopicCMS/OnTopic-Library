@@ -20,12 +20,10 @@ namespace Ignia.Topics.Web.Configuration {
     | FACTORY METHOD: GET CONFIG
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the <c>topics</c> element from the web.config as the configuation section.
+    ///   Gets the <c>topics</c> element from the web.config as the configuration section.
     /// </summary>
     /// <returns>The <c>topics</c> section of the implementing client's configuration.</returns>
-    public static TopicsSection GetConfig() {
-      return ConfigurationManager.GetSection("topics") as TopicsSection;
-    }
+    public static TopicsSection GetConfig() => ConfigurationManager.GetSection("topics") as TopicsSection;
 
     /*==========================================================================================================================
     | ATTRIBUTE: ROOT TOPIC NAMESPACE
@@ -35,12 +33,8 @@ namespace Ignia.Topics.Web.Configuration {
     /// </summary>
     [ConfigurationProperty("rootTopicNamespace", DefaultValue = "Root")]
     public string RootTopicNamespace {
-      get {
-        return (string)this["rootTopicNamespace"];
-      }
-      set {
-        this["rootTopicNamespace"] = value;
-      }
+      get => (string)this["rootTopicNamespace"];
+      set => this["rootTopicNamespace"] = value;
     }
 
     /*==========================================================================================================================
@@ -51,12 +45,8 @@ namespace Ignia.Topics.Web.Configuration {
     /// </summary>
     [ConfigurationProperty("topicDelimiter", DefaultValue = "/")]
     public string TopicDelimiter {
-      get {
-        return (string)this["topicDelimiter"];
-      }
-      set {
-        this["topicDelimiter"] = value;
-      }
+      get => (string)this["topicDelimiter"];
+      set => this["topicDelimiter"] = value;
     }
 
     /*==========================================================================================================================
@@ -66,11 +56,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the value of the <versioning /> element from the configuration.
     /// </summary>
     [ConfigurationProperty("versioning")]
-    public VersioningElement Versioning {
-      get {
-        return this["versioning"] as VersioningElement;
-      }
-    }
+    public VersioningElement Versioning => this["versioning"] as VersioningElement;
 
     /*==========================================================================================================================
     | ELEMENT: EDITOR
@@ -79,11 +65,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the value of the <editor /> element from the configuration.
     /// </summary>
     [ConfigurationProperty("editor")]
-    public EditorElement Editor {
-      get {
-        return this["editor"] as EditorElement;
-      }
-    }
+    public EditorElement Editor => this["editor"] as EditorElement;
 
     /*==========================================================================================================================
     | ELEMENT: VIEWS
@@ -92,11 +74,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the value of the <view /> element from the configuration.
     /// </summary>
     [ConfigurationProperty("views")]
-    public ViewsElement Views {
-      get {
-        return this["views"] as ViewsElement;
-      }
-    }
+    public ViewsElement Views => this["views"] as ViewsElement;
 
     /*==========================================================================================================================
     | COLLECTION: PAGE TYPES
@@ -104,12 +82,7 @@ namespace Ignia.Topics.Web.Configuration {
     /// <summary>
     ///   Gets the value of the <pageTypes /> element from the configuration.
     /// </summary>
-    [ConfigurationProperty("pageTypes")]
-    public PageTypeElementCollection PageTypes {
-      get {
-        return this["pageTypes"] as PageTypeElementCollection;
-      }
-    }
+    public PageTypeElementCollection GetPageTypes() => this["pageTypes"] as PageTypeElementCollection;
 
   } // Class
 

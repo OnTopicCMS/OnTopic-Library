@@ -13,18 +13,13 @@ namespace Ignia.Topics.Mapping {
   ///   Flags that a property should be mapped to a list of metadata available in the <c>Configuration</c> namespace.
   /// </summary>
   /// <remarks>
-  ///   In the Topic Editor, the <c>TopicLookup</c> allows editors to select values from dropdown lists representing topics.
+  ///   In the Topic Editor, the <c>TopicLookup</c> allows editors to select values from drop-down lists representing topics.
   ///   Those topics, by default, are stored in the <c>Configuration:Metadata</c> namespace. The metadata attribute allows a
   ///   strongly-typed reference to be created, thus pulling either a reference to a specific topic (in the case of a single
   ///   value property) or a collection of the metadata (in the case of a collection).
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
   public sealed class MetadataAttribute : System.Attribute {
-
-    /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _key                            = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -35,7 +30,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="key">The key represents the name of the Metadata topic that should be mapped to.</param>
     public MetadataAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
-      _key = key;
+      Key = key;
     }
 
     /*==========================================================================================================================
@@ -44,12 +39,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the key.
     /// </summary>
-    public string Key {
-      get {
-        return _key;
-      }
-    }
+    public string Key { get; }
 
   } //Class
-
 } //Namespace

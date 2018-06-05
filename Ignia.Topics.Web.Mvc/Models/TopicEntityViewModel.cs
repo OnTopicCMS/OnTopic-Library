@@ -25,11 +25,6 @@ namespace Ignia.Topics.Web.Mvc.Models {
   public class TopicEntityViewModel {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _rootTopic                      = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -37,8 +32,15 @@ namespace Ignia.Topics.Web.Mvc.Models {
     /// </summary>
     /// <returns>A Topic view model.</returns>
     public TopicEntityViewModel(ITopicRepository topicRepository, Topic topic) {
+
       TopicRepository           = topicRepository;
       Topic                     = topic;
+      RootTopic                 = topic;
+
+      while (RootTopic.Parent != null) {
+        RootTopic = RootTopic.Parent;
+      }
+
     }
 
     /*==========================================================================================================================
@@ -57,17 +59,7 @@ namespace Ignia.Topics.Web.Mvc.Models {
     ///   Returns the root topic associated with the object graph. This can be used to easily find other topics in the tree.
     /// </summary>
     /// <returns>The <see cref="GetTopic()"/> at the root of the object graph.</returns>
-    public Topic RootTopic {
-      get {
-        if (_rootTopic == null) {
-          _rootTopic = Topic;
-          while (_rootTopic.Parent != null) {
-            _rootTopic = _rootTopic.Parent;
-          }
-        }
-        return _rootTopic;
-      }
-    }
+    public Topic RootTopic { get; }
 
     /*==========================================================================================================================
     | PROPERTY: TOPIC

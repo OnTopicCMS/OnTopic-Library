@@ -20,12 +20,6 @@ namespace Ignia.Topics.Repositories {
   public class MoveEventArgs : EventArgs {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private Topic   _topic = null;
-    private Topic   _target = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY MOVE EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -35,7 +29,7 @@ namespace Ignia.Topics.Repositories {
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="MoveEventArgs"/> class and sets the <see cref="Topic"/> and
-    ///   <see cref="Target"/> propreties based on the specified objects.
+    ///   <see cref="Target"/> properties based on the specified objects.
     /// </summary>
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>
@@ -49,8 +43,8 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
       Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
-      _topic = topic;
-      _target = target;
+      Topic = topic;
+      Target = target;
     }
 
     /*==========================================================================================================================
@@ -59,10 +53,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the Topic object associated with the event.
     /// </summary>
-    public Topic Topic {
-      get => _topic;
-      set => _topic = value;
-    }
+    public Topic Topic { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: TARGET
@@ -70,10 +61,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the new parent that the topic will be moved to.
     /// </summary>
-    public Topic Target {
-      get => _target;
-      set => _target = value;
-    }
+    public Topic Target { get; set; }
 
   } // Class
 

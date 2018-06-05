@@ -18,10 +18,92 @@ namespace Ignia.Topics.Querying {
   public static class Topic {
 
     /*==========================================================================================================================
+    | METHOD: FIND FIRST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Finds the first instance of a <see cref="Target.Topic"/> in the topic tree that satisfies the delegate.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
+    /// <returns>The first instance of the topic to be satisfied.</returns>
+    public static Target.Topic FindFirst(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Search attributes
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (predicate(topic)) {
+        return topic;
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Recurse over children
+      \---------------------------------------------------------------------------------------------------------------------*/
+      foreach (var child in topic.Children) {
+        var nestedResult = child.FindFirst(predicate);
+        if (nestedResult != null) {
+          return nestedResult;
+        }
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Indicate no results found
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: FIND ALL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a collection of topics based on a supplied function.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
+    /// <returns>A collection of topics matching the input parameters.</returns>
+    public static ReadOnlyTopicCollection<Target.Topic> FindAll(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Target.Topic>>() != null);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Search attributes
+      \---------------------------------------------------------------------------------------------------------------------*/
+      var results = new TopicCollection();
+
+      if (predicate(topic)) {
+        results.Add(topic);
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Recurse over children
+      \---------------------------------------------------------------------------------------------------------------------*/
+      foreach (var child in topic.Children) {
+        var nestedResults = child.FindAll(predicate);
+        foreach (var matchedTopic in nestedResults) {
+          if (!results.Contains(matchedTopic.Key)) {
+            results.Add(matchedTopic);
+          }
+        }
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return results
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return results.AsReadOnly();
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: FIND ALL BY ATTRIBUTE
-    >===========================================================================================================================
-    | ###TODO JJC080313: Consider adding an overload of the out-of-the-box FindAll() method that supports recursion, thus
-    | allowing a search by any criteria - including attributes.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a collection of topics based on an attribute name and value.
@@ -50,33 +132,12 @@ namespace Ignia.Topics.Querying {
       TopicFactory.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Search attributes
-      \---------------------------------------------------------------------------------------------------------------------*/
-      var results = new TopicCollection();
-
-      if (
-        !String.IsNullOrEmpty(topic.Attributes.GetValue(name)) &&
-        topic.Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
-        ) {
-        results.Add(topic);
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Search children, if recursive
-      \---------------------------------------------------------------------------------------------------------------------*/
-      foreach (var child in topic.Children) {
-        var nestedResults = child.FindAllByAttribute(name, value);
-        foreach (var matchedTopic in nestedResults) {
-          if (!results.Contains(matchedTopic.Key)) {
-            results.Add(matchedTopic);
-          }
-        }
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
       | Return results
       \---------------------------------------------------------------------------------------------------------------------*/
-      return results.AsReadOnly();
+      return topic.FindAll(t =>
+        !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
+        t.Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+      );
 
     }
 

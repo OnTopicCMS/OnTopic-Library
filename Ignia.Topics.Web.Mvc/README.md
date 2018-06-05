@@ -3,6 +3,7 @@ The `Ignia.Topics.Web.Mvc` assembly provides a default implementation for utiliz
 
 ### Contents
 - [Components](#components)
+- [Controllers](#controllers)
 - [View Conventions](#view-conventions)
   - [View Matching](#view-matching)
   - [View Locations](#view-locations)
@@ -17,6 +18,17 @@ There are three key components at the heart of the MVC implementation.
 - **`MvcTopicRoutingService`**: This is a concrete implementation of the `ITopicRoutingService` which accepts contextual information about a given request (in this case, the URL and routing data) and then uses it to retrieve the current `Topic` from an `ITopicRepository`.
 - **`TopicController`**: This is a default controller instance that can be used for _any_ topic path. It will automatically validate that the `Topic` exists, that it is not disabled (`IsDisabled`), and will honor any redirects (e.g., if the `Url` attribute is filled out). Otherwise, it will return `TopicViewResult` based on a view model, view name, and content type.
 - **`TopicViewEngine`**: The `TopicViewEngine` is called every time a view is requested. It works in conjunction with `TopicViewResult` to identify matching MVC views based on predetermined locations and conventions. These are discussed below.
+
+## Controllers
+There are six main controllers that ship with the MVC implementation. In addition to the core **`TopicController`**, these include the following ancillary controllers:
+- **`ErrorControllerBase<T>`**: Provides support for `Error`, `NotFound`, and `InternalServer` actions. Can accept any `IPageTopicViewModel` as a generic argument; that will be used as the view model.
+- **`FallbackController`**: Used in a [Controller Factory](#controller-factory) as a fallback, in case no other controllers can accept the request. Simply returns a `NotFoundResult` with a predefined message.
+- **`LayoutControllerBase<T>`**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance. 
+  - **`CachedLayoutControllerBase<T>`**: Introduces specialized caching of `INavigationTopicViewModel<T>` graphs whenever a call to the `GetNavigationRoot()` is called. This avoids mapping the entirety of the navigation on each request.
+- **`RedirectController`**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`. 
+- **`SitemapController`**: Provides a single `Sitemap` action which returns a reference to the `ITopicRepository`, thus allowing a sitemap view to recurse over the entire Topic graph, including all attributes.
+
+> **Note:** There is not a practical way for MVC to provide routing for generic controllers. As such, these _must_ be subclassed by each implementation. The derived controller needn't do anything outside of provide a specific type reference to the generic base.
 
 ## View Conventions
 By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
@@ -78,6 +90,8 @@ As OnTopic relies on constructor injection, the application must be configured i
 var connectionString            = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
+var topicViewModelLookupService = new TopicViewModelLookupService();
+var topicMappingService         = new TopicMappingService(cachedTopicRepository, topicViewModelLookupService);
 
 var mvcTopicRoutingService      = new MvcTopicRoutingService(
   cachedTopicRepository,
@@ -85,12 +99,10 @@ var mvcTopicRoutingService      = new MvcTopicRoutingService(
   requestContext.RouteData
 );
 
-var topicMappingService         = new TopicMappingService(cachedTopicRepository);
-
 switch (controllerType.Name) {
 
   case nameof(TopicController):
-    return new TopicController(_topicRepository, mvcTopicRoutingService, _topicMappingService);
+    return new TopicController(sqlTopicRepository, mvcTopicRoutingService, topicMappingService);
 
   case default:
     return base.GetControllerInstance(requestContext, controllerType);
@@ -98,7 +110,7 @@ switch (controllerType.Name) {
 }
 
 ```
-For a complete reference template, see the [`OrganizationNameControllerFactory.cs`](https://gist.github.com/JeremyCaney/6ba4bb0465b7dd1992a7ffdaa1ebf813) Gist.
+For a complete reference template, including the ancillary controllers, see the [`OrganizationNameControllerFactory.cs`](https://gist.github.com/JeremyCaney/6ba4bb0465b7dd1992a7ffdaa1ebf813) Gist.
 
 > *Note:* The default `TopicController` will automatically identify the current topic (based on e.g. the URL), map the current topic to a corresponding view model (based on [the `TopicMappingService` conventions](../Ignia.Topics/Mapping/)), and then return a corresponding view (based on the [view conventions](#view-conventions)). For most applications, this is enough. If custom mapping rules or additional presentation logic are needed, however, implementors can subclass `TopicController`.
 

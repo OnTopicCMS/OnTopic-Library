@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace Ignia.Topics.Mapping {
 
@@ -26,8 +27,8 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<Tuple<int, Type, Relationships>, object> _cache =
-      new ConcurrentDictionary<Tuple<int, Type, Relationships>, object>();
+    private readonly ConcurrentDictionary<(int, Type, Relationships), object> _cache =
+      new ConcurrentDictionary<(int, Type, Relationships), object>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -53,7 +54,7 @@ namespace Ignia.Topics.Mapping {
     ///     <see cref="Object"/>. These results may need to be cast to a specific type, depending on the context. That said,
     ///     strongly-typed views should be able to cast the object to the appropriate View Model type. If the type of the View
     ///     Model is known upfront, and it is imperative that it be strongly-typed, then prefer <see
-    ///     cref="Map{T}(Topic, Relationships)"/>.
+    ///     cref="MapAsync{T}(Topic, Relationships)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed by the underlying implementation, it must implement a
@@ -63,12 +64,12 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, null, relationships);
+      var cacheKey = (topic.Id, (Type)null, relationships);
       if(_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -76,7 +77,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync(topic, relationships), cacheKey);
 
     }
 
@@ -98,12 +99,12 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, typeof(T), relationships);
+      var cacheKey = (topic.Id, typeof(T), relationships);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return (T)viewModel;
       }
@@ -111,7 +112,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map<T>(topic, relationships), cacheKey) as T;
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync<T>(topic, relationships), cacheKey) as T;
 
     }
 
@@ -127,12 +128,12 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = GetCacheKey(topic.Id, target.GetType(), relationships);
+      var cacheKey = (topic.Id, target.GetType(), relationships);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -140,7 +141,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached result
       \---------------------------------------------------------------------------------------------------------------------*/
-      return CacheViewModel(topic.ContentType, _topicMappingService.Map(topic, relationships), cacheKey);
+      return CacheViewModel(topic.ContentType, await _topicMappingService.MapAsync(topic, relationships), cacheKey);
 
     }
 
@@ -151,33 +152,48 @@ namespace Ignia.Topics.Mapping {
     ///   Given a view model, determines if it is appropriate to cache and, if so, adds it to the cache. Regardless, returns the
     ///   view model back to the consumer.
     /// </summary>
+    /// <remarks>
+    ///   The internal will potentially add two entries to the cache for every view model.
+    ///   <list type="number">
+    ///     <item>
+    ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see
+    ///       cref="Relationships"/> mapped.
+    ///     </item>
+    ///     <item>
+    ///       The second will assume a null <see cref="Type"/>, and can be used for scenarios where the <see cref="Type"/> is
+    ///       not known—and, thus, assumed to be the default mapping.
+    ///     </item>
+    ///   </list>
+    ///   In all cases, the <see cref="Topic.Id"/> must be greater than zero, to ensure that it's a saved entity (otherwise,
+    ///   multiple distinct entities will have the default <see cref="Topic.Id"/> of <c>-1</c>). In addition, the following
+    ///   conditions apply, respectively, to each of the caches:
+    ///   <list type="number">
+    ///     <item>
+    ///       The first must have a view model type that is not an <see cref="Object"/>, since it is meant to map to a specific
+    ///       view model type.
+    ///     </item>
+    ///     <item>
+    ///       The second will assume that the view model type of the naming convention <c>{ContentType}TopicViewModel</c>—i.e.,
+    ///       it is the default implementation for the given view model type, and not a specially cast version such as e.g.,
+    ///       <c>NavigationTopicViewModel</c> or <c>TopicViewModel</c>.
+    ///     </item>
+    ///   </list>
+    /// </remarks>
     /// <param name="contentType">The content type associated with the associated <see cref="Topic"/>.</param>
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
-    private object CacheViewModel(string contentType, object viewModel, Tuple<int, Type, Relationships> cacheKey) {
+    private object CacheViewModel(string contentType, object viewModel, (int, Type, Relationships) cacheKey) {
       if (cacheKey.Item1 > 0 && cacheKey.Item2 != null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
       }
-      if (cacheKey.Item1 > 0 && viewModel.GetType().Name.Equals(contentType + "TopicViewModel")) {
+      if (cacheKey.Item2 != null) {
+        cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
+      }
+      if (cacheKey.Item1 > 0 && viewModel.GetType().Name.Equals($"{contentType}TopicViewModel")) {
         _cache.TryAdd(cacheKey, viewModel);
       }
       return viewModel;
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET CACHE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a <see cref="Topic.Id"/>, <see cref="Type"/>, and <see cref="Relationships"/> reference, produces a cache key of
-    ///   type <see cref="Tuple{T1, T2, T3}"/>
-    /// </summary>
-    /// <param name="topicId">The <see cref="Topic.Id"/> of the entity to derive the data from.</param>
-    /// <param name="type">The type of the target object that the <see cref="Topic"/> will be mapped to.</param>
-    /// <param name="relationships">The relationships the mapping will follow, if any.</param>
-    /// <returns>A <see cref="Tuple{Int32, Type, Relationships}"/> representing the unique cache key.</returns>
-    private static Tuple<int, Type, Relationships> GetCacheKey(int topicId, Type type, Relationships relationships) {
-      return new Tuple<int, Type, Relationships>(topicId, type, relationships);
     }
 
   } //Class

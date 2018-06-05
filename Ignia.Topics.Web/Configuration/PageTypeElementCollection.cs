@@ -32,15 +32,13 @@ namespace Ignia.Topics.Web.Configuration {
     ///   value != null
     /// </requires>
     public PageTypeElement this[int index] {
-      get {
-        return base.BaseGet(index) as PageTypeElement;
-      }
+      get => base.BaseGet(index) as PageTypeElement;
       set {
         Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }
-        this.BaseAdd(index, value);
+        BaseAdd(index, value);
       }
     }
 
@@ -51,11 +49,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the default page type (e.g., <see cref="Ignia.Topics.Web.TopicPage"/>).
     /// </summary>
     [ConfigurationProperty("default", DefaultValue="TopicPage", IsRequired = false)]
-    public string Default {
-      get {
-        return (string)base["default"];
-      }
-    }
+    public string Default => (string)base["default"];
 
     /*==========================================================================================================================
     | METHOD: CREATE NEW ELEMENT
@@ -64,9 +58,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Creates a new <see cref="PageTypeElement"/>.
     /// </summary>
     /// <returns>A new instance of a <see cref="PageTypeElement"/>.</returns>
-    protected override ConfigurationElement CreateNewElement() {
-      return new PageTypeElement();
-    }
+    protected override ConfigurationElement CreateNewElement() => new PageTypeElement();
 
     /*==========================================================================================================================
     | METHOD: GET ELEMENT KEY

@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Querying;
 
 namespace Ignia.Topics.Data.Caching {
 
@@ -50,6 +51,11 @@ namespace Ignia.Topics.Data.Caching {
       \-----------------------------------------------------------------------------------------------------------------------*/
       _dataProvider = dataProvider;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure topics are loaded
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _cache = _dataProvider.Load();
+
     }
 
     /*==========================================================================================================================
@@ -64,7 +70,7 @@ namespace Ignia.Topics.Data.Caching {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -72,45 +78,26 @@ namespace Ignia.Topics.Data.Caching {
     public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
+      | Handle request for entire tree
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_cache == null) {
-        _cache = _dataProvider.Load();
+      if (topicId < 0) {
+        return _cache;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Lookup by TopicId
+      | Recursive search
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicId >= 0) {
-        return GetTopic(_cache, topicId);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      return _cache.FindFirst(t => t.Id.Equals(topicId));
 
     }
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
     public override Topic Load(string topicKey = null, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure topics are loaded
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_cache == null) {
-        _cache = _dataProvider.Load();
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -143,45 +130,6 @@ namespace Ignia.Topics.Data.Caching {
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a topic object based on the current topic scope and the specified integer identifier.
-    /// </summary>
-    /// <remarks>
-    ///   If the specified ID does not match the identifier for the current topic, its children will be searched.
-    /// </remarks>
-    /// <param name="sourceTopic">The root topic to search from.</param>
-    /// <param name="topicId">The integer identifier for the topic.</param>
-    /// <returns>The topic or null, if the topic is not found.</returns>
-    /// <requires description="The topicId is expected to be a positive integer." exception="T:System.ArgumentException">
-    ///   topicId &lt;= 0
-    /// </requires>
-    private Topic GetTopic(Topic sourceTopic, int topicId) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topicId >= 0, "The topicId is expected to be a non-negative integer.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return if current
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceTopic.Id == topicId) return sourceTopic;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Iterate through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopic in sourceTopic.Children) {
-        var foundTopic = GetTopic(childTopic, topicId);
-        if (foundTopic != null) return foundTopic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return null if not found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
-
-    /// <summary>
     ///   Retrieves a topic object based on the specified partial or full (prefixed) topic key.
     /// </summary>
     /// <param name="sourceTopic">The root topic to search from.</param>
@@ -211,7 +159,7 @@ namespace Ignia.Topics.Data.Caching {
       | Provide implicit root
       >-------------------------------------------------------------------------------------------------------------------------
       | ###NOTE JJC080313: While a root topic is required by the data structure, it should be implicit from the perspective of
-      | the calling application.  A developer should be able to call GetTopic("Namepace:TopicPath") to get to a topic, without
+      | the calling application.  A developer should be able to call GetTopic("Namespace:TopicPath") to get to a topic, without
       | needing to be aware of the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
@@ -261,8 +209,8 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
-    ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found
+    ///   under Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via

@@ -16,11 +16,6 @@ namespace Ignia.Topics.Repositories {
   public class RenameEventArgs : EventArgs {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private Topic   _topic = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY RENAME EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -37,7 +32,7 @@ namespace Ignia.Topics.Repositories {
     /// </summary>
     /// <param name="topic">The topic object associated with the rename event.</param>
     public RenameEventArgs(Topic topic) {
-      _topic = topic;
+      Topic = topic;
     }
 
     /*==========================================================================================================================
@@ -49,10 +44,7 @@ namespace Ignia.Topics.Repositories {
     /// <value>
     /// The topic.
     /// </value>
-    public Topic Topic {
-      get => _topic;
-      set => _topic = value;
-    }
+    public Topic Topic { get; }
 
   } // Class
 

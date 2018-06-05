@@ -25,11 +25,6 @@ namespace Ignia.Topics.Mapping {
   public sealed class AttributeKeyAttribute : System.Attribute {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _attributeKey                   = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -38,7 +33,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="attributeKey">The key value of the attribute associated with the current property.</param>
     public AttributeKeyAttribute(string attributeKey) {
       TopicFactory.ValidateKey(attributeKey, false);
-      _attributeKey = attributeKey;
+      Value = attributeKey;
     }
 
     /*==========================================================================================================================
@@ -47,11 +42,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the attribute key.
     /// </summary>
-    public string Value {
-      get {
-        return _attributeKey;
-      }
-    }
+    public string Value { get; }
 
   } //Class
 

@@ -15,15 +15,7 @@ namespace Ignia.Topics.Web.Editor {
   ///   Provides a strongly-typed class associated with the FilePath.ascx Attribute Type control and logic associated with
   ///   building a configured file path from values passed to the constructor.
   /// </summary>
-  public class FilePath {
-
-    /*==========================================================================================================================
-    | CONSTRUCTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="FilePath"/> class.
-    /// </summary>
-    public FilePath() { }
+  public static class FilePath {
 
     /*==========================================================================================================================
     | METHOD: GET PATH
@@ -47,7 +39,7 @@ namespace Ignia.Topics.Web.Editor {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate return value
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<String>() != null);
+      Contract.Ensures(Contract.Result<string>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Only process the path if both topic and attribtueKey are provided
@@ -55,12 +47,12 @@ namespace Ignia.Topics.Web.Editor {
       if (topic == null || String.IsNullOrEmpty(attributeKey)) return "";
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Build configured file path string base on values and settings paramters passed to the method
+      | Build configured file path string base on values and settings parameters passed to the method
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string    filePath                = "";
-      string    relativePath            = null;
-      Topic     startTopic              = topic;
-      Topic     endTopic                = includeLeafTopic? topic : topic.Parent;
+      var       filePath                = "";
+      var       relativePath            = (string)null;
+      var       startTopic              = topic;
+      var       endTopic                = includeLeafTopic? topic : topic.Parent;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Crawl up the topics tree to find file path values set at a higher level
@@ -73,7 +65,7 @@ namespace Ignia.Topics.Web.Editor {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add topic keys (directory names) between the start topic and the end topic based on the topic's webpath property
+      | Add topic keys (directory names) between the start topic and the end topic based on the topic's WebPath property
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (startTopic != null) {
         Contract.Assume(
@@ -87,8 +79,8 @@ namespace Ignia.Topics.Web.Editor {
       | Perform path truncation based on topics included in TruncatePathAtTopic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (truncatePathAtTopic != null) {
-        foreach (string truncationTopic in truncatePathAtTopic) {
-          int truncateTopicLocation     = relativePath.IndexOf(truncationTopic, StringComparison.InvariantCultureIgnoreCase);
+        foreach (var truncationTopic in truncatePathAtTopic) {
+          var truncateTopicLocation     = relativePath.IndexOf(truncationTopic, StringComparison.InvariantCultureIgnoreCase);
           if (truncateTopicLocation >= 0) {
             relativePath                = relativePath.Substring(0, truncateTopicLocation + truncationTopic.Length + 1);
           }
@@ -101,7 +93,7 @@ namespace Ignia.Topics.Web.Editor {
       filePath                         += relativePath;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Replace path slashes with backslahes if the resulting file path value uses a UNC or basic file path format
+      | Replace path slashes with backslashes if the resulting file path value uses a UNC or basic file path format
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (filePath.IndexOf("\\") >= 0) {
         filePath                        = filePath.Replace("/", "\\");

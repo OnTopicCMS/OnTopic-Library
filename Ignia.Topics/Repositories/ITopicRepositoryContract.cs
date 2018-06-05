@@ -45,7 +45,7 @@ namespace Ignia.Topics.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -53,24 +53,12 @@ namespace Ignia.Topics.Repositories {
     public Topic Load(int topicId, bool isRecursive = true) => null;
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public Topic Load(string topicKey = null, bool isRecursive = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-    //TopicFactory.ValidateKey(topicKey, true);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide dummy return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return null;
-
-    }
+    public Topic Load(string topicKey = null, bool isRecursive = true) => null;
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.
@@ -88,7 +76,10 @@ namespace Ignia.Topics.Repositories {
       | Validate return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
-      Contract.Requires(version.Date > new DateTime(2014, 12, 9), "The version is expected to have been created since version support was introduced into the topic library.");
+      Contract.Requires(
+        version.Date > new DateTime(2014, 12, 9),
+        "The version is expected to have been created since version support was introduced into the topic library."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide dummy return value
@@ -125,6 +116,7 @@ namespace Ignia.Topics.Repositories {
 
     }
 
+
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -138,11 +130,13 @@ namespace Ignia.Topics.Repositories {
     /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
     ///   topic != null
     /// </requires>
+    #pragma warning disable CA1822 // Mark members as static
     public void Move(Topic topic, Topic target) {
       Contract.Requires(target != topic);
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
       Contract.Requires<ArgumentNullException>(target != null, "target");
     }
+    #pragma warning restore CA1822 // Mark members as static
 
     /// <summary>
     ///   Interface method that supports moving a topic from one position to another.
@@ -176,6 +170,7 @@ namespace Ignia.Topics.Repositories {
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
+    #pragma warning disable IDE0022 // Use expression body for methods
     public void Delete(Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -184,6 +179,7 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
     }
+    #pragma warning restore IDE0022 // Use expression body for methods
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK

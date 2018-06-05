@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
@@ -20,7 +21,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///   identifying the topic associated with the given path, determining its content type, and returning a view associated with
   ///   that content type (with potential overrides for multiple views).
   /// </summary>
-  public class TopicController : Controller {
+  public class TopicController : AsyncController {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -66,11 +67,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository {
-    	get {
-        return _topicRepository;
-      }
-    }
+    protected ITopicRepository TopicRepository => _topicRepository;
 
     /*==========================================================================================================================
     | CURRENT TOPIC
@@ -96,12 +93,12 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    public virtual ActionResult Index(string path) {
+    public async virtual Task<ActionResult> IndexAsync(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = _topicMappingService.Map(CurrentTopic);
+      var topicViewModel = await _topicMappingService.MapAsync(CurrentTopic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view

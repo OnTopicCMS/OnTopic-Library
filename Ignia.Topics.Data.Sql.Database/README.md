@@ -5,7 +5,7 @@ The `Ignia.Topics.Data.Sql.Database` provides a default schema for supporting th
 
 ## Tables
 The following is a summary of the most relevant tables. 
-- **[`topics_Topics`](dbo/Tables/topics_Topics.sql)**: Represents the core hiearchy of topics, encoded in a nested set format.
+- **[`topics_Topics`](dbo/Tables/topics_Topics.sql)**: Represents the core hierarchy of topics, encoded in a nested set format.
 - **[`topics_TopicAttributes`](dbo/Tables/topics_Topics.sql)**: Represents key/value pairs of topic attributes, including historical versions.
 - **[`topics_Blob`](dbo/Tables/topics_Blob.sql)**: Represents an XML-based blob of non-indexed attributes, which are too long for `topics_TopicAttributes`.
 - **[`topics_Relationships`](dbo/Tables/topics_Relationships.sql)**: Represents relationships between topics, segmented by namespace. 
@@ -24,7 +24,7 @@ The following is a summary of the most relevant stored procedures.
 - **[`topics_CreateTopic`](dbo/Stored%20Procedures/topics_CreateTopic.sql)**: Creates a new topic based on a `@ParentId`, an array of `@Attributes`, and an XML `@Blob`. Returns a new `@@Identity`.
 - **[`topics_DeleteTopic`](dbo/Stored%20Procedures/topics_DeleteTopic.sql)**: Deletes an existing topic based on a `@Id`.
 - **[`topics_MoveTopic`](dbo/Stored%20Procedures/topics_MoveTopic.sql)**: Moves an existing topic based on an `@Id`, `@ParentId`, and `@SiblingId`.
-- **[`topics_UpdateTopic`](dbo/Stored%20Procedures/topics_UpdateTopic.sql)**: Updates an existing topic based on an `@Id`, an array of `@Attributes`, and a `@Blob`. Optionally deletes all relationships; these will need to be readded using `topics_PersistRelations`. Old attributes are persisted as previous versions.
+- **[`topics_UpdateTopic`](dbo/Stored%20Procedures/topics_UpdateTopic.sql)**: Updates an existing topic based on an `@Id`, an array of `@Attributes`, and a `@Blob`. Optionally deletes all relationships; these will need to be re-added using `topics_PersistRelations`. Old attributes are persisted as previous versions.
 - **[`topics_PersistRelations`](dbo/Stored%20Procedures/topics_PersistRelations.sql)**: Associates a relationship with a topic based on a `@Source_TopicId`, array of `@Target_TopicIds`, and `@RelationshipTypeID` (which can be any string label).
 
 ## Views

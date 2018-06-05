@@ -29,17 +29,19 @@ namespace Ignia.Topics.Tests.ViewModels {
     [AttributeKey("Property")]
     public string PropertyAlias { get; set; }
 
-    [Recurse(Relationships.Relationships)]
+    public TopicViewModel TopicReference { get; set; }
+
+    [Follow(Relationships.Relationships)]
     public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
 
-    [Recurse(Relationships.Children)]
+    [Follow(Relationships.Children)]
     public TopicViewModelCollection<PageTopicViewModel> Cousins { get; set; }
 
     public TopicViewModelCollection<PageTopicViewModel> Categories { get; set; }
 
     public Collection<Topic> Related { get; set; }
 
-    [Relationship("AmbiguousRelationship", RelationshipType.IncomingRelationship)]
+    [Relationship("AmbiguousRelationship", Type=RelationshipType.IncomingRelationship)]
     public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; }
 
   } //Class

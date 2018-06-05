@@ -3,7 +3,7 @@
 --
 -- Purpose	Used to update the attributes of a provided node
 --
--- History	Casey Margell		04062009  Initial Creation baseaed on code from Celko's Sql For Smarties
+-- History	Casey Margell		04062009  Initial Creation based on code from Celko's SQL For Smarties
 --		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --              Katherine Trunkey	08052014  Added parameter for Version (datetime). Updated procedure to always create new attribute
 --						  records rather than deleting the existing attributes for the topic and recreating them.

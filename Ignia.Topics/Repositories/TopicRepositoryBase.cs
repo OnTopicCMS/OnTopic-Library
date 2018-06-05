@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Querying;
 
 namespace Ignia.Topics.Repositories {
 
@@ -16,6 +17,11 @@ namespace Ignia.Topics.Repositories {
   ///   Defines a base abstract class for taxonomy data providers.
   /// </summary>
   public abstract class TopicRepositoryBase : ITopicRepository {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -41,13 +47,56 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
     /// </summary>
-    public abstract ContentTypeDescriptorCollection GetContentTypeDescriptors();
+    public virtual ContentTypeDescriptorCollection GetContentTypeDescriptors() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_contentTypeDescriptors == null) {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Load configuration data
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var configuration = Load("Configuration");
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Add available Content Types to the collection
+        \---------------------------------------------------------------------------------------------------------------------*/
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Ensure the parent ContentTypes topic is available to iterate over
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (configuration.Children.GetTopic("ContentTypes") == null) {
+          throw new Exception("Unable to load section Configuration:ContentTypes.");
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Add available Content Types to the collection
+        \---------------------------------------------------------------------------------------------------------------------*/
+        foreach (var topic in configuration.Children.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+          // Ensure the Topic is used as the strongly-typed ContentType
+          // Add ContentType Topic to collection if not already added
+          if (
+            topic is ContentTypeDescriptor contentTypeDescriptor &&
+            !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
+          ) {
+            _contentTypeDescriptors.Add(contentTypeDescriptor);
+          }
+        }
+
+      }
+
+      return _contentTypeDescriptors;
+
+    }
+
 
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -55,7 +104,7 @@ namespace Ignia.Topics.Repositories {
     public abstract Topic Load(int topicId, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -103,7 +152,7 @@ namespace Ignia.Topics.Repositories {
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
     /// </requires>
-    public void Rollback(Topic topic, DateTime version) {
+    public virtual void Rollback(Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
@@ -168,10 +217,28 @@ namespace Ignia.Topics.Repositories {
     public virtual int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentTypes = GetContentTypeDescriptors();
+      if (!contentTypes.Contains(topic.ContentType)) {
+        throw new ArgumentException(
+          $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
+          $"\"Configuration:ContentTypes\". There are currently {contentTypes.Count} ContentTypes in the Repository."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update content types collection, if appropriate
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic is ContentTypeDescriptor && !contentTypes.Contains(topic.Key)) {
+        _contentTypeDescriptors.Add(topic as ContentTypeDescriptor);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
-        var       args    = new RenameEventArgs(topic);
+        var args = new RenameEventArgs(topic);
         RenameEvent?.Invoke(this, args);
       }
 

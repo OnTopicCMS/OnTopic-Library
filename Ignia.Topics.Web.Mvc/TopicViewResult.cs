@@ -22,8 +22,8 @@ namespace Ignia.Topics.Web.Mvc {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    string                      _contentType                    = "";
-    string                      _topicView                      = "";
+    readonly                    string                          _contentType                    = "";
+    readonly                    string                          _topicView                      = "";
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -77,7 +77,7 @@ namespace Ignia.Topics.Web.Mvc {
       var                       contentType                     = _contentType;
       var                       viewEngine                      = ViewEngines.Engines;
       var                       requestContext                  = context.HttpContext.Request;
-      var                       view                            = new ViewEngineResult(new string[] { });
+      var                       view                            = new ViewEngineResult(Array.Empty<string>());
       var                       searchedPaths                   = new List<string>();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ namespace Ignia.Topics.Web.Mvc {
         var queryStringValue = requestContext.QueryString["View"];
         if (queryStringValue != null) {
           view = viewEngine.FindView(context, queryStringValue, MasterName);
-          searchedPaths = searchedPaths.Union(view.SearchedLocations?? new string[] { }).ToList();
+          searchedPaths = searchedPaths.Union(view.SearchedLocations?? Array.Empty<string>()).ToList();
         }
       }
 
@@ -108,7 +108,7 @@ namespace Ignia.Topics.Web.Mvc {
             // Validate against available views; if content-type represents a valid view, stop validation
             if (acceptHeader != null) {
               view = viewEngine.FindView(context, acceptHeader, MasterName);
-              searchedPaths = searchedPaths.Union(view.SearchedLocations ?? new string[] { }).ToList();
+              searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
             }
             if (view != null) {
               break;
@@ -125,7 +125,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (view.View == null && !String.IsNullOrEmpty(_topicView)) {
         view = viewEngine.FindView(context, _topicView, MasterName);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? new string[] { }).ToList();
+        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (view.View == null) {
         view = viewEngine.FindView(context, contentType, MasterName);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? new string[] { }).ToList();
+        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (view.View == null) {
         view = base.FindView(context);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? new string[] { }).ToList();
+        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

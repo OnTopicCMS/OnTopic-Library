@@ -4,7 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
@@ -38,7 +40,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModel<T>, new() {
+  public abstract class LayoutControllerBase<T> : AsyncController where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -72,11 +74,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository {
-      get {
-        return _topicRepository;
-      }
-    }
+    protected ITopicRepository TopicRepository => _topicRepository;
 
     /*==========================================================================================================================
     | CURRENT TOPIC
@@ -100,7 +98,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <summary>
     ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
     /// </summary>
-    public virtual PartialViewResult Menu() {
+    public async virtual Task<PartialViewResult> Menu() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -119,7 +117,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = AddNestedTopics(navigationRootTopic, false, 3),
+        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3),
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
@@ -180,7 +178,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     private static int DistanceFromRoot(Topic sourceTopic) {
       var distance = 1;
-      while (sourceTopic.Parent != null) {
+      while (sourceTopic?.Parent != null) {
         sourceTopic = sourceTopic.Parent;
         distance++;
       }
@@ -188,35 +186,97 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     }
 
     /*==========================================================================================================================
-    | ADD NESTED TOPICS
+    | GET ROOT VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A helper function that allows a set number of tiers to be added to a <see cref="NavigationViewModel"/> tree.
+    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
+    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
+    ///   <c>ContentType</c> of <c>PageGroup</c>.
+    /// </summary>
+    /// <remarks>
+    ///   In the out-of-the-box implementation, <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/> and <see
+    ///   cref="GetViewModelAsync(Topic, Boolean, Int32)"/> provide the same functionality. It is recommended that actions call
+    ///   <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/>, however, as it allows implementers the flexibility to
+    ///   differentiate between the root view model (which the client application will be binding to) and any child view models
+    ///   (which the client application may optionally iterate over).
+    /// </remarks>
+    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
+    /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
+    /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
+    protected virtual async Task<T> GetRootViewModelAsync(
+      Topic sourceTopic,
+      bool allowPageGroups = true,
+      int tiers = 1
+    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers);
+
+    /*==========================================================================================================================
+    | GET VIEW MODEL (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
+    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
+    ///   <c>ContentType</c> of <c>PageGroup</c>.
     /// </summary>
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected T AddNestedTopics(
+    protected async Task<T> GetViewModelAsync(
       Topic sourceTopic,
       bool allowPageGroups      = true,
       int tiers                 = 1
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate preconditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
       tiers--;
       if (sourceTopic == null) {
         return null;
       }
-      var viewModel = _topicMappingService.Map<T>(sourceTopic, Relationships.None);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var taskQueue             = new List<Task<T>>();
+      var children              = new List<T>();
+      var viewModel             = (T)null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Map object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Request mapping of children
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
-          viewModel.Children.Add(
-            AddNestedTopics(
-              topic,
-              allowPageGroups,
-              tiers
-            )
-          );
+          taskQueue.Add(GetViewModelAsync(topic, allowPageGroups, tiers));
         }
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (taskQueue.Count > 0 && viewModel.Children.Count == 0) {
+        var dtoTask = await Task.WhenAny(taskQueue);
+        taskQueue.Remove(dtoTask);
+        children.Add(await dtoTask);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add children to view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (viewModel.Children.Count == 0) {
+        lock (viewModel) {
+          if (viewModel.Children.Count == 0) {
+            children.ForEach(c => viewModel.Children.Add(c));
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return viewModel;
     }
 

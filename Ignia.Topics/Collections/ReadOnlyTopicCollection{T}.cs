@@ -12,7 +12,7 @@ namespace Ignia.Topics.Collections {
   | CLASS: READ ONLY TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a read-only keyed collection of topics.
+  ///   Provides a read-only collection of topics.
   /// </summary>
   public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 
@@ -70,11 +70,7 @@ namespace Ignia.Topics.Collections {
     ///   Retrieves an <see cref="Topic"/> by key.
     /// </summary>
     /// <param name="key">The topic key.</param>
-    public Topic this[string key] {
-      get {
-        return _innerCollection[key];
-      }
-    }
+    public Topic this[string key] => _innerCollection[key];
 
   } //Class
 

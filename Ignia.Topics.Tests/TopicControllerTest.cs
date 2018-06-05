@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
@@ -33,6 +34,9 @@ namespace Ignia.Topics.Tests {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     ITopicRepository            _topicRepository                = null;
+    RouteData                   _routeData                      = new RouteData();
+    Uri                         _uri                            = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
+    Topic                       _topic                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -44,20 +48,43 @@ namespace Ignia.Topics.Tests {
     ///   This uses the <see cref="FakeTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
     ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
-    ///   crawling the object graph.
+    ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
+    ///   tests.
     /// </remarks>
     public TopicControllerTest() {
-      _topicRepository = new CachedTopicRepository(new FakeTopicRepository());
+      _topicRepository          = new CachedTopicRepository(new FakeTopicRepository());
+      _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+    }
+
+    /*==========================================================================================================================
+    | TEST: TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
+    /// </summary>
+    [TestMethod]
+    public async Task TopicController_IndexAsync() {
+
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+
+      var controller            = new TopicController(_topicRepository, topicRoutingService, mappingService);
+      var result                = await controller.IndexAsync(_topic.GetWebPath()) as TopicViewResult;
+      var model                 = result.Model as PageTopicViewModel;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string>("Web_0_1_1", model.Title);
+
     }
 
     /*==========================================================================================================================
     | TEST: ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_ErrorTest() {
+    public void ErrorController_Error() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("ErrorPage") as ViewResult;
@@ -72,10 +99,10 @@ namespace Ignia.Topics.Tests {
     | TEST: NOT FOUND ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.NotFound(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.NotFound(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_NotFoundTest() {
+    public void ErrorController_NotFound() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("NotFoundPage") as ViewResult;
@@ -90,10 +117,10 @@ namespace Ignia.Topics.Tests {
     | TEST: INTERNAL SERVER ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.InternalServer(string)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.InternalServer(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_InternalServerTest() {
+    public void ErrorController_InternalServer() {
 
       var controller            = new ErrorController();
       var result                = controller.Error("InternalServer") as ViewResult;
@@ -111,7 +138,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void FallbackController_IndexTest() {
+    public void FallbackController_Index() {
 
       var controller            = new FallbackController();
       var result                = controller.Index() as HttpNotFoundResult;
@@ -129,7 +156,7 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void RedirectController_TopicRedirectTest() {
+    public void RedirectController_TopicRedirect() {
 
       var controller            = new RedirectController(_topicRepository);
       var result                = controller.Redirect(11110) as RedirectResult;
@@ -153,7 +180,7 @@ namespace Ignia.Topics.Tests {
     /// </remarks>
     [TestMethod]
     [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
-    public void SitemapController_IndexTest() {
+    public void SitemapController_Index() {
 
       var controller            = new SitemapController(_topicRepository);
       var result                = controller.Index() as ViewResult;
@@ -173,24 +200,20 @@ namespace Ignia.Topics.Tests {
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void LayoutController_MenuTest() {
+    public async Task Menu() {
 
-      var routes                = new RouteData();
-      var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
-
-      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, uri, routes);
-      var mappingService        = new TopicMappingService(_topicRepository);
+      var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
-      var result                = controller.Menu() as PartialViewResult;
+      var result                = await controller.Menu() as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string>(topic.GetUniqueKey(), model.CurrentKey);
+      Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
       Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
-      Assert.AreEqual<int>(3, model.NavigationRoot.Children.Count());
-      Assert.IsTrue(model.NavigationRoot.IsSelected(topic.GetUniqueKey()));
+      Assert.AreEqual<int>(2, model.NavigationRoot.Children.Count());
+      Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
 
     }
 

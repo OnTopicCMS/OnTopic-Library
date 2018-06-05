@@ -32,11 +32,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the draft mode attribute value from the <see cref="VersioningElement"/> configuration element.
     /// </summary>
     [ConfigurationProperty("draftMode")]
-    public SourceElement DraftMode {
-      get {
-        return this["draftMode"] as SourceElement;
-      }
-    }
+    public SourceElement DraftMode => this["draftMode"] as SourceElement;
 
   } // Class
 

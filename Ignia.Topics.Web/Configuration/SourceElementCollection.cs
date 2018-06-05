@@ -33,15 +33,13 @@ namespace Ignia.Topics.Web.Configuration {
     ///   value != null
     /// </requires>
     public SourceElement this[int index] {
-      get {
-        return base.BaseGet(index) as SourceElement;
-      }
+      get => base.BaseGet(index) as SourceElement;
       set {
         Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }
-        this.BaseAdd(index, value);
+        BaseAdd(index, value);
       }
     }
 
@@ -52,9 +50,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Creates a new <see cref="ConfigurationElement"/>.
     /// </summary>
     /// <returns>A new instance of a <see cref="ConfigurationElement"/>.</returns>
-    protected override ConfigurationElement CreateNewElement() {
-      return new SourceElement();
-    }
+    protected override ConfigurationElement CreateNewElement() => new SourceElement();
 
     /*==========================================================================================================================
     | METHOD: GET ELEMENT KEY

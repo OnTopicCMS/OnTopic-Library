@@ -22,11 +22,6 @@ namespace Ignia.Topics.Collections {
   public class NamedTopicCollection: TopicCollection {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    string                      _name                           = "";
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -35,7 +30,7 @@ namespace Ignia.Topics.Collections {
     /// <param name="name">Provides a name for the collection, used to identify different collections.</param>
     /// <param name="topics">Optionally seeds the collection with an optional list of topic references.</param>
     public NamedTopicCollection(string name = "", IEnumerable<Topic> topics = null) : base() {
-      _name = name;
+      Name = name;
       if (topics != null) {
         CopyTo(topics.ToArray(), 0);
       }
@@ -51,9 +46,7 @@ namespace Ignia.Topics.Collections {
     ///   The Name property is optional, and primary intended to differentiate multiple <see cref="TopicCollection{T}"/>
     ///   instances being referenced in a single collection, such as the <see cref="RelatedTopicCollection"/>.
     /// </remarks>
-    public string Name {
-      get => _name;
-    }
+    public string Name { get; }
 
   } //Class
 

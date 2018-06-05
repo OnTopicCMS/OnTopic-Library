@@ -5,13 +5,13 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using Ignia.Topics.Collections;
+using System.Threading.Tasks;
+using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 
@@ -29,13 +29,13 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static                      Dictionary<string, Type>        _typeLookup                     = null;
-    static                      TypeCollection                  _typeCache                      = new TypeCollection();
+    static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository                = null;
+    readonly                    ITypeLookupService              _typeLookupService              = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -43,92 +43,11 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
     /// </summary>
-    public TopicMappingService(ITopicRepository topicRepository) {
+    public TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
+      Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
       _topicRepository = topicRepository;
-    }
-
-    /*==========================================================================================================================
-    | METHOD: GET VIEW MODEL TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Static helper method for looking up a class type based on a string name.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     According to the default mapping rules, the following will each be mapped:
-    ///     <list type="bullet">
-    ///       <item>Scalar values of types <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="String"/></item>
-    ///       <item>Properties named <c>Parent</c> (will reference <see cref="Topic.Parent"/>)</item>
-    ///       <item>Collections named <c>Children</c> (will reference <see cref="Topic.Children"/>)</item>
-    ///       <item>
-    ///         Collections starting with <c>Related</c> (will reference corresponding <see cref="Topic.Relationships"/>)
-    ///       </item>
-    ///       <item>
-    ///         Collections corresponding to any <see cref="Topic.Children"/> of the same name, and the type <c>ListItem</c>,
-    ///         representing a nested topic list
-    ///       </item>
-    ///     </list>
-    ///   </para>
-    ///   <para>
-    ///     Currently, this method uses reflection to lookup all types ending with <c>TopicViewModel</c> across all assemblies
-    ///     and namespaces. This is incredibly non-performant, and can take over a second to execute. As such, this data is
-    ///     cached for the duration of the application (it is not expected that new classes will be generated during the scope
-    ///     of the application).
-    ///   </para>
-    /// </remarks>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <returns>A class type corresponding to the specified string, and ending with "TopicViewModel".</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    private static Type GetViewModelType(string contentType) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Type>() != null);
-      TopicFactory.ValidateKey(contentType);
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Ensure cache is populated
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup == null) {
-        var typeLookup = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-        var matchedTypes = AppDomain
-          .CurrentDomain
-          .GetAssemblies()
-          .SelectMany(t => t.GetTypes())
-          .Where(t => t.IsClass && t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase))
-          .OrderBy(t => t.Namespace.Equals("Ignia.Topics.ViewModels"))
-          .ToList();
-        foreach (var type in matchedTypes) {
-          var associatedContentType = type.Name.Replace("TopicViewModel", "");
-          if (!typeLookup.ContainsKey(associatedContentType)) {
-            typeLookup.Add(associatedContentType, type);
-          }
-        }
-        _typeLookup = typeLookup;
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (_typeLookup.Keys.Contains(contentType)) {
-        return _typeLookup[contentType];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return default
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return typeof(object);
-
+      _typeLookupService = typeLookupService;
     }
 
     /*==========================================================================================================================
@@ -143,7 +62,7 @@ namespace Ignia.Topics.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="Map{T}(Topic, Relationships)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -152,24 +71,57 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public object Map(Topic topic, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
+      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>());
+
+    /// <summary>
+    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
+    ///   according to the rules of the mapping implementation.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
+    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
+    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
+    ///   </para>
+    ///   <para>
+    ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
+    ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
+    ///     <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
+    private async Task<object> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \---------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) return null;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle cached objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (cache.TryGetValue(topic.Id, out var dto)) {
+        return dto;
+      }
+
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
-      var contentType = topic.ContentType;
-      var viewModelType = TopicMappingService.GetViewModelType(contentType);
+      var viewModelType = _typeLookupService.GetType($"{topic.ContentType}TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return Map(topic, target, relationships);
+      return await MapAsync(topic, target, relationships, cache);
 
     }
 
@@ -190,14 +142,11 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public T Map<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
-
+    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      var target = new T();
-      return (T)Map(topic, target, relationships);
-
+      return (T)await MapAsync(topic, new T(), relationships);
     }
 
     /*==========================================================================================================================
@@ -212,7 +161,30 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public object Map(Topic topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
+      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>());
+
+    /// <summary>
+    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="target">The target object to map the data to.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <remarks>
+    ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
+    ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
+    ///   <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    /// </remarks>
+    /// <returns>
+    ///   The target view model with the properties appropriately mapped.
+    /// </returns>
+    private async Task<object> MapAsync(
+      Topic topic,
+      object target,
+      Relationships relationships,
+      ConcurrentDictionary<int, object> cache
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -229,11 +201,23 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle cached objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (cache.TryGetValue(topic.Id, out var dto)) {
+        return dto;
+      }
+      else if (topic.Id > 0) {
+        cache.GetOrAdd(topic.Id, target);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var property in _typeCache.GetProperties(target.GetType())) {
-        SetProperty(topic, target, relationships, property);
+      var taskQueue = new List<Task>();
+      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
+        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache));
       }
+      await Task.WhenAll(taskQueue.ToArray());
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return result
@@ -243,230 +227,402 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PRIVATE: SET PROPERTY
+    | PROTECTED: SET PROPERTY (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
     ///   <see cref="Topic"/> based on predetermined conventions.
     /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
+    /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
-    private void SetProperty(Topic topic, object target, Relationships relationships, PropertyInfo property) {
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    protected async Task SetPropertyAsync(
+      Topic source,
+      object target,
+      Relationships relationships,
+      PropertyInfo property,
+      ConcurrentDictionary<int, object> cache
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceType            = topic.GetType();
-      var targetType            = target.GetType();
-      var defaultValue          = (string)null;
-      var inheritValue          = false;
-      var attributeKey          = property.Name;
-      var relationshipKey       = property.Name;
-      var relationshipType      = RelationshipType.Any;
-      var crawlRelationships    = Relationships.None;
-      var metadataKey           = (string)null;
-      var attributeFilters      = new Dictionary<string, string>();
+      var configuration         = new PropertyConfiguration(property);
+      var topicReferenceId      = source.Attributes.GetInteger($"{property.Name}Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Assign default value
+      | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var defaultValueAttribute = (DefaultValueAttribute)property.GetCustomAttribute(typeof(DefaultValueAttribute), true);
-      if (defaultValueAttribute != null) {
-        property.SetValue(target, defaultValueAttribute.Value);
-        defaultValue = defaultValueAttribute.Value.ToString();
+      if (configuration.DefaultValue != null) {
+        property.SetValue(target, configuration.DefaultValue);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine inheritance
+      | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (property.GetCustomAttribute(typeof(InheritAttribute), true) != null) {
-        inheritValue = true;
+      if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+        SetScalarValue(source, target, configuration);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine attribute key
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeKeyAttribute = (AttributeKeyAttribute)property.GetCustomAttribute(typeof(AttributeKeyAttribute), true);
-      if (attributeKeyAttribute != null) {
-        attributeKey = attributeKeyAttribute.Value;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine relationship key and type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var relationshipAttribute = (RelationshipAttribute)property.GetCustomAttribute(typeof(RelationshipAttribute), true);
-      if (relationshipAttribute != null) {
-        relationshipKey = relationshipAttribute.Key?? relationshipKey;
-        relationshipType = relationshipAttribute.Type;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine recusion settings
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var recurseAttribute = (RecurseAttribute)property.GetCustomAttribute(typeof(RecurseAttribute), true);
-      if (recurseAttribute != null) {
-        crawlRelationships = recurseAttribute.Relationships;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Determine metadata key, if present
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var metadataAttribute = (MetadataAttribute)property.GetCustomAttribute(typeof(MetadataAttribute), true);
-      if (metadataAttribute != null) {
-        metadataKey = metadataAttribute.Key;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attributes: Set attribute filters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute != null && filterByAttribute.Count() > 0) {
-        foreach (var filter in filterByAttribute) {
-          attributeFilters.Add(filter.Key, filter.Value);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Scalar Value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_typeCache.HasSettableProperty(targetType, property.Name)) {
-        var getterMethod = sourceType.GetRuntimeMethod("Get" + attributeKey, new Type[] { });
-        var attributeValue = (string)null;
-        //Attempt to get value from topic.Get{Property}()
-        if (getterMethod != null) {
-          attributeValue = getterMethod.Invoke(topic, new object[] { }).ToString();
-        }
-        //Otherwise, attempts to get value from topic.Attributes.GetValue({Property})
-        if (String.IsNullOrEmpty(attributeValue)) {
-          attributeValue = topic.Attributes.GetValue(attributeKey, defaultValue, inheritValue);
-        }
-        if (attributeValue != null) {
-          _typeCache.SetProperty(target, property.Name, attributeValue);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Collections
-      \-----------------------------------------------------------------------------------------------------------------------*/
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-
-        //Determine the type of item in the list
-        var listType = typeof(ITopicViewModel);
-        if (property.PropertyType.IsGenericType) {
-          //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-          listType = property.PropertyType.GetGenericArguments().Last();
-        }
-
-        //Get source for list
-        IList listSource = new Topic[] { };
-
-        //Handle children
-        if (
-          (relationshipKey.Equals("Children") || relationshipType.Equals(RelationshipType.Children)) &&
-          relationships.HasFlag(Relationships.Children)
-        ) {
-          listSource = topic.Children.ToList();
-        }
-
-        //Handle (outgoing) relationships
-        if (
-          listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.Relationship)) &&
-          relationships.HasFlag(Relationships.Relationships)
-        ) {
-          if (topic.Relationships.Contains(relationshipKey)) {
-            listSource = topic.Relationships.GetTopics(relationshipKey);
-          }
-        }
-
-        //Handle nested topics, or children corresponding to the property name
-        if (
-          listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.NestedTopics))
-        ) {
-          if (topic.Children.Contains(relationshipKey)) {
-            listSource = topic.Children[relationshipKey].Children.ToList();
-          }
-        }
-
-        //Handle (incoming) relationships
-        if (
-          listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(RelationshipType.IncomingRelationship)) &&
-          relationships.HasFlag(Relationships.IncomingRelationships)
-        ) {
-          if (topic.IncomingRelationships.Contains(relationshipKey)) {
-            listSource = topic.IncomingRelationships.GetTopics(relationshipKey);
-          }
-        }
-
-        //Handle Metadata relationship
-        if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(metadataKey)) {
-          listSource = _topicRepository.Load("Root:Configuration:Metadata:" + metadataKey + ":LookupList")?.Children.ToList();
-        }
-
-        //Ensure list is created
-        var list = (IList)property.GetValue(target, null);
-        if (list == null) {
-          list = (IList)Activator.CreateInstance(property.PropertyType);
-          property.SetValue(target, list);
-        }
-
-        //Validate and populate target collection
-        if (listSource != null) {
-          foreach (Topic childTopic in listSource) {
-            if (filterByAttribute.Any(f => !childTopic.Attributes.GetValue(f.Key, "").Equals(f.Value))) {
-              continue;
-            }
-            if (!childTopic.IsDisabled) {
-              //Handle scenario where the list type derives from Topic
-              if (typeof(Topic).IsAssignableFrom(listType)) {
-                //Ensure the list item derives from the list type (which may be more derived than Topic)
-                if (listType.IsAssignableFrom(childTopic.GetType())) {
-                  list.Add(childTopic);
-                }
-              }
-              //Otherwise, assume the list type is a DTO
-              else {
-                var childDto = Map(
-                  childTopic,
-                  crawlRelationships
-                );
-                //Ensure the mapped type derives from the list type
-                if (listType.IsAssignableFrom(childDto.GetType())) {
-                  list.Add(childDto);
-                }
-              }
-            }
-          }
-        }
-
+        await SetCollectionValueAsync(source, target, relationships, configuration, cache);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Property: Parent
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (attributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
-        if (topic.Parent != null) {
-          var parent = Map(
-            topic.Parent,
-            crawlRelationships
-            );
-          if (property.PropertyType.IsAssignableFrom(parent.GetType())) {
-            property.SetValue(target, parent);
-          }
-        }
+      else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
+        await SetTopicReferenceAsync(source.Parent, target, configuration, cache);
+      }
+      else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
+        var topicReference = _topicRepository.Load(topicReferenceId);
+        await SetTopicReferenceAsync(topicReference, target, configuration, cache);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (ValidationAttribute validator in property.GetCustomAttributes(typeof(ValidationAttribute))) {
-        validator.Validate(property.GetValue(target), property.Name);
+      configuration.Validate(target);
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET SCALAR VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a scalar property on a target DTO.
+    /// </summary>
+    /// <remarks>
+    ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
+    ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
+    ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
+    ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
+    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
+    ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source
+    ///   value cannot be identified on the <paramref name="source"/>, then the property is not set.
+    /// </remarks>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
+    /// <autogeneratedoc />
+    protected static void SetScalarValue(Topic source, object target, PropertyConfiguration configuration) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Escape clause if preconditions are not met
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!_typeCache.HasSettableProperty(target.GetType(), configuration.Property.Name)) {
+        return;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.Get{Property}()
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributeValue = _typeCache.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to retrieve value from topic.{Property}
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(attributeValue)) {
+        attributeValue = _typeCache.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(attributeValue)) {
+        attributeValue = source.Attributes.GetValue(
+          configuration.AttributeKey,
+          configuration.DefaultValue?.ToString(),
+          configuration.InheritValue
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Assuming a value was retrieved, set it
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (attributeValue != null) {
+        _typeCache.SetPropertyValue(target, configuration.Property.Name, attributeValue);
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET COLLECTION VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a collection property, identifies a source collection, maps the values to DTOs, and attempts to add them to the
+    ///   target collection.
+    /// </summary>
+    /// <remarks>
+    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
+    ///   collection on the <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   on the <paramref name="target"/> DTO.
+    /// </remarks>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    protected async Task SetCollectionValueAsync(
+      Topic source,
+      object target,
+      Relationships relationships,
+      PropertyConfiguration configuration,
+      ConcurrentDictionary<int, object> cache
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Escape clause if preconditions are not met
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure target list is created
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var targetList = (IList)configuration.Property.GetValue(target, null);
+      if (targetList == null) {
+        targetList = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
+        configuration.Property.SetValue(target, targetList);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish source collection to store topics to be mapped
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var sourceList = GetSourceCollection(source, relationships, configuration);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate that source collection was identified
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (sourceList == null) return;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Map the topics from the source collection, and add them to the target collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache);
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: GET SOURCE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a source topic and a property configuration, attempts to identify a source collection that maps to the property.
+    /// </summary>
+    /// <remarks>
+    ///   Given a collection <paramref name="configuration"/> on a target DTO, attempts to identify a source collection on the
+    ///   <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
+    ///   on the target DTO.
+    /// </remarks>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    protected IList<Topic> GetSourceCollection(Topic source, Relationships relationships, PropertyConfiguration configuration) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish source collection to store topics to be mapped
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
+      var                       relationshipKey                 = configuration.RelationshipKey;
+      var                       relationshipType                = configuration.RelationshipType;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      listSource = GetRelationship(
+        RelationshipType.Children,
+        s => true,
+        () => source.Children.ToList()
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle (outgoing) relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      listSource = GetRelationship(
+        RelationshipType.Relationship,
+        source.Relationships.Contains,
+        () => source.Relationships.GetTopics(relationshipKey)
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle nested topics, or children corresponding to the property name
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      listSource = GetRelationship(
+        RelationshipType.NestedTopics,
+        source.Children.Contains,
+        () => source.Children[relationshipKey].Children
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle (incoming) relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      listSource = GetRelationship(
+        RelationshipType.IncomingRelationship,
+        source.IncomingRelationships.Contains,
+        () => source.IncomingRelationships.GetTopics(relationshipKey)
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle Metadata relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
+        var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
+        listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
+      }
+
+       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle flattening of children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.FlattenChildren) {
+        var flattenedList = new List<Topic>();
+        listSource.ToList().ForEach(t => PopulateChildTopics(t, flattenedList));
+        listSource = flattenedList;
+      }
+
+      return listSource;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide local function for evaluating current relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
+        var targetRelationships = RelationshipMap.Mappings[relationship];
+        var preconditionsMet    =
+          listSource.Count == 0 &&
+          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
+          (relationshipType.Equals(RelationshipType.Children) || !relationship.Equals(RelationshipType.Children)) &&
+          (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
+          contains(configuration.RelationshipKey);
+        return preconditionsMet? getTopics() : listSource;
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: POPULATE TARGET COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a source list, will populate a target list based on the configured behavior of the target property.
+    /// </summary>
+    /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
+    /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    protected async Task PopulateTargetCollectionAsync(
+      IList<Topic> sourceList,
+      IList targetList,
+      PropertyConfiguration configuration,
+      ConcurrentDictionary<int, object> cache
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Determine the type of item in the list
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var listType = typeof(ITopicViewModel);
+      if (configuration.Property.PropertyType.IsGenericType) {
+        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Queue up mapping tasks
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var taskQueue = new List<Task<object>>();
+
+      foreach (var childTopic in sourceList) {
+
+        //Ensure the source topic matches any [FilterByAttribute()] settings
+        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
+          continue;
+        }
+
+        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
+        if (childTopic.IsDisabled) {
+          continue;
+        }
+
+        //Map child topic to target DTO
+        var childDto = (object)childTopic;
+        if (!typeof(Topic).IsAssignableFrom(listType)) {
+          taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
+        } else {
+          AddToList(childDto);
+        }
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process mapping tasks
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (taskQueue.Count > 0) {
+        var dtoTask = await Task.WhenAny(taskQueue);
+        taskQueue.Remove(dtoTask);
+        AddToList(await dtoTask);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Function: Add to List
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      void AddToList(object dto) {
+        if (listType.IsAssignableFrom(dto.GetType())) {
+          try {
+            targetList.Add(dto);
+          }
+          catch (ArgumentException) {
+            //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
+            //We would defensively check for this, except IList doesn't provide a suitable method to do so
+          }
+        }
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET TOPIC REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a reference to an external topic, attempts to match it to a matching property.
+    /// </summary>
+    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
+    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    protected async Task SetTopicReferenceAsync(
+      Topic source,
+      object target,
+      PropertyConfiguration configuration,
+      ConcurrentDictionary<int, object> cache
+    ) {
+      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache);
+      if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
+        configuration.Property.SetValue(target, topicDto);
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: POPULATE CHILD TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function recursively iterates through children and adds each to a collection.
+    /// </summary>
+    /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
+    /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
+    /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
+    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
+      if (source.IsDisabled) return targetList;
+      if (source.ContentType.Equals("List") && !includeNestedTopics) return targetList;
+      targetList.Add(source);
+      source.Children.ToList().ForEach(t => PopulateChildTopics(t, targetList));
+      return targetList;
     }
 
   } //Class

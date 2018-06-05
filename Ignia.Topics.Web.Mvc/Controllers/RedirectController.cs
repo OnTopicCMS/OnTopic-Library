@@ -18,7 +18,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///   Typically, a page <see cref="Topic"/> is requested based on the <see cref="Topic.GetWebPath"/> value, which is a hash of
   ///   its <see cref="Topic.GetUniqueKey"/>. When a <see cref="Topic"/> is moved to a different location in the topic graph,
   ///   however, its <see cref="Topic.GetUniqueKey"/> will return a different value, corresponding to its new location. To allow
-  ///   permanent references to page, therefore, the the <see cref="RedirectController"/> accepts paths based on the <see
+  ///   permanent references to page, therefore, the <see cref="RedirectController"/> accepts paths based on the <see
   ///   cref="Topic.Id"/>, which is expected to be stable for the lifetime of a <see cref="Topic"/> entity.
   /// </remarks>
   public class RedirectController : Controller {
@@ -26,7 +26,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     ITopicRepository                _topicRepository                = null;
+    private readonly            ITopicRepository                _topicRepository                = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

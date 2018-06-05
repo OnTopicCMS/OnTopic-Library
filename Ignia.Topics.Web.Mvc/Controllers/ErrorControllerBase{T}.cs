@@ -120,13 +120,15 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel = new T();
-      viewModel.Key = key;
-      viewModel.WebPath = "/Error/" + key;
-      viewModel.ContentType = "Page";
-      viewModel.Title = title;
-      viewModel.MetaKeywords = "";
-      viewModel.MetaDescription = "";
+      var viewModel             = new T {
+        Key                     = key,
+        UniqueKey               = "Error:" + key,
+        WebPath                 = "/Error/" + key,
+        ContentType             = "Page",
+        Title                   = title,
+        MetaKeywords            = "",
+        MetaDescription         = ""
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the view

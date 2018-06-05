@@ -25,11 +25,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the path attribute value from the <see cref="ViewsElement"/> configuration element.
     /// </summary>
     [ConfigurationProperty("path", IsRequired=false)]
-    public string Path {
-      get {
-        return this["path"] as string;
-      }
-    }
+    public string Path => this["path"] as string;
 
   } // Class
 

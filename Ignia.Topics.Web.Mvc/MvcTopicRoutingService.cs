@@ -27,9 +27,9 @@ namespace Ignia.Topics.Web.Mvc {
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
-    private                     ITopicRepository                _topicRepository                = null;
-    private                     RouteData                       _routes                         = null;
-    private                     Uri                             _uri                            = null;
+    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            RouteData                       _routes                         = null;
+    private readonly            Uri                             _uri                            = null;
     private                     Topic                           _topic                          = null;
 
     /*==========================================================================================================================
@@ -37,7 +37,7 @@ namespace Ignia.Topics.Web.Mvc {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicRoutingService"/> class based on a URL instance, a fully qualified
-    ///   path to the views Directory, and, optionally, the expected filename suffix fo each view file.
+    ///   path to the views Directory, and, optionally, the expected filename suffix of each view file.
     /// </summary>
     public MvcTopicRoutingService(
       ITopicRepository          topicRepository,

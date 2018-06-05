@@ -49,7 +49,7 @@ namespace Ignia.Topics.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -57,7 +57,7 @@ namespace Ignia.Topics.Repositories {
     Topic Load(int topicId, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>

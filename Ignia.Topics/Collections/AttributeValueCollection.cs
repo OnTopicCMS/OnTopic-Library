@@ -6,7 +6,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
-using Ignia.Topics.Repositories;
+using Ignia.Topics.Reflection;
 
 namespace Ignia.Topics.Collections {
 
@@ -24,10 +24,14 @@ namespace Ignia.Topics.Collections {
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
+    | STATIC VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    static readonly TypeCollection _typeCache = new TypeCollection(typeof(AttributeSetterAttribute));
+
+    /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _associatedTopic                = null;
-    static                      TypeCollection                  _typeCache                      = new TypeCollection(typeof(AttributeSetterAttribute));
+    private readonly            Topic                           _associatedTopic                = null;
     private                     int                             _setCounter                     = 0;
 
     /*==========================================================================================================================
@@ -58,7 +62,7 @@ namespace Ignia.Topics.Collections {
     ///   does not support inheritFromParent or inheritFromDerived (which otherwise default to true).
     /// </remarks>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <returns>True if if the attribute value is marked as dirty; otherwise false.</returns>
+    /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(string name) {
       if (!Contains(name)) {
         return false;
@@ -166,7 +170,7 @@ namespace Ignia.Topics.Collections {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Finaly, return default
+      | Finally, return default
       \-----------------------------------------------------------------------------------------------------------------------*/
       return defaultValue;
 
@@ -227,7 +231,7 @@ namespace Ignia.Topics.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a datetime.
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a DateTime.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
@@ -470,17 +474,37 @@ namespace Ignia.Topics.Collections {
     ///   business logic is enforced.
     /// </summary>
     /// <remarks>
-    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
-    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
-    ///   infinite loop, internal setters _must_ call this overload.
+    ///   <para>
+    ///     If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///     through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
+    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
+    ///     infinite loop, internal setters _must_ call this overload.
+    ///   </para>
+    ///   <para>
+    ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
+    ///     is inserted. This conveniently provides the name of the <see cref="AttributeValue.Key"/> so it's clear what key is
+    ///     being duplicated.
+    ///   </para>
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     /// <returns>The key for the specified collection item.</returns>
+    /// <exception cref="ArgumentException">
+    ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
+    ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
+    /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
       if (EnforceBusinessLogic(item, out item)) {
-        base.InsertItem(index, item);
+        if (!Contains(item.Key)) {
+          base.InsertItem(index, item);
+        }
+        else {
+          throw new ArgumentException(
+            $"An {nameof(AttributeValue)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
+            $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(AttributeValue)}s are associated " +
+            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'."
+          );
+        }
       }
     }
 
@@ -534,11 +558,11 @@ namespace Ignia.Topics.Collections {
         _setCounter++;
         if (_setCounter > 3) {
           throw new Exception(
-            "An infinite loop has occurred when setting `" + originalAttribute.Key +
-            "`; be sure to call `Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
+            $"An infinite loop has occurred when setting '{originalAttribute.Key}'; be sure that you are referencing " +
+            $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
-        _typeCache.SetProperty(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
+        _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
         _setCounter = 0;
         return false;

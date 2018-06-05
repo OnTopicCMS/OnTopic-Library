@@ -32,22 +32,6 @@ namespace Ignia.Topics.ViewModels {
     string WebPath { get; set; }
 
     /*==========================================================================================================================
-    | PROPERTY: TITLE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
-    /// </summary>
-    /// <remarks>
-    ///   While the <see cref="ITopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
-    ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
-    ///   referencing topics.
-    /// </remarks>
-    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(value)
-    /// </requires>
-    string Title { get; set; }
-
-    /*==========================================================================================================================
     | PROPERTY: META KEYWORDS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

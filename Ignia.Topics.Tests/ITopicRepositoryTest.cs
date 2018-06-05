@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests {
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_LoadTest() {
+    public void Load() {
 
       var rootTopic             = _topicRepository.Load();
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
@@ -67,13 +67,29 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD BY ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads topic by ID and ensures it is found.
+    /// </summary>
+    [TestMethod]
+    public void LoadById() {
+
+      var topic                 = _topicRepository.Load(11111);
+
+      Assert.IsNotNull(topic);
+      Assert.AreEqual<string>("Web_1_1_1_1", topic.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Saves topics and ensures their identifiers are properly set.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_SaveTest() {
+    public void Save() {
 
       var rootTopic             = _topicRepository.Load();
       var web                   = _topicRepository.Load("Root:Web");
@@ -100,22 +116,22 @@ namespace Ignia.Topics.Tests {
     ///   Moves topics and ensures their parents are correctly set.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_MoveTest() {
+    public void Move() {
 
       var rootTopic             = _topicRepository.Load();
       var source                = _topicRepository.Load("Root:Web:Web_0");
       var destination           = _topicRepository.Load("Root:Web:Web_1");
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_2");
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
 
       Assert.ReferenceEquals(topic.Parent, source);
-      Assert.AreEqual<int>(3, destination.Children.Count());
-      Assert.AreEqual<int>(3, source.Children.Count());
+      Assert.AreEqual<int>(2, destination.Children.Count());
+      Assert.AreEqual<int>(2, source.Children.Count());
 
       _topicRepository.Move(topic, destination);
 
       Assert.ReferenceEquals(topic.Parent, destination);
-      Assert.AreEqual<int>(2, source.Children.Count());
-      Assert.AreEqual<int>(4, destination.Children.Count());
+      Assert.AreEqual<int>(1, source.Children.Count());
+      Assert.AreEqual<int>(3, destination.Children.Count());
 
     }
 
@@ -126,7 +142,7 @@ namespace Ignia.Topics.Tests {
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_MoveToSiblingTest() {
+    public void MoveToSibling() {
 
       var rootTopic             = _topicRepository.Load();
       var parent                = _topicRepository.Load("Root:Web:Web_0");
@@ -135,12 +151,12 @@ namespace Ignia.Topics.Tests {
 
       Assert.ReferenceEquals(topic.Parent, parent);
       Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
-      Assert.AreEqual<int>(3, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count());
 
       _topicRepository.Move(topic, parent, sibling);
 
       Assert.ReferenceEquals(topic.Parent, parent);
-      Assert.AreEqual<int>(3, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count());
       Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
       Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
 
@@ -153,23 +169,42 @@ namespace Ignia.Topics.Tests {
     ///   Deletes a topic to ensure it is properly removed.
     /// </summary>
     [TestMethod]
-    public void ITopicRepository_DeleteTest() {
+    public void Delete() {
 
-      var parent                = _topicRepository.Load("Root:Web:Web_2");
-      var topic                 = _topicRepository.Load("Root:Web:Web_2:Web_2_2");
-      var child                 = _topicRepository.Load("Root:Web:Web_2:Web_2_2:Web_2_2_0");
-
-      Assert.AreEqual<int>(3, parent.Children.Count());
-
-      _topicRepository.Delete(topic);
+      var parent                = _topicRepository.Load("Root:Web:Web_1");
+      var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
+      var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
 
       Assert.AreEqual<int>(2, parent.Children.Count());
 
-      topic = _topicRepository.Load("Root:Web:Web_2:Web_2_2");
-      child = _topicRepository.Load("Root:Web:Web_2:Web_2_2:Web_2_2_0");
+      _topicRepository.Delete(topic);
+
+      Assert.AreEqual<int>(1, parent.Children.Count());
+
+      topic = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
+      child = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
 
       Assert.IsNull(topic);
       Assert.IsNull(child);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
+    ///   the expected number (2) are present.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptors() {
+
+      var contentTypes = _topicRepository.GetContentTypeDescriptors();
+
+      Assert.AreEqual<int>(7, contentTypes.Count);
+      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
+      Assert.IsNotNull(contentTypes.GetTopic("Page"));
+      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
 
     }
 

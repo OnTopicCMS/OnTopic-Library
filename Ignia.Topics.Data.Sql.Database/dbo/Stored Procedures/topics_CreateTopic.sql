@@ -3,7 +3,7 @@
 --
 -- Purpose	Creates a new topic.
 --
--- History	Casey Margell		04062009  Initial Creation baseaed on code from Celko's Sql For Smarties.
+-- History	Casey Margell		04062009  Initial Creation based on code from Celko's SQL For Smarties.
 --		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
 --		Katherine Trunkey	08142014  Updated topic_TopicAttributes insertion script to use uncommon, multi-character delimiters
 --						  rather than a colon and semicolon in order to provide better escaping safety for @Attributes.

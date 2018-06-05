@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-
 using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Web.Mvc.Models {
@@ -20,13 +19,13 @@ namespace Ignia.Topics.Web.Mvc.Models {
   ///     constructed by the <see cref="LayoutController"/>.
   ///   </para>
   ///   <para>
-  ///     The <see cref="NavigationRoot"/> can be any view model that implements <see cref="INavigationTopicViewModelCore"/>,
+  ///     The <see cref="NavigationRoot"/> can be any view model that implements <see cref="INavigationTopicViewModel"/>,
   ///     which provides a base level of support for properties associated with the typical <c>Page</c> content type as well as
-  ///     a method for determining if a given <see cref="INavigationTopicViewModelCore"/> instance is the currently-selected
-  ///     topic. Implementations may support additional properties, as appropriate.
+  ///     a method for determining if a given <see cref="INavigationTopicViewModel"/> instance is the currently-selected topic.
+  ///     Implementations may support additional properties, as appropriate.
   ///   </para>
   /// </remarks>
-  public class NavigationViewModel<T> where T: IPageTopicViewModel {
+  public class NavigationViewModel<T> where T: INavigationTopicViewModel<T> {
 
     public T NavigationRoot { get; set; }
     public string CurrentKey { get; set; }

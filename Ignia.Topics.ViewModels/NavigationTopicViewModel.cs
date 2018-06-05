@@ -26,10 +26,12 @@ namespace Ignia.Topics.ViewModels {
   ///     cref="NavigationTopicViewModel"/> class is marked as <c>sealed</c>.
   ///   </para>
   /// </remarks>
-  public sealed class NavigationTopicViewModel : PageTopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
+  public sealed class NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
 
+    public string WebPath { get; set; }
+    public string ShortTitle { get; set; }
     public Collection<NavigationTopicViewModel> Children { get; set; }
-    public bool IsSelected(string uniqueKey) => uniqueKey?.StartsWith(UniqueKey) ?? false;
+    public bool IsSelected(string uniqueKey) => $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:") ?? false;
 
   } // Class
 

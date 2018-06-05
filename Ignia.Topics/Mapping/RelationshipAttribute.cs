@@ -31,24 +31,15 @@ namespace Ignia.Topics.Mapping {
   public sealed class RelationshipAttribute : System.Attribute {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string                          _key                            = null;
-    private                     RelationshipType                _type                           = RelationshipType.Any;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>. Optionally
-    ///   specifies the <see cref="RelationshipType"/> as well.
+    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key value of the relationships associated with the current property.</param>
-    /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
-    public RelationshipAttribute(string key, RelationshipType type = RelationshipType.Any) {
+    public RelationshipAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
-      _key = key;
-      _type = type;
+      Key = key;
     }
 
     /// <summary>
@@ -56,7 +47,7 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
     public RelationshipAttribute(RelationshipType type = RelationshipType.Any) {
-      _type = type;
+      Type = type;
     }
 
     /*==========================================================================================================================
@@ -65,11 +56,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the relationship key.
     /// </summary>
-    public string Key {
-      get {
-        return _key;
-      }
-    }
+    public string Key { get; }
 
     /*==========================================================================================================================
     | PROPERTY: TYPE
@@ -77,11 +64,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the relationship type.
     /// </summary>
-    public RelationshipType Type {
-      get {
-        return _type;
-      }
-    }
+    public RelationshipType Type { get; set; }
 
   } //Class
 

@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.Contracts;
-using Ignia.Topics.Collections;
+using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Tests.TestDoubles {
@@ -20,7 +20,6 @@ namespace Ignia.Topics.Tests.TestDoubles {
   ///   Allows testing of services that depend on <see cref="ITopicRepository"/> without maintaining a dependency on a live
   ///   database, or working against actual data. This is faster and safer for test methods.
   /// </remarks>
-
   public class FakeTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
@@ -41,30 +40,19 @@ namespace Ignia.Topics.Tests.TestDoubles {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPE DESCRIPTORS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a collection of Content Type Descriptor objects from the configuration section of the data provider.
-    /// </summary>
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
-      throw new NotImplementedException();
-    }
-
-    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified unique identifier.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) {
-      throw new NotImplementedException();
-    }
+    public override Topic Load(int topicId, bool isRecursive = true) =>
+      (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendents) based on the specified key name.
+    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
@@ -75,7 +63,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrWhiteSpace(topicKey)) {
-        throw new NotImplementedException();
+        topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -215,20 +204,13 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
-    public override void Delete(Topic topic, bool isRecursive = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Delete(topic, isRecursive);
-
-    }
+    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
 
     /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a collection of fake data that loosely mimics a barebones database.
+    ///   Creates a collection of fake data that loosely mimics a bare bones database.
     /// </summary>
     private void CreateFakeData() {
 
@@ -243,9 +225,12 @@ namespace Ignia.Topics.Tests.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      TopicFactory.Create("ContentType", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
@@ -263,7 +248,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var web = TopicFactory.Create("Web", "Page", 10000, rootTopic);
 
-      CreateFakeData(web, 3, 3);
+      CreateFakeData(web, 2, 3);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache

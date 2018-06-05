@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ignia.Topics.Tests</RootNamespace>
     <AssemblyName>Ignia.Topics.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -19,6 +19,17 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.Increment.None</AssemblyVersionSettings>
+    <UpdatePackageVersion>False</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyFileVersionSettings>None.None.Increment.None</AssemblyFileVersionSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +41,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Ignia.Topics.Tests.XML</DocumentationFile>
     <NoWarn>CS1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -96,6 +108,8 @@
   <ItemGroup>
     <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="TestDoubles\FakeViewModelLookupService.cs" />
+    <Compile Include="TestDoubles\FakeTopicLookupService.cs" />
     <Compile Include="TopicRoutingServiceTest.cs" />
     <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />
@@ -108,12 +122,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AttributeValueCollectionTest.cs" />
     <Compile Include="ViewModels\FilteredTopicViewModel.cs" />
+    <Compile Include="ViewModels\FlattenChildrenTopicViewModel.cs" />
     <Compile Include="ViewModels\MetadataLookupTopicViewModel.cs" />
     <Compile Include="ViewModels\MinimumLengthPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\DefaultPropertyTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredObjectTopicViewModel.cs" />
+    <Compile Include="ViewModels\CircularTopicViewModel.cs" />
     <Compile Include="ViewModels\RequiredTopicViewModel.cs" />
     <Compile Include="ViewModels\SampleTopicViewModel.cs" />
+    <Compile Include="ViewModels\MethodBasedViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj">

@@ -156,7 +156,7 @@ namespace Ignia.Topics.Web.Mvc {
     /// <param name="viewName">The requested name of the view.</param>
     /// <param name="locationFormats">The list of path format patterns.</param>
     /// <param name="useCache">Determines whether the request is appropriate for caching.</param>
-    private List<string> GetSearchPaths(ControllerContext controllerContext, string viewName, string[] locationFormats, bool useCache) {
+    private static List<string> GetSearchPaths(ControllerContext controllerContext, string viewName, string[] locationFormats, bool useCache) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
