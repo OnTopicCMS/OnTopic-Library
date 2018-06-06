@@ -96,6 +96,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Ignia.Topics.Web.Mvc.nuspec" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>

@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Ignia.Topics.nuspec" />
     <None Include="Mapping\README.md" />
     <None Include="packages.config" />
     <None Include="README.md" />

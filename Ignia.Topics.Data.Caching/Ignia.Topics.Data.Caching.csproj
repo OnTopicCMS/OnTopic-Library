@@ -147,6 +147,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Ignia.Topics.Data.Caching.nuspec" />
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>

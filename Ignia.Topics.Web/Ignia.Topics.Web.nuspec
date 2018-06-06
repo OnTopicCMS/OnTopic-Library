@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>JeremyCaney</owners>
+    <projectUrl>https://github.com/Ignia/Topics-Library</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>$copyright$</copyright>
+    <tags>C# .NET CMS Web WebForms ASP.NET</tags>
+  </metadata>
+</package>
