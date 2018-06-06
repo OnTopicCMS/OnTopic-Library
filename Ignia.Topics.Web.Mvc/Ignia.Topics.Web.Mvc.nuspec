@@ -10,6 +10,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <copyright>$copyright$</copyright>
-    <tags>C# .NET CMS Web MVC ASP.NET Controller</tags>
+    <tags>C# .NET CMS Presentation Web MVC ASP.NET Controller</tags>
   </metadata>
 </package>

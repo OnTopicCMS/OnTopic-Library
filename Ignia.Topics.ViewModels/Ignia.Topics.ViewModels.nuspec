@@ -10,6 +10,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <copyright>$copyright$</copyright>
-    <tags>C# .NET View Models POCO</tags>
+    <tags>C# .NET CMS Presentation View Models POCO</tags>
   </metadata>
 </package>
