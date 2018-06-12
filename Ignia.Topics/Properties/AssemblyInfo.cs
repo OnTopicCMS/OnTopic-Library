@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 >===============================================================================================================================
 | Declare and define attributes used in the compiling of the finished assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
-[assembly: AssemblyCompany("Ignia, LLC")]
+[assembly: AssemblyCompany("Ignia")]
 [assembly: AssemblyCopyright("Copyright © 2018 Ignia, LLC")]
 [assembly: AssemblyProduct("Ignia OnTopic Library")]
 [assembly: AssemblyTitle("Ignia OnTopic Library")]
