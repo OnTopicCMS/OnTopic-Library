@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
@@ -151,7 +152,18 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle page group
+      | Handle nested topics
+      >-----------------------------------------------------------------------------------------------------------------------—-
+      | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
+      | the request is valid, but forbidden.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (CurrentTopic.ContentType.Equals("List") || CurrentTopic.Parent.ContentType.Equals("List")) {
+        filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle page groups
       >-----------------------------------------------------------------------------------------------------------------------—-
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
       | redirected to the first (non-hidden, non-disabled) page in the page group.
