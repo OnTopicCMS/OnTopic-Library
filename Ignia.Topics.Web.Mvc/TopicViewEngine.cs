@@ -33,6 +33,8 @@ namespace Ignia.Topics.Web.Mvc {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define view location
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Supports the following replacement tokens: {0} Controller, {1} View, {2} Area, and {3} Content Type.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var viewLocations = new[] {
         "~/Views/{3}/{1}.cshtml",
@@ -174,7 +176,7 @@ namespace Ignia.Topics.Web.Mvc {
         area = routeData.GetRequiredString("area");
       }
       if (routeData.Values.ContainsKey("controller")) {
-        area = routeData.GetRequiredString("controller");
+        controller = routeData.GetRequiredString("controller");
       }
       if (routeData.Values.ContainsKey("contenttype")) {
         routeData.Values.TryGetValue("contenttype", out contentType);

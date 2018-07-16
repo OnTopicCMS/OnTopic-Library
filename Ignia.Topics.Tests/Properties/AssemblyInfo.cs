@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 >===============================================================================================================================
 | Declare and define attributes used in the compiling of the finished assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
-[assembly: AssemblyCompany("Ignia, LLC")]
+[assembly: AssemblyCompany("Ignia")]
 [assembly: AssemblyCopyright("Copyright © 2018 Ignia, LLC")]
 [assembly: AssemblyProduct("Ignia OnTopic Library")]
 [assembly: AssemblyTitle("Ignia OnTopic Unit Tests")]
@@ -21,7 +21,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("3.6.1791.0")]
-[assembly: AssemblyFileVersion("3.5.1839.0")]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("27632801-bfe3-41d9-8678-3c4bbe45e6c9")]

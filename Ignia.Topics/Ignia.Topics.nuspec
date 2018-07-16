@@ -2,9 +2,9 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>$version$</version>
+    <version>$SemVer$</version>
     <title>$title$</title>
-    <authors>Ignia</authors>
+    <authors>$author$</authors>
     <owners>JeremyCaney</owners>
     <projectUrl>https://github.com/Ignia/Topics-Library</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
