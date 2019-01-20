@@ -63,6 +63,7 @@
     <Compile Include="Collections\NamedTopicCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
     <Compile Include="Diagnostics\Contract.cs" />
+    <Compile Include="Diagnostics\ContractClassForAttribute.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="ITypeLookupService.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Mapping\RelationshipAttribute.cs" />
     <Compile Include="Mapping\Relationships.cs" />
     <Compile Include="Mapping\TopicMappingService.cs" />
+    <Compile Include="Diagnostics\PureAttribute.cs" />
     <Compile Include="Querying\Topic.cs" />
     <Compile Include="Reflection\DynamicTopicLookupService.cs" />
     <Compile Include="Reflection\DynamicTopicViewModelLookupService.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Reflection\MemberInfoCollection{T}.cs" />
     <Compile Include="Reflection\TypeCollection.cs" />
     <Compile Include="DefaultTopicLookupService.cs" />
+    <Compile Include="Diagnostics\ContractClassAttribute.cs" />
     <Compile Include="Repositories\TopicRepositoryException.cs" />
     <Compile Include="StaticTypeLookupService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
