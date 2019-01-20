@@ -47,13 +47,13 @@ namespace Ignia.Topics.Diagnostics {
     /// <summary>
     ///   Will throw a <see cref="Exception"/> if the supplied expression evaluates to false.
     /// </summary>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     /// <exception cref="Exception">
-    ///   Thrown when <paramref name="isInvalid"/> returns <see langword="true"/>.
+    ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
-    public static void Requires(bool isInvalid, string errorMessage = null) {
-      Requires<Exception>(isInvalid, errorMessage);
+    public static void Requires(bool isValid, string errorMessage = null) {
+      Requires<Exception>(isValid, errorMessage);
     }
 
     /// <summary>
@@ -64,17 +64,17 @@ namespace Ignia.Topics.Diagnostics {
     ///   constructor which accepts a single parameter of type <see cref="String"/>, representing the error message for the
     ///   exception. If no such constructor is available, an <see cref="ArgumentException"/> will be thrown.
     /// </remarks>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     /// <exception cref="T">
-    ///   Thrown when <paramref name="isInvalid"/> returns <see langword="true"/>.
+    ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
     ///   Thrown when the <typeparamref name="T"/> does not a constructor accepting a sole <see cref="String"/> parameter
     ///   representing the error message, and the <paramref name="errorMessage"/> parameter was supplied.
     /// </exception>
-    public static void Requires<T>(bool isInvalid, string errorMessage = null) where T : Exception, new() {
-      if (!isInvalid) return;
+    public static void Requires<T>(bool isValid, string errorMessage = null) where T : Exception, new() {
+      if (isValid) return;
       if (String.IsNullOrEmpty(errorMessage)) {
         throw new T();
       }
@@ -106,10 +106,10 @@ namespace Ignia.Topics.Diagnostics {
     ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Ensures"/>
     ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
     /// </remarks>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.")]
-    public static void Ensures(bool isInvalid, string errorMessage = null) {
+    public static void Ensures(bool isValid, string errorMessage = null) {
     }
 
     /*==========================================================================================================================
@@ -122,10 +122,10 @@ namespace Ignia.Topics.Diagnostics {
     ///   It is not necessary without code analysis to assume that a condition is met. As a result, while this method always
     ///   returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
     /// </remarks>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.")]
-    public static bool Assume(bool isInvalid, string errorMessage = null) => true;
+    public static bool Assume(bool isValid, string errorMessage = null) => true;
 
     /*==========================================================================================================================
     | METHOD: ASSERT
@@ -137,10 +137,10 @@ namespace Ignia.Topics.Diagnostics {
     ///   It is not necessary without code analysis to assert that a condition will be met. As a result, while this method
     ///   always returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
     /// </remarks>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     [Obsolete("Not implemented. The Assert method is maintained for syntactical consistency only. References should be removed.")]
-    public static bool Assert(bool isInvalid, string errorMessage = null) => true;
+    public static bool Assert(bool isValid, string errorMessage = null) => true;
 
     /*==========================================================================================================================
     | METHOD: RESULT

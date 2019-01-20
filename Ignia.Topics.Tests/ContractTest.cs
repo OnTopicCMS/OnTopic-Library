@@ -29,7 +29,7 @@ namespace Ignia.Topics.Tests {
 
       var argument = new Object();
 
-      Contract.Requires<ArgumentNullException>(argument == null, "The argument cannot be null");
+      Contract.Requires<ArgumentNullException>(argument != null, "The argument cannot be null");
 
     }
 
@@ -46,7 +46,7 @@ namespace Ignia.Topics.Tests {
 
       var argument = (object)null;
 
-      Contract.Requires<ArgumentNullException>(argument == null, "The argument cannot be null");
+      Contract.Requires<ArgumentNullException>(argument != null, "The argument cannot be null");
 
     }
 
@@ -64,7 +64,7 @@ namespace Ignia.Topics.Tests {
       var errorMessage = "The argument cannot be null";
 
       try {
-        Contract.Requires<ArgumentException>(argument == null, errorMessage);
+        Contract.Requires<ArgumentException>(argument != null, errorMessage);
       }
       catch (ArgumentException ex) {
         Assert.AreEqual<String>(errorMessage, ex.Message);
