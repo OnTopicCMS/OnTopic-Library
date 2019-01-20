@@ -128,6 +128,21 @@ namespace Ignia.Topics.Diagnostics {
     public static bool Assume(bool isInvalid, string errorMessage = null) => true;
 
     /*==========================================================================================================================
+    | METHOD: ASSERT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
+    /// </summary>
+    /// <remarks>
+    ///   It is not necessary without code analysis to assert that a condition will be met. As a result, while this method
+    ///   always returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
+    /// </remarks>
+    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    [Obsolete("Not implemented. The Assert method is maintained for syntactical consistency only. References should be removed.")]
+    public static bool Assert(bool isInvalid, string errorMessage = null) => true;
+
+    /*==========================================================================================================================
     | METHOD: RESULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
