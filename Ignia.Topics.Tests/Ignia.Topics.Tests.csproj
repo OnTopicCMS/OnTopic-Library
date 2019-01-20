@@ -91,6 +91,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="TestDoubles\FakeViewModelLookupService.cs" />
     <Compile Include="TestDoubles\FakeTopicLookupService.cs" />
+    <Compile Include="ContractTest.cs" />
     <Compile Include="TopicRoutingServiceTest.cs" />
     <Compile Include="ITopicRepositoryTest.cs" />
     <Compile Include="TestDoubles\FakeTopicRepository.cs" />

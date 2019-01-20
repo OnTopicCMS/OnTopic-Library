@@ -62,6 +62,7 @@
     <Compile Include="Collections\AttributeValueCollection.cs" />
     <Compile Include="Collections\NamedTopicCollection.cs" />
     <Compile Include="ContentTypeDescriptor.cs" />
+    <Compile Include="Diagnostics\Contract.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="ITopicRoutingService.cs" />
     <Compile Include="ITypeLookupService.cs" />
