@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Web.Configuration;

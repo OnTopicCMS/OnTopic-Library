@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 
 namespace Ignia.Topics.Web.Editor {
 

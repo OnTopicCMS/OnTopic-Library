@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data.Common;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace Ignia.Topics.Repositories {

@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 
 namespace Ignia.Topics.Web.Configuration {
 

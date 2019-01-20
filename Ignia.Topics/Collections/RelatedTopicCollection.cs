@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 using System.Linq;
 
 namespace Ignia.Topics.Collections {

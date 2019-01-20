@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Diagnostics;
 using System.Globalization;
 using System.Web;
 using System.Web.Security;
