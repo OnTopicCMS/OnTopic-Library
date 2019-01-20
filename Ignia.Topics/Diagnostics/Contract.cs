@@ -45,6 +45,18 @@ namespace Ignia.Topics.Diagnostics {
     | METHOD: REQUIRES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Will throw a <see cref="Exception"/> if the supplied expression evaluates to false.
+    /// </summary>
+    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <exception cref="Exception">
+    ///   Thrown when <paramref name="isInvalid"/> returns <see langword="true"/>.
+    /// </exception>
+    public static void Requires(bool isInvalid, string errorMessage = null) {
+      Requires<Exception>(isInvalid, errorMessage);
+    }
+
+    /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
     /// </summary>
     /// <remarks>
@@ -99,6 +111,21 @@ namespace Ignia.Topics.Diagnostics {
     [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.")]
     public static void Ensures(bool isInvalid, string errorMessage = null) {
     }
+
+    /*==========================================================================================================================
+    | METHOD: ASSUME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
+    /// </summary>
+    /// <remarks>
+    ///   It is not necessary without code analysis to assume that a condition is met. As a result, while this method always
+    ///   returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
+    /// </remarks>
+    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.")]
+    public static bool Assume(bool isInvalid, string errorMessage = null) => true;
 
     /*==========================================================================================================================
     | METHOD: RESULT
