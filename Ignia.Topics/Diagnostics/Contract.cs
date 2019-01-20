@@ -48,16 +48,12 @@ namespace Ignia.Topics.Diagnostics {
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
     /// </summary>
     /// <remarks>
-    ///   The <paramref name="isInvalid"/> is expected to return <see langword="false"/>; if it returns <see langword="true"/>,
-    ///   the exception provided by the generic <typeparamref name="T"/> will be thrown.
-    /// </remarks>
-    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
-    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <remarks>
     ///   If the <paramref name="errorMessage"/> is included, this method assumes that the <typeparamref name="T"/> has a
     ///   constructor which accepts a single parameter of type <see cref="String"/>, representing the error message for the
     ///   exception. If no such constructor is available, an <see cref="ArgumentException"/> will be thrown.
     /// </remarks>
+    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
     /// <exception cref="T">
     ///   Thrown when <paramref name="isInvalid"/> returns <see langword="true"/>.
     /// </exception>
@@ -86,6 +82,37 @@ namespace Ignia.Topics.Diagnostics {
         );
       }
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: ENSURES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
+    /// </summary>
+    /// <remarks>
+    ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Ensures"/>
+    ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
+    /// </remarks>
+    /// <param name="isInvalid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.")]
+    public static void Ensures(bool isInvalid, string errorMessage = null) {
+    }
+
+    /*==========================================================================================================================
+    | METHOD: RESULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
+    /// </summary>
+    /// <remarks>
+    ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Result"/>
+    ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
+    /// </remarks>
+    [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.")]
+    public static T Result<T>() {
+      return default(T);
     }
 
   } //class
