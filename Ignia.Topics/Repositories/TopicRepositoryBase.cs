@@ -50,6 +50,11 @@ namespace Ignia.Topics.Repositories {
     public virtual ContentTypeDescriptorCollection GetContentTypeDescriptors() {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypeDescriptors == null) {
@@ -155,6 +160,16 @@ namespace Ignia.Topics.Repositories {
     public virtual void Rollback(Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentException>(topic != null);
+      Contract.Requires<ArgumentException>(version != null);
+      Contract.Requires<ArgumentException>(
+        !topic.VersionHistory.Contains(version),
+        "The version requested for rollback does not exist in the version history"
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var originalVersion = Load(topic.Id, version);
@@ -217,6 +232,11 @@ namespace Ignia.Topics.Repositories {
     public virtual int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypes = GetContentTypeDescriptors();
@@ -273,12 +293,18 @@ namespace Ignia.Topics.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target != topic);
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(target != null, "The target parameter must be specified.");
       if (topic.Parent != target) {
         MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
         topic.SetParent(target);
       }
+
     }
 
     /// <summary>
@@ -289,6 +315,19 @@ namespace Ignia.Topics.Repositories {
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     public virtual void Move(Topic topic, Topic target, Topic sibling) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target != topic);
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
+      Contract.Requires<ArgumentNullException>(target != null, "target");
+      Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");
+      Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Perform base logic
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != target || topic.Parent.Children.IndexOf(sibling) != topic.Parent.Children.IndexOf(topic)-1) {
         MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
         topic.SetParent(target, sibling);
@@ -312,7 +351,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-    //Contract.Requires<ArgumentNullException>(topic != null, "topic");
+      Contract.Requires<ArgumentNullException>(topic != null, "topic");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event

@@ -123,7 +123,23 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, DateTime version) => _dataProvider.Load(topicId, version);
+    public override Topic Load(int topicId, DateTime version) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(
+        version.Date > new DateTime(2014, 12, 9),
+        "The version is expected to have been created since version support was introduced into the topic library."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return appropriate topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return _dataProvider.Load(topicId, version);
+
+    }
 
 
     /*==========================================================================================================================

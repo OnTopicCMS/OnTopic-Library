@@ -95,7 +95,6 @@
     <Compile Include="StaticTypeLookupService.cs" />
     <Compile Include="Repositories\DeleteEventArgs.cs" />
     <Compile Include="Repositories\ITopicRepository.cs" />
-    <Compile Include="Repositories\ITopicRepositoryContract.cs" />
     <Compile Include="Repositories\MoveEventArgs.cs" />
     <Compile Include="Repositories\RenameEventArgs.cs" />
     <Compile Include="Repositories\TopicRepositoryBase.cs" />
