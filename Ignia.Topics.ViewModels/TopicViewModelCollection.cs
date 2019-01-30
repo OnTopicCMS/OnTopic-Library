@@ -55,7 +55,10 @@ namespace Ignia.Topics.ViewModels {
     /// <param name="contentType">The name of the content type to filter by.</param>
     /// <returns>The filtered list of view models associated with the content type.</returns>
     public TopicViewModelCollection<TItem> GetByContentType(string contentType) {
-      Contract.Assume(!String.IsNullOrWhiteSpace(contentType), "A content type argument is required.");
+      Contract.Requires<ArgumentException>(
+        !String.IsNullOrWhiteSpace(contentType),
+        $"A {nameof(contentType)} argument is required."
+      );
       return new TopicViewModelCollection<TItem>(
         Items.Where<TItem>(t => t.ContentType.Equals(contentType, StringComparison.InvariantCultureIgnoreCase))
       );
@@ -70,7 +73,7 @@ namespace Ignia.Topics.ViewModels {
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(TItem item) {
-      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
+      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
       return item.Key;
     }
 
