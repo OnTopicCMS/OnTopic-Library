@@ -72,7 +72,6 @@ namespace Ignia.Topics.Querying {
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Target.Topic>>() != null);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -128,7 +127,6 @@ namespace Ignia.Topics.Querying {
       Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<Target.Topic>>() != null);
       TopicFactory.ValidateKey(name);
 
       /*----------------------------------------------------------------------------------------------------------------------

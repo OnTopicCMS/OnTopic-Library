@@ -54,7 +54,6 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     public static Topic Configuration {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
         if (_configuration == null) {
           _configuration = TopicRepository.DataProvider.Load("Configuration");
         }
@@ -80,8 +79,6 @@ namespace Ignia.Topics.Web.Migrations {
     /// </remarks>
     public static ContentTypeDescriptorCollection ContentTypes {
       get {
-
-        Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
 
         if (_contentTypes == null) {
 
@@ -296,6 +293,7 @@ namespace Ignia.Topics.Web.Migrations {
         topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
 
       }
+        throw new NullReferenceException("The topic '{key}' could not be found in the topic '{parentTopic.Key}'.");
       return parentTopic.Children[key];
     }
 
@@ -512,7 +510,6 @@ namespace Ignia.Topics.Web.Migrations {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
-      Contract.Ensures(Contract.Result<string>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic properties string and primary properties

@@ -50,11 +50,6 @@ namespace Ignia.Topics.Repositories {
     public virtual ContentTypeDescriptorCollection GetContentTypeDescriptors() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypeDescriptors == null) {

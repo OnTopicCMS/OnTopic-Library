@@ -297,7 +297,6 @@ namespace Ignia.Topics {
     /// </summary>
     public string ViewPath {
       get {
-        Contract.Ensures(Contract.Result<string>() != null);
         return _viewsDirectory + View + "." + _viewExtension;
       }
 

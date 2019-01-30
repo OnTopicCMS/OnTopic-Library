@@ -67,10 +67,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Retrieves a read-only version of this <see cref="TopicCollection{T}"/>.
     /// </summary>
-    public ReadOnlyTopicCollection<T> AsReadOnly() {
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection<T>>() != null);
-      return new ReadOnlyTopicCollection<T>(this);
-    }
+    public ReadOnlyTopicCollection<T> AsReadOnly() => new ReadOnlyTopicCollection<T>(this);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

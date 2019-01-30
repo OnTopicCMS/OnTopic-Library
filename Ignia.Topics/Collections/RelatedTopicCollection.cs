@@ -57,7 +57,6 @@ namespace Ignia.Topics.Collections {
     /// </returns>
     public ReadOnlyCollection<string> Keys {
       get {
-        Contract.Ensures(Contract.Result<ReadOnlyCollection<string>>() != null);
         return new ReadOnlyCollection<string>(Items.Select(t => t.Name).ToList());
       }
     }
@@ -72,7 +71,6 @@ namespace Ignia.Topics.Collections {
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
     public ReadOnlyTopicCollection GetAllTopics() {
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection>() != null);
       var topics = new TopicCollection();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
@@ -91,7 +89,6 @@ namespace Ignia.Topics.Collections {
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
     public ReadOnlyTopicCollection GetAllTopics(string contentType) {
-      Contract.Ensures(Contract.Result<ReadOnlyTopicCollection>() != null);
       var topics = GetAllTopics().Where(t => t.ContentType == contentType);
       return ReadOnlyTopicCollection.FromList(topics.ToList());
     }

@@ -132,11 +132,6 @@ namespace Ignia.Topics {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Validate contract
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<ReadOnlyCollection<ContentTypeDescriptor>>() != null);
-
-        /*----------------------------------------------------------------------------------------------------------------------
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes == null) {
@@ -171,11 +166,6 @@ namespace Ignia.Topics {
     /// </remarks>
     public AttributeDescriptorCollection AttributeDescriptors {
       get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Ensures(Contract.Result<AttributeDescriptorCollection>() != null);
 
         if (_attributeDescriptors == null) {
 

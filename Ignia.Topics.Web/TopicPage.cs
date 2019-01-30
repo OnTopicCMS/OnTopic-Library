@@ -148,7 +148,6 @@ namespace Ignia.Topics.Web {
     public string EditUrl {
       get {
         Contract.Requires(Topic != null, "Assumes the page topic is not null.");
-        Contract.Ensures(Contract.Result<string>() != null);
         return "/!Admin/Topics/Default.aspx?Path=" + Topic.GetUniqueKey();
       }
     }

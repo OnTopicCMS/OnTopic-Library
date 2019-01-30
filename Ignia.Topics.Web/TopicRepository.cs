@@ -41,7 +41,6 @@ namespace Ignia.Topics.Web {
     [Obsolete("The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static ContentTypeDescriptorCollection ContentTypes {
       get {
-        Contract.Ensures(Contract.Result<ContentTypeDescriptorCollection>() != null);
         if (_contentTypes != null) {
           return _contentTypes;
         }
@@ -80,7 +79,6 @@ namespace Ignia.Topics.Web {
     [Obsolete("The TopicRepository class is obsolete, as is the Configuration property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static TopicsSection Configuration {
       get {
-        Contract.Ensures(Contract.Result<TopicsSection>() != null);
         if (_configuration == null) {
           _configuration = (TopicsSection)ConfigurationManager.GetSection("archive");
           if (_configuration == null) {
@@ -104,7 +102,6 @@ namespace Ignia.Topics.Web {
     [Obsolete("The TopicRepository class is obsolete, as is the TopicProviders property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static ITopicRepository DataProvider {
       get {
-        Contract.Ensures(Contract.Result<ITopicRepository>() != null);
         if (_topicRepository == null) {
           throw new Exception("The TopicRepository has not been configured with an instance of ITopicProvider. Configure the application by setting the TopicRepository.DataProvider in e.g. the global.asax file.");
         }

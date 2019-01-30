@@ -169,7 +169,6 @@ namespace Ignia.Topics {
     /// </summary>
     public IDictionary<string, string> Configuration {
       get {
-        Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
         if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
           _configuration = DefaultConfiguration
             .Split(' ')

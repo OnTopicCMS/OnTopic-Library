@@ -466,11 +466,6 @@ namespace Ignia.Topics {
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate return value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<string>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Crawl up tree to define uniqueKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       var uniqueKey = "";
@@ -503,7 +498,6 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
     public string GetWebPath() {
-      Contract.Ensures(Contract.Result<string>() != null);
       var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
       if (!uniqueKey.StartsWith("/")) {
         uniqueKey = $"/{uniqueKey}";
