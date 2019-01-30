@@ -37,11 +37,10 @@ namespace Ignia.Topics.Web.Migrations {
     /// </remarks>
     public static Topic RootTopic {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
         if (_rootTopic == null) {
           _rootTopic = TopicRepository.RootTopic;
         }
-        return _rootTopic;
+        return _rootTopic?? throw new NullReferenceException("The root topic is unavailable. There may be a database error.");
       }
       set => _rootTopic = value;
     }
@@ -293,7 +292,9 @@ namespace Ignia.Topics.Web.Migrations {
         topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
 
       }
+      if (!parentTopic.Children.Contains(key)) {
         throw new NullReferenceException("The topic '{key}' could not be found in the topic '{parentTopic.Key}'.");
+      }
       return parentTopic.Children[key];
     }
 
@@ -468,7 +469,6 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires<ArgumentNullException>(attributes != null, "The attributes topic must be specified.");
       Contract.Requires<ArgumentNullException>(contentType != null, "The contentTYpe topic must be specified.");
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
-      Contract.Ensures(Contract.Result<Topic>() != null);
       TopicFactory.ValidateKey(key);
 
       if (!attributes.Children.Contains(key)) {
@@ -484,12 +484,14 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the attribute reference/derivation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      attributeReference.DerivedTopic = attribute;
+      if (attributeReference != null) {
+        attributeReference.DerivedTopic = attribute;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return referencing attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return attributeReference;
+      return attributeReference?? throw new NullReferenceException("The name element is not defined.");
 
     }
 

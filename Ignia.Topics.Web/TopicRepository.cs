@@ -58,13 +58,12 @@ namespace Ignia.Topics.Web {
     [Obsolete("The TopicRepository class is obsolete, as is the RootTopic property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
     public static Topic RootTopic {
       get {
-        Contract.Ensures(Contract.Result<Topic>() != null);
         if (_rootTopic == null) {
           _rootTopic = DataProvider.Load();
         }
         return _rootTopic;
       }
-      set => _rootTopic = value;
+      set => _rootTopic = value?? throw new NullReferenceException("The root element could not be successfully loaded.");
     }
 
     /*==========================================================================================================================

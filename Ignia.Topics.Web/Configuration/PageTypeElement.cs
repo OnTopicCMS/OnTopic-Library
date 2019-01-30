@@ -33,8 +33,7 @@ namespace Ignia.Topics.Web.Configuration {
     [ConfigurationProperty("name", IsRequired=true, IsKey=true)]
     public string Name {
       get {
-        Contract.Ensures(Contract.Result<string>() != null);
-        return this["name"] as string;
+        return this["name"] as string?? throw new NullReferenceException("The name element is not defined.");
       }
     }
 

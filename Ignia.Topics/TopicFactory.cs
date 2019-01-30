@@ -68,7 +68,6 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Ensures(Contract.Result<Topic>() != null);
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
@@ -85,7 +84,8 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic;
+      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
+
 
     }
 
@@ -115,7 +115,6 @@ namespace Ignia.Topics {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
       Contract.Requires<ArgumentNullException>(id > 0);
-      Contract.Ensures(Contract.Result<Topic>() != null);
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
@@ -132,7 +131,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic;
+      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
 
     }
 

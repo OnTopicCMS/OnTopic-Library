@@ -394,11 +394,6 @@ namespace Ignia.Topics.Data.Sql {
     public override Topic Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
@@ -513,9 +508,15 @@ namespace Ignia.Topics.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topics.Count == 0) {
+        throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) return null;
       return topics[topics.Keys.ElementAt(0)];
 
     }
@@ -540,11 +541,6 @@ namespace Ignia.Topics.Data.Sql {
         version.Date > new DateTime(2014, 12, 9),
         "The version is expected to have been created since version support was introduced into the topic library."
       );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Ensures(Contract.Result<Topic>() != null);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -659,8 +655,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) return null;
-      return topics[topics.Keys.ElementAt(0)];
+      return topics[topics.Keys.ElementAt(0)]?? throw new NullReferenceException("The specified Topic version could not be loaded");
 
     }
 
