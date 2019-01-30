@@ -14,7 +14,7 @@ namespace Ignia.Topics.Diagnostics {
   ///   Designates which class the code contracts in the decorated class are intended to apply to. Intended only for syntactical
   ///   consistency with Code Contracts.
   /// </summary>
-  [Obsolete("Not implemented. The attribute is maintained for syntactical consistency only. References should be removed.")]
+  [Obsolete("Not implemented. The attribute is maintained for syntactical consistency only. References should be removed.", true)]
   public class ContractClassForAttribute : Attribute {
 
     /*==========================================================================================================================
