@@ -354,7 +354,6 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
         Contract.Assume<InvalidOperationException>(
           command.Parameters["@ReturnCode"] != null,
           "The call to the topics_GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
@@ -834,7 +833,6 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
         Contract.Assume<InvalidOperationException>(
           command.Parameters["@ReturnCode"] != null,
           "The call to the topics_CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
