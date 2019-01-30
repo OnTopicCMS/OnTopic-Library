@@ -69,9 +69,9 @@ namespace Ignia.Topics.Web.Configuration {
     /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
     /// <returns>The Name string value for the <see cref="PageTypeElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
-      Contract.Assert(
-        ((PageTypeElement)element) != null,
-        "Confirms the element's Name value is available when deriving its key."
+      Contract.Requires<ArgumentNullException>(
+        element != null,
+        $"The {nameof(element)} must be available in order to derive its key."
       );
       return ((PageTypeElement)element);
     }
