@@ -72,6 +72,24 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: ASSUME (INVALID OPERATION EXCEPTION)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a null assignment using the <see cref="Contract"/> class, and validates that it correctly returns an <see
+    ///   cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void AssumeInvalidOperationException() {
+
+      var variable = (object)null;
+
+      Contract.Assume<InvalidOperationException>(variable != null, "The local runtime state is invalid.");
+
+    }
+
+
   } //Class
 
 } //Namespace

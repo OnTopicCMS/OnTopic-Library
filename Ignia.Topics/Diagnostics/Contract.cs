@@ -127,6 +127,31 @@ namespace Ignia.Topics.Diagnostics {
     [Obsolete("Not implemented. The Assume method is maintained for syntactical consistency only. References should be removed.")]
     public static bool Assume(bool isValid, string errorMessage = null) => true;
 
+    /// <summary>
+    ///   Ensures that a condition is met. If not, the provided exception is thrown.
+    /// </summary>
+    /// <remarks>
+    ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom oerload accepts a generic <typeparamref
+    ///   name="T"/>, of type <see cref="Exeption"/>, which will be thrown if the condition is not met. This is virtually
+    ///   identical to <see cref="Requires{T}(bool, string)"/> except that, syntactically, it is expected to live within the
+    ///   body of a method—where as <see cref="Requires{T}(bool, string)"/> is expected to live at the beginning of a method.
+    ///   This communicates to readers that <see cref="Assume{T}(bool, string)"/> is validating runtime state, whereas <see
+    ///   cref="Requires{T}(bool, string)"/> is validating preconditions.
+    /// </remarks>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <exception cref="T">
+    ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when the <typeparamref name="T"/> does not a constructor accepting a sole <see cref="String"/> parameter
+    ///   representing the error message, and the <paramref name="errorMessage"/> parameter was supplied.
+    /// </exception>
+    public static void Assume<T>(bool isValid, string errorMessage = null) where T : Exception, new() {
+      Requires<T>(isValid, errorMessage);
+    }
+
+
     /*==========================================================================================================================
     | METHOD: ASSERT
     \-------------------------------------------------------------------------------------------------------------------------*/
