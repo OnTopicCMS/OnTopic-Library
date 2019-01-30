@@ -164,7 +164,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    [Obsolete("Not implemented. The Assert method is maintained for syntactical consistency only. References should be removed.")]
+    [Obsolete("Not implemented. The Assert method is maintained for syntactical consistency only. References should be removed.", true)]
     public static bool Assert(bool isValid, string errorMessage = null) => true;
 
     /*==========================================================================================================================
