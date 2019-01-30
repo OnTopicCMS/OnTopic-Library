@@ -13,7 +13,7 @@ namespace Ignia.Topics.Diagnostics {
   /// <summary>
   ///   Marks that a method is flagged as pure. Intended only for syntactical consistency with Code Contracts.
   /// </summary>
-  [Obsolete("Not implemented. The attribute is maintained for syntactical consistency only. References should be removed.")]
+  [Obsolete("Not implemented. The attribute is maintained for syntactical consistency only. References should be removed.", true)]
   public class PureAttribute : Attribute {
   }
 
