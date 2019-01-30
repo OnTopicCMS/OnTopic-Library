@@ -177,7 +177,7 @@ namespace Ignia.Topics.Diagnostics {
     ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Result"/>
     ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
     /// </remarks>
-    [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.")]
+    [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.", true)]
     public static T Result<T>() {
       return default(T);
     }
