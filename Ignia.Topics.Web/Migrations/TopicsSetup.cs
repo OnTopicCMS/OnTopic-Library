@@ -271,7 +271,10 @@ namespace Ignia.Topics.Web.Migrations {
         /*----------------------------------------------------------------------------------------------------------------------
         | Set the primary topic properties (Key, ContentType, and Parent)
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(topic.Key != parentTopic.Key);
+        Contract.Assume<ArgumentException>(
+          topic.Key != parentTopic.Key,
+          $"The Topic '{key}' must not have the same 'Key' as the '{nameof(parentTopic)}"
+        );
         topic.Key = key;
         topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;

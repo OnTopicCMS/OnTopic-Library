@@ -71,12 +71,6 @@ namespace Ignia.Topics.Web {
     /// </exception>
     public IHttpHandler GetHttpHandler(RequestContext requestContext) {
 
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Define assumptions
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(requestContext.RouteData != null, "Assumes the request context and route data are available.");
-      Contract.Assume(requestContext.RouteData.Values != null, "Assumes route data values are available.");
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
