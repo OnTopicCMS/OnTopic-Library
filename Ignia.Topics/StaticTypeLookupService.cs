@@ -104,7 +104,7 @@ namespace Ignia.Topics {
     /// <param name="item">The <see cref="Type"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(Type item) {
-      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
+      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
       return item.Name;
     }
 
