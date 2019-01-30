@@ -148,7 +148,6 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
     /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    [Pure]
     public static void ValidateKey(string topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
