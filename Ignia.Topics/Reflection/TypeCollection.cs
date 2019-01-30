@@ -169,7 +169,7 @@ namespace Ignia.Topics.Reflection {
 
       var property = GetMember<PropertyInfo>(target.GetType(), name);
 
-      Contract.Assume(property != null);
+      Contract.Assume<InvalidOperationException>(property != null, $"The {name} property could not be retrieved.");
 
       var valueObject = GetValueObject(property.PropertyType, value);
 
@@ -222,7 +222,7 @@ namespace Ignia.Topics.Reflection {
 
       var property = GetMember<PropertyInfo>(target.GetType(), name);
 
-      Contract.Assume(property != null);
+      Contract.Assume<InvalidOperationException>(property != null, $"The {name} property could not be retrieved.");
 
       return property.GetValue(target);
 
@@ -268,7 +268,7 @@ namespace Ignia.Topics.Reflection {
 
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
-      Contract.Assume(method != null);
+      Contract.Assume<InvalidOperationException>(method != null, $"The {name}() method could not be retrieved.");
 
       var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
 
@@ -415,7 +415,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override Type GetKeyForItem(MemberInfoCollection item) {
-      Contract.Assume(item != null, "Assumes the item is available when deriving its key.");
+      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
       return item.Type;
     }
 

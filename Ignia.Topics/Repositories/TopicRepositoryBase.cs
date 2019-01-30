@@ -168,7 +168,10 @@ namespace Ignia.Topics.Repositories {
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var originalVersion = Load(topic.Id, version);
-      Contract.Assume(originalVersion != null, "Assumes the originalVersion topic has been loaded from the repository.");
+      Contract.Assume<InvalidOperationException>(
+        originalVersion != null,
+        "The version requested for rollback does not exist in the Topic repository or database."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark each attribute as dirty

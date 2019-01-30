@@ -170,7 +170,10 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(name != null, "Assumes the blob AttributeValue collection is available and has a 'key' attribute.");
+        Contract.Assume<InvalidOperationException>(
+          name != null,
+          $"The @key attribute of the <attribute /> element is missing for Topic '{id}'; the data is not in the expected format."
+        );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Set attribute value
@@ -352,7 +355,10 @@ namespace Ignia.Topics.Data.Sql {
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
-        Contract.Assume(command.Parameters["@ReturnCode"] != null, "Assumes the return code parameter is available on query.");
+        Contract.Assume<InvalidOperationException>(
+          command.Parameters["@ReturnCode"] != null,
+          "The call to the topics_GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
+        );
         topicId = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
       }
@@ -713,7 +719,10 @@ namespace Ignia.Topics.Data.Sql {
       var nullAttributes        = new StringBuilder();
       var blob                  = new StringBuilder();
 
-      Contract.Assume(contentType != null, "Assumes the Content Type is available.");
+      Contract.Assume<ArgumentException>(
+        contentType != null,
+        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+      );
 
       blob.Append("<attributes>");
 
@@ -826,7 +835,10 @@ namespace Ignia.Topics.Data.Sql {
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(command.Parameters != null, "Assumes the command object parameters collection is available.");
-        Contract.Assume(command.Parameters["@ReturnCode"] != null, "Assumes the return code parameter is available on query.");
+        Contract.Assume<InvalidOperationException>(
+          command.Parameters["@ReturnCode"] != null,
+          "The call to the topics_CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
+        );
         returnVal = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
         topic.Id = returnVal;
@@ -866,7 +878,10 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Contract.Assume(childTopic.Attributes.GetInteger("ParentID", -1) > 0, "Assumes the Parent ID AttributeValue is available.");
+          Contract.Assume<InvalidOperationException>(
+            childTopic.Attributes.GetInteger("ParentID", -1) > 0,
+            "The call to the topics_CreateTopic stored procedure did not return the expected 'ParentID' parameter."
+          );
           childTopic.Attributes.SetValue("ParentID", returnVal.ToString());
           Save(childTopic, isRecursive, isDraft);
         }
@@ -1271,7 +1286,10 @@ namespace Ignia.Topics.Data.Sql {
         commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType));
       }
 
-      Contract.Assume(commandObject.Parameters["@" + sqlParameter] != null, "Assumes the parameter is valid.");
+      Contract.Assume<InvalidOperationException>(
+        commandObject.Parameters["@" + sqlParameter] != null,
+        $"The {commandObject.CommandText} stored procedure does not contain a parameter named {sqlParameter}."
+      );
 
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
