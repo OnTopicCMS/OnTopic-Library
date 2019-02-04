@@ -13,14 +13,6 @@ using System.Runtime.InteropServices;
 >===============================================================================================================================
 | Declare and define attributes used in the compiling of the finished assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
-[assembly: AssemblyCompany("Ignia")]
-[assembly: AssemblyCopyright("Copyright © 2018 Ignia, LLC")]
-[assembly: AssemblyProduct("Ignia OnTopic Library")]
-[assembly: AssemblyTitle("Ignia OnTopic Library")]
-[assembly: AssemblyDescription("Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: InternalsVisibleTo("Ignia.Topics.Tests")]
 [assembly: CLSCompliant(true)]

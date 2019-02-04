@@ -12,14 +12,6 @@ using System.Runtime.InteropServices;
 >===============================================================================================================================
 | Declare and define attributes used in the compiling of the finished assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
-[assembly: AssemblyCompany("Ignia")]
-[assembly: AssemblyCopyright("Copyright © 2018 Ignia, LLC")]
-[assembly: AssemblyProduct("Ignia OnTopic Library")]
-[assembly: AssemblyTitle("OnTopic Cached Repository")]
-[assembly: AssemblyDescription("Provides a caching decorator for ITopicRepository implementations.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("206b7f91-ca25-4e9d-9576-60d2e54a2c0a")]
