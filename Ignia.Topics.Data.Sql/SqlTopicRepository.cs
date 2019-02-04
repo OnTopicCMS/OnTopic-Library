@@ -12,7 +12,7 @@ using Ignia.Topics.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
+using System.Net;
 using System.Xml;
 using Ignia.Topics.Repositories;
 
@@ -165,7 +165,7 @@ namespace Ignia.Topics.Data.Sql {
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
         var name                = attribute.Attributes?["key"]?.Value;
-        var value               = HttpUtility.HtmlDecode(attribute.InnerXml);
+        var value               = WebUtility.HtmlDecode(attribute.InnerXml);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
