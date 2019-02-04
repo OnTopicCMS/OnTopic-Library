@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{206B7F91-CA25-4E9D-9576-60D2E54A2C0A}</ProjectGuid>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFrameworks>net47;netstandard2.0</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <AssemblyTitle>OnTopic Cached Repository</AssemblyTitle>
@@ -30,12 +30,15 @@
     <PackageReference Include="UtilPack.NuGet.MSBuild" Version="2.7.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Net.Http" Version="4.3.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj" />
