@@ -100,7 +100,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       if (view.View == null && requestContext.Headers.ContainsKey("Accept")) {
         var acceptHeaders = requestContext.Headers["Accept"].First<string>();
         // Validate the content-type after the slash, then validate it against available views
-        var splitHeaders = acceptHeaders[0].Split(new char[] { ',', ';' });
+        var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
         // Validate the content-type after the slash, then validate it against available views
         for (var i = 0; i < splitHeaders.Length; i++) {
           if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
