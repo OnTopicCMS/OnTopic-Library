@@ -5,6 +5,8 @@
     <NoWarn>CS0618</NoWarn>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+  </PropertyGroup>
+  <PropertyGroup>
     <AssemblyTitle>Ignia OnTopic WebForms Library</AssemblyTitle>
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
@@ -12,6 +14,8 @@
     <Copyright>Copyright © 2015 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
+  </PropertyGroup>
+  <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation Web WebForms ASP.NET</PackageTags>
   </PropertyGroup>

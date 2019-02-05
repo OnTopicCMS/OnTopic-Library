@@ -4,6 +4,8 @@
     <TargetFrameworks>net47;netstandard2.0</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+  </PropertyGroup>
+  <PropertyGroup>
     <AssemblyTitle>OnTopic Cached Repository</AssemblyTitle>
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
@@ -11,6 +13,8 @@
     <Copyright>Copyright © 2018 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
+  </PropertyGroup>
+  <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Caching Data Repository</PackageTags>
   </PropertyGroup>
