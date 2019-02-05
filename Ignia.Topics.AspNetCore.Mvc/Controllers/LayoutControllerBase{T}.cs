@@ -40,7 +40,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : AsyncController where T : class, INavigationTopicViewModel<T>, new() {
+  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
