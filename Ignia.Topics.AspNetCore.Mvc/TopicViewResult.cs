@@ -86,8 +86,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       >-------------------------------------------------------------------------------------------------------------------------
       | Determines if the view is defined in the querystring.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && requestContext.QueryString.AllKeys.Contains("View")) {
-        var queryStringValue = requestContext.QueryString["View"];
+      if (view.View == null && requestContext.Query.ContainsKey("View")) {
+        var queryStringValue = requestContext.Query["View"].First<string>();
         if (queryStringValue != null) {
           view = viewEngine.FindView(context, queryStringValue, MasterName);
           searchedPaths = searchedPaths.Union(view.SearchedLocations?? Array.Empty<string>()).ToList();
@@ -97,8 +97,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Pull Headers
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && requestContext.Headers.AllKeys.Contains("Accept")) {
-        var acceptHeaders = requestContext.Headers.GetValues("Accept");
+      if (view.View == null && requestContext.Headers.ContainsKey("Accept")) {
+        var acceptHeaders = requestContext.Headers["Accept"].First<string>();
         // Validate the content-type after the slash, then validate it against available views
         var splitHeaders = acceptHeaders[0].Split(new char[] { ',', ';' });
         // Validate the content-type after the slash, then validate it against available views
