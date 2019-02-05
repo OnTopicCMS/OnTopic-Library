@@ -167,23 +167,17 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var routeData             = controllerContext.RouteData;
-      var area                  = "";
-      var controller            = "Topic";
+      var area                  = (object)"";
+      var controller            = (object)"Topic";
       var contentType           = (object)null;
       var searchPaths           = new List<string>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (routeData.Values.ContainsKey("area")) {
-        area = routeData.GetRequiredString("area");
-      }
-      if (routeData.Values.ContainsKey("controller")) {
-        controller = routeData.GetRequiredString("controller");
-      }
-      if (routeData.Values.ContainsKey("contenttype")) {
-        routeData.Values.TryGetValue("contenttype", out contentType);
-      }
+      routeData.Values.TryGetValue("area", out area);
+      routeData.Values.TryGetValue("controller", out controller);
+      routeData.Values.TryGetValue("contenttype", out contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through patterns to identify views

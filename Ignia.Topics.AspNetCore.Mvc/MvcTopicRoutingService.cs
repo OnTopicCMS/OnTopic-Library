@@ -74,10 +74,10 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_topic == null) {
         var path = _uri.AbsolutePath;
-        if (_routes.Values.ContainsKey("path")) {
-          path = _routes.GetRequiredString("path");
-          if (_routes.Values.ContainsKey("rootTopic")) {
-            path = _routes.GetRequiredString("rootTopic") + "/" + path;
+        if (_routes.Values.TryGetValue("path", out var routePath)) {
+          path = (string)routePath;
+          if (_routes.Values.TryGetValue("rootTopic", out var rootTopic)) {
+            path = rootTopic + "/" + path;
           }
         }
         path = path.Trim(new char[] { '/' }).Replace("//", "/");
