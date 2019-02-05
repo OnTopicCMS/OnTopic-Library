@@ -5,10 +5,10 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Diagnostics;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Routing;
 using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.AspNetCore.Mvc {
 
   /*============================================================================================================================
   | CLASS: MVC TOPIC ROUTING SERVICE

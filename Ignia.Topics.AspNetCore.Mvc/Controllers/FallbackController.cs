@@ -3,9 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: FALLBACK CONTROLLER

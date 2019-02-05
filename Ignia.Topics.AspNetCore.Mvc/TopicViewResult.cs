@@ -6,10 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Ignia.Topics.ViewModels;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.AspNetCore.Mvc {
 
   /*============================================================================================================================
   | CLASS: TOPIC VIEW RESULT

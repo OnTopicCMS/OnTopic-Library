@@ -8,11 +8,12 @@ using Ignia.Topics.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: TOPIC TEST
@@ -129,7 +130,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic == null) {
-        filterContext.Result = HttpNotFound("There is no topic associated with this path.");
+        filterContext.Result = NotFound("There is no topic associated with this path.");
         return;
       }
 

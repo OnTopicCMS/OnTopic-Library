@@ -6,9 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Razor.Language;
 
-namespace Ignia.Topics.Web.Mvc {
+namespace Ignia.Topics.AspNetCore.Mvc {
 
   /*============================================================================================================================
   | CLASS: TOPIC VIEW ENGINE

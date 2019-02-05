@@ -9,7 +9,7 @@ using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: CACHED LAYOUT CONTROLLER

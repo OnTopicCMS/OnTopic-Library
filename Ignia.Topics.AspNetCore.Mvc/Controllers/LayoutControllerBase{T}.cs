@@ -7,13 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
-using Ignia.Topics.Web.Mvc.Models;
+using Ignia.Topics.AspNetCore.Mvc.Models;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
   | CLASS: LAYOUT CONTROLLER
