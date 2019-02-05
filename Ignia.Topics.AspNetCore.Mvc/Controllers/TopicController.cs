@@ -140,7 +140,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (CurrentTopic.IsDisabled) {
-        filterContext.Result = new HttpUnauthorizedResult("The topic at this location is disabled.");
+        filterContext.Result = new UnauthorizedResult();
         return;
       }
 
@@ -159,7 +159,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (CurrentTopic.ContentType.Equals("List") || CurrentTopic.Parent.ContentType.Equals("List")) {
-        filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+        filterContext.Result = new StatusCodeResult(403);
         return;
       }
 

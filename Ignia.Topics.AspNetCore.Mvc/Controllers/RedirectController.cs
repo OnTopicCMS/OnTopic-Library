@@ -60,7 +60,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) {
-        return HttpNotFound("Invalid TopicID.");
+        return NotFound("Invalid TopicID.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
