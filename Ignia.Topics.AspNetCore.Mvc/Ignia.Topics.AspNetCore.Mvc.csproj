@@ -27,6 +27,11 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Backup\**" />
+    <EmbeddedResource Remove="Backup\**" />
+    <None Remove="Backup\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="4.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
