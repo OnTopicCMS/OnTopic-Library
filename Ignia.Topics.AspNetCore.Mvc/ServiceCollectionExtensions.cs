@@ -5,7 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 
@@ -29,6 +33,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(services == null, nameof(services));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Register services
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      services.Services.TryAddSingleton<IActionResultExecutor<TopicViewResult>, TopicViewResultExecutor>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure services
