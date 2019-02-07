@@ -124,7 +124,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// </remarks>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]
-    protected override void OnActionExecuting(ActionExecutingContext filterContext) {
+    public override void OnActionExecuting(ActionExecutingContext filterContext) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
