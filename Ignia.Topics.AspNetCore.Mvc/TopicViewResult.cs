@@ -21,12 +21,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
   public class TopicViewResult : ViewResult {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    string                          _contentType                    = "";
-    readonly                    string                          _topicView                      = "";
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -38,10 +32,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   cref="ITopicViewModelCore.View"/> is unavailable, it is assumed to be the same as the <see
     ///   cref="ITopicViewModelCore.ContentType"/>.
     /// </remarks>
-    public TopicViewResult(ITopicViewModel viewModel) : base() {
+    public TopicViewResult(ITopicViewModel viewModel, ICompositeViewEngine viewEngine) : base() {
       ViewData.Model = viewModel;
-      _contentType = viewModel.ContentType ?? "Page";
-      _topicView = viewModel.View ?? _contentType;
+      TopicContentType = viewModel.ContentType ?? "Page";
+      TopicView = viewModel.View ?? TopicContentType;
+      ViewEngine = viewEngine;
     }
 
     /// <summary>
@@ -54,106 +49,16 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// </remarks>
     public TopicViewResult(object viewModel, string contentType = "Page", string view = null) : base() {
       ViewData.Model = viewModel;
-      _contentType = contentType;
-      _topicView = view ?? _contentType;
+      ContentType = contentType;
+      TopicView = view ?? ContentType;
     }
 
     /*==========================================================================================================================
-    | METHOD: FIND VIEW
+    | PUBLIC PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Loops through potential sources for views to identify the most appropriate <see cref="RazorView"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Will look for a view, in order, from the query string (<code>?View=</code>), <see cref="HttpRequest.Headers"/>
-    ///   collection (for matches in the <code>accepts</code> header), then the <see cref="Topic.View"/> property, if set, and
-    ///   finally falls back to the <see cref="Topic.ContentType"/>. If none of those yield any results, will default to a
-    ///   content type of "Page", which expects to find <code>~/Views/Page/Page.cshtml</code>.
-    /// </remarks>
-    protected override ViewEngineResult FindView(ControllerContext context) {
+    public string TopicContentType { get; }
+    public string TopicView { get; }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       contentType                     = _contentType;
-      var                       viewEngine                      = ViewEngines.Engines;
-      var                       requestContext                  = context.HttpContext.Request;
-      var                       view                            = new ViewEngineResult(Array.Empty<string>());
-      var                       searchedPaths                   = new List<string>();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Check Querystring
-      >-------------------------------------------------------------------------------------------------------------------------
-      | Determines if the view is defined in the querystring.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && requestContext.Query.ContainsKey("View")) {
-        var queryStringValue = requestContext.Query["View"].First<string>();
-        if (queryStringValue != null) {
-          view = viewEngine.FindView(context, queryStringValue, MasterName);
-          searchedPaths = searchedPaths.Union(view.SearchedLocations?? Array.Empty<string>()).ToList();
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Pull Headers
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && requestContext.Headers.ContainsKey("Accept")) {
-        var acceptHeaders = requestContext.Headers["Accept"].First<string>();
-        // Validate the content-type after the slash, then validate it against available views
-        var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
-        // Validate the content-type after the slash, then validate it against available views
-        for (var i = 0; i < splitHeaders.Length; i++) {
-          if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
-            // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
-            var acceptHeader = splitHeaders[i].Substring(splitHeaders[i].IndexOf("/") + 1).Replace("+", "-");
-            // Validate against available views; if content-type represents a valid view, stop validation
-            if (acceptHeader != null) {
-              view = viewEngine.FindView(context, acceptHeader, MasterName);
-              searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
-            }
-            if (view != null) {
-              break;
-            }
-          }
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Pull from topic attribute
-      >-------------------------------------------------------------------------------------------------------------------------
-      | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary
-      | as it is set as the default View value for the Topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null && !String.IsNullOrEmpty(_topicView)) {
-        view = viewEngine.FindView(context, _topicView, MasterName);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Default to content type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null) {
-        view = viewEngine.FindView(context, contentType, MasterName);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt default search
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View == null) {
-        view = base.FindView(context);
-        searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return view, if found
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view.View != null) {
-        return view;
-      }
-      return new ViewEngineResult(searchedPaths);
-
-    }
 
   } //Class
 
