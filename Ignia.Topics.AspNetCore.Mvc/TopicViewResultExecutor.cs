@@ -69,8 +69,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(actionContext == null, nameof(actionContext));
-      Contract.Requires<ArgumentNullException>(viewResult == null, nameof(viewResult));
+      Contract.Requires<ArgumentNullException>(actionContext != null, nameof(actionContext));
+      Contract.Requires<ArgumentNullException>(viewResult != null, nameof(viewResult));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
@@ -157,8 +157,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(context == null, nameof(context));
-      Contract.Requires<ArgumentNullException>(result == null, nameof(result));
+      Contract.Requires<ArgumentNullException>(context != null, nameof(context));
+      Contract.Requires<ArgumentNullException>(result != null, nameof(result));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find view

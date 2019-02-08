@@ -32,7 +32,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(services == null, nameof(services));
+      Contract.Requires<ArgumentNullException>(services != null, nameof(services));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Register services

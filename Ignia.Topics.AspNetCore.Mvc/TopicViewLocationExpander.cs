@@ -92,8 +92,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(context == null, nameof(context));
-      Contract.Requires<ArgumentNullException>(viewLocations == null, nameof(viewLocations));
+      Contract.Requires<ArgumentNullException>(context != null, nameof(context));
+      Contract.Requires<ArgumentNullException>(viewLocations != null, nameof(viewLocations));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
