@@ -99,7 +99,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var controllerDescriptor  = context.ActionContext.ActionDescriptor as ControllerActionDescriptor;
-      var featureName           = controllerDescriptor?.Properties["feature"] as string;
 
       controllerDescriptor.RouteValues.TryGetValue("contenttype", out var contentType);
 
