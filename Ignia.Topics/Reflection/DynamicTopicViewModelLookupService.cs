@@ -22,7 +22,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
-    internal DynamicTopicViewModelLookupService() : base(
+    public DynamicTopicViewModelLookupService() : base(
       t => t.Name.EndsWith("TopicViewModel"),
       typeof(object)
     ) {}
