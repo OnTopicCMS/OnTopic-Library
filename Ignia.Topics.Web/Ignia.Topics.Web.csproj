@@ -18,6 +18,7 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation Web WebForms ASP.NET</PackageTags>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

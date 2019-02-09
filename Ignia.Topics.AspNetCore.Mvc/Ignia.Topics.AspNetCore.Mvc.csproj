@@ -17,6 +17,7 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation Web MVC ASP.NET Core Controller</PackageTags>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
