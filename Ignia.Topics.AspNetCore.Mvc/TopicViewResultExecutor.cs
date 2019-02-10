@@ -87,7 +87,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       >-------------------------------------------------------------------------------------------------------------------------
       | Determines if the view is defined in the querystring.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false && requestContext.Query.ContainsKey("View")) {
+      if (!(view?.Success ?? false) && requestContext.Query.ContainsKey("View")) {
         var queryStringValue = requestContext.Query["View"].First<string>();
         if (queryStringValue != null) {
           view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
@@ -98,7 +98,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Pull Headers
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false && requestContext.Headers.ContainsKey("Accept")) {
+      if (!(view?.Success ?? false) && requestContext.Headers.ContainsKey("Accept")) {
         var acceptHeaders = requestContext.Headers["Accept"].First<string>();
         // Validate the content-type after the slash, then validate it against available views
         var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
@@ -125,7 +125,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary
       | as it is set as the default View value for the Topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false && !String.IsNullOrEmpty(topicView)) {
+      if (!(view?.Success ?? false) && !String.IsNullOrEmpty(topicView)) {
         view = viewEngine.FindView(actionContext, topicView, isMainPage: true);
         searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
       }
@@ -133,7 +133,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Default to content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false) {
+      if (!view?.Success ?? true) {
         view = viewEngine.FindView(actionContext, contentType, isMainPage: true);
         searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
       }
@@ -141,7 +141,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return view, if found
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false) {
+      if (view?.Success ?? false) {
         return view;
       }
       return ViewEngineResult.NotFound(contentType, searchedPaths);
