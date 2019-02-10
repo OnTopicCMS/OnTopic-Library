@@ -54,9 +54,28 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     }
 
     /*==========================================================================================================================
-    | PUBLIC PROPERTIES
+    | PROPERTY: TOPIC CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Represents the <see cref="ContentTypeDescriptor"/> name associated with the current <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The preferred nomenclature for the name of a <see cref="ContentTypeDescriptor"/> is simply <c>ContentType</c>. The
+    ///   base <see cref="ViewResult"/> class has an existing <see cref="ContentType"/> property representing the HTTP response
+    ///   value, however. As such, <see cref="TopicContentType"/> is used to disambiguate the terms.
+    /// </remarks>
     public string TopicContentType { get; }
+
+    /*==========================================================================================================================
+    | PROPERTY: TOPIC VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Represents the <see cref="Topic.View"/> property. This may be overwritten later by a variety of sources.
+    /// </summary>
+    /// <remarks>
+    ///   The associated <see cref="TopicViewResultExecutor"/> will fall back to the <see cref="TopicView"/> if the view isn't
+    ///   set via other sources, such as the HTTP <c>accepts</c> header, the query string, &c.
+    /// </remarks>
     public string TopicView { get; }
 
     /*==========================================================================================================================
