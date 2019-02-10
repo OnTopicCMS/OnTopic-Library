@@ -110,7 +110,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Yield are view locations
+      | Yield area view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in AreaViewLocations) {
         yield return location.Replace(@"{3}", (string)contentType);
