@@ -8,7 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Ignia.Topics.ViewModels;
+using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 
@@ -24,22 +29,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Constructs a new instances of a <see cref="TopicViewResult"/> based on the <see cref="ITopicViewModelCore.View"/> and
-    ///   <see cref="ITopicViewModelCore.ContentType"/>.
-    /// </summary>
-    /// <remarks>
-    ///   If the <see cref="ITopicViewModelCore.ContentType"/> is unavailable, it is assumed to be <c>Page</c>. If the <see
-    ///   cref="ITopicViewModelCore.View"/> is unavailable, it is assumed to be the same as the <see
-    ///   cref="ITopicViewModelCore.ContentType"/>.
-    /// </remarks>
-    public TopicViewResult(ITopicViewModel viewModel, ICompositeViewEngine viewEngine) : base() {
-      ViewData.Model = viewModel;
-      TopicContentType = viewModel.ContentType ?? "Page";
-      TopicView = viewModel.View ?? TopicContentType;
-      ViewEngine = viewEngine;
-    }
-
-    /// <summary>
     ///   Constructs a new instances of a <see cref="TopicViewResult"/> based on a supplied <paramref name="contentType"/> and,
     ///   optionally, <paramref name="view"/>.
     /// </summary>
@@ -47,10 +36,31 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   If the <paramref name="contentType"/> is not provided, it is assumed to be <c>Page</c>. If the <paramref name="view"/>
     ///   is not provided, it is assumed to be <paramref name="contentType"/>.
     /// </remarks>
-    public TopicViewResult(object viewModel, string contentType = "Page", string view = null) : base() {
+    public TopicViewResult(
+      ViewDataDictionary viewData,
+      ITempDataDictionary tempData,
+      object viewModel,
+      string contentType = "Page",
+      string view = null
+    ) : base() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(viewData != null, nameof(viewData));
+      Contract.Requires<ArgumentNullException>(tempData != null, nameof(tempData));
+      Contract.Requires<ArgumentNullException>(viewModel != null, nameof(viewModel));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set local variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      ViewData = viewData;
+      TempData = tempData;
       ViewData.Model = viewModel;
-      ContentType = contentType;
+      TopicContentType = contentType;
       TopicView = view ?? ContentType;
+      //ViewName = TopicView;
+
     }
 
     /*==========================================================================================================================

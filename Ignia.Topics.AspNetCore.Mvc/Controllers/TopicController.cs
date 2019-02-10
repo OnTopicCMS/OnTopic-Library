@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
@@ -105,8 +106,23 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return new TopicViewResult(topicViewModel, CurrentTopic.ContentType, CurrentTopic.View);
+      return TopicView(topicViewModel, CurrentTopic.View);
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: TOPIC VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicViewResult"/> object by specifying a <paramref name="viewName"/> and the <paramref
+    ///   name="model"/> to be rendered by the view.
+    /// </summary>
+    /// <param name="model">The model that is rendered by the view.</param>
+    /// <param name="viewName">The optional name of the view that is rendered to the response.</param>
+    /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
+    [NonAction]
+    public virtual TopicViewResult TopicView(object model, string viewName = null) {
+      return new TopicViewResult(ViewData, TempData, model, CurrentTopic.ContentType, viewName);
     }
 
     /*==========================================================================================================================
