@@ -59,7 +59,28 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     public string TopicContentType { get; }
     public string TopicView { get; }
 
+    /*==========================================================================================================================
+    | METHOD: EXECUTE RESULT (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Called by the framework to execute the current <see cref="TopicViewResult"/>.
+    /// </summary>
+    /// <param name="context">The <see cref="ActionContext"/> for the current request.</param>
+    /// <returns>A <see cref="Task"/> representing the current state of execution.</returns>
+    public override async Task ExecuteResultAsync(ActionContext context) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires<ArgumentNullException>(context != null, nameof(context));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Call associated executor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var executor = context.HttpContext.RequestServices.GetRequiredService<IActionResultExecutor<TopicViewResult>>();
+      await executor.ExecuteAsync(context, this);
+
+    }
 
   } //Class
-
 } //Namespace
