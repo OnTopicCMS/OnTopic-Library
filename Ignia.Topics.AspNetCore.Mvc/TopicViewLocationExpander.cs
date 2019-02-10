@@ -100,20 +100,20 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var controllerDescriptor  = context.ActionContext.ActionDescriptor as ControllerActionDescriptor;
 
-      controllerDescriptor.RouteValues.TryGetValue("contenttype", out var contentType);
+      context.ActionContext.RouteData.Values.TryGetValue("contenttype", out var contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Yield view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in ViewLocations) {
-        yield return location.Replace(@"{3}", contentType);
+        yield return location.Replace(@"{3}", (string)contentType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Yield are view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in AreaViewLocations) {
-        yield return location.Replace(@"{3}", contentType);
+        yield return location.Replace(@"{3}", (string)contentType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
