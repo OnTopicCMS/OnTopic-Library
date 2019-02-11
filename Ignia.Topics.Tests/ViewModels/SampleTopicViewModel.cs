@@ -32,17 +32,17 @@ namespace Ignia.Topics.Tests.ViewModels {
     public TopicViewModel TopicReference { get; set; }
 
     [Follow(Relationships.Relationships)]
-    public TopicViewModelCollection<PageTopicViewModel> Children { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Children { get; } = new TopicViewModelCollection<PageTopicViewModel>();
 
     [Follow(Relationships.Children)]
-    public TopicViewModelCollection<PageTopicViewModel> Cousins { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Cousins { get; } = new TopicViewModelCollection<PageTopicViewModel>();
 
-    public TopicViewModelCollection<PageTopicViewModel> Categories { get; set; }
+    public TopicViewModelCollection<PageTopicViewModel> Categories { get; } = new TopicViewModelCollection<PageTopicViewModel>();
 
-    public Collection<Topic> Related { get; set; }
+    public Collection<Topic> Related { get; } = new Collection<Topic>();
 
-    [Relationship("AmbiguousRelationship", Type=RelationshipType.IncomingRelationship)]
-    public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; set; }
+    [Relationship("AmbiguousRelationship", Type = RelationshipType.IncomingRelationship)]
+    public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; } = new TopicViewModelCollection<TopicViewModel>();
 
   } //Class
 

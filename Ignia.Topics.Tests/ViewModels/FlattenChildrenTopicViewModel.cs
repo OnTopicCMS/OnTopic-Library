@@ -22,7 +22,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class FlattenChildrenTopicViewModel {
 
     [Flatten]
-    public List<FlattenChildrenTopicViewModel> Children { get; set; }
+    public List<FlattenChildrenTopicViewModel> Children { get; } = new List<FlattenChildrenTopicViewModel>();
 
   } //Class
 } //Namespace

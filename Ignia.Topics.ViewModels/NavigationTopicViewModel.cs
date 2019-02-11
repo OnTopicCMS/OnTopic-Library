@@ -30,7 +30,7 @@ namespace Ignia.Topics.ViewModels {
 
     public string WebPath { get; set; }
     public string ShortTitle { get; set; }
-    public Collection<NavigationTopicViewModel> Children { get; set; }
+    public Collection<NavigationTopicViewModel> Children { get; } = new Collection<NavigationTopicViewModel>();
     public bool IsSelected(string uniqueKey) => $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:") ?? false;
 
   } // Class

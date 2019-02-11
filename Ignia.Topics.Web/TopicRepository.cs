@@ -46,7 +46,6 @@ namespace Ignia.Topics.Web {
         }
         return DataProvider.GetContentTypeDescriptors();
       }
-      set => _contentTypes = value;
     }
 
     /*==========================================================================================================================

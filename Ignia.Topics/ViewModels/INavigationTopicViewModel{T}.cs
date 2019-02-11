@@ -42,7 +42,7 @@ namespace Ignia.Topics.ViewModels {
     /// <summary>
     ///   Represents a collection of child <see cref="INavigationTopicViewModel{T}"/> instances.
     /// </summary>
-    Collection<T> Children { get; set; }
+    Collection<T> Children { get; }
 
     /*==========================================================================================================================
     | METHOD: ISSELECTED

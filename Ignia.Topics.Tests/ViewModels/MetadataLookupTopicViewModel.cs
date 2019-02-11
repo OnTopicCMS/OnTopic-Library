@@ -20,7 +20,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class MetadataLookupTopicViewModel : TopicViewModel {
 
     [Metadata("Categories")]
-    public TopicViewModelCollection<TopicViewModel> Categories { get; set; }
+    public TopicViewModelCollection<TopicViewModel> Categories { get; } = new TopicViewModelCollection<TopicViewModel>();
 
   } //Class
 } //Namespace

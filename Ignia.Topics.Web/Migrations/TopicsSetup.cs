@@ -148,7 +148,10 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure TopicRepository references the local instances of the ContentTypes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicRepository.ContentTypes = ContentTypes;
+      TopicRepository.ContentTypes.Clear();
+      foreach (var contentType in ContentTypes) {
+        TopicRepository.ContentTypes.Add(contentType);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save new configuration
@@ -168,7 +171,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset the TopicRepository's ContentType's cache so it isn't orphaned from the TopicRepository's configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicRepository.ContentTypes = null;
+      TopicRepository.ContentTypes.Clear();
 
       }
 

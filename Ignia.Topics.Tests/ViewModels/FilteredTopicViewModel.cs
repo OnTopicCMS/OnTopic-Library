@@ -22,7 +22,7 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     [FilterByAttribute("ContentType", "Page")]
     [FilterByAttribute("SomeAttribute", "ValueA")]
-    public TopicViewModelCollection<TopicViewModel> Children { get; set; }
+    public TopicViewModelCollection<TopicViewModel> Children { get; } = new TopicViewModelCollection<TopicViewModel>();
 
   } //Class
 } //Namespace
