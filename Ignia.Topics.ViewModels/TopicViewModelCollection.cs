@@ -41,7 +41,7 @@ namespace Ignia.Topics.ViewModels {
     public TopicViewModelCollection(IEnumerable<TItem> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       if (topics != null) {
         foreach(var item in topics) {
-          this.Add(item);
+          Add(item);
         }
       }
     }
