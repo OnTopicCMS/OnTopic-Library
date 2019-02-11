@@ -48,11 +48,11 @@ namespace Ignia.Topics {
     private                     RouteData                       _routes                         = null;
     private                     Uri                             _uri                            = null;
     private                     Topic                           _topic                          = null;
-    private                     NameValueCollection             _headers                        = null;
     private                     List<string>                    _views                          = null;
     private                     string                          _view                           = null;
-    private                     string                          _viewsDirectory                 = null;
-    private                     string                          _viewExtension                  = null;
+    private readonly            NameValueCollection             _headers                        = null;
+    private readonly            string                          _viewsDirectory                 = null;
+    private readonly            string                          _viewExtension                  = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

@@ -33,10 +33,10 @@ namespace Ignia.Topics.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    ITopicRepository            _topicRepository                = null;
-    RouteData                   _routeData                      = new RouteData();
-    Uri                         _uri                            = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
-    Topic                       _topic                          = null;
+    readonly                    ITopicRepository                _topicRepository                = null;
+    readonly                    RouteData                       _routeData                      = new RouteData();
+    readonly                    Uri                             _uri                            = null;
+    readonly                    Topic                           _topic                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -54,6 +54,7 @@ namespace Ignia.Topics.Tests {
     public TopicControllerTest() {
       _topicRepository          = new CachedTopicRepository(new FakeTopicRepository());
       _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+      _uri                      = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
     }
 
     /*==========================================================================================================================

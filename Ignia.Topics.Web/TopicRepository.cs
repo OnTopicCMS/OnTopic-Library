@@ -27,7 +27,7 @@ namespace Ignia.Topics.Web {
     private static              TopicsSection                   _configuration                  = null;
     private static              ITopicRepository                _topicRepository                = null;
     private static              Topic                           _rootTopic                      = null;
-    private static              ContentTypeDescriptorCollection _contentTypes                   = null;
+    private static readonly     ContentTypeDescriptorCollection _contentTypes                   = null;
 
     /*==========================================================================================================================
     | CONTENT TYPES
