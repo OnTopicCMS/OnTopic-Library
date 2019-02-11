@@ -52,7 +52,6 @@ namespace Ignia.Topics {
     private                     List<string>                    _views                          = null;
     private                     string                          _view                           = null;
     private                     string                          _viewsDirectory                 = null;
-    private                     string                          _localViewsDirectory            = null;
     private                     string                          _viewExtension                  = null;
 
     /*==========================================================================================================================
@@ -98,9 +97,10 @@ namespace Ignia.Topics {
       _uri                      = requestContext.HttpContext.Request.Url;
       _headers                  = requestContext.HttpContext.Request.Headers;
       _routes                   = requestContext.RouteData;
-      _localViewsDirectory      = requestContext.HttpContext.Server.MapPath(viewsDirectory);
       _viewsDirectory           = viewsDirectory;
       _viewExtension            = viewExtension;
+
+      LocalViewsDirectory       = requestContext.HttpContext.Server.MapPath(viewsDirectory);
 
     }
 
@@ -150,10 +150,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets the expected location for View files. Must be set during the constructor.
     /// </summary>
-    public string LocalViewsDirectory {
-      get => _localViewsDirectory;
-      private set => _localViewsDirectory = value;
-    }
+    public string LocalViewsDirectory { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: VIEW

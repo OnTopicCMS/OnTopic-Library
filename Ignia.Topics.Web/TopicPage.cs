@@ -22,7 +22,6 @@ namespace Ignia.Topics.Web {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private                     bool                            _enableValidation               = true;
     private                     Topic                           _topic                          = null;
 
     /*==========================================================================================================================
@@ -43,10 +42,7 @@ namespace Ignia.Topics.Web {
     /// <remarks>
     ///   This can optionally be disabled, which is useful for the Editor.
     /// </remarks>
-    public bool EnableValidation {
-      get => _enableValidation;
-      set => _enableValidation = value;
-    }
+    public bool EnableValidation { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: TOPIC

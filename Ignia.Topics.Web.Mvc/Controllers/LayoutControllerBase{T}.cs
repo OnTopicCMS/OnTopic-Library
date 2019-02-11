@@ -45,7 +45,6 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _topicRepository                = null;
     private readonly            ITopicRoutingService            _topicRoutingService            = null;
     private readonly            ITopicMappingService            _topicMappingService            = null;
     private                     Topic                           _currentTopic                   = null;
@@ -62,7 +61,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       ITopicRoutingService topicRoutingService,
       ITopicMappingService topicMappingService
     ) : base() {
-      _topicRepository          = topicRepository;
+      TopicRepository          = topicRepository;
       _topicRoutingService      = topicRoutingService;
       _topicMappingService      = topicMappingService;
     }
@@ -74,7 +73,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository => _topicRepository;
+    protected ITopicRepository TopicRepository { get; } = null;
 
     /*==========================================================================================================================
     | CURRENT TOPIC
