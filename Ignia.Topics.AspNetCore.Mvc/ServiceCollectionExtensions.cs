@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using Ignia.Topics.AspNetCore.Mvc.Controllers;
 using Ignia.Topics.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -45,6 +46,15 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       services.AddRazorOptions(o => {
         o.ViewLocationExpanders.Add(new TopicViewLocationExpander());
       });
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Register local controllers
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //Add Topic assembly into scope
+      services.AddApplicationPart(typeof(TopicController).Assembly)
+
+      //Add controllers to scope as dependencies
+      .AddControllersAsServices();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return services for fluent API
