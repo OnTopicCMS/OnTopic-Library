@@ -57,7 +57,7 @@ namespace Ignia.Topics.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    public static ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
+    public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection != null, "innerCollection should not be null");
       return new ReadOnlyTopicCollection<T>(innerCollection);
     }
