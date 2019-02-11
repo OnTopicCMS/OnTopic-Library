@@ -80,8 +80,8 @@ namespace Ignia.Topics.AspNetCore.Mvc {
             path = rootTopic + "/" + path;
           }
         }
-        path = path.Trim(new char[] { '/' }).Replace("//", "/");
-        _topic = _topicRepository.Load(path.Replace("/", ":"));
+        path = path.Trim(new char[] { '/' }).Replace("//", "/", StringComparison.InvariantCulture);
+        _topic = _topicRepository.Load(path.Replace("/", ":", StringComparison.InvariantCulture));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

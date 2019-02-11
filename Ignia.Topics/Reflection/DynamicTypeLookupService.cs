@@ -36,7 +36,7 @@ namespace Ignia.Topics.Reflection {
         .GetAssemblies()
         .SelectMany(t => t.GetTypes())
         .Where(t => t.IsClass && predicate(t))
-        .OrderBy(t => t.Namespace.StartsWith("Ignia.Topics"))
+        .OrderBy(t => t.Namespace.StartsWith("Ignia.Topics", StringComparison.InvariantCultureIgnoreCase))
         .ToList();
 
       /*----------------------------------------------------------------------------------------------------------------------

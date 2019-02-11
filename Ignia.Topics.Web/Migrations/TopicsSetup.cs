@@ -7,6 +7,7 @@ using System;
 using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Querying;
+using System.Globalization;
 
 namespace Ignia.Topics.Web.Migrations {
 
@@ -252,7 +253,7 @@ namespace Ignia.Topics.Web.Migrations {
         /*----------------------------------------------------------------------------------------------------------------------
         | Create a strongly-typed ContentType object if the contentType key is set to "ContentType"
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (contentType.Equals("ContentType")) {
+        if (contentType == "ContentType") {
           topic = TopicFactory.Create(key, "ContentTypeDescriptor");
         }
 
@@ -260,7 +261,7 @@ namespace Ignia.Topics.Web.Migrations {
         | Create a strongly-typed AttributeDescriptor object if the contentType key is set to either "Attribute" or
         | "AttributeDescriptor".
         \---------------------------------------------------------------------------------------------------------------------*/
-        else if (contentType.Equals("Attribute") || contentType.Equals("AttributeDescriptor")) {
+        else if (contentType == "Attribute" || contentType == "AttributeDescriptor") {
           topic = TopicFactory.Create(key, "AttributeDescriptor");
         }
 
@@ -283,7 +284,7 @@ namespace Ignia.Topics.Web.Migrations {
         topic.ContentType = null;
         topic.Attributes.SetValue("ContentType", contentType);
         topic.Parent = parentTopic;
-        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString(CultureInfo.InvariantCulture));
       }
       else {
 
@@ -295,7 +296,7 @@ namespace Ignia.Topics.Web.Migrations {
         topic.Attributes.SetValue("Key", key);
         topic.ContentType = null;
         topic.Attributes.SetValue("ContentType", contentType);
-        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString());
+        topic.Attributes.SetValue("ParentID", parentTopic.Id.ToString(CultureInfo.InvariantCulture));
 
       }
       if (!parentTopic.Children.Contains(key)) {

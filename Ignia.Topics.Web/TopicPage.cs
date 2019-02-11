@@ -111,7 +111,7 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle missing or disabled topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (EnableValidation && pageTopic != null && pageTopic.Attributes.GetValue("IsDisabled", true).Equals("1")) {
+      if (EnableValidation && pageTopic != null && pageTopic.Attributes.GetValue("IsDisabled", true) == "1") {
         if (!Roles.IsUserInRole(Page.User.Identity.Name?? "", "Administrators")) {
           if (Request.QueryString["PageID"] != null) {
             Response.Redirect("/Redirector.aspx?PageID=" + Request.QueryString["PageID"]);

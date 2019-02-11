@@ -90,7 +90,7 @@ namespace Ignia.Topics.Web.Editor {
       /*------------------------------------------------------------------------------------------------------------------------
       | Replace path slashes with backslashes if the resulting file path value uses a UNC or basic file path format
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (filePath.IndexOf("\\") >= 0) {
+      if (filePath.IndexOf("\\", StringComparison.InvariantCulture) >= 0) {
         filePath                        = filePath.Replace("/", "\\");
       }
 

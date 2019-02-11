@@ -104,7 +104,9 @@ namespace Ignia.Topics.Web.Mvc {
         for (var i = 0; i < splitHeaders.Length; i++) {
           if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
             // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
-            var acceptHeader = splitHeaders[i].Substring(splitHeaders[i].IndexOf("/") + 1).Replace("+", "-");
+            var acceptHeader = splitHeaders[i]
+              .Substring(splitHeaders[i].IndexOf("/", StringComparison.InvariantCulture) + 1)
+              .Replace("+", "-");
             // Validate against available views; if content-type represents a valid view, stop validation
             if (acceptHeader != null) {
               view = viewEngine.FindView(context, acceptHeader, MasterName);

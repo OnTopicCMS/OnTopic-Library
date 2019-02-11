@@ -78,7 +78,7 @@ namespace Ignia.Topics {
         Attributes.SetValue("Key", key, false, false);
         Attributes.SetValue("ContentType", contentType, false, false);
         if (parent != null) {
-          Attributes.SetValue("ParentId", parent.Id.ToString(), false, false);
+          Attributes.SetValue("ParentId", parent.Id.ToString(CultureInfo.InvariantCulture), false, false);
         }
       }
 
@@ -199,7 +199,7 @@ namespace Ignia.Topics {
           _originalKey = Attributes.GetValue("Key", _key, false, false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
-        if (_originalKey != null && !value.Equals(_key) && Parent != null) {
+        if (_originalKey != null && !value.Equals(_key, StringComparison.InvariantCultureIgnoreCase) && Parent != null) {
           Parent.Children.ChangeKey(this, value);
         }
         SetAttributeValue("Key", value);
@@ -381,7 +381,7 @@ namespace Ignia.Topics {
     /// </requires>
     public DateTime LastModified {
       get => Attributes.GetDateTime("LastModified", VersionHistory.DefaultIfEmpty(DateTime.MinValue).LastOrDefault());
-      set => SetAttributeValue("LastModified", value.ToString());
+      set => SetAttributeValue("LastModified", value.ToString(CultureInfo.InvariantCulture));
     }
 
     #endregion
@@ -418,7 +418,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Check to ensure that the topic isn't being moved to a descendant (topics cannot be their own grandpa)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parent.GetUniqueKey().StartsWith(GetUniqueKey())) {
+      if (parent.GetUniqueKey().StartsWith(GetUniqueKey(), StringComparison.InvariantCultureIgnoreCase)) {
         throw new ArgumentOutOfRangeException(nameof(parent), "A descendant cannot be its own parent.");
       }
 
@@ -499,7 +499,7 @@ namespace Ignia.Topics {
     /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
     public string GetWebPath() {
       var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
-      if (!uniqueKey.StartsWith("/")) {
+      if (!uniqueKey.StartsWith("/", StringComparison.InvariantCulture)) {
         uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
@@ -542,7 +542,7 @@ namespace Ignia.Topics {
         }
         _derivedTopic = value;
         if (value != null) {
-          SetAttributeValue("TopicID", value.Id.ToString());
+          SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
         }
         else {
           Attributes.Remove("TopicID");

@@ -87,7 +87,7 @@ namespace Ignia.Topics.Web.Configuration {
     public static SourceElement GetElement(ConfigurationElementCollection parent, string key) {
       if (parent == null) return null;
       foreach (SourceElement source in parent) {
-        if (source.Source.Equals(key)) {
+        if (source.Source == key) {
           return source;
         }
       }
@@ -155,7 +155,7 @@ namespace Ignia.Topics.Web.Configuration {
           value         = HttpContext.Current.Request.Cookies[element.Location]?.Value;
           break;
         case("ROLE") :
-          value         = Roles.IsUserInRole(element.Location).ToString();
+          value         = Roles.IsUserInRole(element.Location).ToString(CultureInfo.InvariantCulture);
           break;
         case("HOSTNAME") :
           value         = element.Location;

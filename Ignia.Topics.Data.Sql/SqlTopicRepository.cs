@@ -86,7 +86,7 @@ namespace Ignia.Topics.Data.Sql {
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.SetValue("ParentID", parentId.ToString(), false);
+        current.Attributes.SetValue("ParentID", parentId.ToString(CultureInfo.InvariantCulture), false);
         current.Parent = topics[parentId];
       }
 
@@ -760,9 +760,9 @@ namespace Ignia.Topics.Data.Sql {
 
         // Set preconditions
         var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));
-        var isPrimaryAttribute  = (attribute.Key.Equals("Key") || attribute.Key.Equals("ContentType") || attribute.Key.Equals("ParentID"));
-        var isRelationships     = (attribute.Type.Equals("Relationships.ascx"));
-        var isNestedTopic       = (attribute.Type.Equals("TopicList.ascx"));
+        var isPrimaryAttribute  = (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID");
+        var isRelationships     = (attribute.Type == "Relationships.ascx");
+        var isNestedTopic       = (attribute.Type == "TopicList.ascx");
         var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
@@ -811,19 +811,59 @@ namespace Ignia.Topics.Data.Sql {
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
-          AddSqlParameter(command,      "TopicID",              topic.Id.ToString(CultureInfo.InvariantCulture),  SqlDbType.Int);
+          AddSqlParameter(
+            command,
+            "TopicID",
+            topic.Id.ToString(CultureInfo.InvariantCulture),
+            SqlDbType.Int
+          );
         }
         if (topic.Parent != null) {
-          AddSqlParameter(command,      "ParentID",             topic.Parent.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          AddSqlParameter(
+            command,
+            "ParentID",
+            topic.Parent.Id.ToString(CultureInfo.InvariantCulture),
+            SqlDbType.Int
+          );
         }
-        AddSqlParameter(command,        "Version",              version.ToString("yyyy-MM-dd HH:mm:ss.fff"),      SqlDbType.DateTime);
-        AddSqlParameter(command,        "Attributes",           attributes.ToString(),                            SqlDbType.VarChar);
+        AddSqlParameter(
+          command,
+          "Version",
+          version.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+          SqlDbType.DateTime
+        );
+        AddSqlParameter(
+          command,
+          "Attributes",
+          attributes.ToString(),
+          SqlDbType.VarChar
+        );
         if (topic.Id != -1) {
-          AddSqlParameter(command,      "NullAttributes",       nullAttributes.ToString(),                        SqlDbType.VarChar);
-          AddSqlParameter(command,      "DeleteRelationships",  "1", SqlDbType.Bit);
+          AddSqlParameter(
+            command,
+            "NullAttributes",
+            nullAttributes.ToString(),
+            SqlDbType.VarChar
+          );
+          AddSqlParameter(
+            command,
+            "DeleteRelationships",
+            "1",
+            SqlDbType.Bit
+          );
         }
-        AddSqlParameter(command,        "Blob",                 blob.ToString(),                                  SqlDbType.Xml);
-        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,                   SqlDbType.Int);
+        AddSqlParameter(
+          command,
+          "Blob",
+          blob.ToString(),
+          SqlDbType.Xml
+        );
+        AddSqlParameter(
+          command,
+          "ReturnCode",
+          ParameterDirection.ReturnValue,
+          SqlDbType.Int
+        );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query
@@ -880,7 +920,7 @@ namespace Ignia.Topics.Data.Sql {
             childTopic.Attributes.GetInteger("ParentID", -1) > 0,
             "The call to the topics_CreateTopic stored procedure did not return the expected 'ParentID' parameter."
           );
-          childTopic.Attributes.SetValue("ParentID", returnVal.ToString());
+          childTopic.Attributes.SetValue("ParentID", returnVal.ToString(CultureInfo.InvariantCulture));
           Save(childTopic, isRecursive, isDraft);
         }
       }
@@ -966,7 +1006,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(), false);
+      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
 
       //return true;
 
@@ -1202,7 +1242,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
 
-      switch (sqlDbType.ToLower()) {
+      switch (sqlDbType.ToLower(CultureInfo.InvariantCulture)) {
         case "int"              : return SqlDbType.Int;
         case "tinyint"          : return SqlDbType.TinyInt;
         case "smallint"         : return SqlDbType.SmallInt;
@@ -1296,13 +1336,13 @@ namespace Ignia.Topics.Data.Sql {
           commandObject.Parameters["@" + sqlParameter].Value = null;
         }
         else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
-          commandObject.Parameters["@" + sqlParameter].Value = Int64.Parse(fieldValue);
+          commandObject.Parameters["@" + sqlParameter].Value = Int64.Parse(fieldValue, CultureInfo.InvariantCulture);
         }
         else if (sqlDbType == SqlDbType.UniqueIdentifier) {
           commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
         }
         else if (sqlDbType == SqlDbType.Bit) {
-          if (fieldValue == "1" || fieldValue.ToLower() == "true") {
+          if (fieldValue == "1" || fieldValue.ToLower(CultureInfo.InvariantCulture) == "true") {
             commandObject.Parameters["@" + sqlParameter].Value = true;
           }
           else {

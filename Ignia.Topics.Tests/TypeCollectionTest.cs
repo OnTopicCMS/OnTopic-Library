@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Reflection;
@@ -106,7 +107,10 @@ namespace Ignia.Topics.Tests {
       var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
       var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
 
-      var lastModified          = DateTime.Parse(types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString());
+      var lastModified          = DateTime.Parse(
+        types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString(),
+        CultureInfo.InvariantCulture
+      );
       var key                   = types.GetPropertyValue(topic, "Key", typeof(string)).ToString();
 
       Assert.IsTrue(isDateSet);

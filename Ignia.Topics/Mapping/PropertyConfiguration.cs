@@ -83,7 +83,10 @@ namespace Ignia.Topics.Mapping {
         }
       );
 
-      if (RelationshipType.Equals(RelationshipType.Any) && RelationshipKey.Equals("Children")) {
+      if (
+        RelationshipType.Equals(RelationshipType.Any) &&
+        RelationshipKey.Equals("Children", StringComparison.InvariantCultureIgnoreCase)
+      ) {
         RelationshipType = RelationshipType.Children;
       }
 
@@ -313,7 +316,9 @@ namespace Ignia.Topics.Mapping {
     /// <param name="source"></param>
     /// <returns></returns>
     public bool SatisfiesAttributeFilters(Topic source) =>
-      AttributeFilters.All(f => source.Attributes.GetValue(f.Key, "").Equals(f.Value));
+      AttributeFilters.All(f =>
+        source.Attributes.GetValue(f.Key, "").Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)
+      );
 
     /*==========================================================================================================================
     | METHOD: VALIDATE

@@ -108,14 +108,14 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Yield view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in ViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType);
+        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Yield area view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in AreaViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType);
+        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

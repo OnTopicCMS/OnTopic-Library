@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -187,7 +188,7 @@ namespace Ignia.Topics.Web.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var pathPattern in locationFormats) {
         if (!pathPattern.Contains("{3}") || !String.IsNullOrEmpty((string)contentType)) {
-          var path = String.Format(pathPattern, controller, viewName, area, contentType);
+          var path = String.Format(CultureInfo.InvariantCulture, pathPattern, controller, viewName, area, contentType);
           searchPaths.Add(path);
         }
       }

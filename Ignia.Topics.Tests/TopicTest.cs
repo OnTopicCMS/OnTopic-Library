@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using System.Linq;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Tests.TestDoubles;
@@ -89,7 +90,10 @@ namespace Ignia.Topics.Tests {
       childTopic.Parent         = parentTopic;
 
       Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
-      Assert.AreEqual<int>(5, Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0")));
+      Assert.AreEqual<int>(
+        5,
+        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
+      );
 
     }
 
@@ -113,7 +117,10 @@ namespace Ignia.Topics.Tests {
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
-      Assert.AreEqual<int>(10, Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0")));
+      Assert.AreEqual<int>(
+        10,
+        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
+      );
 
     }
 

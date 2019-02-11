@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Reflection;
 
@@ -151,7 +152,12 @@ namespace Ignia.Topics.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from topic pointer
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && !name.Equals("TopicId") && _associatedTopic.DerivedTopic != null && maxHops > 0) {
+      if (
+        String.IsNullOrEmpty(value) &&
+        !name.Equals("TopicId", StringComparison.InvariantCulture) &&
+        _associatedTopic.DerivedTopic != null &&
+        maxHops > 0
+      ) {
         value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
       }
 
@@ -221,7 +227,7 @@ namespace Ignia.Topics.Collections {
     public int GetInteger(string name, int defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       return Int32.TryParse(
-        GetValue(name, defaultValue.ToString(), inheritFromParent, (inheritFromDerived ? 5 : 0)),
+        GetValue(name, defaultValue.ToString(CultureInfo.InvariantCulture), inheritFromParent, (inheritFromDerived ? 5 : 0)),
         out var result
       )? result : defaultValue;
     }
@@ -246,7 +252,7 @@ namespace Ignia.Topics.Collections {
     public DateTime GetDateTime(string name, DateTime defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       return DateTime.TryParse(
-        GetValue(name, defaultValue.ToString(), inheritFromParent, (inheritFromDerived ? 5 : 0)),
+        GetValue(name, defaultValue.ToString(CultureInfo.InvariantCulture), inheritFromParent, (inheritFromDerived ? 5 : 0)),
         out var result
       )? result : defaultValue;
     }
@@ -354,7 +360,7 @@ namespace Ignia.Topics.Collections {
         if (isDirty.HasValue) {
           markAsDirty = isDirty.Value;
         }
-        else if (!originalAttribute.Value.Equals(value)) {
+        else if (originalAttribute.Value != value) {
           markAsDirty = true;
         }
         var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic);
@@ -432,7 +438,11 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetInteger(string key, int value, bool? isDirty = null) => SetValue(key, value.ToString(), isDirty, true);
+    public void SetInteger(string key, int value, bool? isDirty = null) => SetValue(
+      key,
+      value.ToString(CultureInfo.InvariantCulture),
+      isDirty, true
+    );
 
     /*==========================================================================================================================
     | METHOD: SET DATETIME
@@ -464,7 +474,12 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetDateTime(string key, DateTime value, bool? isDirty = null) => SetValue(key, value.ToString(), isDirty, true);
+    public void SetDateTime(string key, DateTime value, bool? isDirty = null) => SetValue(
+      key,
+      value.ToString(CultureInfo.InvariantCulture),
+      isDirty,
+      true
+    );
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

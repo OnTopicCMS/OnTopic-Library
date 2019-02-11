@@ -157,7 +157,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType.Equals("List") || CurrentTopic.Parent.ContentType.Equals("List")) {
+      if (CurrentTopic.ContentType == "List" || CurrentTopic.Parent.ContentType == "List") {
         filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
         return;
       }
@@ -168,7 +168,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType.Equals("PageGroup")) {
+      if (CurrentTopic.ContentType == "PageGroup") {
         filterContext.Result = Redirect(
           CurrentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );

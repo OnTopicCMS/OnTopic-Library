@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Querying;
@@ -204,7 +205,7 @@ namespace Ignia.Topics.Repositories {
       | Ensure Parent, ContentType are maintained
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetValue("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
-      topic.Attributes.SetValue("ParentId", topic.Parent.Id.ToString(), false);
+      topic.Attributes.SetValue("ParentId", topic.Parent.Id.ToString(CultureInfo.InvariantCulture), false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version

@@ -190,7 +190,7 @@ namespace Ignia.Topics.Mapping {
       if (cacheKey.Item2 != null) {
         cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
       }
-      if (cacheKey.Item1 > 0 && viewModel.GetType().Name.Equals($"{contentType}TopicViewModel")) {
+      if (cacheKey.Item1 > 0 && viewModel.GetType().Name == $"{contentType}TopicViewModel") {
         _cache.TryAdd(cacheKey, viewModel);
       }
       return viewModel;

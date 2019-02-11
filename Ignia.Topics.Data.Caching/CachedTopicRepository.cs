@@ -164,7 +164,7 @@ namespace Ignia.Topics.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide shortcut for local calls
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.IndexOf(":") < 0 && !uniqueKey.Equals("Root")) {
+      if (uniqueKey.IndexOf(":", StringComparison.InvariantCulture) < 0 && uniqueKey != "Root") {
         if (sourceTopic.Children.Contains(uniqueKey)) {
           return sourceTopic.Children[uniqueKey];
         }

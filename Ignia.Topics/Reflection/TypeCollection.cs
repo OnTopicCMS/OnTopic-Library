@@ -353,7 +353,7 @@ namespace Ignia.Topics.Reflection {
       var valueObject = (object)null;
 
       if (type.Equals(typeof(bool))) {
-        valueObject = value.Equals("1") || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+        valueObject = value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
       }
       else if (type.Equals(typeof(int))) {
         Int32.TryParse(value, out var intValue);

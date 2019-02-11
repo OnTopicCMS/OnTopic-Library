@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using Ignia.Topics.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -81,8 +82,14 @@ namespace Ignia.Topics {
       Contract.Requires(requestContext != null, "An instance of a RequestContext is required.");
       Contract.Requires(viewsDirectory != null, "A value for the viewsDirectory is required. Will default to '~/Views/'");
       Contract.Requires(viewExtension != null, "A value for the viewExtension is required. Will default to 'cshtml'");
-      Contract.Requires(viewsDirectory.IndexOf("/") >= 0, "The viewsDirectory parameter should be a relative path (e.g., '/Views/`).");
-      Contract.Requires(viewExtension.IndexOf(".") < 0, "The viewExtension parameter only contain the extension value (e.g., 'cshtml').");
+      Contract.Requires(
+        viewsDirectory.IndexOf("/", StringComparison.InvariantCulture) >= 0,
+        "The viewsDirectory parameter should be a relative path (e.g., '/Views/`)."
+      );
+      Contract.Requires(
+        viewExtension.IndexOf(".", StringComparison.InvariantCulture) < 0,
+        "The viewExtension parameter only contain the extension value (e.g., 'cshtml')."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
@@ -180,7 +187,7 @@ namespace Ignia.Topics {
 
         // Pull from QueryString
         if (viewName == null && QueryParameters["View"] != null) {
-          IsValidView(contentType, QueryParameters["View"].ToString(), out viewName);
+          IsValidView(contentType, QueryParameters["View"].ToString(CultureInfo.InvariantCulture), out viewName);
         }
 
         /*------------------------------------------------------------------------------------------------------------------------
@@ -191,13 +198,15 @@ namespace Ignia.Topics {
         | Preferably, this would be handled by each environment as appropriate, but that might muddle the logic.
         \-----------------------------------------------------------------------------------------------------------------------*/
         if (viewName == null && _headers["Accept"] != null) {
-          var acceptHeaders = _headers["Accept"].ToString();
+          var acceptHeaders = _headers["Accept"].ToString(CultureInfo.InvariantCulture);
           var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
           // Validate the content-type after the slash, then validate it against available views
           for (var i = 0; i < splitHeaders.Length; i++) {
             if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
               // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
-              var acceptHeader = splitHeaders[i].Substring(splitHeaders[i].IndexOf("/") + 1).Replace("+", "-");
+              var acceptHeader = splitHeaders[i]
+                .Substring(splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) + 1)
+                .Replace("+", "-");
               // Validate against available views; if content-type represents a valid view, stop validation
               if (IsValidView(contentType, acceptHeader, out viewName)) {
                 break;
@@ -262,14 +271,14 @@ namespace Ignia.Topics {
           // Get top-level (generic) view files
           foreach (var file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {
             // Strip off the extension (must do even for the FileInfo instance)
-            var fileName = file.Name.ToLower().Replace("." + _viewExtension, "");
+            var fileName = file.Name.ToLower(CultureInfo.InvariantCulture).Replace("." + _viewExtension, "");
             views.Add(fileName);
           }
           // Get view files specific to Content Type
           foreach (var subDirectory in subDirectories) {
             var subDirectoryName = subDirectory.Name;
             foreach (var file in subDirectory.GetFiles(searchPattern, searchOption)) {
-              var fileName = file.Name.ToLower().Replace("." + _viewExtension, "");
+              var fileName = file.Name.ToLower(CultureInfo.InvariantCulture).Replace("." + _viewExtension, "");
               views.Add(subDirectoryName + "/" + fileName);
             }
           }

@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -203,9 +204,9 @@ namespace Ignia.Topics.Tests {
       var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
-      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
-      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2")));
-      Assert.IsNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
 
     }
 
@@ -248,8 +249,8 @@ namespace Ignia.Topics.Tests {
       var target = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.RelationshipAlias.Count);
-      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5")));
-      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic6")));
+      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic6", StringComparison.InvariantCulture)));
 
     }
 
@@ -272,10 +273,10 @@ namespace Ignia.Topics.Tests {
       var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
-      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1")));
-      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic2")));
-      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("Categories")));
-      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic")));
+      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("Categories", StringComparison.InvariantCulture)));
+      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic", StringComparison.InvariantCulture)));
 
     }
 
@@ -298,11 +299,11 @@ namespace Ignia.Topics.Tests {
       var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(3, target.Children.Count);
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
-      Assert.IsNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
-      Assert.AreEqual<int>(0, ((SampleTopicViewModel)target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"))).Children.Count);
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
+      Assert.IsNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
+      Assert.AreEqual<int>(0, ((SampleTopicViewModel)target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture))).Children.Count);
 
     }
 
@@ -366,8 +367,8 @@ namespace Ignia.Topics.Tests {
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
       var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic);
-      var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3"));
-      var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3"));
+      var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3", StringComparison.InvariantCulture));
+      var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture));
 
       //Because Cousins is set to recurse over Children, its children should be set
       Assert.AreEqual<int>(3, cousinTarget.Children.Count);
@@ -402,10 +403,10 @@ namespace Ignia.Topics.Tests {
       var target                = (SlideshowTopicViewModel) await mappingService.MapAsync(topic);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1")));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
 
     }
 
@@ -430,12 +431,12 @@ namespace Ignia.Topics.Tests {
       topic.Relationships.SetTopic("Related", relatedTopic3);
 
       var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic);
-      var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+      var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
 
       Assert.AreEqual<int>(3, target.Related.Count);
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1")));
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2")));
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3")));
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
       Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy.Key);
 
     }
@@ -502,9 +503,9 @@ namespace Ignia.Topics.Tests {
       var indexes               = target.Children.GetByContentType("Index");
 
       Assert.AreEqual<int>(2, indexes.Count);
-      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2")));
-      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3")));
-      Assert.IsNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4")));
+      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
+      Assert.IsNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
 
     }
 

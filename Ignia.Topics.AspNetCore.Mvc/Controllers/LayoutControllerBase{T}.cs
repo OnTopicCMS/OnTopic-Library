@@ -248,7 +248,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (tiers >= 0 && (allowPageGroups || !sourceTopic.ContentType.Equals("PageGroup")) && viewModel.Children.Count == 0) {
+      if (tiers >= 0 && (allowPageGroups || sourceTopic.ContentType != "PageGroup") && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
           taskQueue.Add(GetViewModelAsync(topic, allowPageGroups, tiers));
         }

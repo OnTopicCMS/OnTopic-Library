@@ -268,8 +268,8 @@ namespace Ignia.Topics.Mapping {
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, relationships, configuration, cache);
       }
-      else if (configuration.AttributeKey.Equals("Parent") && relationships.HasFlag(Relationships.Parents)) {
         await SetTopicReferenceAsync(source.Parent, target, configuration, cache);
+      else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
       }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
@@ -619,7 +619,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
     protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
       if (source.IsDisabled) return targetList;
-      if (source.ContentType.Equals("List") && !includeNestedTopics) return targetList;
+      if (source.ContentType == "List" && !includeNestedTopics) return targetList;
       targetList.Add(source);
       source.Children.ToList().ForEach(t => PopulateChildTopics(t, targetList));
       return targetList;

@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
@@ -64,7 +65,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrWhiteSpace(topicKey)) {
         topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey));
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.InvariantCultureIgnoreCase));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -192,7 +193,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(), false);
+      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
 
     }
 
@@ -273,7 +274,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       for (var i = 0; i < count; i++) {
         var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent.Id + (int)Math.Pow(10, depth) * i, parent);
         topic.Attributes.SetValue("ParentKey", parent.Key);
-        topic.Attributes.SetValue("DepthCount", (depth+i).ToString());
+        topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
         if (depth > 0) {
           CreateFakeData(topic, count, depth - 1);
         }

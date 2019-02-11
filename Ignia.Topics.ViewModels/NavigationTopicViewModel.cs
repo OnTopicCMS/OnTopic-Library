@@ -3,6 +3,7 @@
 | Client        Ignia
 | Project       Website
 \=============================================================================================================================*/
+using System;
 using System.Collections.ObjectModel;
 
 namespace Ignia.Topics.ViewModels {
@@ -31,7 +32,8 @@ namespace Ignia.Topics.ViewModels {
     public string WebPath { get; set; }
     public string ShortTitle { get; set; }
     public Collection<NavigationTopicViewModel> Children { get; } = new Collection<NavigationTopicViewModel>();
-    public bool IsSelected(string uniqueKey) => $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:") ?? false;
+    public bool IsSelected(string uniqueKey) =>
+      $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:", StringComparison.InvariantCultureIgnoreCase) ?? false;
 
   } // Class
 
