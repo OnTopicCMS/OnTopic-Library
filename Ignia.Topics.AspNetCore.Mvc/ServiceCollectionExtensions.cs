@@ -9,6 +9,8 @@ using Ignia.Topics.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -23,7 +25,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
   public static class ServiceCollectionExtensions {
 
     /*==========================================================================================================================
-    | EXTENSION: ADD TOPIC SUPPORT
+    | EXTENSION: ADD TOPIC SUPPORT (IMVCBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Configures the Razor engine to include OnTopic view locations via the <see cref="TopicViewLocationExpander"/>.
@@ -60,6 +62,27 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Return services for fluent API
       \-----------------------------------------------------------------------------------------------------------------------*/
       return services;
+    }
+
+    /*==========================================================================================================================
+    | EXTENSION: MAP TOPIC ROUTE (IROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an MVC route for handling OnTopic related requests, and maps it to the <see cref="TopicController"/> by default.
+    /// </summary>
+    public static IRouteBuilder MapTopicRoute(
+      this IRouteBuilder routes,
+      string rootTopic,
+      string controller = "Topic",
+      string action = "Index"
+    ) {
+
+      return routes.MapRoute(
+        name: $"{rootTopic}Topic",
+        template: rootTopic + "/{*path}",
+        defaults: new { controller = controller, action = action, rootTopic = rootTopic }
+      );
+
     }
 
   } //Class
