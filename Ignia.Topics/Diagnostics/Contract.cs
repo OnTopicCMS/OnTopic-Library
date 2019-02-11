@@ -36,7 +36,7 @@ namespace Ignia.Topics.Diagnostics {
   ///     calls—though, acknowledging, that there are some conditions that won't be satisfied by that (e.g., range checks).
   ///   </para>
   ///   <para>
-  ///     <seealso cref="https://stackoverflow.com/questions/40767941/does-vs2017-work-with-codecontracts/46412917#46412917">
+  ///     <see href="https://stackoverflow.com/questions/40767941/does-vs2017-work-with-codecontracts/46412917#46412917"/>
   ///   </para>
   /// </remarks>
   public static class Contract {
@@ -66,7 +66,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="T">
+    /// <exception cref="T:Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
@@ -132,7 +132,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </summary>
     /// <remarks>
     ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom oerload accepts a generic <typeparamref
-    ///   name="T"/>, of type <see cref="Exeption"/>, which will be thrown if the condition is not met. This is virtually
+    ///   name="T"/>, of type <see cref="Exception"/>, which will be thrown if the condition is not met. This is virtually
     ///   identical to <see cref="Requires{T}(bool, string)"/> except that, syntactically, it is expected to live within the
     ///   body of a method—where as <see cref="Requires{T}(bool, string)"/> is expected to live at the beginning of a method.
     ///   This communicates to readers that <see cref="Assume{T}(bool, string)"/> is validating runtime state, whereas <see
@@ -140,7 +140,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="T">
+    /// <exception cref="T:Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">

@@ -295,8 +295,8 @@ namespace Ignia.Topics.Mapping {
     ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
     ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
     ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
-    ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source
-    ///   value cannot be identified on the <paramref name="source"/>, then the property is not set.
+    ///   cref="Collections.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
+    ///   or the source value cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>

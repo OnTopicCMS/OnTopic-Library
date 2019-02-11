@@ -75,8 +75,8 @@ namespace Ignia.Topics.Collections {
     /// <summary>Fires any time a <typeparamref name="T"/> is added to the collection.</summary>
     /// <remarks>
     ///   Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key is
-    ///   inserted. This conveniently provides the name of the <typeparamref name="T"/>'s <see cref="Topic.UniqueKey"/>, so it's
-    ///   clear what key is being duplicated.
+    ///   inserted. This conveniently provides the name of the <typeparamref name="T"/>'s <see cref="Topic.GetUniqueKey"/>, so
+    ///   it's clear what key is being duplicated.
     /// </remarks>
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <typeparamref name="T"/> instance to insert.</param>

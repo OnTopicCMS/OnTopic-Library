@@ -55,7 +55,7 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Tests a null argument using the <see cref="Contract"/> class, and validates that it correctly returns an <see
-    ///   cref="ArgumentException"/> with the expected <see cref="ArgumentNullException.Message"/>.
+    ///   cref="ArgumentNullException"/> with the expected <see cref="ArgumentException.Message"/>.
     /// </summary>
     [TestMethod]
     public void RequiresExceptionMessage() {

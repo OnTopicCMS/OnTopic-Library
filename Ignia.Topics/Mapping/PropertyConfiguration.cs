@@ -151,7 +151,7 @@ namespace Ignia.Topics.Mapping {
     ///   <para>
     ///     The <see cref="InheritValue"/> configuration is only applicable if the value is pulled from the <see
     ///     cref="Topic.Attributes"/> collection. This is the equivalent to calling the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
+    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
     ///     <c>True</c>.
     ///   </para>
     ///   <para>
