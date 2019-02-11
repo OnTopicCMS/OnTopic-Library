@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{C98F7B48-A085-4394-B820-C244F23868CE}</ProjectGuid>
     <TargetFramework>net47</TargetFramework>
-    <NoWarn>CS0618</NoWarn>
+    <NoWarn>CS0618,CA1010,CA1056,CA1065</NoWarn>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
   </PropertyGroup>
