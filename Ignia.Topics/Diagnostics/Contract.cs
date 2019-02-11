@@ -131,10 +131,10 @@ namespace Ignia.Topics.Diagnostics {
     /// <remarks>
     ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom oerload accepts a generic <typeparamref
     ///   name="T"/>, of type <see cref="Exception"/>, which will be thrown if the condition is not met. This is virtually
-    ///   identical to <see cref="Requires{T}(bool, string)"/> except that, syntactically, it is expected to live within the
-    ///   body of a method—where as <see cref="Requires{T}(bool, string)"/> is expected to live at the beginning of a method.
-    ///   This communicates to readers that <see cref="Assume{T}(bool, string)"/> is validating runtime state, whereas <see
-    ///   cref="Requires{T}(bool, string)"/> is validating preconditions.
+    ///   identical to <see cref="Requires{T}(Boolean, String)"/> except that, syntactically, it is expected to live within the
+    ///   body of a method—where as <see cref="Requires{T}(Boolean, String)"/> is expected to live at the beginning of a method.
+    ///   This communicates to readers that <see cref="Assume{T}(Boolean, String)"/> is validating runtime state, whereas <see
+    ///   cref="Requires{T}(Boolean, String)"/> is validating preconditions.
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
