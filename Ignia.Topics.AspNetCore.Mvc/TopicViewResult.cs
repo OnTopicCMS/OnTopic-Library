@@ -37,11 +37,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   is not provided, it is assumed to be <paramref name="contentType"/>.
     /// </remarks>
     public TopicViewResult(
-      ViewDataDictionary viewData,
-      ITempDataDictionary tempData,
-      object viewModel,
-      string contentType = "Page",
-      string view = null
+      ViewDataDictionary        viewData,
+      ITempDataDictionary       tempData,
+      object                    viewModel,
+      string                    contentType                     = "Page",
+      string                    view                            = null
     ) : base() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -54,12 +54,12 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set local variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ViewData = viewData;
-      TempData = tempData;
-      ViewData.Model = viewModel;
-      TopicContentType = contentType;
-      TopicView = view ?? ContentType;
-      //ViewName = TopicView;
+      ViewData                  = viewData;
+      TempData                  = tempData;
+      ViewData.Model            = viewModel;
+      TopicContentType          = contentType;
+      TopicView                 = view ?? ContentType;
+      //ViewName                = TopicView;
 
     }
 
