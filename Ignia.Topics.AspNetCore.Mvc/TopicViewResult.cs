@@ -107,7 +107,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Call associated executor
       \-----------------------------------------------------------------------------------------------------------------------*/
       var executor = context.HttpContext.RequestServices.GetRequiredService<IActionResultExecutor<TopicViewResult>>();
-      await executor.ExecuteAsync(context, this);
+      await executor.ExecuteAsync(context, this).ConfigureAwait(false);
 
     }
 

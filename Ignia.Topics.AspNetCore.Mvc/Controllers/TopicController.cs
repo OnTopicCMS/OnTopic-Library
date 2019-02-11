@@ -101,7 +101,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = await _topicMappingService.MapAsync(CurrentTopic);
+      var topicViewModel = await _topicMappingService.MapAsync(CurrentTopic).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view

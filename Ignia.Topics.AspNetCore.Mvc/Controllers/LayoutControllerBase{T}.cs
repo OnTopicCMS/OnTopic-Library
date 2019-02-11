@@ -117,7 +117,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3),
+        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3).ConfigureAwait(false),
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
@@ -207,7 +207,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       Topic sourceTopic,
       bool allowPageGroups = true,
       int tiers = 1
-    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers);
+    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
 
     /*==========================================================================================================================
     | GET VIEW MODEL (ASYNC)
@@ -243,7 +243,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None);
+      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children
@@ -258,9 +258,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | Process children
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0 && viewModel.Children.Count == 0) {
-        var dtoTask = await Task.WhenAny(taskQueue);
+        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        children.Add(await dtoTask);
+        children.Add(await dtoTask.ConfigureAwait(false));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

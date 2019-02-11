@@ -69,7 +69,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new TopicController(_topicRepository, topicRoutingService, mappingService);
-      var result                = await controller.IndexAsync(_topic.GetWebPath()) as TopicViewResult;
+      var result                = await controller.IndexAsync(_topic.GetWebPath()).ConfigureAwait(false) as TopicViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
       Assert.IsNotNull(model);
@@ -206,7 +206,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
-      var result                = await controller.Menu() as PartialViewResult;
+      var result                = await controller.Menu().ConfigureAwait(false) as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);

@@ -72,7 +72,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>());
+      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -121,7 +121,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return await MapAsync(topic, target, relationships, cache);
+      return await MapAsync(topic, target, relationships, cache).ConfigureAwait(false);
 
     }
 
@@ -146,7 +146,7 @@ namespace Ignia.Topics.Mapping {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      return (T)await MapAsync(topic, new T(), relationships);
+      return (T)await MapAsync(topic, new T(), relationships).ConfigureAwait(false);
     }
 
     /*==========================================================================================================================
@@ -162,7 +162,7 @@ namespace Ignia.Topics.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>());
+      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
@@ -217,7 +217,7 @@ namespace Ignia.Topics.Mapping {
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
         taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache));
       }
-      await Task.WhenAll(taskQueue.ToArray());
+      await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return result
@@ -266,14 +266,14 @@ namespace Ignia.Topics.Mapping {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        await SetCollectionValueAsync(source, target, relationships, configuration, cache);
+        await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
       }
-        await SetTopicReferenceAsync(source.Parent, target, configuration, cache);
       else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
+        await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
       }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        await SetTopicReferenceAsync(topicReference, target, configuration, cache);
+        await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache);
+      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache).ConfigureAwait(false);
 
     }
 
@@ -562,9 +562,9 @@ namespace Ignia.Topics.Mapping {
       | Process mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0) {
-        var dtoTask = await Task.WhenAny(taskQueue);
+        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        AddToList(await dtoTask);
+        AddToList(await dtoTask.ConfigureAwait(false));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -602,7 +602,7 @@ namespace Ignia.Topics.Mapping {
       PropertyConfiguration configuration,
       ConcurrentDictionary<int, object> cache
     ) {
-      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache);
+      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }

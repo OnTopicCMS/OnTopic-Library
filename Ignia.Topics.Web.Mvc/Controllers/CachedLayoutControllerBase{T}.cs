@@ -90,20 +90,20 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       | Handle empty results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (sourceTopic == null) {
-        return await Task<T>.FromResult<T>(null);
+        return await Task<T>.FromResult<T>(null).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cache hits
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_cache.TryGetValue(sourceTopic.Id, out var dto)) {
-        return await Task<T>.FromResult<T>(dto);
+        return await Task<T>.FromResult<T>(dto).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Cache and return new version
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel = await GetViewModelAsync(sourceTopic, allowPageGroups, tiers);
+      var viewModel = await GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
       return _cache.GetOrAdd(sourceTopic.Id, viewModel);
 
     }

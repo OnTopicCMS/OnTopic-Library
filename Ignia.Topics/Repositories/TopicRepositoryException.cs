@@ -24,6 +24,7 @@ namespace Ignia.Topics.Repositories {
   ///   <see cref="TopicRepositoryException"/> provides a database agnostic version of an exception that can provide a wrapper
   ///   around any of these more concrete exceptions.
   /// </remarks>
+  [Serializable]
   public class TopicRepositoryException : DbException {
 
     /*==========================================================================================================================

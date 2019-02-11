@@ -180,7 +180,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
           result.TempData,
           result.ContentType,
           result.StatusCode
-        );
+        ).ConfigureAwait(false);
       }
 
     }
