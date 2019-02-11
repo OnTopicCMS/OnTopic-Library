@@ -79,7 +79,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       routes.MapRoute(
         name: $"{rootTopic}Topic",
         template: rootTopic + "/{*path}",
-        defaults: new { controller = controller, action = action, rootTopic = rootTopic }
+        defaults: new { controller, action, rootTopic }
       );
 
   } //Class
