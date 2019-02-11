@@ -121,9 +121,8 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <param name="viewName">The optional name of the view that is rendered to the response.</param>
     /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
     [NonAction]
-    public virtual TopicViewResult TopicView(object model, string viewName = null) {
-      return new TopicViewResult(ViewData, TempData, model, CurrentTopic.ContentType, viewName);
-    }
+    public virtual TopicViewResult TopicView(object model, string viewName = null) =>
+      new TopicViewResult(ViewData, TempData, model, CurrentTopic.ContentType, viewName);
 
     /*==========================================================================================================================
     | EVENT: ON ACTION EXECUTING

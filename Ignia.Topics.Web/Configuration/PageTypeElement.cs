@@ -31,11 +31,7 @@ namespace Ignia.Topics.Web.Configuration {
     ///   Gets the name of the page type; typically set to <see cref="Ignia.Topics.Web.TopicPage"/>.
     /// </summary>
     [ConfigurationProperty("name", IsRequired=true, IsKey=true)]
-    public string Name {
-      get {
-        return this["name"] as string?? throw new NullReferenceException("The name element is not defined.");
-      }
-    }
+    public string Name => this["name"] as string?? throw new NullReferenceException("The name element is not defined.");
 
     /*==========================================================================================================================
     | ATTRIBUTE: TYPE

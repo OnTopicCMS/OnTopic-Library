@@ -75,15 +75,12 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       string rootTopic,
       string controller = "Topic",
       string action = "Index"
-    ) {
-
-      return routes.MapRoute(
+    ) =>
+      routes.MapRoute(
         name: $"{rootTopic}Topic",
         template: rootTopic + "/{*path}",
         defaults: new { controller = controller, action = action, rootTopic = rootTopic }
       );
-
-    }
 
   } //Class
 } //Namespace

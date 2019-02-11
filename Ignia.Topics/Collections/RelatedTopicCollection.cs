@@ -55,11 +55,7 @@ namespace Ignia.Topics.Collections {
     /// <returns>
     ///   Returns an enumerable list of relationship scopes.
     /// </returns>
-    public ReadOnlyCollection<string> Keys {
-      get {
-        return new ReadOnlyCollection<string>(Items.Select(t => t.Name).ToList());
-      }
-    }
+    public ReadOnlyCollection<string> Keys => new ReadOnlyCollection<string>(Items.Select(t => t.Name).ToList());
 
     /*==========================================================================================================================
     | METHOD: GET ALL TOPICS

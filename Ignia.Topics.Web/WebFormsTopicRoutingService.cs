@@ -304,12 +304,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Returns the full path to the target view, including the views directory extension.
     /// </summary>
-    public string ViewPath {
-      get {
-        return _viewsDirectory + View + "." + _viewExtension;
-      }
-
-    }
+    public string ViewPath => _viewsDirectory + View + "." + _viewExtension;
 
     /*==========================================================================================================================
     | PROPERTY: IS VALID VIEW

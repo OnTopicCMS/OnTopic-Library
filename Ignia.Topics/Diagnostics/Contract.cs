@@ -52,9 +52,7 @@ namespace Ignia.Topics.Diagnostics {
     /// <exception cref="Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
-    public static void Requires(bool isValid, string errorMessage = null) {
-      Requires<Exception>(isValid, errorMessage);
-    }
+    public static void Requires(bool isValid, string errorMessage = null) => Requires<Exception>(isValid, errorMessage);
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
@@ -147,10 +145,8 @@ namespace Ignia.Topics.Diagnostics {
     ///   Thrown when the <typeparamref name="T"/> does not a constructor accepting a sole <see cref="String"/> parameter
     ///   representing the error message, and the <paramref name="errorMessage"/> parameter was supplied.
     /// </exception>
-    public static void Assume<T>(bool isValid, string errorMessage = null) where T : Exception, new() {
+    public static void Assume<T>(bool isValid, string errorMessage = null) where T : Exception, new() =>
       Requires<T>(isValid, errorMessage);
-    }
-
 
     /*==========================================================================================================================
     | METHOD: ASSERT
@@ -178,9 +174,7 @@ namespace Ignia.Topics.Diagnostics {
     ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
     /// </remarks>
     [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static T Result<T>() {
-      return default(T);
-    }
+    public static T Result<T>() => default(T);
 
   } //class
 } //Namespace
