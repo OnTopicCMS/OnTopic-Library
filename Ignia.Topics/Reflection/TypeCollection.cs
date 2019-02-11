@@ -356,7 +356,7 @@ namespace Ignia.Topics.Reflection {
         valueObject = value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
       }
       else if (type.Equals(typeof(int))) {
-        Int32.TryParse(value, out var intValue);
+        int intValue = Int32.TryParse(value, out intValue)? intValue : 0;
         valueObject = intValue;
       }
       else if (type.Equals(typeof(string))) {

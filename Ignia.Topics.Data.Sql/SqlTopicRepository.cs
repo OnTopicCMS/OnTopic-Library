@@ -68,13 +68,12 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var parentId              = -1;
+      int parentId              = Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId)? parentId : -1;
       var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       var contentType           = reader?["ContentType"]?.ToString();
       var key                   = reader?["TopicKey"]?.ToString();
 
       // Handle ParentID (could be null for root topic)
-      Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
