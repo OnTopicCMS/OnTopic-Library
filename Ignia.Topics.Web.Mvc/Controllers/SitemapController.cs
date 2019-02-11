@@ -41,6 +41,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides the Sitemap.org sitemap for the site.
     /// </summary>
     /// <returns>The site's homepage view.</returns>
+    [HttpGet]
     public virtual ActionResult Index() {
 
       /*------------------------------------------------------------------------------------------------------------------------

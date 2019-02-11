@@ -49,6 +49,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Redirect based on <see cref="Topic.Id"/>.
     /// </summary>
     /// <param name="topicId">The <see cref="Topic.Id"/> to lookup in the <see cref="ITopicRepository"/>.</param>
+    [HttpGet]
     public virtual ActionResult Redirect(int topicId) {
 
       /*------------------------------------------------------------------------------------------------------------------------
