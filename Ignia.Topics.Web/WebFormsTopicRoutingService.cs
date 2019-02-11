@@ -271,14 +271,14 @@ namespace Ignia.Topics {
           // Get top-level (generic) view files
           foreach (var file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {
             // Strip off the extension (must do even for the FileInfo instance)
-            var fileName = file.Name.ToLower(CultureInfo.InvariantCulture).Replace("." + _viewExtension, "");
+            var fileName = file.Name.ToLowerInvariant().Replace("." + _viewExtension, "");
             views.Add(fileName);
           }
           // Get view files specific to Content Type
           foreach (var subDirectory in subDirectories) {
             var subDirectoryName = subDirectory.Name;
             foreach (var file in subDirectory.GetFiles(searchPattern, searchOption)) {
-              var fileName = file.Name.ToLower(CultureInfo.InvariantCulture).Replace("." + _viewExtension, "");
+              var fileName = file.Name.ToLowerInvariant().Replace("." + _viewExtension, "");
               views.Add(subDirectoryName + "/" + fileName);
             }
           }

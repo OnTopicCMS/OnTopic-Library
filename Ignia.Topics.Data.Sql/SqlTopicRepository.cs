@@ -1241,7 +1241,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
 
-      switch (sqlDbType.ToLower(CultureInfo.InvariantCulture)) {
+      switch (sqlDbType.ToLowerInvariant()) {
         case "int"              : return SqlDbType.Int;
         case "tinyint"          : return SqlDbType.TinyInt;
         case "smallint"         : return SqlDbType.SmallInt;
@@ -1341,7 +1341,7 @@ namespace Ignia.Topics.Data.Sql {
           commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
         }
         else if (sqlDbType == SqlDbType.Bit) {
-          if (fieldValue == "1" || fieldValue.ToLower(CultureInfo.InvariantCulture) == "true") {
+          if (fieldValue == "1" || fieldValue.ToLowerInvariant() == "true") {
             commandObject.Parameters["@" + sqlParameter].Value = true;
           }
           else {
