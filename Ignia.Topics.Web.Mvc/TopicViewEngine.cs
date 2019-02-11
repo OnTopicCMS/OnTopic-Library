@@ -84,7 +84,7 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify search paths
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var searchPaths = GetSearchPaths(controllerContext, partialViewName, PartialViewLocationFormats, useCache);
+      var searchPaths = GetSearchPaths(controllerContext, partialViewName, PartialViewLocationFormats);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through patterns to identify views
@@ -124,7 +124,7 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify search paths
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var searchPaths = GetSearchPaths(controllerContext, viewName, ViewLocationFormats, useCache);
+      var searchPaths = GetSearchPaths(controllerContext, viewName, ViewLocationFormats);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through patterns to identify views
@@ -158,8 +158,7 @@ namespace Ignia.Topics.Web.Mvc {
     /// <param name="controllerContext">The current <see cref="ControllerContext"/>.</param>
     /// <param name="viewName">The requested name of the view.</param>
     /// <param name="locationFormats">The list of path format patterns.</param>
-    /// <param name="useCache">Determines whether the request is appropriate for caching.</param>
-    private static List<string> GetSearchPaths(ControllerContext controllerContext, string viewName, string[] locationFormats, bool useCache) {
+    private static List<string> GetSearchPaths(ControllerContext controllerContext, string viewName, string[] locationFormats) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
