@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using Ignia.Topics.Diagnostics;
 using Ignia.Topics.Reflection;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Collections {
 

@@ -4,11 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Mapping {
 
@@ -154,7 +156,7 @@ namespace Ignia.Topics.Mapping {
     ///   <para>
     ///     The <see cref="InheritValue"/> configuration is only applicable if the value is pulled from the <see
     ///     cref="Topic.Attributes"/> collection. This is the equivalent to calling the <see
-    ///     cref="AttributeValueCollection.Get(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
     ///     <c>True</c>.
     ///   </para>
     ///   <para>

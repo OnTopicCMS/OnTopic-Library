@@ -18,22 +18,21 @@ namespace Ignia.Topics.Repositories {
   ///   that arise from concrete <see cref="ITopicRepository"/> implementations.
   /// </summary>
   /// <remarks>
-  ///   Microsoft provides a set of <see cref="DbException"/> classes, such as <see cref="System.Data.SqlClient.SqlException"/>,
-  ///   which are specific to their target implementations. Since <see cref="ITopicRepository"/>, however, is intended to be
-  ///   database agnostic, none of these are appropriate to catch when implementing <see cref="ITopicRepository"/>. Instead, the
-  ///   <see cref="TopicRepositoryException"/> provides a database agnostic version of an exception that can provide a wrapper
-  ///   around any of these more concrete exceptions.
+  ///   Microsoft provides a set of <see cref="DbException"/> classes, such as <c>SqlException</c>, which are specific to their
+  ///   target implementations. Since <see cref="ITopicRepository"/>, however, is intended to be database agnostic, none of
+  ///   these are appropriate to catch when implementing <see cref="ITopicRepository"/>. Instead, the <see
+  ///   cref="TopicRepositoryException"/> provides a database agnostic version of an exception that can provide a wrapper around
+  ///   any of these more concrete exceptions.
   /// </remarks>
   [Serializable]
   public class TopicRepositoryException : DbException {
 
     /*==========================================================================================================================
-    | CONSTRUCTOR: TAXONOMY DELETE EVENT ARGS
+    | CONSTRUCTOR: TOPIC REPOSITORY EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new <see cref="TopicRepositoryException" /> instance.
     /// </summary>
-    /// <param name="message">The message to display for this exception.</param>
     public TopicRepositoryException() : base() { }
 
     /// <summary>

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Ignia.Topics.Diagnostics;
-using System.Reflection;
+using System.Collections;
 
 namespace Ignia.Topics {
 
@@ -15,7 +15,8 @@ namespace Ignia.Topics {
   | CLASS: TYPE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a <see cref="KeyedCollection"/> of <see cref="Type"/> instances indexed by <see cref="String"/>.
+  ///   Provides a <see cref="KeyedCollection{TKey, TItem}"/> of <see cref="Type"/> instances indexed by <see
+  ///   cref="String"/>.
   /// </summary>
   public class TypeCollection : KeyedCollection<string, Type> {
 
@@ -24,7 +25,7 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Instantiates a new <see cref="TypeCollection"/>. Optionally accepts an <see cref="IEnumerable"/> of <see
-    ///   cref="Tyoe" /> instances to prepopulate the collection.
+    ///   cref="Type" /> instances to prepopulate the collection.
     /// </summary>
     public TypeCollection(IEnumerable<Type> types = null) : base(StringComparer.InvariantCultureIgnoreCase) {
 
