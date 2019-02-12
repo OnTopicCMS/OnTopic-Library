@@ -17,13 +17,13 @@ namespace Ignia.Topics.Tests {
   | CLASS: TYPE COLLECTION TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeCollection"/> and <see cref="MemberInfoCollection"/> classes.
+  ///   Provides unit tests for the <see cref="TypeMemberInfoCollection"/> and <see cref="MemberInfoCollection"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
   [TestClass]
-  public class TypeCollectionTest {
+  public class TypeMemberInfoCollectionTest {
 
     /*==========================================================================================================================
     | TEST: PROPERTY INFO COLLECTION CONSTRUCTOR
@@ -48,8 +48,8 @@ namespace Ignia.Topics.Tests {
     | TEST: GET TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetMembers{T}(Type)"/>
-    ///   functions.
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
+    ///   cref="TypeMemberInfoCollection.GetMembers{T}(Type)"/> functions.
     /// </summary>
     [TestMethod]
     public void GetProperties() {
@@ -69,8 +69,8 @@ namespace Ignia.Topics.Tests {
     | TEST: GET MEMBER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that <see cref="TypeCollection.GetMember(Type, String)"/>
-    ///   correctly returns the expected properties.
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
+    ///   cref="TypeMemberInfoCollection.GetMember(Type, String)"/> correctly returns the expected properties.
     /// </summary>
     [TestMethod]
     public void GetMember() {
@@ -90,8 +90,8 @@ namespace Ignia.Topics.Tests {
     | TEST: SET PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
-    ///   <see cref="TypeCollection.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value can be properly set using the
+    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void SetProperty() {
@@ -128,8 +128,8 @@ namespace Ignia.Topics.Tests {
     | TEST: SET METHOD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeCollection"/> and confirms that a value can be properly set using the
-    ///   <see cref="TypeCollection.SetMethodValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value can be properly set using the
+    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void SetMethod() {
