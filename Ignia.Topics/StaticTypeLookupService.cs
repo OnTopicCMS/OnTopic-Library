@@ -17,7 +17,12 @@ namespace Ignia.Topics {
   /// <summary>
   ///   The <see cref="StaticTypeLookupService"/> can be configured to provide a lookup of .
   /// </summary>
-  public class StaticTypeLookupService: KeyedCollection<string, Type>, ITypeLookupService {
+  public class StaticTypeLookupService: ITypeLookupService {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private readonly            TypeCollection                  _typeCollection                 = new TypeCollection();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -35,7 +40,7 @@ namespace Ignia.Topics {
     public StaticTypeLookupService(
       IEnumerable<Type> types = null,
       Type defaultType = null
-    ): base(StringComparer.InvariantCultureIgnoreCase) {
+    ) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set default type
@@ -85,7 +90,7 @@ namespace Ignia.Topics {
       | Return cached entry
       \---------------------------------------------------------------------------------------------------------------------*/
       if (Contains(typeName)) {
-        return this[typeName];
+        return _typeCollection[typeName];
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -96,16 +101,34 @@ namespace Ignia.Topics {
     }
 
     /*==========================================================================================================================
-    | OVERRIDE: GET KEY FOR ITEM
+    | METHOD: ADD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Method must be overridden for the EntityCollection to extract the keys from the items.
+    ///   Adds a <see cref="Type"/> to the underlying collection.
     /// </summary>
-    /// <param name="item">The <see cref="Type"/> object from which to extract the key.</param>
-    /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(Type item) {
-      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
-      return item.Name;
+    protected void Add(Type type) {
+      _typeCollection.Add(type);
+    }
+
+    /*==========================================================================================================================
+    | METHOD: CONTAINS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if the underlying collection has a <see cref="Type"/>.
+    /// </summary>
+    /// <param name="type">The <see cref="Type"/> to located in the collection.</param>
+    /// <returns><c>True</c> if the <see cref="Type"/> exists in the collection.</returns>
+    protected bool Contains(Type type) {
+      return _typeCollection.Contains(type);
+    }
+
+    /// <summary>
+    ///   Determines if the underlying collection has a <see cref="Type"/> with the provided <paramref name="key"/>.
+    /// </summary>
+    /// <param name="key">The key of the <see cref="Type"/> to located in the collection.</param>
+    /// <returns><c>True</c> if a <see cref="Type"/> with <paramref name="key"/> exists in the collection.</returns>
+    protected bool Contains(string key) {
+      return _typeCollection.Contains(key);
     }
 
   } //Class

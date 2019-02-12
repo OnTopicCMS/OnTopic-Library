@@ -29,7 +29,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeCollection                  _typeCache                      = new TypeCollection();
+    static readonly             TypeMemberInfoCollection        _typeCache                      = new TypeMemberInfoCollection();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

@@ -54,7 +54,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void GetProperties() {
 
-      var types = new TypeCollection();
+      var types = new TypeMemberInfoCollection();
 
       var properties = types.GetMembers<PropertyInfo>(typeof(ContentTypeDescriptor));
 
@@ -75,7 +75,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void GetMember() {
 
-      var types = new TypeCollection();
+      var types = new TypeMemberInfoCollection();
 
       Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key") != null);
       Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
@@ -96,7 +96,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void SetProperty() {
 
-      var types                 = new TypeCollection();
+      var types                 = new TypeMemberInfoCollection();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       types.SetPropertyValue(topic, "IsHidden", "1");
@@ -134,7 +134,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void SetMethod() {
 
-      var types                 = new TypeCollection();
+      var types                 = new TypeMemberInfoCollection();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
@@ -165,7 +165,7 @@ namespace Ignia.Topics.Tests {
     public void ReflectionPerformance() {
 
       var totalIterations = 1;
-      var types = new TypeCollection();
+      var types = new TypeMemberInfoCollection();
       var topic = TopicFactory.Create("Test", "ContentType");
 
       var i = 0;

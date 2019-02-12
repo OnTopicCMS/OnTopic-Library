@@ -27,7 +27,7 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeCollection _typeCache = new TypeCollection(typeof(AttributeSetterAttribute));
+    static readonly TypeMemberInfoCollection _typeCache = new TypeMemberInfoCollection(typeof(AttributeSetterAttribute));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

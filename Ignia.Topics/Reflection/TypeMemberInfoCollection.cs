@@ -18,7 +18,7 @@ namespace Ignia.Topics.Reflection {
   /// <summary>
   ///   A collection of <see cref="MemberInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
   /// </summary>
-  internal class TypeCollection : KeyedCollection<Type, MemberInfoCollection> {
+  internal class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -31,7 +31,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Initializes static properties on <see cref="TypeCollection"/>.
     /// </summary>
-    static TypeCollection() {
+    static TypeMemberInfoCollection() {
       SettableTypes = new List<Type> {
         typeof(bool),
         typeof(int),
@@ -50,7 +50,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="attributeFlag">
     ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
     /// </param>
-    internal TypeCollection(Type attributeFlag = null) : base() {
+    internal TypeMemberInfoCollection(Type attributeFlag = null) : base() {
       _attributeFlag = attributeFlag;
     }
 
@@ -394,7 +394,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <see cref="MemberInfoCollection" /> instance to insert.</param>
     /// <exception cref="ArgumentException">
-    ///   The TypeCollection already contains the MemberInfoCollection of the Type '{item.Type}'.
+    ///   The TypeMemberInfoCollection already contains the MemberInfoCollection of the Type '{item.Type}'.
     /// </exception>
     protected override void InsertItem(int index, MemberInfoCollection item) {
       if (!Contains(item.Type)) {
@@ -402,7 +402,7 @@ namespace Ignia.Topics.Reflection {
       }
       else {
         throw new ArgumentException(
-          $"The '{nameof(TypeCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type '{item.Type}'.");
+          $"The '{nameof(TypeMemberInfoCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type '{item.Type}'.");
       }
     }
 
