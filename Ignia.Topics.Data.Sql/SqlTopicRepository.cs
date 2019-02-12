@@ -1241,15 +1241,15 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
 
-      switch (sqlDbType.ToLowerInvariant()) {
-        case "int"              : return SqlDbType.Int;
-        case "tinyint"          : return SqlDbType.TinyInt;
-        case "smallint"         : return SqlDbType.SmallInt;
-        case "uniqueidentifier" : return SqlDbType.UniqueIdentifier;
-        case "bit"              : return SqlDbType.Bit;
-        case "char"             : return SqlDbType.Char;
-        case "varchar"          : return SqlDbType.VarChar;
-        case "datetime"         : return SqlDbType.DateTime;
+      switch (sqlDbType.ToUpperInvariant()) {
+        case "INT"              : return SqlDbType.Int;
+        case "TINYINT"          : return SqlDbType.TinyInt;
+        case "SMALLINT"         : return SqlDbType.SmallInt;
+        case "UNIQUEIDENTIFIER" : return SqlDbType.UniqueIdentifier;
+        case "BIT"              : return SqlDbType.Bit;
+        case "CHAR"             : return SqlDbType.Char;
+        case "VARCHAR"          : return SqlDbType.VarChar;
+        case "DATETIME"         : return SqlDbType.DateTime;
         default                 : return SqlDbType.VarChar;
       }
 
@@ -1341,7 +1341,7 @@ namespace Ignia.Topics.Data.Sql {
           commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
         }
         else if (sqlDbType == SqlDbType.Bit) {
-          if (fieldValue == "1" || fieldValue.ToLowerInvariant() == "true") {
+          if (fieldValue == "1" || fieldValue.ToUpperInvariant() == "TRUE") {
             commandObject.Parameters["@" + sqlParameter].Value = true;
           }
           else {

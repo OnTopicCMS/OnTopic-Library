@@ -98,7 +98,7 @@ namespace Ignia.Topics {
       _headers                  = requestContext.HttpContext.Request.Headers;
       _routes                   = requestContext.RouteData;
       _viewsDirectory           = viewsDirectory;
-      _viewExtension            = viewExtension;
+      _viewExtension            = viewExtension.ToUpperInvariant();
 
       LocalViewsDirectory       = requestContext.HttpContext.Server.MapPath(viewsDirectory);
 
@@ -268,14 +268,14 @@ namespace Ignia.Topics {
           // Get top-level (generic) view files
           foreach (var file in viewsDirectoryInfo.GetFiles(searchPattern, searchOption)) {
             // Strip off the extension (must do even for the FileInfo instance)
-            var fileName = file.Name.ToLowerInvariant().Replace("." + _viewExtension, "");
+            var fileName = file.Name.ToUpperInvariant().Replace("." + _viewExtension, "");
             views.Add(fileName);
           }
           // Get view files specific to Content Type
           foreach (var subDirectory in subDirectories) {
-            var subDirectoryName = subDirectory.Name;
+            var subDirectoryName = subDirectory.Name.ToUpperInvariant();
             foreach (var file in subDirectory.GetFiles(searchPattern, searchOption)) {
-              var fileName = file.Name.ToLowerInvariant().Replace("." + _viewExtension, "");
+              var fileName = file.Name.ToUpperInvariant().Replace("." + _viewExtension, "");
               views.Add(subDirectoryName + "/" + fileName);
             }
           }
