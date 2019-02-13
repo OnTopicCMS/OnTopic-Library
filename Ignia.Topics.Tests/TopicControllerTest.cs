@@ -82,13 +82,13 @@ namespace Ignia.Topics.Tests {
     | TEST: ERROR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="ErrorControllerBase{T}.Error(String)" /> action.
+    ///   Triggers the <see cref="ErrorControllerBase{T}.Index(String)" /> action.
     /// </summary>
     [TestMethod]
-    public void ErrorController_Error() {
+    public void ErrorController_Index() {
 
       var controller            = new ErrorController();
-      var result                = controller.Error("ErrorPage") as ViewResult;
+      var result                = controller.Index("ErrorPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
       Assert.IsNotNull(model);

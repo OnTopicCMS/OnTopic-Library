@@ -31,14 +31,14 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   public abstract class ErrorControllerBase<T> : Controller where T : IPageTopicViewModel, new() {
 
     /*==========================================================================================================================
-    | GET: /Error/Error
+    | GET: /Error
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides the default custom error page for the site.
     /// </summary>
     /// <returns>The site's default error view.</returns>
     [HttpGet]
-    public virtual ActionResult Error(string title = "General Error") {
+    public virtual ActionResult Index (string title = "General Error") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate view model
