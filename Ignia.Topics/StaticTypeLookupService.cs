@@ -84,21 +84,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public Type Lookup(string typeName) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached entry
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(typeName)) {
-        return _typeCollection[typeName];
-      }
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Return default
-      \---------------------------------------------------------------------------------------------------------------------*/
-      return DefaultType;
-
-    }
+    public Type Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
 
     /*==========================================================================================================================
     | METHOD: ADD
@@ -106,9 +92,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Adds a <see cref="Type"/> to the underlying collection.
     /// </summary>
-    protected void Add(Type type) {
-      _typeCollection.Add(type);
-    }
+    protected void Add(Type type) => _typeCollection.Add(type);
 
     /*==========================================================================================================================
     | METHOD: CONTAINS
@@ -118,18 +102,14 @@ namespace Ignia.Topics {
     /// </summary>
     /// <param name="type">The <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if the <see cref="Type"/> exists in the collection.</returns>
-    protected bool Contains(Type type) {
-      return _typeCollection.Contains(type);
-    }
+    protected bool Contains(Type type) => _typeCollection.Contains(type);
 
     /// <summary>
     ///   Determines if the underlying collection has a <see cref="Type"/> with the provided <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key of the <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if a <see cref="Type"/> with <paramref name="key"/> exists in the collection.</returns>
-    protected bool Contains(string key) {
-      return _typeCollection.Contains(key);
-    }
+    protected bool Contains(string key) => _typeCollection.Contains(key);
 
     /*==========================================================================================================================
     | METHOD: REMOVE
@@ -137,9 +117,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Removes a <see cref="Type"/> with the provided <paramref name="key"/>.
     /// </summary>
-    protected void Remove(string key) {
-      _typeCollection.Remove(key);
-    }
+    protected void Remove(string key) => _typeCollection.Remove(key);
 
   } //Class
 } //Namespace
