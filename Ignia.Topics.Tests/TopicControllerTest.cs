@@ -106,7 +106,7 @@ namespace Ignia.Topics.Tests {
     public void ErrorController_NotFound() {
 
       var controller            = new ErrorController();
-      var result                = controller.Error("NotFoundPage") as ViewResult;
+      var result                = controller.NotFound("NotFoundPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
       Assert.IsNotNull(model);
@@ -124,7 +124,7 @@ namespace Ignia.Topics.Tests {
     public void ErrorController_InternalServer() {
 
       var controller            = new ErrorController();
-      var result                = controller.Error("InternalServer") as ViewResult;
+      var result                = controller.InternalServer("InternalServer") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
       Assert.IsNotNull(model);
