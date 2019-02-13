@@ -26,8 +26,7 @@ namespace Ignia.Topics.Diagnostics {
   ///     aims to maintain basic synatactical and functional support for the most basic (and important) features of the rewrite
   ///     module, such as <code>Contract.Requires()</code>, which is necessary to ensure paramater validation in many methods
   ///     throughout the OnTopic library. <see cref="Contract"/> does not seek to functionally reproduce Code Contract's
-  ///     <code>Ensures()</code>, <code>Assume()</code>, or <code>Invariant()</code>—any such functions are purely intended
-  ///     to maintain temporary syntactical support, and will be marked as deprecated.
+  ///     <code>Ensures()</code>, <code>Assume()</code>, or <code>Invariant()</code>—those methods are not implemented.
   ///   </para>
   ///   <para>
   ///     C# 8.0 will introduce nullable reference types. This largely mitigates the need for <code>Contract.Requires()</code>.
@@ -95,36 +94,8 @@ namespace Ignia.Topics.Diagnostics {
     }
 
     /*==========================================================================================================================
-    | METHOD: ENSURES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
-    /// </summary>
-    /// <remarks>
-    ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Ensures"/>
-    ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
-    /// </remarks>
-    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
-    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    [Obsolete("Not implemented. The Ensures method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static void Ensures(bool isValid, string errorMessage = null) {
-    }
-
-    /*==========================================================================================================================
     | METHOD: ASSUME
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
-    /// </summary>
-    /// <remarks>
-    ///   It is not necessary without code analysis to assume that a condition is met. As a result, while this method always
-    ///   returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
-    /// </remarks>
-    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
-    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    [Obsolete("Not implemented. The Assume method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static bool Assume(bool isValid, string errorMessage = null) => true;
-
     /// <summary>
     ///   Ensures that a condition is met. If not, the provided exception is thrown.
     /// </summary>
@@ -147,34 +118,6 @@ namespace Ignia.Topics.Diagnostics {
     /// </exception>
     public static void Assume<T>(bool isValid, string errorMessage = null) where T : Exception, new() =>
       Requires<T>(isValid, errorMessage);
-
-    /*==========================================================================================================================
-    | METHOD: ASSERT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
-    /// </summary>
-    /// <remarks>
-    ///   It is not necessary without code analysis to assert that a condition will be met. As a result, while this method
-    ///   always returns <see langword="true"/>, this method serves no purpose and should be considered deprecated.
-    /// </remarks>
-    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
-    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    [Obsolete("Not implemented. The Assert method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static bool Assert(bool isValid, string errorMessage = null) => true;
-
-    /*==========================================================================================================================
-    | METHOD: RESULT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Not implemented. Merely provided to maintain syntactical consistency with Code Contracts.
-    /// </summary>
-    /// <remarks>
-    ///   It is not possible without code rewriting to validate the output of a method. As such, the <see cref="Result"/>
-    ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
-    /// </remarks>
-    [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static T Result<T>() => default;
 
   } //class
 } //Namespace
