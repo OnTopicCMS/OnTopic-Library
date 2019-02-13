@@ -115,7 +115,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
-      var viewModelType = _typeLookupService.GetType($"{topic.ContentType}TopicViewModel");
+      var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------

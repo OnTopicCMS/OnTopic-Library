@@ -64,12 +64,12 @@ namespace Ignia.Topics {
     | PROPERTY: DEFAULT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   The default type to return in case <see cref="GetType(String)"/> cannot find a match.
+    ///   The default type to return in case <see cref="Lookup(String)"/> cannot find a match.
     /// </summary>
     public Type DefaultType { get; }
 
     /*==========================================================================================================================
-    | METHOD: GET TYPE
+    | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a <see cref="Type"/> from the class based on its string representation.
@@ -84,7 +84,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public Type GetType(string typeName) {
+    public Type Lookup(string typeName) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Return cached entry
