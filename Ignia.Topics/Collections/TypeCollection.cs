@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Ignia.Topics.Diagnostics;
 using System.Collections;
+using System.Reflection;
 
 namespace Ignia.Topics {
 
@@ -46,7 +47,7 @@ namespace Ignia.Topics {
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="Type"/>, returns the value that will act as the key—in this case, the <see cref="Type.Name"/>
+    ///   Given a <see cref="Type"/>, returns the value that will act as the key—in this case, the <see cref="MemberInfo.Name"/>
     ///   property.
     /// </summary>
     /// <param name="item">The <see cref="Type"/> object from which to extract the key.</param>
