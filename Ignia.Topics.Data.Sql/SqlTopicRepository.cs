@@ -147,8 +147,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var blob = new XmlDocument();
-      blob.LoadXml((string)reader?["Blob"]);
+      var xmlData               = reader.GetSqlXml(1);
+      var xmlReader             = xmlData.CreateReader();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the current topic
@@ -158,13 +158,13 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through nodes to set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (XmlNode attribute in blob.DocumentElement.GetElementsByTagName("attribute")) {
+      while (xmlReader.ReadToFollowing("attribute")) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        var name                = attribute.Attributes?["key"]?.Value;
-        var value               = WebUtility.HtmlDecode(attribute.InnerXml);
+        var name                = (string)xmlReader.GetAttribute("key");
+        var value               = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
@@ -181,6 +181,7 @@ namespace Ignia.Topics.Data.Sql {
         current.Attributes.SetValue(name, value, false);
 
       }
+
     }
 
     /*==========================================================================================================================
