@@ -174,7 +174,7 @@ namespace Ignia.Topics.Diagnostics {
     ///   method cannot be properly implemented. For this reason, it is marked as deprecated.
     /// </remarks>
     [Obsolete("Not implemented. The Result method is maintained for syntactical consistency only. References should be removed.", true)]
-    public static T Result<T>() => default(T);
+    public static T Result<T>() => default;
 
   } //class
 } //Namespace
