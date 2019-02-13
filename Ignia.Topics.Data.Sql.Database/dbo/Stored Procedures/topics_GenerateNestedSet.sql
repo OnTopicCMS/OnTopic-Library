@@ -73,7 +73,7 @@ BEGIN
       DELETE FROM topics_hierarchy
        WHERE TopicID = (SELECT TopicID
                         FROM topics_Topics
-                       WHERE Stack_Top = @topics_topics_pointer + 1);
+                        WHERE ISNULL(Stack_Top, 0) = @topics_topics_pointer + 1);
       SET @topics_topics_pointer = @topics_topics_pointer + 1;
     END -- push
     ELSE
@@ -81,7 +81,7 @@ BEGIN
       UPDATE topics_Topics
          SET RangeRight = @RangeLeft_RangeRight,
              Stack_Top = -Stack_Top
-       WHERE Stack_Top = @topics_topics_pointer
+       WHERE ISNULL(Stack_Top, 0) = @topics_topics_pointer
       SET @topics_topics_pointer = @topics_topics_pointer - 1;
     END; -- pop
   SET @RangeLeft_RangeRight = @RangeLeft_RangeRight + 1;
