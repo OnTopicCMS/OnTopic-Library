@@ -23,7 +23,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the <see cref="FakeTopicLookupService"/>.
+    ///   Instantiates a new instance of the <see cref="FakeViewModelLookupService"/>.
     /// </summary>
     /// <returns>A new instance of the <see cref="FakeTopicLookupService"/>.</returns>
     internal FakeViewModelLookupService(): base(null, typeof(object)) {
