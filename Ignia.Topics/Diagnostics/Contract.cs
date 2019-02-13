@@ -64,7 +64,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="T:Exception">
+    /// <exception cref="Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
@@ -138,7 +138,7 @@ namespace Ignia.Topics.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="T:Exception">
+    /// <exception cref="Exception">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
