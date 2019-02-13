@@ -131,5 +131,15 @@ namespace Ignia.Topics {
       return _typeCollection.Contains(key);
     }
 
+    /*==========================================================================================================================
+    | METHOD: REMOVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Removes a <see cref="Type"/> with the provided <paramref name="key"/>.
+    /// </summary>
+    protected void Remove(string key) {
+      _typeCollection.Remove(key);
+    }
+
   } //Class
 } //Namespace
