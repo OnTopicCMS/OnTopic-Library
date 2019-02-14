@@ -156,15 +156,20 @@ namespace Ignia.Topics.Data.Sql {
       var current               = topics[id];
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle scenario where there isn't an <attribute /> element
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!xmlReader.ReadToFollowing("attribute")) return;
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Loop through nodes to set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      while (xmlReader.ReadToFollowing("attribute")) {
+      do {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        var name                = (string)xmlReader.GetAttribute("key");
-        var value               = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
+        var name = (string)xmlReader.GetAttribute("key");
+        var value = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
@@ -180,7 +185,7 @@ namespace Ignia.Topics.Data.Sql {
         if (String.IsNullOrEmpty(value)) continue;
         current.Attributes.SetValue(name, value, false);
 
-      }
+      } while (xmlReader.Name == "attribute");
 
     }
 
