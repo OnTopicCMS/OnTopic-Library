@@ -28,6 +28,7 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 ### Presentation Layer
 - **[`Ignia.Topics.Web`](Ignia.Topics.Web)**: ASP.NET WebForms implementation, allowing templates to be created using `*.aspx` pages. This is considered deprecated, and intended exclusively for backward compatibility.
 - **[`Ignia.Topics.Web.Mvc`](Ignia.Topics.Web.Mvc)**: ASP.NET MVC 5.x implementation, including a default [`TopicController`](Ignia.Topics.Web.Mvc/TopicController.cs) implementation, allowing templates to be created using `*.cshtml` pages.
+- **[`Ignia.Topics.AspNetCore.Mvc`](Ignia.Topics.AspNetCore.Mvc)**: ASP.NET Core 2.x implementation, including a default [`TopicController`](Ignia.Topics.Web.Mvc/TopicController.cs) implementation, allowing templates to be created using `*.cshtml` pages.
 - **[`Ignia.Topics.ViewModels`](Ignia.Topics.ViewModels)**: Standard view models for exposing factory default schemas of shared content types. These can be extended, overwritten, or ignored entirely by the presentation layer implementation; they are provided for convenience.
 
 ### Unit Tests
@@ -36,7 +37,6 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 ### Editor
 - **[`Ignia.Topics.Editor`](https://github.com/Ignia/Topic-Editor/)**: ASP.NET WebForms implementation of the editor interface.
 - **[`Ignia.Topics.Editor.Mvc`](https://github.com/Ignia/Topic-Editor-MVC/)**: ASP.NET MVC implementation of the editor interface.
-
 
 ## Credits
 OnTopic is owned and maintained by [Ignia](http://www.ignia.com/). 
