@@ -46,7 +46,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRoutingService            _topicRoutingService            = null;
-    private readonly            ITopicMappingService            _topicMappingService            = null;
+    private readonly            INavigationMappingService<T>    _navigationMappingService       = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -57,13 +57,11 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected LayoutControllerBase(
-      ITopicRepository topicRepository,
       ITopicRoutingService topicRoutingService,
-      ITopicMappingService topicMappingService
+      INavigationMappingService<T> navigationMappingService
     ) : base() {
-      TopicRepository           = topicRepository;
       _topicRoutingService      = topicRoutingService;
-      _topicMappingService      = topicMappingService;
+      _navigationMappingService = navigationMappingService;
     }
 
     /*==========================================================================================================================
@@ -110,13 +108,13 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = GetNavigationRoot(currentTopic, 2, "Web");
+      navigationRootTopic = _navigationMappingService.GetNavigationRoot(currentTopic, 2, "Web");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3).ConfigureAwait(false),
+        NavigationRoot          = await _navigationMappingService.GetRootViewModelAsync(navigationRootTopic, false, 3).ConfigureAwait(false),
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
@@ -125,158 +123,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return PartialView(navigationViewModel);
 
-    }
-
-    /*==========================================================================================================================
-    | GET NAVIGATION ROOT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   A helper function that will crawl up the current tree and retrieve the topic that is <paramref name="fromRoot"/> tiers
-    ///   down from the root of the topic graph.
-    /// </summary>
-    /// <remarks>
-    ///   Often, an action of a <see cref="LayoutController{T}"/> will need a reference to a topic at a certain level, which
-    ///   represents the navigation for the site. For instance, if the primary navigation is at <c>Root:Web</c>, then the
-    ///   navigation is one level from the root (i.e., <paramref name="fromRoot"/>=1). This, however, should not be hard-coded
-    ///   in case a site has multiple roots. For instance, if a page is under <c>Root:Library</c> then <i>that</i> should be the
-    ///   navigation root. This method provides support for these scenarios.
-    /// </remarks>
-    /// <param name="currentTopic">The <see cref="Topic"/> to start from.</param>
-    /// <param name="fromRoot">The distance that the navigation root should be from the root of the topic graph.</param>
-    /// <param name="defaultRoot">If a root cannot be identified, the default root that should be returned.</param>
-    protected Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Find navigation root
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationRootTopic = currentTopic;
-      while (DistanceFromRoot(navigationRootTopic) > fromRoot) {
-        navigationRootTopic = navigationRootTopic.Parent;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle default, if necessary
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic == null && !String.IsNullOrWhiteSpace(defaultRoot)) {
-        navigationRootTopic = TopicRepository.Load(defaultRoot);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return navigation root
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return navigationRootTopic;
-
-    }
-
-    /*==========================================================================================================================
-    | DISTANCE FROM ROOT
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   A helper function that will determine how far a given topic is from the root of a tree.
-    /// </summary>
-    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    private static int DistanceFromRoot(Topic sourceTopic) {
-      var distance = 1;
-      while (sourceTopic?.Parent != null) {
-        sourceTopic = sourceTopic.Parent;
-        distance++;
-      }
-      return distance;
-    }
-
-    /*==========================================================================================================================
-    | GET ROOT VIEW MODEL (ASYNC)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
-    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
-    ///   <c>ContentType</c> of <c>PageGroup</c>.
-    /// </summary>
-    /// <remarks>
-    ///   In the out-of-the-box implementation, <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/> and <see
-    ///   cref="GetViewModelAsync(Topic, Boolean, Int32)"/> provide the same functionality. It is recommended that actions call
-    ///   <see cref="GetRootViewModelAsync(Topic, Boolean, Int32)"/>, however, as it allows implementers the flexibility to
-    ///   differentiate between the root view model (which the client application will be binding to) and any child view models
-    ///   (which the client application may optionally iterate over).
-    /// </remarks>
-    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
-    /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected virtual async Task<T> GetRootViewModelAsync(
-      Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
-    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
-
-    /*==========================================================================================================================
-    | GET VIEW MODEL (ASYNC)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
-    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
-    ///   <c>ContentType</c> of <c>PageGroup</c>.
-    /// </summary>
-    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
-    /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected async Task<T> GetViewModelAsync(
-      Topic sourceTopic,
-      bool allowPageGroups      = true,
-      int tiers                 = 1
-    ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate preconditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      tiers--;
-      if (sourceTopic == null) {
-        return null;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue             = new List<Task<T>>();
-      var children              = new List<T>();
-      var viewModel             = (T)null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Map object
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Request mapping of children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (tiers >= 0 && (allowPageGroups || sourceTopic.ContentType != "PageGroup") && viewModel.Children.Count == 0) {
-        foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
-          taskQueue.Add(GetViewModelAsync(topic, allowPageGroups, tiers));
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Process children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      while (taskQueue.Count > 0 && viewModel.Children.Count == 0) {
-        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-        taskQueue.Remove(dtoTask);
-        children.Add(await dtoTask.ConfigureAwait(false));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add children to view model
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (viewModel.Children.Count == 0) {
-        lock (viewModel) {
-          if (viewModel.Children.Count == 0) {
-            children.ForEach(c => viewModel.Children.Add(c));
-          }
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return view model
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return viewModel;
     }
 
   } // Class

@@ -4,14 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Ignia.Topics.Mapping;
-using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Controllers;
 
 namespace Ignia.Topics.Tests {
 
   /*============================================================================================================================
-  | CLASS: ERROR CONTROLLER
+  | CLASS: LAYOUT CONTROLLER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Concrete implementation of <see cref="LayoutControllerBase{T}"/> class, suitable for test purposes.
@@ -26,14 +25,12 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     public LayoutController(
-      ITopicRepository topicRepository,
       ITopicRoutingService topicRoutingService,
-      ITopicMappingService topicMappingService
+      INavigationMappingService<NavigationTopicViewModel> navigationMappingService
     ) : base(
-      topicRepository,
       topicRoutingService,
-      topicMappingService
-    ) {}
+      navigationMappingService
+    ) { }
 
   } //Class
 } //Namespace
