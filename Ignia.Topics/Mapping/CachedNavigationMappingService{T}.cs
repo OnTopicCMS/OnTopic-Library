@@ -5,55 +5,34 @@
 \=============================================================================================================================*/
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Ignia.Topics.Mapping;
-using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.Mapping {
 
   /*============================================================================================================================
-  | CLASS: CACHED LAYOUT CONTROLLER
+  | CLASS: CACHED NAVIGATION MAPPING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides access to views for populating specific layout dependencies, such as the <see cref="Menu"/>, while caching
-  ///   the <see cref="INavigationTopicViewModel{T}"/> graphs for performance.
+  ///   Provides a wrapper to a <see cref="INavigationMappingService{T}"/> implementation with support for caching.
   /// </summary>
   /// <remarks>
-  ///   <para>
-  ///     As a best practice, global data required by the layout view are requested independently of the current page. This
-  ///     allows each layout element to be provided with its own layout data, in the form of <see
-  ///     cref="NavigationViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
-  ///     cref="TopicController"/>. The <see cref="LayoutController{T}"/> facilitates this by not only providing a default
-  ///     implementation for <see cref="Menu"/>, but additionally providing protected helper methods that aid in locating and
-  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
-  ///     specific layout elements.
-  ///   </para>
-  ///   <para>
-  ///     In order to remain view model agnostic, the <see cref="LayoutController{T}"/> does not assume that a particular view
-  ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
-  ///     cref="INavigationTopicViewModelCore"/>. Since generic controllers cannot be effectively routed to, however, that means
-  ///     implementors must, at minimum, provide a local instance of <see cref="LayoutController{T}"/> which sets the generic
-  ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
-  ///     <c>abstract</c> and suffixed with <c>Base</c>.
-  ///   </para>
-  ///   <para>
-  ///     By comparison to the <see cref="LayoutControllerBase{T}"/>, the <see cref="CachedLayoutControllerBase{T}"/> will
-  ///     automatically cache the <see cref="INavigationTopicViewModel{T}"/> graph for each action that uses the protected <see
-  ///     cref="GetViewModelAsync(Topic, Boolean, Int32)"/> method to construct the graph. This is preferable over using e.g.
-  ///     the <see cref="CachedTopicMappingService"/> since the <see cref="LayoutControllerBase{T}"/> requires tight control
-  ///     over the shape of the <see cref="INavigationTopicViewModel{T}"/> graph. For instance, using a generic caching
-  ///     decorator for the mapping might result in the edges of the <see cref="Menu"/> action being expanded due to other
-  ///     actions reusing cached instances (e.g., for page-level navigation). To mitigate this, the <see
-  ///     cref="CachedLayoutControllerBase{T}"/> handles top-level caching at the level of the navigation root.
-  ///   </para>
+  ///   By comparison to the <see cref="NavigationMappingService{T}"/>, the <see cref="CachedNavigationMappingService{T}"/> will
+  ///   automatically cache the <see cref="INavigationTopicViewModel{T}"/> graph for each action that uses the protected <see
+  ///   cref="INavigationMappingService.GetViewModelAsync(Topic, Boolean, Int32)"/> method to construct the graph. This is
+  ///   preferable over using e.g. the <see cref="CachedTopicMappingService"/> since the <see cref="LayoutControllerBase{T}"/>
+  ///   requires tight control over the shape of the <see cref="INavigationTopicViewModel{T}"/> graph. For instance, using a
+  ///   generic caching decorator for the mapping might result in the edges of the <see cref="Menu"/> action being expanded due
+  ///   to other actions reusing cached instances (e.g., for page-level navigation). To mitigate this, the <see
+  ///   cref="CachedLayoutControllerBase{T}"/> handles top-level caching at the level of the navigation root.
   /// </remarks>
-  public abstract class CachedLayoutControllerBase<T> : LayoutControllerBase<T>
+  public abstract class CachedNavigationMappingService<T> : INavigationMappingService<T>
     where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private static ConcurrentDictionary<int, T> _cache = new ConcurrentDictionary<int, T>();
+    private readonly ConcurrentDictionary<int, T> _cache = new ConcurrentDictionary<int, T>();
+    private readonly INavigationMappingService<T> _navigationMappingService = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -62,11 +41,32 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    protected CachedLayoutControllerBase(
-      ITopicRepository topicRepository,
-      ITopicRoutingService topicRoutingService,
-      ITopicMappingService topicMappingService
-    ) : base(topicRepository, topicRoutingService, topicMappingService) {}
+    protected CachedNavigationMappingService(
+      INavigationMappingService<T> navigationMappingService
+    ) {
+      _navigationMappingService = navigationMappingService;
+    }
+
+    /*==========================================================================================================================
+    | GET NAVIGATION ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A helper function that will crawl up the current tree and retrieve the topic that is <paramref name="fromRoot"/> tiers
+    ///   down from the root of the topic graph.
+    /// </summary>
+    /// <remarks>
+    ///   Often, an action of a <see cref="LayoutController{T}"/> will need a reference to a topic at a certain level, which
+    ///   represents the navigation for the site. For instance, if the primary navigation is at <c>Root:Web</c>, then the
+    ///   navigation is one level from the root (i.e., <paramref name="fromRoot"/>=1). This, however, should not be hard-coded
+    ///   in case a site has multiple roots. For instance, if a page is under <c>Root:Library</c> then <i>that</i> should be the
+    ///   navigation root. This method provides support for these scenarios.
+    /// </remarks>
+    /// <param name="currentTopic">The <see cref="Topic"/> to start from.</param>
+    /// <param name="fromRoot">The distance that the navigation root should be from the root of the topic graph.</param>
+    /// <param name="defaultRoot">If a root cannot be identified, the default root that should be returned.</param>
+    public Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+      return _navigationMappingService.GetNavigationRoot(currentTopic, fromRoot, defaultRoot);
+    }
 
     /*==========================================================================================================================
     | GET ROOT VIEW MODEL (ASYNC)
@@ -80,10 +80,10 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected override async Task<T> GetRootViewModelAsync(
+    public async Task<T> GetRootViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups      = true,
-      int tiers                 = 1
+      bool allowPageGroups = true,
+      int tiers = 1
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -108,6 +108,24 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
 
     }
 
-  } // Class
+    /*==========================================================================================================================
+    | GET VIEW MODEL (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
+    ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
+    ///   <c>ContentType</c> of <c>PageGroup</c>.
+    /// </summary>
+    /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
+    /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
+    /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
+    public async Task<T> GetViewModelAsync(
+      Topic sourceTopic,
+      bool allowPageGroups = true,
+      int tiers = 1
+    ) {
+      return await _navigationMappingService.GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
+    }
 
+  } // Class
 } // Namespace

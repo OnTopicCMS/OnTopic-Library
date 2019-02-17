@@ -7,47 +7,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
-using Ignia.Topics.Web.Mvc.Models;
 
-namespace Ignia.Topics.Web.Mvc.Controllers {
+namespace Ignia.Topics.Mapping {
 
   /*============================================================================================================================
-  | CLASS: LAYOUT CONTROLLER
+  | CLASS: NAVIGATION MAPPING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides access to views for populating specific layout dependencies, such as the <see cref="Menu"/>.
+  ///   Provides methods for mapping multiple levels of a topic tree to a <see cref="INavigationTopicViewModel{T}"/> tree.
   /// </summary>
   /// <remarks>
   ///   <para>
   ///     As a best practice, global data required by the layout view are requested independently of the current page. This
   ///     allows each layout element to be provided with its own layout data, in the form of <see
-  ///     cref="NavigationViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
+  ///     cref="INavigationTopicViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
   ///     cref="TopicController"/>. The <see cref="LayoutController{T}"/> facilitates this by not only providing a default
   ///     implementation for <see cref="Menu"/>, but additionally providing protected helper methods that aid in locating and
-  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
+  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModel{T}"/> references that are relevant to
   ///     specific layout elements.
   ///   </para>
   ///   <para>
-  ///     In order to remain view model agnostic, the <see cref="LayoutController{T}"/> does not assume that a particular view
-  ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
-  ///     cref="INavigationTopicViewModelCore"/>. Since generic controllers cannot be effectively routed to, however, that means
-  ///     implementors must, at minimum, provide a local instance of <see cref="LayoutController{T}"/> which sets the generic
-  ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
-  ///     <c>abstract</c> and suffixed with <c>Base</c>.
+  ///     In order to remain view model agnostic, the <see cref="NavigationMappingService{T}"/> does not assume that a
+  ///     particular view model will be used, and instead accepts a generic argument for any view model that implements the
+  ///     interface <see cref="INavigationTopicViewModel{T}"/>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : AsyncController where T : class, INavigationTopicViewModel<T>, new() {
+  public class NavigationMappingService<T> : INavigationMappingService<T> where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRoutingService            _topicRoutingService            = null;
     private readonly            ITopicMappingService            _topicMappingService            = null;
-    private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -56,12 +49,12 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Initializes a new instance of a Topic Controller with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    protected LayoutControllerBase(
+    public NavigationMappingService(
       ITopicRepository topicRepository,
       ITopicRoutingService topicRoutingService,
       ITopicMappingService topicMappingService
-    ) : base() {
-      TopicRepository          = topicRepository;
+    ) {
+      TopicRepository           = topicRepository;
       _topicRoutingService      = topicRoutingService;
       _topicMappingService      = topicMappingService;
     }
@@ -73,59 +66,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository { get; } = null;
-
-    /*==========================================================================================================================
-    | CURRENT TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a reference to the current topic associated with the request.
-    /// </summary>
-    /// <returns>The Topic associated with the current request.</returns>
-    protected Topic CurrentTopic {
-      get {
-        if (_currentTopic == null) {
-          _currentTopic = _topicRoutingService.GetCurrentTopic();
-        }
-        return _currentTopic;
-      }
-    }
-
-    /*==========================================================================================================================
-    | MENU
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
-    /// </summary>
-    public async virtual Task<PartialViewResult> Menu() {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var currentTopic          = CurrentTopic;
-      var navigationRootTopic   = (Topic)null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify navigation root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = GetNavigationRoot(currentTopic, 2, "Web");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Construct view model
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = await GetRootViewModelAsync(navigationRootTopic, false, 3).ConfigureAwait(false),
-        CurrentKey              = CurrentTopic?.GetUniqueKey()
-      };
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the corresponding view
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return PartialView(navigationViewModel);
-
-    }
+    private ITopicRepository TopicRepository { get; } = null;
 
     /*==========================================================================================================================
     | GET NAVIGATION ROOT
@@ -144,7 +85,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="currentTopic">The <see cref="Topic"/> to start from.</param>
     /// <param name="fromRoot">The distance that the navigation root should be from the root of the topic graph.</param>
     /// <param name="defaultRoot">If a root cannot be identified, the default root that should be returned.</param>
-    protected Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+    public Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find navigation root
@@ -202,7 +143,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected virtual async Task<T> GetRootViewModelAsync(
+    public virtual async Task<T> GetRootViewModelAsync(
       Topic sourceTopic,
       bool allowPageGroups = true,
       int tiers = 1
@@ -211,6 +152,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /*==========================================================================================================================
     | GET VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
     ///   Given a <paramref name="sourceTopic"/>, maps a <typeparamref name="T"/>, as well as <paramref name="tiers"/> of
     ///   <see cref="INavigationTopicViewModel{T}.Children"/>. Optionally excludes <see cref="Topic"/> instance with the
     ///   <c>ContentType</c> of <c>PageGroup</c>.
@@ -218,7 +160,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     /// <param name="allowPageGroups">Determines whether <see cref="PageGroupTopicViewModel"/>s should be crawled.</param>
     /// <param name="tiers">Determines how many tiers of children should be included in the graph.</param>
-    protected async Task<T> GetViewModelAsync(
+    public async Task<T> GetViewModelAsync(
       Topic sourceTopic,
       bool allowPageGroups      = true,
       int tiers                 = 1
@@ -280,5 +222,4 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     }
 
   } // Class
-
 } // Namespace
