@@ -52,11 +52,11 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | GET NAVIGATION ROOT
+    | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
-    public Topic GetNavigationRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
-      return _navigationMappingService.GetNavigationRoot(currentTopic, fromRoot, defaultRoot);
-    }
+    /// <inheritdocs />
+    public Topic GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
+      _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
 
     /*==========================================================================================================================
     | GET ROOT VIEW MODEL (ASYNC)

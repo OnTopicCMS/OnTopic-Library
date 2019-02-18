@@ -34,7 +34,7 @@ namespace Ignia.Topics.Mapping {
   public interface IHierarchicalTopicMappingService<T> where T : class, IHierarchicalTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
-    | GET NAVIGATION ROOT
+    | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a <paramref name="currentTopic"/>, will crawl up the current tree and retrieve the topic that is <paramref

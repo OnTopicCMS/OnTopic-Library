@@ -69,7 +69,7 @@ namespace Ignia.Topics.Mapping {
     private ITopicRepository TopicRepository { get; } = null;
 
     /*==========================================================================================================================
-    | GET NAVIGATION ROOT
+    | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
     public Topic GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
