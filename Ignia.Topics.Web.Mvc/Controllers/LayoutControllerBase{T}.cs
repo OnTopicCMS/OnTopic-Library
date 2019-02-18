@@ -46,7 +46,6 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRoutingService            _topicRoutingService            = null;
-    private readonly            INavigationMappingService<T>    _navigationMappingService       = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -58,10 +57,10 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected LayoutControllerBase(
       ITopicRoutingService topicRoutingService,
-      INavigationMappingService<T> navigationMappingService
+      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) : base() {
-      _topicRoutingService      = topicRoutingService;
-      _navigationMappingService = navigationMappingService;
+      _topicRoutingService = topicRoutingService;
+      HierarchicalTopicMappingService = hierarchicalTopicMappingService;
     }
 
     /*==========================================================================================================================
@@ -79,6 +78,15 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
         return _currentTopic;
       }
     }
+
+    /*==========================================================================================================================
+    | HIERARCHICAL TOPIC MAPPING SERVICE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the <see cref="IHierarchicalTopicMappingService{T}"/> associated with the request.
+    /// </summary>
+    /// <returns>The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the current request.</returns>
+    protected IHierarchicalTopicMappingService<T> HierarchicalTopicMappingService { get; }
 
     /*==========================================================================================================================
     | MENU
@@ -99,7 +107,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = _navigationMappingService.GetNavigationRoot(currentTopic, 2, "Web");
+      navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model

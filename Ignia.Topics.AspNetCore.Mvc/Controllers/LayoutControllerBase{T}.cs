@@ -43,7 +43,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRoutingService            _topicRoutingService            = null;
-    private readonly            INavigationMappingService<T>    _navigationMappingService       = null;
+    private readonly            IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService = null;
     private                     Topic                           _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -55,10 +55,10 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected LayoutControllerBase(
       ITopicRoutingService topicRoutingService,
-      INavigationMappingService<T> navigationMappingService
+      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) : base() {
-      _topicRoutingService      = topicRoutingService;
-      _navigationMappingService = navigationMappingService;
+      _topicRoutingService = topicRoutingService;
+      _hierarchicalTopicMappingService = hierarchicalTopicMappingService;
     }
 
     /*==========================================================================================================================
@@ -105,7 +105,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = _navigationMappingService.GetNavigationRoot(currentTopic, 2, "Web");
+      navigationRootTopic = _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model

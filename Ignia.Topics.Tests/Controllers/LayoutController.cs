@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests {
     /// <returns>A topic controller for loading OnTopic views.</returns>
     public LayoutController(
       ITopicRoutingService topicRoutingService,
-      INavigationMappingService<NavigationTopicViewModel> navigationMappingService
+      IHierarchicalTopicMappingService<NavigationTopicViewModel> navigationMappingService
     ) : base(
       topicRoutingService,
       navigationMappingService
