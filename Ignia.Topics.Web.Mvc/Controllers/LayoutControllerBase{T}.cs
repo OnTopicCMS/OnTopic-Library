@@ -28,13 +28,13 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
   ///     cref="NavigationViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
   ///     cref="TopicController"/>. The <see cref="LayoutController{T}"/> facilitates this by not only providing a default
   ///     implementation for <see cref="Menu"/>, but additionally providing protected helper methods that aid in locating and
-  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
+  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModel{T}"/> references that are relevant to
   ///     specific layout elements.
   ///   </para>
   ///   <para>
   ///     In order to remain view model agnostic, the <see cref="LayoutController{T}"/> does not assume that a particular view
   ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
-  ///     cref="INavigationTopicViewModelCore"/>. Since generic controllers cannot be effectively routed to, however, that means
+  ///     cref="INavigationTopicViewModel{T}"/>. Since generic controllers cannot be effectively routed to, however, that means
   ///     implementors must, at minimum, provide a local instance of <see cref="LayoutController{T}"/> which sets the generic
   ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
   ///     <c>abstract</c> and suffixed with <c>Base</c>.

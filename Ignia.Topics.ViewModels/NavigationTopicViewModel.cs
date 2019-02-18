@@ -4,6 +4,7 @@
 | Project       Website
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Ignia.Topics.ViewModels {
@@ -23,7 +24,7 @@ namespace Ignia.Topics.ViewModels {
   ///     Since C# doesn't support return-type covariance, this class can't be derived in a meaningful way (i.e., if it were to
   ///     be, the <see cref="NavigationTopicViewModel.Children"/> property would still return a <see cref="Collection{T}"/> of
   ///     <see cref="NavigationTopicViewModel"/> instances). Instead, the preferred way to extend the functionality is to create
-  ///     a new implementation of <see cref="INavigationTopicViewModelCore{T}"/>. To help communicate this, the <see
+  ///     a new implementation of <see cref="INavigationTopicViewModel{T}"/>. To help communicate this, the <see
   ///     cref="NavigationTopicViewModel"/> class is marked as <c>sealed</c>.
   ///   </para>
   /// </remarks>
