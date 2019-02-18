@@ -75,8 +75,8 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     Task<T> GetRootViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
     );
 
     /*==========================================================================================================================
@@ -95,8 +95,8 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     Task<T> GetViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
     );
 
 

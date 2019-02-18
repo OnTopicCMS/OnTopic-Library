@@ -118,9 +118,9 @@ namespace Ignia.Topics.Mapping {
     /// <inheritdocs />
     public virtual async Task<T> GetRootViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
-    ) => await GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
+    ) => await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 
     /*==========================================================================================================================
     | GET VIEW MODEL (ASYNC)
@@ -128,8 +128,8 @@ namespace Ignia.Topics.Mapping {
     /// <inheritdocs />
     public async Task<T> GetViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups      = true,
-      int tiers                 = 1
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -148,16 +148,23 @@ namespace Ignia.Topics.Mapping {
       var viewModel             = (T)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish default delegate
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (validationDelegate == null) {
+        validationDelegate = (Topic) => true;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Map object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel                 = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
+      viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (tiers >= 0 && (allowPageGroups || sourceTopic.ContentType != "PageGroup") && viewModel.Children.Count == 0) {
+      if (tiers >= 0 && validationDelegate(sourceTopic) && viewModel.Children.Count == 0) {
         foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
-          taskQueue.Add(GetViewModelAsync(topic, allowPageGroups, tiers));
+          taskQueue.Add(GetViewModelAsync(topic, tiers, validationDelegate));
         }
       }
 

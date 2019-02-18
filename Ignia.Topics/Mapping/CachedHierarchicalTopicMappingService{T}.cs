@@ -64,8 +64,8 @@ namespace Ignia.Topics.Mapping {
     /// <inheritdocs />
     public async Task<T> GetRootViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Cache and return new version
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModel = await GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
+      var viewModel = await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
       return _cache.GetOrAdd(sourceTopic.Id, viewModel);
 
     }
@@ -96,11 +96,10 @@ namespace Ignia.Topics.Mapping {
     /// <inheritdocs />
     public async Task<T> GetViewModelAsync(
       Topic sourceTopic,
-      bool allowPageGroups = true,
-      int tiers = 1
-    ) {
-      return await _navigationMappingService.GetViewModelAsync(sourceTopic, allowPageGroups, tiers).ConfigureAwait(false);
-    }
+      int tiers = 1,
+      Func<Topic, bool> validationDelegate = null
+    ) =>
+      await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 
   } // Class
 } // Namespace

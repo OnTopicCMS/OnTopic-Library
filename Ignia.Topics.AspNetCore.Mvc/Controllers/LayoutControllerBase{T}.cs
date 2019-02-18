@@ -106,12 +106,17 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       navigationRootTopic = _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
+      var navigationRoot = await _hierarchicalTopicMappingService.GetRootViewModelAsync(
+        navigationRootTopic,
+        3,
+        t => t.ContentType != "PageGroup"
+      ).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = await _navigationMappingService.GetRootViewModelAsync(navigationRootTopic, false, 3).ConfigureAwait(false),
+        NavigationRoot          = navigationRoot,
         CurrentKey              = CurrentTopic?.GetUniqueKey()
       };
 
