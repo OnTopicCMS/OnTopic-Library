@@ -18,7 +18,7 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
 - [Caching](#caching)
   - [Internal Caching](#internal-caching)
   - [`CachedTopicMappingService`](#cachedtopicmappingservice)
-- [`HierarchicalTopicMappingService`](#ihierarchicaltopicmappingservice)
+- [`HierarchicalTopicMappingService`](#hierarchicaltopicmappingservice)
   - [`CachedHierarchicalTopicMappingService`](#cachedhierarchicaltopicmappingservice)
   - [Example](#example-2)
 
