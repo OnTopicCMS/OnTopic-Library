@@ -116,6 +116,14 @@ namespace Ignia.Topics.Mapping {
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
       var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+
+      if (viewModelType == null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
+        throw new InvalidOperationException(
+          $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
+          $"to map the topic '{topic.GetUniqueKey()}'."
+        );
+      }
+
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
