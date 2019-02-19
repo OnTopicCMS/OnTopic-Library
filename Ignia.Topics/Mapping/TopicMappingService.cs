@@ -551,8 +551,9 @@ namespace Ignia.Topics.Mapping {
           continue;
         }
 
-        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
-        if (childTopic.IsDisabled) {
+        //Ensure the source topic isn't disabled or hidden; disabled and hidden topics should never be returned to the
+        //presentation layer
+        if (!childTopic.IsVisible()) {
           continue;
         }
 
