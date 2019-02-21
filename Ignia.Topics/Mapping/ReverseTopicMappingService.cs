@@ -359,15 +359,6 @@ namespace Ignia.Topics.Mapping {
         listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
       }
 
-       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle flattening of children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.FlattenChildren) {
-        var flattenedList = new List<Topic>();
-        listSource.ToList().ForEach(t => PopulateChildTopics(t, flattenedList));
-        listSource = flattenedList;
-      }
-
       return listSource;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -463,25 +454,6 @@ namespace Ignia.Topics.Mapping {
         }
       }
 
-    }
-
-    }
-
-    /*==========================================================================================================================
-    | PROTECTED: POPULATE CHILD TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Helper function recursively iterates through children and adds each to a collection.
-    /// </summary>
-    /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
-    /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
-    /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
-      if (source.IsDisabled) return targetList;
-      if (source.ContentType == "List" && !includeNestedTopics) return targetList;
-      targetList.Add(source);
-      source.Children.ToList().ForEach(t => PopulateChildTopics(t, targetList));
-      return targetList;
     }
 
   } //Class
