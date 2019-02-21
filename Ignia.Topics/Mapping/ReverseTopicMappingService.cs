@@ -146,8 +146,12 @@ namespace Ignia.Topics.Mapping {
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
       }
-      else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
-        await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
+      else if (configuration.AttributeKey == "Parent") {
+        throw new InvalidOperationException(
+          $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be removed " +
+          $"from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent it from being" +
+          $"evaluated by the {nameof(ReverseTopicMappingService)}."
+        );
       }
       else if (typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)) {
         var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
