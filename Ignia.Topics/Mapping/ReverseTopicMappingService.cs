@@ -18,13 +18,13 @@ using Ignia.Topics.ViewModels;
 namespace Ignia.Topics.Mapping {
 
   /*============================================================================================================================
-  | CLASS: TOPIC MAPPING SERVICE
+  | CLASS: REVERSE TOPIC MAPPING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
+  ///   The <see cref="IReverseTopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
   ///   Data Transfer Objects, such as View Models.
   /// </summary>
-  public class TopicMappingService : ITopicMappingService {
+  public class ReverseTopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
     | STATIC VARIABLES
@@ -43,7 +43,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
     /// </summary>
-    public TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
+    public ReverseTopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
       Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
       _topicRepository = topicRepository;
