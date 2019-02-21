@@ -55,12 +55,12 @@ namespace Ignia.Topics.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Topic"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the Topic is known
-    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="MapAsync{T}(ITopicViewModel)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="MapAsync{T}(ITopicBindingModel)"/>.
     ///   </para>
     /// </remarks>
     /// <param name="bindingModel">The binding model—any plain old C# object—to derive the data from.</param>
     /// <returns>An instance of the dynamically determined <see cref="Topic"/> with attributes appropriately mapped.</returns>
-    Task<Topic> MapAsync(ITopicViewModel bindingModel);
+    Task<Topic> MapAsync(ITopicBindingModel bindingModel);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -73,7 +73,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested Topc <typeparamref name="T"/> with attributes appropriately mapped.
     /// </returns>
-    Task<T> MapAsync<T>(ITopicViewModel bindingModel) where T : Topic;
+    Task<T> MapAsync<T>(ITopicBindingModel bindingModel) where T : Topic;
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -87,7 +87,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
     /// </returns>
-    Task<Topic> MapAsync(ITopicViewModel bindingModel, Topic topic);
+    Task<Topic> MapAsync(ITopicBindingModel bindingModel, Topic topic);
 
   } //Interface
 } //Namespace
