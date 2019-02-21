@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Ignia.Topics.Diagnostics;
 using System.Linq;
@@ -20,11 +19,8 @@ namespace Ignia.Topics.Mapping {
   /*============================================================================================================================
   | CLASS: REVERSE TOPIC MAPPING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   The <see cref="IReverseTopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
-  ///   Data Transfer Objects, such as View Models.
-  /// </summary>
-  public class ReverseTopicMappingService : ITopicMappingService {
+  /// <inheritdoc/>
+  public class ReverseTopicMappingService : IReverseTopicMappingService {
 
     /*==========================================================================================================================
     | STATIC VARIABLES
@@ -41,7 +37,7 @@ namespace Ignia.Topics.Mapping {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
+    ///   Establishes a new instance of a <see cref="ReverseTopicMappingService"/> with required dependencies.
     /// </summary>
     public ReverseTopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
@@ -53,143 +49,47 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
-    ///   according to the rules of the mapping implementation.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
-    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
-    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
-    ///   </para>
-    ///   <para>
-    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
-
-    /// <summary>
-    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
-    ///   according to the rules of the mapping implementation.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
-    ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
-    ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
-    ///   </para>
-    ///   <para>
-    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
-    ///   </para>
-    ///   <para>
-    ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
-    ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///     <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private async Task<object> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
+    /// <inheritdoc/>
+    public async Task<Topic> MapAsync(ITopicBindingModel source) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle cached objects
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
-      }
+      if (source == null) return null;
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Instantiate object
+      | Instantiate target
       \---------------------------------------------------------------------------------------------------------------------*/
-      var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
-      var target = Activator.CreateInstance(viewModelType);
+      var topic = TopicFactory.Create(source.Key, source.ContentType);
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \---------------------------------------------------------------------------------------------------------------------*/
-      return await MapAsync(topic, target, relationships, cache).ConfigureAwait(false);
+      return await MapAsync(source, topic).ConfigureAwait(false);
 
     }
 
     /*==========================================================================================================================
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic and a generic type, will instantiate a new instance of the generic type and populate it according to the
-    ///   rules of the mapping implementation.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Because the target object is being dynamically constructed, it must implement a default constructor.
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>
-    ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
-    /// </returns>
-    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
-      if (typeof(Topic).IsAssignableFrom(typeof(T))) {
-        return topic as T;
-      }
-      return (T)await MapAsync(topic, new T(), relationships).ConfigureAwait(false);
+    /// <inheritdoc/>
+    public async Task<T> MapAsync<T>(ITopicBindingModel source) where T : Topic {
+      return (T)await MapAsync(
+        source,
+        TopicFactory.Create(source.Key, source.ContentType)
+      ).ConfigureAwait(false);
     }
 
     /*==========================================================================================================================
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
-    /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>
-    ///   The target view model with the properties appropriately mapped.
-    /// </returns>
-    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
-
-    /// <summary>
-    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
-    /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    /// <remarks>
-    ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
-    ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///   <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
-    /// </remarks>
-    /// <returns>
-    ///   The target view model with the properties appropriately mapped.
-    /// </returns>
-    private async Task<object> MapAsync(
-      Topic topic,
-      object target,
-      Relationships relationships,
-      ConcurrentDictionary<int, object> cache
-    ) {
+    /// <inheritdoc/>
+    public async Task<Topic> MapAsync(ITopicBindingModel source, Topic target) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled) {
+      if (source == null) {
         return target;
       }
 
@@ -198,16 +98,6 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (typeof(Topic).IsAssignableFrom(target.GetType())) {
         return topic;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle cached objects
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
-      }
-      else if (topic.Id > 0) {
-        cache.GetOrAdd(topic.Id, target);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -231,19 +121,15 @@ namespace Ignia.Topics.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
-    ///   <see cref="Topic"/> based on predetermined conventions.
+    ///   <see cref="ITopicBindingModel"/> based on predetermined conventions.
     /// </summary>
-    /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="property">Information related to the current property.</param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetPropertyAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyInfo property,
-      ConcurrentDictionary<int, object> cache
+      ITopicBindingModel source,
+      Topic target,
+      PropertyInfo property
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -292,17 +178,17 @@ namespace Ignia.Topics.Mapping {
     /// <remarks>
     ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
-    ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
-    ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
-    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
+    ///   cref="SetScalarValue(ITopicBindingModel, Topic, PropertyConfiguration)"/> method will attempt to set the property on
+    ///   the <paramref name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method,
+    ///   <c>{Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
     ///   cref="Collections.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
     ///   or the source value cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>
-    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="target">The target DTO on which to set the property value.</param>
+    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
     /// <autogeneratedoc />
-    protected static void SetScalarValue(Topic source, object target, PropertyConfiguration configuration) {
+    protected static void SetScalarValue(ITopicBindingModel source, Topic target, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
@@ -312,12 +198,12 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to retrieve value from topic.Get{Property}()
+      | Attempt to retrieve value from target.Get{Property}()
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attributeValue = _typeCache.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to retrieve value from topic.{Property}
+      | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
         attributeValue = _typeCache.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
@@ -353,24 +239,20 @@ namespace Ignia.Topics.Mapping {
     /// <remarks>
     ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
     ///   collection on the <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
-    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which will be part of
     ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
     ///   on the <paramref name="target"/> DTO.
     /// </remarks>
-    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="target">The target DTO on which to set the property value.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetCollectionValueAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      ITopicBindingModel source,
+      Topic target,
+      PropertyConfiguration configuration
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -379,18 +261,16 @@ namespace Ignia.Topics.Mapping {
       if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure target list is created
+      | Ensure source list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetList = (IList)configuration.Property.GetValue(target, null);
-      if (targetList == null) {
-        targetList = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
-        configuration.Property.SetValue(target, targetList);
-      }
+      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(target, null)?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = GetSourceCollection(source, relationships, configuration);
+      //#### TODO JC20190219: This is now just an IList and can be retrieved using Configuration.Property.GetValue()
+      //#### TODO JC20190219: May need to create a child List ContentType that IsHidden for Nested Topics
+      var targetList = GetTargetCollection(target, configuration);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
@@ -400,30 +280,35 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      await PopulateTargetCollectionAsync(sourceList, targetList, configuration, cache).ConfigureAwait(false);
+      //#### TODO JC20190219: If it's a relationships collection (and that's all we should be supporting right now!) then it
+      //should be using target.SetRelationship().
+      await PopulateTargetCollectionAsync(sourceList, targetList, configuration).ConfigureAwait(false);
 
     }
 
     /*==========================================================================================================================
-    | PROTECTED: GET SOURCE COLLECTION
+    | PROTECTED: GET TARGET COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a source topic and a property configuration, attempts to identify a source collection that maps to the property.
+    ///   Given a target target and a property configuration, attempts to identify the source collection that maps to the
+    ///   property.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on a target DTO, attempts to identify a source collection on the
-    ///   <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
-    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested topic (which will be part of
-    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   Given a collection <paramref name="configuration"/> on the source binding model, attempts to identify a source
+    ///   collection on the <paramref name="target"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which will be part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="ReverseTopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
-    ///   on the target DTO.
+    ///   on the source DTO.
     /// </remarks>
-    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="target">The binding model—any plain old C# object—to derive the data from.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected IList<Topic> GetSourceCollection(Topic source, Relationships relationships, PropertyConfiguration configuration) {
+    protected IList<Topic> GetTargetCollection(Topic target, PropertyConfiguration configuration) {
+
+      //#### TODO JC20190219: If this is still needed, it likely needs to be flipped, such that it's finding the TARGET
+      //collection on the target. That said, this really only provides value if Children and Nested Topics are supported.
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
@@ -438,7 +323,7 @@ namespace Ignia.Topics.Mapping {
       listSource = GetRelationship(
         RelationshipType.Children,
         s => true,
-        () => source.Children.ToList()
+        () => target.Children.ToList()
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -446,8 +331,8 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
         RelationshipType.Relationship,
-        source.Relationships.Contains,
-        () => source.Relationships.GetTopics(relationshipKey)
+        target.Relationships.Contains,
+        () => target.Relationships.GetTopics(relationshipKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -464,8 +349,8 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
         RelationshipType.IncomingRelationship,
-        source.IncomingRelationships.Contains,
-        () => source.IncomingRelationships.GetTopics(relationshipKey)
+        target.IncomingRelationships.Contains,
+        () => target.IncomingRelationships.GetTopics(relationshipKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -514,18 +399,16 @@ namespace Ignia.Topics.Mapping {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task PopulateTargetCollectionAsync(
-      IList<Topic> sourceList,
-      IList targetList,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      IList<ITopicBindingModel> sourceList,
+      IList<Topic> targetList,
+      PropertyConfiguration configuration
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine the type of item in the list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var listType = typeof(ITopicViewModel);
+      var listType = typeof(ITopicBindingModel);
       if (configuration.Property.PropertyType.IsGenericType) {
         //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
         listType = configuration.Property.PropertyType.GetGenericArguments().Last();
@@ -534,7 +417,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Queue up mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue = new List<Task<object>>();
+      var taskQueue = new List<Task<Topic>>();
 
       foreach (var childTopic in sourceList) {
 
@@ -570,7 +453,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
-      void AddToList(object dto) {
+      void AddToList(Topic dto) {
         if (listType.IsAssignableFrom(dto.GetType())) {
           try {
             targetList.Add(dto);
