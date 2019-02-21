@@ -129,7 +129,6 @@ namespace Ignia.Topics.Mapping {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
-      var topicReferenceId      = source.Attributes.GetInteger($"{property.Name}Id", 0);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
@@ -150,9 +149,11 @@ namespace Ignia.Topics.Mapping {
       else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
         await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
       }
-      else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
-        var topicReference = _topicRepository.Load(topicReferenceId);
-        await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
+      else if (typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)) {
+        var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
+        //#### TODO JJC20190221: Should this enforce the appending of an ID to maintain the convention? Or assume the
+        //developer knows to set an alias, or is deliberately breaking the convention?
+        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -460,28 +461,6 @@ namespace Ignia.Topics.Mapping {
 
     }
 
-    /*==========================================================================================================================
-    | PROTECTED: SET TOPIC REFERENCE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a reference to an external topic, attempts to match it to a matching property.
-    /// </summary>
-    /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="target">The target DTO on which to set the property value.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
-    /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
-    protected async Task SetTopicReferenceAsync(
-      Topic source,
-      object target,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
-    ) {
-      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
-      if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
-        configuration.Property.SetValue(target, topicDto);
-      }
     }
 
     /*==========================================================================================================================
