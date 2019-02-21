@@ -97,8 +97,8 @@ namespace Ignia.Topics.Mapping {
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
-      foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache));
+      foreach (var property in _typeCache.GetMembers<PropertyInfo>(source.GetType())) {
+        taskQueue.Add(SetPropertyAsync(source, target, property));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
