@@ -14,6 +14,8 @@ using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 using System.Globalization;
+using System.ComponentModel;
+using Ignia.Topics.Collections;
 
 namespace Ignia.Topics.Mapping {
 
@@ -41,14 +43,23 @@ namespace Ignia.Topics.Mapping {
     ///   Establishes a new instance of a <see cref="ReverseTopicMappingService"/> with required dependencies.
     /// </summary>
     public ReverseTopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
       Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set dependencies
+      \---------------------------------------------------------------------------------------------------------------------*/
       _topicRepository = topicRepository;
       _typeLookupService = typeLookupService;
+
     }
 
     /*==========================================================================================================================
-    | METHOD: MAP
+    | METHOD: MAP (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     public async Task<Topic> MapAsync(ITopicBindingModel source) {
@@ -82,7 +93,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | METHOD: MAP (OBJECTS)
+    | METHOD: MAP (TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     public async Task<Topic> MapAsync(ITopicBindingModel source, Topic target) {
@@ -114,10 +125,13 @@ namespace Ignia.Topics.Mapping {
     | PROTECTED: SET PROPERTY (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper function that evaluates each property on the target object and attempts to retrieve a value from the source
-    ///   <see cref="ITopicBindingModel"/> based on predetermined conventions.
+    ///   Helper function that evaluates each property on the source <see cref="ITopicBindingModel"/> and then attempts to
+    ///   locate and set the associated attribute, collection, or property on the target <see cref="Topic"/> based on
+    ///   predetermined conventions.
     /// </summary>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="property">Information related to the current property.</param>
     protected async Task SetPropertyAsync(
@@ -167,18 +181,20 @@ namespace Ignia.Topics.Mapping {
     | PROTECTED: SET SCALAR VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a scalar property on a target DTO.
+    ///   Sets an attribute on the target <see cref="Topic"/> with a scalar value from the source binding model.
     /// </summary>
     /// <remarks>
     ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
     ///   cref="SetScalarValue(ITopicBindingModel, Topic, PropertyConfiguration)"/> method will attempt to set the property on
-    ///   the <paramref name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method,
-    ///   <c>{Property}</c> property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
-    ///   cref="Collections.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
-    ///   or the source value cannot be identified on the <paramref name="source"/>, then the property is not set.
+    ///   the <paramref name="target"/>. If the value is not set on the <paramref name="source"/> then the <see
+    ///   cref="DefaultValueAttribute"/> will be evaluated as a fallback. If the property is not of a settable type then the property
+    ///   is not set. If the value is empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s <see
+    ///   cref="AttributeValueCollection"/>.
     /// </remarks>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
     /// <autogeneratedoc />
@@ -214,18 +230,21 @@ namespace Ignia.Topics.Mapping {
     | PROTECTED: SET COLLECTION VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a collection property, identifies a source collection, maps the values to DTOs, and attempts to add them to the
-    ///   target collection.
+    ///   Given a collection property, identifies a target collection, maps the values from the binding model to target <see
+    ///   cref="Topic"/>s, and attempts to add them to the target collection.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on a <paramref name="target"/> DTO, attempts to identify a source
-    ///   collection on the <paramref name="source"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
-    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which will be part of
-    ///   <see cref="Topic.Children"/>). By default, <see cref="TopicMappingService"/> will attempt to map based on the
+    ///   Given a source collection <paramref name="configuration"/> on a <paramref name="target"/> binding model, attempts to
+    ///   identify a source collection on the <paramref name="target"/>. Collections can be mapped to <see
+    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which is part of
+    ///   <see cref="Topic.Children"/>). By default, <see cref="ReverseTopicMappingService"/> will attempt to map based on the
     ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
-    ///   on the <paramref name="target"/> DTO.
+    ///   on the <paramref name="source"/> binding model. The <see cref="ReverseTopicMappingService"/> does <i>not</i> support
+    ///   mapping <see cref="Topic.Children"/>.
     /// </remarks>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
@@ -239,6 +258,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
+      //#### TODO JJC20190221: If this is a relationship collection, then the list will be IRelatedTopicBindingModel. This needs
+      //to address that scenario. This may require splitting this up into two methods (one for relationships, another for
+      //children). That may make sense regardless since the way they are set will also vary.
       if (!typeof(IList<ITopicBindingModel>).IsAssignableFrom(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -271,25 +293,29 @@ namespace Ignia.Topics.Mapping {
     | PROTECTED: GET TARGET COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a target target and a property configuration, attempts to identify the source collection that maps to the
-    ///   property.
+    ///   Given a target <see cref="Topic"/> and a <see cref="PropertyConfiguration"/>, attempts to identify the target
+    ///   collection that is associated with the source property on the binding model.
     /// </summary>
     /// <remarks>
-    ///   Given a collection <paramref name="configuration"/> on the source binding model, attempts to identify a source
-    ///   collection on the <paramref name="target"/>. Collections can be mapped to <see cref="Topic.Children"/>, <see
-    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which will be part of
-    ///   <see cref="Topic.Children"/>). By default, <see cref="ReverseTopicMappingService"/> will attempt to map based on the
-    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
-    ///   on the source DTO.
+    ///   Collections can be mapped to <see cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a
+    ///   nested target (which will be part of <see cref="Topic.Children"/>). By default, <see
+    ///   cref="ReverseTopicMappingService"/> will attempt to map based on the property name, though this behavior can be
+    ///   modified using the <paramref name="configuration"/>, based on annotations on the source binding model.
     /// </remarks>
-    /// <param name="target">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="target">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <exception cref="InvalidOperationException">
+    ///   <see cref="ReverseTopicMappingService"/> does not support mapping to <see cref="Topic.Children"/>. Any attempts to do
+    ///   so will raise an <see cref="InvalidOperationException"/>. If mapping of children is necessary, then it should be
+    ///   handled by the calling class on a per child basis. The caller will have better awareness of the context, and is thus
+    ///   better suited to validate the request and handle potential issues with merging—such as deleting entire <see
+    ///   cref="Topic"/> trees.
+    /// </exception>
     protected IList<Topic> GetTargetCollection(Topic target, PropertyConfiguration configuration) {
-
-      //#### TODO JC20190219: If this is still needed, it likely needs to be flipped, such that it's finding the TARGET
-      //collection on the target. That said, this really only provides value if Children and Nested Topics are supported.
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
@@ -349,10 +375,10 @@ namespace Ignia.Topics.Mapping {
     | PROTECTED: POPULATE TARGET COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a source list, will populate a target list based on the configured behavior of the target property.
+    ///   Given a source list, will populate a target list based on the configured behavior of the source property.
     /// </summary>
-    /// <param name="sourceList">The <see cref="IList{Topic}"/> to pull the source <see cref="Topic"/> objects from.</param>
-    /// <param name="targetList">The target <see cref="IList"/> to add the mapped <see cref="Topic"/> objects to.</param>
+    /// <param name="sourceList">The <see cref="IList{ITopicBindingModel}"/> to pull the binding models from.</param>
+    /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>

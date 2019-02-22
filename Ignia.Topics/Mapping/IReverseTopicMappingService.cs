@@ -58,7 +58,9 @@ namespace Ignia.Topics.Mapping {
     ///     upfront, and it is imperative that it be strongly-typed, then prefer <see cref="MapAsync{T}(ITopicBindingModel)"/>.
     ///   </para>
     /// </remarks>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <returns>An instance of the dynamically determined <see cref="Topic"/> with attributes appropriately mapped.</returns>
     Task<Topic> MapAsync(ITopicBindingModel source);
 
@@ -69,7 +71,9 @@ namespace Ignia.Topics.Mapping {
     ///   Given a binding model, will instantiate a new instance of the generic type and map the properties of the binding model
     ///   to attributes on the <see cref="Topic"/>.
     /// </summary>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <returns>
     ///   An instance of the requested Topc <typeparamref name="T"/> with attributes appropriately mapped.
     /// </returns>
@@ -82,7 +86,9 @@ namespace Ignia.Topics.Mapping {
     ///   Given a binding model and an existing <see cref="Topic"/>, will map the properties of the binding model to attributes
     ///   on the <see cref="Topic"/>.
     /// </summary>
-    /// <param name="source">The binding model—any plain old C# object—to derive the data from.</param>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <returns>
     ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
