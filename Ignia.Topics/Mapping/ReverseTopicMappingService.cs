@@ -392,11 +392,6 @@ namespace Ignia.Topics.Mapping {
 
       foreach (var childTopic in sourceList) {
 
-        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
-        if (childTopic.IsDisabled) {
-          continue;
-        }
-
         //Map child topic to target DTO
         var childDto = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
