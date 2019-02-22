@@ -142,7 +142,7 @@ namespace Ignia.Topics.Mapping {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
+        await SetCollectionValueAsync(source, target, configuration).ConfigureAwait(false);
       }
       else if (configuration.AttributeKey == "Parent") {
         throw new InvalidOperationException(
@@ -236,7 +236,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IList).IsAssignableFrom(configuration.Property.PropertyType)) return;
+      if (!typeof(IList<ITopicBindingModel>).IsAssignableFrom(configuration.Property.PropertyType)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure source list is created
@@ -244,7 +244,7 @@ namespace Ignia.Topics.Mapping {
       var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(target, null)?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish source collection to store topics to be mapped
+      | Establish target collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
       //#### TODO JC20190219: This is now just an IList and can be retrieved using Configuration.Property.GetValue()
       //#### TODO JC20190219: May need to create a child List ContentType that IsHidden for Nested Topics
@@ -318,8 +318,8 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
         RelationshipType.NestedTopics,
-        source.Children.Contains,
-        () => source.Children[relationshipKey].Children
+        target.Children.Contains,
+        () => target.Children[relationshipKey].Children
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
