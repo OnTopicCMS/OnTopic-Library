@@ -204,7 +204,7 @@ namespace Ignia.Topics.Mapping {
       | Assuming a value was retrieved, set it
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeValue != null) {
-        _typeCache.SetPropertyValue(target, configuration.Property.Name, attributeValue);
+        target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
       }
 
     }
