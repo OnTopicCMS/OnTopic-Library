@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
-using System.Globalization;
 using System.ComponentModel;
 using Ignia.Topics.Collections;
 
@@ -35,6 +34,7 @@ namespace Ignia.Topics.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository                = null;
     readonly                    ITypeLookupService              _typeLookupService              = null;
+    readonly                    ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -53,8 +53,9 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Set dependencies
       \---------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository = topicRepository;
-      _typeLookupService = typeLookupService;
+      _topicRepository          = topicRepository;
+      _typeLookupService        = typeLookupService;
+      _contentTypeDescriptors   = topicRepository.GetContentTypeDescriptors();
 
     }
 
@@ -103,6 +104,35 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (source == null) {
         return target;
+      }
+
+      //Ensure the content type is valid
+      if (!_contentTypeDescriptors.Contains(source.ContentType)) {
+        throw new InvalidEnumArgumentException(
+          $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
+          $"no matching content type in the ITopicRepository provided. This suggests that the binding model is invalid. If " +
+          $"this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
+          $"to the same ITopicRepository instance prior to creating any instances of it."
+        );
+      }
+
+      //Ensure the content types match
+      if (source.ContentType != target.ContentType) {
+        throw new InvalidEnumArgumentException(
+          $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
+          $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
+          $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. If" +
+          $"this is by design, change the content type on the target topic prior to invoking MapAsync()."
+        );
+      }
+
+      //Ensure the keys match
+      if (source.Key != target.Key && !String.IsNullOrEmpty(source.Key)) {
+        throw new InvalidEnumArgumentException(
+          $"The {nameof(source)} object has a key of '{source.Key}', while the {nameof(target)} object has a key of " +
+          $"'{target.Key}'. It is not permitted to change the topic'key during a mapping operation, as this suggests in " +
+          $"invalid target. If this is by design, change the key on the target topic prior to invoking MapAsync()."
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
