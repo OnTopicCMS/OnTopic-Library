@@ -135,15 +135,15 @@ namespace Ignia.Topics.Mapping {
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="property">Information related to the current property.</param>
     protected async Task SetPropertyAsync(
-      ITopicBindingModel source,
-      Topic target,
-      PropertyInfo property
+      ITopicBindingModel        source,
+      Topic                     target,
+      PropertyInfo              property
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(property);
+      var                       configuration                   = new PropertyConfiguration(property);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
@@ -250,9 +250,9 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     protected async Task SetCollectionValueAsync(
-      ITopicBindingModel source,
-      Topic target,
-      PropertyConfiguration configuration
+      ITopicBindingModel        source,
+      Topic                     target,
+      PropertyConfiguration     configuration
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -384,8 +384,8 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     protected async Task PopulateTargetCollectionAsync(
       IList<ITopicBindingModel> sourceList,
-      IList<Topic> targetList,
-      PropertyConfiguration configuration
+      IList<Topic>              targetList,
+      PropertyConfiguration     configuration
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
