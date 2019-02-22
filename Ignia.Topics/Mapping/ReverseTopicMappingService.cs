@@ -191,10 +191,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!_typeCache.HasSettableProperty(target.GetType(), configuration.Property.Name)) {
-        return;
-      }
-
+      //#### TODO JC20190219: Validate using the ITopicRepository's ContentTypeDescriptor to ensure it's a valid attribute
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
