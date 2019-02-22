@@ -218,11 +218,9 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Assuming a value was retrieved, set it
+      | Set the value (to null, if appropriate)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue != null) {
-        target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
-      }
+      target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
 
     }
 
