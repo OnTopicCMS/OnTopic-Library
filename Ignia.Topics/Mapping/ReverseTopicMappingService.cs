@@ -195,10 +195,6 @@ namespace Ignia.Topics.Mapping {
         return;
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to retrieve value from target.Get{Property}()
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValue = _typeCache.GetMethodValue(source, $"Get{configuration.AttributeKey}")?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
