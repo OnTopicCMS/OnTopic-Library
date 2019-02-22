@@ -400,22 +400,9 @@ namespace Ignia.Topics.Mapping {
       | Process mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0) {
-        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
-        taskQueue.Remove(dtoTask);
-        AddToList(await dtoTask.ConfigureAwait(false));
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Function: Add to List
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      void AddToList(Topic dto) {
-          try {
-            targetList.Add(dto);
-          }
-          catch (ArgumentException) {
-            //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
-            //We would defensively check for this, except IList doesn't provide a suitable method to do so
-          }
+        var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        taskQueue.Remove(topicTask);
+        targetList.Add(await topicTask.ConfigureAwait(false));
       }
 
     }
