@@ -138,7 +138,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+      // ### TODO JJC20190220: This should use the `ContentTypeDescriptor` to determine if it's an attribute. Or assume based on
+      // a fixed number of convertible types (e.g., string, int, bool, DateTime).
+      if (_typeCache.HasSettableProperty(source.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
