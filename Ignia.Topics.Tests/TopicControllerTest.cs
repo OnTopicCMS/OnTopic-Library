@@ -204,9 +204,15 @@ namespace Ignia.Topics.Tests {
     public async Task Menu() {
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new HierarchicalTopicMappingService<NavigationTopicViewModel>(
+        _topicRepository,
+        new TopicMappingService(
+          _topicRepository,
+          new FakeViewModelLookupService()
+        )
+      );
 
-      var controller            = new LayoutController(_topicRepository, topicRoutingService, mappingService);
+      var controller            = new LayoutController(topicRoutingService, mappingService);
       var result                = await controller.Menu().ConfigureAwait(false) as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 

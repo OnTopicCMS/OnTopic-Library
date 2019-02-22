@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 namespace Ignia.Topics.ViewModels {
 
   /*============================================================================================================================
-  | INTERFACE: PAGE TOPIC VIEW MODEL
+  | INTERFACE: NAVIGATION TOPIC VIEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a generic data transfer topic for feeding views information about a navigation entry.
@@ -17,7 +17,10 @@ namespace Ignia.Topics.ViewModels {
   ///   No topics are expected to have a <c>Navigation</c> content type. Instead, implementers of this view model are expected
   ///   to manually construct instances.
   /// </remarks>
-  public interface INavigationTopicViewModel<T> : ITopicViewModel where T: INavigationTopicViewModel<T> {
+  public interface INavigationTopicViewModel<T> :
+    ITopicViewModel, IHierarchicalTopicViewModel<T>
+    where T: INavigationTopicViewModel<T>
+  {
 
     /*==========================================================================================================================
     | PROPERTY: WEBPATH
@@ -35,14 +38,6 @@ namespace Ignia.Topics.ViewModels {
     ///   value should be used instead of Title.
     /// </summary>
     string ShortTitle { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: CHILDREN
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Represents a collection of child <see cref="INavigationTopicViewModel{T}"/> instances.
-    /// </summary>
-    Collection<T> Children { get; }
 
     /*==========================================================================================================================
     | METHOD: ISSELECTED
