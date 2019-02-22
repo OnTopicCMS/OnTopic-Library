@@ -314,29 +314,24 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.Relationship,
-        target.Relationships.Contains,
-        () => target.Relationships.GetTopics(relationshipKey)
-      );
+      if (relationshipType.Equals(RelationshipType.Relationship) && target.Relationships.Contains(relationshipKey)) {
+        listSource = target.Relationships.GetTopics(relationshipKey);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.NestedTopics,
-        target.Children.Contains,
-        () => target.Children[relationshipKey].Children
-      );
+      //#### TODO JJC20190221: Should create the interstitial "List" container if it's missing
+      if (relationshipType.Equals(RelationshipType.NestedTopics) && target.Children.Contains(relationshipKey)) {
+        listSource = target.Children[relationshipKey].Children;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.IncomingRelationship,
-        target.IncomingRelationships.Contains,
-        () => target.IncomingRelationships.GetTopics(relationshipKey)
-      );
+      if (relationshipType.Equals(RelationshipType.IncomingRelationship) && target.IncomingRelationships.Contains(relationshipKey)) {
+        listSource = target.IncomingRelationships.GetTopics(relationshipKey);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle Metadata relationship
@@ -347,20 +342,6 @@ namespace Ignia.Topics.Mapping {
       }
 
       return listSource;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Provide local function for evaluating current relationship
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetRelationships = RelationshipMap.Mappings[relationship];
-        var preconditionsMet    =
-          listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
-          (relationshipType.Equals(RelationshipType.Children) || !relationship.Equals(RelationshipType.Children)) &&
-          (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
-          contains(configuration.RelationshipKey);
-        return preconditionsMet? getTopics() : listSource;
-      }
 
     }
 
