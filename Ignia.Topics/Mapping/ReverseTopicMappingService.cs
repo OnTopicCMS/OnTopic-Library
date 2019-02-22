@@ -131,8 +131,9 @@ namespace Ignia.Topics.Mapping {
       var configuration         = new PropertyConfiguration(property);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Assign default value
+      | Validate fields
       \-----------------------------------------------------------------------------------------------------------------------*/
+      configuration.Validate(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
@@ -156,11 +157,6 @@ namespace Ignia.Topics.Mapping {
         //developer knows to set an alias, or is deliberately breaking the convention?
         target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate fields
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      configuration.Validate(target);
 
     }
 
