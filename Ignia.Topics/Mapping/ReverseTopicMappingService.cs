@@ -264,7 +264,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure source list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(target, null)?? new List<ITopicBindingModel>();
+      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(source, null)?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store topics to be mapped
@@ -274,9 +274,9 @@ namespace Ignia.Topics.Mapping {
       var targetList = GetTargetCollection(target, configuration);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate that source collection was identified
+      | Validate that target collection was identified
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceList == null) return;
+      if (targetList == null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
