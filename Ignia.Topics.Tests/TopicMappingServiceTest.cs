@@ -270,6 +270,8 @@ namespace Ignia.Topics.Tests {
       var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
       var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
 
+      topicList.IsHidden        = true;
+
       var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Categories.Count);

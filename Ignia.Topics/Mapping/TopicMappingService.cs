@@ -116,6 +116,14 @@ namespace Ignia.Topics.Mapping {
       | Instantiate object
       \---------------------------------------------------------------------------------------------------------------------*/
       var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+
+      if (viewModelType == null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
+        throw new InvalidOperationException(
+          $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
+          $"to map the topic '{topic.GetUniqueKey()}'."
+        );
+      }
+
       var target = Activator.CreateInstance(viewModelType);
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -543,8 +551,9 @@ namespace Ignia.Topics.Mapping {
           continue;
         }
 
-        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
-        if (childTopic.IsDisabled) {
+        //Ensure the source topic isn't disabled or hidden; disabled and hidden topics should never be returned to the
+        //presentation layer
+        if (!childTopic.IsVisible()) {
           continue;
         }
 
