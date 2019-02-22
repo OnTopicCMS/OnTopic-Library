@@ -389,26 +389,13 @@ namespace Ignia.Topics.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Determine the type of item in the list
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var listType = typeof(ITopicBindingModel);
-      if (configuration.Property.PropertyType.IsGenericType) {
-        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Queue up mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task<Topic>>();
 
+      //Map child binding model to target collection on the target
       foreach (var childBindingModel in sourceList) {
-
-        //Map child binding model to target collection on the target
-        if (typeof(Topic).IsAssignableFrom(listType)) {
-          taskQueue.Add(MapAsync(childBindingModel));
-        }
-
+        taskQueue.Add(MapAsync(childBindingModel));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -424,7 +411,6 @@ namespace Ignia.Topics.Mapping {
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
       void AddToList(Topic dto) {
-        if (listType.IsAssignableFrom(dto.GetType())) {
           try {
             targetList.Add(dto);
           }
@@ -432,7 +418,6 @@ namespace Ignia.Topics.Mapping {
             //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
             //We would defensively check for this, except IList doesn't provide a suitable method to do so
           }
-        }
       }
 
     }
