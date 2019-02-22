@@ -301,11 +301,15 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.Children,
-        s => true,
-        () => target.Children.ToList()
-      );
+      if (relationshipType.Equals(RelationshipType.Children)) {
+        throw new InvalidOperationException(
+          $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be removed " +
+          $"from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent it from " +
+          $"being evaluated by the {nameof(ReverseTopicMappingService)}. If children must be mapped, then the caller should" +
+          $"handle this on a per child basis, where it can better validate the merge logic given the current context of the " +
+          $"target topic."
+        );
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
