@@ -136,10 +136,17 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
+
+      BindingModelValidator.ValidateModel(source.GetType(), properties, _contentTypeDescriptors.GetTopic(target.ContentType));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
-      foreach (var property in _typeCache.GetMembers<PropertyInfo>(source.GetType())) {
+      foreach (var property in properties) {
         taskQueue.Add(SetPropertyAsync(source, target, property));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
@@ -190,13 +197,6 @@ namespace Ignia.Topics.Mapping {
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, configuration).ConfigureAwait(false);
-      }
-      else if (configuration.AttributeKey == "Parent") {
-        throw new InvalidOperationException(
-          $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be removed " +
-          $"from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent it from being" +
-          $"evaluated by the {nameof(ReverseTopicMappingService)}."
-        );
       }
       else if (typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)) {
         var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
@@ -351,19 +351,6 @@ namespace Ignia.Topics.Mapping {
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
       var                       relationshipKey                 = configuration.RelationshipKey;
       var                       relationshipType                = configuration.RelationshipType;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (relationshipType.Equals(RelationshipType.Children)) {
-        throw new InvalidOperationException(
-          $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be removed " +
-          $"from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent it from " +
-          $"being evaluated by the {nameof(ReverseTopicMappingService)}. If children must be mapped, then the caller should" +
-          $"handle this on a per child basis, where it can better validate the merge logic given the current context of the " +
-          $"target topic."
-        );
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
