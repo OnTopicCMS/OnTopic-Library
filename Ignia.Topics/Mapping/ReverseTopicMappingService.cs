@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
+using System.Globalization;
 
 namespace Ignia.Topics.Mapping {
 
@@ -390,14 +391,11 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task<Topic>>();
 
-      foreach (var childTopic in sourceList) {
+      foreach (var childBindingModel in sourceList) {
 
-        //Map child topic to target DTO
-        var childDto = (object)childTopic;
-        if (!typeof(Topic).IsAssignableFrom(listType)) {
-          taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
-        } else {
-          AddToList(childDto);
+        //Map child binding model to target collection on the target
+        if (typeof(Topic).IsAssignableFrom(listType)) {
+          taskQueue.Add(MapAsync(childBindingModel));
         }
 
       }
