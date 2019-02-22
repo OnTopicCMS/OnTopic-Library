@@ -196,19 +196,12 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
-        attributeValue = _typeCache.GetPropertyValue(source, configuration.AttributeKey)?.ToString();
-      }
+      var attributeValue = _typeCache.GetPropertyValue(source, configuration.Property.Name)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
-        attributeValue = source.Attributes.GetValue(
-          configuration.AttributeKey,
-          configuration.DefaultValue?.ToString(),
-          configuration.InheritValue
-        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
