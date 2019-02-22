@@ -133,9 +133,6 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.DefaultValue != null) {
-        property.SetValue(target, configuration.DefaultValue);
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
@@ -199,9 +196,10 @@ namespace Ignia.Topics.Mapping {
       var attributeValue = _typeCache.GetPropertyValue(source, configuration.Property.Name)?.ToString();
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Otherwise, attempt to retrieve value from topic.Attributes.GetValue({Property})
+      | Fall back to default, if configured
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(attributeValue)) {
+        attributeValue = configuration.DefaultValue.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
