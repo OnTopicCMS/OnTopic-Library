@@ -392,11 +392,6 @@ namespace Ignia.Topics.Mapping {
 
       foreach (var childTopic in sourceList) {
 
-        //Ensure the source topic matches any [FilterByAttribute()] settings
-        if (!configuration.SatisfiesAttributeFilters(childTopic)) {
-          continue;
-        }
-
         //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer
         if (childTopic.IsDisabled) {
           continue;
