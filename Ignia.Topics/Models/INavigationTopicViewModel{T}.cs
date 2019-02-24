@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
 
-namespace Ignia.Topics.ViewModels {
+namespace Ignia.Topics.Models {
 
   /*============================================================================================================================
   | INTERFACE: NAVIGATION TOPIC VIEW MODEL

@@ -6,7 +6,7 @@
 using System.Collections.ObjectModel;
 using Ignia.Topics.Mapping;
 
-namespace Ignia.Topics.ViewModels {
+namespace Ignia.Topics.Models {
 
   /*============================================================================================================================
   | INTERFACE: HIERARCHICAL VIEW MODEL

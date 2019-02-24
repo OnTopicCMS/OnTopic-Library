@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.ViewModels;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Mapping {
 

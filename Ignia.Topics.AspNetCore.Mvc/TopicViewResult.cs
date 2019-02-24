@@ -9,7 +9,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Ignia.Topics.ViewModels;
+using Ignia.Topics.Models;
 using System.Threading.Tasks;
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.DependencyInjection;

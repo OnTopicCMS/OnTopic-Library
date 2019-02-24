@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.ViewModels {
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.ViewModels;
+using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
