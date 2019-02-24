@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Querying;
 using System.Globalization;

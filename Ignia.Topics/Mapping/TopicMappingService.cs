@@ -7,7 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;

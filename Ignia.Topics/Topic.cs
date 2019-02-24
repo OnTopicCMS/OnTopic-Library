@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Ignia.Topics.Collections;

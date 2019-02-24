@@ -6,7 +6,7 @@
 using System;
 using System.Reflection;
 
-namespace Ignia.Topics.Diagnostics {
+namespace Ignia.Topics.Internal.Diagnostics {
 
   /*============================================================================================================================
   | CLASS: CONTRACT [STATIC]

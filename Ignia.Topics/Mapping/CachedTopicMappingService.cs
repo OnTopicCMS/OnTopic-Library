@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Concurrent;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Ignia.Topics.Mapping {

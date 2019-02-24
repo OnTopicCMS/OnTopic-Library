@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using System.Web;
 using System.Web.Compilation;
 using System.Web.Routing;

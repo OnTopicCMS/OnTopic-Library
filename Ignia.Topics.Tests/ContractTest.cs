@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {

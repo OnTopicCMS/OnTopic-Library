@@ -6,7 +6,7 @@
 using System;
 using System.ComponentModel;
 using System.Configuration;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Web.Configuration {
 

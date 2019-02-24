@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Globalization;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 
