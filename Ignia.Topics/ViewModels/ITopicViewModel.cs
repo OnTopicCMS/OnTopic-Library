@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Metadata;
 
 namespace Ignia.Topics.ViewModels {
 
