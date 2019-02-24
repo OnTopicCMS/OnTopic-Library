@@ -29,7 +29,7 @@ namespace Ignia.Topics.Internal.Reflection {
     | CONSTRUCTOR (STATIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes static properties on <see cref="TypeCollection"/>.
+    ///   Initializes static properties on <see cref="TypeMemberInfoCollection"/>.
     /// </summary>
     static TypeMemberInfoCollection() {
       SettableTypes = new List<Type> {
@@ -45,7 +45,7 @@ namespace Ignia.Topics.Internal.Reflection {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TypeCollection"/> class.
+    ///   Initializes a new instance of the <see cref="TypeMemberInfoCollection"/> class.
     /// </summary>
     /// <param name="attributeFlag">
     ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.

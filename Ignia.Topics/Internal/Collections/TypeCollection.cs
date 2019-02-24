@@ -10,7 +10,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using System.Collections;
 using System.Reflection;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Internal.Collections {
 
   /*============================================================================================================================
   | CLASS: TYPE COLLECTION
