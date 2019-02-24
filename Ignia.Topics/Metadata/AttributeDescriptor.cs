@@ -7,9 +7,8 @@ using System;
 using System.Collections.Generic;
 using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
-using Ignia.Topics.Collections;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Metadata {
 
   /*============================================================================================================================
   | CLASS: ATTRIBUTE DESCRIPTOR

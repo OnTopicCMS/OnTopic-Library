@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Internal.Reflection;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Tests.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

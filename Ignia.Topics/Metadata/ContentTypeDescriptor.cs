@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Metadata {
 
   /*============================================================================================================================
   | CLASS: CONTENT TYPE

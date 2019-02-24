@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Querying;
 
 namespace Ignia.Topics.Repositories {

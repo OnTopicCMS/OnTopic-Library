@@ -6,6 +6,7 @@
 using System;
 using System.Globalization;
 using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 

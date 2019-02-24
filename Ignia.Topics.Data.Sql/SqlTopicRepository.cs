@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Metadata;
 using System.Globalization;
 using System.Linq;
 using System.Text;

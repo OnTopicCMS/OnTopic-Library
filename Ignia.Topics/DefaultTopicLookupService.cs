@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Metadata;
 using System.Reflection;
 
 namespace Ignia.Topics {
