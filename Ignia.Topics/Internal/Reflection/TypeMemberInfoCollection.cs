@@ -10,7 +10,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace Ignia.Topics.Reflection {
+namespace Ignia.Topics.Internal.Reflection {
 
   /*============================================================================================================================
   | CLASS: TYPE COLLECTION
@@ -18,7 +18,7 @@ namespace Ignia.Topics.Reflection {
   /// <summary>
   ///   A collection of <see cref="MemberInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
   /// </summary>
-  internal class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
+  public class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -50,7 +50,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="attributeFlag">
     ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
     /// </param>
-    internal TypeMemberInfoCollection(Type attributeFlag = null) : base() {
+    public TypeMemberInfoCollection(Type attributeFlag = null) : base() {
       _attributeFlag = attributeFlag;
     }
 
@@ -64,7 +64,7 @@ namespace Ignia.Topics.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    internal MemberInfoCollection GetMembers(Type type) {
+    public MemberInfoCollection GetMembers(Type type) {
       if (!Contains(type)) {
         Add(new MemberInfoCollection(type));
       }
@@ -81,7 +81,7 @@ namespace Ignia.Topics.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
+    public MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
       new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
 
     /*==========================================================================================================================
@@ -91,7 +91,7 @@ namespace Ignia.Topics.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
     ///   instance.
     /// </summary>
-    internal MemberInfo GetMember(Type type, string name)  {
+    public MemberInfo GetMember(Type type, string name)  {
       var members = GetMembers(type);
       if (members.Contains(name)) {
         return members[name];
@@ -106,7 +106,7 @@ namespace Ignia.Topics.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <typeparamref name="T"/>
     ///   instance.
     /// </summary>
-    internal T GetMember<T>(Type type, string name) where T : MemberInfo {
+    public T GetMember<T>(Type type, string name) where T : MemberInfo {
       var members = GetMembers(type);
       if (members.Contains(name) && typeof(T).IsAssignableFrom(members[name].GetType())) {
         return members[name] as T;
@@ -120,7 +120,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member is available.
     /// </summary>
-    internal bool HasMember(Type type, string name) => GetMember(type, name) != null;
+    public bool HasMember(Type type, string name) => GetMember(type, name) != null;
 
     /*==========================================================================================================================
     | METHOD: HAS MEMBER {T}
@@ -128,7 +128,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
     /// </summary>
-    internal bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) != null;
+    public bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) != null;
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
@@ -141,7 +141,7 @@ namespace Ignia.Topics.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
-    internal bool HasSettableProperty(Type type, string name) {
+    public bool HasSettableProperty(Type type, string name) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property != null &&
@@ -161,7 +161,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    internal bool SetPropertyValue(object target, string name, string value) {
+    public bool SetPropertyValue(object target, string name, string value) {
 
       if (!HasSettableProperty(target.GetType(), name)) {
         return false;
@@ -194,7 +194,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasGettableProperty(Type type, string name, Type targetType = null) {
+    public bool HasGettableProperty(Type type, string name, Type targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property != null &&
@@ -214,7 +214,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="target">The object instance on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal object GetPropertyValue(object target, string name, Type targetType = null) {
+    public object GetPropertyValue(object target, string name, Type targetType = null) {
 
       if (!HasGettableProperty(target.GetType(), name, targetType)) {
         return null;
@@ -240,7 +240,7 @@ namespace Ignia.Topics.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
-    internal bool HasSettableMethod(Type type, string name) {
+    public bool HasSettableMethod(Type type, string name) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method != null &&
@@ -260,7 +260,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    internal bool SetMethodValue(object target, string name, string value) {
+    public bool SetMethodValue(object target, string name, string value) {
 
       if (!HasSettableMethod(target.GetType(), name)) {
         return false;
@@ -295,7 +295,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal bool HasGettableMethod(Type type, string name, Type targetType = null) {
+    public bool HasGettableMethod(Type type, string name, Type targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method != null &&
@@ -314,7 +314,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    internal object GetMethodValue(object target, string name, Type targetType = null) {
+    public object GetMethodValue(object target, string name, Type targetType = null) {
 
       if (!HasGettableMethod(target.GetType(), name, targetType)) {
         return null;
@@ -378,7 +378,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
-    static internal List<Type> SettableTypes { get; }
+    public static List<Type> SettableTypes { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

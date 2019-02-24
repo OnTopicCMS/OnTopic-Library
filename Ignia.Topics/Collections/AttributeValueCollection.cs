@@ -7,7 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Ignia.Topics.Internal.Diagnostics;
-using Ignia.Topics.Reflection;
+using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Collections {

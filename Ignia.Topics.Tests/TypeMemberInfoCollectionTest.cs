@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using Ignia.Topics.Collections;
-using Ignia.Topics.Reflection;
+using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Tests.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
