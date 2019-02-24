@@ -11,8 +11,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Mapping;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Internal.Mapping {
 
   /*============================================================================================================================
   | CLASS: PROPERTY ATTRIBUTES

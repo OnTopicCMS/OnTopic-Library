@@ -11,6 +11,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
