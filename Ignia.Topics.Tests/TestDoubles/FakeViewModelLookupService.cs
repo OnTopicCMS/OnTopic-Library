@@ -31,7 +31,16 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Add(typeof(CircularTopicViewModel));      Add(typeof(DefaultValueTopicViewModel));      Add(typeof(FilteredTopicViewModel));      Add(typeof(FlattenChildrenTopicViewModel));      Add(typeof(MetadataLookupTopicViewModel));      Add(typeof(MethodBasedViewModel));      Add(typeof(MinimumLengthPropertyTopicViewModel));      Add(typeof(RequiredObjectTopicViewModel));      Add(typeof(RequiredTopicViewModel));      Add(typeof(SampleTopicViewModel));
+      Add(typeof(CircularTopicViewModel));
+      Add(typeof(DefaultValueTopicViewModel));
+      Add(typeof(FilteredTopicViewModel));
+      Add(typeof(FlattenChildrenTopicViewModel));
+      Add(typeof(MetadataLookupTopicViewModel));
+      Add(typeof(MethodBasedViewModel));
+      Add(typeof(MinimumLengthPropertyTopicViewModel));
+      Add(typeof(RequiredObjectTopicViewModel));
+      Add(typeof(RequiredTopicViewModel));
+      Add(typeof(SampleTopicViewModel));
 
     }
 
