@@ -233,12 +233,42 @@ namespace Ignia.Topics.Tests.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
+      addAttribute(contentTypes, "Key", "FormField", true);
+      addAttribute(contentTypes, "ContentType", "FormField", true);
+      addAttribute(contentTypes, "Title", "FormField", true);
+      addAttribute(contentTypes, "Attributes", "TopicList");
+      addAttribute(contentTypes, "TopicId", "TopicPointer");
+
       TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
-      TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
+
+      var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(attributeDescriptor, "DefaultValue", "FormField", true);
+      addAttribute(attributeDescriptor, "IsRequired", "Checkbox", true);
+
+      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(pageContentType, "MetaTitle");
+      addAttribute(pageContentType, "IsHidden");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Local addAttribute() helper function
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      AttributeDescriptor addAttribute(Topic contentType, string attributeKey, string editorType = "FormField", bool isRequired = false) {
+        var container = contentType.Children.GetTopic("Attributes");
+        if (container == null) {
+          container = TopicFactory.Create("Attributes", "List", contentType);
+          container.Attributes.SetBoolean("IsHidden", true);
+        }
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, "AttributeDescriptor", container);
+        attribute.EditorType = editorType;
+        attribute.IsRequired = isRequired;
+        return attribute;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
