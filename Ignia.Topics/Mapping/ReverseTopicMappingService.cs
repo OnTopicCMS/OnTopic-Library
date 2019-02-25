@@ -182,7 +182,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       configuration                   = new PropertyConfiguration(property);
+      var configuration         = new PropertyConfiguration(property);
+      var contentType           = _contentTypeDescriptors[source.ContentType];
+      var attributeType         = contentType.AttributeDescriptors.GetTopic(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate fields
@@ -192,15 +194,12 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // ### TODO JJC20190220: This should use the `ContentTypeDescriptor` to determine if it's an attribute. Or assume based on
-      // a fixed number of convertible types (e.g., string, int, bool, DateTime).
-      if (_typeCache.HasSettableProperty(source.GetType(), property.Name)) {
+      if (_typeCache.HasSettableProperty(source.GetType(), property.Name) && attributeType.ModelType == ModelType.ScalarValue) {
         SetScalarValue(source, target, configuration);
       }
-      else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        await SetCollectionValueAsync(source, target, configuration).ConfigureAwait(false);
+      else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.Relationship) {
       }
-      else if (typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)) {
+      else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.NestedTopic) {
         var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
         //#### TODO JJC20190221: Should this enforce the appending of an ID to maintain the convention? Or assume the
         //developer knows to set an alias, or is deliberately breaking the convention?
