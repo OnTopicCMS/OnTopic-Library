@@ -109,7 +109,11 @@ namespace Ignia.Topics.Metadata {
         /*----------------------------------------------------------------------------------------------------------------------
         | Determine value
         \---------------------------------------------------------------------------------------------------------------------*/
-        var editorType = EditorType.Substring(0, EditorType.LastIndexOf(".", StringComparison.InvariantCulture));
+        var editorType = EditorType;
+
+        if (editorType.LastIndexOf(".", StringComparison.InvariantCulture) >= 0) {
+          editorType = editorType.Substring(0, EditorType.LastIndexOf(".", StringComparison.InvariantCulture));
+        }
 
         if (new [] { "Relationships", "TokenizedTopicList"}.Contains(editorType)) {
           _modelType = ModelType.Relationship;
