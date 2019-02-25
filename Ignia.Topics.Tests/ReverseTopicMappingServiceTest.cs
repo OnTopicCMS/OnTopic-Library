@@ -77,6 +77,35 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP (DYNAMIC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values by allowing it to
+    ///   dynamically determine the instance type.
+    /// </summary>
+    [TestMethod]
+    public async Task MapDynamic() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new AttributeDescriptorTopicBindingModel();
+
+      bindingModel.Key          = "Test";
+      bindingModel.ContentType  = "AttributeDescriptor";
+      bindingModel.Title        = "Test Attribute";
+      bindingModel.DefaultValue = "Hello";
+      bindingModel.IsRequired   = true;
+
+      var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.AreEqual<string>("Test", target.Key);
+      Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
+      Assert.AreEqual<string>("Test Attribute", target.Title);
+      Assert.AreEqual<string>("Hello", target.DefaultValue);
+      Assert.AreEqual<bool>(true, target.IsRequired);
+
+    }
+
 
   } //Class
 
