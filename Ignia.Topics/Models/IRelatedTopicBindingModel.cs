@@ -6,7 +6,7 @@
 using System.ComponentModel.DataAnnotations;
 using Ignia.Topics.Mapping;
 
-namespace Ignia.Topics.ViewModels {
+namespace Ignia.Topics.Models {
 
   /*============================================================================================================================
   | INTERFACE: RELATED TOPIC BINDING MODEL

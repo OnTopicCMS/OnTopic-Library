@@ -11,9 +11,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Ignia.Topics.Internal.Mapping;
+using Ignia.Topics.Internal.Reflection;
+using Ignia.Topics.Metadata;
+using Ignia.Topics.Models;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Mapping {
 

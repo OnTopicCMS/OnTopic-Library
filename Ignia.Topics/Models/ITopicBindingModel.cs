@@ -5,8 +5,9 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Metadata;
 
-namespace Ignia.Topics.ViewModels {
+namespace Ignia.Topics.Models {
 
   /*============================================================================================================================
   | INTERFACE: TOPIC BINDING MODEL

@@ -6,7 +6,8 @@
 using System;
 using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.ViewModels;
+using Ignia.Topics.Models;
+using Ignia.Topics.Metadata;
 
 namespace Ignia.Topics.Mapping {
 
