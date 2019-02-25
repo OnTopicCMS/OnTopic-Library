@@ -106,6 +106,44 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP (EXISTING)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values on an existing object,
+    ///   ensuring that all mapped values are overwritten, and unmapped valued are not.
+    /// </summary>
+    [TestMethod]
+    public async Task MapExisting() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new AttributeDescriptorTopicBindingModel();
+      var target                = (AttributeDescriptor)TopicFactory.Create("Test", "AttributeDescriptor");
+
+      target.Title              = "Original Attribute";
+      target.DefaultValue       = "Hello";
+      target.IsRequired         = true;
+      target.StoreInBlob        = false;
+      target.Description        = "Original Description";
+
+      bindingModel.Key          = "Test";
+      bindingModel.ContentType  = "AttributeDescriptor";
+      bindingModel.Title        = null;
+      bindingModel.DefaultValue = "World";
+      bindingModel.IsRequired   = false;
+
+      target                    = (AttributeDescriptor)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+
+      Assert.AreEqual<string>("Test", target.Key);
+      Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
+      Assert.AreEqual<string>("Test", target.Title); //Should inherit from "Key" since it will be null
+      Assert.AreEqual<string>("World", target.DefaultValue);
+      Assert.AreEqual<bool>(false, target.IsRequired);
+      Assert.AreEqual<bool>(false, target.StoreInBlob);
+      Assert.AreEqual<string>("Original Description", target.Description);
+
+    }
+
 
   } //Class
 
