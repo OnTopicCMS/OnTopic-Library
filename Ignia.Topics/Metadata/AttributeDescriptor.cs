@@ -84,7 +84,57 @@ namespace Ignia.Topics.Metadata {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: TYPE
+    | PROPERTY: MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an <see cref="Metadata.ModelType"/> value suggesting how this attribute is modeled in the object graph.
+    /// </summary>
+    /// <remarks>
+    ///   Often, there are several editor controls (represented by <see cref="EditorType"/>) which correspond to a single model
+    ///   structure in the Topic Library. For instance, both <c>Relationships</c> and <c>TokenizedTopicList</c> are ways of
+    ///   exposing the same underlying relationship to the editor in different forms. The <see cref="ModelType"/> property
+    ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
+    ///   exposed in the editor.
+    /// </remarks>
+    public ModelType ModelType {
+      get {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return cached value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (_modelType.HasValue) {
+          return _modelType.Value;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Determine value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        var editorType = EditorType.Substring(0, EditorType.LastIndexOf(".", StringComparison.InvariantCulture));
+
+        if (new [] { "Relationships", "TokenizedTopicList"}.Contains(editorType)) {
+          _modelType = ModelType.Relationship;
+        }
+        else if (
+          new[] { "TopicLookup", "TopicPointer" }.Contains(editorType) ||
+          Key.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase)
+        ) {
+          _modelType = ModelType.Reference;
+        }
+        else if (new[] { "TopicList" }.Contains(editorType)) {
+          _modelType = ModelType.Reference;
+        }
+        else {
+          _modelType = ModelType.ScalarValue;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Return value
+        \---------------------------------------------------------------------------------------------------------------------*/
+        return _modelType.Value;
+
+      }
+    }
+
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -104,7 +154,7 @@ namespace Ignia.Topics.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public string Type {
+    public string EditorType {
       get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
