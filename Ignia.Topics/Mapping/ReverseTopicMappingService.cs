@@ -249,7 +249,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Fall back to default, if configured
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) {
+      if (String.IsNullOrEmpty(attributeValue) && configuration.DefaultValue != null) {
         attributeValue = configuration.DefaultValue.ToString();
       }
 
