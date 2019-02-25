@@ -144,6 +144,29 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: ALTERNATE ATTRIBUTE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully derives values from the key
+    ///   specified by <see cref="AttributeKeyAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task AlternateAttributeKey() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new PageTopicBindingModel();
+
+      bindingModel.Key          = "Test";
+      bindingModel.ContentType  = "Page";
+      bindingModel.BrowserTitle = "Browser Title";
+
+      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.AreEqual<string>("Browser Title", target.Attributes.GetValue("MetaTitle"));
+
+    }
+
 
   } //Class
 
