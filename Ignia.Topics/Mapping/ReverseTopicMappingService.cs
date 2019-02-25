@@ -198,11 +198,16 @@ namespace Ignia.Topics.Mapping {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.Relationship) {
+        SetRelationships(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.NestedTopic) {
+        await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
+      }
+      else if (
+        typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType) &&
+        attributeType.ModelType == ModelType.Reference
+      ) {
         var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
-        //#### TODO JJC20190221: Should this enforce the appending of an ID to maintain the convention? Or assume the
-        //developer knows to set an alias, or is deliberately breaking the convention?
         target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
       }
 
@@ -256,21 +261,12 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET COLLECTION VALUE
+    | PROTECTED: SET RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a collection property, identifies a target collection, maps the values from the binding model to target <see
-    ///   cref="Topic"/>s, and attempts to add them to the target collection.
+    ///   Given a relationship property, identifies the target <see cref="Topic"/> for each related item, and sets it on the
+    ///   source <see cref="Topic"/>'s <see cref="Topic.Relationships"/> collection.
     /// </summary>
-    /// <remarks>
-    ///   Given a source collection <paramref name="configuration"/> on a <paramref name="target"/> binding model, attempts to
-    ///   identify a source collection on the <paramref name="target"/>. Collections can be mapped to <see
-    ///   cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a nested target (which is part of
-    ///   <see cref="Topic.Children"/>). By default, <see cref="ReverseTopicMappingService"/> will attempt to map based on the
-    ///   property name, though this behavior can be modified using the <paramref name="configuration"/>, based on annotations
-    ///   on the <paramref name="source"/> binding model. The <see cref="ReverseTopicMappingService"/> does <i>not</i> support
-    ///   mapping <see cref="Topic.Children"/>.
-    /// </remarks>
     /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
@@ -278,43 +274,69 @@ namespace Ignia.Topics.Mapping {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected async Task SetCollectionValueAsync(
+    protected void SetRelationships(
       ITopicBindingModel        source,
       Topic                     target,
       PropertyConfiguration     configuration
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Escape clause if preconditions are not met
+      | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //#### TODO JJC20190221: If this is a relationship collection, then the list will be IRelatedTopicBindingModel. This needs
-      //to address that scenario. This may require splitting this up into two methods (one for relationships, another for
-      //children). That may make sense regardless since the way they are set will also vary.
-      if (!typeof(IList<ITopicBindingModel>).IsAssignableFrom(configuration.Property.PropertyType)) return;
+      var sourceList = (IList<IRelatedTopicBindingModel>)configuration.Property.GetValue(source, null);
+
+      if (sourceList == null) {
+        sourceList = new List<IRelatedTopicBindingModel>();
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure source list is created
+      | Set relationships for each
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(source, null)?? new List<ITopicBindingModel>();
+      foreach (var relationship in sourceList) {
+        var targetTopic = _topicRepository.Load(relationship.UniqueKey);
+        target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: SET NESTED TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a nested topic property, serializes a topic for each property, and sets it on the target <see cref="Topic"/>'s
+    ///   <see cref="Topic.Children"/> collection.
+    /// </summary>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
+    protected async Task SetNestedTopicsAsync(
+      ITopicBindingModel source,
+      Topic target,
+      PropertyConfiguration configuration
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish target collection to store topics to be mapped
+      | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //#### TODO JC20190219: This is now just an IList and can be retrieved using Configuration.Property.GetValue()
-      //#### TODO JC20190219: May need to create a child List ContentType that IsHidden for Nested Topics
-      var targetList = GetTargetCollection(target, configuration);
+      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate that target collection was identified
+      | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (targetList == null) return;
+      var container = target.Children.GetTopic(configuration.AttributeKey);
+      if (container == null) {
+        container = TopicFactory.Create(configuration.AttributeKey, "List", target);
+        container.IsHidden = true;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //#### TODO JC20190219: If it's a relationships collection (and that's all we should be supporting right now!) then it
-      //should be using target.SetRelationship().
-      await PopulateTargetCollectionAsync(sourceList, targetList, configuration).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, container.Children, configuration).ConfigureAwait(false);
 
     }
 
@@ -400,7 +422,7 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     protected async Task PopulateTargetCollectionAsync(
       IList<ITopicBindingModel> sourceList,
-      IList<Topic>              targetList,
+      TopicCollection           targetList,
       PropertyConfiguration     configuration
     ) {
 
@@ -411,7 +433,22 @@ namespace Ignia.Topics.Mapping {
 
       //Map child binding model to target collection on the target
       foreach (var childBindingModel in sourceList) {
-        taskQueue.Add(MapAsync(childBindingModel));
+        if (targetList.Contains(childBindingModel.Key)) {
+          taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)));
+        }
+        else {
+          taskQueue.Add(MapAsync(childBindingModel));
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove orphaned topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopic in targetList.ToArray()) {
+        if (sourceList.Any(model => model.Key == childTopic.Key)) {
+          continue;
+        }
+        targetList.Remove(childTopic);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -420,7 +457,10 @@ namespace Ignia.Topics.Mapping {
       while (taskQueue.Count > 0) {
         var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(topicTask);
-        targetList.Add(await topicTask.ConfigureAwait(false));
+        var topic = await topicTask.ConfigureAwait(false);
+        if (topic.Id < 0) {
+          targetList.Add(topic);
+        }
       }
 
     }
