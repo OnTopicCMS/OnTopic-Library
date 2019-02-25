@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Ignia.Topics.Reflection {
+namespace Ignia.Topics.Internal.Reflection {
 
   /*============================================================================================================================
   | CLASS: MEMBER INFO COLLECTION
@@ -15,7 +15,7 @@ namespace Ignia.Topics.Reflection {
   /// <summary>
   ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
   /// </summary>
-  internal class MemberInfoCollection : MemberInfoCollection<MemberInfo> {
+  public class MemberInfoCollection : MemberInfoCollection<MemberInfo> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -25,7 +25,7 @@ namespace Ignia.Topics.Reflection {
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
-    internal MemberInfoCollection(Type type) : base(type) {
+    public MemberInfoCollection(Type type) : base(type) {
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{MemberInfo}"/> of <see cref="MemberInfo"/> instances to populate the collection.
     /// </param>
-    internal MemberInfoCollection(Type type, IEnumerable<MemberInfo> members) : base(type, members) {
+    public MemberInfoCollection(Type type, IEnumerable<MemberInfo> members) : base(type, members) {
     }
 
   } //Class

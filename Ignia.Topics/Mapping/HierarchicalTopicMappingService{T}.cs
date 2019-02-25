@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.ViewModels;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Mapping {
 

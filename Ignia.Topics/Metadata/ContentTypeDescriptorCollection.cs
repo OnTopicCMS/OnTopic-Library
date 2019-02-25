@@ -3,8 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Ignia.Topics.Collections;
 
-namespace Ignia.Topics.Collections {
+namespace Ignia.Topics.Metadata {
 
   /*============================================================================================================================
   | CLASS: CONTENT TYPE DESCRIPTOR COLLECTION

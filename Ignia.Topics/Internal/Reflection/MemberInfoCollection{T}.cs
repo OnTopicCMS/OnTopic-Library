@@ -6,11 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace Ignia.Topics.Reflection {
+namespace Ignia.Topics.Internal.Reflection {
 
   /*============================================================================================================================
   | CLASS: MEMBER INFO COLLECTION {T}
@@ -18,7 +18,7 @@ namespace Ignia.Topics.Reflection {
   /// <summary>
   ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
   /// </summary>
-  internal class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
+  public class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -28,7 +28,7 @@ namespace Ignia.Topics.Reflection {
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
-    internal MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
+    public MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type != null);
       Type = type;
       foreach (
@@ -52,7 +52,7 @@ namespace Ignia.Topics.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{T}"/> of <typeparamref name="T"/> instances to populate the collection.
     /// </param>
-    internal MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
+    public MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type != null);
       Contract.Requires(members != null);
       Type = type;
@@ -88,7 +88,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Returns the type associated with this collection.
     /// </summary>
-    internal Type Type { get; }
+    public Type Type { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM

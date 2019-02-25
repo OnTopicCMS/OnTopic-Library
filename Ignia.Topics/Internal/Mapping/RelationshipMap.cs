@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ignia.Topics.Mapping;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Internal.Mapping {
 
   /*============================================================================================================================
   | CLASS: RELATIONSHIP MAP

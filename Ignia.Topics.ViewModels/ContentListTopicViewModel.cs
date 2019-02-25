@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.ViewModels {
 

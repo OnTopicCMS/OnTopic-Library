@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Ignia.Topics.AspNetCore.Mvc.Controllers;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

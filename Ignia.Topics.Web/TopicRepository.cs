@@ -5,8 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Web.Configuration;
 

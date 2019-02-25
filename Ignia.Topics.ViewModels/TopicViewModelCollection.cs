@@ -6,7 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Models;
 using System.Linq;
 
 namespace Ignia.Topics.ViewModels {

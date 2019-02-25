@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Ignia.Topics.Querying;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Tests.TestDoubles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -267,8 +268,8 @@ namespace Ignia.Topics.Tests {
     | TEST: ATTRIBUTE CONFIGURATION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the <see cref="Ignia.Topics.AttributeDescriptor.DefaultConfiguration"/> property, then confirms that it is
-    ///   correctly parsed via the <see cref="Ignia.Topics.AttributeDescriptor.Configuration"/> property.
+    ///   Sets the <see cref="AttributeDescriptor.DefaultConfiguration"/> property, then confirms that it is
+    ///   correctly parsed via the <see cref="AttributeDescriptor.Configuration"/> property.
     /// </summary>
     [TestMethod]
     public void AttributeConfiguration() {

@@ -22,7 +22,7 @@ namespace Ignia.Topics.Reflection {
     /// <summary>
     ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
-    internal DynamicTopicLookupService() : base(
+    public DynamicTopicLookupService() : base(
       t => typeof(Topic).IsAssignableFrom(t),
       typeof(Topic)
     ) {}

@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Ignia.Topics.Diagnostics;
+using Ignia.Topics.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Razor;
 
