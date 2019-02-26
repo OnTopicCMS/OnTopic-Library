@@ -319,7 +319,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList<ITopicBindingModel>)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
+      var sourceList = (IList)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
@@ -418,7 +418,7 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
     protected async Task PopulateTargetCollectionAsync(
-      IList<ITopicBindingModel> sourceList,
+      IList                     sourceList,
       TopicCollection           targetList,
       PropertyConfiguration     configuration
     ) {
@@ -429,7 +429,7 @@ namespace Ignia.Topics.Mapping {
       var taskQueue = new List<Task<Topic>>();
 
       //Map child binding model to target collection on the target
-      foreach (var childBindingModel in sourceList) {
+      foreach (ITopicBindingModel childBindingModel in sourceList) {
         if (targetList.Contains(childBindingModel.Key)) {
           taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)));
         }
@@ -442,7 +442,7 @@ namespace Ignia.Topics.Mapping {
       | Remove orphaned topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var childTopic in targetList.ToArray()) {
-        if (sourceList.Any(model => model.Key == childTopic.Key)) {
+        if (sourceList.Cast<ITopicBindingModel>().Any(model => model.Key == childTopic.Key)) {
           continue;
         }
         targetList.Remove(childTopic);
