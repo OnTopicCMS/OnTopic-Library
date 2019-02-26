@@ -455,7 +455,7 @@ namespace Ignia.Topics.Mapping {
         var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(topicTask);
         var topic = await topicTask.ConfigureAwait(false);
-        if (topic.Id < 0) {
+        if (!targetList.Contains(topic.Key)) {
           targetList.Add(topic);
         }
       }
