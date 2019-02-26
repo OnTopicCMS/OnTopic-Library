@@ -210,6 +210,21 @@ namespace Ignia.Topics.Mapping {
           $"{configuration.RelationshipType} then use the {nameof(RelationshipAttribute)} to map it to a different " +
           $"{nameof(RelationshipType)}. If this collection is not intended to be mapped at all, include the " +
           $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate the correct base class for reference
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        attributeDescriptor.ModelType == ModelType.Reference &&
+        !typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)
+      ) {
+        throw new InvalidOperationException(
+          $"The {property.Name} on the {sourceType.Name} has been determined to be a {ModelType.Reference}, but " +
+          $"the generic type {property.PropertyType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} " +
+          $"interface. This is required for references. If this property is not intended to be mapped to " +
+          $"{ModelType.NestedTopic} then update the definition in the associated {nameof(ContentTypeDescriptor)}. If this " +
+          $"property is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)} to exclude it from " +
+          $"mapping."
         );
       }
 

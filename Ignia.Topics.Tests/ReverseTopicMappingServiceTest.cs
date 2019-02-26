@@ -452,6 +452,25 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: REFERENCE TYPE PROPERTY (INVALID)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see
+    ///   cref="TopicViewModel"/>, even though references are expected to return a type implementing <see
+    ///   cref="IRelatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task InvalidReferenceTypeProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
 
   } //Class
 
