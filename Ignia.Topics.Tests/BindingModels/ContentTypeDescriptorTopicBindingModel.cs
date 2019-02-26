@@ -26,6 +26,8 @@ namespace Ignia.Topics.Tests.BindingModels {
 
     public List<RelatedTopicBindingModel> ContentTypes { get; } = new List<RelatedTopicBindingModel>();
 
+    public List<AttributeDescriptorTopicBindingModel> Attributes { get; } = new List<AttributeDescriptorTopicBindingModel>();
+
   } //Class
 
 } //Namespace

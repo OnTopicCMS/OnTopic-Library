@@ -198,6 +198,43 @@ namespace Ignia.Topics.Tests {
     }
 
 
+    /*==========================================================================================================================
+    | TEST: MAP NESTED TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the nested topics.
+    /// </summary>
+    [TestMethod]
+    public async Task MapNestedTopics() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
+
+      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute1"));
+      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute2"));
+      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute3") { DefaultValue = "New Value" } );
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
+      var attributes            = TopicFactory.Create("Attributes", "List", topic);
+
+      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "AttributeDescriptor", attributes);
+      var attribute4            = TopicFactory.Create("Attribute4", "AttributeDescriptor", attributes);
+
+      attribute3.DefaultValue   = "Original Value";
+
+      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(3, target.AttributeDescriptors.Count);
+      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute1"));
+      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute2"));
+      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute3"));
+      Assert.AreEqual<string>("New Value", target.AttributeDescriptors.GetTopic("Attribute3").DefaultValue);
+      Assert.IsNull(target.AttributeDescriptors.GetTopic("Attribute4"));
+
+    }
+
+
+
   } //Class
 
 } //Namespace

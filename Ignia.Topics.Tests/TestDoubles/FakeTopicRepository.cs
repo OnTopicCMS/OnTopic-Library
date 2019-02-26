@@ -236,12 +236,12 @@ namespace Ignia.Topics.Tests.TestDoubles {
       addAttribute(contentTypes, "Key", "FormField", true);
       addAttribute(contentTypes, "ContentType", "FormField", true);
       addAttribute(contentTypes, "Title", "FormField", true);
-      addAttribute(contentTypes, "Attributes", "TopicList");
       addAttribute(contentTypes, "TopicId", "TopicPointer");
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(contentTypeDescriptor, "ContentTypes", "Relationships");
+      addAttribute(contentTypeDescriptor, "Attributes", "TopicList");
 
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
