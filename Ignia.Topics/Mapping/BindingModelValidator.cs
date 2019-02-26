@@ -234,7 +234,7 @@ namespace Ignia.Topics.Mapping {
       | Validate that references end in "Id"
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType) &&
+        attributeDescriptor.ModelType == ModelType.Reference &&
         !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
       ) {
         throw new InvalidOperationException(
@@ -305,11 +305,10 @@ namespace Ignia.Topics.Mapping {
       if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
-          $"the generic type {listType.Name} does not implement the {typeof(IRelatedTopicBindingModel)} interface. This is " +
-          $"required for binding models. If this collection is not intended to be mapped to " +
-          $"{configuration.RelationshipType} then use the {nameof(RelationshipAttribute)} to map it to a different " +
-          $"{nameof(RelationshipType)}. If this collection is not intended to be mapped at all, include the " +
-          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
+          $"the generic type {listType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} interface. This is " +
+          $"required for binding models. If this collection is not intended to be mapped to {configuration.RelationshipType} " +
+          $"then update the definition in the associated {nameof(ContentTypeDescriptor)}. If this collection is not intended " +
+          $"to be mapped at all, include the {nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 
