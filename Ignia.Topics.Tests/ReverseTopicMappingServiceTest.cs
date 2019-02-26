@@ -411,6 +411,26 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: RELATIONSHIP TYPE PROPERTY (INVALID)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a relationship an invalid <see cref="RelationshipType"/>—i.e., it refers to <see
+    ///   cref="RelationshipType.NestedTopics"/>, even though the property is associated with a <see
+    ///   cref="RelationshipType.Relationship"/>. This is invalid, and expected to throw an <see
+    ///   cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task InvalidRelationshipTypeProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
 
   } //Class
 
