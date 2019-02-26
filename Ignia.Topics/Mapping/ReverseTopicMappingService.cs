@@ -283,7 +283,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList<IRelatedTopicBindingModel>)configuration.Property.GetValue(source, null);
+      var sourceList = (IList)configuration.Property.GetValue(source, null);
 
       if (sourceList == null) {
         sourceList = new List<IRelatedTopicBindingModel>();
@@ -292,7 +292,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var relationship in sourceList) {
+      foreach (IRelatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey);
         target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
       }
