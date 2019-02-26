@@ -471,6 +471,28 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: ATTRIBUTE PROPERTY (DISABLED)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a property that doesn't map to any attributes. This is invalid. However, the property
+    ///   is also decorated with the <see cref="DisableMappingAttribute"/>, which should prevent the <see
+    ///   cref="ReverseTopicMappingService"/> from validating or mapping the property.
+    /// </summary>
+    [TestMethod]
+    public async Task DisabledAttributeProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new DisabledAttributeTopicBindingModel("Test");
+
+      bindingModel.UnmappedAttribute = "Hello World";
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.IsNull(target.Attributes.GetValue("UnmappedAttribute", null));
+
+    }
+
 
   } //Class
 
