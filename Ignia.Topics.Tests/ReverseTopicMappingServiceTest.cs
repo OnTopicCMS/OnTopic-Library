@@ -319,6 +319,24 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CHILDREN PROPERTY (INVALID)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has children property. This is invalid, and expected to throw an <see
+    ///   cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task InvalidChildrenProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
   } //Class
 
 } //Namespace
