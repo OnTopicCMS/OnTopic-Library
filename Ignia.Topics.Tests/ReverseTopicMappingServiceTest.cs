@@ -279,6 +279,28 @@ namespace Ignia.Topics.Tests {
 
     }
 
+
+    /*==========================================================================================================================
+    | TEST: DEFAULT VALUE PROPERTIES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has default properties. Ensures that each is set appropriately.
+    /// </summary>
+    [TestMethod]
+    public async Task MapDefaultValueProperties() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new PageTopicBindingModel("Test");
+
+      bindingModel.Title        = "Required Title";
+
+      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.AreEqual<string>("Default page description", target.Attributes.GetValue("MetaDescription"));
+
+    }
+
+
   } //Class
 
 } //Namespace

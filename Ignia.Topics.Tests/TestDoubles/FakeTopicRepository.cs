@@ -257,6 +257,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", 908, contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
+      addAttribute(pageContentType, "MetaDescription");
       addAttribute(pageContentType, "IsHidden");
 
       /*------------------------------------------------------------------------------------------------------------------------
