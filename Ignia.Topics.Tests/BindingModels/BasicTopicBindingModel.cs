@@ -20,6 +20,15 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class BasicTopicBindingModel : ITopicBindingModel {
 
+    public BasicTopicBindingModel() {
+
+    }
+
+    public BasicTopicBindingModel(string key, string contentType) {
+      Key = key;
+      ContentType = contentType;
+    }
+
     public string Key { get; set; }
 
     [Required]
