@@ -247,7 +247,7 @@ namespace Ignia.Topics.Tests {
     public async Task MapTopicReferences() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new AttributeDescriptorTopicBindingModel("Test");
+      var bindingModel          = new ReferenceTopicBindingModel("Test");
 
       bindingModel.DerivedTopic = new RelatedTopicBindingModel() {
         UniqueKey               = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()

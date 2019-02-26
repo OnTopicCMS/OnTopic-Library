@@ -11,30 +11,21 @@ using Ignia.Topics.Models;
 namespace Ignia.Topics.Tests.BindingModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: DEFAULT VALUE TOPIC
+  | VIEW MODEL: REFERENCE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing views properties annotated with default value attributes.
+  ///   Provides a strongly-typed data transfer object for testing a property associated with a topic pointer—i.e. a reference
+  ///   to another topic.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class BasicTopicBindingModel : ITopicBindingModel {
+  public class ReferenceTopicBindingModel : BasicTopicBindingModel {
 
-    public BasicTopicBindingModel() {
+    public ReferenceTopicBindingModel(string key) : base(key, "AttributeDescriptor") {}
 
-    }
-
-    public BasicTopicBindingModel(string key, string contentType) {
-      Key = key;
-      ContentType = contentType;
-    }
-
-    public string Key { get; set; }
-
-    [Required]
-    public string ContentType { get; set; }
-
+    [AttributeKey("TopicId")]
+    public RelatedTopicBindingModel DerivedTopic { get; set; }
 
   } //Class
 } //Namespace
