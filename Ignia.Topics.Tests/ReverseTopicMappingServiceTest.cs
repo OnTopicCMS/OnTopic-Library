@@ -160,6 +160,7 @@ namespace Ignia.Topics.Tests {
 
       bindingModel.Key          = "Test";
       bindingModel.ContentType  = "Page";
+      bindingModel.Title        = "Test Page";
       bindingModel.BrowserTitle = "Browser Title";
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -261,6 +262,22 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP REQUIRED PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a required property. Ensures that an error is thrown if it is not set.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ValidationException))]
+    public async Task MapRequiredProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new PageTopicBindingModel("Test");
+
+      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
 
   } //Class
 
