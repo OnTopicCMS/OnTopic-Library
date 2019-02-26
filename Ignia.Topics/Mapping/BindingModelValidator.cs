@@ -217,7 +217,7 @@ namespace Ignia.Topics.Mapping {
       | Validate that references end in "Id"
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        typeof(ITopicBindingModel).IsAssignableFrom(property.PropertyType) &&
+        typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType) &&
         !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
       ) {
         throw new InvalidOperationException(
