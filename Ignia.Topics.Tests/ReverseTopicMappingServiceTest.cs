@@ -15,6 +15,7 @@ using Ignia.Topics.Tests.BindingModels;
 using Ignia.Topics.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ignia.Topics.Metadata;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Tests {
 
@@ -233,6 +234,32 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP TOPIC REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully maps referenced topics.
+    /// </summary>
+    [TestMethod]
+    public async Task MapTopicReferences() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new AttributeDescriptorTopicBindingModel("Test");
+
+      bindingModel.DerivedTopic = new RelatedTopicBindingModel() {
+        UniqueKey               = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
+      };
+
+      var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      var test = _topicRepository.Load("Root:Configuration:ContentTypes");
+
+      target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
+
+      Assert.IsNotNull(target.DerivedTopic);
+      Assert.AreEqual<string>("FormField", target.EditorType);
+
+    }
 
 
   } //Class

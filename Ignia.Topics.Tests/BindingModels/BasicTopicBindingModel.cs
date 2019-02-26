@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Ignia.Topics.Mapping;
 using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Tests.BindingModels {
@@ -30,6 +31,9 @@ namespace Ignia.Topics.Tests.BindingModels {
     }
 
     public string Key { get; set; }
+
+    [AttributeKey("TopicId")]
+    public RelatedTopicBindingModel DerivedTopic { get; set; }
 
     [Required]
     public string ContentType { get; set; }
