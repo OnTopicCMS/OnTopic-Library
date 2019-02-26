@@ -167,6 +167,36 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the relationships.
+    /// </summary>
+    [TestMethod]
+    public async Task MapRelationships() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var bindingModel          = new ContentTypeDescriptorTopicBindingModel();
+
+      bindingModel.Key          = "Test";
+      bindingModel.ContentType  = "ContentTypeDescriptor";
+
+      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[0].GetUniqueKey() });
+      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[1].GetUniqueKey() });
+      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[2].GetUniqueKey() });
+
+      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(3, target.PermittedContentTypes.Count);
+      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[0]));
+      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[1]));
+      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[2]));
+      Assert.IsFalse(target.PermittedContentTypes.Contains(contentTypes[3]));
+
+    }
+
 
   } //Class
 

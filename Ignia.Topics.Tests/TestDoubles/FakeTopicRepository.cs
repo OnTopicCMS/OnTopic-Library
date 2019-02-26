@@ -239,7 +239,10 @@ namespace Ignia.Topics.Tests.TestDoubles {
       addAttribute(contentTypes, "Attributes", "TopicList");
       addAttribute(contentTypes, "TopicId", "TopicPointer");
 
-      TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(contentTypeDescriptor, "ContentTypes", "Relationships");
+
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
