@@ -16,6 +16,8 @@ using Ignia.Topics.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace Ignia.Topics.Tests {
 
@@ -426,6 +428,25 @@ namespace Ignia.Topics.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: RELATIONSHIP LIST TYPE PROPERTY (INVALID)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a relationship that implements an invalid collection type—i.e., it implements a <see
+    ///   cref="Dictionary{TKey, TValue}"/>, even though relationships are expected to return a type implementing <see
+    ///   cref="IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task InvalidRelationshipListTypeProperty() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
