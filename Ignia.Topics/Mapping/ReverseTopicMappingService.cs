@@ -194,19 +194,16 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_typeCache.HasSettableProperty(source.GetType(), property.Name) && attributeType.ModelType == ModelType.ScalarValue) {
+      if (attributeType.ModelType == ModelType.ScalarValue) {
         SetScalarValue(source, target, configuration);
       }
-      else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.Relationship) {
+      else if (attributeType.ModelType == ModelType.Relationship) {
         SetRelationships(source, target, configuration);
       }
-      else if (typeof(IList).IsAssignableFrom(property.PropertyType) && attributeType.ModelType == ModelType.NestedTopic) {
+      else if (attributeType.ModelType == ModelType.NestedTopic) {
         await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
       }
-      else if (
-        typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType) &&
-        attributeType.ModelType == ModelType.Reference
-      ) {
+      else if (attributeType.ModelType == ModelType.Reference) {
         var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
         target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
       }
