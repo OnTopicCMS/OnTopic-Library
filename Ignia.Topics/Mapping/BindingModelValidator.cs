@@ -192,30 +192,8 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect non-mapped relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (typeof(IList).IsAssignableFrom(property.PropertyType) && configuration.RelationshipType == RelationshipType.Any) {
-        throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} is a collection, but it is ambiguous what relationship on the " +
-          $"{nameof(ContentTypeDescriptor)} that is represents. If it is intended to be mapped, include the " +
-          $"{nameof(RelationshipAttribute)}. Otherwise, include the {nameof(DisableMappingAttribute)} to indicate that this" +
-          $"property is not intended to be mapped."
-        );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate the correct base class for relationships
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        relationships.Contains(configuration.RelationshipType) &&
-        !typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)
-      ) {
-        throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
-          $"the generic type {listType.Name} does not implement the {typeof(IRelatedTopicBindingModel)} interface. This is " +
-          $"required for binding models. If this collection is not intended to be mapped to " +
-          $"{configuration.RelationshipType} then use the {nameof(RelationshipAttribute)} to map it to a different " +
-          $"{nameof(RelationshipType)}. If this collection is not intended to be mapped at all, include the " +
-          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
-        );
+      if (attributeDescriptor.ModelType == ModelType.Relationship) {
+        ValidateRelationship(sourceType, configuration, attributeDescriptor, listType);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -250,6 +228,71 @@ namespace Ignia.Topics.Mapping {
           $"property is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)}. If the " +
           $"{contentTypeDescriptor.Key} defines a topic reference attribute that doesn't follow this convention, then it " +
           $"should be updated."
+        );
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: VALIDATE RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper function that evaluates a relationship property on the binding model against the associated content type to
+    ///   identify any potential mapping errors relative to the schema.
+    /// </summary>
+    /// <param name="sourceType">
+    ///   The binding model <see cref="Type"/> to validate.
+    /// </param>
+    /// <param name="configuration">
+    ///   A <see cref="PropertyConfiguration"/> describing a specific property of the <paramref name="sourceType"/>.
+    /// </param>
+    /// <param name="attributeDescriptor">
+    ///   The <see cref="AttributeDescriptor"/> object against which to validate the model.
+    /// </param>
+    static internal void ValidateRelationship(
+      Type                      sourceType,
+      PropertyConfiguration     configuration,
+      AttributeDescriptor       attributeDescriptor,
+      Type                      listType
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var property              = configuration.Property;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate list
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!typeof(IList).IsAssignableFrom(property.PropertyType)) {
+        throw new InvalidOperationException(
+          $"The {property.Name} on the {sourceType.Name} maps to a relationship attribute {attributeDescriptor.Key}, but does" +
+          $"not implement {nameof(IList)}. Relationships must implement {nameof(IList)} or derive from a collection that does."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate relationship type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!new[] { RelationshipType.Any, RelationshipType.Relationship }.Contains(configuration.RelationshipType)) {
+        throw new InvalidOperationException(
+          $"The {property.Name} on the {sourceType.Name} maps to a relationship attribute {attributeDescriptor.Key}, but is " +
+          $"configured as a {configuration.RelationshipType}. The property should be flagged as either " +
+          $"{nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate the correct base class for relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
+        throw new InvalidOperationException(
+          $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
+          $"the generic type {listType.Name} does not implement the {typeof(IRelatedTopicBindingModel)} interface. This is " +
+          $"required for binding models. If this collection is not intended to be mapped to " +
+          $"{configuration.RelationshipType} then use the {nameof(RelationshipAttribute)} to map it to a different " +
+          $"{nameof(RelationshipType)}. If this collection is not intended to be mapped at all, include the " +
+          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 
