@@ -62,6 +62,7 @@ namespace Ignia.Topics.Internal.Mapping {
       RelationshipType          = RelationshipType.Any;
       CrawlRelationships        = Relationships.None;
       MetadataKey               = (string)null;
+      DisableMapping            = false;
       AttributeFilters          = new Dictionary<string, string>();
       FlattenChildren           = false;
 
@@ -74,6 +75,7 @@ namespace Ignia.Topics.Internal.Mapping {
       GetAttributeValue<FollowAttribute>(property, a => CrawlRelationships = a.Relationships);
       GetAttributeValue<FlattenAttribute>(property, a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property, a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(property, a => DisableMapping = true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
@@ -254,6 +256,20 @@ namespace Ignia.Topics.Internal.Mapping {
     ///   </para>
     /// </remarks>
     public string MetadataKey { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: DISABLE MAPPING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether the property is intended to be mapped to the corresponding <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="DisableMapping"/> property corresponds to the <see cref="DisableMappingAttribute"/> being set on a
+    ///     given property. It can be assigned by decorating a DTO property with e.g. <c>[DisableMapping]</c>.
+    ///   </para>
+    /// </remarks>
+    public bool DisableMapping { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE FILTERS
