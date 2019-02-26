@@ -225,35 +225,36 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = TopicFactory.Create("Root", "Container");
+      var rootTopic = TopicFactory.Create("Root", "Container", 900);
+      var currentAttributeId = 800;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
-      var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
+      var configuration = TopicFactory.Create("Configuration", "Container", 901, rootTopic);
+      var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", 902, configuration);
 
       addAttribute(contentTypes, "Key", "FormField", true);
       addAttribute(contentTypes, "ContentType", "FormField", true);
       addAttribute(contentTypes, "Title", "FormField", true);
       addAttribute(contentTypes, "TopicId", "TopicPointer");
 
-      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", 903, contentTypes);
 
       addAttribute(contentTypeDescriptor, "ContentTypes", "Relationships");
       addAttribute(contentTypeDescriptor, "Attributes", "TopicList");
 
-      TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
-      TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
-      TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
-      TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
+      TopicFactory.Create("Container", "ContentTypeDescriptor", 904, contentTypes);
+      TopicFactory.Create("Lookup", "ContentTypeDescriptor", 905, contentTypes);
+      TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", 906, contentTypes);
+      TopicFactory.Create("List", "ContentTypeDescriptor", 907, contentTypes);
 
       var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(attributeDescriptor, "DefaultValue", "FormField", true);
       addAttribute(attributeDescriptor, "IsRequired", "Checkbox", true);
 
-      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", 908, contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "IsHidden");
@@ -267,7 +268,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, "AttributeDescriptor", container);
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, "AttributeDescriptor", currentAttributeId++, container);
         attribute.EditorType = editorType;
         attribute.IsRequired = isRequired;
         return attribute;
