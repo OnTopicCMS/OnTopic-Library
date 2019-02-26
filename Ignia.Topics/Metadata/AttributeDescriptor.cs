@@ -125,7 +125,7 @@ namespace Ignia.Topics.Metadata {
           _modelType = ModelType.Reference;
         }
         else if (new[] { "TopicList" }.Contains(editorType)) {
-          _modelType = ModelType.Reference;
+          _modelType = ModelType.NestedTopic;
         }
         else {
           _modelType = ModelType.ScalarValue;
