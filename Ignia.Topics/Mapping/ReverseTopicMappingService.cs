@@ -204,8 +204,11 @@ namespace Ignia.Topics.Mapping {
         await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
       }
       else if (attributeType.ModelType == ModelType.Reference) {
-        var topicReference = _topicRepository.Load(((IRelatedTopicBindingModel)property.GetValue(source)).UniqueKey);
-        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+        var modelReference = (IRelatedTopicBindingModel)property.GetValue(source);
+        if (!String.IsNullOrEmpty(modelReference?.UniqueKey)) {
+          var topicReference = _topicRepository.Load(modelReference.UniqueKey);
+          target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+        }
       }
 
     }
