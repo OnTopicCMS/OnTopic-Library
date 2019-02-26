@@ -259,6 +259,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
       addAttribute(pageContentType, "IsHidden");
+      addAttribute(pageContentType, "TopicReference", "TopicPointer");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
