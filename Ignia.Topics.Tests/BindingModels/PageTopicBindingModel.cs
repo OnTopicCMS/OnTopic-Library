@@ -22,6 +22,8 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class PageTopicBindingModel : BasicTopicBindingModel {
 
+    public PageTopicBindingModel(string key = null) : base(key, "Page") { }
+
     public string Title { get; set; }
 
     [AttributeKey("MetaTitle")]
