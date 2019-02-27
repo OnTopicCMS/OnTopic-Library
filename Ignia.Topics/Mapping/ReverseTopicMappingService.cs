@@ -209,11 +209,8 @@ namespace Ignia.Topics.Mapping {
         await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
       }
       else if (attributeType.ModelType == ModelType.Reference) {
-        var modelReference = (IRelatedTopicBindingModel)property.GetValue(source);
-        if (!String.IsNullOrEmpty(modelReference?.UniqueKey)) {
-          var topicReference = _topicRepository.Load(modelReference.UniqueKey);
-          target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
         }
+          SetReference(source, target, configuration);
       }
 
     }
@@ -341,71 +338,42 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: GET TARGET COLLECTION
+    | PROTECTED: SET REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a target <see cref="Topic"/> and a <see cref="PropertyConfiguration"/>, attempts to identify the target
-    ///   collection that is associated with the source property on the binding model.
+    ///   Given a reference property, lookup the associated topic and set its <see cref="Topic.Id"/> on the <paramref
+    ///   name="target"/>'s <see cref="Topic.Attributes"/> collection.
     /// </summary>
-    /// <remarks>
-    ///   Collections can be mapped to <see cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/> or to a
-    ///   nested target (which will be part of <see cref="Topic.Children"/>). By default, <see
-    ///   cref="ReverseTopicMappingService"/> will attempt to map based on the property name, though this behavior can be
-    ///   modified using the <paramref name="configuration"/>, based on annotations on the source binding model.
-    /// </remarks>
-    /// <param name="target">
+    /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    /// <exception cref="InvalidOperationException">
-    ///   <see cref="ReverseTopicMappingService"/> does not support mapping to <see cref="Topic.Children"/>. Any attempts to do
-    ///   so will raise an <see cref="InvalidOperationException"/>. If mapping of children is necessary, then it should be
-    ///   handled by the calling class on a per child basis. The caller will have better awareness of the context, and is thus
-    ///   better suited to validate the request and handle potential issues with merging—such as deleting entire <see
-    ///   cref="Topic"/> trees.
-    /// </exception>
-    protected IList<Topic> GetTargetCollection(Topic target, PropertyConfiguration configuration) {
+    protected void SetReference(
+      ITopicBindingModel source,
+      Topic target,
+      PropertyConfiguration configuration
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish source collection to store topics to be mapped
+      | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
-      var                       relationshipKey                 = configuration.RelationshipKey;
-      var                       relationshipType                = configuration.RelationshipType;
+      var modelReference = (IRelatedTopicBindingModel)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle (outgoing) relationships
+      | Bypass if reference (or value) is null (or empty)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (relationshipType.Equals(RelationshipType.Relationship) && target.Relationships.Contains(relationshipKey)) {
-        listSource = target.Relationships.GetTopics(relationshipKey);
+      if (String.IsNullOrEmpty(modelReference?.UniqueKey)) {
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle nested topics, or children corresponding to the property name
+      | Set target value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //#### TODO JJC20190221: Should create the interstitial "List" container if it's missing
-      if (relationshipType.Equals(RelationshipType.NestedTopics) && target.Children.Contains(relationshipKey)) {
-        listSource = target.Children[relationshipKey].Children;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle (incoming) relationships
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (relationshipType.Equals(RelationshipType.IncomingRelationship) && target.IncomingRelationships.Contains(relationshipKey)) {
-        listSource = target.IncomingRelationships.GetTopics(relationshipKey);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle Metadata relationship
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
-        var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-        listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
-      }
-
-      return listSource;
+      var topicReference = _topicRepository.Load(modelReference.UniqueKey);
+      target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
 
     }
 
