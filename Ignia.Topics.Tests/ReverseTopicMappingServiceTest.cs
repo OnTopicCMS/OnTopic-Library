@@ -62,13 +62,14 @@ namespace Ignia.Topics.Tests {
     public async Task MapGeneric() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new AttributeDescriptorTopicBindingModel();
 
-      bindingModel.Key          = "Test";
-      bindingModel.ContentType  = "AttributeDescriptor";
-      bindingModel.Title        = "Test Attribute";
-      bindingModel.DefaultValue = "Hello";
-      bindingModel.IsRequired   = true;
+      var bindingModel          = new AttributeDescriptorTopicBindingModel() {
+        Key                     = "Test",
+        ContentType             = "AttributeDescriptor",
+        Title                   = "Test Attribute",
+        DefaultValue            = "Hello",
+        IsRequired              = true
+      };
 
       var target                = await mappingService.MapAsync<AttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
@@ -91,13 +92,14 @@ namespace Ignia.Topics.Tests {
     public async Task MapDynamic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new AttributeDescriptorTopicBindingModel();
 
-      bindingModel.Key          = "Test";
-      bindingModel.ContentType  = "AttributeDescriptor";
-      bindingModel.Title        = "Test Attribute";
-      bindingModel.DefaultValue = "Hello";
-      bindingModel.IsRequired   = true;
+      var bindingModel          = new AttributeDescriptorTopicBindingModel {
+        Key                     = "Test",
+        ContentType             = "AttributeDescriptor",
+        Title                   = "Test Attribute",
+        DefaultValue            = "Hello",
+        IsRequired              = true
+      };
 
       var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
@@ -120,7 +122,15 @@ namespace Ignia.Topics.Tests {
     public async Task MapExisting() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new AttributeDescriptorTopicBindingModel();
+
+      var bindingModel          = new AttributeDescriptorTopicBindingModel() {
+        Key                     = "Test",
+        ContentType             = "AttributeDescriptor",
+        Title                   = null,
+        DefaultValue            = "World",
+        IsRequired              = false
+      };
+
       var target                = (AttributeDescriptor)TopicFactory.Create("Test", "AttributeDescriptor");
 
       target.Title              = "Original Attribute";
@@ -128,12 +138,6 @@ namespace Ignia.Topics.Tests {
       target.IsRequired         = true;
       target.StoreInBlob        = false;
       target.Description        = "Original Description";
-
-      bindingModel.Key          = "Test";
-      bindingModel.ContentType  = "AttributeDescriptor";
-      bindingModel.Title        = null;
-      bindingModel.DefaultValue = "World";
-      bindingModel.IsRequired   = false;
 
       target                    = (AttributeDescriptor)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
@@ -158,12 +162,13 @@ namespace Ignia.Topics.Tests {
     public async Task AlternateAttributeKey() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new PageTopicBindingModel();
 
-      bindingModel.Key          = "Test";
-      bindingModel.ContentType  = "Page";
-      bindingModel.Title        = "Test Page";
-      bindingModel.BrowserTitle = "Browser Title";
+      var bindingModel          = new PageTopicBindingModel {
+        Key                     = "Test",
+        ContentType             = "Page",
+        Title                   = "Test Page",
+        BrowserTitle            = "Browser Title"
+      };
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
@@ -180,12 +185,13 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapRelationships() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var bindingModel          = new ContentTypeDescriptorTopicBindingModel();
+      var mappingService = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var contentTypes = _topicRepository.GetContentTypeDescriptors();
 
-      bindingModel.Key          = "Test";
-      bindingModel.ContentType  = "ContentTypeDescriptor";
+      var bindingModel = new ContentTypeDescriptorTopicBindingModel {
+        Key = "Test",
+        ContentType = "ContentTypeDescriptor"
+      };
 
       bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[0].GetUniqueKey() });
       bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[1].GetUniqueKey() });
@@ -247,15 +253,14 @@ namespace Ignia.Topics.Tests {
     public async Task MapTopicReferences() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new ReferenceTopicBindingModel("Test");
 
-      bindingModel.DerivedTopic = new RelatedTopicBindingModel() {
-        UniqueKey               = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
+      var bindingModel          = new ReferenceTopicBindingModel("Test") {
+        DerivedTopic            = new RelatedTopicBindingModel() {
+          UniqueKey             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
+        }
       };
 
       var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
-
-      var test = _topicRepository.Load("Root:Configuration:ContentTypes");
 
       target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
 
@@ -292,9 +297,10 @@ namespace Ignia.Topics.Tests {
     public async Task MapDefaultValueProperties() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new PageTopicBindingModel("Test");
 
-      bindingModel.Title        = "Required Title";
+      var bindingModel          = new PageTopicBindingModel("Test") {
+        Title                   = "Required Title"
+      };
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
@@ -313,9 +319,10 @@ namespace Ignia.Topics.Tests {
     public async Task MapMinimumValueProperties() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new MinimumLengthPropertyTopicBindingModel("Test");
 
-      bindingModel.Title        = "Hello World";
+      var bindingModel          = new MinimumLengthPropertyTopicBindingModel("Test") {
+        Title                   = "Hello World"
+      };
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
@@ -351,9 +358,10 @@ namespace Ignia.Topics.Tests {
     public async Task InvalidParentProperty() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new InvalidParentTopicBindingModel("Test");
 
-      bindingModel.Parent       = new BasicTopicBindingModel("Test", "Page");
+      var bindingModel          = new InvalidParentTopicBindingModel("Test") {
+        Parent                  = new BasicTopicBindingModel("Test", "Page")
+      };
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
@@ -483,9 +491,10 @@ namespace Ignia.Topics.Tests {
     public async Task DisabledAttributeProperty() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var bindingModel          = new DisabledAttributeTopicBindingModel("Test");
 
-      bindingModel.UnmappedAttribute = "Hello World";
+      var bindingModel          = new DisabledAttributeTopicBindingModel("Test") {
+        UnmappedAttribute       = "Hello World"
+      };
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
