@@ -333,7 +333,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      await PopulateTargetCollectionAsync(sourceList, container.Children, configuration).ConfigureAwait(false);
+      await PopulateTargetCollectionAsync(sourceList, container.Children).ConfigureAwait(false);
 
     }
 
@@ -385,13 +385,9 @@ namespace Ignia.Topics.Mapping {
     /// </summary>
     /// <param name="sourceList">The <see cref="IList{ITopicBindingModel}"/> to pull the binding models from.</param>
     /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
-    /// <param name="configuration">
-    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
-    /// </param>
     protected async Task PopulateTargetCollectionAsync(
       IList                     sourceList,
-      TopicCollection           targetList,
-      PropertyConfiguration     configuration
+      TopicCollection           targetList
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
