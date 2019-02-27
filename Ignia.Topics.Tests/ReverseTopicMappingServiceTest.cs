@@ -193,9 +193,13 @@ namespace Ignia.Topics.Tests {
         ContentType = "ContentTypeDescriptor"
       };
 
-      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[0].GetUniqueKey() });
-      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[1].GetUniqueKey() });
-      bindingModel.ContentTypes.Add(new Models.RelatedTopicBindingModel() { UniqueKey = contentTypes[2].GetUniqueKey() });
+      for (var i = 0; i < 3; i++) {
+        bindingModel.ContentTypes.Add(
+          new Models.RelatedTopicBindingModel() {
+            UniqueKey = contentTypes[i].GetUniqueKey()
+          }
+        );
+      }
 
       var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
