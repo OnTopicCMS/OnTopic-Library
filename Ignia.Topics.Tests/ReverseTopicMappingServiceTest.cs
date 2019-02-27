@@ -185,13 +185,12 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapRelationships() {
 
-      var mappingService = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var contentTypes = _topicRepository.GetContentTypeDescriptors();
+      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
 
-      var bindingModel = new ContentTypeDescriptorTopicBindingModel {
-        Key = "Test",
-        ContentType = "ContentTypeDescriptor"
-      };
+      topic.Relationships.SetTopic("ContentTypes", contentTypes[4]);
 
       for (var i = 0; i < 3; i++) {
         bindingModel.ContentTypes.Add(
@@ -201,7 +200,7 @@ namespace Ignia.Topics.Tests {
         );
       }
 
-      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(3, target.PermittedContentTypes.Count);
       Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[0]));
