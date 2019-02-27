@@ -273,6 +273,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="attributeDescriptor">
     ///   The <see cref="AttributeDescriptor"/> object against which to validate the model.
     /// </param>
+    /// <param name="listType">The generic <see cref="Type"/> used for the corresponding <see cref="IList{T}"/>.</param>
     static internal void ValidateRelationship(
       Type                      sourceType,
       PropertyConfiguration     configuration,
