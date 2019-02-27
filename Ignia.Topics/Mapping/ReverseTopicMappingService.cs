@@ -88,12 +88,10 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<T> MapAsync<T>(ITopicBindingModel source) where T : Topic {
-      return (T)await MapAsync(
-        source,
-        TopicFactory.Create(source.Key, source.ContentType)
-      ).ConfigureAwait(false);
-    }
+    public async Task<T> MapAsync<T>(ITopicBindingModel source) where T : Topic => (T)await MapAsync(
+      source,
+      TopicFactory.Create(source.Key, source.ContentType)
+    ).ConfigureAwait(false);
 
     /*==========================================================================================================================
     | METHOD: MAP (TOPIC)
