@@ -258,6 +258,37 @@ namespace Ignia.Topics.Internal.Mapping {
     public string MetadataKey { get; set; }
 
     /*==========================================================================================================================
+    | PROPERTY: FLATTEN CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether all descendants in a collection should be included in the collection.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, only <see cref="Topic"/> stored directly in a source collection will be included in the target
+    ///     collection on a DTO class. If the <see cref="FlattenChildren"/> property is set, however, then all descendants of
+    ///     those <see cref="Topic"/>s are <i>also</i> included. So, for instance, if a <c>Children</c> property is decorated
+    ///     with the <see cref="FlattenAttribute"/>, then not only will the <see cref="Topic.Children"/> be included, but any
+    ///     grandchildren, great-grandchildren, etc. will be included.
+    ///   </para>
+    ///   <para>
+    ///     When <see cref="FlattenChildren"/> is specified, <see cref="ITopicMappingService"/> implementations are expected to
+    ///     apply all other constraints. For instance, if the target collection is strongly typed, then only DTOs that exhibit
+    ///     polymorphic compatibility with that type will be included (i.e., DTOs of the same or a derived type as the target
+    ///     collection). Similarly, any <see cref="AttributeFilters"/> will be applied to each of the descendants. Finally, if
+    ///     the target collection has a unique constraint (e.g., due to implementing <see cref="KeyedCollection{TKey, TItem}"/>)
+    ///     then any items that would constitute a duplicate will be filtered out <i>without raising an exception</i>. This
+    ///     can thus allow the <see cref="FlattenChildren"/> method to be used to represent unique search results within a
+    ///     <see cref="Topic"/> graph.
+    ///    </para>
+    ///   <para>
+    ///     The <see cref="FlattenChildren"/> property corresponds to the <see cref="FlattenAttribute"/> being set on a given
+    ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Flatten]</c>.
+    ///   </para>
+    /// </remarks>
+    public bool FlattenChildren { get; set; }
+
+    /*==========================================================================================================================
     | PROPERTY: DISABLE MAPPING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -293,37 +324,6 @@ namespace Ignia.Topics.Internal.Mapping {
     ///   </para>
     /// </remarks>
     public Dictionary<string, string> AttributeFilters { get; }
-
-    /*==========================================================================================================================
-    | PROPERTY: FLATTEN CHILDREN
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines whether all descendants in a collection should be included in the collection.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     By default, only <see cref="Topic"/> stored directly in a source collection will be included in the target
-    ///     collection on a DTO class. If the <see cref="FlattenChildren"/> property is set, however, then all descendants of
-    ///     those <see cref="Topic"/>s are <i>also</i> included. So, for instance, if a <c>Children</c> property is decorated
-    ///     with the <see cref="FlattenAttribute"/>, then not only will the <see cref="Topic.Children"/> be included, but any
-    ///     grandchildren, great-grandchildren, etc. will be included.
-    ///   </para>
-    ///   <para>
-    ///     When <see cref="FlattenChildren"/> is specified, <see cref="ITopicMappingService"/> implementations are expected to
-    ///     apply all other constraints. For instance, if the target collection is strongly typed, then only DTOs that exhibit
-    ///     polymorphic compatibility with that type will be included (i.e., DTOs of the same or a derived type as the target
-    ///     collection). Similarly, any <see cref="AttributeFilters"/> will be applied to each of the descendants. Finally, if
-    ///     the target collection has a unique constraint (e.g., due to implementing <see cref="KeyedCollection{TKey, TItem}"/>)
-    ///     then any items that would constitute a duplicate will be filtered out <i>without raising an exception</i>. This
-    ///     can thus allow the <see cref="FlattenChildren"/> method to be used to represent unique search results within a
-    ///     <see cref="Topic"/> graph.
-    ///    </para>
-    ///   <para>
-    ///     The <see cref="FlattenChildren"/> property corresponds to the <see cref="FlattenAttribute"/> being set on a given
-    ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Flatten]</c>.
-    ///   </para>
-    /// </remarks>
-    public bool FlattenChildren { get; set; }
 
     /*==========================================================================================================================
     | METHOD: SATISFIES ATTRIBUTE FILTERS
