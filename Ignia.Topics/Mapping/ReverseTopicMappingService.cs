@@ -252,6 +252,17 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle type conversion
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (attributeValue != null) {
+        switch (configuration.Property.PropertyType.Name) {
+          case nameof(Boolean):
+            attributeValue = attributeValue == "True" ? "1" : "0";
+            break;
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set the value (to null, if appropriate)
       \-----------------------------------------------------------------------------------------------------------------------*/
       target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
