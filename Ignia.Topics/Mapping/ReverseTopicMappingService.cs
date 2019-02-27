@@ -199,18 +199,19 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle property by type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeType.ModelType == ModelType.ScalarValue) {
-        SetScalarValue(source, target, configuration);
-      }
-      else if (attributeType.ModelType == ModelType.Relationship) {
-        SetRelationships(source, target, configuration);
-      }
-      else if (attributeType.ModelType == ModelType.NestedTopic) {
-        await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
-      }
-      else if (attributeType.ModelType == ModelType.Reference) {
-        }
+      switch (attributeType.ModelType) {
+        case ModelType.ScalarValue:
+          SetScalarValue(source, target, configuration);
+          return;
+        case ModelType.Relationship:
+          SetRelationships(source, target, configuration);
+          return;
+        case ModelType.NestedTopic:
+          await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
+          return;
+        case ModelType.Reference:
           SetReference(source, target, configuration);
+          return;
       }
 
     }
