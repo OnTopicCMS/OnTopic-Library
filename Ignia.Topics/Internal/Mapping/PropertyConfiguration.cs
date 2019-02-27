@@ -69,13 +69,13 @@ namespace Ignia.Topics.Internal.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<DefaultValueAttribute>(property, a => DefaultValue = a.Value);
-      GetAttributeValue<InheritAttribute>(property, a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property, a => AttributeKey = a.Value);
-      GetAttributeValue<FollowAttribute>(property, a => CrawlRelationships = a.Relationships);
-      GetAttributeValue<FlattenAttribute>(property, a => FlattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(property, a => MetadataKey = a.Key);
-      GetAttributeValue<DisableMappingAttribute>(property, a => DisableMapping = true);
+      GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
+      GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = a.Value);
+      GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
+      GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
