@@ -767,8 +767,8 @@ namespace Ignia.Topics.Data.Sql {
         // Set preconditions
         var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));
         var isPrimaryAttribute  = (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID");
-        var isRelationships     = (attribute.Type == "Relationships.ascx");
-        var isNestedTopic       = (attribute.Type == "TopicList.ascx");
+        var isRelationships     = (attribute.EditorType == "Relationships.ascx");
+        var isNestedTopic       = (attribute.EditorType == "TopicList.ascx");
         var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
