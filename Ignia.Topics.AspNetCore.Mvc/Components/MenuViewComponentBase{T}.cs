@@ -10,34 +10,31 @@ using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 
-namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
+namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
   /*============================================================================================================================
-  | CLASS: LAYOUT CONTROLLER
+  | CLASS: MENU VIEW COMPONENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides access to views for populating specific layout dependencies, such as the <see cref="Menu"/>.
+  ///   Defines a <see cref="ViewComponent"/> which provides access to a menu of <typeparamref name="T"/> instances.
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     As a best practice, global data required by the layout view are requested independently of the current page. This
+  ///     As a best practice, global data required by the layout view are requested independent of the current page. This
   ///     allows each layout element to be provided with its own layout data, in the form of <see
   ///     cref="NavigationViewModel{T}"/>s, instead of needing to add this data to every view model returned by <see
-  ///     cref="TopicController"/>. The <see cref="LayoutController{T}"/> facilitates this by not only providing a default
-  ///     implementation for <see cref="Menu"/>, but additionally providing protected helper methods that aid in locating and
-  ///     assembling <see cref="Topic"/> and <see cref="INavigationTopicViewModelCore"/> references that are relevant to
-  ///     specific layout elements.
+  ///     cref="TopicController"/>.
   ///   </para>
   ///   <para>
-  ///     In order to remain view model agnostic, the <see cref="LayoutController{T}"/> does not assume that a particular view
-  ///     model will be used, and instead accepts a generic argument for any view model that implements the interface <see
-  ///     cref="INavigationTopicViewModel{T}"/>. Since generic controllers cannot be effectively routed to, however, that means
-  ///     implementors must, at minimum, provide a local instance of <see cref="LayoutController{T}"/> which sets the generic
-  ///     value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
+  ///     In order to remain view model agnostic, the <see cref="NavigationViewModel{T}"/> does not assume that a particular
+  ///     view model will be used, and instead accepts a generic argument for any view model that implements the interface <see
+  ///     cref="INavigationTopicViewModel{T}"/>. Since generic view components cannot be effectively routed to, however, that
+  ///     means implementors must, at minimum, provide a local instance of <see cref="NavigationViewModel{T}"/> which sets the
+  ///     generic value to the desired view model. To help enforce this, while avoiding ambiguity, this class is marked as
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class LayoutControllerBase<T> : Controller where T : class, INavigationTopicViewModel<T>, new() {
+  public abstract class MenuViewComponentBase<T> : ViewComponent where T : class, INavigationTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -50,13 +47,13 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of a Topic Controller with necessary dependencies.
+    ///   Initializes a new instance of a <see cref="MenuViewComponentBase{T}"/> with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
-    protected LayoutControllerBase(
+    protected MenuViewComponentBase(
       ITopicRoutingService topicRoutingService,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
-    ) : base() {
+    ) {
       _topicRoutingService = topicRoutingService;
       _hierarchicalTopicMappingService = hierarchicalTopicMappingService;
     }
@@ -92,7 +89,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
     /// </summary>
-    public async virtual Task<PartialViewResult> Menu() {
+    public async Task<IViewComponentResult> InvokeAsync() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -123,7 +120,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the corresponding view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return PartialView(navigationViewModel);
+      return View(navigationViewModel);
 
     }
 
