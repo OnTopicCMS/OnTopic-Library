@@ -3,7 +3,7 @@ The `Ignia.Topics.AspNetCore.Mvc` assembly provides a default implementation for
 
 ### Contents
 - [Components](#components)
-- [Controllers](#controllers)
+- [Controllers and View Components](#controllers-and-view-components)
 - [View Conventions](#view-conventions)
   - [View Matching](#view-matching)
   - [View Locations](#view-locations)
@@ -11,7 +11,7 @@ The `Ignia.Topics.AspNetCore.Mvc` assembly provides a default implementation for
 - [Configuration](#configuration)
   - [Application](#application)
   - [Route Configuration](#route-configuration)
-  - [Controller Activator](#controller-activator)
+  - [Composition Root](#composition-root)
 
 ## Components
 There are five key components at the heart of the ASP.NET Core implementation.
@@ -23,15 +23,15 @@ There are five key components at the heart of the ASP.NET Core implementation.
 
 > **Note:** In [`Ignia.Topics.Web.Mvc`](../Ignia.Topics.Web.Mvc/), the `TopicViewEngine` took on the responsibilities now handled by the `TopicViewLocationExpander`, and the `TopicViewResult` took on responsibilities now handled by the `TopicViewResultExecutor`.
 
-## Controllers
-There are six main controllers that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary controllers:
+## Controllers and View Components
+There are six main controllers and view components that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary classes:
 - **`ErrorControllerBase<T>`**: Provides support for `Error`, `NotFound`, and `InternalServer` actions. Can accept any `IPageTopicViewModel` as a generic argument; that will be used as the view model.
 - **`FallbackController`**: Used in a [Controller Factory](#controller-factory) as a fallback, in case no other controllers can accept the request. Simply returns a `NotFoundResult` with a predefined message.
-- **`LayoutControllerBase<T>`**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance. 
 - **`RedirectController`**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`. 
 - **`SitemapController`**: Provides a single `Sitemap` action which returns a reference to the `ITopicRepository`, thus allowing a sitemap view to recurse over the entire Topic graph, including all attributes.
+- **`MenuViewComponentBase<T>`**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance. 
 
-> **Note:** There is not a practical way for ASP.NET Core to provide routing for generic controllers. As such, these _must_ be subclassed by each implementation. The derived controller needn't do anything outside of provide a specific type reference to the generic base.
+> **Note:** There is not a practical way for ASP.NET Core to provide routing for generic controllers and view components. As such, these _must_ be subclassed by each implementation. The derived class needn't do anything outside of provide a specific type reference to the generic base.
 
 ## View Conventions
 By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
@@ -101,8 +101,8 @@ public class Startup {
 ```
 > *Note:* Because OnTopic relies on wildcard pathnames, a new route should be configured for every root namespace (e.g., `/Web`). While it's possible to configure OnTopic to evaluate _all_ paths, this makes it difficult to delegate control to other controllers and handlers, when necessary. As a result, it is recommended that each root container be registered individually.
 
-### Controller Activator
-As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator. The basic structure of this might look like:
+### Composition Root
+As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator for controllers, and view component activator for view components. For controllers, the basic structure of this might look like:
 ```
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
