@@ -612,7 +612,13 @@ namespace Ignia.Topics.Mapping {
       PropertyConfiguration configuration,
       ConcurrentDictionary<int, object> cache
     ) {
-      var topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
+      var topicDto = (object)null;
+      try {
+        topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
+      }
+      catch (InvalidOperationException ex) {
+        //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
+      }
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }
