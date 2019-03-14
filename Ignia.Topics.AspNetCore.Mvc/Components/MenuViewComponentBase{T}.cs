@@ -34,14 +34,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
   ///     <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
   /// </remarks>
-  public abstract class MenuViewComponentBase<T> : ViewComponent where T : class, INavigationTopicViewModel<T>, new() {
-
-    /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRoutingService            _topicRoutingService            = null;
-    private readonly            IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService = null;
-    private                     Topic                           _currentTopic                   = null;
+  public abstract class MenuViewComponentBase<T> :
+    NavigationTopicViewComponentBase<T> where T : class, INavigationTopicViewModel<T>, new()
+  {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -53,38 +48,14 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     protected MenuViewComponentBase(
       ITopicRoutingService topicRoutingService,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
-    ) {
-      _topicRoutingService = topicRoutingService;
-      _hierarchicalTopicMappingService = hierarchicalTopicMappingService;
-    }
+    ) : base(
+      topicRoutingService,
+      hierarchicalTopicMappingService
+    ) { }
+
 
     /*==========================================================================================================================
-    | TOPIC REPOSITORY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
-    /// </summary>
-    /// <returns>The TopicRepository associated with the controller.</returns>
-    protected ITopicRepository TopicRepository { get; }
-
-    /*==========================================================================================================================
-    | CURRENT TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a reference to the current topic associated with the request.
-    /// </summary>
-    /// <returns>The Topic associated with the current request.</returns>
-    protected Topic CurrentTopic {
-      get {
-        if (_currentTopic == null) {
-          _currentTopic = _topicRoutingService.GetCurrentTopic();
-        }
-        return _currentTopic;
-      }
-    }
-
-    /*==========================================================================================================================
-    | MENU
+    | METHOD: INVOKE (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
@@ -102,8 +73,8 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
-      var navigationRoot = await _hierarchicalTopicMappingService.GetRootViewModelAsync(
+      navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
+      var navigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic,
         3,
         t => t.ContentType != "PageGroup"
