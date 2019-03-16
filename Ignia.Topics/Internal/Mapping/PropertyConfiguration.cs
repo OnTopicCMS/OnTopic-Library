@@ -62,18 +62,20 @@ namespace Ignia.Topics.Internal.Mapping {
       RelationshipType          = RelationshipType.Any;
       CrawlRelationships        = Relationships.None;
       MetadataKey               = (string)null;
+      DisableMapping            = false;
       AttributeFilters          = new Dictionary<string, string>();
       FlattenChildren           = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<DefaultValueAttribute>(property, a => DefaultValue = a.Value);
-      GetAttributeValue<InheritAttribute>(property, a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property, a => AttributeKey = a.Value);
-      GetAttributeValue<FollowAttribute>(property, a => CrawlRelationships = a.Relationships);
-      GetAttributeValue<FlattenAttribute>(property, a => FlattenChildren = true);
-      GetAttributeValue<MetadataAttribute>(property, a => MetadataKey = a.Key);
+      GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
+      GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
+      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = a.Value);
+      GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
+      GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
+      GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
+      GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
@@ -256,29 +258,6 @@ namespace Ignia.Topics.Internal.Mapping {
     public string MetadataKey { get; set; }
 
     /*==========================================================================================================================
-    | PROPERTY: ATTRIBUTE FILTERS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a list of <c>Key</c>/<c>Value</c> pairs corresponding to <see cref="Topic.Attributes"/> which can optionally
-    ///   be used to filter a collection.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     By default, all <see cref="Topic"/>s in a source collection (e.g., <see cref="Topic.Children"/>) will be included in
-    ///     a corresponding collection on the DTO (assuming the mapped DTO is compatible with the collection type). If any
-    ///     <see cref="AttributeFilters"/> are set, however, then each <see cref="Topic"/> will be evaluated to confirm that it
-    ///     satisfies the conditions of those filters.
-    ///   </para>
-    ///   <para>
-    ///     The <see cref="AttributeFilters"/> property corresponds to the <see cref="FilterByAttributeAttribute.Key"/> and
-    ///     <see cref="FilterByAttributeAttribute.Value"/> properties. It can be assigned by decorating a DTO property with e.g.
-    ///     <c>[FilterByAttribute("Company", "Ignia")]</c>. Multiple <see cref="FilterByAttributeAttribute"/>s can be assigned
-    ///     to a single property, thus allowing each item in a collection to be filtered by multiple values.
-    ///   </para>
-    /// </remarks>
-    public Dictionary<string, string> AttributeFilters { get; }
-
-    /*==========================================================================================================================
     | PROPERTY: FLATTEN CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -308,6 +287,43 @@ namespace Ignia.Topics.Internal.Mapping {
     ///   </para>
     /// </remarks>
     public bool FlattenChildren { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: DISABLE MAPPING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether the property is intended to be mapped to the corresponding <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="DisableMapping"/> property corresponds to the <see cref="DisableMappingAttribute"/> being set on a
+    ///     given property. It can be assigned by decorating a DTO property with e.g. <c>[DisableMapping]</c>.
+    ///   </para>
+    /// </remarks>
+    public bool DisableMapping { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: ATTRIBUTE FILTERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a list of <c>Key</c>/<c>Value</c> pairs corresponding to <see cref="Topic.Attributes"/> which can optionally
+    ///   be used to filter a collection.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, all <see cref="Topic"/>s in a source collection (e.g., <see cref="Topic.Children"/>) will be included in
+    ///     a corresponding collection on the DTO (assuming the mapped DTO is compatible with the collection type). If any
+    ///     <see cref="AttributeFilters"/> are set, however, then each <see cref="Topic"/> will be evaluated to confirm that it
+    ///     satisfies the conditions of those filters.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributeFilters"/> property corresponds to the <see cref="FilterByAttributeAttribute.Key"/> and
+    ///     <see cref="FilterByAttributeAttribute.Value"/> properties. It can be assigned by decorating a DTO property with e.g.
+    ///     <c>[FilterByAttribute("Company", "Ignia")]</c>. Multiple <see cref="FilterByAttributeAttribute"/>s can be assigned
+    ///     to a single property, thus allowing each item in a collection to be filtered by multiple values.
+    ///   </para>
+    /// </remarks>
+    public Dictionary<string, string> AttributeFilters { get; }
 
     /*==========================================================================================================================
     | METHOD: SATISFIES ATTRIBUTE FILTERS

@@ -225,7 +225,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = TopicFactory.Create("Root", "Container");
+      var rootTopic = TopicFactory.Create("Root", "Container", 900);
+      var currentAttributeId = 800;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish configuration
@@ -233,12 +234,47 @@ namespace Ignia.Topics.Tests.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
-      TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+      addAttribute(contentTypes, "Key", "FormField", true);
+      addAttribute(contentTypes, "ContentType", "FormField", true);
+      addAttribute(contentTypes, "Title", "FormField", true);
+      addAttribute(contentTypes, "TopicId", "TopicPointer");
+
+      var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(contentTypeDescriptor, "ContentTypes", "Relationships");
+      addAttribute(contentTypeDescriptor, "Attributes", "TopicList");
+
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("LookupListItem", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("List", "ContentTypeDescriptor", contentTypes);
+
+      var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(attributeDescriptor, "DefaultValue", "FormField", true);
+      addAttribute(attributeDescriptor, "IsRequired", "Checkbox", true);
+
+      var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(pageContentType, "MetaTitle");
+      addAttribute(pageContentType, "MetaDescription");
+      addAttribute(pageContentType, "IsHidden");
+      addAttribute(pageContentType, "TopicReference", "TopicPointer");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Local addAttribute() helper function
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      AttributeDescriptor addAttribute(Topic contentType, string attributeKey, string editorType = "FormField", bool isRequired = false) {
+        var container = contentType.Children.GetTopic("Attributes");
+        if (container == null) {
+          container = TopicFactory.Create("Attributes", "List", contentType);
+          container.Attributes.SetBoolean("IsHidden", true);
+        }
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, "AttributeDescriptor", currentAttributeId++, container);
+        attribute.EditorType = editorType;
+        attribute.IsRequired = isRequired;
+        return attribute;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish metadata
