@@ -665,7 +665,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from topic.{Property}
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.Property.Name);
+      var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
