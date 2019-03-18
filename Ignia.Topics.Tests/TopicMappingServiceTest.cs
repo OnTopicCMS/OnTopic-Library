@@ -4,11 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Metadata;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
 using Ignia.Topics.Tests.ViewModels;
@@ -531,6 +533,30 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: MAP COMPATIBLE PROPERTIES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps two properties with compatible types without attempting a conversion. This can be used for mapping types that are
+    ///   appropriate for the target view model, such as enums.
+    /// </summary>
+    [TestMethod]
+    public async Task MapCompatibleProperties() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = (AttributeDescriptor)TopicFactory.Create("Attribute", "AttributeDescriptor");
+
+      topic.DefaultConfiguration = "Value1=1&Value2=2";
+      topic.EditorType          = "TopicList";
+
+      var target                = (CompatiblePropertyTopicViewModel)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
+      Assert.AreEqual<IDictionary<string, string>>(topic.Configuration, target.Configuration);
+
+    }
+
 
     /*==========================================================================================================================
     | TEST: MAP REQUIRED PROPERTY
