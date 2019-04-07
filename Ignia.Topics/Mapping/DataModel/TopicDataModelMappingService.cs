@@ -3,9 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Mapping.DataModel
 {

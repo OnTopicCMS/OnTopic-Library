@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Ignia.Topics.Mapping;
 using Ignia.Topics.Metadata;
 
 namespace Ignia.Topics.Models {

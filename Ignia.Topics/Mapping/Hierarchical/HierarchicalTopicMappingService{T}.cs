@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Mapping.Hierarchical {
 
