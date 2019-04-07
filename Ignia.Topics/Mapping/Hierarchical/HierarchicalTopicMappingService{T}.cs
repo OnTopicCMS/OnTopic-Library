@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Hierarchical {
 
   /*============================================================================================================================
   | CLASS: NAVIGATION MAPPING SERVICE

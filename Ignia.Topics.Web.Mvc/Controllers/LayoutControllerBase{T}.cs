@@ -12,6 +12,7 @@ using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using Ignia.Topics.Web.Mvc.Models;
+using Ignia.Topics.Mapping.Hierarchical;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {
 

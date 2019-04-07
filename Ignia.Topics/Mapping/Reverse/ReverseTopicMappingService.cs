@@ -18,7 +18,7 @@ using Ignia.Topics.Models;
 using Ignia.Topics.Repositories;
 using System.ComponentModel;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Reverse {
 
   /*============================================================================================================================
   | CLASS: REVERSE TOPIC MAPPING SERVICE

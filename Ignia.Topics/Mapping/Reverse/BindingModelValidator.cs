@@ -18,7 +18,7 @@ using Ignia.Topics.Models;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Reverse {
 
   /*============================================================================================================================
   | CLASS: BINDING MODEL VALIDATOR

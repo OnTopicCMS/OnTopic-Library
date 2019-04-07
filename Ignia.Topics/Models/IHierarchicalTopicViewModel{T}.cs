@@ -4,7 +4,7 @@
 | Project       Website
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 
 namespace Ignia.Topics.Models {
 

@@ -54,5 +54,8 @@
     <Folder Include="Internal\Collections\" />
     <Folder Include="Internal\Mapping\" />
     <Folder Include="Internal\Reflection\" />
+    <Folder Include="Mapping\DataModel\" />
+    <Folder Include="Mapping\Hierarchical\" />
+    <Folder Include="Mapping\Reverse\" />
   </ItemGroup>
 </Project>

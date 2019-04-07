@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
 using Ignia.Topics.ViewModels;

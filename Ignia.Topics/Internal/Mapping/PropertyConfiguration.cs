@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Reverse;
 
 namespace Ignia.Topics.Internal.Mapping {
 
