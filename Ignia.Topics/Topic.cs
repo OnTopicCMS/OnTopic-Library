@@ -10,6 +10,7 @@ using System.Linq;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Metadata;
+using Newtonsoft.Json;
 
 namespace Ignia.Topics {
 
@@ -20,6 +21,7 @@ namespace Ignia.Topics {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
+  [JsonObject(MemberSerialization.OptIn)]
   public class Topic {
 
     /*==========================================================================================================================
@@ -53,7 +55,8 @@ namespace Ignia.Topics {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public Topic(string key, string contentType, Topic parent, int id = -1) {
+    [JsonConstructor]
+    public Topic(string key, string contentType, Topic parent = null, int id = -1) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set relationships
@@ -168,6 +171,7 @@ namespace Ignia.Topics {
     /// <value>
     ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
     /// </value>
+    [JsonProperty]
     public string ContentType {
       get => Attributes.GetValue("ContentType");
       set => SetAttributeValue("ContentType", value);
@@ -191,6 +195,7 @@ namespace Ignia.Topics {
     /// >
     ///   !value.Contains(" ")
     /// </requires>
+    [JsonProperty]
     [AttributeSetter]
     public string Key {
       get => _key;
@@ -565,6 +570,7 @@ namespace Ignia.Topics {
     ///   property).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s attributes.</value>
+    [JsonProperty]
     public AttributeValueCollection Attributes { get; }
 
     /*==========================================================================================================================
@@ -579,6 +585,7 @@ namespace Ignia.Topics {
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
+    [JsonProperty]
     public RelatedTopicCollection Relationships { get; }
 
     /*===========================================================================================================================
@@ -607,6 +614,7 @@ namespace Ignia.Topics {
     ///   its derived providers).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s version history.</value>
+    [JsonProperty]
     public List<DateTime> VersionHistory { get; }
 
     #endregion

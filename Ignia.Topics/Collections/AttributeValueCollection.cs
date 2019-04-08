@@ -9,6 +9,8 @@ using System.Globalization;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Serialization;
+using Newtonsoft.Json;
 
 namespace Ignia.Topics.Collections {
 
@@ -23,6 +25,7 @@ namespace Ignia.Topics.Collections {
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
   ///   the <see cref="AttributeValueCollection"/> class.
   /// </remarks>
+  [JsonConverter(typeof(AttributeValueCollectionJsonConverter))]
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
