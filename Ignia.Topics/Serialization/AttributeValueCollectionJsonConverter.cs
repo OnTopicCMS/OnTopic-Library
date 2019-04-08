@@ -50,5 +50,25 @@ namespace Ignia.Topics.Serialization {
       }
       writer.WriteEndObject();
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: CAN READ
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Informs the serialization library whether or not this the <see cref="AttributeValueCollectionJsonConverter"/> is
+    ///   capable of reading JSON data.
+    /// </summary>
+    public override bool CanRead => false;
+
+    /*==========================================================================================================================
+    | METHOD: READ JSON
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Reads the JSON input, and populates the supplied <paramref name="existingValue"/>.
+    /// </summary>
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+      throw new NotImplementedException("Deserializing AttributeValueCollections is not currently supported.");
+    }
+
   } //Class
 } //Namespace
