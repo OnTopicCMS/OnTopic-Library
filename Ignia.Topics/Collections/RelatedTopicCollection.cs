@@ -7,6 +7,8 @@ using System;
 using System.Collections.ObjectModel;
 using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
+using Ignia.Topics.Serialization;
+using Newtonsoft.Json;
 
 namespace Ignia.Topics.Collections {
 
@@ -16,6 +18,7 @@ namespace Ignia.Topics.Collections {
   /// <summary>
   ///   Provides a simple interface for accessing collections of topic collections.
   /// </summary>
+  [JsonConverter(typeof(RelatedTopicCollectionJsonConverter))]
   public class RelatedTopicCollection : KeyedCollection<string, NamedTopicCollection> {
 
     /*==========================================================================================================================

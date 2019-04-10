@@ -59,6 +59,28 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: WRITE RELATED TOPIC COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests the serialization of a <see cref="RelatedTopicCollection"/> to confirm that it properly utilizes the <see
+    ///   cref="RelatedTopicCollectionJsonConverter"/>.
+    /// </summary>
+    [TestMethod]
+    public void WriteRelatedTopicCollection() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+
+      topic.Relationships.SetTopic("Related", related);
+
+      var json                  = JsonConvert.SerializeObject(topic);
+      var jObject               = JObject.Parse(json);
+
+      Assert.AreEqual<string>("Related", jObject["Relationships"]["Related"].First["title"].ToString());
+
+    }
+
   } //Class
 
 } //Namespace
