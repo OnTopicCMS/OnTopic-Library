@@ -77,9 +77,6 @@ namespace Ignia.Topics.Internal.Reflection {
       if (!Contains(item.Name)) {
         base.InsertItem(index, item);
       }
-      else {
-        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'");
-      }
     }
 
     /*==========================================================================================================================

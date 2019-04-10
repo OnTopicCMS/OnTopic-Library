@@ -58,7 +58,7 @@ namespace Ignia.Topics.Serialization {
     ///   Informs the serialization library whether or not this the <see cref="AttributeValueCollectionJsonConverter"/> is
     ///   capable of reading JSON data.
     /// </summary>
-    public override bool CanRead => false;
+    public override bool CanRead => true;
 
     /*==========================================================================================================================
     | METHOD: READ JSON
@@ -67,7 +67,45 @@ namespace Ignia.Topics.Serialization {
     ///   Reads the JSON input, and populates the supplied <paramref name="existingValue"/>.
     /// </summary>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
-      throw new NotImplementedException("Deserializing AttributeValueCollections is not currently supported.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate suitability
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!CanConvert(objectType)) {
+        throw new NotImplementedException(
+          $"The {nameof(AttributeValueCollectionJsonConverter)} cannot read objects of type {objectType.Name}"
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate request type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (reader.TokenType == JsonToken.Null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure object is created
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (existingValue == null) {
+        existingValue = new AttributeValueCollection(null);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Populate existing value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributes            = (AttributeValueCollection)existingValue;
+      var jObject               = JObject.Load(reader);
+
+      foreach (var property in jObject.Properties()) {
+        attributes.SetValue(property.Name, property.Value.ToString());
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return attributes;
+
     }
 
   } //Class

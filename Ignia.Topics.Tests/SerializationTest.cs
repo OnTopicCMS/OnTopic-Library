@@ -41,6 +41,24 @@ namespace Ignia.Topics.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: READ ATTRIBUTE VALUE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests the deserialization of a <see cref="AttributeValueCollection"/> to confirm that it properly utilizes the <see
+    ///   cref="AttributeValueCollectionJsonConverter"/>.
+    /// </summary>
+    [TestMethod]
+    public void ReadAttributeValueCollection() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var json                  = JsonConvert.SerializeObject(topic);
+      var result                = JsonConvert.DeserializeObject<Topic>(json);
+
+      Assert.AreEqual<string>("Page", result.Attributes.GetValue("ContentType"));
+
+    }
+
   } //Class
 
 } //Namespace

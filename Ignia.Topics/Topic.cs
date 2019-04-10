@@ -37,6 +37,30 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Initializes a new instance of a <see cref="Topic"/> class with no data; assumes the data will be injected directly
+    ///   via the <see cref="Relationships"/> and <see cref="Attributes"/> collections.
+    /// </summary>
+    /// <remarks>
+    ///   This overload is intended exclusively for internal use—and, primarily, for use with the JSON.NET Deserialization
+    ///   process, which uses it to ensure that the child collections are instantiated. Otherwise, there isn't a way for
+    ///   JSON.NET to create the child collections with a reference back to the parent topic.
+    /// </remarks>
+    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
+    [JsonConstructor]
+    private Topic() {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Set relationships
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Children                  = new TopicCollection(this);
+      Attributes                = new AttributeValueCollection(this);
+      IncomingRelationships     = new RelatedTopicCollection(this, true);
+      Relationships             = new RelatedTopicCollection(this, false);
+      VersionHistory            = new List<DateTime>();
+
+    }
+
+    /// <summary>
     ///   Initializes a new instance of a <see cref="Topic"/> class with a <see cref="Key"/>, <see cref="ContentType"/>, and,
     ///   optionally, <see cref="Parent"/>, <see cref="Id"/>.
     /// </summary>
@@ -55,17 +79,7 @@ namespace Ignia.Topics {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    [JsonConstructor]
-    public Topic(string key, string contentType, Topic parent = null, int id = -1) {
-
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Set relationships
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Children                  = new TopicCollection(this);
-      Attributes                = new AttributeValueCollection(this);
-      IncomingRelationships     = new RelatedTopicCollection(this, true);
-      Relationships             = new RelatedTopicCollection(this, false);
-      VersionHistory            = new List<DateTime>();
+    public Topic(string key, string contentType, Topic parent, int id = -1) : this() {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set core properties
