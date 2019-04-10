@@ -18,7 +18,6 @@ namespace Ignia.Topics.Collections {
   /// <summary>
   ///   Provides a simple interface for accessing collections of topic collections.
   /// </summary>
-  [JsonConverter(typeof(RelatedTopicCollectionJsonConverter))]
   public class RelatedTopicCollection : KeyedCollection<string, NamedTopicCollection> {
 
     /*==========================================================================================================================

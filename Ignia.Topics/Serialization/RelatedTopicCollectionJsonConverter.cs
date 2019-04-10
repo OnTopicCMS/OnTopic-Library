@@ -29,12 +29,24 @@ namespace Ignia.Topics.Serialization {
   public class RelatedTopicCollectionJsonConverter : JsonConverter {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITopicRepository                _topicRepository                = null;
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a new instance of a <see cref="RelatedTopicCollectionJsonConverter"/>.
     /// </summary>
     public RelatedTopicCollectionJsonConverter() {}
+
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="RelatedTopicCollectionJsonConverter"/> with optional dependencies.
+    /// </summary>
+    public RelatedTopicCollectionJsonConverter(ITopicRepository topicRepository) {
+      _topicRepository = topicRepository;
+    }
 
     /*==========================================================================================================================
     | PROPERTY: CAN CONVERT
@@ -78,7 +90,7 @@ namespace Ignia.Topics.Serialization {
     ///   Informs the serialization library whether or not this the <see cref="AttributeValueCollectionJsonConverter"/> is
     ///   capable of reading JSON data.
     /// </summary>
-    public override bool CanRead => false;
+    public override bool CanRead => _topicRepository != null;
 
     /*==========================================================================================================================
     | METHOD: READ JSON
@@ -87,7 +99,47 @@ namespace Ignia.Topics.Serialization {
     ///   Reads the JSON input, and populates the supplied <paramref name="existingValue"/>.
     /// </summary>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
-      throw new NotImplementedException("Deserialization of RelatedTopicCollections not currently supported.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate suitability
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!CanConvert(objectType)) {
+        throw new NotImplementedException(
+          $"The {nameof(RelatedTopicCollectionJsonConverter)} cannot read objects of type {objectType.Name}"
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate request type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (reader.TokenType == JsonToken.Null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure object is created
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (existingValue == null) {
+        existingValue = new RelatedTopicCollection(null);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Populate existing value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var scopes                = (RelatedTopicCollection)existingValue;
+      var jObject               = JObject.Load(reader);
+
+      foreach (var scope in jObject.Properties()) {
+        foreach (var topic in scope.Value) {
+          scopes.SetTopic(scope.Name, _topicRepository.Load(topic.Value<string>("uniqueKey")));
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return scopes;
+
     }
 
   } //Class
