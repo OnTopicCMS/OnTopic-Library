@@ -143,7 +143,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return view, if found
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view?.Success ?? false) {
+      if (view != null && view.Success) {
         return view;
       }
       return ViewEngineResult.NotFound(contentType, searchedPaths);

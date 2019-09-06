@@ -208,13 +208,17 @@ namespace Ignia.Topics.Data.Sql {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+      Contract.Requires<ArgumentNullException>(reader != null, "The reader must not be null.");
+      Contract.Requires<ArgumentNullException>(reader?["Source_TopicID"] != null, "The Source_TopicID record must not be null.");
+      Contract.Requires<ArgumentNullException>(reader?["Target_TopicID"] != null, "The Target_TopicID record must not be null.");
+      Contract.Requires<ArgumentNullException>(reader?["RelationshipTypeID"] != null, "The RelationshipTypeID record must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader?["Source_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var targetTopicId         = Int32.Parse(reader?["Target_TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var relationshipTypeId    = (string)reader?["RelationshipTypeID"];
+      var sourceTopicId         = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      var targetTopicId         = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
+      var relationshipTypeId    = (string)reader["RelationshipTypeID"];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics

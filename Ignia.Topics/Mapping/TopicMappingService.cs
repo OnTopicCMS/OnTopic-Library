@@ -486,7 +486,10 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-        listSource = _topicRepository.Load(metadataKey)?.Children.ToList();
+        var metadataParent = _topicRepository.Load(metadataKey);
+        if (metadataParent != null) { 
+          listSource = _topicRepository.Load(metadataKey).Children.ToList();
+        }
       }
 
        /*------------------------------------------------------------------------------------------------------------------------
