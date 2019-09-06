@@ -20,7 +20,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class MinimumLengthPropertyTopicBindingModel : BasicTopicBindingModel {
 
-    public MinimumLengthPropertyTopicBindingModel(string key = null) : base(key, "Page") { }
+    public MinimumLengthPropertyTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     [MinLength(13)]
     public string Title { get; set; }

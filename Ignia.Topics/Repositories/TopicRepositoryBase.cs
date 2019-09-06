@@ -23,7 +23,7 @@ namespace Ignia.Topics.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
+    private ContentTypeDescriptorCollection? _contentTypeDescriptors = null;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -103,7 +103,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public abstract Topic Load(int topicId, bool isRecursive = true);
+    public abstract Topic? Load(int topicId, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
@@ -111,7 +111,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public abstract Topic Load(string topicKey = null, bool isRecursive = true);
+    public abstract Topic? Load(string? topicKey = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.
@@ -123,7 +123,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public abstract Topic Load(int topicId, DateTime version);
+    public abstract Topic? Load(int topicId, DateTime version);
 
     /*==========================================================================================================================
     | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
@@ -314,7 +314,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move(Topic topic, Topic target, Topic sibling) {
+    public virtual void Move(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

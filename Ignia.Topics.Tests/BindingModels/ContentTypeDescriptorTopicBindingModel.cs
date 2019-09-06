@@ -22,7 +22,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class ContentTypeDescriptorTopicBindingModel : BasicTopicBindingModel {
 
-    public ContentTypeDescriptorTopicBindingModel(string key = null) : base(key, "ContentTypeDescriptor") { }
+    public ContentTypeDescriptorTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
     public List<RelatedTopicBindingModel> ContentTypes { get; } = new List<RelatedTopicBindingModel>();
 

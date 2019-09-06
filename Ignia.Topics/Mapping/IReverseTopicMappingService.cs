@@ -63,7 +63,7 @@ namespace Ignia.Topics.Mapping {
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <returns>An instance of the dynamically determined <see cref="Topic"/> with attributes appropriately mapped.</returns>
-    Task<Topic> MapAsync(ITopicBindingModel source);
+    Task<Topic?> MapAsync(ITopicBindingModel source);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -78,7 +78,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested Topc <typeparamref name="T"/> with attributes appropriately mapped.
     /// </returns>
-    Task<T> MapAsync<T>(ITopicBindingModel source) where T : Topic;
+    Task<T?> MapAsync<T>(ITopicBindingModel source) where T : Topic;
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -94,7 +94,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
     /// </returns>
-    Task<Topic> MapAsync(ITopicBindingModel source, Topic target);
+    Task<Topic?> MapAsync(ITopicBindingModel source, Topic target);
 
   } //Interface
 } //Namespace

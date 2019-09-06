@@ -72,7 +72,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
+    public async Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
       await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
 
     /// <summary>
@@ -99,7 +99,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private async Task<object> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
+    private async Task<object?> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -151,7 +151,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
@@ -547,7 +547,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Queue up mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue = new List<Task<object>>();
+      var taskQueue = new List<Task<object?>>();
 
       foreach (var childTopic in sourceList) {
 
@@ -616,7 +616,7 @@ namespace Ignia.Topics.Mapping {
       PropertyConfiguration configuration,
       ConcurrentDictionary<int, object> cache
     ) {
-      var topicDto = (object)null;
+      var topicDto = (object?)null;
       try {
         topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       }

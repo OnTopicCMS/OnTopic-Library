@@ -144,7 +144,7 @@ namespace Ignia.Topics.Mapping {
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(configuration.AttributeKey);
       var childRelationships    = new[] { RelationshipType.Children, RelationshipType.NestedTopics };
       var relationships         = new[] { RelationshipType.Relationship, RelationshipType.IncomingRelationship };
-      var listType              = (Type)null;
+      var listType              = (Type?)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define list type (if it's a list and it's generic)

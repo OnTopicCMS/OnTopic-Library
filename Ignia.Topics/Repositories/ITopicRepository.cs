@@ -54,7 +54,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic Load(int topicId, bool isRecursive = true);
+    Topic? Load(int topicId, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
@@ -62,7 +62,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic Load(string topicKey = null, bool isRecursive = true);
+    Topic? Load(string? topicKey = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.
@@ -74,7 +74,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    Topic Load(int topicId, DateTime version);
+    Topic? Load(int topicId, DateTime version);
 
     /*==========================================================================================================================
     | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
@@ -140,7 +140,7 @@ namespace Ignia.Topics.Repositories {
     /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
     ///   topic != null
     /// </requires>
-    void Move(Topic topic, Topic target, Topic sibling = null);
+    void Move(Topic topic, Topic target, Topic? sibling = null);
 
     /*==========================================================================================================================
     | METHOD: DELETE

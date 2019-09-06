@@ -28,7 +28,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class InvalidRelationshipListTypeTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidRelationshipListTypeTopicBindingModel(string key = null) : base(key, "ContentTypeDescriptor") { }
+    public InvalidRelationshipListTypeTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
     public Dictionary<string, RelatedTopicBindingModel> ContentTypes { get; } = new Dictionary<string, RelatedTopicBindingModel>();
 

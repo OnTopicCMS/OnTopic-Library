@@ -44,7 +44,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ArgumentNullException))]
     public void RequiresArgumentNullException() {
 
-      var argument = (object)null;
+      var argument = (object?)null;
 
       Contract.Requires<ArgumentNullException>(argument != null, "The argument cannot be null");
 
@@ -60,7 +60,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void RequiresExceptionMessage() {
 
-      var argument = (object)null;
+      var argument = (object?)null;
       var errorMessage = "The argument cannot be null";
 
       try {
@@ -83,7 +83,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public void AssumeInvalidOperationException() {
 
-      var variable = (object)null;
+      var variable = (object?)null;
 
       Contract.Assume<InvalidOperationException>(variable != null, "The local runtime state is invalid.");
 

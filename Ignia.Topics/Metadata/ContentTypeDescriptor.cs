@@ -37,8 +37,8 @@ namespace Ignia.Topics.Metadata {
   /*============================================================================================================================
   | PRIVATE VARIABLES
   \---------------------------------------------------------------------------------------------------------------------------*/
-    private   AttributeDescriptorCollection                     _attributeDescriptors           = null;
-    private   ReadOnlyTopicCollection<ContentTypeDescriptor>    _permittedContentTypes          = null;
+    private   AttributeDescriptorCollection?                    _attributeDescriptors           = null;
+    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -234,7 +234,7 @@ namespace Ignia.Topics.Metadata {
       /*----------------------------------------------------------------------------------------------------------------------
       | Determine match
       \---------------------------------------------------------------------------------------------------------------------*/
-      var contentType = this;
+      var contentType = (ContentTypeDescriptor?)this;
 
       while (contentType != null) {
         if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {

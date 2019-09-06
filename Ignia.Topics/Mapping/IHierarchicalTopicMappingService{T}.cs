@@ -50,7 +50,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="currentTopic">The <see cref="Topic"/> to start from.</param>
     /// <param name="fromRoot">The distance that the navigation root should be from the root of the topic graph.</param>
     /// <param name="defaultRoot">If a root cannot be identified, the default root that should be returned.</param>
-    Topic GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web");
+    Topic? GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web");
 
     /*==========================================================================================================================
     | GET ROOT VIEW MODEL (ASYNC)
@@ -73,10 +73,10 @@ namespace Ignia.Topics.Mapping {
     ///   A delegate for validating whether a <see cref="Topic"/> (and it's descendants) should be included in the returned
     ///   hierarchy.
     /// </param>
-    Task<T> GetRootViewModelAsync(
+    Task<T?> GetRootViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     );
 
     /*==========================================================================================================================
@@ -93,10 +93,10 @@ namespace Ignia.Topics.Mapping {
     ///   A delegate for validating whether a <see cref="Topic"/> (and it's descendants) should be included in the returned
     ///   hierarchy.
     /// </param>
-    Task<T> GetViewModelAsync(
+    Task<T?> GetViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     );
 
 

@@ -79,7 +79,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       var                       topicView                       = viewResult.TopicView;
       var                       viewEngine                      = viewResult.ViewEngine ?? ViewEngine;
       var                       requestContext                  = actionContext.HttpContext.Request;
-      var                       view                            = (ViewEngineResult)null;
+      var                       view                            = (ViewEngineResult?)null;
       var                       searchedPaths                   = new List<string>();
 
       /*------------------------------------------------------------------------------------------------------------------------

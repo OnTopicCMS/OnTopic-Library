@@ -29,9 +29,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _currentTopic                   = null;
     private readonly            ITopicRoutingService            _topicRoutingService;
     private readonly            ITopicMappingService            _topicMappingService;
+    private                     Topic?                          _currentTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -120,7 +120,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <param name="viewName">The optional name of the view that is rendered to the response.</param>
     /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
     [NonAction]
-    public virtual TopicViewResult TopicView(object model, string viewName = null) =>
+    public virtual TopicViewResult TopicView(object model, string? viewName = null) =>
       new TopicViewResult(ViewData, TempData, model, CurrentTopic.ContentType, viewName);
 
     /*==========================================================================================================================

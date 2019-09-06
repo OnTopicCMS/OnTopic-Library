@@ -41,7 +41,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       ITempDataDictionary       tempData,
       object                    viewModel,
       string                    contentType                     = "Page",
-      string                    view                            = null
+      string?                   view                            = null
     ) : base() {
 
       /*------------------------------------------------------------------------------------------------------------------------

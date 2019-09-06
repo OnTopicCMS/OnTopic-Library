@@ -28,8 +28,8 @@ namespace Ignia.Topics.Data.Caching {
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _cache                          = null;
     private readonly            ITopicRepository                _dataProvider;
+    private                     Topic?                          _cache                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -76,7 +76,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) {
+    public override Topic? Load(int topicId, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for entire tree
@@ -98,7 +98,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(string topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -124,7 +124,7 @@ namespace Ignia.Topics.Data.Caching {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -154,7 +154,7 @@ namespace Ignia.Topics.Data.Caching {
     ///   The partial or full string value representing the key (or <see cref="Topic.GetUniqueKey"/>) for the topic.
     /// </param>
     /// <returns>The topic or null, if the topic is not found.</returns>
-    private Topic GetTopic(Topic sourceTopic, string uniqueKey) {
+    private Topic? GetTopic(Topic? sourceTopic, string uniqueKey) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -254,7 +254,7 @@ namespace Ignia.Topics.Data.Caching {
       "TestAlwaysEvaluatingToAConstant",
       Justification = "Sibling may be null from overloaded caller."
       )]
-    public override void Move(Topic topic, Topic target, Topic sibling) => _dataProvider.Move(topic, target, sibling);
+    public override void Move(Topic topic, Topic target, Topic? sibling) => _dataProvider.Move(topic, target, sibling);
 
     /*==========================================================================================================================
     | METHOD: DELETE

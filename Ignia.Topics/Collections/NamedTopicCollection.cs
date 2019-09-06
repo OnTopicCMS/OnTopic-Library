@@ -29,7 +29,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="name">Provides a name for the collection, used to identify different collections.</param>
     /// <param name="topics">Optionally seeds the collection with an optional list of topic references.</param>
-    public NamedTopicCollection(string name = "", IEnumerable<Topic> topics = null) : base() {
+    public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) : base() {
       Name = name;
       if (topics != null) {
         CopyTo(topics.ToArray(), 0);

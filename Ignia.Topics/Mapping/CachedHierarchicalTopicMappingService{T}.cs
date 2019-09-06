@@ -34,8 +34,8 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<int, T> _cache = new ConcurrentDictionary<int, T>();
     private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService = null;
+    private readonly ConcurrentDictionary<int, T?> _cache = new ConcurrentDictionary<int, T?>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -55,31 +55,31 @@ namespace Ignia.Topics.Mapping {
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public Topic GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
+    public Topic? GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") =>
       _hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, fromRoot, defaultRoot);
 
     /*==========================================================================================================================
     | GET ROOT VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public async Task<T> GetRootViewModelAsync(
+    public async Task<T?> GetRootViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (sourceTopic == null) {
-        return await Task<T>.FromResult<T>(null).ConfigureAwait(false);
+        return await Task<T?>.FromResult<T?>(null).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cache hits
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_cache.TryGetValue(sourceTopic.Id, out var dto)) {
-        return await Task<T>.FromResult<T>(dto).ConfigureAwait(false);
+        return await Task<T?>.FromResult<T?>(dto).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -94,10 +94,10 @@ namespace Ignia.Topics.Mapping {
     | GET VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public async Task<T> GetViewModelAsync(
+    public async Task<T?> GetViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     ) =>
       await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 

@@ -90,7 +90,7 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target                = (PageTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (PageTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -121,7 +121,7 @@ namespace Ignia.Topics.Tests {
       grandParent.Attributes.SetValue("Title", "Value3");
       grandParent.Attributes.SetValue("Property", "ValueB");
 
-      var viewModel             = (PageTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (PageTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
       var parentViewModel       = viewModel?.Parent;
       var grandParentViewModel  = parentViewModel?.Parent as SampleTopicViewModel;
 
@@ -155,7 +155,7 @@ namespace Ignia.Topics.Tests {
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel             = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>(null, viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
@@ -178,7 +178,7 @@ namespace Ignia.Topics.Tests {
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel             = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
@@ -203,7 +203,7 @@ namespace Ignia.Topics.Tests {
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
       Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1", StringComparison.InvariantCulture)));
@@ -248,7 +248,7 @@ namespace Ignia.Topics.Tests {
       relatedTopic5.Relationships.SetTopic("AmbiguousRelationship", topic);
       relatedTopic6.Relationships.SetTopic("AmbiguousRelationship", topic);
 
-      var target = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.RelationshipAlias.Count);
       Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5", StringComparison.InvariantCulture)));
@@ -274,7 +274,7 @@ namespace Ignia.Topics.Tests {
 
       topicList.IsHidden        = true;
 
-      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
       Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1", StringComparison.InvariantCulture)));
@@ -300,7 +300,7 @@ namespace Ignia.Topics.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", topic);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
 
-      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(3, target.Children.Count);
       Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
@@ -326,7 +326,7 @@ namespace Ignia.Topics.Tests {
 
       topic.Attributes.SetInteger("TopicReferenceId", 11111);
 
-      var target                = (SampleTopicViewModel)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.IsNotNull(target.TopicReference);
       Assert.AreEqual<int>(11111, target.TopicReference.Id);
@@ -370,7 +370,7 @@ namespace Ignia.Topics.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
       var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3", StringComparison.InvariantCulture));
       var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture));
 
@@ -404,7 +404,7 @@ namespace Ignia.Topics.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Slide", slides);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
 
-      var target                = (SlideshowTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SlideshowTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
       Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
@@ -434,7 +434,7 @@ namespace Ignia.Topics.Tests {
       topic.Relationships.SetTopic("Related", relatedTopic2);
       topic.Relationships.SetTopic("Related", relatedTopic3);
 
-      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
       var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
 
       Assert.AreEqual<int>(3, target.Related.Count);
@@ -458,7 +458,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
-      var target                = (MetadataLookupTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (MetadataLookupTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(5, target.Categories.Count);
 
@@ -479,7 +479,7 @@ namespace Ignia.Topics.Tests {
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
 
-      var mappedTopic           = (CircularTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var mappedTopic           = (CircularTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<CircularTopicViewModel>(mappedTopic, mappedTopic.Children.First().Parent);
 
@@ -502,7 +502,7 @@ namespace Ignia.Topics.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Index", topic);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
 
-      var target                = (SampleTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       var indexes               = target.Children.GetByContentType("Index");
 
@@ -528,7 +528,7 @@ namespace Ignia.Topics.Tests {
       var childTopic            = TopicFactory.Create("Child", "Page", topic);
       var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
 
-      var target = (IndexTopicViewModel) await mappingService.MapAsync(grandChildTopic).ConfigureAwait(false);
+      var target = (IndexTopicViewModel?)await mappingService.MapAsync(grandChildTopic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
 
@@ -550,7 +550,7 @@ namespace Ignia.Topics.Tests {
       topic.DefaultConfiguration = "Value1=1&Value2=2";
       topic.EditorType          = "TopicList";
 
-      var target                = (CompatiblePropertyTopicViewModel)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = (CompatiblePropertyTopicViewModel?)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
       Assert.AreEqual<IDictionary<string, string>>(topic.Configuration, target.Configuration);
@@ -572,7 +572,7 @@ namespace Ignia.Topics.Tests {
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
-      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Required", target.RequiredAttribute);
 
@@ -591,7 +591,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Required");
 
-      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -608,7 +608,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
-      var target = (RequiredTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -624,7 +624,7 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
-      var target                = (DefaultValueTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (DefaultValueTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Default", target.DefaultString);
       Assert.AreEqual<int>(10, target.DefaultInt);
@@ -647,7 +647,7 @@ namespace Ignia.Topics.Tests {
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
-      var target = (MinimumLengthPropertyTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (MinimumLengthPropertyTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -674,7 +674,7 @@ namespace Ignia.Topics.Tests {
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
 
-      var target = (FilteredTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (FilteredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
 
@@ -701,7 +701,7 @@ namespace Ignia.Topics.Tests {
         }
       }
 
-      var target = (FlattenChildrenTopicViewModel) await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (FlattenChildrenTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(25, target.Children.Count);
 
@@ -722,8 +722,8 @@ namespace Ignia.Topics.Tests {
 
       var topic = TopicFactory.Create("Test", "Filtered", 5);
 
-      var target1 = (FilteredTopicViewModel)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
-      var target2 = (FilteredTopicViewModel)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
+      var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
+      var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<FilteredTopicViewModel>(target1, target2);
 

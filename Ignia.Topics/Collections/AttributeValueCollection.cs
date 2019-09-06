@@ -83,7 +83,7 @@ namespace Ignia.Topics.Collections {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string GetValue(string name, bool inheritFromParent = false) => GetValue(name, "", inheritFromParent);
+    public string? GetValue(string name, bool inheritFromParent = false) => GetValue(name, "", inheritFromParent);
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
@@ -99,7 +99,7 @@ namespace Ignia.Topics.Collections {
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public string GetValue(string name, string defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+    public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       return GetValue(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
@@ -131,7 +131,7 @@ namespace Ignia.Topics.Collections {
     ///   description="The maximum number of hops should not exceed 100." exception="T:System.ArgumentException">
     ///   maxHops &lt;= 100
     /// </requires>
-    private string GetValue(string name, string defaultValue, bool inheritFromParent, int maxHops) {
+    private string? GetValue(string name, string? defaultValue, bool inheritFromParent, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -141,7 +141,7 @@ namespace Ignia.Topics.Collections {
       Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
       TopicFactory.ValidateKey(name);
 
-      string value = null;
+      string? value = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from Attributes
@@ -329,7 +329,7 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    internal void SetValue(string key, string value, bool? isDirty, bool enforceBusinessLogic) {
+    internal void SetValue(string key, string? value, bool? isDirty, bool enforceBusinessLogic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input

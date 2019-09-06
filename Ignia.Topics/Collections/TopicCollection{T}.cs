@@ -21,7 +21,7 @@ namespace Ignia.Topics.Collections {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    Topic                           _parent                         = null;
+    readonly                    Topic?                          _parent                         = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -31,7 +31,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="parent">A reference to the parent <see cref="Topic"/>.</param>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(Topic parent, IEnumerable<T> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+    public TopicCollection(Topic? parent, IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
       if (topics != null) {
         foreach (var topic in topics) {
@@ -44,7 +44,7 @@ namespace Ignia.Topics.Collections {
     ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<T> topics = null) : this(null, topics) {
+    public TopicCollection(IEnumerable<T>? topics = null) : this(null, topics) {
     }
 
     /*==========================================================================================================================
@@ -53,7 +53,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Retrieves a <typeparamref name="T"/> by key.
     /// </summary>
-    public T GetTopic(string key) {
+    public T? GetTopic(string key) {
       TopicFactory.ValidateKey(key);
       if (Contains(key)) {
         return this[key];

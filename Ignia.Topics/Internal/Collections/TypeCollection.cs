@@ -28,7 +28,7 @@ namespace Ignia.Topics.Internal.Collections {
     ///   Instantiates a new <see cref="TypeCollection"/>. Optionally accepts an <see cref="IEnumerable"/> of <see
     ///   cref="Type" /> instances to prepopulate the collection.
     /// </summary>
-    public TypeCollection(IEnumerable<Type> types = null) : base(StringComparer.InvariantCultureIgnoreCase) {
+    public TypeCollection(IEnumerable<Type>? types = null) : base(StringComparer.InvariantCultureIgnoreCase) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate collection

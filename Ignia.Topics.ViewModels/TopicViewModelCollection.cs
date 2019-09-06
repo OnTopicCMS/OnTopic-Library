@@ -39,7 +39,7 @@ namespace Ignia.Topics.ViewModels {
     ///   Initializes a new instance of the <see cref="TopicViewModelCollection{T}"/>.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicViewModelCollection(IEnumerable<TItem> topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+    public TopicViewModelCollection(IEnumerable<TItem>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       if (topics != null) {
         foreach(var item in topics) {
           Add(item);

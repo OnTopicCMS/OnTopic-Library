@@ -65,7 +65,7 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<Topic> MapAsync(ITopicBindingModel source) {
+    public async Task<Topic?> MapAsync(ITopicBindingModel source) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -88,7 +88,7 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<T> MapAsync<T>(ITopicBindingModel source) where T : Topic => (T)await MapAsync(
+    public async Task<T?> MapAsync<T>(ITopicBindingModel source) where T : Topic => (T?)await MapAsync(
       source,
       TopicFactory.Create(source.Key, source.ContentType)
     ).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<Topic> MapAsync(ITopicBindingModel source, Topic target) {
+    public async Task<Topic?> MapAsync(ITopicBindingModel source, Topic target) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -410,7 +410,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Queue up mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue = new List<Task<Topic>>();
+      var taskQueue = new List<Task<Topic?>>();
 
       //Map child binding model to target collection on the target
       foreach (ITopicBindingModel childBindingModel in sourceList) {

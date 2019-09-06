@@ -39,7 +39,7 @@ namespace Ignia.Topics.Collections {
     /// <summary>
     ///   Retrieves a <typeparamref name="T"/> by key.
     /// </summary>
-    public T GetTopic(string key) {
+    public T? GetTopic(string key) {
       TopicFactory.ValidateKey(key);
       if (_innerCollection.Contains(key)) {
         return _innerCollection[key];

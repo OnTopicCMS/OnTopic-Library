@@ -27,9 +27,9 @@ namespace Ignia.Topics {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     int                             _id                             = -1;
     private                     string                          _key                            = null;
-    private                     string                          _originalKey                    = null;
-    private                     Topic                           _parent                         = null;
-    private                     Topic                           _derivedTopic                   = null;
+    private                     string?                         _originalKey                    = null;
+    private                     Topic?                          _parent                         = null;
+    private                     Topic?                          _derivedTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -133,7 +133,7 @@ namespace Ignia.Topics {
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
-    public Topic Parent {
+    public Topic? Parent {
       get => _parent;
       set {
         if (_parent != value) {
@@ -229,7 +229,7 @@ namespace Ignia.Topics {
     /// >
     ///   !value?.Contains(" ")?? true
     /// </requires>
-    internal string OriginalKey {
+    internal string? OriginalKey {
       get => _originalKey;
       set {
         TopicFactory.ValidateKey(value, true);
@@ -264,7 +264,7 @@ namespace Ignia.Topics {
     ///   !value?.Contains(" ")?? true
     /// </requires>
     [AttributeSetter]
-    public string View {
+    public string? View {
       get =>
         Attributes.GetValue("View", "");
       set {
@@ -337,7 +337,7 @@ namespace Ignia.Topics {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get => Attributes.GetValue("Title", Key);
+      get => Attributes.GetValue("Title", Key)?? Key;
       set => SetAttributeValue("Title", value);
     }
 
@@ -357,7 +357,7 @@ namespace Ignia.Topics {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
-    public string Description {
+    public string? Description {
       get => Attributes.GetValue("Description");
       set => SetAttributeValue("Description", value);
     }
@@ -408,7 +408,7 @@ namespace Ignia.Topics {
     ///   Duplicate key when setting Parent property: the topic with the name '{Key}' already exists in the '{parent.Key}'
     ///   topic.
     /// </exception>
-    public void SetParent(Topic parent, Topic sibling = null) {
+    public void SetParent(Topic parent, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Check preconditions
@@ -470,7 +470,7 @@ namespace Ignia.Topics {
       | Crawl up tree to define uniqueKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       var uniqueKey = "";
-      var topic = this;
+      var topic = (Topic?)this;
 
       for (var i = 0; i < 100; i++) {
         if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
@@ -531,7 +531,7 @@ namespace Ignia.Topics {
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
-    public Topic DerivedTopic {
+    public Topic? DerivedTopic {
       get => _derivedTopic;
       set {
         Contract.Requires<ArgumentException>(
@@ -654,7 +654,7 @@ namespace Ignia.Topics {
     /// >
     ///   !value.Contains(" ")
     /// </requires>
-    protected void SetAttributeValue(string key, string value, bool? isDirty = null) {
+    protected void SetAttributeValue(string key, string? value, bool? isDirty = null) {
       Contract.Requires(!String.IsNullOrWhiteSpace(key));
       Attributes.SetValue(key, value, isDirty, false);
     }

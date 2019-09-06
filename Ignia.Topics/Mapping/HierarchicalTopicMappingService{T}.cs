@@ -66,18 +66,18 @@ namespace Ignia.Topics.Mapping {
     ///   Provides a reference to the Topic Repository in order to gain arbitrary access to the entire topic graph.
     /// </summary>
     /// <returns>The TopicRepository associated with the controller.</returns>
-    private ITopicRepository TopicRepository { get; } = null;
+    private ITopicRepository TopicRepository { get; }
 
     /*==========================================================================================================================
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public Topic GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+    public Topic? GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find navigation root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationRootTopic = currentTopic;
+      var navigationRootTopic = (Topic?)currentTopic;
       while (DistanceFromRoot(navigationRootTopic) > fromRoot) {
         navigationRootTopic = navigationRootTopic.Parent;
       }
@@ -103,7 +103,7 @@ namespace Ignia.Topics.Mapping {
     ///   A helper function that will determine how far a given topic is from the root of a tree.
     /// </summary>
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    private static int DistanceFromRoot(Topic sourceTopic) {
+    private static int DistanceFromRoot(Topic? sourceTopic) {
       var distance = 1;
       while (sourceTopic?.Parent != null) {
         sourceTopic = sourceTopic.Parent;
@@ -116,20 +116,20 @@ namespace Ignia.Topics.Mapping {
     | GET ROOT VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public virtual async Task<T> GetRootViewModelAsync(
+    public virtual async Task<T?> GetRootViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     ) => await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 
     /*==========================================================================================================================
     | GET VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public async Task<T> GetViewModelAsync(
+    public async Task<T?> GetViewModelAsync(
       Topic sourceTopic,
       int tiers = 1,
-      Func<Topic, bool> validationDelegate = null
+      Func<Topic, bool>? validationDelegate = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -143,9 +143,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var taskQueue             = new List<Task<T>>();
+      var taskQueue             = new List<Task<T?>>();
       var children              = new List<T>();
-      var viewModel             = (T)null;
+      var viewModel             = (T?)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default delegate

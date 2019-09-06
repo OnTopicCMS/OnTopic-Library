@@ -158,7 +158,7 @@ namespace Ignia.Topics.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public string EditorType {
+    public string? EditorType {
       get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
@@ -183,7 +183,7 @@ namespace Ignia.Topics.Metadata {
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
     [AttributeSetter]
-    public string DisplayGroup {
+    public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
@@ -245,7 +245,7 @@ namespace Ignia.Topics.Metadata {
     ///   Retrieves a configuration value from the <see cref="Configuration"/> dictionary; if the value doesn't exist, then
     ///   optionally returns a default value.
     /// </summary>
-    public string GetConfigurationValue(string key, string defaultValue = null) {
+    public string? GetConfigurationValue(string key, string? defaultValue = null) {
       Contract.Requires(!String.IsNullOrWhiteSpace(key));
       if (Configuration.ContainsKey(key) && Configuration[key] != null) {
         return Configuration[key];
@@ -280,7 +280,7 @@ namespace Ignia.Topics.Metadata {
     ///   value (if not overwritten) is committed to the database and, thus, that version is used in the future. As such, the
     ///   default value only affects the topic when it is first being created via the editor.
     /// </remarks>
-    public string DefaultValue {
+    public string? DefaultValue {
       get => Attributes.GetValue("DefaultValue", "");
       set => SetAttributeValue("DefaultValue", value);
     }

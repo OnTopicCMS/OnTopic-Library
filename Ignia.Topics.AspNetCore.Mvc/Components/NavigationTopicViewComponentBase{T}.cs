@@ -28,8 +28,8 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _currentTopic                   = null;
     private readonly            ITopicRoutingService            _topicRoutingService;
+    private                     Topic?                          _currentTopic                   = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -65,7 +65,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     ///   Provides a reference to the current topic associated with the request.
     /// </summary>
     /// <returns>The Topic associated with the current request.</returns>
-    protected Topic CurrentTopic {
+    protected Topic? CurrentTopic {
       get {
         if (_currentTopic == null) {
           _currentTopic = _topicRoutingService.GetCurrentTopic();

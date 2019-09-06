@@ -27,10 +27,10 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic                           _topic                          = null;
     private readonly            ITopicRepository                _topicRepository;
     private readonly            RouteData                       _routes;
     private readonly            Uri                             _uri;
+    private                     Topic?                          _topic                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -67,7 +67,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// <summary>
     ///   Gets the topic associated with the current URL.
     /// </summary>
-    public Topic GetCurrentTopic() {
+    public Topic? GetCurrentTopic() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic

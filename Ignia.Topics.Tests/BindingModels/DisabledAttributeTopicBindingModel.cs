@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class DisabledAttributeTopicBindingModel : BasicTopicBindingModel {
 
-    public DisabledAttributeTopicBindingModel(string key = null) : base(key, "Page") { }
+    public DisabledAttributeTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     [DisableMapping]
     public string UnmappedAttribute { get; set; }

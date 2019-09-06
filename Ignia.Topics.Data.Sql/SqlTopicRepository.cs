@@ -220,7 +220,7 @@ namespace Ignia.Topics.Data.Sql {
       | Identify affected topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var current               = topics[sourceTopicId];
-      var related               = (Topic)null;
+      var related               = (Topic?)null;
 
       // Fetch the related topic
       if (topics.Keys.Contains(targetTopicId)) {
@@ -318,7 +318,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(string topicKey = null, bool isRecursive = true) {
+    public override Topic Load(string? topicKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty topic
@@ -413,7 +413,7 @@ namespace Ignia.Topics.Data.Sql {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
-      var reader                = (SqlDataReader)null;
+      var reader                = (SqlDataReader?)null;
 
       try {
 
@@ -562,7 +562,7 @@ namespace Ignia.Topics.Data.Sql {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
-      var reader                = (SqlDataReader)null;
+      var reader                = (SqlDataReader?)null;
 
       command.CommandType       = CommandType.StoredProcedure;
 
@@ -738,7 +738,7 @@ namespace Ignia.Topics.Data.Sql {
       foreach (var attributeValue in topic.Attributes) {
 
         var key = attributeValue.Key;
-        var attribute = (AttributeDescriptor)null;
+        var attribute = (AttributeDescriptor?)null;
 
         if (contentType.AttributeDescriptors.Contains(key)) {
           attribute = contentType.AttributeDescriptors[key];
@@ -781,7 +781,7 @@ namespace Ignia.Topics.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection = new SqlConnection(_connectionString);
-      SqlCommand command = null;
+      var command = (SqlCommand?)null;
       var returnVal = -1;
 
       try {
@@ -967,7 +967,7 @@ namespace Ignia.Topics.Data.Sql {
       | Move in database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection = new SqlConnection(_connectionString);
-      SqlCommand command = null;
+      var command = (SqlCommand?)null;
 
       try {
 
@@ -1043,7 +1043,7 @@ namespace Ignia.Topics.Data.Sql {
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection = new SqlConnection(_connectionString);
-      SqlCommand command = null;
+      SqlCommand? command = null;
 
       try {
 
@@ -1124,7 +1124,7 @@ namespace Ignia.Topics.Data.Sql {
       if (topic.Relationships.Keys.Count() <= 0) {
         return "";
       }
-      SqlCommand command = null;
+      var command = (SqlCommand?)null;
 
       try {
 
@@ -1308,7 +1308,7 @@ namespace Ignia.Topics.Data.Sql {
     private static void AddSqlParameter(
       SqlCommand commandObject,
       string sqlParameter,
-      string fieldValue,
+      string? fieldValue,
       SqlDbType sqlDbType,
       ParameterDirection paramDirection,
       int sqlLength

@@ -33,7 +33,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public DefaultTopicLookupService(IEnumerable<Type> types = null, Type defaultType = null) :
+    public DefaultTopicLookupService(IEnumerable<Type>? types = null, Type? defaultType = null) :
       base(types, defaultType?? typeof(Topic)) {
 
       /*------------------------------------------------------------------------------------------------------------------------

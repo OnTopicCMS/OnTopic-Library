@@ -28,7 +28,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     int                         _identity                       = 1;
-    Topic                       _cache                          = null;
+    Topic?                      _cache                          = null;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,7 +50,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, bool isRecursive = true) =>
+    public override Topic? Load(int topicId, bool isRecursive = true) =>
       (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <summary>
@@ -59,7 +59,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicKey">The topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(string topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -86,7 +86,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
-    public override Topic Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -184,7 +184,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       "TestAlwaysEvaluatingToAConstant",
       Justification = "Sibling may be null from overloaded caller."
       )]
-    public override void Move(Topic topic, Topic target, Topic sibling) {
+    public override void Move(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

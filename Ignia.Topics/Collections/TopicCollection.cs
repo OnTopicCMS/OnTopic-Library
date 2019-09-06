@@ -23,14 +23,14 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="parent">A reference to the parent <see cref="Topic"/>.</param>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(Topic parent, IEnumerable<Topic> topics = null) : base(parent, topics) {
+    public TopicCollection(Topic? parent, IEnumerable<Topic>? topics = null) : base(parent, topics) {
     }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic> topics = null) : this(null, topics) {
+    public TopicCollection(IEnumerable<Topic>? topics = null) : this(null, topics) {
     }
 
   }

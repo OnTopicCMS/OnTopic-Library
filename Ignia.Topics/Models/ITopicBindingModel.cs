@@ -36,7 +36,7 @@ namespace Ignia.Topics.Models {
     ///   !value.Contains(" ")
     /// </requires>
     [Required]
-    string Key { get; set; }
+    string? Key { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -51,7 +51,7 @@ namespace Ignia.Topics.Models {
     ///   overwritten down the pipe).
     /// </remarks>
     [Required]
-    string ContentType { get; set; }
+    string? ContentType { get; set; }
 
   } //Class
 } //Namespace

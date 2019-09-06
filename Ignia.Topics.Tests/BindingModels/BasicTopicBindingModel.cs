@@ -25,15 +25,15 @@ namespace Ignia.Topics.Tests.BindingModels {
 
     }
 
-    public BasicTopicBindingModel(string key, string contentType) {
+    public BasicTopicBindingModel(string? key, string? contentType) {
       Key = key;
       ContentType = contentType;
     }
 
-    public string Key { get; set; }
+    public string? Key { get; set; }
 
     [Required]
-    public string ContentType { get; set; }
+    public string? ContentType { get; set; }
 
 
   } //Class

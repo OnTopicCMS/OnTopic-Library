@@ -23,11 +23,11 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class AttributeDescriptorTopicBindingModel : BasicTopicBindingModel {
 
-    public AttributeDescriptorTopicBindingModel(string key = null) : base(key, "AttributeDescriptor") {}
+    public AttributeDescriptorTopicBindingModel(string? key = null) : base(key, "AttributeDescriptor") {}
 
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
-    public string DefaultValue { get; set; }
+    public string? DefaultValue { get; set; }
 
     public bool IsRequired { get; set; }
 

@@ -59,7 +59,7 @@ namespace Ignia.Topics {
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    public AttributeValue(string key, string value, bool isDirty = true) {
+    public AttributeValue(string key, string? value, bool isDirty = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -97,7 +97,7 @@ namespace Ignia.Topics {
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    internal AttributeValue(string key, string value, bool isDirty, bool enforceBusinessLogic) : this(key, value, isDirty) {
+    internal AttributeValue(string key, string? value, bool isDirty, bool enforceBusinessLogic) : this(key, value, isDirty) {
       EnforceBusinessLogic = enforceBusinessLogic;
     }
 
@@ -123,7 +123,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets the current value of the attribute.
     /// </summary>
-    public string Value { get; }
+    public string? Value { get; }
 
     /*==========================================================================================================================
     | PROPERTY: IS DIRTY

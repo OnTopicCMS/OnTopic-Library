@@ -61,7 +61,7 @@ namespace Ignia.Topics.Internal.Mapping {
       RelationshipKey           = AttributeKey;
       RelationshipType          = RelationshipType.Any;
       CrawlRelationships        = Relationships.None;
-      MetadataKey               = (string)null;
+      MetadataKey               = null;
       DisableMapping            = false;
       AttributeFilters          = new Dictionary<string, string>();
       FlattenChildren           = false;
@@ -146,7 +146,7 @@ namespace Ignia.Topics.Internal.Mapping {
     ///   The <see cref="DefaultValue"/> property corresponds to the <see cref="DefaultValueAttribute.Value"/> property. It can
     ///   be assigned by decorating a DTO property with e.g. <c>[DefaultValue("DefaultValue")]</c>.
     /// </remarks>
-    public object DefaultValue { get; set; }
+    public object? DefaultValue { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: INHERIT VALUE
@@ -255,7 +255,7 @@ namespace Ignia.Topics.Internal.Mapping {
     ///     assigned by decorating a DTO property with e.g. <c>[Metadata("States")]</c>.
     ///   </para>
     /// </remarks>
-    public string MetadataKey { get; set; }
+    public string? MetadataKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: FLATTEN CHILDREN

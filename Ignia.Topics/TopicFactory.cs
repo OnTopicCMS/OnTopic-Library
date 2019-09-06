@@ -61,7 +61,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public static Topic Create(string key, string contentType, Topic parent = null) {
+    public static Topic Create(string key, string contentType, Topic? parent = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -107,7 +107,7 @@ namespace Ignia.Topics {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public static Topic Create(string key, string contentType, int id, Topic parent = null) {
+    public static Topic Create(string key, string contentType, int id, Topic? parent = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -148,7 +148,7 @@ namespace Ignia.Topics {
     /// </remarks>
     /// <param name="topicKey">The topic key that should be validated.</param>
     /// <param name="isOptional">Allows the topicKey to be optional (i.e., a null reference).</param>
-    public static void ValidateKey(string topicKey, bool isOptional = false) {
+    public static void ValidateKey(string? topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
         String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey ?? "", @"^[a-zA-Z0-9\.\-_]+$"),

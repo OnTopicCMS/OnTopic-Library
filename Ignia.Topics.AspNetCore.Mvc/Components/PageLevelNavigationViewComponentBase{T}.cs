@@ -67,7 +67,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var currentTopic          = CurrentTopic;
-      var navigationRootTopic   = (Topic)currentTopic;
+      var navigationRootTopic   = (Topic?)currentTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify navigation root

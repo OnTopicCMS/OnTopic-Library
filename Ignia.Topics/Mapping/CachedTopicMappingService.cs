@@ -27,8 +27,8 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<(int, Type, Relationships), object> _cache =
-      new ConcurrentDictionary<(int, Type, Relationships), object>();
+    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache =
+      new ConcurrentDictionary<(int, Type?, Relationships), object>();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -64,12 +64,17 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public async Task<object> MapAsync(Topic topic, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = (topic.Id, (Type)null, relationships);
+      Contract.Requires(topic != null, "The topic object that is being mapped must be specified.");
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Ensure cache is populated
+      \---------------------------------------------------------------------------------------------------------------------*/
+      var cacheKey = (topic.Id, (Type?)null, relationships);
       if(_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -103,7 +108,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public async Task<T> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -136,7 +141,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -195,7 +200,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
-    private object CacheViewModel(string contentType, object viewModel, (int, Type, Relationships) cacheKey) {
+    private object? CacheViewModel(string contentType, object viewModel, (int, Type?, Relationships) cacheKey) {
       if (cacheKey.Item1 > 0 && cacheKey.Item2 != null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
       }

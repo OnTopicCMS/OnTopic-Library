@@ -26,7 +26,7 @@ namespace Ignia.Topics.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>The first instance of the topic to be satisfied.</returns>
-    public static Target.Topic FindFirst(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+    public static Target.Topic? FindFirst(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts

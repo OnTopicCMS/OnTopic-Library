@@ -30,7 +30,7 @@ namespace Ignia.Topics {
     ///   Gets the requested <see cref="Type"/>.
     /// </summary>
     /// <param name="typeName">The name of the <see cref="Type"/> to retrieve.</param>
-    Type Lookup(string typeName);
+    Type? Lookup(string typeName);
 
   }
 }

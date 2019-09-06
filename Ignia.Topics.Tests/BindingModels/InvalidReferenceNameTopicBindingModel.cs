@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class InvalidReferenceNameTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidReferenceNameTopicBindingModel(string key = null) : base(key, "Page") { }
+    public InvalidReferenceNameTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     public RelatedTopicBindingModel TopicReference { get; } = new RelatedTopicBindingModel();
 

@@ -101,8 +101,9 @@ namespace Ignia.Topics.Tests {
         IsRequired              = true
       };
 
-      var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
+      Assert.IsNotNull(target);
       Assert.AreEqual<string>("Test", target.Key);
       Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
       Assert.AreEqual<string>("Test Attribute", target.Title);
@@ -131,7 +132,7 @@ namespace Ignia.Topics.Tests {
         IsRequired              = false
       };
 
-      var target                = (AttributeDescriptor)TopicFactory.Create("Test", "AttributeDescriptor");
+      var target                = (AttributeDescriptor?)TopicFactory.Create("Test", "AttributeDescriptor");
 
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
@@ -139,7 +140,7 @@ namespace Ignia.Topics.Tests {
       target.StoreInBlob        = false;
       target.Description        = "Original Description";
 
-      target                    = (AttributeDescriptor)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+      target                    = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Test", target.Key);
       Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
@@ -200,7 +201,7 @@ namespace Ignia.Topics.Tests {
         );
       }
 
-      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(3, target.PermittedContentTypes.Count);
       Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[0]));
@@ -235,7 +236,7 @@ namespace Ignia.Topics.Tests {
 
       attribute3.DefaultValue   = "Original Value";
 
-      var target                = (ContentTypeDescriptor)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(3, target.AttributeDescriptors.Count);
       Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute1"));
@@ -263,7 +264,7 @@ namespace Ignia.Topics.Tests {
         }
       };
 
-      var target                = (AttributeDescriptor)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
 

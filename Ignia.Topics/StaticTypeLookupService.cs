@@ -39,8 +39,8 @@ namespace Ignia.Topics {
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
     /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
     public StaticTypeLookupService(
-      IEnumerable<Type> types = null,
-      Type defaultType = null
+      IEnumerable<Type>? types = null,
+      Type? defaultType = null
     ) {
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   The default type to return in case <see cref="Lookup(String)"/> cannot find a match.
     /// </summary>
-    public Type DefaultType { get; }
+    public Type? DefaultType { get; }
 
     /*==========================================================================================================================
     | METHOD: LOOKUP
@@ -85,7 +85,7 @@ namespace Ignia.Topics {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public Type Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
+    public Type? Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
 
     /*==========================================================================================================================
     | METHOD: ADD

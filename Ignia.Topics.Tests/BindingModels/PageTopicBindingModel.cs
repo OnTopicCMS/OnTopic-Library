@@ -24,7 +24,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class PageTopicBindingModel : BasicTopicBindingModel {
 
-    public PageTopicBindingModel(string key = null) : base(key, "Page") { }
+    public PageTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     [Required]
     public string Title { get; set; }
