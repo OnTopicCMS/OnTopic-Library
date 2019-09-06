@@ -209,7 +209,7 @@ namespace Ignia.Topics.Metadata {
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {
-      get => Attributes.GetValue("DefaultConfiguration", "");
+      get => Attributes.GetValue("DefaultConfiguration", "")?? "";
       set {
         SetAttributeValue("DefaultConfiguration", value);
         _configuration.Clear();

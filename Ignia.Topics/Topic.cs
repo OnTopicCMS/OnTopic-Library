@@ -169,7 +169,7 @@ namespace Ignia.Topics {
     ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
     /// </value>
     public string ContentType {
-      get => Attributes.GetValue("ContentType");
+      get => Attributes.GetValue("ContentType")?? "";
       set => SetAttributeValue("ContentType", value);
     }
 
