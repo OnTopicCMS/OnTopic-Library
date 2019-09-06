@@ -34,8 +34,8 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService = null;
     private readonly ConcurrentDictionary<int, T?> _cache = new ConcurrentDictionary<int, T?>();
+    private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
