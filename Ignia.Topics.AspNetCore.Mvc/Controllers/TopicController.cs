@@ -29,9 +29,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRoutingService            _topicRoutingService            = null;
-    private readonly            ITopicMappingService            _topicMappingService            = null;
     private                     Topic                           _currentTopic                   = null;
+    private readonly            ITopicRoutingService            _topicRoutingService;
+    private readonly            ITopicMappingService            _topicMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

@@ -34,9 +34,9 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository                = null;
-    readonly                    ITypeLookupService              _typeLookupService              = null;
-    readonly                    ContentTypeDescriptorCollection _contentTypeDescriptors         = null;
+    readonly                    ITopicRepository                _topicRepository;
+    readonly                    ITypeLookupService              _typeLookupService;
+    readonly                    ContentTypeDescriptorCollection _contentTypeDescriptors;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

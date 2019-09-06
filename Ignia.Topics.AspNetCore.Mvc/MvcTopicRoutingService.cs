@@ -27,10 +27,10 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _topicRepository                = null;
-    private readonly            RouteData                       _routes                         = null;
-    private readonly            Uri                             _uri                            = null;
     private                     Topic                           _topic                          = null;
+    private readonly            ITopicRepository                _topicRepository;
+    private readonly            RouteData                       _routes;
+    private readonly            Uri                             _uri;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

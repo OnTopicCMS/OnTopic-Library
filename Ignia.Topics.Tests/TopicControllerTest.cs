@@ -33,10 +33,10 @@ namespace Ignia.Topics.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository                = null;
     readonly                    RouteData                       _routeData                      = new RouteData();
-    readonly                    Uri                             _uri                            = null;
-    readonly                    Topic                           _topic                          = null;
+    readonly                    ITopicRepository                _topicRepository;
+    readonly                    Uri                             _uri;
+    readonly                    Topic                           _topic;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
