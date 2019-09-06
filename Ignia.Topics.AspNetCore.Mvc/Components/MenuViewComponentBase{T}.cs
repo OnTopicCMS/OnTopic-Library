@@ -66,14 +66,13 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var currentTopic          = CurrentTopic;
-      var navigationRootTopic   = (Topic)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify navigation root
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
+      var navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
       var navigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic,
         3,

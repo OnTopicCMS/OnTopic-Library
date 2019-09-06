@@ -25,8 +25,8 @@ namespace Ignia.Topics {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     string                          _key;
     private                     int                             _id                             = -1;
-    private                     string                          _key                            = null;
     private                     string?                         _originalKey                    = null;
     private                     Topic?                          _parent                         = null;
     private                     Topic?                          _derivedTopic                   = null;

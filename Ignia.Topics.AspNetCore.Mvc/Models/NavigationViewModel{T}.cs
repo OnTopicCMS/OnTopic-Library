@@ -25,10 +25,10 @@ namespace Ignia.Topics.AspNetCore.Mvc.Models {
   ///     Implementations may support additional properties, as appropriate.
   ///   </para>
   /// </remarks>
-  public class NavigationViewModel<T> where T: INavigationTopicViewModel<T> {
+  public class NavigationViewModel<T> where T: class, INavigationTopicViewModel<T> {
 
-    public T NavigationRoot { get; set; }
-    public string CurrentKey { get; set; }
+    public T? NavigationRoot { get; set; }
+    public string CurrentKey { get; set; } = default!;
 
   } // Class
 
