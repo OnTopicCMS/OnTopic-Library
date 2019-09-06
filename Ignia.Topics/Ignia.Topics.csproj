@@ -4,6 +4,7 @@
     <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyTitle>Ignia OnTopic Library</AssemblyTitle>
@@ -23,7 +24,6 @@
     <DebugType>full</DebugType>
     <DocumentationFile>bin\$(Configuration)\Ignia.Topics.XML</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

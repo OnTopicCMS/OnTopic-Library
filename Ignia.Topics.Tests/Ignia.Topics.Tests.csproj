@@ -10,6 +10,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyTitle>Ignia OnTopic Unit Tests</AssemblyTitle>
