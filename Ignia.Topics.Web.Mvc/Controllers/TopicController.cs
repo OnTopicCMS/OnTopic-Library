@@ -47,8 +47,8 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(topicRoutingService != null, "A concrete implementation of an ITopicRoutingService is required.");
+      Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(topicRoutingService, "A concrete implementation of an ITopicRoutingService is required.");
       Contract.Requires(topicMappingService!= null, "A concrete implementation of an ITopicMappingService is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------

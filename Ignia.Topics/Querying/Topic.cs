@@ -31,7 +31,7 @@ namespace Ignia.Topics.Querying {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Requires(topic, "The topic parameter must be specified.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -71,7 +71,7 @@ namespace Ignia.Topics.Querying {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Requires(topic, "The topic parameter must be specified.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -124,7 +124,7 @@ namespace Ignia.Topics.Querying {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic parameter must be specified.");
+      Contract.Requires(topic, "The topic parameter must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
       TopicFactory.ValidateKey(name);

@@ -37,7 +37,7 @@ namespace Ignia.Topics.Mapping {
     ///   Establishes a new instance of a <see cref="CachedTopicMappingService"/> with required dependencies.
     /// </summary>
     public CachedTopicMappingService(ITopicMappingService topicMappingService) {
-      Contract.Requires<ArgumentNullException>(topicMappingService != null, "An instance of topicMappingService is required.");
+      Contract.Requires(topicMappingService, "An instance of topicMappingService is required.");
       _topicMappingService = topicMappingService;
     }
 
@@ -69,7 +69,7 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic != null, "The topic object that is being mapped must be specified.");
+      Contract.Requires(topic, "The topic object that is being mapped must be specified.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated

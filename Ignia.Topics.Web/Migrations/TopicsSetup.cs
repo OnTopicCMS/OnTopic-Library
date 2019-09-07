@@ -145,7 +145,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+      Contract.Requires(topic, "The topic must be specified.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure TopicRepository references the local instances of the ContentTypes
@@ -195,7 +195,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+      Contract.Requires(topic, "The topic must be specified.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update the topic reference/derivation
@@ -245,7 +245,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
+      Contract.Requires(parentTopic, "The parent topic must be specified.");
       TopicFactory.ValidateKey(key);
 
       Topic topic = null;
@@ -319,7 +319,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(parentTopic != null, "The parent topic must be specified.");
+      Contract.Requires(parentTopic, "The parent topic must be specified.");
       TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -454,7 +454,7 @@ namespace Ignia.Topics.Web.Migrations {
     /// </summary>
     /// <param name="parentContentType">The <see cref="Topic.ContentType"/> topic for the parent topic.</param>
     public static void DisableChildTopics(Topic parentContentType) {
-      Contract.Requires<ArgumentNullException>(parentContentType != null, "The parent ContentType must be specified.");
+      Contract.Requires(parentContentType, "The parent ContentType must be specified.");
       parentContentType.Attributes.SetValue("DisableChildTopics", "1");
     }
 
@@ -474,8 +474,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(attributes != null, "The attributes topic must be specified.");
-      Contract.Requires<ArgumentNullException>(contentType != null, "The contentTYpe topic must be specified.");
+      Contract.Requires(attributes, "The attributes topic must be specified.");
+      Contract.Requires(contentType, "The contentTYpe topic must be specified.");
       Contract.Requires<ArgumentNullException>(String.IsNullOrWhiteSpace(key), "The key must be specified.");
       TopicFactory.ValidateKey(key);
 
@@ -519,7 +519,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must be specified.");
+      Contract.Requires(topic, "The topic must be specified.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic properties string and primary properties

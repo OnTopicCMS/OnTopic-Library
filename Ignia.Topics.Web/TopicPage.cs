@@ -143,7 +143,7 @@ namespace Ignia.Topics.Web {
     /// <remarks>The URL in the editor associated with the current topic.</remarks>
     public string EditUrl {
       get {
-        Contract.Requires(Topic != null, "Assumes the page topic is not null.");
+        Contract.Requires(Topic, "Assumes the page topic is not null.");
         return "/!Admin/Topics/Default.aspx?Path=" + Topic.GetUniqueKey();
       }
     }

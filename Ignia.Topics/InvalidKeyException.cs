@@ -78,7 +78,7 @@ namespace Ignia.Topics {
     /// <param name="context">A <see cref="StreamingContext"/> instance with details about the request context.</param>
     /// <returns>A new <see cref="InvalidKeyException"/> instance.</returns>
     protected InvalidKeyException(SerializationInfo info, StreamingContext context) : base(info, context) {
-      Contract.Requires<ArgumentNullException>(info != null);
+      Contract.Requires(info);
     }
 
   }

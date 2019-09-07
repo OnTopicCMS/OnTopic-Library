@@ -138,7 +138,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+      Contract.Requires(topics, "The topics Dictionary must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -207,8 +207,8 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
-      Contract.Requires<ArgumentNullException>(reader != null, "The reader must not be null.");
+      Contract.Requires(topics, "The topics Dictionary must not be null.");
+      Contract.Requires(reader, "The reader must not be null.");
       Contract.Requires<ArgumentNullException>(reader?["Source_TopicID"] != null, "The Source_TopicID record must not be null.");
       Contract.Requires<ArgumentNullException>(reader?["Target_TopicID"] != null, "The Target_TopicID record must not be null.");
       Contract.Requires<ArgumentNullException>(reader?["RelationshipTypeID"] != null, "The RelationshipTypeID record must not be null.");
@@ -258,7 +258,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+      Contract.Requires(topics, "The topics Dictionary must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through topics
@@ -292,7 +292,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topics != null, "The topics Dictionary must not be null.");
+      Contract.Requires(topics, "The topics Dictionary must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -1096,7 +1096,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <param name="connection">The SQL connection.</param>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection) {
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+      Contract.Requires(topic, "The topic must not be null.");
       return PersistRelations(topic, connection, false);
     }
 
@@ -1119,7 +1119,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -1204,7 +1204,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topic != null, "The topic must not be null.");
+      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create blob string container
@@ -1250,7 +1250,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(sqlDbType != null, "The sqlDbType must not be null.");
+      Contract.Requires(sqlDbType, "The sqlDbType must not be null.");
 
       switch (sqlDbType.ToUpperInvariant()) {
         case "INT"              : return SqlDbType.Int;
@@ -1321,7 +1321,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(commandObject != null, "The SQL command object must be specified.");
+      Contract.Requires(commandObject, "The SQL command object must be specified.");
       Contract.Requires(commandObject.Parameters != null, "The SQL command object's parameters collection must be available");
 
       /*------------------------------------------------------------------------------------------------------------------------

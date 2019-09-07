@@ -77,10 +77,10 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(requestContext != null, "An instance of a RequestContext is required.");
-      Contract.Requires(viewsDirectory != null, "A value for the viewsDirectory is required. Will default to '~/Views/'");
-      Contract.Requires(viewExtension != null, "A value for the viewExtension is required. Will default to 'cshtml'");
+      Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(requestContext, "An instance of a RequestContext is required.");
+      Contract.Requires(viewsDirectory, "A value for the viewsDirectory is required. Will default to '~/Views/'");
+      Contract.Requires(viewExtension, "A value for the viewExtension is required. Will default to 'cshtml'");
       Contract.Requires(
         viewsDirectory.IndexOf("/", StringComparison.InvariantCulture) >= 0,
         "The viewsDirectory parameter should be a relative path (e.g., '/Views/`)."
@@ -324,7 +324,7 @@ namespace Ignia.Topics {
       /*-------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \------------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(contentType != null, "contentType");
+      Contract.Requires(contentType, "contentType");
       TopicFactory.ValidateKey(contentType);
 
       /*-------------------------------------------------------------------------------------------------------------------------

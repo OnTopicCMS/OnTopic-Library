@@ -49,8 +49,8 @@ namespace Ignia.Topics.Mapping {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
-      Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
+      Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
+      Contract.Requires(typeLookupService, "An instance of an ITypeLookupService is required.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set dependencies

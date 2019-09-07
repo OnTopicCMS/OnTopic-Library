@@ -29,7 +29,7 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
     public ReadOnlyTopicCollection(IList<T> innerCollection) : base(innerCollection) {
-      Contract.Requires(innerCollection != null, "innerCollection should not be null");
+      Contract.Requires(innerCollection, "innerCollection should not be null");
       _innerCollection = innerCollection as TopicCollection<T>?? new TopicCollection<T>(innerCollection);
     }
 
@@ -58,7 +58,7 @@ namespace Ignia.Topics.Collections {
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
     public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
-      Contract.Requires(innerCollection != null, "innerCollection should not be null");
+      Contract.Requires(innerCollection, "innerCollection should not be null");
       return new ReadOnlyTopicCollection<T>(innerCollection);
     }
 

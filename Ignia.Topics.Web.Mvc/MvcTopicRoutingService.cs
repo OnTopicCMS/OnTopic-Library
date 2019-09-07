@@ -48,9 +48,9 @@ namespace Ignia.Topics.Web.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topicRepository != null, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(uri != null, "An instance of a Uri instantiated to the requested URL is required.");
-      Contract.Requires(routeData != null, "An instance of a RouteData dictionary is required. It can be empty.");
+      Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(uri, "An instance of a Uri instantiated to the requested URL is required.");
+      Contract.Requires(routeData, "An instance of a RouteData dictionary is required. It can be empty.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally

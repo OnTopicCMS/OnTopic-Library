@@ -413,7 +413,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Check preconditions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(parent != null, "The value for Parent must not be null.");
+      Contract.Requires(parent, "The value for Parent must not be null.");
       Contract.Requires<ArgumentOutOfRangeException>(parent != this, "A topic cannot be its own parent.");
 
       /*------------------------------------------------------------------------------------------------------------------------

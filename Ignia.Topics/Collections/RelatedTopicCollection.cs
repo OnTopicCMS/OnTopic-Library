@@ -155,7 +155,7 @@ namespace Ignia.Topics.Collections {
     /// </returns>
     public bool RemoveTopic(string scope, Topic topic) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      Contract.Requires<ArgumentNullException>(topic != null);
+      Contract.Requires(topic);
       if (Contains(scope)) {
         var topics = this[scope];
         return topics.Remove(topic);
@@ -193,7 +193,7 @@ namespace Ignia.Topics.Collections {
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      Contract.Requires<ArgumentNullException>(topic != null);
+      Contract.Requires(topic);
       TopicFactory.ValidateKey(scope);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ namespace Ignia.Topics.Collections {
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(NamedTopicCollection item) {
-      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
+      Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Name;
     }
 

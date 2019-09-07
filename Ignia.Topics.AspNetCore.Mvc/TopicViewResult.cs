@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Ignia.Topics.Models;
 using System.Threading.Tasks;
-using System.Diagnostics.Contracts;
+using Ignia.Topics.Internal.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -47,9 +47,9 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(viewData != null, nameof(viewData));
-      Contract.Requires<ArgumentNullException>(tempData != null, nameof(tempData));
-      Contract.Requires<ArgumentNullException>(viewModel != null, nameof(viewModel));
+      Contract.Requires(viewData, nameof(viewData));
+      Contract.Requires(tempData, nameof(tempData));
+      Contract.Requires(viewModel, nameof(viewModel));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set local variables
@@ -101,7 +101,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(context != null, nameof(context));
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call associated executor

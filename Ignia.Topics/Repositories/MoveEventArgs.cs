@@ -40,8 +40,8 @@ namespace Ignia.Topics.Repositories {
     /// </requires>
     /// <requires description="The topic cannot be its own parent." exception="T:System.ArgumentException">topic != target</requires>
     public MoveEventArgs(Topic topic, Topic target) {
-      Contract.Requires<ArgumentNullException>(topic != null, "topic");
-      Contract.Requires<ArgumentNullException>(target != null, "target");
+      Contract.Requires(topic, "topic");
+      Contract.Requires(target, "target");
       Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
       Topic = topic;
       Target = target;

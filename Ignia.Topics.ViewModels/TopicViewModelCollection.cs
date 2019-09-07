@@ -74,7 +74,7 @@ namespace Ignia.Topics.ViewModels {
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(TItem item) {
-      Contract.Requires<ArgumentNullException>(item != null, "The item must be available in order to derive its key.");
+      Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
     }
 

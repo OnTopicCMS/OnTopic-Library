@@ -45,8 +45,8 @@ namespace Ignia.Topics.Mapping {
     ///   Establishes a new instance of a <see cref="TopicMappingService"/> with required dependencies.
     /// </summary>
     public TopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
-      Contract.Requires<ArgumentNullException>(topicRepository != null, "An instance of an ITopicRepository is required.");
-      Contract.Requires<ArgumentNullException>(typeLookupService != null, "An instance of an ITypeLookupService is required.");
+      Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
+      Contract.Requires(typeLookupService, "An instance of an ITypeLookupService is required.");
       _topicRepository = topicRepository;
       _typeLookupService = typeLookupService;
     }

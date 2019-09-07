@@ -35,7 +35,7 @@ namespace Ignia.Topics.Web.Configuration {
     public SourceElement this[int index] {
       get => base.BaseGet(index) as SourceElement;
       set {
-        Contract.Requires<ArgumentNullException>(value != null, "The value from the getter must not be null.");
+        Contract.Requires(value, "The value from the getter must not be null.");
         if (base.BaseGet(index) != null) {
           base.BaseRemoveAt(index);
         }

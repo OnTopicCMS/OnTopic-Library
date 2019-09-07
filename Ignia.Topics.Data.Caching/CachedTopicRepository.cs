@@ -45,7 +45,7 @@ namespace Ignia.Topics.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(dataProvider != null, "A concrete implementation of an ITopicRepository is required.");
+      Contract.Requires(dataProvider, "A concrete implementation of an ITopicRepository is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
