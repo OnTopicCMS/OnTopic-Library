@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Internal.Diagnostics {
 
@@ -52,6 +53,17 @@ namespace Ignia.Topics.Internal.Diagnostics {
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     public static void Requires(bool isValid, string? errorMessage = null) => Requires<Exception>(isValid, errorMessage);
+
+    /// <summary>
+    ///   Will throw an <see cref="ArgumentNullException"/> if the supplied object is <see langword="null"/>.
+    /// </summary>
+    /// <param name="requiredObject">An object that is required to be provided.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <exception cref="ArgumentNullException">
+    ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
+    /// </exception>
+    public static void Requires([NotNull]object? requiredObject, string? errorMessage = null) 
+      => Requires<ArgumentNullException>(requiredObject != null, errorMessage);
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
@@ -118,6 +130,17 @@ namespace Ignia.Topics.Internal.Diagnostics {
     /// </exception>
     public static void Assume<T>(bool isValid, string? errorMessage = null) where T : Exception, new() =>
       Requires<T>(isValid, errorMessage);
+
+    /// <summary>
+    ///   Will throw an <see cref="InvalidOperationException"/> if the supplied object is <see langword="null"/>.
+    /// </summary>
+    /// <param name="requiredObject">An object that is required to be provided.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <exception cref="InvalidOperationException">
+    ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
+    /// </exception>
+    public static void Assume([NotNull]object? requiredObject, string? errorMessage = null)
+      => Requires<InvalidOperationException>(requiredObject != null, errorMessage);
 
   } //class
 } //Namespace
