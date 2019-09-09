@@ -209,9 +209,10 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topics, "The topics Dictionary must not be null.");
       Contract.Requires(reader, "The reader must not be null.");
-      Contract.Requires<ArgumentNullException>(reader?["Source_TopicID"] != null, "The Source_TopicID record must not be null.");
-      Contract.Requires<ArgumentNullException>(reader?["Target_TopicID"] != null, "The Target_TopicID record must not be null.");
-      Contract.Requires<ArgumentNullException>(reader?["RelationshipTypeID"] != null, "The RelationshipTypeID record must not be null.");
+
+      Contract.Requires(reader["Source_TopicID"], "The Source_TopicID record must not be null.");
+      Contract.Requires(reader["Target_TopicID"], "The Target_TopicID record must not be null.");
+      Contract.Requires(reader["RelationshipTypeID"], "The RelationshipTypeID record must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -728,8 +729,8 @@ namespace Ignia.Topics.Data.Sql {
       var nullAttributes        = new StringBuilder();
       var blob                  = new StringBuilder();
 
-      Contract.Assume<ArgumentException>(
-        contentType != null,
+      Contract.Assume(
+        contentType,
         "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
       );
 
@@ -1322,7 +1323,7 @@ namespace Ignia.Topics.Data.Sql {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(commandObject, "The SQL command object must be specified.");
-      Contract.Requires(commandObject.Parameters != null, "The SQL command object's parameters collection must be available");
+      Contract.Requires(commandObject.Parameters, "The SQL command object's parameters collection must be available");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define primary assumptions

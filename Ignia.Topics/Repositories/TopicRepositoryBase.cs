@@ -159,8 +159,8 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentException>(topic != null);
-      Contract.Requires<ArgumentException>(version != null);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(version, nameof(version));
       Contract.Requires<ArgumentException>(
         !topic.VersionHistory.Contains(version),
         "The version requested for rollback does not exist in the version history"
@@ -170,8 +170,8 @@ namespace Ignia.Topics.Repositories {
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var originalVersion = Load(topic.Id, version);
-      Contract.Assume<InvalidOperationException>(
-        originalVersion != null,
+      Contract.Assume(
+        originalVersion,
         "The version requested for rollback does not exist in the Topic repository or database."
       );
 
