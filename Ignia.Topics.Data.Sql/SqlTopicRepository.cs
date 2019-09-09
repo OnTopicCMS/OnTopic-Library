@@ -16,6 +16,7 @@ using System.Text;
 using System.Net;
 using System.Xml;
 using Ignia.Topics.Repositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Data.Sql {
 
@@ -710,7 +711,7 @@ namespace Ignia.Topics.Data.Sql {
     /// <exception cref="Exception">
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via connection string: <c>ex.Message</c>
     /// </exception>
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public override int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -720,7 +721,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")];
+      var contentType = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute strings
@@ -962,7 +963,7 @@ namespace Ignia.Topics.Data.Sql {
       "TestAlwaysEvaluatingToAConstant",
       Justification = "Sibling may be null from overloaded caller."
       )]
-    public override void Move(Topic topic, Topic target, Topic sibling) {
+    public override void Move(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

@@ -61,12 +61,12 @@ namespace Ignia.Topics.Web.Configuration {
     /// <param name="element">The <see cref="ConfigurationElement"/> element object from which to extract the key.</param>
     /// <returns>The Source string value for the <see cref="SourceElement"/> as the element's key.</returns>
     protected override object GetElementKey(ConfigurationElement element) {
-      Contract.Requires<ArgumentNullException>(
-        element != null,
+      Contract.Requires(
+        element,
         $"The {nameof(element)} must be available in order to derive its key."
       );
-      Contract.Requires<ArgumentException>(
-        ((SourceElement)element).Source != null,
+      Contract.Requires(
+        ((SourceElement)element)?.Source,
         "The element's Source attribute must be available."
       );
       return ((SourceElement)element).Source;

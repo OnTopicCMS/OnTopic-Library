@@ -9,6 +9,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Querying;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Repositories {
 
@@ -231,12 +232,12 @@ namespace Ignia.Topics.Repositories {
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    public virtual int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "topic");
+      Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
@@ -353,7 +354,7 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "topic");
+      Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event

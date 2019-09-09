@@ -162,6 +162,9 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="value">The value to set on the property.</param>
     public bool SetPropertyValue(object target, string name, string? value) {
 
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
       if (!HasSettableProperty(target.GetType(), name)) {
         return false;
       }
@@ -215,10 +218,22 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     public object? GetPropertyValue(object target, string name, Type? targetType = null) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate member type
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (!HasGettableProperty(target.GetType(), name, targetType)) {
         return null;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var property = GetMember<PropertyInfo>(target.GetType(), name);
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
@@ -259,12 +274,24 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    public bool SetMethodValue(object target, string name, string value) {
+    public bool SetMethodValue(object target, string name, string? value) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate member type
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (!HasSettableMethod(target.GetType(), name)) {
         return false;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
       Contract.Assume(method, $"The {name}() method could not be retrieved.");
@@ -315,10 +342,22 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
     public object? GetMethodValue(object target, string name, Type? targetType = null) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate member type
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (!HasGettableMethod(target.GetType(), name, targetType)) {
         return null;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
       Contract.Assume(method, $"The method '{name}' could not be found on the '{target.GetType()}' class.");
@@ -400,6 +439,15 @@ namespace Ignia.Topics.Internal.Reflection {
     ///   The TypeMemberInfoCollection already contains the MemberInfoCollection of the Type '{item.Type}'.
     /// </exception>
     protected override void InsertItem(int index, MemberInfoCollection item) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(item, nameof(item));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Insert item, if not already present
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (!Contains(item.Type)) {
         base.InsertItem(index, item);
       }

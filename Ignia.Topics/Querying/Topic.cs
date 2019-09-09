@@ -31,7 +31,8 @@ namespace Ignia.Topics.Querying {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(predicate, nameof(predicate));
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes
@@ -71,7 +72,8 @@ namespace Ignia.Topics.Querying {
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(predicate, nameof(predicate));
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Search attributes

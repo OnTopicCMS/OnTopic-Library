@@ -110,6 +110,11 @@ namespace Ignia.Topics.Mapping {
     /// </returns>
     public async Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
@@ -142,6 +147,12 @@ namespace Ignia.Topics.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     public async Task<object?> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated

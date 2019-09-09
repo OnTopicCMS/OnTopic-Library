@@ -295,7 +295,7 @@ namespace Ignia.Topics.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetValue(string key, string value, bool? isDirty = null) => SetValue(key, value, isDirty, true);
+    public void SetValue(string key, string? value, bool? isDirty = null) => SetValue(key, value, isDirty, true);
 
     /// <summary>
     ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing

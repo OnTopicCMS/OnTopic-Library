@@ -88,10 +88,24 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<T?> MapAsync<T>(ITopicBindingModel source) where T : Topic => (T?)await MapAsync(
-      source,
-      TopicFactory.Create(source.Key, source.ContentType)
-    ).ConfigureAwait(false);
+    public async Task<T?> MapAsync<T>(ITopicBindingModel source) where T : Topic {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (source == null) {
+        return null;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Map source
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return (T?)await MapAsync(
+        source,
+        TopicFactory.Create(source.Key, source.ContentType)
+      ).ConfigureAwait(false);
+
+    }
 
     /*==========================================================================================================================
     | METHOD: MAP (TOPIC)
@@ -105,6 +119,7 @@ namespace Ignia.Topics.Mapping {
       if (source == null) {
         return target;
       }
+      Contract.Requires(target, nameof(target));
 
       //Ensure the content type is valid
       if (!_contentTypeDescriptors.Contains(source.ContentType)) {
@@ -256,6 +271,13 @@ namespace Ignia.Topics.Mapping {
     protected static void SetScalarValue(ITopicBindingModel source, Topic target, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(configuration, nameof(configuration));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to retrieve value from the binding model property
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attributeValue = _typeCache.GetPropertyValue(source, configuration.Property.Name)?.ToString();
@@ -306,6 +328,13 @@ namespace Ignia.Topics.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(configuration, nameof(configuration));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceList = (IList)configuration.Property.GetValue(source, null);
@@ -324,6 +353,13 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (IRelatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey);
+        if (targetTopic == null) {
+          throw new ArgumentOutOfRangeException(
+            configuration.Property.Name,
+            $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
+            $"be located in the repository."
+          );
+        }
         target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
       }
 
@@ -348,6 +384,13 @@ namespace Ignia.Topics.Mapping {
       Topic target,
       PropertyConfiguration configuration
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(configuration, nameof(configuration));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
@@ -443,6 +486,12 @@ namespace Ignia.Topics.Mapping {
       IList                     sourceList,
       TopicCollection           targetList
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceList, nameof(sourceList));
+      Contract.Requires(targetList, nameof(targetList));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Queue up mapping tasks

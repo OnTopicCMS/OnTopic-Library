@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Models;
 
 namespace Ignia.Topics.Web.Mvc {
@@ -38,6 +39,7 @@ namespace Ignia.Topics.Web.Mvc {
     ///   cref="ITopicViewModelCore.ContentType"/>.
     /// </remarks>
     public TopicViewResult(ITopicViewModel viewModel) : base() {
+      Contract.Requires(viewModel, nameof(viewModel));
       ViewData.Model = viewModel;
       _contentType = viewModel.ContentType ?? "Page";
       _topicView = viewModel.View ?? _contentType;
@@ -71,6 +73,11 @@ namespace Ignia.Topics.Web.Mvc {
     /// </remarks>
     protected override ViewEngineResult FindView(ControllerContext context) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(context, nameof(context));
+      
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/

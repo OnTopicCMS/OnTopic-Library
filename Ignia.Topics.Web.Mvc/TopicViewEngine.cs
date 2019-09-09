@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Ignia.Topics.Internal.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -82,6 +83,12 @@ namespace Ignia.Topics.Web.Mvc {
     public override ViewEngineResult FindPartialView(ControllerContext controllerContext, string partialViewName, bool useCache) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(controllerContext, nameof(controllerContext));
+      Contract.Requires(partialViewName, nameof(partialViewName));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify search paths
       \-----------------------------------------------------------------------------------------------------------------------*/
       var searchPaths = GetSearchPaths(controllerContext, partialViewName, PartialViewLocationFormats);
@@ -121,6 +128,13 @@ namespace Ignia.Topics.Web.Mvc {
     /// <param name="useCache">Determines whether the request is appropriate for caching.</param>
     public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(controllerContext, nameof(controllerContext));
+      Contract.Requires(viewName, nameof(viewName));
+      Contract.Requires(masterName, nameof(masterName));
+      
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify search paths
       \-----------------------------------------------------------------------------------------------------------------------*/

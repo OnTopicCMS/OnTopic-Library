@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Internal.Mapping {
 
@@ -48,9 +49,14 @@ namespace Ignia.Topics.Internal.Mapping {
     public PropertyConfiguration(PropertyInfo property) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(property, nameof(property));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set backing property
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Property                  = property;
+      Property = property;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values

@@ -75,6 +75,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// <seealso cref="https://stackoverflow.com/questions/36802661/what-is-iviewlocationexpander-populatevalues-for-in-asp-net-core-mvc"/>
     /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
     public void PopulateValues(ViewLocationExpanderContext context) {
+      Contract.Requires(context, nameof(context));
       context.Values["action_displayname"] = context.ActionContext.ActionDescriptor.DisplayName;
       context.ActionContext.RouteData.Values.TryGetValue("contenttype", out var contentType);
       context.Values["content_type"] = (string)contentType;

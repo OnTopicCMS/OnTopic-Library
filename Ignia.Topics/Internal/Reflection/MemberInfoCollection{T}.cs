@@ -74,6 +74,15 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
     /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
     protected override void InsertItem(int index, T item) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(item, nameof(item));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Insert Item
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (!Contains(item.Name)) {
         base.InsertItem(index, item);
       }
