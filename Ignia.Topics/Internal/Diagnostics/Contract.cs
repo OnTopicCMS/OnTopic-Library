@@ -62,8 +62,13 @@ namespace Ignia.Topics.Internal.Diagnostics {
     /// <exception cref="ArgumentNullException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
-    public static void Requires([NotNull]object? requiredObject, string? errorMessage = null) 
-      => Requires<ArgumentNullException>(requiredObject != null, errorMessage);
+    public static void Requires([NotNull]object? requiredObject, string? errorMessage = null) {
+    //###HACK JJC20190908: Roslyn's flow analysis doesn't accept the [NotNull] hint for parameters unless the variable has 
+    //been locally assigned, which is an issue for Requires() since it is intended to be used exclusively as a guard clause for
+    //parameters. Assigning the parameter to itself mitigates this issue—though it does prompt its own warning in return.
+      requiredObject = requiredObject;
+      Requires<ArgumentNullException>(requiredObject != null, errorMessage);
+    }
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
