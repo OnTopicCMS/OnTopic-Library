@@ -160,7 +160,7 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    public bool SetPropertyValue(object target, string name, string value) {
+    public bool SetPropertyValue(object target, string name, string? value) {
 
       if (!HasSettableProperty(target.GetType(), name)) {
         return false;
@@ -321,6 +321,8 @@ namespace Ignia.Topics.Internal.Reflection {
 
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
+      Contract.Assume(method, $"The method '{name}' could not be found on the '{target.GetType()}' class.");
+
       return method.Invoke(target, Array.Empty<object>());
 
     }
@@ -347,9 +349,11 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <summary>
     ///   Converts a string value to an object of the target type.
     /// </summary>
-    private static object? GetValueObject(Type type, string value) {
+    private static object? GetValueObject(Type type, string? value) {
 
       var valueObject = (object?)null;
+
+      if (value == null) return null;
 
       if (type.Equals(typeof(bool))) {
         valueObject = value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);

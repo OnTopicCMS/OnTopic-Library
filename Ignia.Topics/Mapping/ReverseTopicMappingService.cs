@@ -178,6 +178,13 @@ namespace Ignia.Topics.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(property, nameof(property));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
@@ -189,6 +196,15 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Throw an exception if the attribute can't be found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (attributeType == null) {
+        throw new InvalidOperationException(
+          $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
+          $"'{contentType.Key}' content type.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -375,6 +391,13 @@ namespace Ignia.Topics.Mapping {
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(configuration, nameof(configuration));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var modelReference = (IRelatedTopicBindingModel)configuration.Property.GetValue(source);
@@ -387,9 +410,23 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set target value
+      | Identify target value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicReference = _topicRepository.Load(modelReference.UniqueKey);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Provide error handling
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicReference == null) {
+        throw new InvalidOperationException(
+          $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
+          $"'{configuration.Property.Name}' property could not be found."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set target attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
       target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
 
     }

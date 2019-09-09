@@ -208,8 +208,10 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         attributeDescriptor.ModelType == ModelType.NestedTopic &&
-        !typeof(ITopicBindingModel).IsAssignableFrom(listType)
-      ) {
+        !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
+        listType != null
+      )
+      {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
           $"the generic type {listType.Name} does not implement the {nameof(ITopicBindingModel)} interface. This is " +

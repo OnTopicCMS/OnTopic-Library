@@ -111,8 +111,13 @@ namespace Ignia.Topics.Metadata {
         \---------------------------------------------------------------------------------------------------------------------*/
         var editorType = EditorType;
 
+        Contract.Assume(
+          editorType, 
+          $"The 'EditorType' property is not set for the '{this.Key}' attribute, and thus a 'ModelType' cannot be determined."
+        );
+
         if (editorType.LastIndexOf(".", StringComparison.InvariantCulture) >= 0) {
-          editorType = editorType.Substring(0, EditorType.LastIndexOf(".", StringComparison.InvariantCulture));
+          editorType = editorType.Substring(0, editorType.LastIndexOf(".", StringComparison.InvariantCulture));
         }
 
         if (new [] { "Relationships", "TokenizedTopicList"}.Contains(editorType)) {

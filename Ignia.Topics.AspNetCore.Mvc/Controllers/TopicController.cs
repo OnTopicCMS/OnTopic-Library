@@ -172,7 +172,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType == "List" || CurrentTopic.Parent.ContentType == "List") {
+      if (CurrentTopic.ContentType == "List" || CurrentTopic.Parent?.ContentType == "List") {
         filterContext.Result = new StatusCodeResult(403);
         return;
       }

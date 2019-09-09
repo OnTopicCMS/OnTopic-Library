@@ -472,11 +472,10 @@ namespace Ignia.Topics {
       var uniqueKey = "";
       var topic = (Topic?)this;
 
-      for (var i = 0; i < 100; i++) {
+      while (topic != null) {
         if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
         uniqueKey = topic.Key + uniqueKey;
         topic = topic.Parent;
-        if (topic == null) break;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

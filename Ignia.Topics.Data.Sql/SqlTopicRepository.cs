@@ -139,11 +139,12 @@ namespace Ignia.Topics.Data.Sql {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topics, "The topics Dictionary must not be null.");
+      Contract.Requires(reader, nameof(reader));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument

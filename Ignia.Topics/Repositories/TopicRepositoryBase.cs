@@ -61,6 +61,8 @@ namespace Ignia.Topics.Repositories {
         \---------------------------------------------------------------------------------------------------------------------*/
         var configuration = Load("Configuration");
 
+        Contract.Assume(configuration, $"The 'Root:Configuration' section could not be loaded from the 'ITopicRepository'.");
+
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
@@ -69,14 +71,14 @@ namespace Ignia.Topics.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Ensure the parent ContentTypes topic is available to iterate over
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (configuration.Children.GetTopic("ContentTypes") == null) {
-          throw new Exception("Unable to load section Configuration:ContentTypes.");
-        }
+        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes");
+
+        Contract.Assume(allowedContentTypes, "Unable to load section 'Configuration:ContentTypes'.");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (var topic in configuration.Children.GetTopic("ContentTypes").FindAllByAttribute("ContentType", "ContentType")) {
+        foreach (var topic in allowedContentTypes.FindAllByAttribute("ContentType", "ContentType")) {
           // Ensure the Topic is used as the strongly-typed ContentType
           // Add ContentType Topic to collection if not already added
           if (
@@ -206,7 +208,7 @@ namespace Ignia.Topics.Repositories {
       | Ensure Parent, ContentType are maintained
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetValue("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
-      topic.Attributes.SetValue("ParentId", topic.Parent.Id.ToString(CultureInfo.InvariantCulture), false);
+      topic.Attributes.SetValue("ParentId", topic.Parent?.Id.ToString(CultureInfo.InvariantCulture)?? "-1", false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
@@ -239,19 +241,19 @@ namespace Ignia.Topics.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentTypes = GetContentTypeDescriptors();
-      if (!contentTypes.Contains(topic.ContentType)) {
+      _contentTypeDescriptors = GetContentTypeDescriptors();
+      if (!_contentTypeDescriptors.Contains(topic.ContentType)) {
         throw new ArgumentException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
-          $"\"Configuration:ContentTypes\". There are currently {contentTypes.Count} ContentTypes in the Repository."
+          $"\"Configuration:ContentTypes\". There are currently {_contentTypeDescriptors.Count} ContentTypes in the Repository."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && !contentTypes.Contains(topic.Key)) {
-        _contentTypeDescriptors.Add(topic as ContentTypeDescriptor);
+      if (topic is ContentTypeDescriptor && !_contentTypeDescriptors.Contains(topic.Key)) {
+        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

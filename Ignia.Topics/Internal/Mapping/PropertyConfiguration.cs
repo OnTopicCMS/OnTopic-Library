@@ -336,7 +336,7 @@ namespace Ignia.Topics.Internal.Mapping {
     /// <returns></returns>
     public bool SatisfiesAttributeFilters(Topic source) =>
       AttributeFilters.All(f =>
-        source.Attributes.GetValue(f.Key, "").Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)
+        source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)?? false
       );
 
     /*==========================================================================================================================

@@ -488,7 +488,7 @@ namespace Ignia.Topics.Mapping {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
         var metadataParent = _topicRepository.Load(metadataKey);
         if (metadataParent != null) { 
-          listSource = _topicRepository.Load(metadataKey).Children.ToList();
+          listSource = metadataParent.Children.ToList();
         }
       }
 
