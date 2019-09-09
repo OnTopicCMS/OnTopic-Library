@@ -75,18 +75,38 @@ namespace Ignia.Topics.Mapping {
     public Topic? GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Find navigation root
+      | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationRootTopic = (Topic?)currentTopic;
-      while (DistanceFromRoot(navigationRootTopic) > fromRoot) {
-        navigationRootTopic = navigationRootTopic.Parent;
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle default, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic == null && !String.IsNullOrWhiteSpace(defaultRoot)) {
+      if (navigationRootTopic == null) {
+        if (String.IsNullOrEmpty(defaultRoot)) {
+          throw new ArgumentOutOfRangeException(
+            nameof(defaultRoot),
+            "The current route could not be resolved to a topic and the defaultRoot was not set."
+          );
+        }
         navigationRootTopic = TopicRepository.Load(defaultRoot);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle error state
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (navigationRootTopic == null) {
+        throw new ArgumentOutOfRangeException(
+          nameof(defaultRoot),
+          "Neither the current route nor the 'defaultRoot' parameter could be resolved to a topic."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find navigation root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (navigationRootTopic != null && DistanceFromRoot(navigationRootTopic) > fromRoot) {
+        navigationRootTopic = navigationRootTopic.Parent;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
