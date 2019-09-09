@@ -21,7 +21,7 @@ namespace System.Diagnostics.CodeAnalysis {
   ///   correct namespace satisfies the code analysis and allows the project to move forward with implementing the nullable 
   ///   annotation context.
   /// </remarks>
-  [AttributeUsage(AttributeTargets.Parameter)]
+  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue)]
   public class NotNullAttribute: Attribute {
 
     /*==========================================================================================================================
