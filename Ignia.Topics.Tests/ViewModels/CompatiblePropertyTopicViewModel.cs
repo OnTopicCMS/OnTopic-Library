@@ -25,7 +25,7 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
     [DisallowNull]
-    public IDictionary<string, string> Configuration { get; set; }
+    public IDictionary<string, string?> Configuration { get; set; }
 
     } //Class
   } //Namespace

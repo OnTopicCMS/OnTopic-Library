@@ -43,7 +43,7 @@ namespace Ignia.Topics.Metadata {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Dictionary<string, string>      _configuration;
+    private                     Dictionary<string, string?>     _configuration;
     private                     ModelType?                      _modelType                      = null;
 
     /*==========================================================================================================================
@@ -80,7 +80,7 @@ namespace Ignia.Topics.Metadata {
       parent,
       id
     ) {
-      _configuration = new Dictionary<string, string>();
+      _configuration = new Dictionary<string, string?>();
     }
 
     /*==========================================================================================================================
@@ -228,7 +228,7 @@ namespace Ignia.Topics.Metadata {
     ///   Retrieves a dictionary representing a parsed collection of key/value pairs from the
     ///   <see cref="DefaultConfiguration"/>.
     /// </summary>
-    public IDictionary<string, string> Configuration {
+    public IDictionary<string, string?> Configuration {
       get {
         if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
           _configuration = DefaultConfiguration

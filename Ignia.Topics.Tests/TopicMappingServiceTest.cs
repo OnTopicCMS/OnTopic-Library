@@ -553,7 +553,7 @@ namespace Ignia.Topics.Tests {
       var target                = (CompatiblePropertyTopicViewModel?)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
-      Assert.AreEqual<IDictionary<string, string>>(topic.Configuration, target.Configuration);
+      Assert.AreEqual<IDictionary<string, string?>>(topic.Configuration, target.Configuration);
 
     }
 
