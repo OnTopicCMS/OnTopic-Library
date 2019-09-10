@@ -19,7 +19,7 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class SlideshowTopicViewModel: ContentListTopicViewModel {
 
-    public string TransitionEffect { get; set; }
+    public string? TransitionEffect { get; set; }
 
   } //Class
 } //Namespace

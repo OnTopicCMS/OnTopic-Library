@@ -25,7 +25,7 @@ namespace Ignia.Topics {
     /// <summary>
     ///   Gets the topic associated with the current URL.
     /// </summary>
-    Topic GetCurrentTopic();
+    Topic? GetCurrentTopic();
 
     }
   }

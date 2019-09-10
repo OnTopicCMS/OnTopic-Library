@@ -22,15 +22,15 @@ namespace Ignia.Topics.Tests.ViewModels {
   /// </remarks>
   public class SampleTopicViewModel : PageTopicViewModel {
 
-    public string Property { get; set; }
+    public string? Property { get; set; }
 
     [Inherit]
-    public string InheritedProperty { get; set; }
+    public string? InheritedProperty { get; set; }
 
     [AttributeKey("Property")]
-    public string PropertyAlias { get; set; }
+    public string? PropertyAlias { get; set; }
 
-    public TopicViewModel TopicReference { get; set; }
+    public TopicViewModel? TopicReference { get; set; }
 
     [Follow(Relationships.Relationships)]
     public TopicViewModelCollection<PageTopicViewModel> Children { get; } = new TopicViewModelCollection<PageTopicViewModel>();

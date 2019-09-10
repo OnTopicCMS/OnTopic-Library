@@ -19,8 +19,8 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class VideoTopicViewModel: PageTopicViewModel {
 
-    public string VideoUrl { get; set; }
-    public string PosterUrl { get; set; }
+    public string? VideoUrl { get; set; }
+    public string? PosterUrl { get; set; }
 
   } //Class
 } //Namespace

@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Ignia.Topics.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.ViewModels {
 
@@ -20,13 +21,13 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
 
-    public string Subtitle { get; set; }
-    public string WebPath { get; set; }
-    public string MetaTitle { get; set; }
-    public string MetaDescription { get; set; }
-    public string MetaKeywords { get; set; }
-    public string ShortTitle { get; set; }
-    public string Body { get; set; }
+    public string? Subtitle { get; set; }
+    public string? WebPath { get; set; }
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+    public string? MetaKeywords { get; set; }
+    public string? ShortTitle { get; set; }
+    public string? Body { get; set; }
 
   } //Class
 } //Namespace

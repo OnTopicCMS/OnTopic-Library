@@ -44,7 +44,7 @@ namespace Ignia.Topics.Models {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    string Key { get; set; }
+    string? Key { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -55,7 +55,7 @@ namespace Ignia.Topics.Models {
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value != null
     /// </requires>
-    string UniqueKey { get; set; }
+    string? UniqueKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -69,7 +69,7 @@ namespace Ignia.Topics.Models {
     ///   by default, which view is rendered by the <see cref="Topics.ITopicRoutingService"/> (assuming the value isn't
     ///   overwritten down the pipe).
     /// </remarks>
-    string ContentType { get; set; }
+    string? ContentType { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: VIEW
@@ -92,7 +92,7 @@ namespace Ignia.Topics.Models {
     ///   exception="T:System.ArgumentException">
     ///   !value?.Contains(" ")?? true
     /// </requires>
-    string View { get; set; }
+    string? View { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: IS HIDDEN
@@ -116,7 +116,7 @@ namespace Ignia.Topics.Models {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
-    string Title { get; set; }
+    string? Title { get; set; }
 
   } //Class
 } //Namespace

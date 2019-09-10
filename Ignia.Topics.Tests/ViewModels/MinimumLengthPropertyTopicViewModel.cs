@@ -20,7 +20,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class MinimumLengthPropertyTopicViewModel : TopicViewModel {
 
     [MinLength(13)]
-    public string MinimumLength { get; set; }
+    public string? MinimumLength { get; set; }
 
   } //Class
 } //Namespace

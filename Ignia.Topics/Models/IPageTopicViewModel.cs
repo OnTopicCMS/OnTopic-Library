@@ -29,7 +29,7 @@ namespace Ignia.Topics.Models {
     /// <summary>
     ///   Gets or sets the Web Path attribute, representing the URL representation of the path to the associated topic.
     /// </summary>
-    string WebPath { get; set; }
+    string? WebPath { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: META KEYWORDS
@@ -38,7 +38,7 @@ namespace Ignia.Topics.Models {
     ///   Gets or sets the Meta Keywords attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string MetaKeywords { get; set; }
+    string? MetaKeywords { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: META DESCRIPTION
@@ -47,7 +47,7 @@ namespace Ignia.Topics.Models {
     ///   Gets or sets the Meta Description attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string MetaDescription { get; set; }
+    string? MetaDescription { get; set; }
 
   } //Class
 } //Namespace

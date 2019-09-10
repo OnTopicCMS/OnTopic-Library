@@ -23,16 +23,16 @@ namespace Ignia.Topics.ViewModels {
   public class TopicViewModel: ITopicViewModel {
 
     public int Id { get; set; }
-    public string Key { get; set; }
-    public string ContentType { get; set; }
-    public string UniqueKey { get; set; }
-    public string View { get; set; }
-    public string Title { get; set; }
+    public string? Key { get; set; }
+    public string? ContentType { get; set; }
+    public string? UniqueKey { get; set; }
+    public string? View { get; set; }
+    public string? Title { get; set; }
     public bool IsHidden { get; set; }
     public DateTime LastModified { get; set; }
 
     [Follow(Relationships.Parents)]
-    public TopicViewModel Parent { get; set; }
+    public TopicViewModel? Parent { get; set; }
 
   } //Class
 } //Namespace

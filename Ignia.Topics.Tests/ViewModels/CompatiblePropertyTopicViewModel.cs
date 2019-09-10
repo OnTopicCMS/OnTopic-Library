@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.ViewModels;
 
@@ -23,6 +24,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class CompatiblePropertyTopicViewModel : TopicViewModel {
 
     public ModelType ModelType { get; set; }
+    [DisallowNull]
     public IDictionary<string, string> Configuration { get; set; }
 
     } //Class

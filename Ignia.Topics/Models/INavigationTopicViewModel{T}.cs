@@ -28,7 +28,7 @@ namespace Ignia.Topics.Models {
     /// <summary>
     ///   Represents the HTTP routing path for the corresponding <see cref="Topic"/>.
     /// </summary>
-    string WebPath { get; set; }
+    string? WebPath { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: SHORT TITLE
@@ -37,7 +37,7 @@ namespace Ignia.Topics.Models {
     ///   In addition to the Title, a site may opt to define a Short Title used exclusively in the navigation. If present, this
     ///   value should be used instead of Title.
     /// </summary>
-    string ShortTitle { get; set; }
+    string? ShortTitle { get; set; }
 
     /*==========================================================================================================================
     | METHOD: ISSELECTED

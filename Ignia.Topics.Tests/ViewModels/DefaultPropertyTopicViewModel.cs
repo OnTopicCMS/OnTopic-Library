@@ -20,7 +20,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class DefaultValueTopicViewModel : TopicViewModel {
 
     [DefaultValue("Default")]
-    public string DefaultString { get; set; }
+    public string? DefaultString { get; set; }
 
     [DefaultValue(10)]
     public int DefaultInt { get; set; }

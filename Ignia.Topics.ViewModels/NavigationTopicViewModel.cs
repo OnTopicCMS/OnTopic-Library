@@ -31,8 +31,8 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public sealed class NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
 
-    public string WebPath { get; set; }
-    public string ShortTitle { get; set; }
+    public string? WebPath { get; set; }
+    public string? ShortTitle { get; set; }
     public Collection<NavigationTopicViewModel> Children { get; } = new Collection<NavigationTopicViewModel>();
     public bool IsSelected(string uniqueKey) =>
       $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:", StringComparison.InvariantCultureIgnoreCase) ?? false;

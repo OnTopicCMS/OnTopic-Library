@@ -19,10 +19,10 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class ContentItemTopicViewModel: ItemTopicViewModel {
 
-    public string Description { get; set; }
-    public string LearnMoreUrl { get; set; }
-    public string ThumbnailImage { get; set; }
-    public string Category { get; set; }
+    public string Description { get; set; } = default!;
+    public string? LearnMoreUrl { get; set; }
+    public string? ThumbnailImage { get; set; }
+    public string? Category { get; set; }
 
   } //Class
 } //Namespace

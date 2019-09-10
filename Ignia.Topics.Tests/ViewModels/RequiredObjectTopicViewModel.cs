@@ -19,7 +19,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class RequiredObjectTopicViewModel : RequiredTopicViewModel {
 
     [Required]
-    public Topic RequiredObject { get; set; }
+    public Topic? RequiredObject { get; set; }
 
   } //Class
 } //Namespace

@@ -19,7 +19,7 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class SectionTopicViewModel : TopicViewModel {
 
-    public string HeaderImageUrl { get; set; }
+    public string? HeaderImageUrl { get; set; }
 
   } //Class
 } //Namespace
