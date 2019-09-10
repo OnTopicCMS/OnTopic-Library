@@ -99,7 +99,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private async Task<object?> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
+    private async Task<object?> MapAsync(Topic? topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -151,11 +151,11 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public async Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new() {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      return (T)await MapAsync(topic, new T(), relationships).ConfigureAwait(false);
+      return (T?)await MapAsync(topic, new T(), relationships).ConfigureAwait(false);
     }
 
     /*==========================================================================================================================
@@ -170,8 +170,10 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public async Task<object> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
+      Contract.Requires(target, nameof(target));
+      return await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+    }
 
     /// <summary>
     ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
@@ -189,7 +191,7 @@ namespace Ignia.Topics.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     private async Task<object> MapAsync(
-      Topic topic,
+      Topic? topic,
       object target,
       Relationships relationships,
       ConcurrentDictionary<int, object> cache
@@ -259,6 +261,7 @@ namespace Ignia.Topics.Mapping {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(source, nameof(source));
+      Contract.Requires(target, nameof(target));
       Contract.Requires(relationships, nameof(relationships));
       Contract.Requires(property, nameof(property));
       Contract.Requires(cache, nameof(cache));

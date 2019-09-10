@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Mapping {
 
@@ -178,6 +179,11 @@ namespace Ignia.Topics.Mapping {
       | Map object
       \-----------------------------------------------------------------------------------------------------------------------*/
       viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
+
+      Contract.Assume(
+        viewModel, 
+        $"The 'ITopicMappingService' failed to return a {typeof(T)} model for the '{sourceTopic.GetUniqueKey()}' topic."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children

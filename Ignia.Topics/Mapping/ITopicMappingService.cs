@@ -38,7 +38,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All);
+    Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -57,7 +57,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new();
+    Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new();
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -72,7 +72,7 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model instance with properties appropriately mapped.
     /// </returns>
-    Task<object?> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All);
+    Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All);
 
   } //Interface
 } //Namespace

@@ -157,7 +157,7 @@ namespace Ignia.Topics.Tests {
 
       var viewModel             = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
-      Assert.AreEqual<string>(null, viewModel.Property);
+      Assert.IsNull(viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
 
     }

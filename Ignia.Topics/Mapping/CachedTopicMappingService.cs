@@ -64,27 +64,35 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public async Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Ensure cache is populated
+      | Handle null source
       \---------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic object that is being mapped must be specified.");
+      if (topic == null) return null;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, (Type?)null, relationships);
-      if(_cache.TryGetValue(cacheKey, out var viewModel)) {
+      if(_cache.TryGetValue(cacheKey, out object? viewModel)) {
         return viewModel;
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached result
+      | Process result
       \---------------------------------------------------------------------------------------------------------------------*/
+      viewModel = await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return (cached) result
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (viewModel == null) {
+        return null;
+      }
       return CacheViewModel(
         topic.ContentType,
-        await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false),
+        viewModel,
         cacheKey
       );
 
@@ -108,27 +116,35 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    public async Task<T?> MapAsync<T>(Topic topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new() {
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, nameof(topic));
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Handle null source
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (topic == null) return null;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, typeof(T), relationships);
-      if (_cache.TryGetValue(cacheKey, out var viewModel)) {
+      if (_cache.TryGetValue(cacheKey, out object? viewModel)) {
         return (T)viewModel;
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached result
+      | Process result
       \---------------------------------------------------------------------------------------------------------------------*/
+      viewModel = await _topicMappingService.MapAsync<T>(topic, relationships).ConfigureAwait(false);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return (cached) result
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (viewModel == null) {
+        return null;
+      }
       return CacheViewModel(
         topic.ContentType,
-        await _topicMappingService.MapAsync<T>(topic, relationships).ConfigureAwait(false),
+        viewModel,
         cacheKey
       ) as T;
 
@@ -146,28 +162,40 @@ namespace Ignia.Topics.Mapping {
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
-    public async Task<object?> MapAsync(Topic topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Handle null source
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (topic == null) return null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, nameof(topic));
       Contract.Requires(target, nameof(target));
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \---------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, target.GetType(), relationships);
-      if (_cache.TryGetValue(cacheKey, out var viewModel)) {
+      if (_cache.TryGetValue(cacheKey, out object? viewModel)) {
         return viewModel;
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Return cached result
+      | Process result
       \---------------------------------------------------------------------------------------------------------------------*/
+      viewModel = await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false);
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Return (cached) result
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (viewModel == null) {
+        return null;
+      }
       return CacheViewModel(
         topic.ContentType,
-        await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false),
+        viewModel,
         cacheKey
       );
 
