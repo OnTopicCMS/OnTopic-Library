@@ -32,7 +32,7 @@ namespace Ignia.Topics.Models {
     ///   value != null
     /// </requires>
     [Required]
-    public string UniqueKey { get; set; }
+    public string? UniqueKey { get; set; }
 
   } //Class
 } //Namespace

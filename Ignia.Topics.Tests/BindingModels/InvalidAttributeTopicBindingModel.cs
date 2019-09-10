@@ -27,7 +27,7 @@ namespace Ignia.Topics.Tests.BindingModels {
 
     public InvalidAttributeTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public string UnmappedAttribute { get; set; }
+    public string? UnmappedAttribute { get; set; }
 
   } //Class
 

@@ -56,7 +56,7 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Gets the value of the relationship key.
     /// </summary>
-    public string Key { get; }
+    public string? Key { get; }
 
     /*==========================================================================================================================
     | PROPERTY: TYPE

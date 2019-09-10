@@ -27,7 +27,7 @@ namespace Ignia.Topics.Tests.BindingModels {
 
     public InvalidParentTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public BasicTopicBindingModel Parent { get; set; }
+    public BasicTopicBindingModel? Parent { get; set; }
 
   } //Class
 

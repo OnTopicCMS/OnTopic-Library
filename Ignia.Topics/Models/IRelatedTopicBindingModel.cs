@@ -31,7 +31,7 @@ namespace Ignia.Topics.Models {
     ///   value != null
     /// </requires>
     [Required]
-    string UniqueKey { get; set; }
+    string? UniqueKey { get; set; }
 
   } //Class
 } //Namespace

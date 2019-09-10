@@ -25,7 +25,7 @@ namespace Ignia.Topics.Tests.BindingModels {
     public ReferenceTopicBindingModel(string key) : base(key, "AttributeDescriptor") {}
 
     [AttributeKey("TopicId")]
-    public RelatedTopicBindingModel DerivedTopic { get; set; }
+    public RelatedTopicBindingModel? DerivedTopic { get; set; }
 
   } //Class
 } //Namespace

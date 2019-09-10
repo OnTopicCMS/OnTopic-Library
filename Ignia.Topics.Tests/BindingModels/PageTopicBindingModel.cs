@@ -27,13 +27,13 @@ namespace Ignia.Topics.Tests.BindingModels {
     public PageTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     [Required]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [AttributeKey("MetaTitle")]
-    public string BrowserTitle { get; set; }
+    public string? BrowserTitle { get; set; }
 
     [DefaultValue("Default page description")]
-    public string MetaDescription { get; set; }
+    public string? MetaDescription { get; set; }
 
     public bool IsHidden { get; set; }
 
