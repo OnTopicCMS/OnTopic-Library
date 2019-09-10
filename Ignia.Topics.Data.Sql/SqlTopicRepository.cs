@@ -68,12 +68,23 @@ namespace Ignia.Topics.Data.Sql {
     private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(reader, nameof(reader));
+      Contract.Requires(topics, nameof(topics));
+
+      Contract.Requires(reader["ParentID"], "The SqlDataReader is expected to include a 'ParentID' element.");
+      Contract.Requires(reader["TopicID"], "The SqlDataReader is expected to include a 'ParentID' element.");
+      Contract.Requires(reader["ContentType"], "The SqlDataReader is expected to include a 'ContentType' element.");
+      Contract.Requires(reader["TopicKey"], "The SqlDataReader is expected to include a 'TopicKey' element.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId              = Int32.TryParse(reader?["ParentID"]?.ToString(), out parentId)? parentId : -1;
-      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var contentType           = reader?["ContentType"]?.ToString();
-      var key                   = reader?["TopicKey"]?.ToString();
+      int parentId              = Int32.TryParse(reader["ParentID"].ToString(), out parentId)? parentId : -1;
+      var id                    = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
+      var contentType           = reader["ContentType"].ToString();
+      var key                   = reader["TopicKey"].ToString();
 
       // Handle ParentID (could be null for root topic)
 

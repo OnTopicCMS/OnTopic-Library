@@ -51,7 +51,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(topicRoutingService, "A concrete implementation of an ITopicRoutingService is required.");
-      Contract.Requires(topicMappingService!= null, "A concrete implementation of an ITopicMappingService is required.");
+      Contract.Requires(topicMappingService, "A concrete implementation of an ITopicMappingService is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
