@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 using Ignia.Topics.Internal.Diagnostics;
 
+#if NETFRAMEWORK
+
 namespace System.Diagnostics.CodeAnalysis {
 
   /*============================================================================================================================
@@ -47,3 +49,5 @@ namespace System.Diagnostics.CodeAnalysis {
 
   } //Class
 } //Namespace
+
+#endif

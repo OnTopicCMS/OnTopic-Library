@@ -7,6 +7,8 @@ using System;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 
+#if NETFRAMEWORK
+
 namespace System.Diagnostics.CodeAnalysis {
 
   /*============================================================================================================================
@@ -41,3 +43,5 @@ namespace System.Diagnostics.CodeAnalysis {
 
   } //Class
 } //Namespace
+
+#endif
