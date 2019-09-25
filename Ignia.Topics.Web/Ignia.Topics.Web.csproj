@@ -2,7 +2,6 @@
   <PropertyGroup>
     <ProjectGuid>{C98F7B48-A085-4394-B820-C244F23868CE}</ProjectGuid>
     <TargetFramework>net48</TargetFramework>
-    <NoWarn>CS0618,CA1010,CA1056,CA1065</NoWarn>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
   </PropertyGroup>
@@ -23,9 +22,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <LangVersion>latest</LangVersion>
+    <NoWarn>CS0618,CA1010,CA1056,CA1065;CA1303</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
+    <NoWarn>CS0618,CA1010,CA1056,CA1065;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.1">

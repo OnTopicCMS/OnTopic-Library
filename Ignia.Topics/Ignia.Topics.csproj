@@ -25,10 +25,12 @@
     <DebugType>full</DebugType>
     <DocumentationFile>bin\$(Configuration)\Ignia.Topics.XML</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.1">

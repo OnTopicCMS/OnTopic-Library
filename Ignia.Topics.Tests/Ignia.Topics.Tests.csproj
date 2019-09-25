@@ -10,7 +10,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <NoWarn>CS1591,1701,1702,CA1707,CA1062,CS8602,CS8604</NoWarn>
+    <NoWarn>CS1591,1701,1702,CA1707,CA1062,CS8602,CS8604;CA1303</NoWarn>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
