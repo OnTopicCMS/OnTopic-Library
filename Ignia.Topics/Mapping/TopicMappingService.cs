@@ -682,7 +682,7 @@ namespace Ignia.Topics.Mapping {
       try {
         topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       }
-      catch (InvalidOperationException ex) {
+      catch (InvalidOperationException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
       }
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
