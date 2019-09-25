@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
@@ -52,9 +53,14 @@ namespace Ignia.Topics.Tests {
     ///   tests.
     /// </remarks>
     public TopicControllerTest() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = new CachedTopicRepository(new FakeTopicRepository());
-      _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
+      _topic                    = _topicRepository.Load("Root" + _uri.PathAndQuery.Replace("/", ":"))!;
       _uri                      = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
+
     }
 
     /*==========================================================================================================================
