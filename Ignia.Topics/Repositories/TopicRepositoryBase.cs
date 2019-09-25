@@ -329,12 +329,22 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Ignore requests
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //If the target is already positioned after the sibling, then no actual change is registered
+      if (
+        sibling != null && 
+        topic.Parent != null && 
+        topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != target || topic.Parent.Children.IndexOf(sibling) != topic.Parent.Children.IndexOf(topic)-1) {
-        MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-        topic.SetParent(target, sibling);
-      }
+      MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      topic.SetParent(target, sibling);
+
     }
 
     /*==========================================================================================================================
