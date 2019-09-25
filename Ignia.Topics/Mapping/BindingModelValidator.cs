@@ -7,10 +7,12 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Metadata;
@@ -87,9 +89,9 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
     static internal void ValidateModel(
-      Type sourceType,
-      MemberInfoCollection<PropertyInfo> properties,
-      ContentTypeDescriptor contentTypeDescriptor
+      [AllowNull]Type sourceType,
+      [AllowNull]MemberInfoCollection<PropertyInfo> properties,
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -139,9 +141,9 @@ namespace Ignia.Topics.Mapping {
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
     static internal void ValidateProperty(
-      Type sourceType,
-      PropertyInfo property,
-      ContentTypeDescriptor contentTypeDescriptor
+      [AllowNull]Type sourceType,
+      [AllowNull]PropertyInfo property,
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -291,10 +293,10 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     /// <param name="listType">The generic <see cref="Type"/> used for the corresponding <see cref="IList{T}"/>.</param>
     static internal void ValidateRelationship(
-      Type                      sourceType,
-      PropertyConfiguration     configuration,
-      AttributeDescriptor       attributeDescriptor,
-      Type                      listType
+      [AllowNull]Type                      sourceType,
+      [AllowNull]PropertyConfiguration     configuration,
+      [AllowNull]AttributeDescriptor       attributeDescriptor,
+      [AllowNull]Type                      listType
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------

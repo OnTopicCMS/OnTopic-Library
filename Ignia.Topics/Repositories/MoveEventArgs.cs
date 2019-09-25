@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Repositories {
@@ -53,6 +54,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the Topic object associated with the event.
     /// </summary>
+    [DisallowNull]
     public Topic Topic { get; set; }
 
     /*==========================================================================================================================
@@ -61,6 +63,7 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the new parent that the topic will be moved to.
     /// </summary>
+    [DisallowNull]
     public Topic Target { get; set; }
 
   } // Class

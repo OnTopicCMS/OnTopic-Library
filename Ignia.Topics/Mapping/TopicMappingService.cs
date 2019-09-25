@@ -15,6 +15,7 @@ using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Mapping {
 
@@ -73,6 +74,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     public async Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
+    [return: NotNullIfNotNull("topic")]
       await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
 
     /// <summary>

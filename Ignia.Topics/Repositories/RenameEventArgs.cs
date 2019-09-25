@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Repositories {
 
@@ -44,6 +45,7 @@ namespace Ignia.Topics.Repositories {
     /// <value>
     /// The topic.
     /// </value>
+    [DisallowNull]
     public Topic Topic { get; }
 
   } // Class
