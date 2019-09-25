@@ -169,7 +169,7 @@ namespace Ignia.Topics.Tests {
       var types = new TypeMemberInfoCollection();
       var topic = TopicFactory.Create("Test", "ContentType");
 
-      var i = 0;
+      int i;
       for (i = 0; i < totalIterations; i++) {
         types.SetPropertyValue(topic, "Key", "Key" + i);
       }

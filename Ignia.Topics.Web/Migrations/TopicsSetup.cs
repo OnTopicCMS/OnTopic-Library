@@ -249,7 +249,7 @@ namespace Ignia.Topics.Web.Migrations {
       Contract.Requires(contentType, nameof(contentType));
       TopicFactory.ValidateKey(key);
 
-      var topic = (Topic)null;
+      Topic topic;
       if (!parentTopic.Children.Contains(key)) {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -371,8 +371,8 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentTypeDescriptor parent = null;
-      ContentTypeDescriptor child = null;
+      ContentTypeDescriptor parent;
+      ContentTypeDescriptor child;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up Parent Content Type
@@ -431,7 +431,7 @@ namespace Ignia.Topics.Web.Migrations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      ContentTypeDescriptor parent = null;
+      ContentTypeDescriptor parent;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up parent
