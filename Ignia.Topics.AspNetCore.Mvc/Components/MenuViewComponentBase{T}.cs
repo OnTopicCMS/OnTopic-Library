@@ -85,7 +85,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel   = new NavigationViewModel<T>() {
         NavigationRoot          = navigationRoot,
-        CurrentKey              = CurrentTopic?.GetUniqueKey()
+        CurrentKey              = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

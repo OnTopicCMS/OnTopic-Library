@@ -75,7 +75,7 @@ namespace Ignia.Topics.ViewModels {
     /// <returns>The key for the specified collection item.</returns>
     protected override string GetKeyForItem(TItem item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
-      return item.Key;
+      return item.Key?? "";
     }
 
   }
