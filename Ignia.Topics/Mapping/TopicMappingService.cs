@@ -73,8 +73,8 @@ namespace Ignia.Topics.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    public async Task<object?> MapAsync(Topic topic, Relationships relationships = Relationships.All) =>
     [return: NotNullIfNotNull("topic")]
+    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) =>
       await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
 
     /// <summary>
