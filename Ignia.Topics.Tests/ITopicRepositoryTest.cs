@@ -92,7 +92,6 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Save() {
 
-      var rootTopic             = _topicRepository.Load();
       var web                   = _topicRepository.Load("Root:Web");
       var configuration         = _topicRepository.Load("Root:Configuration");
 
@@ -119,7 +118,6 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void Move() {
 
-      var rootTopic             = _topicRepository.Load();
       var source                = _topicRepository.Load("Root:Web:Web_0");
       var destination           = _topicRepository.Load("Root:Web:Web_1");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
@@ -145,7 +143,6 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void MoveToSibling() {
 
-      var rootTopic             = _topicRepository.Load();
       var parent                = _topicRepository.Load("Root:Web:Web_0");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
       var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_1");

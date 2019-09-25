@@ -101,7 +101,6 @@ namespace Ignia.Topics.Tests {
     public void Routes() {
 
       var routes                = new RouteData();
-      var rootTopic             = _topicRepository.Load();
       var uri                   = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
 
       routes.Values.Add("rootTopic", "Web");
