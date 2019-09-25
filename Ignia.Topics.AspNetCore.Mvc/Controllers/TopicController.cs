@@ -113,7 +113,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return TopicView(topicViewModel, CurrentTopic.View);
+      return TopicView(topicViewModel, CurrentTopic?.View);
 
     }
 
@@ -129,7 +129,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
     [NonAction]
     public virtual TopicViewResult TopicView(object model, string? viewName = null) =>
-      new TopicViewResult(ViewData, TempData, model, CurrentTopic.ContentType, viewName);
+      new TopicViewResult(ViewData, TempData, model, CurrentTopic?.ContentType, viewName);
 
     /*==========================================================================================================================
     | EVENT: ON ACTION EXECUTING

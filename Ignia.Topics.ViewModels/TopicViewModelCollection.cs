@@ -61,7 +61,7 @@ namespace Ignia.Topics.ViewModels {
         $"A {nameof(contentType)} argument is required."
       );
       return new TopicViewModelCollection<TItem>(
-        Items.Where<TItem>(t => t.ContentType.Equals(contentType, StringComparison.InvariantCultureIgnoreCase))
+        Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.InvariantCultureIgnoreCase)?? false)
       );
     }
 
