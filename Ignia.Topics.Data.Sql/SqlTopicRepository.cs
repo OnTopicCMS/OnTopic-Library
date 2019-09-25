@@ -110,11 +110,23 @@ namespace Ignia.Topics.Data.Sql {
     private static void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(reader, nameof(reader));
+      Contract.Requires(topics, nameof(topics));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var name                  = reader?["AttributeKey"]?.ToString();
-      var value                 = reader?["AttributeValue"]?.ToString();
+      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var name                  = reader["AttributeKey"]?.ToString();
+      var value                 = reader["AttributeValue"]?.ToString();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate conditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
+      Contract.Assume(name, $"The 'AttributeKey' field is missing from the topic. This is an unexpected condition.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -148,7 +160,7 @@ namespace Ignia.Topics.Data.Sql {
     private static void SetBlobAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topics, "The topics Dictionary must not be null.");
       Contract.Requires(reader, nameof(reader));
@@ -157,6 +169,11 @@ namespace Ignia.Topics.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate conditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load blob into XmlDocument
@@ -188,8 +205,8 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume<InvalidOperationException>(
-          name != null,
+        Contract.Assume(
+          name,
           $"The @key attribute of the <attribute /> element is missing for Topic '{id}'; the data is not in the expected format."
         );
 

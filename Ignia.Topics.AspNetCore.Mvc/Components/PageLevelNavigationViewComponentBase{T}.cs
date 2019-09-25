@@ -9,6 +9,7 @@ using Ignia.Topics.Mapping;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 using System;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
@@ -86,11 +87,17 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       if (navigationRootTopic?.Parent == null) navigationRootTopic = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate conditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(navigationRootTopic, $"The root topic could not be identified for the page-level navigation.");
+      Contract.Assume(CurrentTopic, $"The current topic could not be identified for the page-level navigation.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel = new NavigationViewModel<T>() {
         NavigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(navigationRootTopic).ConfigureAwait(true),
-        CurrentKey = CurrentTopic?.GetUniqueKey()
+        CurrentKey = CurrentTopic.GetUniqueKey()
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

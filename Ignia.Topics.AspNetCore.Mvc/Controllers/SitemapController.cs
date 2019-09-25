@@ -55,12 +55,23 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     public virtual ActionResult Index() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish Page Topic
+      | Ensure topics are loaded
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicViewModel = new TopicEntityViewModel(_topicRepository, _topicRepository.Load());
+      var rootTopic = _topicRepository.Load();
+
+      Contract.Assume(
+        rootTopic,
+        $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
+        $"{nameof(SitemapController)} is unable to establish a local copy to work off of."
+      );
+      
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topicViewModel = new TopicEntityViewModel(_topicRepository, rootTopic);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | DEFINE CONTENT TYPE
+      | Define content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       Response.ContentType = "text/xml";
 

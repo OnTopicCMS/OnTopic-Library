@@ -29,7 +29,7 @@ namespace Ignia.Topics.Data.Caching {
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRepository                _dataProvider;
-    private                     Topic?                          _cache                          = null;
+    private                     Topic                           _cache;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -55,7 +55,18 @@ namespace Ignia.Topics.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _cache = _dataProvider.Load();
+      var rootTopic = _dataProvider.Load();
+
+      Contract.Assume(
+        rootTopic,
+        $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
+        $"{nameof(CachedTopicRepository)} is unable to establish the cache."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure topics are loaded
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _cache = rootTopic;
 
     }
 
