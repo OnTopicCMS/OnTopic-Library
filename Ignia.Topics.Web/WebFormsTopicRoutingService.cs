@@ -44,9 +44,9 @@ namespace Ignia.Topics {
     /*============================================================================================================================
     | PRIVATE VARIABLES
     \---------------------------------------------------------------------------------------------------------------------------*/
-    private                     ITopicRepository                _topicRepository                = null;
-    private                     RouteData                       _routes                         = null;
-    private                     Uri                             _uri                            = null;
+    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            RouteData                       _routes                         = null;
+    private readonly            Uri                             _uri                            = null;
     private                     Topic                           _topic                          = null;
     private                     List<string>                    _views                          = null;
     private                     string                          _view                           = null;

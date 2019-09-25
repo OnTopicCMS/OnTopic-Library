@@ -29,7 +29,7 @@ namespace Ignia.Topics.Data.Caching {
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicRepository                _dataProvider;
-    private                     Topic                           _cache;
+    private readonly            Topic                           _cache;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
