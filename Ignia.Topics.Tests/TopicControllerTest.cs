@@ -73,6 +73,8 @@ namespace Ignia.Topics.Tests {
       var result                = await controller.IndexAsync(_topic.GetWebPath()).ConfigureAwait(false) as TopicViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
+      controller.Dispose();
+
       Assert.IsNotNull(model);
       Assert.AreEqual<string>("Web_0_1_1", model.Title);
 
@@ -90,6 +92,8 @@ namespace Ignia.Topics.Tests {
       var controller            = new ErrorController();
       var result                = controller.Index("ErrorPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
+
+      controller.Dispose();
 
       Assert.IsNotNull(model);
       Assert.AreEqual<string>("ErrorPage", model.Title);
@@ -109,6 +113,8 @@ namespace Ignia.Topics.Tests {
       var result                = controller.NotFound("NotFoundPage") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
+      controller.Dispose();
+
       Assert.IsNotNull(model);
       Assert.AreEqual<string>("NotFoundPage", model.Title);
 
@@ -127,6 +133,8 @@ namespace Ignia.Topics.Tests {
       var result                = controller.InternalServer("InternalServer") as ViewResult;
       var model                 = result.Model as PageTopicViewModel;
 
+      controller.Dispose();
+
       Assert.IsNotNull(model);
       Assert.AreEqual<string>("InternalServer", model.Title);
 
@@ -143,6 +151,8 @@ namespace Ignia.Topics.Tests {
 
       var controller            = new FallbackController();
       var result                = controller.Index() as HttpNotFoundResult;
+
+      controller.Dispose();
 
       Assert.IsNotNull(result);
       Assert.AreEqual<int>(404, result.StatusCode);
@@ -161,6 +171,8 @@ namespace Ignia.Topics.Tests {
 
       var controller            = new RedirectController(_topicRepository);
       var result                = controller.Redirect(11110) as RedirectResult;
+
+      controller.Dispose();
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result.Permanent);
@@ -186,6 +198,8 @@ namespace Ignia.Topics.Tests {
       var controller            = new SitemapController(_topicRepository);
       var result                = controller.Index() as ViewResult;
       var model                 = result.Model as TopicEntityViewModel;
+
+      controller.Dispose();
 
       Assert.IsNotNull(model);
       Assert.AreEqual<ITopicRepository>(_topicRepository, model.TopicRepository);
@@ -216,6 +230,8 @@ namespace Ignia.Topics.Tests {
       var result                = await controller.Menu().ConfigureAwait(false) as PartialViewResult;
       var model                 = result.Model as NavigationViewModel<NavigationTopicViewModel>;
 
+      controller.Dispose();
+
       Assert.IsNotNull(model);
       Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
       Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
@@ -223,7 +239,6 @@ namespace Ignia.Topics.Tests {
       Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
 
     }
-
 
   } //Class
 

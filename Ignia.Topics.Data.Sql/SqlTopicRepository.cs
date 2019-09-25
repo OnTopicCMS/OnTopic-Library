@@ -1208,8 +1208,8 @@ namespace Ignia.Topics.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        //if (command != null) command.Dispose();
-        //Since the connection string is being passed in, do not close connection.
+        if (command != null) command.Dispose();
+        //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
         //if (connection != null) connection.Dispose();
       }
 
