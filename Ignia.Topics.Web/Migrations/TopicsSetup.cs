@@ -557,7 +557,7 @@ namespace Ignia.Topics.Web.Migrations {
       | Recurse over child topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var childTopic in topic.Children) {
-        output = output + WriteTopic(childTopic);
+        output += WriteTopic(childTopic);
       }
 
       output = output
