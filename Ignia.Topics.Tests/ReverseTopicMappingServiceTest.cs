@@ -61,7 +61,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapGeneric() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new AttributeDescriptorTopicBindingModel() {
         Key                     = "Test",
@@ -91,7 +91,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapDynamic() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new AttributeDescriptorTopicBindingModel {
         Key                     = "Test",
@@ -122,7 +122,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapExisting() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new AttributeDescriptorTopicBindingModel() {
         Key                     = "Test",
@@ -162,7 +162,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task AlternateAttributeKey() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new PageTopicBindingModel {
         Key                     = "Test",
@@ -186,7 +186,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapRelationships() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
@@ -221,7 +221,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapNestedTopics() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
 
       bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute1"));
@@ -256,7 +256,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapTopicReferences() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("Test") {
         DerivedTopic            = new RelatedTopicBindingModel() {
@@ -283,13 +283,12 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ValidationException))]
     public async Task MapRequiredProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: DEFAULT VALUE PROPERTIES
@@ -300,7 +299,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task MapDefaultValueProperties() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new PageTopicBindingModel("Test") {
         Title                   = "Required Title"
@@ -322,7 +321,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(ValidationException))]
     public async Task MapMinimumValueProperties() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new MinimumLengthPropertyTopicBindingModel("Test") {
         Title                   = "Hello World"
@@ -343,7 +342,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidChildrenProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -361,7 +360,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidParentProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new InvalidParentTopicBindingModel("Test") {
         Parent                  = new BasicTopicBindingModel("Test", "Page")
@@ -382,7 +381,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidAttributeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -400,7 +399,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidRelationshipBaseTypeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -418,7 +417,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidReferenceNameProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceNameTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -438,7 +437,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidRelationshipTypeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -457,7 +456,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidRelationshipListTypeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -476,7 +475,7 @@ namespace Ignia.Topics.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public async Task InvalidReferenceTypeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
@@ -494,7 +493,7 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public async Task DisabledAttributeProperty() {
 
-      var mappingService        = new ReverseTopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new DisabledAttributeTopicBindingModel("Test") {
         UnmappedAttribute       = "Hello World"

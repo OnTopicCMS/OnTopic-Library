@@ -35,7 +35,6 @@ namespace Ignia.Topics.Mapping {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
-    readonly                    ITypeLookupService              _typeLookupService;
     readonly                    ContentTypeDescriptorCollection _contentTypeDescriptors;
 
     /*==========================================================================================================================
@@ -44,19 +43,17 @@ namespace Ignia.Topics.Mapping {
     /// <summary>
     ///   Establishes a new instance of a <see cref="ReverseTopicMappingService"/> with required dependencies.
     /// </summary>
-    public ReverseTopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
+    public ReverseTopicMappingService(ITopicRepository topicRepository) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
-      Contract.Requires(typeLookupService, "An instance of an ITypeLookupService is required.");
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Set dependencies
       \---------------------------------------------------------------------------------------------------------------------*/
       _topicRepository          = topicRepository;
-      _typeLookupService        = typeLookupService;
       _contentTypeDescriptors   = topicRepository.GetContentTypeDescriptors();
 
       /*----------------------------------------------------------------------------------------------------------------------
