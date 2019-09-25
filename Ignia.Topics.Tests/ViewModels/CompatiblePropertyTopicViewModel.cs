@@ -25,7 +25,8 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
     [DisallowNull]
-    public IDictionary<string, string?> Configuration { get; set; }
+    [SuppressMessage("Usage", "CA2227", Justification = "This is intended to be initialized by the mapping service.")]
+    public IDictionary<string, string?>? Configuration { get; set; }
 
     } //Class
   } //Namespace
