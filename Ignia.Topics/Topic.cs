@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Ignia.Topics.Collections;
@@ -133,6 +134,7 @@ namespace Ignia.Topics {
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
+    [DisallowNull]
     public Topic? Parent {
       get => _parent;
       set {
