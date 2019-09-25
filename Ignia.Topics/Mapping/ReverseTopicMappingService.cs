@@ -231,7 +231,7 @@ namespace Ignia.Topics.Mapping {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
-      var contentType           = _contentTypeDescriptors[source.ContentType];
+      var contentType           = _contentTypeDescriptors.GetTopic(source.ContentType);
 
       Contract.Assume(contentType, nameof(contentType));
 
