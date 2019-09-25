@@ -24,11 +24,6 @@ namespace Ignia.Topics.Repositories {
     | CONSTRUCTOR: TAXONOMY MOVE EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="MoveEventArgs"/> class.
-    /// </summary>
-    public MoveEventArgs() { }
-
-    /// <summary>
     ///   Initializes a new instance of the <see cref="MoveEventArgs"/> class and sets the <see cref="Topic"/> and
     ///   <see cref="Target"/> properties based on the specified objects.
     /// </summary>
@@ -54,7 +49,6 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the Topic object associated with the event.
     /// </summary>
-    [DisallowNull]
     public Topic Topic { get; set; }
 
     /*==========================================================================================================================
@@ -63,7 +57,6 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Gets or sets the new parent that the topic will be moved to.
     /// </summary>
-    [DisallowNull]
     public Topic Target { get; set; }
 
   } // Class

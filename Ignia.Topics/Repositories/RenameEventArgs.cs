@@ -20,14 +20,6 @@ namespace Ignia.Topics.Repositories {
     | CONSTRUCTOR: TAXONOMY RENAME EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="RenameEventArgs"/> class.
-    /// </summary>
-    /// <remarks>
-    ///   Optional overload allows for specifying a topic object.
-    /// </remarks>
-    public RenameEventArgs() { }
-
-    /// <summary>
     ///   Initializes a new instance of the <see cref="RenameEventArgs"/> class and sets the <see cref="Topic"/> property based
     ///   on the specified object.
     /// </summary>
@@ -45,7 +37,6 @@ namespace Ignia.Topics.Repositories {
     /// <value>
     /// The topic.
     /// </value>
-    [DisallowNull]
     public Topic Topic { get; }
 
   } // Class
