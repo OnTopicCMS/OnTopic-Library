@@ -1356,7 +1356,7 @@ namespace Ignia.Topics.Data.Sql {
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
       if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
-        if (String.IsNullOrEmpty(fieldValue)) {
+        if (fieldValue is null || String.IsNullOrEmpty(fieldValue)) {
           commandObject.Parameters["@" + sqlParameter].Value = null;
         }
         else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
