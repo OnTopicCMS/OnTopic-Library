@@ -141,7 +141,7 @@ namespace Ignia.Topics.Tests {
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
       var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
 
-      var value                 = types.GetMethodValue(source, "GetMethod");
+      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsTrue(isValueSet);
       Assert.IsFalse(isInvalidSet);

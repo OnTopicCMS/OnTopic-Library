@@ -40,7 +40,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       ViewDataDictionary        viewData,
       ITempDataDictionary       tempData,
       object                    viewModel,
-      string                    contentType                     = "Page",
+      string?                   contentType                     = null,
       string?                   view                            = null
     ) : base() {
 
@@ -57,7 +57,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       ViewData                  = viewData;
       TempData                  = tempData;
       ViewData.Model            = viewModel;
-      TopicContentType          = contentType;
+      TopicContentType          = contentType?? TopicContentType;
       TopicView                 = view ?? ContentType;
       //ViewName                = TopicView;
 
@@ -74,7 +74,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   base <see cref="ViewResult"/> class has an existing <see cref="ContentType"/> property representing the HTTP response
     ///   value, however. As such, <see cref="TopicContentType"/> is used to disambiguate the terms.
     /// </remarks>
-    public string TopicContentType { get; }
+    public string TopicContentType { get; } = "Page";
 
     /*==========================================================================================================================
     | PROPERTY: TOPIC VIEW
