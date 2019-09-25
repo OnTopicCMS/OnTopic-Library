@@ -113,7 +113,7 @@ namespace Ignia.Topics.Metadata {
 
         Contract.Assume(
           editorType, 
-          $"The 'EditorType' property is not set for the '{this.Key}' attribute, and thus a 'ModelType' cannot be determined."
+          $"The 'EditorType' property is not set for the '{Key}' attribute, and thus a 'ModelType' cannot be determined."
         );
 
         if (editorType.LastIndexOf(".", StringComparison.InvariantCulture) >= 0) {
