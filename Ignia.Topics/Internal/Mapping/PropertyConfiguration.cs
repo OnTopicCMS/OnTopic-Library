@@ -105,7 +105,7 @@ namespace Ignia.Topics.Internal.Mapping {
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute != null && filterByAttribute.Count() > 0) {
+      if (filterByAttribute != null && filterByAttribute.Any()) {
         foreach (var filter in filterByAttribute) {
           AttributeFilters.Add(filter.Key, filter.Value);
         }

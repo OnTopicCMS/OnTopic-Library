@@ -1156,7 +1156,7 @@ namespace Ignia.Topics.Data.Sql {
       | Return blank if the topic has no relations.
       \-----------------------------------------------------------------------------------------------------------------------*/
       // return "" if the topic has no relations
-      if (topic.Relationships.Keys.Count() <= 0) {
+      if (!topic.Relationships.Keys.Any()) {
         return "";
       }
       var command = (SqlCommand?)null;

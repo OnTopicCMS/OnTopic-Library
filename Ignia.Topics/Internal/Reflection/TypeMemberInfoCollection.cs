@@ -325,7 +325,7 @@ namespace Ignia.Topics.Internal.Reflection {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method != null &&
-        method.GetParameters().Count().Equals(0) &&
+        !method.GetParameters().Any() &&
         IsSettableType(method.ReturnType, targetType) &&
         (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
       );
