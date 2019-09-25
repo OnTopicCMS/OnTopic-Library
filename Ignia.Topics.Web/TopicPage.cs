@@ -8,6 +8,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Web.Security;
 using System.Web.UI;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Web {
 
@@ -17,6 +18,7 @@ namespace Ignia.Topics.Web {
   /// <summary>
   ///   Provides a base class for Topic-related pages.
   /// </summary>
+  [SuppressMessage("Security", "CA5368", Justification = "Deprecated code; non-breaking issue.")]
   public class TopicPage : Page {
 
   /*============================================================================================================================
