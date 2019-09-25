@@ -21,7 +21,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class CircularTopicViewModel {
 
     [Follow(Relationships.Parents)]
-    public CircularTopicViewModel Parent { get; set; }
+    public CircularTopicViewModel? Parent { get; set; }
 
     [Follow(Relationships.Children | Relationships.Parents)]
     public List<CircularTopicViewModel> Children { get; } = new List<CircularTopicViewModel>();

@@ -19,7 +19,7 @@ namespace Ignia.Topics.Tests.ViewModels {
   public class RequiredTopicViewModel : SampleTopicViewModel {
 
     [Required]
-    public string RequiredAttribute { get; set; }
+    public string? RequiredAttribute { get; set; }
 
   } //Class
 } //Namespace

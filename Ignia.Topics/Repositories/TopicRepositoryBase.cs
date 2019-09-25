@@ -32,17 +32,17 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<DeleteEventArgs>        DeleteEvent;
+    public event EventHandler<DeleteEventArgs>?       DeleteEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<MoveEventArgs>          MoveEvent;
+    public event EventHandler<MoveEventArgs>?         MoveEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<RenameEventArgs>        RenameEvent;
+    public event EventHandler<RenameEventArgs>?       RenameEvent;
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS

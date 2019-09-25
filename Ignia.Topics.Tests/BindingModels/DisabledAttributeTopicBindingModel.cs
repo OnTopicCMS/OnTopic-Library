@@ -29,7 +29,7 @@ namespace Ignia.Topics.Tests.BindingModels {
     public DisabledAttributeTopicBindingModel(string? key = null) : base(key, "Page") { }
 
     [DisableMapping]
-    public string UnmappedAttribute { get; set; }
+    public string? UnmappedAttribute { get; set; }
 
   } //Class
 
