@@ -73,6 +73,13 @@ namespace Ignia.Topics {
       Parent                    = parent;
 
       /*----------------------------------------------------------------------------------------------------------------------
+      | Initialize key
+      \---------------------------------------------------------------------------------------------------------------------*/
+      //###HACK JJC20190924: The local backing field _key is always initialized at this point. But Roslyn's flow analysis 
+      //isn't smart enough to detect this. As such, the following effectively sets _key to itself.
+      _key = Key;
+
+      /*----------------------------------------------------------------------------------------------------------------------
       | If ID is set, ensure attributes are not marked as IsDirty
       \---------------------------------------------------------------------------------------------------------------------*/
       if (id >= 0) {
