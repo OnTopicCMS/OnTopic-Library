@@ -39,7 +39,7 @@ namespace Ignia.Topics.Web.Editor {
       /*------------------------------------------------------------------------------------------------------------------------
       | Only process the path if both topic and attribtueKey are provided
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || String.IsNullOrEmpty(attributeKey)) return "";
+      if (topic is null || attributeKey is null || attributeKey.Length.Equals(0)) return "";
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Build configured file path string base on values and settings parameters passed to the method

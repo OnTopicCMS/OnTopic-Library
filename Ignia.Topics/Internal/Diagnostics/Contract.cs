@@ -89,7 +89,7 @@ namespace Ignia.Topics.Internal.Diagnostics {
     /// </exception>
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
-      if (String.IsNullOrEmpty(errorMessage)) {
+      if (errorMessage is null || errorMessage.Length.Equals(0)) {
         throw new T();
       }
       try {

@@ -114,7 +114,7 @@ namespace Ignia.Topics.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrWhiteSpace(topicKey)) {
+      if (topicKey != null && !topicKey.Length.Equals(0)) {
         return GetTopic(_cache, topicKey);
       }
 

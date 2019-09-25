@@ -480,7 +480,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (modelReference is null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
+      if (modelReference?.UniqueKey is null || modelReference.UniqueKey.Length.Equals(0)) {
         return;
       }
 

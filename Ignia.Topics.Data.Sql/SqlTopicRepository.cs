@@ -361,7 +361,7 @@ namespace Ignia.Topics.Data.Sql {
       | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrWhiteSpace(topicKey)) {
+      if (topicKey is null || topicKey.Trim().Length == 0) {
         return Load(-1, isRecursive);
       }
 
@@ -1373,7 +1373,7 @@ namespace Ignia.Topics.Data.Sql {
       commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
 
       if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
-        if (fieldValue is null || String.IsNullOrEmpty(fieldValue)) {
+        if (fieldValue is null ||fieldValue.Length.Equals(0)) {
           commandObject.Parameters["@" + sqlParameter].Value = null;
         }
         else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
