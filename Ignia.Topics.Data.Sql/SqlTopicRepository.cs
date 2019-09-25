@@ -1266,38 +1266,6 @@ namespace Ignia.Topics.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | FUNCTION: CONV DB TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Converts a string into the appropriate database type object
-    /// </summary>
-    /// <param name="sqlDbType">The string specified to be converted to the appropriate SQL data type.</param>
-    /// <returns>The converted SQL data type.</returns>
-    /// <requires description="The sqlDbType must not be null." exception="T:System.ArgumentNullException">
-    ///   sqlDbType != null
-    /// </requires>
-    private static SqlDbType ConvDbType(string sqlDbType) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(sqlDbType, "The sqlDbType must not be null.");
-
-      switch (sqlDbType.ToUpperInvariant()) {
-        case "INT"              : return SqlDbType.Int;
-        case "TINYINT"          : return SqlDbType.TinyInt;
-        case "SMALLINT"         : return SqlDbType.SmallInt;
-        case "UNIQUEIDENTIFIER" : return SqlDbType.UniqueIdentifier;
-        case "BIT"              : return SqlDbType.Bit;
-        case "CHAR"             : return SqlDbType.Char;
-        case "VARCHAR"          : return SqlDbType.VarChar;
-        case "DATETIME"         : return SqlDbType.DateTime;
-        default                 : return SqlDbType.VarChar;
-      }
-
-    }
-
-    /*==========================================================================================================================
     | METHOD: ADD SQL PARAMETER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
