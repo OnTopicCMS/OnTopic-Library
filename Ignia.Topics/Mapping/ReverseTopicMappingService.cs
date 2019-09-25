@@ -143,6 +143,7 @@ namespace Ignia.Topics.Mapping {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(target, nameof(target));
+      Contract.Assume(source.ContentType, nameof(source.ContentType));
 
       //Ensure the content type is valid
       if (!_contentTypeDescriptors.Contains(source.ContentType)) {
@@ -533,7 +534,7 @@ namespace Ignia.Topics.Mapping {
       foreach (ITopicBindingModel childBindingModel in sourceList) {
         Contract.Assume(childBindingModel.Key);
         if (targetList.Contains(childBindingModel.Key)) {
-          taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)));
+          taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)!));
         }
         else {
           taskQueue.Add(MapAsync(childBindingModel));
