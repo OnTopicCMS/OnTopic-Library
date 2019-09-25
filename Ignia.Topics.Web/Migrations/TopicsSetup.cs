@@ -302,7 +302,7 @@ namespace Ignia.Topics.Web.Migrations {
 
       }
       if (!parentTopic.Children.Contains(key)) {
-        throw new NullReferenceException("The topic '{key}' could not be found in the topic '{parentTopic.Key}'.");
+        throw new NullReferenceException($"The topic '{key}' could not be found in the topic '{parentTopic.Key}'.");
       }
       return parentTopic.Children[key];
     }
