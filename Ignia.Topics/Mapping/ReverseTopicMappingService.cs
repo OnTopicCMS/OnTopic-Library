@@ -47,7 +47,7 @@ namespace Ignia.Topics.Mapping {
     public ReverseTopicMappingService(ITopicRepository topicRepository, ITypeLookupService typeLookupService) {
 
       /*----------------------------------------------------------------------------------------------------------------------
-      | Validate dependencies
+      | Validate parameters
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
       Contract.Requires(typeLookupService, "An instance of an ITypeLookupService is required.");
@@ -58,6 +58,15 @@ namespace Ignia.Topics.Mapping {
       _topicRepository          = topicRepository;
       _typeLookupService        = typeLookupService;
       _contentTypeDescriptors   = topicRepository.GetContentTypeDescriptors();
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(
+        _contentTypeDescriptors, 
+        $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
+        $"or data source."
+      );
 
     }
 
@@ -214,10 +223,18 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires(property, nameof(property));
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate conditions
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(source.ContentType, nameof(source.ContentType));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
       var contentType           = _contentTypeDescriptors[source.ContentType];
+
+      Contract.Assume(contentType, nameof(contentType));
+
       var attributeType         = contentType.AttributeDescriptors.GetTopic(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -514,6 +531,7 @@ namespace Ignia.Topics.Mapping {
 
       //Map child binding model to target collection on the target
       foreach (ITopicBindingModel childBindingModel in sourceList) {
+        Contract.Assume(childBindingModel.Key);
         if (targetList.Contains(childBindingModel.Key)) {
           taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)));
         }

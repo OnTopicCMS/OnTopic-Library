@@ -137,6 +137,7 @@ namespace Ignia.Topics {
       get => _parent;
       set {
         if (_parent != value) {
+          Contract.Requires(value, "Parent cannot be explicitly set to null.");
           SetParent(value, value?.Children?.LastOrDefault());
         }
       }

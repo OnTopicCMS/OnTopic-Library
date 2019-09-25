@@ -79,6 +79,8 @@ namespace Ignia.Topics {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
       Contract.Requires(requestContext, "An instance of a RequestContext is required.");
+      Contract.Requires(viewsDirectory, "The viewsDirectory must be set.");
+      Contract.Requires(viewExtension, "The viewExtension must be set.");
       Contract.Requires(
         viewsDirectory.IndexOf("/", StringComparison.InvariantCulture) >= 0,
         "The viewsDirectory parameter should be a relative path (e.g., '/Views/`)."

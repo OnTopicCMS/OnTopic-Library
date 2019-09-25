@@ -93,6 +93,13 @@ namespace Ignia.Topics.Mapping {
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceType, nameof(sourceType));
+      Contract.Requires(properties, nameof(properties));
+      Contract.Requires(contentTypeDescriptor, nameof(contentTypeDescriptor));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Skip validation if this type has already been validated for this content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_modelsValidated.Contains((sourceType, contentTypeDescriptor.Key))) {
@@ -137,6 +144,13 @@ namespace Ignia.Topics.Mapping {
       ContentTypeDescriptor contentTypeDescriptor
     ) {
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceType, nameof(sourceType));
+      Contract.Requires(property, nameof(property));
+      Contract.Requires(contentTypeDescriptor, nameof(contentTypeDescriptor));
+      
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -282,6 +296,14 @@ namespace Ignia.Topics.Mapping {
       AttributeDescriptor       attributeDescriptor,
       Type                      listType
     ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceType, nameof(sourceType));
+      Contract.Requires(configuration, nameof(configuration));
+      Contract.Requires(attributeDescriptor, nameof(attributeDescriptor));
+    //Contract.Requires(listType, nameof(listType));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables

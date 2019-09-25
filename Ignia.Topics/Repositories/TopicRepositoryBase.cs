@@ -323,8 +323,8 @@ namespace Ignia.Topics.Repositories {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(target != topic);
-      Contract.Requires(topic, "topic");
-      Contract.Requires(target, "target");
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
       Contract.Requires<ArgumentException>(topic != target, "A topic cannot be its own parent.");
       Contract.Requires<ArgumentException>(topic != sibling, "A topic cannot be moved relative to itself.");
 

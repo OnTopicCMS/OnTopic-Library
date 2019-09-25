@@ -9,6 +9,7 @@ using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
@@ -63,18 +64,18 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     public async Task<IViewComponentResult> InvokeAsync() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
+      | Validate dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var currentTopic          = CurrentTopic;
+      Contract.Assume(CurrentTopic, nameof(CurrentTopic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify navigation root
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web");
+      var navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
       var navigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(
-        navigationRootTopic,
+        navigationRootTopic!,
         3,
         t => t.ContentType != "PageGroup"
       ).ConfigureAwait(false);

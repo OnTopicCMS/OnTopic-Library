@@ -103,6 +103,14 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       var topicViewModel = await _topicMappingService.MapAsync(CurrentTopic).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Assume(
+        topicViewModel,
+        $"A topic view model could not be created for the '{CurrentTopic?.GetUniqueKey()}' topic."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return topic view
       \-----------------------------------------------------------------------------------------------------------------------*/
       return TopicView(topicViewModel, CurrentTopic.View);
@@ -139,6 +147,11 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]
     public override void OnActionExecuting(ActionExecutingContext filterContext) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(filterContext, nameof(filterContext));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions

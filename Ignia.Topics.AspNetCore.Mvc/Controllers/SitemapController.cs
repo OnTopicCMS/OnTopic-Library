@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.AspNetCore.Mvc.Models;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
@@ -31,7 +32,17 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     public SitemapController(ITopicRepository topicRepository) {
-      _topicRepository          = topicRepository;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topicRepository, nameof(topicRepository));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository = topicRepository;
+
     }
 
     /*==========================================================================================================================
