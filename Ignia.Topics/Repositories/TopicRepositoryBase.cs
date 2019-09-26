@@ -10,6 +10,7 @@ using Ignia.Topics.Collections;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Querying;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft;
 
 namespace Ignia.Topics.Repositories {
 
@@ -157,7 +158,7 @@ namespace Ignia.Topics.Repositories {
     ///   exception="T:System.ArgumentNullException">
     ///   !VersionHistory.Contains(version)
     /// </requires>
-    public virtual void Rollback(Topic topic, DateTime version) {
+    public virtual void Rollback([ValidatedNotNull, NotNull]Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -232,7 +233,7 @@ namespace Ignia.Topics.Repositories {
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    public virtual int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([ValidatedNotNull, NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -295,7 +296,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="topic">The topic object to be moved.</param>
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move(Topic topic, Topic target) {
+    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -317,7 +318,7 @@ namespace Ignia.Topics.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move(Topic topic, Topic target, Topic? sibling) {
+    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -359,7 +360,7 @@ namespace Ignia.Topics.Repositories {
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    public virtual void Delete(Topic topic, bool isRecursive) {
+    public virtual void Delete([ValidatedNotNull, NotNull]Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

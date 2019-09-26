@@ -6,6 +6,7 @@
 using System;
 using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft;
 
 namespace Ignia.Topics.Internal.Diagnostics {
 
@@ -62,13 +63,13 @@ namespace Ignia.Topics.Internal.Diagnostics {
     /// <exception cref="ArgumentNullException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
-    public static void Requires([NotNull]object? requiredObject, string? errorMessage = null) {
       //###HACK JJC20190908: Roslyn's flow analysis doesn't accept the [NotNull] hint for parameters unless the variable has
       //been locally assigned, which is an issue for Requires() since it is intended to be used exclusively as a guard clause for
       //parameters. Assigning the parameter to itself mitigates this issue—though it does prompt its own warning in return.
       #pragma warning disable CS1717 // Assignment made to same variable
       requiredObject = requiredObject;
       #pragma warning restore CS1717 // Assignment made to same variable
+    public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
       Requires<ArgumentNullException>(requiredObject != null, errorMessage);
     }
 
@@ -146,7 +147,7 @@ namespace Ignia.Topics.Internal.Diagnostics {
     /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
-    public static void Assume([NotNull]object? requiredObject, string? errorMessage = null)
+    public static void Assume([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null)
       => Requires<InvalidOperationException>(requiredObject != null, errorMessage);
 
   } //class
