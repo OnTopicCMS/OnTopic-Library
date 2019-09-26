@@ -1121,18 +1121,6 @@ namespace Ignia.Topics.Data.Sql {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
-    ///   appending to the attribute 'blob'.
-    /// </summary>
-    /// <param name="topic">The topic object whose relationships should be persisted.</param>
-    /// <param name="connection">The SQL connection.</param>
-    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
-    private static string PersistRelations(Topic topic, SqlConnection connection) {
-      Contract.Requires(topic, "The topic must not be null.");
-      return PersistRelations(topic, connection, false);
-    }
-
-    /// <summary>
-    ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
     ///   appending to the attribute 'blob' unless <c>skipBlob == true</c>.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
