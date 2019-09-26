@@ -1,23 +1,23 @@
 # SQL Schema
-The `Ignia.Topics.Data.Sql.Database` provides a default schema for supporting the [`SqlTopicRepository`](../Ignia.Topics.Data.Sql). 
+The `Ignia.Topics.Data.Sql.Database` provides a default schema for supporting the [`SqlTopicRepository`](../Ignia.Topics.Data.Sql).
 
 > *Note:* Not all SQL objects are documented here. Missing objects are primarily intended for infrastructure support and used exclusively by stored procedures or administrators.
 
 ## Tables
-The following is a summary of the most relevant tables. 
+The following is a summary of the most relevant tables.
 - **[`topics_Topics`](dbo/Tables/topics_Topics.sql)**: Represents the core hierarchy of topics, encoded in a nested set format.
 - **[`topics_TopicAttributes`](dbo/Tables/topics_Topics.sql)**: Represents key/value pairs of topic attributes, including historical versions.
 - **[`topics_Blob`](dbo/Tables/topics_Blob.sql)**: Represents an XML-based blob of non-indexed attributes, which are too long for `topics_TopicAttributes`.
-- **[`topics_Relationships`](dbo/Tables/topics_Relationships.sql)**: Represents relationships between topics, segmented by namespace. 
+- **[`topics_Relationships`](dbo/Tables/topics_Relationships.sql)**: Represents relationships between topics, segmented by namespace.
 
 > *Note:* Neither `topics_Topics` nor `topics_Relationships` are subject to tracking versions. Changes to these records are permanent.
 
 ## Stored Procedures
-The following is a summary of the most relevant stored procedures. 
+The following is a summary of the most relevant stored procedures.
 
 ### Querying
 - **[`topics_GetTopics`](dbo/Stored%20Procedures/topics_GetTopics.sql)**: Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `topics_TopicAttributes`, `topics_Blob`, `topics_Relationships`, and version history. Only retrieves the latest version of each attribute.
-- **[`topics_GetGetTopicID`](dbo/Stored%20Procedures/topics_GetTopicID.sql)**: Retrieves a topic's `Id` based on a corresponding `Key`. 
+- **[`topics_GetGetTopicID`](dbo/Stored%20Procedures/topics_GetTopicID.sql)**: Retrieves a topic's `Id` based on a corresponding `Key`.
 - **[`topics_GetVersion`](dbo/Stored%20Procedures/topics_GetVersion.sql)**: Retrieves a single instance of a topic based on an `@Id` and `@Version`.
 
 ### Updating

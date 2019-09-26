@@ -9,9 +9,9 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
     - [Collections](#collections)
     - [References](#references)
     - [Parent](#parent)
-  - [Example](#example) 
+  - [Example](#example)
 - [Attributes](#attributes)
-  - [Example](#example-1) 
+  - [Example](#example-1)
 - [Polymorphism](#polymorphism)
   - [Filtering](#filtering)
   - [Topics](#topics)
@@ -40,7 +40,7 @@ The mapping service will automatically attempt to map any properties on a data t
 If a property is of the type `bool`, `int`, `string`, or `DateTime`, then:
 - Will pull the value from a parameterless getter method with the same name.
 - Will pull the value from a property of the same name.
-- Otherwise, will pull the value from the `topic.Attributes.GetValue()` method. 
+- Otherwise, will pull the value from the `topic.Attributes.GetValue()` method.
 
 For example, if a property on a view model is named `Author`, it will automatically look, in order, for:
 - `topic.GetAuthor()`
@@ -48,7 +48,7 @@ For example, if a property on a view model is named `Author`, it will automatica
 - `topic.Attributes.GetValue("Author")`
 
 #### Collections
-If a property implements `IList` (e.g., `List<>`, `Collection<>`, `TopicViewModelCollection<>`), then: 
+If a property implements `IList` (e.g., `List<>`, `Collection<>`, `TopicViewModelCollection<>`), then:
 - Will pull the value from a collection with the same name as the property.
 - If the property is explicitly named `Children` then it will load the `topic.Children`.
 - Will search, in order, `topic.Relationships`, `topic.IncomingRelationships`, `topic.Children`.
@@ -59,7 +59,7 @@ Topic references relate a single topic to another topic. If a property correspon
 ```
 public AuthorTopicViewModel Author { get; set; }
 ```
-Would be mapped to an `AuthorTopicViewModel` if `topic.Attributes.GetValue("AuthorId")` returns the identifier of a `Topic` with a `ContentType` set to `Author`. 
+Would be mapped to an `AuthorTopicViewModel` if `topic.Attributes.GetValue("AuthorId")` returns the identifier of a `Topic` with a `ContentType` set to `Author`.
 
 #### Parent
 If a property is named `Parent`, then the `TopicMappingService` will pull the value from `topic.Parent`. This acts as a special version of a [Topic Reference](#references).
@@ -88,17 +88,17 @@ In this example, the properties would map to:
 - `Cousins`: A relationship or nested topic set named `Cousins`, with each relationship mapped to a `TopicViewModel`.
 - `NestedTopics`: A relationship or nested topic set named `NestedTopics` (the name doesn't have any special meaning).
 
-## Attributes 
+## Attributes
 To support the mapping, a variety of `Attribute` classes are provided for decorating data transfer objects.
 
 - **`[Validation]`**: Enforces the rules established by any of the [`ValidationAttribute`](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.validationattribute%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396) subclasses.
   - This includes e.g., `[Required]`, `[MaxLength()]`, `[RegularExpression()]`, &c.
 - **`[DefaultValue()]`**: Sets the default value for the property.
 - **`[Inherit]`**: If the corresponding call comes back null, checks parent topics until a value is found.
-  - This is the equivalent of calling `topic.Attributes.GetValue(attributeKey, true)`. 
+  - This is the equivalent of calling `topic.Attributes.GetValue(attributeKey, true)`.
 - **`[Metadata(key)]`**: Populates a collection with a list of `LookupItem` values from `Root:Configuration:Metadata`.
   - This is useful for including a list of items to filter collections by.
-  - E.g., If child objects have a `TopicLookup` referencing the `Countries` metadata collection. 
+  - E.g., If child objects have a `TopicLookup` referencing the `Countries` metadata collection.
 - **`[AttributeKey(key)]`**: Instructs the `TopicMappingService` to use the specified `key` instead of the property name when calling `topic.Attributes.GetValue()`.
 - **`[FilterByAttribute(key, value)]`**: Ensures that all items in a collection have an attribute named "Key" with a value of "Value"; all else will be excluded. Multiple instances can be stacked.
 - **`[Relationship(key, type)]`**: For a collection, optionally specifies the name of the key to look for, instead of the property name, and the relationship type, in case the key name is ambiguous.
@@ -142,10 +142,10 @@ In this example, the properties would map to:
 - `HideFromDirectory`: An attribute named `IsHidden` or a method named `GetIsHidden()`. If null, will look in `Parent` topics.
 - `Countries`: Loads all `LookupListItem` instances in the `Root:Configuration:Metadata:Countries` metadata collection.
 - `CaseStudies`: A collection of `CaseStudy` topics pointing to the current `Company` via a "Companies" relationship. Will load the children of each case study.
-- `Children`: A collection of child topics, with all relationships (but not e.g. grandchildren) loaded. 
+- `Children`: A collection of child topics, with all relationships (but not e.g. grandchildren) loaded.
 - `Contacts`: A list of `Employee` nested topics, filtered by those with `IsActive` set to `1` (`true`) and `Role` set to "Account Manager". Includes any descendants of the nested topics that meet the previous criteria.
 
-> *Note*: Often times, data transfer objects won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional help. For instance, the `[Relationship(…)]` attribute is useful if the relationship key is ambiguous between outgoing relationships and incoming relationships. 
+> *Note*: Often times, data transfer objects won't require any attributes. These are only needed if the properties don't follow the built-in conventions and require additional help. For instance, the `[Relationship(…)]` attribute is useful if the relationship key is ambiguous between outgoing relationships and incoming relationships.
 
 ## Polymorphism
 If a reference type (e.g., `TopicViewModel Parent`) or a strongly-typed collection property (e.g., `List<TopicViewModel>`) are defined, then any target instances must be assignable by the base type (in these cases, `TopicViewModel`). If they cannot be, then they will not be included; no error will occur.
@@ -159,7 +159,7 @@ This can be useful for filtering a collection. For instance, if a `CompanyTopicV
 While it's not a best practice, this also works for strongly-typed collections of `Topic` objects. Typically, collections should return view models, but if the collection is strongly-typed to `Topic` (or a derivative) then the source `Topic` will not be mapped, and will be used as-is assuming it implements (or derives from) the target `Topic` type. This can be useful for scenarios where a view needs full access to the object graph (such as the `SitemapController`). In such cases, it is impractical to map the entirety of an object graph, along with all attributes, to a corresponding view model graph, and makes more sense to simply return the `Topic` graph.
 
 ## Caching
-By default, the `TopicMappingService` will cache a reference to all `MemberInfo` objects associated with each of view model it maps. That mitigates much of the performance hit associated with the use of reflection. Despite that, simply setting properties—and, especially, on large object graphs—can require a lot of processing time. To address this, OnTopic also offers two approaches. 
+By default, the `TopicMappingService` will cache a reference to all `MemberInfo` objects associated with each of view model it maps. That mitigates much of the performance hit associated with the use of reflection. Despite that, simply setting properties—and, especially, on large object graphs—can require a lot of processing time. To address this, OnTopic also offers two approaches.
 
 ### Internal Caching
 When a request is made to `TopicMappingService`, and internal cache is constructed. If any mapping requests refer to a `Topic` that's already been mapped as part of the _current_ object graph, then that object will be returned. This prevents unnecessary duplication of mapping, and also avoids the potential for infinite loops. For instance, if a view model includes `Children`, and those children are set to `[Follow(Relationships.Parents)]`, the `TopicMappingService` will point back to the originally-mapped `Parent` object, instead of mapping a new instance of that `Topic`.
@@ -191,13 +191,13 @@ While the `CachedTopicMappingService` can be useful for particular scenarios, it
 The [`IHierarchicalTopicMappingService<T>`](IHierarchicalTopicMappingService{T}.cs) and its concrete implementation, [`HierarchicalTopicMappingService<T>`](HierarchicalTopicMappingService{T}.cs), provide special handling for traversing hierarchical trees of view models. While the [`TopicMappingService`](#topicmappingservice) is capable of populating trees on its own, it is exclusively bound to honoring the rules defined by the attributes (such as `[Follow(relationships)]` and `[Flatten]`). By contrast, the `IHierarchicalTopicMappingService<T>` offers three additional capabilities:
 
 1. The number of tiers in the hierarchy can be restricted to a set number (via the `tiers` parameter on `GetRootViewModelAsync()` and `GetViewModelAsync()`).
-2. The topics included can be constrained by specifying a method or lamda expression that accepts a `Topic` as the parameter, and returns `true` (if the `Topic` should be mapped) or `false` (if it should be skipped). 
-3. The type that all _children_ will be mapped to can be specified, instead of letting the model type be determined exclusively by the `Topic.ContentType` property. 
+2. The topics included can be constrained by specifying a method or lamda expression that accepts a `Topic` as the parameter, and returns `true` (if the `Topic` should be mapped) or `false` (if it should be skipped).
+3. The type that all _children_ will be mapped to can be specified, instead of letting the model type be determined exclusively by the `Topic.ContentType` property.
 
 In many cases, these are not needed. They do, however, provide additional flexibility for particular scenarios. For example, these are valuable for constructing the navigation used by e.g. the [`LayoutControllerBase<T>`](../../Ignia.Topics.Web.Mvc/Controllers/LayoutControllerBase{T}.cs), which should be restricted to three tiers, should be mapped to a [`NavigationTopicViewModel`](../../Ignia.Topics.ViewModels/NavigationTopicViewModel.cs`), and, in the case of the many navigation, should exclude any topics of the content type `PageGroup`.
 
 ### `CachedHierarchicalTopicMappingService`
-The [`CachedHierarchicalTopicMappingService<T>`](CachedHierarchicalTopicMappingService{T}.cs) caches entries keyed based on the `Topic.Id` of the root `Topic` as well as the `T` argument of the type. Because of the mechanics of the `HierarchicalTopicMappingService<T>`, this cannot simply use the `CachedTopicMappingService` for caching, since each tier of navigation is mapped independently. This is necessary to apply the above business logic to the hierarchy, but makes it impossible for the `CachedTopicMappingService` to understand whether each request is suitable for caching. 
+The [`CachedHierarchicalTopicMappingService<T>`](CachedHierarchicalTopicMappingService{T}.cs) caches entries keyed based on the `Topic.Id` of the root `Topic` as well as the `T` argument of the type. Because of the mechanics of the `HierarchicalTopicMappingService<T>`, this cannot simply use the `CachedTopicMappingService` for caching, since each tier of navigation is mapped independently. This is necessary to apply the above business logic to the hierarchy, but makes it impossible for the `CachedTopicMappingService` to understand whether each request is suitable for caching.
 
 > *Note:* As with the `CachedTopicMappingService`, the `CachedHierarchicalTopicMapping` service should be used with caution. It will not be (immediately) updated if the underlying database or topic graph are updated. And since the topic graph is already cached, it effectively doubles the memory footprint of the graph by storing it both as topics as well as view models. That said, this is useful for large view model graphs that are frequently reused—such as those that show up in the navigation of a site.
 
@@ -213,7 +213,7 @@ var hierarchicalTopicMappingService = new CachedHierarchicalTopicMappingService<
 ```
 Once the `IHierarchicalTopicMappingService<T>` is constructed, it can by calling the main entry point, `GetRootViewModelAsync()`, which accepts three arguments:
 
-1. **`Topic sourceTopic`:** The topic representing the root of the hierarchy. This could be the root topic in the database, but will more likely be the root of a subtree. 
+1. **`Topic sourceTopic`:** The topic representing the root of the hierarchy. This could be the root topic in the database, but will more likely be the root of a subtree.
 2. **`int tiers = 1`:** The number of tiers to crawl. While the `TopicMappingService` implementation will crawl indefinitely, given the right conditions, the `IHierarchicalTopicMappingService<T>` can be constrained to a particular depth by the caller.
 3. **`Func<Topic, bool> validationDelegate = null`:** A validation function that accepts a `Topic` as input and returns `true` if the `Topic` (and its descendants) should be included, and otherwise `false`.
 

@@ -181,7 +181,7 @@ namespace Ignia.Topics.Mapping {
       viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
 
       Contract.Assume(
-        viewModel, 
+        viewModel,
         $"The 'ITopicMappingService' failed to return a {typeof(T)} model for the '{sourceTopic.GetUniqueKey()}' topic."
       );
 

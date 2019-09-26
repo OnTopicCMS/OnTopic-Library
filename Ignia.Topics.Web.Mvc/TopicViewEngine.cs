@@ -134,7 +134,7 @@ namespace Ignia.Topics.Web.Mvc {
       Contract.Requires(controllerContext, nameof(controllerContext));
       Contract.Requires(viewName, nameof(viewName));
       Contract.Requires(masterName, nameof(masterName));
-      
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify search paths
       \-----------------------------------------------------------------------------------------------------------------------*/

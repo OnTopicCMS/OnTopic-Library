@@ -267,7 +267,7 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires(relationships, nameof(relationships));
       Contract.Requires(property, nameof(property));
       Contract.Requires(cache, nameof(cache));
-      
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -291,7 +291,7 @@ namespace Ignia.Topics.Mapping {
         await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
       }
       else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
-        if (source.Parent != null) { 
+        if (source.Parent != null) {
           await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
         }
       }
@@ -526,7 +526,7 @@ namespace Ignia.Topics.Mapping {
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
         var metadataParent = _topicRepository.Load(metadataKey);
-        if (metadataParent != null) { 
+        if (metadataParent != null) {
           listSource = metadataParent.Children.ToList();
         }
       }

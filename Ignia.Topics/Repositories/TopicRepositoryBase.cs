@@ -333,8 +333,8 @@ namespace Ignia.Topics.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //If the target is already positioned after the sibling, then no actual change is registered
       if (
-        sibling != null && 
-        topic.Parent != null && 
+        sibling != null &&
+        topic.Parent != null &&
         topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
         return;
       }

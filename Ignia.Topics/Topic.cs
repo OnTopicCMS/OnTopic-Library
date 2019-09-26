@@ -75,7 +75,7 @@ namespace Ignia.Topics {
       /*----------------------------------------------------------------------------------------------------------------------
       | Initialize key
       \---------------------------------------------------------------------------------------------------------------------*/
-      //###HACK JJC20190924: The local backing field _key is always initialized at this point. But Roslyn's flow analysis 
+      //###HACK JJC20190924: The local backing field _key is always initialized at this point. But Roslyn's flow analysis
       //isn't smart enough to detect this. As such, the following effectively sets _key to itself.
       _key = Key;
 

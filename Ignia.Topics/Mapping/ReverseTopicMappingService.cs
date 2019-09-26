@@ -60,7 +60,7 @@ namespace Ignia.Topics.Mapping {
       | Validate dependencies
       \---------------------------------------------------------------------------------------------------------------------*/
       Contract.Assume(
-        _contentTypeDescriptors, 
+        _contentTypeDescriptors,
         $"The {nameof(ITopicRepository.GetContentTypeDescriptors)}() method returned null. This could indicate a corrupt " +
         $"or data source."
       );

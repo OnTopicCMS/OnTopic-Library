@@ -64,7 +64,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
         $"The topic graph could not be successfully loaded from the {nameof(ITopicRepository)} instance. The " +
         $"{nameof(SitemapController)} is unable to establish a local copy to work off of."
       );
-      
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish view model
       \-----------------------------------------------------------------------------------------------------------------------*/

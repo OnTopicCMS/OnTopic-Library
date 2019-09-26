@@ -22,7 +22,7 @@ namespace Ignia.Topics.Web.Editor {
     | PROPERTY: INHERITED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the value of a control, as inherited from any Topic pointers. 
+    ///   Gets or sets the value of a control, as inherited from any Topic pointers.
     /// </summary>
     /// <remarks>
     ///   If this value is set, then the control should not be marked as required, as it is inheriting its value from a

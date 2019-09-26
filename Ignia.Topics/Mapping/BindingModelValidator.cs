@@ -152,7 +152,7 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires(sourceType, nameof(sourceType));
       Contract.Requires(property, nameof(property));
       Contract.Requires(contentTypeDescriptor, nameof(contentTypeDescriptor));
-      
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
