@@ -53,10 +53,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Register local controllers
       \-----------------------------------------------------------------------------------------------------------------------*/
       //Add Topic assembly into scope
-      services.AddApplicationPart(typeof(TopicController).Assembly)
-
-      //Add controllers to scope as dependencies
-      .AddControllersAsServices();
+      services.AddApplicationPart(typeof(TopicController).Assembly);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return services for fluent API
