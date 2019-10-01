@@ -95,7 +95,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    public async virtual Task<IActionResult> Index(string path) {
+    public async virtual Task<IActionResult> IndexAsync(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default view model
