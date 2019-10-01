@@ -79,5 +79,27 @@ namespace Ignia.Topics.AspNetCore.Mvc {
         defaults: new { controller, action, rootTopic }
       );
 
+    /*==========================================================================================================================
+    | EXTENSION: MAP TOPIC ROUTE (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an MVC route for handling OnTopic related requests, and maps it to the <see cref="TopicController"/> by default.
+    /// </summary>
+    /// <remarks>
+    ///   This is functionally identical to <see cref="MapTopicRoute(IRouteBuilder, string, string, string)"/>, except that it
+    ///   targets the <see cref="IEndpointRouteBuilder"/>, which is preferred in ASP.NET Core 3.
+    /// </remarks>
+    public static ControllerActionEndpointConventionBuilder MapTopicRoute(
+      this IEndpointRouteBuilder routes,
+      string rootTopic,
+      string controller = "Topic",
+      string action = "Index"
+    ) =>
+      routes.MapControllerRoute(
+        name: $"{rootTopic}Topic",
+        pattern: rootTopic + "/{*path}",
+        defaults: new { controller, action, rootTopic }
+      );
+
   } //Class
 } //Namespace
