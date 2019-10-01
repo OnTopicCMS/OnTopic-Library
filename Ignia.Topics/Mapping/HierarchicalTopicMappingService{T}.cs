@@ -73,12 +73,12 @@ namespace Ignia.Topics.Mapping {
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
-    public Topic? GetHierarchicalRoot(Topic currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationRootTopic = (Topic?)currentTopic;
+      var navigationRootTopic = currentTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle default, if necessary
@@ -138,7 +138,7 @@ namespace Ignia.Topics.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
     public virtual async Task<T?> GetRootViewModelAsync(
-      Topic sourceTopic,
+      Topic? sourceTopic,
       int tiers = 1,
       Func<Topic, bool>? validationDelegate = null
     ) => await GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
@@ -148,7 +148,7 @@ namespace Ignia.Topics.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdocs />
     public async Task<T?> GetViewModelAsync(
-      Topic sourceTopic,
+      Topic? sourceTopic,
       int tiers = 1,
       Func<Topic, bool>? validationDelegate = null
     ) {
