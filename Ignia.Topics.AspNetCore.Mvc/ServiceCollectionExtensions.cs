@@ -101,5 +101,18 @@ namespace Ignia.Topics.AspNetCore.Mvc {
         defaults: new { controller, action, rootTopic }
       );
 
+    /*==========================================================================================================================
+    | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an MVC route for handling OnTopic redirect requests, and maps it to the <see cref="RedirectController"/>.
+    /// </summary>
+    public static ControllerActionEndpointConventionBuilder MapTopicRedirect(this IEndpointRouteBuilder routes) =>
+      routes.MapControllerRoute(
+        name: "TopicRedirect",
+        pattern: "Topic/{topicId}",
+        defaults: new { controller = "Redirect", action = "Redirect" }
+      );
+
   } //Class
 } //Namespace
