@@ -89,7 +89,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate conditions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(navigationRootTopic, $"The root topic could not be identified for the page-level navigation.");
       Contract.Assume(CurrentTopic, $"The current topic could not be identified for the page-level navigation.");
 
       /*------------------------------------------------------------------------------------------------------------------------
