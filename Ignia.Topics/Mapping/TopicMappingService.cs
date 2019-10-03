@@ -608,9 +608,11 @@ namespace Ignia.Topics.Mapping {
 
         //Ensure the source topic isn't disabled or hidden; disabled and hidden topics should never be returned to the
         //presentation layer
+        /*
         if (!childTopic.IsVisible()) {
           continue;
         }
+        */
 
         //Map child topic to target DTO
         var childDto = (object)childTopic;
