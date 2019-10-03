@@ -101,10 +101,12 @@ namespace Ignia.Topics.Mapping {
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     private async Task<object> MapAsync(Topic topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
 
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Handle null source
-      \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return null;
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic == null || topic.IsDisabled || topic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
+        return null;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
@@ -198,7 +200,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled) {
+      if (topic == null || topic.IsDisabled || topic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
         return target;
       }
 
@@ -587,7 +589,7 @@ namespace Ignia.Topics.Mapping {
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
       void AddToList(object dto) {
-        if (listType.IsAssignableFrom(dto.GetType())) {
+        if (dto != null && listType.IsAssignableFrom(dto.GetType())) {
           try {
             targetList.Add(dto);
           }
