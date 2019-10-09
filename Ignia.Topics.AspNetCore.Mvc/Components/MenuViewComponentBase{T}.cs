@@ -10,6 +10,7 @@ using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 using Ignia.Topics.Internal.Diagnostics;
+using System;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
@@ -40,6 +41,11 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
   {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITopicRepository                _topicRepository;
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -48,12 +54,15 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected MenuViewComponentBase(
       ITopicRoutingService topicRoutingService,
-      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
+      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService,
+      ITopicRepository topicRepository
     ) : base(
       topicRoutingService,
       hierarchicalTopicMappingService
-    ) { }
-
+    ) {
+      Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
+      _topicRepository = topicRepository;
+    }
 
     /*==========================================================================================================================
     | METHOD: INVOKE (ASYNC)
@@ -73,7 +82,16 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       >-------------------------------------------------------------------------------------------------------------------------
       | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
+      var                       navigationRootTopic             = (Topic?)null;
+      var                       configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
+
+      if (!String.IsNullOrEmpty(configuredRoot)) {
+        navigationRootTopic = _topicRepository.Load(configuredRoot);
+       }
+      if (navigationRootTopic is null) {
+        navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
+      }
+
       var navigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic!,
         3,
