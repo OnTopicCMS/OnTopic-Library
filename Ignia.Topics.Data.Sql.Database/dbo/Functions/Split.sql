@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[Split] (@s varchar(512), @sep char(1))
+﻿CREATE FUNCTION [dbo].[Split] (@s varchar(8000), @sep char(1))
 RETURNS table
 AS
 RETURN (
@@ -10,6 +10,6 @@ RETURN (
     WHERE	stop > 0
   )
   SELECT	pn,
-		SUBSTRING(@s, start, CASE WHEN stop > 0 THEN stop-start ELSE 512 END) AS s
+		SUBSTRING(@s, start, CASE WHEN stop > 0 THEN stop-start ELSE 8000 END) AS s
     FROM	Pieces
 )
