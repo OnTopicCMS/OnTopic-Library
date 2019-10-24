@@ -523,6 +523,27 @@ namespace Ignia.Topics.Mapping {
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle other strongly typed source collections
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //The following allows a target collection to be mapped to an IList<Topic> source collection. This is valuable for custom,
+      //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific relationship type.
+      //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
+      //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
+      if (listSource.Count == 0) {
+        var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
+        if (sourceProperty != null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
+          var sourcePropertyValue = sourceProperty.GetValue(source) as IList;
+          if (sourcePropertyValue != null) {
+            listSource = GetRelationship(
+              RelationshipType.Any,
+              s => true,
+              () => sourcePropertyValue.Cast<Topic>().ToList()
+            );
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle Metadata relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {

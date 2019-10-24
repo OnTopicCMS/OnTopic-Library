@@ -257,6 +257,31 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: CUSTOM COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from a custom source
+    ///   collection compatible with <see cref="IList{T}"/>, where <c>{T}</c> is a <see cref="Topic"/>, or derivative.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses a <see cref="RelationshipAttribute"/> to set the
+    ///   relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
+    ///   cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
+    ///   outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
+    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
+    /// </remarks>
+    [TestMethod]
+    public async Task CustomCollection () {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
+      var target                = (ContentTypeDescriptorTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(8, target.AttributeDescriptors.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP NESTED TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

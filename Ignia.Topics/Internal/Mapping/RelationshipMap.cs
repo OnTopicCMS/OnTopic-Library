@@ -31,6 +31,7 @@ namespace Ignia.Topics.Internal.Mapping {
     static RelationshipMap() {
 
       var mappings = new Dictionary<RelationshipType, Relationships> {
+        { RelationshipType.Any, Relationships.None },
         { RelationshipType.Children, Relationships.Children },
         { RelationshipType.Relationship, Relationships.Relationships },
         { RelationshipType.NestedTopics, Relationships.None },
