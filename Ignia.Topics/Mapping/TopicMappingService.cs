@@ -533,7 +533,11 @@ namespace Ignia.Topics.Mapping {
         var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
         if (sourceProperty != null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
           var sourcePropertyValue = sourceProperty.GetValue(source) as IList;
-          if (sourcePropertyValue != null) {
+          if (
+            sourcePropertyValue != null &&
+            sourcePropertyValue.Count > 0 &&
+            typeof(Topic).IsAssignableFrom(sourcePropertyValue[0].GetType())
+          ) {
             listSource = GetRelationship(
               RelationshipType.Any,
               s => true,
