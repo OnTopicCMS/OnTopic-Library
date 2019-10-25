@@ -263,13 +263,6 @@ namespace Ignia.Topics.Tests {
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from a custom source
     ///   collection compatible with <see cref="IList{T}"/>, where <c>{T}</c> is a <see cref="Topic"/>, or derivative.
     /// </summary>
-    /// <remarks>
-    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses a <see cref="RelationshipAttribute"/> to set the
-    ///   relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
-    ///   cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
-    ///   outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
-    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
-    /// </remarks>
     [TestMethod]
     public async Task CustomCollection () {
 
@@ -575,10 +568,13 @@ namespace Ignia.Topics.Tests {
       topic.DefaultConfiguration = "Value1=1&Value2=2";
       topic.EditorType          = "TopicList";
 
+      topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
+
       var target                = (CompatiblePropertyTopicViewModel?)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
       Assert.AreEqual<IDictionary<string, string?>>(topic.Configuration, target.Configuration);
+      Assert.AreEqual<int>(1, target.VersionHistory.Count);
 
     }
 

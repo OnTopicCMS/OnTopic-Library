@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
@@ -21,12 +22,15 @@ namespace Ignia.Topics.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
+  [SuppressMessage("Usage", "CA2227", Justification = "This is intended to be initialized by the mapping service.")]
   public class CompatiblePropertyTopicViewModel : TopicViewModel {
 
     public ModelType ModelType { get; set; }
+
     [DisallowNull]
-    [SuppressMessage("Usage", "CA2227", Justification = "This is intended to be initialized by the mapping service.")]
     public IDictionary<string, string?>? Configuration { get; set; }
+
+    public List<DateTime>? VersionHistory { get; set; }
 
     } //Class
   } //Namespace
