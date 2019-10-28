@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Metadata;
 using System.Reflection;
+using Ignia.Topics.Metadata.AttributeTypes;
 
 namespace Ignia.Topics {
 
@@ -39,8 +40,20 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure editor types are accounted for
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Contains("ContentTypeDescriptor")) Add(typeof(ContentTypeDescriptor));
-      if (!Contains("AttributeDescriptor")) Add(typeof(AttributeDescriptor));
+      if (!Contains(nameof(ContentTypeDescriptor)))             Add(typeof(ContentTypeDescriptor));
+      if (!Contains(nameof(AttributeDescriptor)))               Add(typeof(AttributeDescriptor));
+      if (!Contains(nameof(BooleanAttribute)))                  Add(typeof(BooleanAttribute));
+      if (!Contains(nameof(DateTimeAttribute)))                 Add(typeof(DateTimeAttribute));
+      if (!Contains(nameof(FileListAttribute)))                 Add(typeof(FileListAttribute));
+      if (!Contains(nameof(FilePathAttribute)))                 Add(typeof(FilePathAttribute));
+      if (!Contains(nameof(HtmlAttribute)))                     Add(typeof(HtmlAttribute));
+      if (!Contains(nameof(NestedTopicListAttribute)))          Add(typeof(NestedTopicListAttribute));
+      if (!Contains(nameof(RelationshipAttribute)))             Add(typeof(RelationshipAttribute));
+      if (!Contains(nameof(TextAreaAttribute)))                 Add(typeof(TextAreaAttribute));
+      if (!Contains(nameof(TextAttribute)))                     Add(typeof(TextAttribute));
+      if (!Contains(nameof(TokenizedTopicListAttribute)))       Add(typeof(TokenizedTopicListAttribute));
+      if (!Contains(nameof(TopicListAttribute)))                Add(typeof(TopicListAttribute));
+      if (!Contains(nameof(TopicReferenceAttribute)))           Add(typeof(TopicReferenceAttribute));
 
     }
 
