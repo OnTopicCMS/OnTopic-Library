@@ -11,23 +11,23 @@ using System.Linq;
 namespace Ignia.Topics.Metadata.AttributeTypes {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP ATTRIBUTE (DESCRIPTOR)
+  | CLASS: QUERYABLE TOPIC LIST ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a relationship attribute type, including information on how it will be presented and
-  ///   validated in the editor.
+  ///   Represents metadata for describing a queryable topic list attribute types, including information on how they will be
+  ///   presented and validated in the editor. Acts as a base class for other topic list attribute types.
   /// </summary>
   /// <remarks>
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class RelationshipAttribute : QueryableTopicListAttribute {
+  public class QueryableTopicListAttribute : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public RelationshipAttribute(
+    public QueryableTopicListAttribute(
       string key,
       string contentType,
       Topic parent,

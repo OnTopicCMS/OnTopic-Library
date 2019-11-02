@@ -11,23 +11,23 @@ using System.Linq;
 namespace Ignia.Topics.Metadata.AttributeTypes {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP ATTRIBUTE (DESCRIPTOR)
+  | CLASS: LAST MODIFIED BY ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a relationship attribute type, including information on how it will be presented and
-  ///   validated in the editor.
+  ///   Represents metadata for descripting the last modified by attribute type, including information on how it will be
+  ///   presented and validated in the editor.
   /// </summary>
   /// <remarks>
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class RelationshipAttribute : QueryableTopicListAttribute {
+  public class LastModifiedByAttribute : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public RelationshipAttribute(
+    public LastModifiedByAttribute(
       string key,
       string contentType,
       Topic parent,
