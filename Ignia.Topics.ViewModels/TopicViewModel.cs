@@ -26,6 +26,7 @@ namespace Ignia.Topics.ViewModels {
     public string? Key { get; set; }
     public string? ContentType { get; set; }
     public string? UniqueKey { get; set; }
+    public string? WebPath { get; set; }
     public string? View { get; set; }
     public string? Title { get; set; }
     public bool IsHidden { get; set; }

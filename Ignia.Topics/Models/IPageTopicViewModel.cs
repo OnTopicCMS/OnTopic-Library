@@ -24,14 +24,6 @@ namespace Ignia.Topics.Models {
   public interface IPageTopicViewModel : ITopicViewModel {
 
     /*==========================================================================================================================
-    | PROPERTY: WEB PATH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the Web Path attribute, representing the URL representation of the path to the associated topic.
-    /// </summary>
-    string? WebPath { get; set; }
-
-    /*==========================================================================================================================
     | PROPERTY: META KEYWORDS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
