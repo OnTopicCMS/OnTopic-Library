@@ -36,14 +36,6 @@ namespace Ignia.Topics.Models {
     /// <summary>
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
-    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
-    /// </requires>
-    /// <requires
-    ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
     string? Key { get; set; }
 
     /*==========================================================================================================================
@@ -52,9 +44,6 @@ namespace Ignia.Topics.Models {
     /// <summary>
     ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
     /// </summary>
-    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
-    /// </requires>
     string? UniqueKey { get; set; }
 
     /*==========================================================================================================================
@@ -84,14 +73,6 @@ namespace Ignia.Topics.Models {
     ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
     ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
     /// </remarks>
-    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(value)
-    /// </requires>
-    /// <requires
-    ///   description="The View should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value?.Contains(" ")?? true
-    /// </requires>
     string? View { get; set; }
 
     /*==========================================================================================================================
@@ -113,9 +94,6 @@ namespace Ignia.Topics.Models {
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>
-    /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
-    ///   !string.IsNullOrWhiteSpace(value)
-    /// </requires>
     string? Title { get; set; }
 
   } //Class
