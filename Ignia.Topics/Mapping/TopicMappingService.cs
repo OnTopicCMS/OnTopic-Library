@@ -557,12 +557,12 @@ namespace Ignia.Topics.Mapping {
         }
       }
 
-       /*------------------------------------------------------------------------------------------------------------------------
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle flattening of children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.FlattenChildren) {
         var flattenedList = new List<Topic>();
-        listSource.ToList().ForEach(t => PopulateChildTopics(t, flattenedList));
+        listSource.ToList().ForEach(t => FlattenTopicGraph(t, flattenedList));
         listSource = flattenedList;
       }
 
@@ -724,7 +724,7 @@ namespace Ignia.Topics.Mapping {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: POPULATE CHILD TOPICS
+    | PROTECTED: FLATTEN TOPIC GRAPH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function recursively iterates through children and adds each to a collection.
@@ -732,7 +732,7 @@ namespace Ignia.Topics.Mapping {
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
     /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    protected IList<Topic> PopulateChildTopics(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
+    protected IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -750,7 +750,7 @@ namespace Ignia.Topics.Mapping {
       | Merge source list into target list
       \-----------------------------------------------------------------------------------------------------------------------*/
       targetList.Add(source);
-      source.Children.ToList().ForEach(t => PopulateChildTopics(t, targetList));
+      source.Children.ToList().ForEach(t => FlattenTopicGraph(t, targetList));
       return targetList;
 
     }
