@@ -39,6 +39,7 @@ namespace Ignia.Topics.ViewModels {
       AddIfMissing(typeof(ContentListTopicViewModel));
       AddIfMissing(typeof(IndexTopicViewModel));
       AddIfMissing(typeof(ItemTopicViewModel));
+      AddIfMissing(typeof(ListTopicViewModel));
       AddIfMissing(typeof(LookupListItemTopicViewModel));
       AddIfMissing(typeof(NavigationTopicViewModel));
       AddIfMissing(typeof(PageGroupTopicViewModel));

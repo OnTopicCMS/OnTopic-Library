@@ -25,7 +25,7 @@ namespace Ignia.Topics.ViewModels {
   ///     are supplied for convenience to model factory default settings for out-of-the-box content types.
   ///   </para>
   /// </remarks>
-  public class ListViewModel: ContentItemTopicViewModel {
+  public class ListTopicViewModel: ContentItemTopicViewModel {
 
   } //Class
 } //Namespace
