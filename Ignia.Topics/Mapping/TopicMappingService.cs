@@ -106,7 +106,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled || topic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
+      if (topic == null || topic.IsDisabled) {
         return null;
       }
 
@@ -204,7 +204,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled || topic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
+      if (topic == null || topic.IsDisabled) {
         return target;
       }
 
@@ -629,6 +629,11 @@ namespace Ignia.Topics.Mapping {
 
         //Ensure the source topic matches any [FilterByAttribute()] settings
         if (!configuration.SatisfiesAttributeFilters(childTopic)) {
+          continue;
+        }
+
+        //Skip nested topics; those should be explicitly mapped to their own collection or topic reference
+        if (childTopic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
           continue;
         }
 
