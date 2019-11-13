@@ -25,6 +25,7 @@ namespace Ignia.Topics.ViewModels {
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
     public string? MetaKeywords { get; set; }
+    public bool? NoIndex { get; set; }
     public string? ShortTitle { get; set; }
     public string? Body { get; set; }
 
