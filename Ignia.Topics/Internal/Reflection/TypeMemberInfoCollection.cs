@@ -34,9 +34,12 @@ namespace Ignia.Topics.Internal.Reflection {
     static TypeMemberInfoCollection() {
       SettableTypes = new List<Type> {
         typeof(bool),
+        typeof(bool?),
         typeof(int),
+        typeof(int?),
         typeof(string),
-        typeof(DateTime)
+        typeof(DateTime),
+        typeof(DateTime?)
       };
     }
 
@@ -392,19 +395,30 @@ namespace Ignia.Topics.Internal.Reflection {
 
       var valueObject = (object?)null;
 
+      //Treat empty as null for non-strings, regardless of whether they’re nullable
+      if (!type.Equals(typeof(string)) && String.IsNullOrWhiteSpace(value)) {
+        return null;
+      }
+
       if (value == null) return null;
 
-      if (type.Equals(typeof(bool))) {
-        valueObject = value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-      }
-      else if (type.Equals(typeof(int))) {
-        int intValue = Int32.TryParse(value, out intValue)? intValue : 0;
-        valueObject = intValue;
-      }
-      else if (type.Equals(typeof(string))) {
+      if (type.Equals(typeof(string))) {
         valueObject = value;
       }
-      else if (type.Equals(typeof(DateTime))) {
+      else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
+        if (value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase)) {
+          valueObject = true;
+        }
+        else if (value == "0" || value.Equals("false", StringComparison.InvariantCultureIgnoreCase)) {
+          valueObject = false;
+        }
+      }
+      else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
+        if (Int32.TryParse(value, out var intValue)) {
+          valueObject = intValue;
+        }
+      }
+      else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
         if (DateTime.TryParse(value, out var date)) {
           valueObject = date;
         }
