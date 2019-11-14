@@ -261,6 +261,9 @@ namespace Ignia.Topics.Tests.TestDoubles {
       addAttribute(pageContentType, "IsHidden");
       addAttribute(pageContentType, "TopicReference", "TopicPointer");
 
+      pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
       \-----------------------------------------------------------------------------------------------------------------------*/

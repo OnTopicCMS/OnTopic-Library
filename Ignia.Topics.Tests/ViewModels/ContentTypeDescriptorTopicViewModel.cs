@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Ignia.Topics.Mapping;
 using Ignia.Topics.ViewModels;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,7 +21,11 @@ namespace Ignia.Topics.Tests.ViewModels {
   /// </remarks>
   public class ContentTypeDescriptorTopicViewModel : PageTopicViewModel {
 
-    public TopicViewModelCollection<TopicViewModel> AttributeDescriptors { get; } = new TopicViewModelCollection<TopicViewModel>();
+    public TopicViewModelCollection<TopicViewModel> AttributeDescriptors
+      { get; } = new TopicViewModelCollection<TopicViewModel>();
+
+    public TopicViewModelCollection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes
+      { get; } = new TopicViewModelCollection<ContentTypeDescriptorTopicViewModel>();
 
   } //Class
 } //Namespace

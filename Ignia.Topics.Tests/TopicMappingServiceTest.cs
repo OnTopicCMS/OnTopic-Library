@@ -337,6 +337,10 @@ namespace Ignia.Topics.Tests {
       var target                = (ContentTypeDescriptorTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(8, target.AttributeDescriptors.Count);
+      Assert.AreEqual<int>(2, target.PermittedContentTypes.Count);
+
+      //Ensure custom collections are not recursively followed without instruction
+      Assert.AreEqual<int>(0, target.PermittedContentTypes.FirstOrDefault()?.PermittedContentTypes.Count?? 0);
 
     }
 
