@@ -163,6 +163,72 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP NULLABLE PROPERTIES WITH INVALID VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting nullable scalar values with invalid values with the
+    ///   expectation that they will be returned as null.
+    /// </summary>
+    [TestMethod]
+    public async Task MapNullablePropertiesWithInvalidValues() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      topic.Attributes.SetValue("NullableInteger", "A");
+      topic.Attributes.SetValue("NullableBoolean", "43");
+      topic.Attributes.SetValue("NullableDateTime", "Hello World");
+
+      var target                = await mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.IsNull(target.NullableInteger);
+      Assert.IsNull(target.NullableBoolean);
+      Assert.IsNull(target.NullableDateTime);
+
+      //The following should not be null since they map to non-nullable properties which will have default values
+      Assert.AreEqual(topic.Title, target.Title);
+      Assert.AreEqual<bool?>(topic.IsHidden, target.IsHidden);
+      Assert.AreEqual<DateTime?>(topic.LastModified, target.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP NULLABLE PROPERTIES WITH VALID VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests setting nullable scalar values with valid values with the
+    ///   expectation that they will be mapped correctly.
+    /// </summary>
+    [TestMethod]
+    public async Task MapNullablePropertiesWithValidValues() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      topic.Attributes.SetValue("NullableString", "Hello World.");
+      topic.Attributes.SetValue("NullableInteger", "43");
+      topic.Attributes.SetValue("NullableBoolean", "tRuE");
+      topic.Attributes.SetValue("NullableDateTime", "10/15/1976");
+
+      topic.Attributes.SetValue("Title", "Hello World.");
+      topic.Attributes.SetValue("IsHidden", "true");
+      topic.Attributes.SetValue("LastModified", "10/15/1976");
+
+      var target                = await mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<string?>("Hello World.", target.NullableString);
+      Assert.AreEqual<int?>(43, target.NullableInteger);
+      Assert.AreEqual<bool?>(true, target.NullableBoolean);
+      Assert.AreEqual<DateTime?>(new DateTime(1976, 10, 15), target.NullableDateTime);
+
+      Assert.AreEqual<string?>(topic.Title, target.Title);
+      Assert.AreEqual<bool?>(target.IsHidden, target.IsHidden);
+      Assert.AreEqual<DateTime?>(topic.LastModified, target.LastModified);
+
+    }
+
+
+    /*==========================================================================================================================
     | TEST: ALTERNATE ATTRIBUTE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
