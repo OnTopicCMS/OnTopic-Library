@@ -538,7 +538,7 @@ namespace Ignia.Topics.Mapping {
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0].GetType())
           ) {
             listSource = GetRelationship(
-              RelationshipType.Any,
+              RelationshipType.MappedCollection,
               s => true,
               () => sourcePropertyValue.Cast<Topic>().ToList()
             );

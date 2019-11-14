@@ -24,6 +24,8 @@ namespace Ignia.Topics.Tests.ViewModels {
     public TopicViewModelCollection<TopicViewModel> AttributeDescriptors
       { get; } = new TopicViewModelCollection<TopicViewModel>();
 
+    [Relationship(RelationshipType.MappedCollection)]
+    [Follow(Relationships.None)]
     public TopicViewModelCollection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes
       { get; } = new TopicViewModelCollection<ContentTypeDescriptorTopicViewModel>();
 

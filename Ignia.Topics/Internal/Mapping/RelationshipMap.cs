@@ -35,6 +35,7 @@ namespace Ignia.Topics.Internal.Mapping {
         { RelationshipType.Children, Relationships.Children },
         { RelationshipType.Relationship, Relationships.Relationships },
         { RelationshipType.NestedTopics, Relationships.None },
+        { RelationshipType.MappedCollection, Relationships.MappedCollections },
         { RelationshipType.IncomingRelationship, Relationships.IncomingRelationships }
       };
 
