@@ -100,7 +100,7 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<T?> MapAsync<T>(ITopicBindingModel source) where T : Topic {
+    public async Task<T?> MapAsync<T>(ITopicBindingModel? source) where T : Topic {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -129,7 +129,7 @@ namespace Ignia.Topics.Mapping {
     | METHOD: MAP (TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public async Task<Topic?> MapAsync(ITopicBindingModel source, Topic target) {
+    public async Task<Topic?> MapAsync(ITopicBindingModel? source, Topic target) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -171,19 +171,55 @@ namespace Ignia.Topics.Mapping {
         );
       }
 
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Map source to target
+      \---------------------------------------------------------------------------------------------------------------------*/
+      return await MapAsync(source, target, null).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
+    | PROTECTED: MAP (TOPIC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a binding model and an existing <see cref="Topic"/>, will map the properties of the binding model to attributes
+    ///   on the <see cref="Topic"/>, optionally prefixing the attributes with the <paramref name="attributePrefix"/>.
+    /// </summary>
+    /// <param name="source">
+    ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
+    /// </param>
+    /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    /// <returns>
+    ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
+    /// </returns>
+    protected async Task<Topic?> MapAsync(object? source, Topic target, string? attributePrefix) {
+
+      /*----------------------------------------------------------------------------------------------------------------------
+      | Handle null source
+      \---------------------------------------------------------------------------------------------------------------------*/
+      if (source == null) return target;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Assume(target.ContentType, nameof(target.ContentType));
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
+      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
 
-      BindingModelValidator.ValidateModel(source.GetType(), properties, _contentTypeDescriptors.GetTopic(target.ContentType));
+      BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
       foreach (var property in properties) {
-        taskQueue.Add(SetPropertyAsync(source, target, property));
+        taskQueue.Add(SetPropertyAsync(source, target, property, attributePrefix));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
@@ -207,10 +243,12 @@ namespace Ignia.Topics.Mapping {
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="property">Information related to the current property.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected async Task SetPropertyAsync(
-      ITopicBindingModel        source,
+      object                    source,
       Topic                     target,
-      PropertyInfo              property
+      PropertyInfo              property,
+      string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -221,19 +259,13 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires(property, nameof(property));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(source.ContentType, nameof(source.ContentType));
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
-      var contentType           = _contentTypeDescriptors.GetTopic(source.ContentType);
+      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
+      var compositeAttributeKey = attributePrefix + configuration.AttributeKey;
 
-      Contract.Assume(contentType, nameof(contentType));
-
-      var attributeType         = contentType.AttributeDescriptors.GetTopic(configuration.AttributeKey);
+      Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties decorated with [DisableMapping]
@@ -243,12 +275,26 @@ namespace Ignia.Topics.Mapping {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Throw an exception if the attribute can't be found
+      | Handle mapping properties from referenced objects
       \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.MapToParent) {
+        await MapAsync(
+          property.GetValue(source),
+          target,
+          attributePrefix + configuration.AttributePrefix
+        ).ConfigureAwait(false);
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve attribute descriptor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributeType = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
+
       if (attributeType == null) {
         throw new InvalidOperationException(
           $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
-          $"'{contentType.Key}' content type.");
+          $"'{contentTypeDescriptor.Key}' content type.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -261,16 +307,16 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       switch (attributeType.ModelType) {
         case ModelType.ScalarValue:
-          SetScalarValue(source, target, configuration);
+          SetScalarValue(source, target, configuration, attributePrefix);
           return;
         case ModelType.Relationship:
-          SetRelationships(source, target, configuration);
+          SetRelationships(source, target, configuration, attributePrefix);
           return;
         case ModelType.NestedTopic:
-          await SetNestedTopicsAsync(source, target, configuration).ConfigureAwait(false);
+          await SetNestedTopicsAsync(source, target, configuration, attributePrefix).ConfigureAwait(false);
           return;
         case ModelType.Reference:
-          SetReference(source, target, configuration);
+          SetReference(source, target, configuration, attributePrefix);
           return;
       }
 
@@ -285,19 +331,26 @@ namespace Ignia.Topics.Mapping {
     /// <remarks>
     ///   Assuming the <paramref name="configuration"/>'s <see cref="PropertyConfiguration.Property"/> is of the type <see
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
-    ///   cref="SetScalarValue(ITopicBindingModel, Topic, PropertyConfiguration)"/> method will attempt to set the property on
-    ///   the <paramref name="target"/>. If the value is not set on the <paramref name="source"/> then the <see
-    ///   cref="DefaultValueAttribute"/> will be evaluated as a fallback. If the property is not of a settable type then the property
-    ///   is not set. If the value is empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s <see
-    ///   cref="AttributeValueCollection"/>.
+    ///   cref="SetScalarValue(Object, Topic, PropertyConfiguration, String)"/> method will attempt to set the property on the
+    ///   <paramref name="target"/>. If the value is not set on the <paramref name="source"/> then the <see
+    ///   cref="DefaultValueAttribute"/> will be evaluated as a fallback. If the property is not of a settable type then the
+    ///   property is not set. If the value is empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s
+    ///   <see cref="AttributeValueCollection"/>.
     /// </remarks>
     /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <autogeneratedoc />
-    protected static void SetScalarValue(ITopicBindingModel source, Topic target, PropertyConfiguration configuration) {
+    protected static void SetScalarValue(
+      object                    source,
+      Topic                     target,
+      PropertyConfiguration     configuration,
+      string?                   attributePrefix                 = null
+    )
+    {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -332,7 +385,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set the value (to null, if appropriate)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetValue(configuration.AttributeKey, attributeValue);
+      target.Attributes.SetValue(attributePrefix + configuration.AttributeKey, attributeValue);
 
     }
 
@@ -350,11 +403,14 @@ namespace Ignia.Topics.Mapping {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected void SetRelationships(
-      ITopicBindingModel        source,
+      object                    source,
       Topic                     target,
-      PropertyConfiguration     configuration
-    ) {
+      PropertyConfiguration     configuration,
+      string?                   attributePrefix                 = null
+    )
+    {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -375,7 +431,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Relationships.ClearTopics(configuration.AttributeKey);
+      target.Relationships.ClearTopics(attributePrefix + configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
@@ -389,7 +445,7 @@ namespace Ignia.Topics.Mapping {
             $"be located in the repository."
           );
         }
-        target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
+        target.Relationships.SetTopic(attributePrefix + configuration.AttributeKey, targetTopic);
       }
 
     }
@@ -408,10 +464,12 @@ namespace Ignia.Topics.Mapping {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected async Task SetNestedTopicsAsync(
-      ITopicBindingModel source,
-      Topic target,
-      PropertyConfiguration configuration
+      object                    source,
+      Topic                     target,
+      PropertyConfiguration     configuration,
+      string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -429,9 +487,9 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var container = target.Children.GetTopic(configuration.AttributeKey);
+      var container = target.Children.GetTopic(attributePrefix + configuration.AttributeKey);
       if (container == null) {
-        container = TopicFactory.Create(configuration.AttributeKey, "List", target);
+        container = TopicFactory.Create(attributePrefix + configuration.AttributeKey, "List", target);
         container.IsHidden = true;
       }
 
@@ -456,10 +514,12 @@ namespace Ignia.Topics.Mapping {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected void SetReference(
-      ITopicBindingModel source,
-      Topic target,
-      PropertyConfiguration configuration
+      object                    source,
+      Topic                     target,
+      PropertyConfiguration     configuration,
+      string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -499,7 +559,7 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+      target.Attributes.SetInteger(attributePrefix + configuration.AttributeKey, topicReference.Id);
 
     }
 

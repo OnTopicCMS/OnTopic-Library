@@ -89,10 +89,12 @@ namespace Ignia.Topics.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
+    /// <param name="attributePrefix">The optional prefix to apply to the attributes.</param>
     static internal void ValidateModel(
       [AllowNull]Type sourceType,
       [AllowNull]MemberInfoCollection<PropertyInfo> properties,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
+      string? attributePrefix = null
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +115,7 @@ namespace Ignia.Topics.Mapping {
       | Validate
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var property in properties) {
-        ValidateProperty(sourceType, property, contentTypeDescriptor);
+        ValidateProperty(sourceType, property, contentTypeDescriptor, attributePrefix);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -141,11 +143,14 @@ namespace Ignia.Topics.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
+    /// <param name="attributePrefix">The optional prefix to apply to the attributes.</param>
     static internal void ValidateProperty(
       [AllowNull]Type sourceType,
       [AllowNull]PropertyInfo property,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
-    ) {
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
+      string? attributePrefix
+    )
+    {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -157,24 +162,40 @@ namespace Ignia.Topics.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var propertyType          = property.PropertyType;
       var configuration         = new PropertyConfiguration(property);
-      var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(configuration.AttributeKey);
+      var compositeAttributeKey = attributePrefix + configuration.AttributeKey;
+      var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
       var childRelationships    = new[] { RelationshipType.Children, RelationshipType.NestedTopics };
       var relationships         = new[] { RelationshipType.Relationship, RelationshipType.IncomingRelationship };
       var listType              = (Type?)null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define list type (if it's a list and it's generic)
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (typeof(IList).IsAssignableFrom(property.PropertyType) && configuration.Property.PropertyType.IsGenericType) {
-        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties decorated as [DisableMapping]
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
         return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle mapping properties from referenced objects
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.MapToParent) {
+        var childProperties = new MemberInfoCollection<PropertyInfo>(propertyType, propertyType.GetProperties());
+        ValidateModel(
+          propertyType,
+          childProperties,
+          contentTypeDescriptor,
+          attributePrefix + configuration.AttributePrefix
+        );
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Define list type (if it's a list and it's generic)
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (typeof(IList).IsAssignableFrom(propertyType) && propertyType.IsGenericType) {
+        listType = propertyType.GetGenericArguments().Last();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -207,7 +228,7 @@ namespace Ignia.Topics.Mapping {
       if (attributeDescriptor == null) {
         throw new InvalidOperationException(
           $"A {nameof(sourceType)} object was provided with a content type set to {contentTypeDescriptor.Key}'. This " +
-          $"content type does not contain an attribute named '{configuration.AttributeKey}', as requested by the " +
+          $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
           $"{configuration.Property.Name} property. If this property is not intended to be mapped by the " +
           $"{nameof(ReverseTopicMappingService)}, then it should be decorated with {nameof(DisableMappingAttribute)}."
         );
@@ -244,15 +265,14 @@ namespace Ignia.Topics.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         attributeDescriptor.ModelType == ModelType.Reference &&
-        !typeof(IRelatedTopicBindingModel).IsAssignableFrom(property.PropertyType)
+        !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a {ModelType.Reference}, but " +
-          $"the generic type {property.PropertyType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} " +
-          $"interface. This is required for references. If this property is not intended to be mapped to " +
-          $"{ModelType.NestedTopic} then update the definition in the associated {nameof(ContentTypeDescriptor)}. If this " +
-          $"property is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)} to exclude it from " +
-          $"mapping."
+          $"the generic type {propertyType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} interface. This " +
+          $"is required for references. If this property is not intended to be mapped to {ModelType.NestedTopic} then update " +
+          $"the definition in the associated {nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped " +
+          $"at all, include the {nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 
@@ -265,12 +285,11 @@ namespace Ignia.Topics.Mapping {
       ) {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a topic reference, but the generic type " +
-          $"{configuration.AttributeKey} does not end in <c>Id</c>. By convention, all topic reference are expected to end " +
-          $"in <c>Id</c>. To keep the property name set to {property.PropertyType.Name}, use the " +
-          $"{nameof(AttributeKeyAttribute)} to specify the name of the topic reference this should map to. If this " +
-          $"property is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)}. If the " +
-          $"{contentTypeDescriptor.Key} defines a topic reference attribute that doesn't follow this convention, then it " +
-          $"should be updated."
+          $"{compositeAttributeKey} does not end in <c>Id</c>. By convention, all topic reference are expected to end " +
+          $"in <c>Id</c>. To keep the property name set to {propertyType.Name}, use the {nameof(AttributeKeyAttribute)} to " +
+          $"specify the name of the topic reference this should map to. If this property is not intended to be mapped at " +
+          $"all, include the {nameof(DisableMappingAttribute)}. If the {contentTypeDescriptor.Key} defines a topic reference " +
+          $"attribute that doesn't follow this convention, then it should be updated."
         );
       }
 
