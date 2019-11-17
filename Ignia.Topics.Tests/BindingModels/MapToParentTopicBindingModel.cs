@@ -22,10 +22,13 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class MapToParentTopicBindingModel : BasicTopicBindingModel {
 
+    [MapToParent(AttributePrefix="")]
     public ContactTopicBindingModel PrimaryContact { get; set; } = new ContactTopicBindingModel();
 
+    [MapToParent(AttributePrefix="Alternate")]
     public ContactTopicBindingModel AlternateContact { get; set; } = new ContactTopicBindingModel();
 
+    [MapToParent]
     public ContactTopicBindingModel BillingContact { get; set; } = new ContactTopicBindingModel();
 
   } //Class

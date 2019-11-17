@@ -79,6 +79,8 @@ namespace Ignia.Topics.Internal.Mapping {
       GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
       GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = a.Value);
+      GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
+      GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix = a.AttributePrefix?? property.Name);
       GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
@@ -142,6 +144,48 @@ namespace Ignia.Topics.Internal.Mapping {
     ///   </para>
     /// </remarks>
     public string AttributeKey { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: MAP TO PARENT?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether or not a complex object's properties should be mapped to the topic's attributes.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, properties representing complex classes won't be mapped unless they correspond to a narrow set of types
+    ///     (such as <see cref="IList{T}"/>). The <see cref="MapToParentAttribute"/> allows this behavior to be overwritten.
+    ///     When this occurs, the properties of the referenced object are treated as attributes on the topic.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="MapToParent"/> property corresponds to the <see cref="MapToParentAttribute"/> attribute. It can be
+    ///     assigned by decorating a DTO property with e.g. <c>[MapToParent]</c>. Optionally, an attribute prefix can be
+    ///     provided; see <see cref="AttributePrefix"/> for details.
+    ///   </para>
+    /// </remarks>
+    public bool MapToParent { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: ATTRIBUTE PREFIX
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The prefix to apply to the <see cref="AttributeKey"/>; used when mapping complex objects.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, properties representing complex classes won't be mapped unless they correspond to a narrow set of types
+    ///     (such as <see cref="IList{T}"/>). The <see cref="MapToParentAttribute"/> allows this behavior to be overwritten.
+    ///     When this occurs, the properties of the referenced object are treated as attributes on the topic. To distinguish
+    ///     them from properties on the parent topic, they are (by default) prefixed with the name of the property that the
+    ///     complex object is assigned to. Optionally, however, this can be overridden, or set to <see cref="String.Empty"/>.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributePrefix"/> property corresponds to the <see cref="MapToParentAttribute.AttributePrefix"/>
+    ///     property. It can be assigned by decorating a DTO property with e.g. <c>[MapToParent(AttributePrefix
+    ///     = "AlternateAttributeKey")]</c>.
+    ///   </para>
+    /// </remarks>
+    public string? AttributePrefix { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: DEFAULT VALUE
