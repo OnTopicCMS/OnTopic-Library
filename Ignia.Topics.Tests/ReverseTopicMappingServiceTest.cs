@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Tests.TestDoubles;
 using Ignia.Topics.Tests.BindingModels;

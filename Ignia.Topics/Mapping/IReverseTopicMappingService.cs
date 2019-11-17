@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using Ignia.Topics.Metadata;
+using Ignia.Topics.Mapping.Annotations;
 
 namespace Ignia.Topics.Mapping {
 
