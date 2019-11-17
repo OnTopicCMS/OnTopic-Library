@@ -46,8 +46,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// </summary>
     public static IEnumerable<string> ViewLocations => new[] {
       "/Views/{3}/{0}.cshtml",
+      "/Views/{3}/Shared/{0}.cshtml",
       "/Views/ContentTypes/{3}.{0}.cshtml",
+      "/Views/ContentTypes/Shared/{0}.cshtml",
       "/Views/ContentTypes/{0}.cshtml",
+      "/Views/{1}/Shared/{0}.cshtml",
       "/Views/Shared/{0}.cshtml",
     };
 
@@ -59,8 +62,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// </summary>
     public static IEnumerable<string> AreaViewLocations => new[] {
       "/{2}/Views/{3}/{0}.cshtml",
+      "/{2}/Views/{3}/Shared/{0}.cshtml",
       "/{2}/Views/ContentTypes/{3}.{0}.cshtml",
+      "/{2}/Views/ContentTypes/Shared/{0}.cshtml",
       "/{2}/Views/ContentTypes/{0}.cshtml",
+      "/{2}/Views/{1}/Shared/{0}.cshtml",
       "/{2}/Views/Shared/{0}.cshtml",
     };
 
