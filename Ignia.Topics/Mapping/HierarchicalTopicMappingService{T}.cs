@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Models;
 using Ignia.Topics.Internal.Diagnostics;
 

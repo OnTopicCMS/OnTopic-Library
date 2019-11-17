@@ -6,7 +6,7 @@
 using System;
 using Ignia.Topics.Collections;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Annotations {
 
   /*============================================================================================================================
   | ATTRIBUTE: INHERIT

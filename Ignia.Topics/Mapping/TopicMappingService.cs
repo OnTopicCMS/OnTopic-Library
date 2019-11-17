@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
+using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using System.Diagnostics.CodeAnalysis;

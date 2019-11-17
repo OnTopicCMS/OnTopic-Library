@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Threading.Tasks;
+using Ignia.Topics.Mapping.Annotations;
 
 namespace Ignia.Topics.Mapping {
 

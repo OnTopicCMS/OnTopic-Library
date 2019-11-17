@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.ViewModels;
 using System.ComponentModel.DataAnnotations;
 

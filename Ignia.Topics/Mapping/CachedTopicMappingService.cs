@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Concurrent;
 using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Mapping.Annotations;
 using System.Threading.Tasks;
 
 namespace Ignia.Topics.Mapping {

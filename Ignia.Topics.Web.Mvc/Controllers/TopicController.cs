@@ -10,6 +10,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {
