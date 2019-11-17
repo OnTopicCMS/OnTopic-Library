@@ -199,7 +199,7 @@ namespace Ignia.Topics.Tests {
 
       var contentTypes = _topicRepository.GetContentTypeDescriptors();
 
-      Assert.AreEqual<int>(8, contentTypes.Count);
+      Assert.AreEqual<int>(9, contentTypes.Count);
       Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
       Assert.IsNotNull(contentTypes.GetTopic("Page"));
       Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));

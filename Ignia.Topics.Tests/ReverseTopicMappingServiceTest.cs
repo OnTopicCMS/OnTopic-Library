@@ -153,6 +153,36 @@ namespace Ignia.Topics.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP COMPLEX OBJECTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting values from complex objects.
+    /// </summary>
+    [TestMethod]
+    public async Task MapComplexObjects() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+
+      var bindingModel          = new MapToParentTopicBindingModel {
+        Key                     = "Test",
+        ContentType             = "Contact"
+      };
+
+      bindingModel.PrimaryContact.Email = "PrimaryContact@Ignia.com";
+      bindingModel.AlternateContact.Email = "AlternateContact@Ignia.com";
+      bindingModel.BillingContact.Email = "BillingContact@Ignia.com";
+
+      var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+      Assert.IsNotNull(target);
+      Assert.AreEqual<string>("PrimaryContact@Ignia.com", target.Attributes.GetValue("Email"));
+      Assert.AreEqual<string>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
+      Assert.AreEqual<string>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+
+    }
+
+
+    /*==========================================================================================================================
     | TEST: ALTERNATE ATTRIBUTE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

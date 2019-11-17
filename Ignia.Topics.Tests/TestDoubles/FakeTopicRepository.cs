@@ -264,6 +264,12 @@ namespace Ignia.Topics.Tests.TestDoubles {
       pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
       pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
 
+      var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
+
+      addAttribute(contactContentType, "Email");
+      addAttribute(contactContentType, "AlternateEmail");
+      addAttribute(contactContentType, "BillingContactEmail");
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
       \-----------------------------------------------------------------------------------------------------------------------*/
