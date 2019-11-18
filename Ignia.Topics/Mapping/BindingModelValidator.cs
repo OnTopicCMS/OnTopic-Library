@@ -270,7 +270,7 @@ namespace Ignia.Topics.Mapping {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a {ModelType.Reference}, but " +
           $"the generic type {propertyType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} interface. This " +
-          $"is required for references. If this property is not intended to be mapped to {ModelType.NestedTopic} then update " +
+          $"is required for references. If this property is not intended to be mapped to {ModelType.Reference} then update " +
           $"the definition in the associated {nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped " +
           $"at all, include the {nameof(DisableMappingAttribute)} to exclude it from mapping."
         );

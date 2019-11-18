@@ -124,8 +124,9 @@ namespace Ignia.Topics.Metadata {
           _modelType = ModelType.Relationship;
         }
         else if (
-          new[] { "TopicLookup", "TopicPointer" }.Contains(editorType) ||
-          Key.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase)
+          new[] { "TopicPointer" }.Contains(editorType) ||
+          Key.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase) &&
+          !Key.Equals("Id", StringComparison.InvariantCultureIgnoreCase)
         ) {
           _modelType = ModelType.Reference;
         }
