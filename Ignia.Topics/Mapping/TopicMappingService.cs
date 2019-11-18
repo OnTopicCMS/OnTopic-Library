@@ -275,7 +275,11 @@ namespace Ignia.Topics.Mapping {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property);
-      var topicReferenceId      = source.Attributes.GetInteger($"{property.Name}Id", 0);
+      var topicReferenceId      = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+
+      if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase)) {
+        topicReferenceId        = source.Attributes.GetInteger(configuration.AttributeKey, 0);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
