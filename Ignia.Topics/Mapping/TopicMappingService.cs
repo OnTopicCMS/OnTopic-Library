@@ -536,12 +536,12 @@ namespace Ignia.Topics.Mapping {
       if (listSource.Count == 0) {
         var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
         if (sourceProperty != null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
-          var sourcePropertyValue = sourceProperty.GetValue(source) as IList;
           if (
-            sourcePropertyValue != null &&
+            sourceProperty.GetValue(source) is IList sourcePropertyValue &&
             sourcePropertyValue.Count > 0 &&
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0].GetType())
-          ) {
+          )
+          {
             listSource = GetRelationship(
               RelationshipType.MappedCollection,
               s => true,
