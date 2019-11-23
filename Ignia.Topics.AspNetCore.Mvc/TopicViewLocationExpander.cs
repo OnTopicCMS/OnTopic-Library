@@ -3,12 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Ignia.Topics.Internal.Diagnostics;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Razor;
+using System;
+using System.Collections.Generic;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 
@@ -21,7 +19,9 @@ namespace Ignia.Topics.AspNetCore.Mvc {
   /// </summary>
   /// <remarks>
   ///   In addition to Area (<c>{2}</c>), Controller (<c>{1}</c>), and View (<c>{0}</c>), the <see
-  ///   cref="TopicViewLocationExpander"/> also factors in ContentType (<c>{3}</c>).
+  ///   cref="TopicViewLocationExpander"/> also factors in ContentType (<c>{3}</c>). Note that, by default, the action is used
+  ///   as the view name. The topic library overrides this behavior by evaluating other sources of views. If a match with an
+  ///   controller and an action is found, however, that should be prioritized.
   /// </remarks>
   public class TopicViewLocationExpander : IViewLocationExpander {
 
@@ -45,13 +45,14 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   Retrieves a static copy of all view locations associated with OnTopic.
     /// </summary>
     public static IEnumerable<string> ViewLocations => new[] {
-      "/Views/{3}/{0}.cshtml",
-      "/Views/{3}/Shared/{0}.cshtml",
-      "/Views/ContentTypes/{3}.{0}.cshtml",
-      "/Views/ContentTypes/Shared/{0}.cshtml",
-      "/Views/ContentTypes/{0}.cshtml",
-      "/Views/{1}/Shared/{0}.cshtml",
-      "/Views/Shared/{0}.cshtml",
+      "/Views/{1}/{0}.cshtml",                                  //Views/Controller/Action.cshtml
+      "/Views/{3}/{0}.cshtml",                                  //Views/ContentType/View.cshtml
+      "/Views/{3}/Shared/{0}.cshtml",                           //Views/ContentType/Shared/View.cshtml
+      "/Views/ContentTypes/{3}.{0}.cshtml",                     //Views/ContentTypes/ContentType.View.cshtml
+      "/Views/{1}/Shared/{0}.cshtml",                           //Views/Controller/Shared/Action.cshtml
+      "/Views/ContentTypes/Shared/{0}.cshtml",                  //Views/ContentTypes/Shared/View.cshtml
+      "/Views/ContentTypes/{0}.cshtml",                         //Views/ContentTypes/View.cshtml
+      "/Views/Shared/{0}.cshtml",                               //Views/Shared/View.cshtml
     };
 
     /*==========================================================================================================================
@@ -61,13 +62,14 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   Retrieves a static copy of all areas view locations associated with OnTopic.
     /// </summary>
     public static IEnumerable<string> AreaViewLocations => new[] {
-      "/{2}/Views/{3}/{0}.cshtml",
-      "/{2}/Views/{3}/Shared/{0}.cshtml",
-      "/{2}/Views/ContentTypes/{3}.{0}.cshtml",
-      "/{2}/Views/ContentTypes/Shared/{0}.cshtml",
-      "/{2}/Views/ContentTypes/{0}.cshtml",
-      "/{2}/Views/{1}/Shared/{0}.cshtml",
-      "/{2}/Views/Shared/{0}.cshtml",
+      "/{2}/Views/{1}/{0}.cshtml",                              //Areas/Area/Views/Controller/Action.cshtml
+      "/{2}/Views/{3}/{0}.cshtml",                              //Areas/Area/Views/ContentType/View.cshtml
+      "/{2}/Views/{3}/Shared/{0}.cshtml",                       //Areas/Area/Views/ContentType/Shared/View.cshtml
+      "/{2}/Views/ContentTypes/{3}.{0}.cshtml",                 //Areas/Area/Views/ContentTypes/ContentType.View.cshtml
+      "/{2}/Views/{1}/Shared/{0}.cshtml",                       //Areas/Area/Views/Controller/Shared/Action.cshtml
+      "/{2}/Views/ContentTypes/Shared/{0}.cshtml",              //Areas/Area/Views/ContentTypes/Shared/View.cshtml
+      "/{2}/Views/ContentTypes/{0}.cshtml",                     //Areas/Area/Views/ContentTypes/View.cshtml
+      "/{2}/Views/Shared/{0}.cshtml",                           //Areas/Area/Views/Shared/View.cshtml
     };
 
     /*==========================================================================================================================
