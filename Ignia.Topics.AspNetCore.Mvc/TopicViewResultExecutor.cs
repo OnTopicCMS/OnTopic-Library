@@ -136,6 +136,22 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Pull from action name
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Typically, views in the topic library are contextual to the request, topic, or content type. When deriving from the
+      | TopicController, however, and implementing custom actions, we should prioritize views that correspond to that action,
+      | if they exist. This maps closely to how the default ViewResultExecutor works, but places it in the appropriate order for
+      | evaluation against other view sources.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!view?.Success ?? false) {
+        if (routeData.Values.TryGetValue("action", out var action)) {
+          var actionName = action?.ToString()?.Replace("Async", "", StringComparison.InvariantCultureIgnoreCase);
+          view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
+          searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Pull from topic attribute
       >-------------------------------------------------------------------------------------------------------------------------
       | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary
