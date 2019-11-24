@@ -3,16 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using Ignia.Topics.Internal.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
@@ -74,7 +69,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     ///   Provides a reference to the current topic associated with the request.
     /// </summary>
     /// <returns>The Topic associated with the current request.</returns>
-    protected Topic? CurrentTopic {
+    public Topic? CurrentTopic {
       get {
         if (_currentTopic == null) {
           _currentTopic = TopicRepository.Load(RouteData);
@@ -91,6 +86,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     ///   query string or topic's view.
     /// </summary>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
+    [ValidateTopic]
     public async virtual Task<IActionResult> IndexAsync(string path) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -126,85 +122,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     [NonAction]
     public virtual TopicViewResult TopicView(object model, string? viewName = null) =>
       new TopicViewResult(ViewData, TempData, model, CurrentTopic?.ContentType, viewName);
-
-    /*==========================================================================================================================
-    | EVENT: ON ACTION EXECUTING
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides universal validation of calls to any action on <see cref="TopicController"/> or its derivatives.
-    /// </summary>
-    /// <remarks>
-    ///   While the <see cref="OnActionExecuting(ActionExecutingContext)"/> event can be used to provide a wide variety of
-    ///   filters, this specific implementation is focused on validating the state of the <see cref="CurrentTopic"/>. Namely,
-    ///   it will provide error handling (if the <see cref="CurrentTopic"/> is null), a redirect (if the <see
-    ///   cref="CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized response (if the <see cref="CurrentTopic"/>'s
-    ///   <see cref="Topic.IsDisabled"/> flag is set.
-    /// </remarks>
-    /// <returns>A view associated with the requested topic's Content Type and view.</returns>
-    [NonAction]
-    public override void OnActionExecuting(ActionExecutingContext filterContext) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(filterContext, nameof(filterContext));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle exceptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic == null) {
-        filterContext.Result = NotFound("There is no topic associated with this path.");
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle disabled topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
-      //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
-      if (CurrentTopic.IsDisabled) {
-        filterContext.Result = new UnauthorizedResult();
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle redirect
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(CurrentTopic.Attributes.GetValue("URL"))) {
-        filterContext.Result = RedirectPermanent(CurrentTopic.Attributes.GetValue("URL"));
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle nested topics
-      >-----------------------------------------------------------------------------------------------------------------------—-
-      | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
-      | the request is valid, but forbidden.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType == "List" || CurrentTopic.Parent?.ContentType == "List") {
-        filterContext.Result = new StatusCodeResult(403);
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle page groups
-      >-----------------------------------------------------------------------------------------------------------------------—-
-      | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
-      | redirected to the first (non-hidden, non-disabled) page in the page group.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (CurrentTopic.ContentType == "PageGroup") {
-        filterContext.Result = Redirect(
-          CurrentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
-        );
-        return;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Base processing
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.OnActionExecuting(filterContext);
-
-    }
 
   } //Class
 } //Namespace
