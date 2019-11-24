@@ -22,6 +22,11 @@ namespace Ignia.Topics.AspNetCore.Mvc {
   ///   MVC, such as the <see cref="RouteData"/>. That said, it also fully encapsulates them to ensure that they are not leaked
   ///   through the <see cref="ITopicRoutingService"/> abstraction.
   /// </remarks>
+  [Obsolete(
+    "The MvcTopicRoutingService is deprecate for use in ASP.NET Core. Instead, use the ITopicRepository.Load(RouteData) " +
+    "extension method to retrieve the current topic based on the routing data.",
+    false
+  )]
   public class MvcTopicRoutingService : ITopicRoutingService {
 
     /*============================================================================================================================
