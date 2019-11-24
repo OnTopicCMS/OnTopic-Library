@@ -1,0 +1,19 @@
+﻿@model PageTopicViewModel
+
+<h2>Attributes</h2>
+<ul>
+  <li>MetaDescription: @Model.MetaDescription</li>
+  <li>MetaKeywords: @Model.MetaKeywords</li>
+  <li>MetaTitle: @Model.MetaTitle</li>
+  <li>NoIndex? @Model.NoIndex</li>
+  <li>ShortTitle: @Model.ShortTitle</li>
+  <li>SubTitle: @Model.Subtitle</li>
+</ul>
+
+<h2>Body</h2>
+@Html.Raw(Model.Body)
+
+<!--
+  Content Type: PageTopicViewModel
+  View Location: ~/Views/Shared/_PageAttributes.cshtml
+-->

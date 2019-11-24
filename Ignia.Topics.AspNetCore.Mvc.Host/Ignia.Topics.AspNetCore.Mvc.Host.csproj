@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>62eb85bf-f802-4afd-8bec-3d344e1cfc79</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ignia.Topics.AspNetCore.Mvc\Ignia.Topics.AspNetCore.Mvc.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.Data.Sql\Ignia.Topics.Data.Sql.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj" />
+    <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj" />
+  </ItemGroup>
+
+</Project>

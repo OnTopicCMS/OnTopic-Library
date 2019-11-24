@@ -1,0 +1,42 @@
+﻿@model PageTopicViewModel
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>@(Model.MetaTitle?? Model.Title?? Model.Key)</title>
+    <meta name="keywords" content="@Model.MetaKeywords" />
+    <meta name="description" content="@Model.MetaDescription" />
+    @RenderSection("Head", false)
+  </head>
+  <body vocab="http://schema.org/" typeof="WebPage">
+
+    <!-- Site Navigation Area -->
+    <navigation id="SiteNavigation">
+      <vc:menu />
+    </navigation>
+    <!-- /Site Navigation Area -->
+
+    <!-- Main Site Content Area -->
+    <main id="MainContentArea" class="page content" role="main">
+
+      <!-- Page Header Area -->
+      <section id="PageHeaderSection">
+        <vc:page-level-navigation />
+      </section>
+      <!-- /Page Header Area -->
+
+      <article itemscope itemtype="http://schema.org/WebPageElement" itemprop="mainContentOfPage" class="grid-container">
+        <h1>@(Model.ContentType.Equals("PageGroup")? "Overview" : Model.Title)</h1>
+        <p class="subtitle">@Model.Subtitle</p>
+        <section class="body">
+          <partial name="_TopicAttributes" />
+          @RenderBody()
+        </section>
+      </article>
+    </main>
+    <!-- /Main Site Content Area -->
+
+    @RenderSection("Scripts", false)
+
+  </body>
+</html>
