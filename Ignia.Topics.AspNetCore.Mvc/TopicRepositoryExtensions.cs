@@ -74,7 +74,13 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Load by path
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topicRepository.Load(primaryPath)?? topicRepository.Load(fallbackPath);
+      var topic = topicRepository.Load(primaryPath);
+
+      if (topic == null && !String.IsNullOrEmpty(fallbackPath)) {
+        topic = topicRepository.Load(fallbackPath);
+      }
+
+      return topic;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get route value
