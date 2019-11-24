@@ -75,12 +75,26 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set variables
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var                       routeData                       = actionContext.RouteData;
       var                       contentType                     = viewResult.TopicContentType;
       var                       topicView                       = viewResult.TopicView;
-      var                       viewEngine                      = viewResult.ViewEngine ?? ViewEngine;
+      var                       viewEngine                      = viewResult.ViewEngine?? ViewEngine;
       var                       requestContext                  = actionContext.HttpContext.Request;
       var                       view                            = (ViewEngineResult?)null;
       var                       searchedPaths                   = new List<string>();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Cache content type as route variable
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC20191123 This isn't required by the TopicViewResultExecutor itself, but is needed by the
+      | TopicViewLocationExpander, which is responsible for finding views that correspond to the ViewEngineResult returned by
+      | the TopicViewResultExecutor. This is necessary because by the time the TopicViewLocationExpander is executed, it only
+      | has access to the view name and the view data, but not the original TopicViewResult, or even the ViewEngineResult.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (routeData.Values.ContainsKey("contenttype")) {
+        routeData.Values.Remove("contenttype");
+      }
+      routeData.Values.Add("contenttype", contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Check Querystring
