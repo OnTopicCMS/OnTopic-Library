@@ -7,6 +7,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Repositories;
 using Microsoft.AspNetCore.Routing;
 using System;
+using System.Collections.Generic;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 
@@ -55,29 +56,25 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       var rootTopic             = getRouteValue("rootTopic");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Define path by parameters
+      | Define search paths based on route variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (rootTopic != null) {
-        primaryPath              = $"{rootTopic}/{path}";
-      }
-      else if (controller != null) {
-        primaryPath             = $"{controller}/{path}";
-        fallbackPath            = $"{controller}/{action}/{path}";
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Cleanup path
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      primaryPath               = cleanPath(primaryPath);
-      fallbackPath              = cleanPath(fallbackPath);
+      var paths = new List<String?>() {
+       cleanPath($"{rootTopic}/{path}"),
+       cleanPath($"{controller}/{action}/{path}"),
+       cleanPath($"{controller}/{path}"),
+       cleanPath($"{controller}/{action}"),
+       cleanPath($"{controller}")
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load by path
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = topicRepository.Load(primaryPath);
+      var topic = (Topic?)null;
 
-      if (topic == null && !String.IsNullOrEmpty(fallbackPath)) {
-        topic = topicRepository.Load(fallbackPath);
+      foreach (var searchPath in paths) {
+       if (topic != null) break;
+       if (String.IsNullOrEmpty(searchPath)) continue;
+       topic = topicRepository.Load(searchPath);
       }
 
       return topic;
