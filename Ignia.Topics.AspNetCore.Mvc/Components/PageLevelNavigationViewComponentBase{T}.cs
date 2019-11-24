@@ -10,6 +10,7 @@ using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 using System;
 using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
@@ -48,10 +49,10 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected PageLevelNavigationViewComponentBase(
-      ITopicRoutingService topicRoutingService,
+      ITopicRepository topicRepository,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) : base(
-      topicRoutingService,
+      topicRepository,
       hierarchicalTopicMappingService
     ) {}
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
@@ -28,7 +29,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRoutingService            _topicRoutingService;
     private                     Topic?                          _currentTopic                   = null;
 
     /*==========================================================================================================================
@@ -39,12 +39,24 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /// </summary>
     /// <returns>A topic <see cref="NavigationTopicViewComponentBase{T}"/>.</returns>
     protected NavigationTopicViewComponentBase(
-      ITopicRoutingService topicRoutingService,
+      ITopicRepository topicRepository,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) {
-      _topicRoutingService = topicRoutingService;
+      TopicRepository = topicRepository;
       HierarchicalTopicMappingService = hierarchicalTopicMappingService;
     }
+
+    /*==========================================================================================================================
+    | TOPIC REPOSITORY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the <see cref="ITopicRepository"/> in order to allow the current topic to be identified based
+    ///   on the route data.
+    /// </summary>
+    /// <returns>
+    ///   The <see cref="ITopicRepository"/> associated with the <see cref="TopicViewComponentBase{T}"/>.
+    /// </returns>
+    protected ITopicRepository TopicRepository { get; }
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
@@ -68,7 +80,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     protected Topic? CurrentTopic {
       get {
         if (_currentTopic == null) {
-          _currentTopic = _topicRoutingService.GetCurrentTopic();
+          _currentTopic = TopicRepository.Load(RouteData);
         }
         return _currentTopic;
       }

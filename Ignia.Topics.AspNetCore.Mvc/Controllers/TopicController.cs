@@ -29,7 +29,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRoutingService            _topicRoutingService;
     private readonly            ITopicMappingService            _topicMappingService;
     private                     Topic?                          _currentTopic                   = null;
 
@@ -42,7 +41,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     /// <returns>A topic controller for loading OnTopic views.</returns>
     public TopicController(
       ITopicRepository topicRepository,
-      ITopicRoutingService topicRoutingService,
       ITopicMappingService topicMappingService
      ) {
 
@@ -50,14 +48,12 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topicRepository, "A concrete implementation of an ITopicRepository is required.");
-      Contract.Requires(topicRoutingService, "A concrete implementation of an ITopicRoutingService is required.");
       Contract.Requires(topicMappingService, "A concrete implementation of an ITopicMappingService is required.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set values locally
       \-----------------------------------------------------------------------------------------------------------------------*/
       TopicRepository = topicRepository;
-      _topicRoutingService = topicRoutingService;
       _topicMappingService = topicMappingService;
 
     }
@@ -81,7 +77,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     protected Topic? CurrentTopic {
       get {
         if (_currentTopic == null) {
-          _currentTopic = _topicRoutingService.GetCurrentTopic();
+          _currentTopic = TopicRepository.Load(RouteData);
         }
         return _currentTopic;
       }
@@ -211,7 +207,4 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
     }
 
   } //Class
-
 } //Namespace
-
-

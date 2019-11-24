@@ -41,11 +41,6 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
   {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository                _topicRepository;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -53,15 +48,12 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     protected MenuViewComponentBase(
-      ITopicRoutingService topicRoutingService,
-      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService,
-      ITopicRepository topicRepository
+      ITopicRepository topicRepository,
+      IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) : base(
-      topicRoutingService,
+      topicRepository,
       hierarchicalTopicMappingService
     ) {
-      Contract.Requires(topicRepository, "An instance of an ITopicRepository is required.");
-      _topicRepository = topicRepository;
     }
 
     /*==========================================================================================================================
@@ -86,7 +78,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
       var                       configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
 
       if (!String.IsNullOrEmpty(configuredRoot)) {
-        navigationRootTopic = _topicRepository.Load(configuredRoot);
+        navigationRootTopic = TopicRepository.Load(configuredRoot);
        }
       if (navigationRootTopic is null) {
         navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
