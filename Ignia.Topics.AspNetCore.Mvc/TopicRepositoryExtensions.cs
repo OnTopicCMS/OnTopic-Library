@@ -62,8 +62,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
        cleanPath($"{rootTopic}/{path}"),
        cleanPath($"{controller}/{action}/{path}"),
        cleanPath($"{controller}/{path}"),
-       cleanPath($"{controller}/{action}"),
-       cleanPath($"{controller}")
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
