@@ -116,8 +116,12 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
-        endpoints.MapControllers();
+        endpoints.MapControllerRoute(
+          name: "default",
+          pattern: "{controller}/{action=Index}/"
+        );
         endpoints.MapTopicRoute("Web");
+        endpoints.MapControllers();
       });
 
     }

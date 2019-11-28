@@ -105,6 +105,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       if (type == typeof(TopicController)) {
         return new TopicController(_topicRepository, _topicMappingService);
       }
+      if (type == typeof(SitemapController)) {
+        return new SitemapController(_topicRepository);
+      }
       else {
         throw new Exception($"Unknown controller {type.Name}");
       }
