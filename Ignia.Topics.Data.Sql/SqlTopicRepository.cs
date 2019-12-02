@@ -1156,20 +1156,13 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (var key in topic.Relationships.Keys) {
 
-          var scope = topic.Relationships.GetTopics(key);
-
-          command = new SqlCommand("topics_PersistRelations", connection) {
-            CommandType = CommandType.StoredProcedure
-          };
-
-          var targetIds         = new string[scope.Count()];
+          var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var count             = 0;
+          var targetIds         = scope.Select<Topic, int>(m => m.Id).ToArray();
 
-          foreach (var relTopic in scope) {
-            targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
-            count++;
-          }
+          command               = new SqlCommand("topics_PersistRelations", connection) {
+            CommandType         = CommandType.StoredProcedure
+          };
 
           // Add Parameters
           AddSqlParameter(command, "RelationshipTypeID", key, SqlDbType.VarChar);
