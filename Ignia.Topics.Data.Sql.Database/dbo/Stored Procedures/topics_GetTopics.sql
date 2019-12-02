@@ -146,18 +146,18 @@ JOIN		#Topics AS Storage
 -- SELECT HISTORY
 -----------------------------------------------------------------------------------------------------------------------------------------------
 ;WITH TopicVersions AS (
-  SELECT	Attributes.TopicID,
+  SELECT	Distinct
+			Attributes.TopicID,
 		Attributes.Version,
 		RowNumber = ROW_NUMBER() OVER (
-		  PARTITION BY	Storage.TopicID
 		  ORDER BY	Version DESC
 		)
   FROM		topics_TopicAttributes Attributes
   JOIN		#Topics AS Storage
     ON		Storage.TopicID = Attributes.TopicID
+  Group by	Attributes.TopicID, Attributes.Version
 )
-SELECT		DISTINCT
-		TopicId,
+SELECT	TopicId,
 		Version
 FROM		TopicVersions
 WHERE		RowNumber <= 6
