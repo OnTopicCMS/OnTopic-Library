@@ -150,6 +150,7 @@ JOIN		#Topics AS Storage
 			Attributes.TopicID,
 		Attributes.Version,
 		RowNumber = ROW_NUMBER() OVER (
+		  Partition by Attributes.TopicID
 		  ORDER BY	Version DESC
 		)
   FROM		topics_TopicAttributes Attributes
