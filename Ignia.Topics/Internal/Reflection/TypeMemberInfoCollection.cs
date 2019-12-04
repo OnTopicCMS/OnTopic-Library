@@ -37,6 +37,8 @@ namespace Ignia.Topics.Internal.Reflection {
         typeof(bool?),
         typeof(int),
         typeof(int?),
+        typeof(double),
+        typeof(double?),
         typeof(string),
         typeof(DateTime),
         typeof(DateTime?)
@@ -416,6 +418,11 @@ namespace Ignia.Topics.Internal.Reflection {
       else if (type.Equals(typeof(int)) || type.Equals(typeof(int?))) {
         if (Int32.TryParse(value, out var intValue)) {
           valueObject = intValue;
+        }
+      }
+      else if (type.Equals(typeof(double)) || type.Equals(typeof(double?))) {
+        if (Double.TryParse(value, out var doubleValue)) {
+          valueObject = doubleValue;
         }
       }
       else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {

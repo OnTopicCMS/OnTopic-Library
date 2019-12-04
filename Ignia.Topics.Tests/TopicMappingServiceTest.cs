@@ -208,6 +208,7 @@ namespace Ignia.Topics.Tests {
 
       topic.Attributes.SetValue("NullableString", "Hello World.");
       topic.Attributes.SetValue("NullableInteger", "43");
+      topic.Attributes.SetValue("NullableDouble", "3.14159265359");
       topic.Attributes.SetValue("NullableBoolean", "tRuE");
       topic.Attributes.SetValue("NullableDateTime", "10/15/1976");
 
@@ -219,6 +220,7 @@ namespace Ignia.Topics.Tests {
 
       Assert.AreEqual<string?>("Hello World.", target.NullableString);
       Assert.AreEqual<int?>(43, target.NullableInteger);
+      Assert.AreEqual<double?>(3.14159265359, target.NullableDouble);
       Assert.AreEqual<bool?>(true, target.NullableBoolean);
       Assert.AreEqual<DateTime?>(new DateTime(1976, 10, 15), target.NullableDateTime);
 

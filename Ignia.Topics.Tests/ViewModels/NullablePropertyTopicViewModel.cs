@@ -24,6 +24,8 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public int? NullableInteger { get; set; }
 
+    public double? NullableDouble { get; set; }
+
     public bool? NullableBoolean { get; set; }
 
     public DateTime? NullableDateTime { get; set; }
