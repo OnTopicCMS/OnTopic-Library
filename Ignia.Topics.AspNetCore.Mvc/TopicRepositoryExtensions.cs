@@ -48,8 +48,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define parameters from route
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var primaryPath           = (string?)null;
-      var fallbackPath          = (string?)null;
+      var area                  = getRouteValue("area");
       var controller            = getRouteValue("controller");
       var action                = getRouteValue("action");
       var path                  = getRouteValue("path");
@@ -57,11 +56,17 @@ namespace Ignia.Topics.AspNetCore.Mvc {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define search paths based on route variables
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC20191205: If any variables—such as {area}—is not defined, then it will be excluded and any slashes ("/")
+      | remaining at the beginning or the end will be removed. As such, there's no need to search for both e.g.
+      | {area}/{controller}/{action}/{path} as well as, say, {controller}/{action}. This provides an automatical fallback in
+      | case particular routes aren't present. That said, if they are defined, but should be excluded from a fallback, then
+      | that path does need to be defined—thus e.g. {area}/{controller}/{path}.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var paths = new List<String?>() {
        cleanPath($"{rootTopic}/{path}"),
-       cleanPath($"{controller}/{action}/{path}"),
-       cleanPath($"{controller}/{path}"),
+       cleanPath($"{area}/{controller}/{action}/{path}"),
+       cleanPath($"{area}/{controller}/{path}"),
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
