@@ -62,14 +62,14 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     ///   Retrieves a static copy of all areas view locations associated with OnTopic.
     /// </summary>
     public static IEnumerable<string> AreaViewLocations => new[] {
-      "/{2}/Views/{1}/{0}.cshtml",                              //Areas/Area/Views/Controller/Action.cshtml
-      "/{2}/Views/{3}/{0}.cshtml",                              //Areas/Area/Views/ContentType/View.cshtml
-      "/{2}/Views/{3}/Shared/{0}.cshtml",                       //Areas/Area/Views/ContentType/Shared/View.cshtml
-      "/{2}/Views/ContentTypes/{3}.{0}.cshtml",                 //Areas/Area/Views/ContentTypes/ContentType.View.cshtml
-      "/{2}/Views/{1}/Shared/{0}.cshtml",                       //Areas/Area/Views/Controller/Shared/Action.cshtml
-      "/{2}/Views/ContentTypes/Shared/{0}.cshtml",              //Areas/Area/Views/ContentTypes/Shared/View.cshtml
-      "/{2}/Views/ContentTypes/{0}.cshtml",                     //Areas/Area/Views/ContentTypes/View.cshtml
-      "/{2}/Views/Shared/{0}.cshtml",                           //Areas/Area/Views/Shared/View.cshtml
+      "/Areas/{2}/Views/{1}/{0}.cshtml",                        //Areas/Area/Views/Controller/Action.cshtml
+      "/Areas/{2}/Views/{3}/{0}.cshtml",                        //Areas/Area/Views/ContentType/View.cshtml
+      "/Areas/{2}/Views/{3}/Shared/{0}.cshtml",                 //Areas/Area/Views/ContentType/Shared/View.cshtml
+      "/Areas/{2}/Views/ContentTypes/{3}.{0}.cshtml",           //Areas/Area/Views/ContentTypes/ContentType.View.cshtml
+      "/Areas/{2}/Views/{1}/Shared/{0}.cshtml",                 //Areas/Area/Views/Controller/Shared/Action.cshtml
+      "/Areas/{2}/Views/ContentTypes/Shared/{0}.cshtml",        //Areas/Area/Views/ContentTypes/Shared/View.cshtml
+      "/Areas/{2}/Views/ContentTypes/{0}.cshtml",               //Areas/Area/Views/ContentTypes/View.cshtml
+      "/Areas/{2}/Views/Shared/{0}.cshtml",                     //Areas/Area/Views/Shared/View.cshtml
     };
 
     /*==========================================================================================================================
