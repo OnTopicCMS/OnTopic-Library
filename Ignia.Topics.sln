@@ -20,6 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ignia.Topics.ViewModels", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D5A35CE-F5A4-4DDF-8938-8B1116CDF58E}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		GitVersion.yml = GitVersion.yml
 		README.md = README.md
 	EndProjectSection
