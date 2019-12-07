@@ -3,31 +3,31 @@
 --
 -- Purpose	Moves a topic and all of its children underneath another topic.
 --
--- History	John Mulhausen		06302009  Created initial version.
---		Jeremy Caney		05282010  Reformatted code and refactored identifiers for improved readability.
---              Hedley Robertson	07062010  Added support for SiblingID (Ordering)
---              Hedley Robertson	08122010  Inline test cases, debugging statements and check for re-parenting;
---						  now avoids moving item to start of SET when sibling move requested
---						  and ParentId has not changed
---              Hedley Robertson	08172010  Rebuilt with externalized MoveSubTree function
---		Jeremy Caney		09222014  Updated logic for ParentID attribute to be based on Key, not ID
---		Jeremy Caney		12092017  Refactored based on Celko's alternative formulation.
+-- History	John Mulhausen		06302009	Created initial version.
+--	Jeremy Caney		05282010	Reformatted code and refactored identifiers for improved readability.
+--              Hedley Robertson	07062010	Added support for SiblingID (Ordering)
+--              Hedley Robertson	08122010	Inline test cases, debugging statements and check for re-parenting;
+--				now avoids moving item to start of SET when sibling move requested
+--				and ParentId has not changed
+--              Hedley Robertson	08172010	Rebuilt with externalized MoveSubTree function
+--	Jeremy Caney		09222014	Updated logic for ParentID attribute to be based on Key, not ID
+--	Jeremy Caney		12092017	Refactored based on Celko's alternative formulation.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_MoveTopic]
-		@TopicID		INT			,
-		@ParentID		INT			,
-		@SiblingID		INT		= -1
+	@TopicID		INT		,
+	@ParentID		INT		,
+	@SiblingID		INT	= -1
 AS
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
 -----------------------------------------------------------------------------------------------------------------------------------------------
-DECLARE		@OriginalLeft		int
-DECLARE		@OriginalRight		int
-DECLARE		@InsertionPoint		int
-DECLARE		@OriginalRange		int
-DECLARE		@Offset			int
+DECLARE	@OriginalLeft		int
+DECLARE	@OriginalRight		int
+DECLARE	@InsertionPoint		int
+DECLARE	@OriginalRange		int
+DECLARE	@Offset		int
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE SOURCE RANGE
@@ -35,11 +35,11 @@ DECLARE		@Offset			int
 -- The source range defines the original boundaries (@OriginalLeft, @OriginalRight) and the width (@OriginalRange) of the source subtree
 -- (@TopicID), which will be used to determine what nodes to move.
 -----------------------------------------------------------------------------------------------------------------------------------------------
-SELECT		@OriginalRange		= RangeRight - RangeLeft + 1,
-		@OriginalLeft		= RangeLeft,
-		@OriginalRight		= RangeRight
-FROM		topics_Topics
-WHERE		TopicID			= @TopicID
+SELECT	@OriginalRange		= RangeRight - RangeLeft + 1,
+	@OriginalLeft		= RangeLeft,
+	@OriginalRight		= RangeRight
+FROM	topics_Topics
+WHERE	TopicID		= @TopicID
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE INSERTION POINT
@@ -54,13 +54,13 @@ WHERE		TopicID			= @TopicID
 IF @SiblingID < 0
   -- Place as the first sibling if a sibling isn't specified
   SELECT	@InsertionPoint		= RangeLeft + 1
-  FROM		topics_Topics
-  WHERE		TopicID			= @ParentID
+  FROM	topics_Topics
+  WHERE	TopicID			= @ParentID
 ELSE
   -- Place immediately to the right of a sibling, if specified
   SELECT	@InsertionPoint		= RangeRight + 1
-  FROM		topics_Topics
-  WHERE		TopicID			= @SiblingID
+  FROM	topics_Topics
+  WHERE	TopicID		= @SiblingID
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- VALIDATE REQUEST
@@ -113,11 +113,11 @@ IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
 -- EXAMPLE: If you have a source subtree (@TopicID) with a range of (52-58) and you're moving it to a start position of 25, then the @Offset
 -- will be 27 (i.e., 52-25). If you are moving it to a start position of 75, however, then the @Offset will be 17 (75-58).
 -----------------------------------------------------------------------------------------------------------------------------------------------
-SET			@Offset =
+SET	@Offset =
   CASE
-  WHEN			@InsertionPoint < @OriginalLeft
-  THEN			@OriginalLeft - @InsertionPoint
-  ELSE			@InsertionPoint - @OriginalRight
+    WHEN	@InsertionPoint < @OriginalLeft
+    THEN	@OriginalLeft - @InsertionPoint
+  ELSE	@InsertionPoint - @OriginalRight
   END
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -133,36 +133,36 @@ SET			@Offset =
 -- depending on whether the tree has been moved up or down).
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
-UPDATE			topics_Topics
-SET			RangeLeft = RangeLeft +
+UPDATE	topics_Topics
+SET	RangeLeft = RangeLeft +
   CASE
 
   ---------------------------------------------------------------------------------------------------------------------------------------------
   -- MOVE SOURCE TOPIC TO ITS LEFT
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
-  WHEN			@InsertionPoint < @OriginalLeft
+  WHEN	@InsertionPoint < @OriginalLeft
   THEN
     CASE
 
     -- Shift source topic (and children) left to its new location
 
-    WHEN (		RangeLeft
-      BETWEEN		@OriginalLeft
-      AND		@OriginalRight
+    WHEN (	RangeLeft
+      BETWEEN	@OriginalLeft
+      AND	@OriginalRight
     )
-    THEN		- @Offset
+    THEN	- @Offset
 
     -- Shift items between the destination and source topic to the right
     -- This pushes everything back by the width of the source topic, filling the gap it left behind
     -- This also makes room for the above shift of the source topic, preventing duplicate ranges
 
-    WHEN (		RangeLeft
-      BETWEEN		@InsertionPoint
-      AND		@OriginalLeft
+    WHEN (	RangeLeft
+      BETWEEN	@InsertionPoint
+      AND	@OriginalLeft
     )
-    THEN		@OriginalRange
-    ELSE		0
+    THEN	@OriginalRange
+    ELSE	0
 
     END
 
@@ -170,64 +170,64 @@ SET			RangeLeft = RangeLeft +
   -- MOVE SOURCE TOPIC TO ITS RIGHT
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
-  WHEN			@InsertionPoint > @OriginalRight
+  WHEN	@InsertionPoint > @OriginalRight
   THEN
     CASE
 
     -- Shift source topic (and children) right to its new location
     -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
 
-    WHEN (		RangeLeft
-      BETWEEN		@OriginalLeft
-      AND		@OriginalRight
+    WHEN (	RangeLeft
+      BETWEEN	@OriginalLeft
+      AND	@OriginalRight
     )
-    THEN		@Offset - 1
+    THEN	@Offset - 1
 
     -- Shift items between the source topic and the destination to the left
     -- This pulls everything back by the width of the source topic, filling the gap it left behind
     -- This also makes room for the above shift of the source topic, preventing duplicate ranges
     -- Because between is inclusive, includes offsets to only cover intermediate records
 
-    WHEN (		RangeLeft
-      BETWEEN		@OriginalRight + 1
-      AND		@InsertionPoint - 1
+    WHEN (	RangeLeft
+      BETWEEN	@OriginalRight + 1
+      AND	@InsertionPoint - 1
     )
-    THEN		- @OriginalRange
-    ELSE		0
+    THEN	- @OriginalRange
+    ELSE	0
 
     END
 
   END,
 
-			RangeRight = RangeRight +
+	RangeRight = RangeRight +
   CASE
 
   ---------------------------------------------------------------------------------------------------------------------------------------------
   -- MOVE SOURCE TOPIC TO ITS LEFT
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
-  WHEN			@InsertionPoint < @OriginalLeft
+  WHEN	@InsertionPoint < @OriginalLeft
   THEN
     CASE
 
     -- Shift source topic (and children) left to its new location
 
-    WHEN (		RangeRight
-      BETWEEN		@OriginalLeft
-      AND		@OriginalRight
+    WHEN (	RangeRight
+      BETWEEN	@OriginalLeft
+      AND	@OriginalRight
     )
-    THEN		- @Offset
+    THEN	- @Offset
 
     -- Shift items between the destination and source topic to the right
     -- This pushes everything back by the width of the source topic, filling the gap it left behind
     -- This also makes room for the above shift of the source topic, preventing duplicate ranges
 
-    WHEN (		RangeRight
-      BETWEEN		@InsertionPoint
-      AND		@OriginalLeft - 1
+    WHEN (	RangeRight
+      BETWEEN	@InsertionPoint
+      AND	@OriginalLeft - 1
     )
-    THEN		@OriginalRange
-    ELSE		0
+    THEN	@OriginalRange
+    ELSE	0
 
     END
 
@@ -235,30 +235,30 @@ SET			RangeLeft = RangeLeft +
   -- MOVE SOURCE TOPIC TO ITS RIGHT
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
-  WHEN			@InsertionPoint > @OriginalRight
+  WHEN	@InsertionPoint > @OriginalRight
   THEN
     CASE
 
     -- Shift source topic (and children) right to its new location
     -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
 
-    WHEN (		RangeRight
-      BETWEEN		@OriginalLeft
-      AND		@OriginalRight
+    WHEN (	RangeRight
+      BETWEEN	@OriginalLeft
+      AND	@OriginalRight
     )
-    THEN		@Offset - 1
+    THEN	@Offset - 1
 
     -- Shift items between the source topic and the destination to the left
     -- This pulls everything back by the width of the source topic, filling the gap it left behind
     -- This also makes room for the above shift of the source topic, preventing duplicate ranges
     -- Because between is inclusive, includes offsets to only cover intermediate records
 
-    WHEN (		RangeRight
-      BETWEEN		@OriginalRight + 1
-      AND		@InsertionPoint - 1
+    WHEN (	RangeRight
+      BETWEEN	@OriginalRight + 1
+      AND	@InsertionPoint - 1
     )
-    THEN		- @OriginalRange
-    ELSE		0
+    THEN	- @OriginalRange
+    ELSE	0
 
     END
 
@@ -267,19 +267,19 @@ SET			RangeLeft = RangeLeft +
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
 -----------------------------------------------------------------------------------------------------------------------------------------------
-UPDATE			topics_TopicAttributes
-SET			AttributeValue		= CONVERT(NVarChar(255), @ParentID)
-WHERE			TopicID			= @TopicID
-  AND			AttributeKey		= 'ParentID'
+UPDATE	topics_TopicAttributes
+SET	AttributeValue		= CONVERT(NVarChar(255), @ParentID)
+WHERE	TopicID		= @TopicID
+  AND	AttributeKey		= 'ParentID'
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- DEBUGGING DATA
 -----------------------------------------------------------------------------------------------------------------------------------------------
-SELECT			@TopicID		TopicID,
-			@ParentID		ParentID,
-			@SiblingID		SiblingID,
-			@OriginalLeft		OriginalLeft,
-			@OriginalRight		OriginalRight,
-			@InsertionPoint		InsertionPoint,
-			@OriginalRange		OriginalRange,
-			@Offset			Offset
+SELECT	@TopicID		TopicID,
+	@ParentID		ParentID,
+	@SiblingID		SiblingID,
+	@OriginalLeft		OriginalLeft,
+	@OriginalRight		OriginalRight,
+	@InsertionPoint		InsertionPoint,
+	@OriginalRange		OriginalRange,
+	@Offset		Offset
