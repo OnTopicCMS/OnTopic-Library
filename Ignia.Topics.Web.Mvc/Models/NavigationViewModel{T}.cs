@@ -21,8 +21,8 @@ namespace Ignia.Topics.Web.Mvc.Models {
   ///   <para>
   ///     The <see cref="NavigationRoot"/> can be any view model that implements <see cref="INavigationTopicViewModel{T}"/>,
   ///     which provides a base level of support for properties associated with the typical <c>Page</c> content type as well as
-  ///     a method for determining if a given <see cref="INavigationTopicViewModel{T}"/> instance is the currently-selected topic.
-  ///     Implementations may support additional properties, as appropriate.
+  ///     a method for determining if a given <see cref="INavigationTopicViewModel{T}"/> instance is the currently-selected
+  ///     topic. Implementations may support additional properties, as appropriate.
   ///   </para>
   /// </remarks>
   public class NavigationViewModel<T> where T: INavigationTopicViewModel<T> {

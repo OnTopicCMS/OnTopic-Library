@@ -474,7 +474,8 @@ namespace Ignia.Topics.Internal.Reflection {
       }
       else {
         throw new ArgumentException(
-          $"The '{nameof(TypeMemberInfoCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type '{item.Type}'.");
+          $"The '{nameof(TypeMemberInfoCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type " +
+          $"'{item.Type}'.");
       }
     }
 

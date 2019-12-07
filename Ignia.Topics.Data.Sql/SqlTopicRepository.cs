@@ -1064,7 +1064,9 @@ namespace Ignia.Topics.Data.Sql {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
     ///   (the default) and the topic has children, including any nested topics, an exception will be thrown.
     /// </param>
-    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
     public override void Delete(Topic topic, bool isRecursive = false) {

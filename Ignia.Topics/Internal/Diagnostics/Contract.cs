@@ -98,7 +98,8 @@ namespace Ignia.Topics.Internal.Diagnostics {
         || ex is NotSupportedException
       ) {
         throw new ArgumentException(
-          "The exception provided as the generic type argument does not have a constructor that accepts an error message as its sole argument",
+          "The exception provided as the generic type argument does not have a constructor that accepts an error message as" +
+          " its sole argument",
           nameof(errorMessage),
           new T()
         );

@@ -209,9 +209,9 @@ namespace Ignia.Topics.Metadata {
     ///     the control's configuration. This allows attribute type-specific properties to be set on a per-attribute basis.
     ///   </para>
     ///   <para>
-    ///     Properties available for configuration are up to the control associated with the <see cref="EditorType"/>, and the format
-    ///     will be  dependent on the framework in which the attribute type control is written. For example, for ASP.NET User
-    ///     Controls as well as AngularJS Directives, the format is Property1="Value" Propert2="Value".
+    ///     Properties available for configuration are up to the control associated with the <see cref="EditorType"/>, and the
+    ///     format will be  dependent on the framework in which the attribute type control is written. For example, for ASP.NET
+    ///     User Controls as well as AngularJS Directives, the format is Property1="Value" Propert2="Value".
     ///   </para>
     /// </remarks>
     public string DefaultConfiguration {

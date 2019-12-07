@@ -23,12 +23,12 @@ namespace Ignia.Topics.Mapping.Annotations {
   ///   by an empty string, if no prefix is desired.
   /// </remarks>
   /// <example>
-  ///   As an example, imagine that a view model has a property <c>BillingContact</c> which is of type <c>Contact</c>. By default,
-  ///   this will be ignored, since there's no obvious way to map it back to a <see cref="Topic"/>. If it is annotated with the
-  ///   <see cref="MapToParentAttribute"/>, however, then its properties will be mapped to the parent topic. So, for example, if
-  ///   the <c>Contact</c> class has a property named <c>FirstName</c>, then that will be saved to an attribute named
-  ///   <c>BillingContactFirstName</c>. Alternatively, if a prefix of <see cref="String.Empty"/> were provided, then that same
-  ///   property would instead be mapped to <c>FirstName</c>—which could potentially introduce conflicts if there is also a
+  ///   As an example, imagine that a view model has a property <c>BillingContact</c> which is of type <c>Contact</c>. By
+  ///   default, this will be ignored, since there's no obvious way to map it back to a <see cref="Topic"/>. If it is annotated
+  ///   with the <see cref="MapToParentAttribute"/>, however, then its properties will be mapped to the parent topic. So, for
+  ///   example, if the <c>Contact</c> class has a property named <c>FirstName</c>, then that will be saved to an attribute
+  ///   named <c>BillingContactFirstName</c>. Alternatively, if a prefix of <see cref="String.Empty"/> were provided, then that
+  ///   same property would instead be mapped to <c>FirstName</c>—which could potentially introduce conflicts if there is also a
   ///   <c>FirstName</c> property on the parent object.
   /// </example>
   [System.AttributeUsage(System.AttributeTargets.Property, Inherited=true)]

@@ -157,8 +157,8 @@ namespace Ignia.Topics.Mapping {
         throw new InvalidEnumArgumentException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
           $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
-          $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. If" +
-          $"this is by design, change the content type on the target topic prior to invoking MapAsync()."
+          $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. " +
+          $"If this is by design, change the content type on the target topic prior to invoking MapAsync()."
         );
       }
 

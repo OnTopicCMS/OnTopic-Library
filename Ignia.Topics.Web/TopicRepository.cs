@@ -39,7 +39,11 @@ namespace Ignia.Topics.Web {
     /// <summary>
     ///   Gets a list of available <see cref="ContentTypeDescriptor"/> objects from the Configuration.
     /// </summary>
-    [Obsolete("The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
+    [Obsolete(
+      "The TopicRepository class is obsolete, as is the ContentTypes property. Instead, clients should use Dependency " +
+      "Injection with the ITopicRepository interface.",
+      false
+    )]
     public static ContentTypeDescriptorCollection ContentTypes {
       get {
         if (_contentTypes != null) {
@@ -55,7 +59,11 @@ namespace Ignia.Topics.Web {
     /// <summary>
     ///   Static reference to the root <see cref="Topic"/>.
     /// </summary>
-    [Obsolete("The TopicRepository class is obsolete, as is the RootTopic property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
+    [Obsolete(
+      "The TopicRepository class is obsolete, as is the RootTopic property. Instead, clients should use Dependency Injection " +
+      "with the ITopicRepository interface.",
+      false
+    )]
     public static Topic RootTopic {
       get {
         if (_rootTopic == null) {
@@ -75,7 +83,11 @@ namespace Ignia.Topics.Web {
     /// <remarks>
     ///   The web.config stores information such as data providers, views directory, etc.
     /// </remarks>
-    [Obsolete("The TopicRepository class is obsolete, as is the Configuration property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
+    [Obsolete(
+      "The TopicRepository class is obsolete, as is the Configuration property. Instead, clients should use Dependency " +
+      "Injection with the ITopicRepository interface.",
+      false
+    )]
     public static TopicsSection Configuration {
       get {
         if (_configuration == null) {
@@ -98,11 +110,18 @@ namespace Ignia.Topics.Web {
     ///   Pulled from the implementing website's configuration via the <see
     ///   cref="Ignia.Topics.Configuration.TopicDataProviderManager"/>.
     /// </remarks>
-    [Obsolete("The TopicRepository class is obsolete, as is the TopicProviders property. Instead, clients should use Dependency Injection with the ITopicRepository interface.", false)]
+    [Obsolete(
+      "The TopicRepository class is obsolete, as is the TopicProviders property. Instead, clients should use Dependency " +
+      "Injection with the ITopicRepository interface.",
+      false
+    )]
     public static ITopicRepository DataProvider {
       get {
         if (_topicRepository == null) {
-          throw new Exception("The TopicRepository has not been configured with an instance of ITopicProvider. Configure the application by setting the TopicRepository.DataProvider in e.g. the global.asax file.");
+          throw new Exception(
+            "The TopicRepository has not been configured with an instance of ITopicProvider. Configure the application by " +
+            "setting the TopicRepository.DataProvider in e.g. the global.asax file."
+          );
         }
         return _topicRepository;
       }

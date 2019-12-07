@@ -134,8 +134,9 @@ namespace Ignia.Topics {
     /// <remarks>
     ///   The IsDirty property is used by the <see cref="Topics.Repositories.ITopicRepository"/> to determine whether or not
     ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database
-    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/> is called. Otherwise, it is ignored,
-    ///   thus preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
+    ///   when <see cref="Topics.Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/> is called. Otherwise, it is
+    ///   ignored, thus preventing the need to update attributes (or create new versions of attributes) whose values haven't
+    ///   changed.
     /// </remarks>
     public bool IsDirty { get; set; }
 

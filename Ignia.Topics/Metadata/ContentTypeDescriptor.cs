@@ -91,9 +91,9 @@ namespace Ignia.Topics.Metadata {
     ///   </para>
     ///   <para>
     ///     It is important to note that this functionality only affects the Topic Editor interface, by disabling the option to
-    ///     add a child topic. This functionality is not enforced by the library itself. As such, developers may programmatically
-    ///     add child topics to a topic regardless of whether it's associated <see cref="ContentTypeDescriptor"/> is set to <see
-    ///     cref="DisableChildTopics"/>.
+    ///     add a child topic. This functionality is not enforced by the library itself. As such, developers may
+    ///     programmatically add child topics to a topic regardless of whether it's associated <see
+    ///     cref="ContentTypeDescriptor"/> is set to <see cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
     [AttributeSetter]
@@ -227,8 +227,8 @@ namespace Ignia.Topics.Metadata {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentTypeName), "The attribute contentTypeName must be specified.");
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(!String.IsNullOrWhiteSpace(contentTypeName), "The attribute contentTypeName must be specified.");
       TopicFactory.ValidateKey(contentTypeName);
 
       /*------------------------------------------------------------------------------------------------------------------------

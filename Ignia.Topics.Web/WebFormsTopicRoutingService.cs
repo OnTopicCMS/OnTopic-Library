@@ -200,7 +200,8 @@ namespace Ignia.Topics {
           // Validate the content-type after the slash, then validate it against available views
           for (var i = 0; i < splitHeaders.Length; i++) {
             if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
-              // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding purposes
+              // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file
+              // purposes
               var acceptHeader = splitHeaders[i]
                 .Substring(splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) + 1)
                 .Replace("+", "-");
@@ -214,9 +215,9 @@ namespace Ignia.Topics {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Pull from topic attribute
-        | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not necessary
-        | as it is set as the default View value for the Topic
         >-----------------------------------------------------------------------------------------------------------------------
+        | Pull from Topic's View Attribute; additional check against the Topic's ContentType Topic View Attribute is not
+        | necessary as it is set as the default View value for the Topic
         \---------------------------------------------------------------------------------------------------------------------*/
         if (viewName == null && !String.IsNullOrEmpty(topic.View)) {
           IsValidView(contentType, topic.View, out viewName);

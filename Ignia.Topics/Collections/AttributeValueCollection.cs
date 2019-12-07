@@ -254,7 +254,12 @@ namespace Ignia.Topics.Collections {
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
-    public DateTime GetDateTime(string name, DateTime defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+    public DateTime GetDateTime(
+      string name,
+      DateTime defaultValue,
+      bool inheritFromParent = false,
+      bool inheritFromDerived = true
+    ) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
       return DateTime.TryParse(
         GetValue(name, defaultValue.ToString(CultureInfo.InvariantCulture), inheritFromParent, (inheritFromDerived ? 5 : 0)),

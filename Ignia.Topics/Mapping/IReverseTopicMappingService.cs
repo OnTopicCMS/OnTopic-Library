@@ -24,9 +24,9 @@ namespace Ignia.Topics.Mapping {
   ///     Unlike something like e.g. AutoMapper, the reverse mapping scenario isn't simply a matter of "flipping the script" on
   ///     the <see cref="ITopicMappingService"/>. A binding model should not be relied upon to be an accurate description of the
   ///     <see cref="ContentTypeDescriptor"/> (even though, ideally, it should be). Therefore, the <see
-  ///     cref="IReverseTopicMappingService"/> will instead rely upon the <see cref="ContentTypeDescriptor"/> to define the model
-  ///     and use that to selectively pull in property values accordingly. At the same time, however, it must honor hints from
-  ///     the binding model regarding what properties are intended for—especially in terms of e.g aliased relationships.
+  ///     cref="IReverseTopicMappingService"/> will instead rely upon the <see cref="ContentTypeDescriptor"/> to define the
+  ///     model and use that to selectively pull in property values accordingly. At the same time, however, it must honor hints
+  ///     from the binding model regarding what properties are intended for—especially in terms of e.g aliased relationships.
   ///   </para>
   ///   <para>
   ///     The current design of <see cref="IReverseTopicMappingService"/> is not intended to support mapping relationships, as

@@ -119,7 +119,9 @@ namespace Ignia.Topics.Repositories {
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
-    /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     int Save(Topic topic, bool isRecursive = false, bool isDraft = false);
 
@@ -137,7 +139,9 @@ namespace Ignia.Topics.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    /// <requires description="The target under which to move the topic must be provided." exception="T:System.ArgumentNullException">
+    /// <requires
+    ///   description="The target under which to move the topic must be provided."
+    ///   exception="T:System.ArgumentNullException">
     ///   topic != null
     /// </requires>
     void Move(Topic topic, Topic target, Topic? sibling = null);
@@ -153,7 +157,9 @@ namespace Ignia.Topics.Repositories {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
     ///   (the default) and the topic has children, including any nested topics, an exception will be thrown.
     /// </param>
-    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     void Delete(Topic topic, bool isRecursive = false);
 

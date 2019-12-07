@@ -36,8 +36,8 @@ namespace Ignia.Topics.Collections {
     /// </summary>
     /// <remarks>
     ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
-    ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may be
-    ///   set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
+    ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may
+    ///   be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
     ///   set, then it will not allow incoming relationships to be set via the internal
     ///   <see cref="SetTopic(String, Topic, Boolean)"/> overload.
     /// </remarks>

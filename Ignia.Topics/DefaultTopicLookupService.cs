@@ -25,8 +25,8 @@ namespace Ignia.Topics {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="DefaultTopicLookupService"/>. Optionally accepts a list of <see cref="Type"/>
-    ///   instances and a default <see cref="Type"/> value.
+    ///   Establishes a new instance of a <see cref="DefaultTopicLookupService"/>. Optionally accepts a list of <see
+    ///   cref="Type"/> instances and a default <see cref="Type"/> value.
     /// </summary>
     /// <remarks>
     ///   Any <see cref="Type"/> instances submitted via <paramref name="types"/> should be unique by <see

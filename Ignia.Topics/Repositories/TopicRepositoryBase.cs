@@ -33,17 +33,17 @@ namespace Ignia.Topics.Repositories {
     /// <summary>
     ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<DeleteEventArgs>?       DeleteEvent;
+    public event EventHandler<DeleteEventArgs>? DeleteEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<MoveEventArgs>?         MoveEvent;
+    public event EventHandler<MoveEventArgs>? MoveEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
     /// </summary>
-    public event EventHandler<RenameEventArgs>?       RenameEvent;
+    public event EventHandler<RenameEventArgs>? RenameEvent;
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
@@ -96,7 +96,6 @@ namespace Ignia.Topics.Repositories {
       return _contentTypeDescriptors;
 
     }
-
 
     /*==========================================================================================================================
     | METHOD: LOAD
@@ -232,7 +231,9 @@ namespace Ignia.Topics.Repositories {
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
-    /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     public virtual int Save([ValidatedNotNull, NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
@@ -359,7 +360,9 @@ namespace Ignia.Topics.Repositories {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well.
     /// </param>
-    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     public virtual void Delete([ValidatedNotNull, NotNull]Topic topic, bool isRecursive) {
 
