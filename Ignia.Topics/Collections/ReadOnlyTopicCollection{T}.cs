@@ -2,7 +2,8 @@
 | Author        Ignia, LLC
 | Client        Ignia, LLC
 | Project       Topics Library
-\=============================================================================================================================*/using System.Collections.Generic;
+\=============================================================================================================================*/
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Ignia.Topics.Internal.Diagnostics;
 
