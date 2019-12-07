@@ -35,4 +35,4 @@ namespace Ignia.Topics.Models {
     public string? UniqueKey { get; set; }
 
   } //Class
-} //Namespace
+} //Namespaces

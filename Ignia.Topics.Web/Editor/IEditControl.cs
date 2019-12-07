@@ -66,6 +66,5 @@ namespace Ignia.Topics.Web.Editor {
     /// </summary>
     bool Required { get; set; }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

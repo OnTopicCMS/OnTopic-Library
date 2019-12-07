@@ -32,5 +32,5 @@ namespace Ignia.Topics {
     /// <param name="typeName">The name of the <see cref="Type"/> to retrieve.</param>
     Type? Lookup(string typeName);
 
-  }
-}
+  } //Class
+} //Namespace

@@ -38,5 +38,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public bool IsHidden { get; set; }
 
   } //Class
-
 } //Namespace

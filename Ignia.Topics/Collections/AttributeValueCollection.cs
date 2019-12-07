@@ -603,6 +603,5 @@ namespace Ignia.Topics.Collections {
       return item.Key;
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

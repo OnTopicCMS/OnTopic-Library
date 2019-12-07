@@ -72,5 +72,4 @@ namespace Ignia.Topics.Collections {
     public Topic this[string key] => _innerCollection[key];
 
   } //Class
-
 } //Namespace

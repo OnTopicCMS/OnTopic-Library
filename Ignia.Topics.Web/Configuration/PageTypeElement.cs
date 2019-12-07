@@ -43,7 +43,5 @@ namespace Ignia.Topics.Web.Configuration {
     [ConfigurationProperty("type", IsRequired = false)]
     public Type Type => this["type"] as Type;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

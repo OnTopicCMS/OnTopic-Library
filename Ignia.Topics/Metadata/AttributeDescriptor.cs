@@ -316,6 +316,5 @@ namespace Ignia.Topics.Metadata {
       set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

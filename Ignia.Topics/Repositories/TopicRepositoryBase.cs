@@ -383,6 +383,5 @@ namespace Ignia.Topics.Repositories {
 
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

@@ -84,7 +84,5 @@ namespace Ignia.Topics.Web.Configuration {
     /// </summary>
     public PageTypeElementCollection GetPageTypes() => this["pageTypes"] as PageTypeElementCollection;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

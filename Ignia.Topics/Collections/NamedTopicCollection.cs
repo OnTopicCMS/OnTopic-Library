@@ -49,5 +49,4 @@ namespace Ignia.Topics.Collections {
     public string Name { get; }
 
   } //Class
-
 } //Namespace

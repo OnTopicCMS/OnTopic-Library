@@ -30,5 +30,4 @@ namespace Ignia.Topics.Mapping.Annotations {
     }
 
   } //Class
-
 } //Namespace

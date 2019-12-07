@@ -58,6 +58,5 @@ namespace Ignia.Topics.Repositories {
       Contract.Requires(info);
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

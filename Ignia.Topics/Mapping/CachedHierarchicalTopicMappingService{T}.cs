@@ -101,5 +101,5 @@ namespace Ignia.Topics.Mapping {
     ) =>
       await _hierarchicalTopicMappingService.GetViewModelAsync(sourceTopic, tiers, validationDelegate).ConfigureAwait(false);
 
-  } // Class
-} // Namespace
+  } //Class
+} //Namespace

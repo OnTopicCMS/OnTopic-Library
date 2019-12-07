@@ -30,5 +30,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public string? UnmappedAttribute { get; set; }
 
   } //Class
-
 } //Namespace

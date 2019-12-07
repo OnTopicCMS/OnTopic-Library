@@ -27,5 +27,5 @@ namespace Ignia.Topics {
     /// </summary>
     Topic? GetCurrentTopic();
 
-    }
-  }
+  } //Class
+} //Namespace

@@ -106,6 +106,5 @@ namespace Ignia.Topics.AspNetCore.Mvc {
 
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

@@ -670,6 +670,5 @@ namespace Ignia.Topics {
 
     #endregion
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

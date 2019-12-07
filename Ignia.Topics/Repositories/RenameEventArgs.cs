@@ -39,6 +39,5 @@ namespace Ignia.Topics.Repositories {
     /// </value>
     public Topic Topic { get; }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

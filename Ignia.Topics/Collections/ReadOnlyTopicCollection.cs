@@ -41,5 +41,5 @@ namespace Ignia.Topics.Collections {
       return new ReadOnlyTopicCollection(innerCollection);
     }
 
-  }
-}
+  } //Class
+} //Namespace

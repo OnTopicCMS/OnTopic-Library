@@ -30,6 +30,5 @@ namespace Ignia.Topics.Web.Mvc.Models {
     public T NavigationRoot { get; set; }
     public string CurrentKey { get; set; }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

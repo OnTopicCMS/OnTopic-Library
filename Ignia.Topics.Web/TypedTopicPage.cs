@@ -23,6 +23,5 @@ namespace Ignia.Topics.Web {
     /// </summary>
     public TypedTopicPage() : base() { }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

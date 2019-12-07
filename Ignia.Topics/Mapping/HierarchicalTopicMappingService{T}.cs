@@ -221,5 +221,5 @@ namespace Ignia.Topics.Mapping {
       return viewModel;
     }
 
-  } // Class
-} // Namespace
+  } //Class
+} //Namespace

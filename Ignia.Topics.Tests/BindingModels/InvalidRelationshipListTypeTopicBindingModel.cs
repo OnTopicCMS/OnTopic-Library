@@ -33,5 +33,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public Dictionary<string, RelatedTopicBindingModel> ContentTypes { get; } = new Dictionary<string, RelatedTopicBindingModel>();
 
   } //Class
-
 } //Namespace

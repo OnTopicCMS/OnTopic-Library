@@ -32,5 +32,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public bool IsRequired { get; set; }
 
   } //Class
-
 } //Namespace

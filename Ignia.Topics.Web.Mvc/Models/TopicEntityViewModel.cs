@@ -70,6 +70,5 @@ namespace Ignia.Topics.Web.Mvc.Models {
     /// <returns>The <see cref="GetTopic()"/> associated with the current page.</returns>
     public Topic Topic { get; }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

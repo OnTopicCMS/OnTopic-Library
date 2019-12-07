@@ -24,5 +24,5 @@ namespace Ignia.Topics.Metadata {
     public ContentTypeDescriptorCollection() : base(null, null) {
     }
 
-  }
-}
+  } //Class
+} //Namespace

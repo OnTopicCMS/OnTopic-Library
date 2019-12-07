@@ -143,5 +143,5 @@ namespace Ignia.Topics.Internal.Diagnostics {
     public static void Assume([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null)
       => Requires<InvalidOperationException>(requiredObject != null, errorMessage);
 
-  } //class
+  } //Class
 } //Namespace

@@ -81,5 +81,5 @@ namespace Ignia.Topics {
       Contract.Requires(info);
     }
 
-  }
-}
+  } //Class
+} //Namespace

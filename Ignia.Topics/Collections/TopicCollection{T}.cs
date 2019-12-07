@@ -134,5 +134,4 @@ namespace Ignia.Topics.Collections {
     }
 
   } //Class
-
 } //Namespace

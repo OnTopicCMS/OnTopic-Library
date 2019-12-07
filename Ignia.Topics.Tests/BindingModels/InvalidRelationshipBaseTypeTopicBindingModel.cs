@@ -31,5 +31,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public List<TopicViewModel> ContentTypes { get; } = new List<TopicViewModel>();
 
   } //Class
-
 } //Namespace

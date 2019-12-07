@@ -141,5 +141,5 @@ namespace Ignia.Topics.Querying {
 
     }
 
-  }
-}
+  } //Class
+} //Namespace

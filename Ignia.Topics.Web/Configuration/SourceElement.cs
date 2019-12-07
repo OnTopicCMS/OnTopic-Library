@@ -289,7 +289,5 @@ namespace Ignia.Topics.Web.Configuration {
     /// </returns>
     public static bool IsTrusted(SourceElement element) => (element == null)? false : element.Trusted;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

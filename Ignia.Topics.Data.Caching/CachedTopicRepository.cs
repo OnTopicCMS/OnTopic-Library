@@ -284,5 +284,4 @@ namespace Ignia.Topics.Data.Caching {
     public override void Delete(Topic topic, bool isRecursive = false) => _dataProvider.Delete(topic, isRecursive);
 
   } //Class
-
 } //Namespace

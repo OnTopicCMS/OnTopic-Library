@@ -34,7 +34,5 @@ namespace Ignia.Topics.Web.Configuration {
     [ConfigurationProperty("draftMode")]
     public SourceElement DraftMode => this["draftMode"] as SourceElement;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

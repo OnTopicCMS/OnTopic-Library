@@ -32,5 +32,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public TopicViewModel DerivedTopic { get; } = new TopicViewModel();
 
   } //Class
-
 } //Namespace

@@ -46,5 +46,5 @@ namespace Ignia.Topics.Tests.TestDoubles {
 
     }
 
-  }
-}
+  } //Class
+} //Namespace

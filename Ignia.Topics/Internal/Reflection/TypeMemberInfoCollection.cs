@@ -492,5 +492,4 @@ namespace Ignia.Topics.Internal.Reflection {
     }
 
   } //Class
-
 } //Namespace

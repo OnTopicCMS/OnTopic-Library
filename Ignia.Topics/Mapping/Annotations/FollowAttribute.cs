@@ -49,5 +49,4 @@ namespace Ignia.Topics.Mapping.Annotations {
     public Relationships Relationships { get; }
 
   } //Class
-
 } //Namespace

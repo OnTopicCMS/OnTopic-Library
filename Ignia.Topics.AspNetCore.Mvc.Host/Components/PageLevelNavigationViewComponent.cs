@@ -44,6 +44,5 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host.Components {
       hierarchicalTopicMappingService
     ) {}
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

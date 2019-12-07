@@ -40,5 +40,5 @@ namespace Ignia.Topics.Metadata {
     ) {
     }
 
-  } // Class
-} // Namespace
+  } //Class
+} //Namespace

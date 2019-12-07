@@ -30,6 +30,5 @@ namespace Ignia.Topics.AspNetCore.Mvc.Models {
     public T? NavigationRoot { get; set; }
     public string CurrentKey { get; set; } = default!;
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

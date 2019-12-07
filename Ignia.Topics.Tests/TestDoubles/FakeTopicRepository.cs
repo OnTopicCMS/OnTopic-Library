@@ -129,8 +129,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
-    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
-    ///   Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
+    ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found
+    ///   under Configuration:ContentTypes. There are <c>TopicRepository.ContentTypes.Count</c> ContentTypes in the Repository.
     /// </exception>
     /// <exception cref="Exception">
     ///   Failed to save Topic <c>topic.Key</c> (<c>topic.Id</c>) via
@@ -209,7 +209,9 @@ namespace Ignia.Topics.Tests.TestDoubles {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
     ///   (the default) and the topic has children, including any nested topics, an exception will be thrown.
     /// </param>
-    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">topic != null</requires>
+    /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
+    ///   topic != null
+    /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     /// <exception cref="Exception">Failed to delete Topic <c>topic.Key</c> (<c>topic.Id</c>): <c>ex.Message</c></exception>
     public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
@@ -328,5 +330,4 @@ namespace Ignia.Topics.Tests.TestDoubles {
     }
 
   } //Class
-
 } //Namespace

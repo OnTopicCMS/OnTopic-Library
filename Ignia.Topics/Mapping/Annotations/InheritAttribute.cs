@@ -26,5 +26,4 @@ namespace Ignia.Topics.Mapping.Annotations {
   public sealed class InheritAttribute : System.Attribute {
 
   } //Class
-
 } //Namespace

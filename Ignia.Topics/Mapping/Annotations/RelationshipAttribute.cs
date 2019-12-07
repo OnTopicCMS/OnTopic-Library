@@ -67,5 +67,4 @@ namespace Ignia.Topics.Mapping.Annotations {
     public RelationshipType Type { get; set; }
 
   } //Class
-
 } //Namespace

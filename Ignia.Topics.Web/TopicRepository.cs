@@ -109,7 +109,5 @@ namespace Ignia.Topics.Web {
       set => _topicRepository = value;
     }
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

@@ -174,6 +174,5 @@ namespace Ignia.Topics {
     /// </summary>
     public DateTime LastModified { get; } = DateTime.Now;
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

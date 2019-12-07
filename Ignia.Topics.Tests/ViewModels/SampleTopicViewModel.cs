@@ -46,5 +46,4 @@ namespace Ignia.Topics.Tests.ViewModels {
     public TopicViewModelCollection<TopicViewModel> RelationshipAlias { get; } = new TopicViewModelCollection<TopicViewModel>();
 
   } //Class
-
 } //Namespace

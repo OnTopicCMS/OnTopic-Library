@@ -164,5 +164,4 @@ namespace Ignia.Topics.Web.Mvc {
     }
 
   } //Class
-
 } //Namespace

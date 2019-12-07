@@ -29,6 +29,5 @@ namespace Ignia.Topics.Models {
     /// </summary>
     Collection<T> Children { get; }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

@@ -29,5 +29,4 @@ namespace Ignia.Topics.Mapping.Annotations {
     #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
   } //Enum
-
 } //Namespace

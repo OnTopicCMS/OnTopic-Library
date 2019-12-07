@@ -48,5 +48,5 @@ namespace Ignia.Topics.Internal.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     static internal Dictionary<RelationshipType, Relationships> Mappings { get; }
 
-  }
-}
+  } //Class
+} //Namespace

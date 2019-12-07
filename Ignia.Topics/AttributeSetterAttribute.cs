@@ -44,5 +44,4 @@ namespace Ignia.Topics {
   public sealed class AttributeSetterAttribute : System.Attribute {
 
   } //Class
-
 } //Namespace

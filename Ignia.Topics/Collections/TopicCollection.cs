@@ -33,5 +33,5 @@ namespace Ignia.Topics.Collections {
     public TopicCollection(IEnumerable<Topic>? topics = null) : this(null, topics) {
     }
 
-  }
-}
+  } //Class
+} //Namespace

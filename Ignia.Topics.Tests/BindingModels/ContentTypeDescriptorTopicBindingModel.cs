@@ -29,5 +29,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public List<AttributeDescriptorTopicBindingModel> Attributes { get; } = new List<AttributeDescriptorTopicBindingModel>();
 
   } //Class
-
 } //Namespace

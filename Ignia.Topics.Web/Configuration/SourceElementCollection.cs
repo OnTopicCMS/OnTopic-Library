@@ -72,6 +72,5 @@ namespace Ignia.Topics.Web.Configuration {
       return ((SourceElement)element).Source;
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

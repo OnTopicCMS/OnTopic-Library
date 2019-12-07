@@ -38,5 +38,4 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     public virtual ActionResult Index() => HttpNotFound("No controller available to handle this request.");
 
   } //Class
-
 } //Namespace

@@ -1347,5 +1347,4 @@ namespace Ignia.Topics.Data.Sql {
     }
 
   } //Class
-
 } //Namespace

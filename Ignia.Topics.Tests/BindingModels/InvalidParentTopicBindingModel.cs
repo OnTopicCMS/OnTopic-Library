@@ -30,5 +30,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public BasicTopicBindingModel? Parent { get; set; }
 
   } //Class
-
 } //Namespace

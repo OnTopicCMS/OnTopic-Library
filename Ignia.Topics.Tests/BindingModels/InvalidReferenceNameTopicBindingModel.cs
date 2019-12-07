@@ -31,5 +31,4 @@ namespace Ignia.Topics.Tests.BindingModels {
     public RelatedTopicBindingModel TopicReference { get; } = new RelatedTopicBindingModel();
 
   } //Class
-
 } //Namespace

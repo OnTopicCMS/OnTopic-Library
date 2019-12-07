@@ -157,6 +157,5 @@ namespace Ignia.Topics.Repositories {
     /// <exception cref="ArgumentNullException">topic</exception>
     void Delete(Topic topic, bool isRecursive = false);
 
-  } // Interface
-
-} // Namespace
+  } //Interface
+} //Namespace

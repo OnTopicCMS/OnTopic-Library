@@ -71,6 +71,5 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
 
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

@@ -36,6 +36,5 @@ namespace Ignia.Topics.ViewModels {
     public bool IsSelected(string uniqueKey) =>
       $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:", StringComparison.InvariantCultureIgnoreCase) ?? false;
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

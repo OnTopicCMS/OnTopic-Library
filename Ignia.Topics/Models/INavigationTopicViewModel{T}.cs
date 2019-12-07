@@ -42,6 +42,5 @@ namespace Ignia.Topics.Models {
     /// </param>
     bool IsSelected(string uniqueKey);
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace

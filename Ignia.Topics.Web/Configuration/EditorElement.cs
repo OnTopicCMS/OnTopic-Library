@@ -54,7 +54,5 @@ namespace Ignia.Topics.Web.Configuration {
     [ConfigurationProperty("admin")]
     public SourceElement Admin => this["admin"] as SourceElement;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

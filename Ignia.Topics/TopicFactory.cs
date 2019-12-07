@@ -156,5 +156,5 @@ namespace Ignia.Topics {
       );
     }
 
-  } //class
+  } //Class
 } //Namespace

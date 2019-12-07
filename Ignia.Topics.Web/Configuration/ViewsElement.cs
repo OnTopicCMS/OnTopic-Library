@@ -27,7 +27,5 @@ namespace Ignia.Topics.Web.Configuration {
     [ConfigurationProperty("path", IsRequired=false)]
     public string Path => this["path"] as string;
 
-  } // Class
-
-} // Namespace
-
+  } //Class
+} //Namespace

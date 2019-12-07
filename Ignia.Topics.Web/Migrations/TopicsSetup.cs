@@ -568,6 +568,5 @@ namespace Ignia.Topics.Web.Migrations {
 
     }
 
-  } // Class
-
-} // Namespace
+  } //Class
+} //Namespace
