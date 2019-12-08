@@ -21,7 +21,22 @@ DECLARE	@RangeLeft		INT
 DECLARE	@RangeRight		INT
 DECLARE	@RangeWidth		INT
 DECLARE	@Topics		TABLE	(TopicId INT)
+DECLARE	@IsNestedTransaction	BIT;
 
+BEGIN TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- BEGIN TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT = 0)
+  BEGIN
+    SET @IsNestedTransaction = 0;
+    BEGIN TRANSACTION;
+  END
+ELSE
+  BEGIN
+    SET @IsNestedTransaction = 1;
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE RANGE TO DELETE
@@ -84,3 +99,25 @@ WHERE	ISNULL(RangeRight, 0)	> @RangeRight
 UPDATE	topics_Topics
 SET	RangeLeft		= RangeLeft - @RangeWidth
 WHERE	RangeLeft		> @RangeRight
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- COMMIT TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+  BEGIN
+    COMMIT
+  END
+
+END TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- HANDLE ERRORS
+--------------------------------------------------------------------------------------------------------------------------------
+BEGIN CATCH
+  IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+    BEGIN
+      ROLLBACK;
+    END;
+  THROW
+  RETURN;
+END CATCH
