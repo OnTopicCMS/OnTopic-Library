@@ -24,7 +24,7 @@ SELECT	TopicID		AS TopicID,
 	CONVERT(Int, AttributeValue)	AS ParentID,
 	GETDATE()		AS DateAdded
 FROM	topics_TopicAttributes
-WHERE	ISNULL(AttributeID, 0)	= 2
+WHERE	AttributeKey		= 'ParentID'
 
 -- Address root node
 UPDATE	topics_Hierarchy

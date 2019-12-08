@@ -1,7 +1,6 @@
 ﻿CREATE
 TABLE	[dbo].[topics_TopicAttributes] (
 	  [TopicID]		INT	NOT NULL,
-	  [AttributeID]		INT	NULL,
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
 	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
 	  [DateModified]	DATETIME	CONSTRAINT [DF_topics_TopicAttributes_DateModified] DEFAULT (getdate()) NOT NULL,
