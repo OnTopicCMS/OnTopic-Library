@@ -9,14 +9,19 @@ CREATE PROCEDURE [dbo].[topics_DeleteTopic]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- DISABLE NOCOUND
+--------------------------------------------------------------------------------------------------------------------------------
+-- Prevent extra result sets from interfering with SELECT statements
+SET NOCOUNT ON;
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@RangeLeft		INT
 DECLARE	@RangeRight		INT
 DECLARE	@RangeWidth		INT
+DECLARE	@Topics		TABLE	(TopicId INT)
 
--- SET NOCOUNT ON added to prevent extra result sets from interfering with SELECT statements.
-SET NOCOUNT ON;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE RANGE TO DELETE
@@ -27,54 +32,47 @@ SELECT	@RangeLeft		= RangeLeft,
 FROM	topics_Topics
 WHERE	TopicID		= @TopicID;
 
------------------------------------------------------------------------------------------------------------------------------------------------
--- DELETE RELATED ATTRIBUTES
------------------------------------------------------------------------------------------------------------------------------------------------
-DELETE
-FROM	topics_TopicAttributes
-WHERE	TopicID IN (
-  SELECT	TopicID
-  FROM	topics_Topics
-  WHERE	RangeLeft
-    BETWEEN	@RangeLeft
-    AND	@RangeRight
-)
-
-DELETE
-FROM	topics_Blob
-WHERE	TopicID In (
-  SELECT	TopicID
-  FROM	topics_Topics
-  WHERE	RangeLeft
-    BETWEEN	@RangeLeft
-    AND	@RangeRight
-)
-
-DELETE
-FROM	topics_Relationships
-WHERE	Source_TopicID IN (
-  SELECT	TopicID
-  FROM	topics_Topics
-  WHERE	RangeLeft
-    BETWEEN	@RangeLeft
-    AND	@RangeRight
-)
-OR	Target_TopicID IN (
-  SELECT	TopicID
-  FROM	topics_Topics
-  WHERE	RangeLeft
-    BETWEEN	@RangeLeft
-    AND	@RangeRight
-)
-
------------------------------------------------------------------------------------------------------------------------------------------------
--- DELETE RANGE
------------------------------------------------------------------------------------------------------------------------------------------------
-DELETE
+--------------------------------------------------------------------------------------------------------------------------------
+-- STORE RANGE IN TABLE VARIABLE
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	@Topics(TopicId)
+SELECT	TopicId
 FROM	topics_Topics
 WHERE	RangeLeft
   BETWEEN	@RangeLeft
   AND	@RangeRight
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE RELATED ATTRIBUTES
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	Attributes
+FROM	topics_TopicAttributes	Attributes
+INNER JOIN	@Topics                         Topics
+  ON	Topics.TopicId                  = Attributes.TopicID
+
+DELETE	Blob
+FROM	topics_Blob		Blob
+INNER JOIN	@Topics                         Topics
+  ON	Topics.TopicId                  = Blob.TopicID
+
+DELETE	Relationships
+FROM	topics_Relationships	Relationships
+INNER JOIN	@Topics                         Topics
+  ON	Topics.TopicId                  = Relationships.Source_TopicID
+
+DELETE	Relationships
+FROM	topics_Relationships	Relationships
+INNER JOIN	@Topics                         Topics
+  ON	Topics.TopicId                  = Relationships.Target_TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE RANGE
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	TopicsActual
+FROM	topics_Topics		TopicsActual
+INNER JOIN	@Topics                         Topics
+  ON	Topics.TopicId		= TopicsActual.TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CLOSE LEFT GAP
@@ -83,6 +81,6 @@ UPDATE	topics_Topics
 SET	RangeRight		= RangeRight - @RangeWidth
 WHERE	ISNULL(RangeRight, 0)	> @RangeRight
 
-Update	topics_Topics
+UPDATE	topics_Topics
 SET	RangeLeft		= RangeLeft - @RangeWidth
 WHERE	RangeLeft		> @RangeRight
