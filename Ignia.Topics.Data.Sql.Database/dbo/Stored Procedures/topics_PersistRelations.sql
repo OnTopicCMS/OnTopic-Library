@@ -1,8 +1,11 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- PERSIST RELATIONS
 --------------------------------------------------------------------------------------------------------------------------------
+-- Removes and saves the n:n mappings for scoped related topics.
+--------------------------------------------------------------------------------------------------------------------------------
+
 CREATE PROCEDURE [dbo].[topics_PersistRelations]
-	@RelationshipTypeID	VARCHAR(64)	= 'related',
+	@RelationshipTypeID	VARCHAR(255)	= 'related',
 	@Source_TopicID		INT	= -1,
 	@Target_TopicIDs	VARCHAR(max)	= ''
 AS

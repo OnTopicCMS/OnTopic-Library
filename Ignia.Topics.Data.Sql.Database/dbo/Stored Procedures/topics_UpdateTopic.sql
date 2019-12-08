@@ -6,8 +6,8 @@
 
 CREATE PROCEDURE [dbo].[topics_UpdateTopic]
 	@TopicID		INT		= -1		,
-	@Attributes		VARCHAR(1024)		= ''		,
-	@NullAttributes		VARCHAR(1024)		= ''		,
+	@Attributes		VARCHAR(max)		= ''		,
+	@NullAttributes		VARCHAR(max)		= ''		,
 	@ParentID		INT		= -1		,
 	@Blob		XML		= null		,
 	@Version		DATETIME		= null		,
