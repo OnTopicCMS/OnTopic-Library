@@ -1,10 +1,7 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	DELETE TOPIC
---
--- Purpose	Deletes a topic in the tree, including all child topics.
---
--- History	John Mulhausen		04062009	Created initial version.
---	Jeremy Caney		05282010	Reformatted code and refactored identifiers for improved readability.
+-- DELETE TOPIC
+--------------------------------------------------------------------------------------------------------------------------------
+-- Deletes a topic in the tree, including all child topics.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_DeleteTopic]

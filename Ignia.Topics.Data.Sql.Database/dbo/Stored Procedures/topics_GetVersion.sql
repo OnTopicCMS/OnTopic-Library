@@ -1,10 +1,9 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	GET VERSION
---
--- Purpose	Retrieves data associated with an individual topic version, as a means of either comparing or restoring a previous version.
---
--- History      Jeremy Caney		07262017	Initial Creation based on original topics_getTopics code.
+-- GET VERSION
 --------------------------------------------------------------------------------------------------------------------------------
+-- Retrieves data associated with an individual topic version, as a means of either comparing or restoring a previous version.
+--------------------------------------------------------------------------------------------------------------------------------
+
 CREATE PROCEDURE [dbo].[topics_GetVersion]
 	@TopicID		int	= -1,
 	@Version		datetime	= null

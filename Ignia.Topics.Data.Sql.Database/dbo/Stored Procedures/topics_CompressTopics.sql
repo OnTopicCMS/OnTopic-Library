@@ -1,9 +1,7 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	COMPRESS TOPICS
---
--- Purpose	Remove gaps within nested set model created when non-leaf nodes are deleted
---
--- History	Hedley Robertson	06222010  Created initial version.
+-- COMPRESS TOPICS
+--------------------------------------------------------------------------------------------------------------------------------
+-- Remove gaps within nested set model created when non-leaf nodes are deleted
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_CompressTopics]

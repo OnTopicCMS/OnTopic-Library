@@ -1,11 +1,10 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- PROCEDURE	GENERATE NESTED SET
---
--- Purpose	Creates an adjacency list using the _ParentID fields in topics_TopicAttributes then takes the newly created adjacency list and
---	uses it to generate a nested set based table in topics_Topics.  Useful for recovering from a corrupted nested set model.
---
--- History	Jeremy Caney		050909	Created initial version based on Celko's conversion model
+-- GENERATE NESTED SET
 --------------------------------------------------------------------------------------------------------------------------------
+-- Creates an adjacency list using the _ParentID fields in topics_TopicAttributes then takes the newly created adjacency list
+-- and uses it to generate a nested set based table in topics_Topics.  Useful for recovering from a corrupted nested set model.
+--------------------------------------------------------------------------------------------------------------------------------
+
 CREATE PROCEDURE [dbo].[topics_GenerateNestedSet]
 AS
 

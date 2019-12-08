@@ -1,19 +1,9 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	UPDATE TOPIC
---
--- Purpose	Used to update the attributes of a provided node
---
--- History	Casey Margell		04062009	Initial Creation based on code from Celko's SQL For Smarties
---	Jeremy Caney		05282010	Reformatted code and refactored identifiers for improved readability.
---	Katherine Trunkey	08052014	Added parameter for Version (datetime). Updated procedure to always create new
---				attribute records rather than deleting the existing attributes for the topic and
---				recreating them.
---	Katherine Trunkey	08142014	Updated topic_TopicAttributes insertion script to use uncommon, multi-character
---				delimiters rather than a colon and semicolon in order to provide better escaping
---				safety for @Attributes.
---	Jeremy Caney		10032014	Added support to optionally delete relationships, as part of a coordinated
---				update.
+-- UPDATE TOPIC
 --------------------------------------------------------------------------------------------------------------------------------
+-- Used to update the attributes of a provided node
+--------------------------------------------------------------------------------------------------------------------------------
+
 CREATE PROCEDURE [dbo].[topics_UpdateTopic]
 	@TopicID		INT		= -1		,
 	@Attributes		VARCHAR(1024)		= ''		,

@@ -1,17 +1,7 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	MOVE TOPICS
---
--- Purpose	Moves a topic and all of its children underneath another topic.
---
--- History	John Mulhausen		06302009	Created initial version.
---	Jeremy Caney		05282010	Reformatted code and refactored identifiers for improved readability.
---              Hedley Robertson	07062010	Added support for SiblingID (Ordering)
---              Hedley Robertson	08122010	Inline test cases, debugging statements and check for re-parenting;
---				now avoids moving item to start of SET when sibling move requested
---				and ParentId has not changed
---              Hedley Robertson	08172010	Rebuilt with externalized MoveSubTree function
---	Jeremy Caney		09222014	Updated logic for ParentID attribute to be based on Key, not ID
---	Jeremy Caney		12092017	Refactored based on Celko's alternative formulation.
+-- MOVE TOPICS
+--------------------------------------------------------------------------------------------------------------------------------
+-- Moves a topic and all of its children underneath another topic.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_MoveTopic]

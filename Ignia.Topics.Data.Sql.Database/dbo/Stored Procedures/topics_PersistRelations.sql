@@ -1,10 +1,5 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	PERSIST RELATIONS
---
--- Purpose	Removes and saves the n:n mappings for scoped related topics.
---
--- History	Hedley Robertson	07072010	Initial Creation
---	Jeremy Caney		10922014	Updated to support multiple relationship types
+-- PERSIST RELATIONS
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE PROCEDURE [dbo].[topics_PersistRelations]
 	@RelationshipTypeID	VARCHAR(64)	= 'related',
