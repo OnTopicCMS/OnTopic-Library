@@ -13,11 +13,27 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@OriginalLeft		int
-DECLARE	@OriginalRight		int
-DECLARE	@InsertionPoint		int
-DECLARE	@OriginalRange		int
-DECLARE	@Offset		int
+DECLARE	@OriginalLeft		INT
+DECLARE	@OriginalRight		INT
+DECLARE	@InsertionPoint		INT
+DECLARE	@OriginalRange		INT
+DECLARE	@Offset		INT
+DECLARE	@IsNestedTransaction	BIT;
+
+BEGIN TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- BEGIN TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT = 0)
+  BEGIN
+    SET @IsNestedTransaction = 0;
+    BEGIN TRANSACTION;
+  END
+ELSE
+  BEGIN
+    SET @IsNestedTransaction = 1;
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE SOURCE RANGE
@@ -275,3 +291,26 @@ SELECT	@TopicID		TopicID,
 	@InsertionPoint		InsertionPoint,
 	@OriginalRange		OriginalRange,
 	@Offset		Offset
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- COMMIT TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+  BEGIN
+    COMMIT
+  END
+
+END TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- HANDLE ERRORS
+--------------------------------------------------------------------------------------------------------------------------------
+BEGIN CATCH
+  IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+    BEGIN
+      ROLLBACK;
+    END;
+  THROW
+  RETURN;
+END CATCH
