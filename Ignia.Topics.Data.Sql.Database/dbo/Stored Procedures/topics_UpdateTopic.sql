@@ -69,14 +69,14 @@ SELECT	@TopicID,
 	AttributeKey,
 	'',
 	@Version
-FROM	@Attributes
+FROM	@Attributes		NullAttributes
 WHERE	IsNull(AttributeValue, '')	= ''
   AND (
     SELECT	TOP 1
 	AttributeValue
     FROM	topics_TopicAttributes
     WHERE	TopicID		= @TopicID
-      AND	AttributeKey		= AttributeKey
+      AND	AttributeKey		= NullAttributes.AttributeKey
     ORDER BY	Version DESC
   )			!= ''
 
