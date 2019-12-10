@@ -755,9 +755,11 @@ namespace Ignia.Topics.Data.Sql {
       | Establish attribute strings
       \-----------------------------------------------------------------------------------------------------------------------*/
       // Strings are immutable, use a StringBuilder to save memory
-      var attributes            = new StringBuilder();
-      var nullAttributes        = new StringBuilder();
       var blob                  = new StringBuilder();
+      var attributes            = new DataTable();
+
+      attributes.Columns.Add("AttributeKey");
+      attributes.Columns.Add("AttributeValue");
 
       Contract.Assume(
         contentType,
@@ -781,7 +783,10 @@ namespace Ignia.Topics.Data.Sql {
 
         // For attributes not stored in the Blob, only add the AttributeValue item to store if it has changed
         if (attribute != null && !attribute.StoreInBlob && attributeValue.IsDirty) {
-          attributes.Append(key + "~~" + attributeValue.Value + "``");
+          var record = attributes.NewRow();
+          record["AttributeKey"] = key;
+          record["AttributeValue"] = attributeValue;
+          attributes.Rows.Add(record);
         }
         else if (attribute != null && attribute.StoreInBlob) {
           blob.Append("<attribute key=\"" + key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>");
@@ -807,7 +812,10 @@ namespace Ignia.Topics.Data.Sql {
         var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
-          nullAttributes.Append(attribute.Key + ",");
+          var record = attributes.NewRow();
+          record["AttributeKey"] = attribute.Key;
+          record["AttributeValue"] = null;
+          attributes.Rows.Add(record);
         }
 
       }
@@ -873,19 +881,8 @@ namespace Ignia.Topics.Data.Sql {
           version.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
           SqlDbType.DateTime
         );
-        AddSqlParameter(
-          command,
-          "Attributes",
-          attributes.ToString(),
-          SqlDbType.VarChar
-        );
+        command.Parameters.AddWithValue("@Attributes", attributes);
         if (topic.Id != -1) {
-          AddSqlParameter(
-            command,
-            "NullAttributes",
-            nullAttributes.ToString(),
-            SqlDbType.VarChar
-          );
           AddSqlParameter(
             command,
             "DeleteRelationships",
@@ -950,6 +947,7 @@ namespace Ignia.Topics.Data.Sql {
       finally {
         if (command != null) command.Dispose();
         if (connection != null) connection.Dispose();
+        if (attributes != null) attributes.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

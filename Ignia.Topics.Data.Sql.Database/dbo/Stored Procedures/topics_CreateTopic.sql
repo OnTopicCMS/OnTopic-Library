@@ -1,14 +1,15 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- Procedure	CREATE TOPIC
--- Purpose	Creates a new topic.
+-- CREATE TOPIC
+--------------------------------------------------------------------------------------------------------------------------------
+-- Creates a new topic.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_CreateTopic]
-	@ParentID		int	= -1,
-	@Attributes		varchar(max)	= '',
-	@Blob		Xml	= null,
-	@Version		datetime	= null,
-	@IsDraft		bit	= 0
+	@ParentID		int		= -1,
+	@Attributes		AttributeValues		READONLY,
+	@Blob		Xml		= null,
+	@Version		datetime		= null,
+	@IsDraft		bit		= 0
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -74,13 +75,13 @@ INSERT INTO	topics_TopicAttributes (
 	AttributeValue		,
 	Version
 )
-SELECT	@TopicID		,
-	Substring(s, 0, CharIndex('~~', s)),
-	Substring(s, CharIndex('~~', s) + 2, Len(s)),
+SELECT	@TopicID,
+	AttributeKey,
+	AttributeValue,
 	@Version
-FROM	Split (@Attributes, '``')
-WHERE	s not like 'ParentID~~%'
-  AND	s != ''
+FROM	@Attributes
+WHERE	AttributeKey		!= 'ParentID'
+  AND 	IsNull(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE BLOB

@@ -6,8 +6,7 @@
 
 CREATE PROCEDURE [dbo].[topics_UpdateTopic]
 	@TopicID		INT		= -1		,
-	@Attributes		VARCHAR(max)		= ''		,
-	@NullAttributes		VARCHAR(max)		= ''		,
+	@Attributes		AttributeValues		READONLY		,
 	@ParentID		INT		= -1		,
 	@Blob		XML		= null		,
 	@Version		DATETIME		= null		,
@@ -32,12 +31,12 @@ INTO	topics_TopicAttributes (
 	  AttributeValue	,
 	  Version
 	)
-SELECT	@TopicID		,
-	Substring(s, 0, CharIndex('~~', s)),
-	Substring(s, CharIndex('~~', s) + 2, Len(s)),
+SELECT	@TopicID,
+	AttributeKey,
+	AttributeValue,
 	@Version
-FROM	Split(@Attributes, '``')
-WHERE	s != ''
+FROM	@Attributes
+WHERE	IsNull(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE BLOB
@@ -66,19 +65,20 @@ INSERT INTO	topics_TopicAttributes (
 	  AttributeValue	,
 	  Version
 	)
-SELECT	@TopicID		,
-	s		,
-	''		,
+SELECT	@TopicID,
+	AttributeKey,
+	'',
 	@Version
-FROM	Split (@NullAttributes, ',')
-WHERE (
-  SELECT	TOP 1
+FROM	@Attributes
+WHERE	IsNull(AttributeValue, '')	= ''
+  AND (
+    SELECT	TOP 1
 	AttributeValue
-  FROM	topics_TopicAttributes
-  WHERE	TopicID		= @TopicID
-    AND	AttributeKey		= s
-  ORDER BY	Version DESC
-) != ''
+    FROM	topics_TopicAttributes
+    WHERE	TopicID		= @TopicID
+      AND	AttributeKey		= AttributeKey
+    ORDER BY	Version DESC
+  )			!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- REMOVE EXISTING RELATIONS

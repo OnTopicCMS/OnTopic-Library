@@ -68,6 +68,7 @@
     <Folder Include="dbo\Views\" />
     <Folder Include="dbo\Functions\" />
     <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\topics_Blob.sql" />
@@ -94,6 +95,7 @@
     <Build Include="dbo\Stored Procedures\pr_Disable_Foreign_Keys.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetVersion.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetTopicID.sql" />
+    <Build Include="dbo\Types\AttributeValues.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
