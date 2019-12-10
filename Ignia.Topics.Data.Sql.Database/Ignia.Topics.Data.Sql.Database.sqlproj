@@ -96,6 +96,7 @@
     <Build Include="dbo\Stored Procedures\topics_GetVersion.sql" />
     <Build Include="dbo\Stored Procedures\topics_GetTopicID.sql" />
     <Build Include="dbo\Types\AttributeValues.sql" />
+    <Build Include="dbo\Types\TopicList.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">

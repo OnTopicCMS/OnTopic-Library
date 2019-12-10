@@ -1147,7 +1147,10 @@ namespace Ignia.Topics.Data.Sql {
       if (!topic.Relationships.Keys.Any()) {
         return "";
       }
-      var command = (SqlCommand?)null;
+      var command               = (SqlCommand?)null;
+      var targetIds             = new DataTable();
+
+      targetIds.Columns.Add("TopicId");
 
       try {
 
@@ -1158,16 +1161,21 @@ namespace Ignia.Topics.Data.Sql {
 
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var targetIds         = scope.Select<Topic, int>(m => m.Id).ToArray();
 
           command               = new SqlCommand("topics_PersistRelations", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
+          foreach (var targetTopicId in scope.Select<Topic, int>(m => m.Id)) {
+            var record = targetIds.NewRow();
+            record["TopicID"] = key;
+            targetIds.Rows.Add(record);
+          }
+
           // Add Parameters
-          AddSqlParameter(command, "RelationshipTypeID", key, SqlDbType.VarChar);
-          AddSqlParameter(command, "Source_TopicID", topicId, SqlDbType.Int);
-          AddSqlParameter(command, "Target_TopicIDs", String.Join(",", targetIds), SqlDbType.VarChar);
+          command.Parameters.AddWithValue("RelationshipTypeID", key);
+          command.Parameters.AddWithValue("Source_TopicID", topicId);
+          command.Parameters.AddWithValue("@Target_TopicIDs", targetIds);
 
           command.ExecuteNonQuery();
 
@@ -1190,6 +1198,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
         if (command != null) command.Dispose();
+        if (targetIds != null) targetIds.Dispose();
         //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
         //if (connection != null) connection.Dispose();
       }
