@@ -1168,7 +1168,7 @@ namespace Ignia.Topics.Data.Sql {
 
           foreach (var targetTopicId in scope.Select<Topic, int>(m => m.Id)) {
             var record = targetIds.NewRow();
-            record["TopicID"] = key;
+            record["TopicID"] = targetTopicId;
             targetIds.Rows.Add(record);
           }
 
