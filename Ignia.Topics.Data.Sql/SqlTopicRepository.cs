@@ -785,7 +785,7 @@ namespace Ignia.Topics.Data.Sql {
         if (attribute != null && !attribute.StoreInBlob && attributeValue.IsDirty) {
           var record = attributes.NewRow();
           record["AttributeKey"] = key;
-          record["AttributeValue"] = attributeValue;
+          record["AttributeValue"] = attributeValue.Value;
           attributes.Rows.Add(record);
         }
         else if (attribute != null && attribute.StoreInBlob) {
