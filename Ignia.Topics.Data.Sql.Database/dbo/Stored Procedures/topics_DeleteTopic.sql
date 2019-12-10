@@ -28,6 +28,18 @@ BEGIN TRY
 --------------------------------------------------------------------------------------------------------------------------------
 -- BEGIN TRANSACTION
 --------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: This application includes a number of read operations that join the topics_Topics table with other
+-- tables modified as part of this procedure. Many of those read operations will fail while this operation is happening. For
+-- example, common joins between topics_Topics and topics_TopicAttributes may fail since critical AttributeKeys such as Key,
+-- ParentId, and ContentType may be missing during this operation. For this reason, we are opting to use an aggressive isolation
+-- level—SERIALIZABLE—to ensure that all callers outside of this transcation receive a stable (pre-transaction) state of the
+-- data until this transaction is committed.
+--------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: The SERIALIZABLE isolation level also has the benefit (for our needs) of maintaining any holds for the
+-- duration of the transaction. This includes any rows within the scope of where clauses within this procedure. Critically, it
+-- also includes a TABLOCK established early on, which prevents the nested set hierarchy from being modified until completion.
+-- See additional notes below for further explanation of the decision to use a TABLOCK.
+--------------------------------------------------------------------------------------------------------------------------------
 IF (@@TRANCOUNT = 0)
   BEGIN
     SET @IsNestedTransaction = 0;
@@ -38,14 +50,26 @@ ELSE
     SET @IsNestedTransaction = 1;
   END
 
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE RANGE TO DELETE
+--------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: We usually avoid broad hints like TABLOCK. That said, the delete operation requires multiple
+-- operations against the topics table which will fail if the topic range shifts. Locking the table helps ensure that data
+-- integrity issues aren't introduced by concurrent modification of the nested set.
+--------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: Note that locks are NOT required on the child tables, such as topics_TopicAttributes, topics_Blob, and
+-- topics_Relationships. This is because those queries are much narrower in scope, and the standard out-of-the-box row locks
+-- that come with the SERIALIZABLE isolation level when those calls are executed will be more than sufficient.
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@RangeLeft		= RangeLeft,
 	@RangeRight		= RangeRight,
 	@RangeWidth		= RangeRight - RangeLeft + 1
 FROM	topics_Topics
-WHERE	TopicID		= @TopicID;
+WITH (	TABLOCK)
+WHERE	TopicID		= @TopicID
+;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- STORE RANGE IN TABLE VARIABLE

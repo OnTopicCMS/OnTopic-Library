@@ -25,6 +25,14 @@ BEGIN TRY
 --------------------------------------------------------------------------------------------------------------------------------
 -- BEGIN TRANSACTION
 --------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: By necessity, this procedure makes a massive number of changes to the topics_Topics table's nested set.
+-- During the execution, the nested set hierarchy WILL be in an inconsistent state. Read operations during that time are very
+-- likely to be corrupted. As such, it's critical that the updates made as part of this procedure be isolated from other reads
+-- being performed on the system. Further, we don't want any writes being made to the topics_Topics table during this time—see
+-- notes below regarding TABLOCK. By combining SERIALIZABLE with TABLOCK, we ensure that a) readers get a stable state, while b)
+-- writers are prevented from concurrently modifying the table. Fortunately, these types of operations should be pretty
+-- uncommon! The nested set model is very much optimized for read performance and presumes a relatively stable data set.
+--------------------------------------------------------------------------------------------------------------------------------
 IF (@@TRANCOUNT = 0)
   BEGIN
     SET @IsNestedTransaction = 0;
@@ -35,16 +43,25 @@ ELSE
     SET @IsNestedTransaction = 1;
   END
 
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEFINE SOURCE RANGE
 --------------------------------------------------------------------------------------------------------------------------------
 -- The source range defines the original boundaries (@OriginalLeft, @OriginalRight) and the width (@OriginalRange) of the source
 -- subtree (@TopicID), which will be used to determine what nodes to move.
 --------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: We usually avoid broad hints like TABLOCK. That said, the delete operation requires multiple
+-- operations against the topics table which will fail if the topic range shifts. Locking the table helps ensure that data
+-- integrity issues aren't introduced by concurrent modification of the nested set. Because this is being done within a
+-- SERIALIZABLE isolation level, this lock will be maintained for the duration of the transaction.
+--------------------------------------------------------------------------------------------------------------------------------
 SELECT	@OriginalRange		= RangeRight - RangeLeft + 1,
 	@OriginalLeft		= RangeLeft,
 	@OriginalRight		= RangeRight
 FROM	topics_Topics
+WITH (	TABLOCK
+)
 WHERE	TopicID		= @TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -61,7 +78,7 @@ IF @SiblingID < 0
   -- Place as the first sibling if a sibling isn't specified
   SELECT	@InsertionPoint		= RangeLeft + 1
   FROM	topics_Topics
-  WHERE	TopicID			= @ParentID
+  WHERE	TopicID		= @ParentID
 ELSE
   -- Place immediately to the right of a sibling, if specified
   SELECT	@InsertionPoint		= RangeRight + 1
