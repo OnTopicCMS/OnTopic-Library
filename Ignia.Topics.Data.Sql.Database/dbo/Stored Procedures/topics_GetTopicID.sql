@@ -7,13 +7,13 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_GetTopicID]
-	@TopicKey	varchar(255)	= null
+	@TopicKey		NVARCHAR(255)	= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND DEFINE VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@TopicID	int
+DECLARE	@TopicID		INT
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID BASED ON TOPIC KEY
@@ -24,8 +24,13 @@ FROM	topics_TopicAttributes	Attributes
 JOIN	topics_Topics		Topics
   ON	Attributes.TopicID	= Topics.TopicID
 WHERE	AttributeKey		= 'Key'
-  AND	AttributeValue		= CONVERT(NVarChar(255), @TopicKey)
-ORDER BY	Topics.TopicID		desc
+  AND	AttributeValue		= @TopicKey
+ORDER BY	RangeLeft		DESC
+OPTION (
+  OPTIMIZE
+  FOR (	@TopicKey		= 'Root'
+  )
+)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID
