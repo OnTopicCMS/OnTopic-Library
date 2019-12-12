@@ -68,8 +68,6 @@ SELECT	Attributes.TopicID,
 	Attributes.AttributeValue
 FROM	Attributes
 WHERE	RowNumber		= 1
---ORDER BY	Storage.SortOrder	ASC,
---	TopicAttributes.AttributeKey	ASC
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT BLOB
@@ -104,19 +102,7 @@ WHERE	Source_TopicID		= @TopicID
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	TopicVersions
-AS (
-  SELECT	Attributes.TopicID,
-	Attributes.Version,
-	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID
-	  ORDER BY		Version DESC
-	)
-  FROM	topics_TopicAttributes	Attributes
-  WHERE	TopicID		= @TopicID
-)
-SELECT	DISTINCT
-	TopicId,
+SELECT	TopicID,
 	Version
-From	TopicVersions
-Where	RowNumber		>= 6
+FROM	topics_VersionHistoryIndex
+WHERE	TopicID		= @TopicID

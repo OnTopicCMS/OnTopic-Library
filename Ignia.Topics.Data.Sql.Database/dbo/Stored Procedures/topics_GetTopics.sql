@@ -135,22 +135,8 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	TopicVersions
-AS (
-  SELECT	Distinct
-	Attributes.TopicID,
-	Attributes.Version,
-	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID
-	  ORDER BY		Version DESC
-	)
-  FROM	topics_TopicAttributes	Attributes
-  JOIN	#Topics		AS Storage
-    ON	Storage.TopicID		= Attributes.TopicID
-  GROUP BY	Attributes.TopicID,
-	Attributes.Version
-)
-SELECT	TopicId,
-	Version
-FROM	TopicVersions
-WHERE	RowNumber		<= 6
+SELECT	VersionHistory.TopicID,
+	VersionHistory.Version
+FROM	topics_VersionHistoryIndex	VersionHistory
+JOIN	#Topics		AS Storage
+  ON	Storage.TopicID		= Relationships.Source_TopicID
