@@ -217,6 +217,12 @@ BEGIN
 
     END
 
+  WHERE	RangeLeft
+    BETWEEN	@InsertionPoint
+      AND	@OriginalRight
+  OR	RangeRight
+    BETWEEN	@InsertionPoint
+    AND	@OriginalRight
 
 END
 
@@ -281,6 +287,12 @@ BEGIN
 
     END
 
+  WHERE	RangeLeft
+    BETWEEN	@OriginalLeft
+      AND	@InsertionPoint - 1
+  OR	RangeRight
+    BETWEEN	@OriginalLeft
+      AND	@InsertionPoint - 1
 
 END
 
