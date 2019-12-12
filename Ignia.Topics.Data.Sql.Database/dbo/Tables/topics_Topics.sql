@@ -10,7 +10,7 @@ TABLE	[dbo].[topics_Topics] (
 );
 
 GO
-CREATE NONCLUSTERED INDEX [IX_topics_Topics]
+CREATE NONCLUSTERED INDEX [IX_Topics_RangeLeft_RangeRight]
   ON	[dbo].[topics_Topics] (
 	  [RangeLeft] ASC,
 	  [RangeRight] ASC
