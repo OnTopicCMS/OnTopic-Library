@@ -139,4 +139,4 @@ SELECT	VersionHistory.TopicID,
 	VersionHistory.Version
 FROM	topics_VersionHistoryIndex	VersionHistory
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= Relationships.Source_TopicID
+  ON	Storage.TopicID		= VersionHistory.TopicID;
