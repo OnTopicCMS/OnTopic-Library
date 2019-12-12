@@ -39,8 +39,11 @@ TABLE	#Topics (
 	  SortOrder		INT
 )
 
-CREATE CLUSTERED INDEX IDX_C_Topics_SortOrder ON #Topics(SortOrder)
-CREATE INDEX IDX_Topics_TopicID ON #Topics(TopicID, SortOrder)
+CREATE
+CLUSTERED INDEX	IX_C_Topics_TopicID
+  ON	#Topics(
+	  TopicID
+	)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC AND DESCENDENTS
