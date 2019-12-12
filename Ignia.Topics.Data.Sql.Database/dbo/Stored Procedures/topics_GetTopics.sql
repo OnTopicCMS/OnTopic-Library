@@ -16,18 +16,12 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 IF @TopicKey IS NOT NULL
   BEGIN
-    SELECT	@TopicID		= TopicID
-    FROM	topics_TopicAttributes
-    WHERE	AttributeKey		= 'Key'
-      AND	AttributeValue		like @TopicKey
+    EXEC	@TopicID		= topics_GetTopicID @TopicKey
   END
 
 IF @TopicID < 0
   BEGIN
-    SELECT	TOP 1
-	@TopicID		= TopicID
-    FROM	topics_Topics
-    ORDER BY	TopicID		ASC
+    EXEC	@TopicID		= topics_GetTopicID 'Root'
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
