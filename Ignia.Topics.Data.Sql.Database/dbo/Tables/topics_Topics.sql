@@ -15,3 +15,9 @@ CREATE NONCLUSTERED INDEX [IX_Topics_RangeLeft_RangeRight]
 	  [RangeLeft] ASC,
 	  [RangeRight] ASC
   );
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Topics_RangeRight]
+  ON	[dbo].[topics_Topics] (
+	  [RangeRight] ASC
+  );
