@@ -752,14 +752,21 @@ namespace Ignia.Topics.Data.Sql {
       var contentType = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish attribute strings
+      | Establish attribute containers with schema
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // Strings are immutable, use a StringBuilder to save memory
       var blob                  = new StringBuilder();
       var attributes            = new DataTable();
 
-      attributes.Columns.Add("AttributeKey");
-      attributes.Columns.Add("AttributeValue");
+      attributes.Columns.Add(
+        new DataColumn("AttributeKey") {
+          MaxLength             = 128
+        }
+      );
+      attributes.Columns.Add(
+        new DataColumn("AttributeKey") {
+          MaxLength             = 255
+        }
+      );
 
       Contract.Assume(
         contentType,
@@ -1149,6 +1156,10 @@ namespace Ignia.Topics.Data.Sql {
       }
       var command               = (SqlCommand?)null;
       var targetIds             = new DataTable();
+
+      targetIds.Columns.Add(
+        new DataColumn("TopicID", typeof(int))
+      );
 
       targetIds.Columns.Add("TopicId");
 
