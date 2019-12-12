@@ -1,8 +1,8 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPICS
 --------------------------------------------------------------------------------------------------------------------------------
--- Gets the tree of current topics rooted FROM the provided TopicID.  If no TopicID is provided then the sproc returns everything
---under the topic with the lowest id.
+-- Gets the tree of current topics rooted FROM the provided TopicID.  If no TopicID is provided then the sproc returns
+-- everything under the topic with the lowest id.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[topics_GetTopics]
@@ -10,10 +10,6 @@ CREATE PROCEDURE [dbo].[topics_GetTopics]
 	@DeepLoad		bit	= 1,
 	@TopicKey		nvarchar(255)	= null
 AS
-
---------------------------------------------------------------------------------------------------------------------------------
--- DECLARE AND DEFINE VARIABLES
---------------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID IF UNKNOWN.
@@ -37,10 +33,10 @@ IF @TopicID < 0
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE TEMP TABLES
 --------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE
-#Topics (
-  TopicID	int,
-  SortOrder	int
+CREATE
+TABLE	#Topics (
+	  TopicID		INT,
+	  SortOrder		INT
 )
 
 CREATE CLUSTERED INDEX IDX_C_Topics_SortOrder ON #Topics(SortOrder)
@@ -51,8 +47,7 @@ CREATE INDEX IDX_Topics_TopicID ON #Topics(TopicID, SortOrder)
 --------------------------------------------------------------------------------------------------------------------------------
 IF @DeepLoad = 1
   BEGIN
-    INSERT
-    INTO	#Topics (
+    INSERT	#Topics (
 	  TopicID,
 	  SortOrder
 	)
@@ -65,7 +60,11 @@ IF @DeepLoad = 1
         AND	ISNULL(T2.RangeRight, 0)
       AND	T2.TopicID		= @TopicID
     ORDER BY	T1.RangeLeft
-    OPTION	(OPTIMIZE FOR		(@TopicID = 1))
+    OPTION (
+      OPTIMIZE
+      FOR (	@TopicID		= 1
+      )
+    )
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -73,8 +72,7 @@ IF @DeepLoad = 1
 --------------------------------------------------------------------------------------------------------------------------------
 ELSE
   BEGIN
-    INSERT
-    INTO	#Topics (
+    INSERT	#Topics (
 	  TopicID,
 	  SortOrder
 	)
@@ -84,8 +82,7 @@ ELSE
     WHERE	TopicID		= @TopicID
     OPTION (
       OPTIMIZE
-      FOR (
-	@TopicID		UNKNOWN
+      FOR (	@TopicID		UNKNOWN
       )
     )
   END
@@ -121,13 +118,11 @@ SELECT	TopicBlob.TopicID,
 FROM	topics_BlobIndex	AS TopicBlob
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= TopicBlob.TopicID
---AND	TopicBlob.Blob.exist('/attributes/attribute') >= 1
---ORDER BY	TopicBlob.TopicID ASC
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-;SELECT	Relationships.RelationshipTypeID,
+SELECT	Relationships.RelationshipTypeID,
 	Relationships.Source_TopicID,
 	Relationships.Target_TopicID
 FROM	topics_Relationships	Relationships
