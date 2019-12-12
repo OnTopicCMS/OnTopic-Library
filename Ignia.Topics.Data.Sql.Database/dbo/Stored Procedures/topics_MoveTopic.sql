@@ -157,17 +157,18 @@ SET	@Offset =
 -- adding 12 (the @OriginalRange) to all nodes between the target location (@InsertionPoint) and the original subtree location
 -- (either @OriginalLeft or @OriginalRight, depending on whether the tree has been moved up or down).
 --------------------------------------------------------------------------------------------------------------------------------
+-- NOTE: To make the logic more readable, we split the update into two distinct queries—one for moving left, the other for
+-- moving right. Only one of these will be executed for any one move, so it doesn't introduce any performance or data integrity
+-- risks. In fact, the query was previously broken up by this logic already, just using WHEN statements within the query.
+--------------------------------------------------------------------------------------------------------------------------------
 
-UPDATE	topics_Topics
-SET	RangeLeft = RangeLeft +
-  CASE
-
-  ------------------------------------------------------------------------------------------------------------------------------
-  -- MOVE SOURCE TOPIC TO ITS LEFT
-  ------------------------------------------------------------------------------------------------------------------------------
-
-  WHEN	@InsertionPoint < @OriginalLeft
-  THEN
+--------------------------------------------------------------------------------------------------------------------------------
+-- MOVE SOURCE TOPIC TO ITS LEFT
+--------------------------------------------------------------------------------------------------------------------------------
+IF @InsertionPoint < @OriginalLeft
+BEGIN
+  UPDATE	topics_Topics
+  SET	RangeLeft = RangeLeft +
     CASE
 
     -- Shift source topic (and children) left to its new location
@@ -189,50 +190,10 @@ SET	RangeLeft = RangeLeft +
     THEN	@OriginalRange
     ELSE	0
 
-    END
-
-  ------------------------------------------------------------------------------------------------------------------------------
-  -- MOVE SOURCE TOPIC TO ITS RIGHT
-  ------------------------------------------------------------------------------------------------------------------------------
-
-  WHEN	@InsertionPoint > @OriginalRight
-  THEN
-    CASE
-
-    -- Shift source topic (and children) right to its new location
-    -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
-
-    WHEN (	RangeLeft
-      BETWEEN	@OriginalLeft
-      AND	@OriginalRight
-    )
-    THEN	@Offset - 1
-
-    -- Shift items between the source topic and the destination to the left
-    -- This pulls everything back by the width of the source topic, filling the gap it left behind
-    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
-    -- Because between is inclusive, includes offsets to only cover intermediate records
-
-    WHEN (	RangeLeft
-      BETWEEN	@OriginalRight + 1
-      AND	@InsertionPoint - 1
-    )
-    THEN	- @OriginalRange
-    ELSE	0
-
-    END
-
-  END,
+    END,
 
 	RangeRight = RangeRight +
-  CASE
 
-  ------------------------------------------------------------------------------------------------------------------------------
-  -- MOVE SOURCE TOPIC TO ITS LEFT
-  ------------------------------------------------------------------------------------------------------------------------------
-
-  WHEN	@InsertionPoint < @OriginalLeft
-  THEN
     CASE
 
     -- Shift source topic (and children) left to its new location
@@ -256,12 +217,45 @@ SET	RangeLeft = RangeLeft +
 
     END
 
-  ------------------------------------------------------------------------------------------------------------------------------
-  -- MOVE SOURCE TOPIC TO ITS RIGHT
-  ------------------------------------------------------------------------------------------------------------------------------
 
-  WHEN	@InsertionPoint > @OriginalRight
-  THEN
+END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- MOVE SOURCE TOPIC TO ITS RIGHT
+--------------------------------------------------------------------------------------------------------------------------------
+
+IF @InsertionPoint > @OriginalRight
+BEGIN
+
+  UPDATE	topics_Topics
+  SET	RangeLeft = RangeLeft +
+
+    CASE
+
+    -- Shift source topic (and children) right to its new location
+    -- When shifting to the right, an offset of -1 is required to account for implied padding between numbers
+
+    WHEN (	RangeLeft
+      BETWEEN	@OriginalLeft
+      AND	@OriginalRight
+    )
+    THEN	@Offset - 1
+
+    -- Shift items between the source topic and the destination to the left
+    -- This pulls everything back by the width of the source topic, filling the gap it left behind
+    -- This also makes room for the above shift of the source topic, preventing duplicate ranges
+    -- Because between is inclusive, includes offsets to only cover intermediate records
+
+    WHEN (	RangeLeft
+      BETWEEN	@OriginalRight + 1
+      AND	@InsertionPoint - 1
+    )
+    THEN	- @OriginalRange
+    ELSE	0
+
+    END,
+
+	RangeRight = RangeRight +
     CASE
 
     -- Shift source topic (and children) right to its new location
@@ -287,7 +281,8 @@ SET	RangeLeft = RangeLeft +
 
     END
 
-  END
+
+END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
