@@ -4,13 +4,13 @@ WITH	SCHEMABINDING
 AS
 
 WITH	TopicBlob AS (
-  SELECT	Blob.TopicID,
-	Blob.Blob,
+  SELECT	TopicID,
+	Blob,
 	RowNumber = ROW_NUMBER() OVER (
-	  PARTITION BY		Blob.TopicID
-	  ORDER BY		Blob.Version DESC
+	  PARTITION BY		TopicID
+	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[topics_Blob]	AS Blob
+  FROM	[dbo].[topics_Blob]
 )
 SELECT	TopicBlob.TopicID,
 	TopicBlob.Blob

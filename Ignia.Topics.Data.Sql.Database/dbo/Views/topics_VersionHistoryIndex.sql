@@ -6,15 +6,15 @@ AS
 WITH	TopicVersions
 AS (
   SELECT	DISTINCT
-	Attributes.TopicID,
-	Attributes.Version,
+	TopicID,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID
+	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[topics_TopicAttributes]	Attributes
-  GROUP BY	Attributes.TopicID,
-	Attributes.Version
+  FROM	[dbo].[topics_TopicAttributes]
+  GROUP BY	TopicID,
+	Version
 )
 SELECT	Versions.TopicId,
 	Version

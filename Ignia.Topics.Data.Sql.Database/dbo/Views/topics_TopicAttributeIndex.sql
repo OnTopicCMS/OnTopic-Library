@@ -4,15 +4,16 @@ WITH	SCHEMABINDING
 AS
 
 WITH TopicAttributes AS (
-  SELECT	Attributes.TopicID,
-	Attributes.AttributeKey,
-	Attributes.AttributeValue,
+  SELECT	TopicID,
+	AttributeKey,
+	AttributeValue,
 	RowNumber = ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID, Attributes.AttributeKey
-	  ORDER BY		Attributes.Version DESC
+	  PARTITION BY		TopicID,
+			AttributeKey
+	  ORDER BY		Version	DESC
 	)
-  FROM	[dbo].[topics_TopicAttributes]	as Attributes
-  WHERE	Attributes.AttributeKey	not in ('Key', 'ParentID', 'ContentType')
+  FROM	[dbo].[topics_TopicAttributes]
+  WHERE	AttributeKey	not in ('Key', 'ParentID', 'ContentType')
 )
 SELECT	TopicAttributes.TopicID,
 	TopicAttributes.AttributeKey,
