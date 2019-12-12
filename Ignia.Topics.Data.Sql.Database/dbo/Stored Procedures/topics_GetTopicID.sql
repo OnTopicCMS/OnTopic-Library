@@ -19,11 +19,13 @@ DECLARE	@TopicID	int
 -- GET TOPIC ID BASED ON TOPIC KEY
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	TOP 1
-	@TopicID		= TopicID
-FROM	topics_TopicAttributes
+	@TopicID		= Topics.TopicID
+FROM	topics_TopicAttributes	Attributes
+JOIN	topics_Topics		Topics
+  ON	Attributes.TopicID	= Topics.TopicID
 WHERE	AttributeKey		= 'Key'
-  AND	AttributeValue		like CONVERT(NVarChar(255), @TopicKey)
-ORDER BY	TopicID		desc
+  AND	AttributeValue		= CONVERT(NVarChar(255), @TopicKey)
+ORDER BY	Topics.TopicID		desc
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID
