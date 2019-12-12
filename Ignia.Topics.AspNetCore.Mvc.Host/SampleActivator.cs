@@ -33,11 +33,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
     /*==========================================================================================================================
     | PRIVATE INSTANCES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            string                          _connectionString               = null;
     private readonly            ITypeLookupService              _typeLookupService              = null;
     private readonly            ITopicMappingService            _topicMappingService            = null;
     private readonly            ITopicRepository                _topicRepository                = null;
-    private readonly            Topic                           _rootTopic                      = null;
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
@@ -60,10 +58,9 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize Topic Repository
       \-----------------------------------------------------------------------------------------------------------------------*/
-                                _connectionString               = connectionString;
       var                       sqlTopicRepository              = new SqlTopicRepository(connectionString);
       var                       cachedTopicRepository           = new CachedTopicRepository(sqlTopicRepository);
-      var                       topicViewModel                  = new PageTopicViewModel();
+      _                                                         = new PageTopicViewModel();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Preload repository
@@ -71,7 +68,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       _topicRepository                                          = cachedTopicRepository;
       _typeLookupService                                        = new DynamicTopicViewModelLookupService();
       _topicMappingService                                      = new TopicMappingService(_topicRepository, _typeLookupService);
-      _rootTopic                                                = _topicRepository.Load();
+      _                                                         = _topicRepository.Load();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish hierarchical topic mapping service
@@ -97,7 +94,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine controller type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Type type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+      var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate controller
@@ -123,7 +120,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine view component type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Type type = context.ViewComponentDescriptor.TypeInfo.AsType();
+      var type = context.ViewComponentDescriptor.TypeInfo.AsType();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate view component
