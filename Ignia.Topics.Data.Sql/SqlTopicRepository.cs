@@ -763,7 +763,7 @@ namespace Ignia.Topics.Data.Sql {
         }
       );
       attributes.Columns.Add(
-        new DataColumn("AttributeKey") {
+        new DataColumn("AttributeValue") {
           MaxLength             = 255
         }
       );
