@@ -5,7 +5,7 @@
 -- providing a list of recent versions that can be reverted to.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[topics_VersionHistoryIndex]
+VIEW	[dbo].[VersionHistoryIndex]
 WITH	SCHEMABINDING
 AS
 
@@ -18,7 +18,7 @@ AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[topics_TopicAttributes]
+  FROM	[dbo].[TopicAttributes]
   GROUP BY	TopicID,
 	Version
 )

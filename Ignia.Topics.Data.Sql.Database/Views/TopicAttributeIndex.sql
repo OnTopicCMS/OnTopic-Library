@@ -5,7 +5,7 @@
 -- primary sources for retrieving attributes, since it excludes historical versions.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[topics_TopicAttributeIndex]
+VIEW	[dbo].[TopicAttributeIndex]
 WITH	SCHEMABINDING
 AS
 
@@ -18,8 +18,12 @@ WITH TopicAttributes AS (
 			AttributeKey
 	  ORDER BY		Version	DESC
 	)
-  FROM	[dbo].[topics_TopicAttributes]
-  WHERE	AttributeKey	not in ('Key', 'ParentID', 'ContentType')
+  FROM	[dbo].[TopicAttributes]
+  WHERE	AttributeKey
+  NOT IN (	'Key',
+	'ParentID',
+	'ContentType'
+  )
 )
 SELECT	TopicAttributes.TopicID,
 	TopicAttributes.AttributeKey,

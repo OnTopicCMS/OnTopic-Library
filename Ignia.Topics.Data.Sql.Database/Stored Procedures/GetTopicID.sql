@@ -6,7 +6,7 @@
 -- (and, thus, earliest) instance will be returned.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_GetTopicID]
+CREATE PROCEDURE [dbo].[GetTopicID]
 	@TopicKey		NVARCHAR(255)	= NULL
 AS
 
@@ -20,8 +20,8 @@ DECLARE	@TopicID		INT
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	TOP 1
 	@TopicID		= Topics.TopicID
-FROM	topics_TopicAttributes	Attributes
-JOIN	topics_Topics		Topics
+FROM	TopicAttributes		Attributes
+JOIN	Topics		Topics
   ON	Attributes.TopicID	= Topics.TopicID
 WHERE	AttributeKey		= 'Key'
   AND	AttributeValue		= @TopicKey

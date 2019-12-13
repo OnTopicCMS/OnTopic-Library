@@ -4,7 +4,7 @@
 -- Used to update the attributes of a provided node
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_UpdateTopic]
+CREATE PROCEDURE [dbo].[UpdateTopic]
 	@TopicID		INT		= -1		,
 	@Attributes		AttributeValues		READONLY		,
 	@ParentID		INT		= -1		,
@@ -25,7 +25,7 @@ SET	@Version		= getdate()
 -- INSERT NEW ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
-INTO	topics_TopicAttributes (
+INTO	TopicAttributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
@@ -44,7 +44,7 @@ WHERE	IsNull(AttributeValue, '')	!= ''
 IF @Blob is not null
   BEGIN
     INSERT
-    INTO	topics_Blob (
+    INTO	Blob (
 	  TopicID		,
 	  Blob		,
 	  Version
@@ -59,7 +59,7 @@ IF @Blob is not null
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NULL ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (
+INSERT INTO	TopicAttributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
@@ -74,7 +74,7 @@ WHERE	IsNull(AttributeValue, '')	= ''
   AND (
     SELECT	TOP 1
 	AttributeValue
-    FROM	topics_TopicAttributes
+    FROM	TopicAttributes
     WHERE	TopicID		= @TopicID
       AND	AttributeKey		= NullAttributes.AttributeKey
     ORDER BY	Version DESC
@@ -86,7 +86,7 @@ WHERE	IsNull(AttributeValue, '')	= ''
 -- Relationships will be re-added by the Data Access Layer using Topics_PersistRelationships.
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE
-FROM	[dbo].[topics_Relationships]
+FROM	[dbo].[Relationships]
 WHERE	Source_TopicID		= @TopicID
   AND	@DeleteRelationships	= 1
 

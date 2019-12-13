@@ -4,7 +4,7 @@
 -- Represents n:n relationships between topics, grouped together by namespaces ("RelationshipTypeID").
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[topics_Relationships] (
+TABLE	[dbo].[Relationships] (
 	  [Target_TopicID]	INT	NOT NULL,
 	  [Source_TopicID]	INT	NOT NULL,
 	  [RelationshipTypeID]	VARCHAR(255)	NOT NULL,
@@ -16,13 +16,13 @@ TABLE	[dbo].[topics_Relationships] (
   CONSTRAINT	  [FK_Relationships_Source]
   FOREIGN KEY (	    [Source_TopicID]
   )
-  REFERENCES	  [dbo].[topics_Topics] (
+  REFERENCES	  [dbo].[Topics] (
 	    [TopicID]
   ),
   CONSTRAINT	  [FK_Relationships_Target]
   FOREIGN KEY (	    [Target_TopicID]
   )
-  REFERENCES	  [dbo].[topics_Topics] (
+  REFERENCES	  [dbo].[Topics] (
 	    [TopicID]
 	  )
 );

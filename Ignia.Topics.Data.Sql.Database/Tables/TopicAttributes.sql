@@ -7,7 +7,7 @@
 -- only needed in narrow cases, should instead be store in the attribute blob.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[topics_TopicAttributes] (
+TABLE	[dbo].[TopicAttributes] (
 	  [TopicID]		INT	NOT NULL,
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
 	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
@@ -23,7 +23,7 @@ TABLE	[dbo].[topics_TopicAttributes] (
   CONSTRAINT	  [FK_TopicAttributes_TopicID]
   FOREIGN KEY (	    [TopicID]
 	  )
-  REFERENCES	  [dbo].[topics_Topics] (
+  REFERENCES	  [dbo].[Topics] (
 	    [TopicID]
 	  )
 );
@@ -37,8 +37,8 @@ GO
 -- ParentID.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE	NONCLUSTERED
-INDEX	[IX_topics_TopicAttributes_AttributeKey]
-  ON	[dbo].[topics_TopicAttributes] (
+INDEX	[IX_TopicAttributes_AttributeKey]
+  ON	[dbo].[TopicAttributes] (
 	  [TopicID]		ASC,
 	  [AttributeKey]	ASC,
 	  [Version]		DESC

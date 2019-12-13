@@ -10,11 +10,11 @@ DECLARE
 -- A list of all foreign keys and table names
 DECLARE	foreignKeyCursor	CURSOR
 FOR	SELECT
-	  ref.CONSTRAINT_NAME AS FK_Name,
-	  fk.TABLE_NAME AS FK_Table
+	  ref.CONSTRAINT_NAME	AS FK_Name,
+	  fk.TABLE_NAME		AS FK_Table
 FROM	INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS ref
 INNER JOIN	INFORMATION_SCHEMA.TABLE_CONSTRAINTS fk
-  ON	ref.CONSTRAINT_NAME = fk.CONSTRAINT_NAME
+  ON	ref.CONSTRAINT_NAME	= fk.CONSTRAINT_NAME
 ORDER BY	fk.TABLE_NAME,
 	ref.CONSTRAINT_NAME
 
@@ -22,7 +22,8 @@ OPEN	foreignKeyCursor
 
 FETCH NEXT
 FROM	foreignKeyCursor
-INTO	@foreignKeyName, @tableName
+INTO	@foreignKeyName,
+	@tableName
 
 WHILE (	@@FETCH_STATUS = 0
 )

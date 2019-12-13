@@ -63,42 +63,41 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="dbo\" />
-    <Folder Include="dbo\Tables\" />
-    <Folder Include="dbo\Views\" />
-    <Folder Include="dbo\Functions\" />
-    <Folder Include="dbo\Stored Procedures\" />
-    <Folder Include="dbo\Types" />
+    <Folder Include="Tables\" />
+    <Folder Include="Views\" />
+    <Folder Include="Functions\" />
+    <Folder Include="Stored Procedures\" />
+    <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\topics_Blob.sql" />
-    <Build Include="dbo\Tables\topics_Hierarchy.sql" />
-    <Build Include="dbo\Tables\topics_Relationships.sql" />
-    <Build Include="dbo\Tables\topics_Topics.sql" />
-    <Build Include="dbo\Tables\topics_TopicAttributes.sql" />
-    <Build Include="dbo\Views\topics_LftRgt.sql" />
-    <Build Include="dbo\Views\topics_TopicIndex.sql" />
-    <Build Include="dbo\Views\topics_TopicAttributeIndex.sql" />
-    <Build Include="dbo\Views\topics_BlobIndex.sql" />
-    <Build Include="dbo\Functions\topics_GetParentID.sql" />
-    <Build Include="dbo\Functions\topics_SimpleIntListToTbl.sql" />
-    <Build Include="dbo\Functions\Split.sql" />
-    <Build Include="dbo\Stored Procedures\topics_MoveTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_UpdateTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_PersistRelations.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GetTopics.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GetTopicAttributes.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GenerateNestedSet.sql" />
-    <Build Include="dbo\Stored Procedures\topics_DeleteTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_CreateTopic.sql" />
-    <Build Include="dbo\Stored Procedures\topics_CompressTopics.sql" />
-    <Build Include="dbo\Stored Procedures\pr_Disable_Foreign_Keys.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GetVersion.sql" />
-    <Build Include="dbo\Stored Procedures\topics_GetTopicID.sql" />
-    <Build Include="dbo\Types\AttributeValues.sql" />
-    <Build Include="dbo\Types\TopicList.sql" />
-    <Build Include="dbo\Views\topics_VersionHistoryIndex.sql" />
-    <Build Include="dbo\Stored Procedures\topics_DetectHierarchyCorruption.sql" />
+    <Build Include="Tables\Blob.sql" />
+    <Build Include="Tables\Hierarchy.sql" />
+    <Build Include="Tables\Relationships.sql" />
+    <Build Include="Tables\Topics.sql" />
+    <Build Include="Tables\TopicAttributes.sql" />
+    <Build Include="Views\LftRgt.sql" />
+    <Build Include="Views\TopicIndex.sql" />
+    <Build Include="Views\TopicAttributeIndex.sql" />
+    <Build Include="Views\BlobIndex.sql" />
+    <Build Include="Functions\GetParentID.sql" />
+    <Build Include="Functions\SimpleIntListToTbl.sql" />
+    <Build Include="Functions\Split.sql" />
+    <Build Include="Stored Procedures\MoveTopic.sql" />
+    <Build Include="Stored Procedures\UpdateTopic.sql" />
+    <Build Include="Stored Procedures\PersistRelations.sql" />
+    <Build Include="Stored Procedures\GetTopics.sql" />
+    <Build Include="Stored Procedures\GetTopicAttributes.sql" />
+    <Build Include="Stored Procedures\GenerateNestedSet.sql" />
+    <Build Include="Stored Procedures\DeleteTopic.sql" />
+    <Build Include="Stored Procedures\CreateTopic.sql" />
+    <Build Include="Stored Procedures\CompressTopics.sql" />
+    <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
+    <Build Include="Stored Procedures\GetVersion.sql" />
+    <Build Include="Stored Procedures\GetTopicID.sql" />
+    <Build Include="Types\AttributeValues.sql" />
+    <Build Include="Types\TopicList.sql" />
+    <Build Include="Views\VersionHistoryIndex.sql" />
+    <Build Include="Stored Procedures\DetectHierarchyCorruption.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">

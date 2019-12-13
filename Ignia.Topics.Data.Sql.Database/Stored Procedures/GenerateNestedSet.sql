@@ -1,33 +1,33 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- GENERATE NESTED SET
 --------------------------------------------------------------------------------------------------------------------------------
--- Creates an adjacency list using the _ParentID fields in topics_TopicAttributes then takes the newly created adjacency list
--- and uses it to generate a nested set based table in topics_Topics.  Useful for recovering from a corrupted nested set model.
+-- Creates an adjacency list using the _ParentID fields in TopicAttributes then takes the newly created adjacency list
+-- and uses it to generate a nested set based table in Topics.  Useful for recovering from a corrupted nested set model.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_GenerateNestedSet]
+CREATE PROCEDURE [dbo].[GenerateNestedSet]
 AS
 
-SET IDENTITY_INSERT topics_Topics ON
+SET IDENTITY_INSERT Topics ON
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RECREATE TOPICS_HIERARCHY
 --------------------------------------------------------------------------------------------------------------------------------
 -- Delete original content
 DELETE
-FROM	topics_Hierarchy
+FROM	Hierarchy
 
--- Insert data from topics_TopicAttributes
+-- Insert data from TopicAttributes
 INSERT
-INTO	topics_Hierarchy
+INTO	Hierarchy
 SELECT	TopicID		AS TopicID,
 	CONVERT(Int, AttributeValue)	AS ParentID,
 	GETDATE()		AS DateAdded
-FROM	topics_TopicAttributes
+FROM	TopicAttributes
 WHERE	AttributeKey		= 'ParentID'
 
 -- Address root node
-UPDATE	topics_Hierarchy
+UPDATE	Hierarchy
 SET	Parent_TopicID		= null
 WHERE	ISNULL(Parent_TopicID, -1)	= -1
 
@@ -36,16 +36,16 @@ WHERE	ISNULL(Parent_TopicID, -1)	= -1
 --------------------------------------------------------------------------------------------------------------------------------
 BEGIN
   DECLARE	@RangeLeft_RangeRight	INTEGER,
-	@topics_topics_pointer	INTEGER,
+	@pointer		INTEGER,
 	@max_RangeLeft_RangeRight	INTEGER;
 
 SET	@max_RangeLeft_RangeRight	= 2 * (
   SELECT	COUNT(*)
-  FROM	topics_Hierarchy
+  FROM	Hierarchy
 );
 
 INSERT
-INTO	topics_Topics (
+INTO	Topics (
 	  Stack_Top,
 	  TopicID,
 	  RangeLeft,
@@ -55,63 +55,63 @@ SELECT	1,
 	TopicID,
 	1,
 	@max_RangeLeft_RangeRight
-FROM	topics_Hierarchy
+FROM	Hierarchy
 WHERE	Parent_TopicID		IS NULL;
 
 SET	@RangeLeft_RangeRight	= 2;
-SET	@topics_topics_pointer	= 1;
+SET	@pointer	= 1;
 
 DELETE
-FROM	topics_Hierarchy
+FROM	Hierarchy
 WHERE	Parent_TopicID		IS NULL;
 
--- The topics_topics is now loaded and ready to use
+-- The topics is now loaded and ready to use
 
 WHILE	(@RangeLeft_RangeRight < @max_RangeLeft_RangeRight)
 BEGIN
   IF EXISTS (
     SELECT	*
-    FROM	topics_Topics		AS S1
-    JOIN	topics_Hierarchy	AS T1
+    FROM	Topics		AS S1
+    JOIN	Hierarchy		AS T1
       ON	S1.TopicID		= T1.Parent_TopicID
-      AND	S1.Stack_Top		= @topics_topics_pointer
+      AND	S1.Stack_Top		= @pointer
   )
     BEGIN
 
       -- push when Stack_Top has subordinates and set RangeLeft value
       INSERT
-      INTO	topics_Topics (
+      INTO	Topics (
 	  Stack_Top,
 	  TopicID,
 	  RangeLeft,
 	  RangeRight
 	)
-      SELECT	(@topics_topics_pointer + 1),
+      SELECT	(@pointer + 1),
 	MIN(T1.TopicID),
 	@RangeLeft_RangeRight,
 	NULL
-      FROM	topics_Topics		AS S1
-      JOIN	topics_Hierarchy	AS T1
+      FROM	Topics		AS S1
+      JOIN	Hierarchy		AS T1
         ON	S1.TopicID		= T1.Parent_TopicID
-        AND	S1.Stack_Top		= @topics_topics_pointer;
+        AND	S1.Stack_Top		= @pointer;
 
-      -- remove this row from topics_hierarchy
+      -- remove this row from hierarchy
       DELETE
-      FROM	topics_hierarchy
+      FROM	hierarchy
       WHERE	TopicID		= (
         SELECT	TopicID
-        FROM	topics_Topics
-        WHERE	ISNULL(Stack_Top, 0)	= @topics_topics_pointer + 1);
-      SET	@topics_topics_pointer = @topics_topics_pointer + 1;
+        FROM	Topics
+        WHERE	ISNULL(Stack_Top, 0)	= @pointer + 1);
+      SET	@pointer = @pointer + 1;
     END -- push
   ELSE
     BEGIN
-      -- pop the topics_topics and set RangeRight value
-      UPDATE	topics_Topics
+      -- pop the topics and set RangeRight value
+      UPDATE	Topics
       SET	RangeRight		= @RangeLeft_RangeRight,
 	Stack_Top		= -Stack_Top
-      WHERE	ISNULL(Stack_Top, 0)	= @topics_topics_pointer
-      SET	@topics_topics_pointer	= @topics_topics_pointer - 1;
+      WHERE	ISNULL(Stack_Top, 0)	= @pointer
+      SET	@pointer		= @pointer - 1;
     END; -- pop
     SET	@RangeLeft_RangeRight	= @RangeLeft_RangeRight + 1;
   END; -- if
@@ -121,7 +121,7 @@ SELECT	Stack_Top,
 	TopicId,
 	RangeLeft,
 	RangeRight
-FROM	topics_Topics
+FROM	Topics
 ORDER BY	RangeLeft;
 
-SET IDENTITY_INSERT topics_Topics OFF
+SET IDENTITY_INSERT Topics OFF

@@ -4,7 +4,7 @@
 -- Removes and saves the n:n mappings for scoped related topics.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_PersistRelations]
+CREATE PROCEDURE [dbo].[PersistRelations]
 	@RelationshipTypeID	VARCHAR(255)	= 'related',
 	@Source_TopicID		INT	= -1,
 	@Target_TopicIDs	TopicList	READONLY
@@ -20,10 +20,10 @@ DECLARE	@Existing_TopicIDs	TopicList
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
 INTO	@Existing_TopicIDs (
-	TopicID
-)
+	  TopicID
+	)
 SELECT	Target_TopicID
-FROM	topics_Relationships
+FROM	Relationships
 WHERE	Source_TopicID		= @Source_TopicID
   AND	RelationshipTypeId	= @RelationshipTypeId
 
@@ -31,11 +31,11 @@ WHERE	Source_TopicID		= @Source_TopicID
 -- INSERT NOVEL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
-INTO	topics_Relationships (
-	RelationshipTypeId,
-	Source_TopicId,
-	Target_TopicId
-)
+INTO	Relationships (
+	  RelationshipTypeId,
+	  Source_TopicId,
+	  Target_TopicId
+	)
 SELECT	@RelationshipTypeId,
 	@Source_TopicId,
 	Target.TopicId

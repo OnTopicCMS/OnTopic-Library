@@ -8,7 +8,7 @@
 -- safety precaution, it provides a means of identifying potential sources of corruption. It won't resolve the corruption, nor
 -- fully identify where it is. But it'll help identify scenarios that should never occur.
 --------------------------------------------------------------------------------------------------------------------------------
-CREATE PROCEDURE [dbo].[topics_DetectHierarchyCorruption]
+CREATE PROCEDURE [dbo].[DetectHierarchyCorruption]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -21,10 +21,10 @@ AS
 PRINT	'Detect range overlaps'
 
 SELECT	*
-FROM	topics_Topics		OuterTopics
+FROM	Topics		OuterTopics
 WHERE (
   SELECT	COUNT(TopicID)
-  FROM	topics_Topics		InnerTopics
+  FROM	Topics		InnerTopics
   WHERE (	RangeLeft		< OuterTopics.RangeLeft
     AND	RangeRight		< OuterTopics.RangeRight
     AND	RangeRight		> OuterTopics.RangeLeft
@@ -45,10 +45,10 @@ WHERE (
 PRINT	'Detect range duplicates'
 
 SELECT	*
-FROM	topics_Topics		OuterTopics
+FROM	Topics		OuterTopics
 WHERE (
   SELECT	COUNT(TopicID)
-  FROM	topics_Topics		InnerTopics
+  FROM	Topics		InnerTopics
   WHERE	TopicID		!= OuterTopics.TopicID
     AND (	RangeLeft
       IN (	  OuterTopics.RangeLeft,
@@ -69,6 +69,6 @@ WHERE (
 PRINT	'Detect range mismatches'
 
 SELECT	*
-FROM	topics_Topics
+FROM	Topics
 WHERE	RangeLeft	>= RangeRight
 

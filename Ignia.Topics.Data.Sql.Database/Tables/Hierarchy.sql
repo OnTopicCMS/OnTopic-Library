@@ -6,11 +6,11 @@
 -- processing migrations from other data formats, or rebuilding the nested set hierarchy should it become corrupted.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[topics_Hierarchy] (
+TABLE	[dbo].[Hierarchy] (
 	  [TopicID]		INT	NOT NULL,
 	  [Parent_TopicID]	INT	NULL,
 	  [DateAdded]		DATETIME	NOT NULL,
-  CONSTRAINT	  [PK_Topics_Hierarchy]	PRIMARY KEY
+  CONSTRAINT	  [PK_Hierarchy]	PRIMARY KEY
   CLUSTERED (	  [TopicID]		ASC
   )
 );

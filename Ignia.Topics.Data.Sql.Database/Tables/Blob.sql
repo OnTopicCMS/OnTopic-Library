@@ -2,11 +2,11 @@
 -- BLOB (TABLE)
 --------------------------------------------------------------------------------------------------------------------------------
 -- Provides a storage blob (in XML format) for attribute key/value pairs. Attributes can also be stored in the
--- topics_TopicAttributes table. The difference is that the latter limits attribute values to 255 characters per AttributeValue,
+-- TopicAttributes table. The difference is that the latter limits attribute values to 255 characters per AttributeValue,
 -- whereas the blob offers virtually unlimited storage capacity (at least in practical terms).
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[topics_Blob] (
+TABLE	[dbo].[Blob] (
 	  [TopicID]		INT	NOT NULL,
 	  [Blob]		XML	NOT NULL,
 	  [DateModified]	DATETIME
@@ -24,7 +24,7 @@ TABLE	[dbo].[topics_Blob] (
   CONSTRAINT	  [FK_Blob_Topics]
   FOREIGN KEY (	    [TopicID]
 	)
-  REFERENCES	  [dbo].[topics_Topics] (
+  REFERENCES	  [dbo].[Topics] (
 	    [TopicID]
 	)
 );

@@ -6,7 +6,7 @@
 -- TopicList type.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-FUNCTION	[dbo].[topics_SimpleIntListToTbl] (
+FUNCTION	[dbo].[SimpleIntListToTbl] (
 	@list		NVARCHAR(MAX)
 )
 RETURNS	@tbl		TABLE (

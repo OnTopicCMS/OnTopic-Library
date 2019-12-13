@@ -6,10 +6,10 @@
 -- uninterrupted sequence between the first row's RangeLeft and RangeRight.)
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[topics_LftRgt] (seq) AS
+VIEW	[dbo].[LftRgt] (seq) AS
 
 SELECT	RangeLeft
-FROM	topics_Topics
+FROM	Topics
 UNION	ALL
 SELECT	RangeRight
-FROM	topics_Topics;
+FROM	Topics;

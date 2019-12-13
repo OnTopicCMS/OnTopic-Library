@@ -4,7 +4,7 @@
 -- Remove gaps within nested set model created when non-leaf nodes are deleted
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_CompressTopics]
+CREATE PROCEDURE [dbo].[CompressTopics]
 AS
 
 SET NOCOUNT ON;
@@ -12,14 +12,14 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIND THE GAP!
 --------------------------------------------------------------------------------------------------------------------------------
-UPDATE	topics_Topics
+UPDATE	Topics
 SET	RangeLeft = (
   SELECT	COUNT(*)
-  FROM	topics_LftRgt
+  FROM	LftRgt
   WHERE	seq <= RangeLeft
 ),
 	RangeRight = (
   SELECT	COUNT(*)
-  FROM	topics_LftRgt
+  FROM	LftRgt
   WHERE	seq <= ISNULL(RangeRight, 0)
 );

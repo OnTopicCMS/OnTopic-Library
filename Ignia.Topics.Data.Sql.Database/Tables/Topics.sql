@@ -5,12 +5,12 @@
 -- table in the database is keyed off of this table.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[topics_Topics] (
+TABLE	[dbo].[Topics] (
   	  [Stack_Top]		INT	NULL,
 	  [TopicID]		INT	IDENTITY (1, 1) NOT NULL,
 	  [RangeLeft]		INT	NOT NULL,
 	  [RangeRight]		INT	NULL,
-  CONSTRAINT	  [PK_topics_Topics]	PRIMARY KEY
+  CONSTRAINT	  [PK_Topics]	PRIMARY KEY
   CLUSTERED (     [TopicID]		ASC
 	  )
 );
@@ -25,7 +25,7 @@ GO
 
 CREATE	NONCLUSTERED
 INDEX	[IX_Topics_RangeLeft_RangeRight]
-  ON	[dbo].[topics_Topics] (
+  ON	[dbo].[Topics] (
 	  [RangeLeft] ASC,
 	  [RangeRight] ASC
   );
@@ -36,11 +36,11 @@ GO
 -- RANGE RIGHT (INDEX)
 --------------------------------------------------------------------------------------------------------------------------------
 -- Provides a secondary index used by queries which need to insert topics into or remove topics from the hierarchy, and will
--- thus filter by and update based on RangeRight relative to the target insertion point. See, for example, topics_CreateTopic
+-- thus filter by and update based on RangeRight relative to the target insertion point. See, for example, CreateTopic
 -- and topic_DeleteTopic.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE	NONCLUSTERED
 INDEX	[IX_Topics_RangeRight]
-  ON	[dbo].[topics_Topics] (
+  ON	[dbo].[Topics] (
 	  [RangeRight] ASC
   );

@@ -4,7 +4,7 @@
 -- Moves a topic and all of its children underneath another topic.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_MoveTopic]
+CREATE PROCEDURE [dbo].[MoveTopic]
 	@TopicID		INT		,
 	@ParentID		INT		,
 	@SiblingID		INT	= -1
@@ -25,10 +25,10 @@ BEGIN TRY
 --------------------------------------------------------------------------------------------------------------------------------
 -- BEGIN TRANSACTION
 --------------------------------------------------------------------------------------------------------------------------------
--- ### NOTE JJC20191208: By necessity, this procedure makes a massive number of changes to the topics_Topics table's nested set.
+-- ### NOTE JJC20191208: By necessity, this procedure makes a massive number of changes to the Topics table's nested set.
 -- During the execution, the nested set hierarchy WILL be in an inconsistent state. Read operations during that time are very
 -- likely to be corrupted. As such, it's critical that the updates made as part of this procedure be isolated from other reads
--- being performed on the system. Further, we don't want any writes being made to the topics_Topics table during this time—see
+-- being performed on the system. Further, we don't want any writes being made to the Topics table during this time—see
 -- notes below regarding TABLOCK. By combining SERIALIZABLE with TABLOCK, we ensure that a) readers get a stable state, while b)
 -- writers are prevented from concurrently modifying the table. Fortunately, these types of operations should be pretty
 -- uncommon! The nested set model is very much optimized for read performance and presumes a relatively stable data set.
@@ -59,7 +59,7 @@ SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 SELECT	@OriginalRange		= RangeRight - RangeLeft + 1,
 	@OriginalLeft		= RangeLeft,
 	@OriginalRight		= RangeRight
-FROM	topics_Topics
+FROM	Topics
 WITH (	TABLOCK
 )
 WHERE	TopicID		= @TopicID
@@ -77,12 +77,12 @@ WHERE	TopicID		= @TopicID
 IF @SiblingID < 0
   -- Place as the first sibling if a sibling isn't specified
   SELECT	@InsertionPoint		= RangeLeft + 1
-  FROM	topics_Topics
+  FROM	Topics
   WHERE	TopicID		= @ParentID
 ELSE
   -- Place immediately to the right of a sibling, if specified
   SELECT	@InsertionPoint		= RangeRight + 1
-  FROM	topics_Topics
+  FROM	Topics
   WHERE	TopicID		= @SiblingID
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ SET	@Offset =
 --------------------------------------------------------------------------------------------------------------------------------
 IF @InsertionPoint < @OriginalLeft
 BEGIN
-  UPDATE	topics_Topics
+  UPDATE	Topics
   SET	RangeLeft = RangeLeft +
     CASE
 
@@ -233,7 +233,7 @@ END
 IF @InsertionPoint > @OriginalRight
 BEGIN
 
-  UPDATE	topics_Topics
+  UPDATE	Topics
   SET	RangeLeft = RangeLeft +
 
     CASE
@@ -299,7 +299,7 @@ END
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
 --------------------------------------------------------------------------------------------------------------------------------
-UPDATE	topics_TopicAttributes
+UPDATE	TopicAttributes
 SET	AttributeValue		= CONVERT(NVarChar(255), @ParentID)
 WHERE	TopicID		= @TopicID
   AND	AttributeKey		= 'ParentID'

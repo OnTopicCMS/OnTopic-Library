@@ -5,7 +5,7 @@
 -- retrieving a blob, since it excludes historical versions.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[topics_BlobIndex]
+VIEW	[dbo].[BlobIndex]
 WITH	SCHEMABINDING
 AS
 
@@ -16,7 +16,7 @@ WITH	TopicBlob AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[topics_Blob]
+  FROM	[dbo].[Blob]
 )
 SELECT	TopicBlob.TopicID,
 	TopicBlob.Blob

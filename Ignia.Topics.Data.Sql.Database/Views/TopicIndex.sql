@@ -7,7 +7,7 @@
 -- single query.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[topics_TopicIndex]
+VIEW	[dbo].[TopicIndex]
 WITH	SCHEMABINDING
 AS
 
@@ -20,8 +20,12 @@ WITH KeyTopicAttributes AS (
 			AttributeKey
                   ORDER BY		Version DESC
                 )
-  FROM	[dbo].[topics_TopicAttributes]
-  WHERE	AttributeKey		IN ('Key', 'ParentID', 'ContentType')
+  FROM	[dbo].[TopicAttributes]
+  WHERE	AttributeKey
+  IN (	'Key',
+	'ParentID',
+	'ContentType'
+  )
 )
 SELECT	TopicID,
 	ContentType,

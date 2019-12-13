@@ -4,7 +4,7 @@
 -- Retrieves data associated with an individual topic version, as a means of either comparing or restoring a previous version.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_GetVersion]
+CREATE PROCEDURE [dbo].[GetVersion]
 	@TopicID		int	= -1,
 	@Version		datetime	= null
 AS
@@ -26,7 +26,7 @@ AS (
 			Attributes.AttributeKey
                   ORDER BY		Version	DESC
                 )
-  FROM	topics_TopicAttributes	AS Attributes
+  FROM	TopicAttributes	AS Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
     AND	AttributeKey		IN ('Key', 'ParentID', 'ContentType')
@@ -58,7 +58,7 @@ AS (
 	  PARTITION BY		Attributes.TopicID, Attributes.AttributeKey
 	  ORDER BY		Attributes.Version DESC
 	)
-  FROM	topics_TopicAttributes	AS Attributes
+  FROM	TopicAttributes		AS Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
     AND 	Attributes.AttributeKey	not in ('Key', 'ParentID', 'ContentType')
@@ -80,7 +80,7 @@ AS (
 	  PARTITION BY		Blob.TopicID
 	  ORDER BY		Blob.Version DESC
 	)
-  FROM	topics_Blob		AS Blob
+  FROM	Blob		AS Blob
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
 )
@@ -95,7 +95,7 @@ WHERE	RowNumber		= 1
 ;SELECT	Relationships.RelationshipTypeID,
 	Relationships.Source_TopicID,
 	Relationships.Target_TopicID
-FROM	topics_Relationships	Relationships
+FROM	Relationships		Relationships
 WHERE	Source_TopicID		= @TopicID
 
 
@@ -104,5 +104,5 @@ WHERE	Source_TopicID		= @TopicID
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	TopicID,
 	Version
-FROM	topics_VersionHistoryIndex
+FROM	VersionHistoryIndex
 WHERE	TopicID		= @TopicID

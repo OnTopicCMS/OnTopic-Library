@@ -4,7 +4,7 @@
 -- Creates a new topic.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[topics_CreateTopic]
+CREATE PROCEDURE [dbo].[CreateTopic]
 	@ParentID		int		= -1,
 	@Attributes		AttributeValues		READONLY,
 	@Blob		Xml		= null,
@@ -31,10 +31,10 @@ SET	@RangeRight		= 0
 IF (@ParentID > -1)
   BEGIN
     SELECT	@RangeRight		= RangeRight
-    FROM	topics_Topics
+    FROM	Topics
     WHERE	TopicID		= @ParentID
 
-    UPDATE	topics_Topics
+    UPDATE	Topics
       SET	RangeLeft		=
         CASE
           WHEN	RangeLeft		> @RangeRight
@@ -53,7 +53,7 @@ IF (@ParentID > -1)
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE NEW TOPIC
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_Topics (
+INSERT INTO	Topics (
 	RangeLeft,
 	RangeRight
 )
@@ -69,7 +69,7 @@ SELECT	@TopicID		= SCOPE_IDENTITY()
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE ATTRIBUTES FROM STRING
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (
+INSERT INTO	TopicAttributes (
 	TopicID		,
 	AttributeKey		,
 	AttributeValue		,
@@ -89,7 +89,7 @@ WHERE	AttributeKey		!= 'ParentID'
 IF @Blob is not null
   BEGIN
     INSERT
-    INTO	topics_Blob (
+    INTO	Blob (
 	TopicID		,
 	Blob		,
 	Version
@@ -103,7 +103,7 @@ IF @Blob is not null
 --------------------------------------------------------------------------------------------------------------------------------
 -- CACHE PARENT ID FOR DATA INTEGRITY PURPOSES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	topics_TopicAttributes (
+INSERT INTO	TopicAttributes (
 	TopicID		,
 	AttributeKey		,
 	AttributeValue		,
