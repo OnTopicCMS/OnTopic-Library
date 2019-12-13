@@ -10,7 +10,6 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@ParentID		INT		= -1		,
 	@ExtendedAttributes	XML		= null		,
 	@Version		DATETIME		= null		,
-	@IsDraft		BIT		= 0		,
 	@DeleteRelationships	BIT		= 0
 AS
 
@@ -18,8 +17,7 @@ AS
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-AND	@IsDraft		= 0
-SET	@Version		= getdate()
+SET	@Version		= GetDate()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NEW ATTRIBUTES

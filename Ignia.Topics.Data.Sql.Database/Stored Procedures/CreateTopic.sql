@@ -8,15 +8,13 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@ParentID		int		= -1,
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	Xml		= null,
-	@Version		datetime		= null,
-	@IsDraft		bit		= 0
+	@Version		datetime		= null
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-AND	@IsDraft		= 0
 SET	@Version		= getdate()
 
 --------------------------------------------------------------------------------------------------------------------------------
