@@ -44,7 +44,9 @@ WHERE (
 --------------------------------------------------------------------------------------------------------------------------------
 PRINT	'Detect range duplicates'
 
-SELECT	*
+SELECT	TopicID,
+	RangeLeft,
+	RangeRight
 FROM	Topics		OuterTopics
 WHERE (
   SELECT	COUNT(TopicID)
@@ -68,7 +70,22 @@ WHERE (
 --------------------------------------------------------------------------------------------------------------------------------
 PRINT	'Detect range mismatches'
 
-SELECT	*
+SELECT	TopicID,
+	RangeLeft,
+	RangeRight
 FROM	Topics
 WHERE	RangeLeft	>= RangeRight
 
+--------------------------------------------------------------------------------------------------------------------------------
+-- DETECT PARENT ID MISMATCHES
+--------------------------------------------------------------------------------------------------------------------------------
+-- The ParentID attribute is a cached version of the topic's parent in the nested set hierarchy. These values should match. If
+-- that's not the case, something is wrong.
+--------------------------------------------------------------------------------------------------------------------------------
+PRINT	'Detect ParentID mismatches'
+
+SELECT	TopicID,
+	AttributeValue
+FROM	Attributes
+WHERE	AttributeKey		= 'ParentID'
+AND	AttributeValue		!= dbo.GetParentID(TopicID)
