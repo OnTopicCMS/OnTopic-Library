@@ -112,7 +112,7 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
 	Attributes.AttributeXml
-FROM	ExtendedAttributesIndex	AS Attributes
+FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= TopicAttributeXml.TopicID
 

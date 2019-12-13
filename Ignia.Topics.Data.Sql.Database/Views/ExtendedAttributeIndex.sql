@@ -5,7 +5,7 @@
 -- source for retrieving extended attributes, since it excludes historical versions.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[ExtendedAttributesIndex]
+VIEW	[dbo].[ExtendedAttributeIndex]
 WITH	SCHEMABINDING
 AS
 
