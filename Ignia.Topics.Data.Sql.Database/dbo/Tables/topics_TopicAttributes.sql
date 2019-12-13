@@ -1,4 +1,12 @@
-﻿CREATE
+﻿--------------------------------------------------------------------------------------------------------------------------------
+-- ATTRIBUTES (TABLE)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Provides the primary storage for topic attributes, including not only core identifiers such as Key, ContentType, and
+-- ParentID, but additionally any other key/value pairs associated with a topic. This table limits values to 255 and is intended
+-- for "indexed" attributes—i.e., attributes that are widely referenced and should be easy to access. Longer values, or those
+-- only needed in narrow cases, should instead be store in the attribute blob.
+--------------------------------------------------------------------------------------------------------------------------------
+CREATE
 TABLE	[dbo].[topics_TopicAttributes] (
 	  [TopicID]		INT	NOT NULL,
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
@@ -21,6 +29,13 @@ TABLE	[dbo].[topics_TopicAttributes] (
 );
 
 GO
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- CORE ATTRIBUTES (INDEX)
+--------------------------------------------------------------------------------------------------------------------------------
+-- Provides a filtered index of the core attributes needed to establish a topic entity—namely the Key, ContentType, and
+-- ParentID.
+--------------------------------------------------------------------------------------------------------------------------------
 CREATE	NONCLUSTERED
 INDEX	[IX_topics_TopicAttributes_AttributeKey]
   ON	[dbo].[topics_TopicAttributes] (
