@@ -7,7 +7,6 @@
 CREATE PROCEDURE [dbo].[UpdateTopic]
 	@TopicID		INT		= -1		,
 	@Attributes		AttributeValues		READONLY		,
-	@ParentID		INT		= -1		,
 	@ExtendedAttributes	XML		= null		,
 	@Version		DATETIME		= null		,
 	@DeleteRelationships	BIT		= 0

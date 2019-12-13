@@ -873,7 +873,7 @@ namespace Ignia.Topics.Data.Sql {
             SqlDbType.Int
           );
         }
-        if (topic.Parent != null) {
+        else if (topic.Parent != null) {
           AddSqlParameter(
             command,
             "ParentID",
