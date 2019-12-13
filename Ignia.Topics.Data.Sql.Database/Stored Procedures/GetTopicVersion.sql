@@ -89,7 +89,7 @@ AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
 	)
-  FROM	Blob
+  FROM	Blobs
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
 )

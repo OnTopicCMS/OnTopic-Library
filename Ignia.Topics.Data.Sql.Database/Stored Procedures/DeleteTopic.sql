@@ -90,10 +90,10 @@ FROM	Attributes		Attributes
 INNER JOIN	@Topics                         Topics
   ON	Topics.TopicId                  = Attributes.TopicID
 
-DELETE	Blob
-FROM	Blob		Blob
+DELETE	Blobs
+FROM	Blobs		Blobs
 INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = Blob.TopicID
+  ON	Topics.TopicId                  = Blobs.TopicID
 
 DELETE	Relationships
 FROM	Relationships		Relationships

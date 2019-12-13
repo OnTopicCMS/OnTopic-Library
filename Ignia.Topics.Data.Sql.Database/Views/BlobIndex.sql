@@ -16,7 +16,7 @@ WITH	TopicBlob AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[Blob]
+  FROM	[dbo].[Blobs]
 )
 SELECT	TopicBlob.TopicID,
 	TopicBlob.Blob

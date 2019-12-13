@@ -70,7 +70,7 @@
     <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Blob.sql" />
+    <Build Include="Tables\Blobs.sql" />
     <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />

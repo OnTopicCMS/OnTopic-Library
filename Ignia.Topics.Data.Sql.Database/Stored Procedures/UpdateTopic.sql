@@ -44,7 +44,7 @@ WHERE	IsNull(AttributeValue, '')	!= ''
 IF @Blob is not null
   BEGIN
     INSERT
-    INTO	Blob (
+    INTO	Blobs (
 	  TopicID		,
 	  Blob		,
 	  Version
