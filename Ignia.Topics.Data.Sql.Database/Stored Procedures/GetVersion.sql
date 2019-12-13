@@ -18,15 +18,15 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 ;WITH	KeyAttributes
 AS (
-  SELECT	Attributes.TopicID,
-                Attributes.AttributeKey,
-                Attributes.AttributeValue,
+  SELECT	TopicID,
+                AttributeKey,
+                AttributeValue,
                 RowNumber		= ROW_NUMBER() OVER (
-                  PARTITION BY		Attributes.TopicID,
-			Attributes.AttributeKey
+                  PARTITION BY		TopicID,
+			AttributeKey
                   ORDER BY		Version		DESC
                 )
-  FROM	Attributes		AS Attributes
+  FROM	Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
     AND	AttributeKey
@@ -53,48 +53,48 @@ WHERE	RowNumber		= 1
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	Attributes
+;WITH	TopicAttributes
 AS (
-  SELECT	Attributes.TopicID,
-	Attributes.AttributeKey,
-	Attributes.AttributeValue,
+  SELECT	TopicID,
+	AttributeKey,
+	AttributeValue,
 	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID,
-			Attributes.AttributeKey
-	  ORDER BY		Attributes.Version	DESC
+	  PARTITION BY		TopicID,
+			AttributeKey
+	  ORDER BY		Version		DESC
 	)
-  FROM	Attributes		AS Attributes
+  FROM	Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND 	Attributes.AttributeKey
+    AND 	AttributeKey
     NOT IN (	'Key',
 	'ParentID',
 	'ContentType'
     )
 )
-SELECT	Attributes.TopicID,
-	Attributes.AttributeKey,
-	Attributes.AttributeValue
-FROM	Attributes
+SELECT	TopicID,
+	AttributeKey,
+	AttributeValue
+FROM	TopicAttributes
 WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT BLOB
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH TopicBlob
+;WITH	TopicBlob
 AS (
-  SELECT	Blob.TopicID,
-	Blob.Blob,
+  SELECT	TopicID,
+	Blob,
 	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Blob.TopicID
-	  ORDER BY		Blob.Version		DESC
+	  PARTITION BY		TopicID
+	  ORDER BY		Version		DESC
 	)
-  FROM	Blob		AS Blob
+  FROM	Blob
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
 )
-SELECT	TopicBlob.TopicID,
-	TopicBlob.Blob
+SELECT	TopicID,
+	Blob
 FROM	TopicBlob
 WHERE	RowNumber		= 1
 
