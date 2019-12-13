@@ -1,18 +1,18 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- PERSIST RELATIONS
+-- UPDATE RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
--- Removes and saves the n:n mappings for scoped related topics.
+-- Saves the n:n mappings for related topics.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[PersistRelations]
-	@RelationshipTypeID	VARCHAR(255)	= 'related',
-	@Source_TopicID		INT	= -1,
-	@Target_TopicIDs	TopicList	READONLY
+	@TopicID		INT	= -1,
+	@RelationshipKey	VARCHAR(255)	= 'related',
+	@RelatedTopics		TopicList	READONLY
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND SET VARIABLES
---------------------------------------------------------------------------------------------------------------------------------
+
 DECLARE	@Existing_TopicIDs	TopicList
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -24,22 +24,22 @@ INTO	@Existing_TopicIDs (
 	)
 SELECT	Target_TopicID
 FROM	Relationships
-WHERE	Source_TopicID		= @Source_TopicID
-  AND	RelationshipTypeId	= @RelationshipTypeId
+WHERE	Source_TopicID		= @TopicID
+  AND	RelationshipKey		= @RelationshipKey
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NOVEL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
 INTO	Relationships (
-	  RelationshipTypeId,
 	  Source_TopicId,
+	  RelationshipKey,
 	  Target_TopicId
 	)
-SELECT	@RelationshipTypeId,
-	@Source_TopicId,
+SELECT	@TopicId,
+	@RelationshipKey,
 	Target.TopicId
-FROM	@Target_TopicIDs	Target
+FROM	@RelatedTopics		Target
 FULL JOIN	@Existing_TopicIDs	Existing
   ON	Existing.TopicID	= Target.TopicID
 WHERE	Existing.TopicID	is null
@@ -47,4 +47,4 @@ WHERE	Existing.TopicID	is null
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID
 --------------------------------------------------------------------------------------------------------------------------------
-RETURN	@Source_TopicID;
+RETURN	@TopicID;

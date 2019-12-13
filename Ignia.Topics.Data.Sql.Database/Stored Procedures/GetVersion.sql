@@ -101,8 +101,8 @@ WHERE	RowNumber		= 1
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-;SELECT	RelationshipTypeID,
-	Source_TopicID,
+;SELECT	Source_TopicID,
+	RelationshipKey,
 	Target_TopicID
 FROM	Relationships
 WHERE	Source_TopicID		= @TopicID

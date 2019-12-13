@@ -241,15 +241,15 @@ namespace Ignia.Topics.Data.Sql {
       Contract.Requires(reader, "The reader must not be null.");
 
       Contract.Requires(reader["Source_TopicID"], "The Source_TopicID record must not be null.");
+      Contract.Requires(reader["RelationshipKey"], "The RelationshipKey record must not be null.");
       Contract.Requires(reader["Target_TopicID"], "The Target_TopicID record must not be null.");
-      Contract.Requires(reader["RelationshipTypeID"], "The RelationshipTypeID record must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
       var targetTopicId         = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var relationshipTypeId    = (string)reader["RelationshipTypeID"];
+      var relationshipKey       = (string)reader["RelationshipKey"];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
@@ -268,7 +268,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipTypeId, related);
+      current.Relationships.SetTopic(relationshipKey, related);
 
     }
 
@@ -1173,7 +1173,7 @@ namespace Ignia.Topics.Data.Sql {
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
 
-          command               = new SqlCommand("PersistRelations", connection) {
+          command               = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
@@ -1184,9 +1184,9 @@ namespace Ignia.Topics.Data.Sql {
           }
 
           // Add Parameters
-          command.Parameters.AddWithValue("RelationshipTypeID", key);
-          command.Parameters.AddWithValue("Source_TopicID", topicId);
-          command.Parameters.AddWithValue("@Target_TopicIDs", targetIds);
+          command.Parameters.AddWithValue("TopicID", topicId);
+          command.Parameters.AddWithValue("RelationshipKey", key);
+          command.Parameters.AddWithValue("RelatedTopics", targetIds);
 
           command.ExecuteNonQuery();
 

@@ -85,7 +85,7 @@
     <Build Include="Functions\Split.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
     <Build Include="Stored Procedures\UpdateTopic.sql" />
-    <Build Include="Stored Procedures\PersistRelations.sql" />
+    <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetAttributes.sql" />
     <Build Include="Stored Procedures\GenerateNestedSet.sql" />
@@ -109,5 +109,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Ignia.Topics.Data.Sql.Database.refactorlog" />
   </ItemGroup>
 </Project>

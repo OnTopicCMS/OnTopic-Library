@@ -119,8 +119,8 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	Relationships.RelationshipTypeID,
-	Relationships.Source_TopicID,
+SELECT	Relationships.Source_TopicID,
+	Relationships.RelationshipKey,
 	Relationships.Target_TopicID
 FROM	Relationships		Relationships
 JOIN	#Topics		AS Storage
