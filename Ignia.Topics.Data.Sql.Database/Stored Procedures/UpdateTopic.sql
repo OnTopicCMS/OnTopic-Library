@@ -36,7 +36,8 @@ SELECT	@TopicID,
 	AttributeValue,
 	@Version
 FROM	@Attributes
-WHERE	IsNull(AttributeValue, '')	!= ''
+WHERE	AttributeKey		!= 'ParentId'
+  AND	IsNull(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES (XML)
