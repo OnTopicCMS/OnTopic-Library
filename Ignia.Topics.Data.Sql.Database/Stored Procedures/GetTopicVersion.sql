@@ -1,10 +1,10 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- GET VERSION
+-- GET TOPIC VERSION
 --------------------------------------------------------------------------------------------------------------------------------
 -- Retrieves data associated with an individual topic version, as a means of either comparing or restoring a previous version.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[GetVersion]
+CREATE PROCEDURE [dbo].[GetTopicVersion]
 	@TopicID		int	= -1,
 	@Version		datetime	= null
 AS

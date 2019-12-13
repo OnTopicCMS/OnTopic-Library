@@ -93,7 +93,7 @@
     <Build Include="Stored Procedures\CreateTopic.sql" />
     <Build Include="Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
-    <Build Include="Stored Procedures\GetVersion.sql" />
+    <Build Include="Stored Procedures\GetTopicVersion.sql" />
     <Build Include="Stored Procedures\GetTopicID.sql" />
     <Build Include="Stored Procedures\ValidateHierarchy.sql" />
     <Build Include="Types\AttributeValues.sql" />

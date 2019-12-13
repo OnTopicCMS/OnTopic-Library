@@ -593,7 +593,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("GetVersion", connection) {
+      var command               = new SqlCommand("GetTopicVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
@@ -652,7 +652,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Read related items
         >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getVersion correctly returns relationships, they cannot be correctly set because this
+        | ### NOTE JJC072617: While GetTopicVersion correctly returns relationships, they cannot be correctly set because this
         | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since
         | relationships are not currently versioned.
         \---------------------------------------------------------------------------------------------------------------------*/
@@ -675,7 +675,7 @@ namespace Ignia.Topics.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate strongly typed references
         >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getVersion correctly returns the derived topic, it cannot be correctly set because this
+        | ### NOTE JJC072617: While getTopicVersion correctly returns the derived topic, it cannot be correctly set because this
         | overload doesn't maintain a full set of topics to create relationships to.
         \---------------------------------------------------------------------------------------------------------------------*/
         //SetDerivedTopics(topics);
