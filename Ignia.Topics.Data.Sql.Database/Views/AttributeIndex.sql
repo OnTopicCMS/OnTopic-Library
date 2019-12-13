@@ -1,11 +1,11 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- TOPIC ATTRIBUTES (INDEX)
+-- ATTRIBUTES (INDEX)
 --------------------------------------------------------------------------------------------------------------------------------
 -- Filters the attributes table by the latest version for each topic and attribute key. For most use cases, this should be the
 -- primary sources for retrieving attributes, since it excludes historical versions.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[TopicAttributeIndex]
+VIEW	[dbo].[AttributeIndex]
 WITH	SCHEMABINDING
 AS
 

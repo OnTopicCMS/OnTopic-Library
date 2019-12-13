@@ -103,7 +103,7 @@ ORDER BY	SortOrder
 SELECT	Attributes.TopicID,
 	Attributes.AttributeKey,
 	Attributes.AttributeValue
-FROM	TopicAttributeIndex	Attributes
+FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
 
