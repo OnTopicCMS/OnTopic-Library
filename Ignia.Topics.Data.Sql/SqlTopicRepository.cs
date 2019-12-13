@@ -329,7 +329,7 @@ namespace Ignia.Topics.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = Int32.Parse(reader?["TopicId"]?.ToString(), CultureInfo.InvariantCulture);
-      var dateTime              = Convert.ToDateTime(reader?["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      var dateTime              = reader?.GetDateTime(reader?.GetOrdinal("Version")?? 0)?? DateTime.Now;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
