@@ -81,6 +81,7 @@
     <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Functions\GetParentID.sql" />
+    <Build Include="Functions\GetTopicID.sql" />
     <Build Include="Functions\SimpleIntListToTbl.sql" />
     <Build Include="Functions\Split.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
@@ -94,7 +95,6 @@
     <Build Include="Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
-    <Build Include="Stored Procedures\GetTopicID.sql" />
     <Build Include="Stored Procedures\ValidateHierarchy.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
