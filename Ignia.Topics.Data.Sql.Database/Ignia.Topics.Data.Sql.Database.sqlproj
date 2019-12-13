@@ -74,11 +74,12 @@
     <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
-    <Build Include="Tables\TopicAttributes.sql" />
+    <Build Include="Tables\Attributes.sql" />
     <Build Include="Views\LftRgt.sql" />
     <Build Include="Views\TopicIndex.sql" />
-    <Build Include="Views\TopicAttributeIndex.sql" />
+    <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\BlobIndex.sql" />
+    <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Functions\GetParentID.sql" />
     <Build Include="Functions\SimpleIntListToTbl.sql" />
     <Build Include="Functions\Split.sql" />
@@ -86,18 +87,18 @@
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Stored Procedures\PersistRelations.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
-    <Build Include="Stored Procedures\GetTopicAttributes.sql" />
+    <Build Include="Stored Procedures\GetAttributes.sql" />
     <Build Include="Stored Procedures\GenerateNestedSet.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
-    <Build Include="Stored Procedures\CompressTopics.sql" />
+    <Build Include="Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
     <Build Include="Stored Procedures\GetVersion.sql" />
     <Build Include="Stored Procedures\GetTopicID.sql" />
+    <Build Include="Stored Procedures\ValidateHierarchy.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
-    <Build Include="Views\VersionHistoryIndex.sql" />
-    <Build Include="Stored Procedures\DetectHierarchyCorruption.sql" />
+    <Build Include="Views\AttributeIndex.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
