@@ -612,7 +612,11 @@ namespace Ignia.Topics.Data.Sql {
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
         AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
-        AddSqlParameter(command, "Version",      version.ToString(CultureInfo.InvariantCulture),       SqlDbType.DateTime);
+        AddSqlParameter(command,
+          "Version",
+          version.ToString("yyyy-MM-dd hh:mm:ss.fff tt", CultureInfo.InvariantCulture),
+          SqlDbType.DateTime
+        );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
