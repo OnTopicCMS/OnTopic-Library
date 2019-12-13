@@ -1161,8 +1161,6 @@ namespace Ignia.Topics.Data.Sql {
         new DataColumn("TopicID", typeof(int))
       );
 
-      targetIds.Columns.Add("TopicId");
-
       try {
 
         /*----------------------------------------------------------------------------------------------------------------------
