@@ -369,7 +369,7 @@ namespace Ignia.Topics.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("topics_GetTopicID", connection);
+      var command               = new SqlCommand("GetTopicID", connection);
       int topicId;
 
       command.CommandType = CommandType.StoredProcedure;
@@ -397,7 +397,7 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume<InvalidOperationException>(
           command.Parameters["@ReturnCode"] != null,
-          "The call to the topics_GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
+          "The call to the GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
         );
         topicId = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
@@ -444,7 +444,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("topics_GetTopics", connection) {
+      var command               = new SqlCommand("GetTopics", connection) {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
@@ -593,7 +593,7 @@ namespace Ignia.Topics.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = new Dictionary<int, Topic>();
       var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("topics_GetVersion", connection) {
+      var command               = new SqlCommand("GetVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
@@ -731,7 +731,7 @@ namespace Ignia.Topics.Data.Sql {
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
-    /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
+    /// <returns>The integer return value from the execution of the <c>UpdateTopic</c> stored procedure.</returns>
     /// <exception cref="Exception">
     ///   The Content Type <c>topic.Attributes.GetValue(ContentType, Page)</c> referenced by <c>topic.Key</c> could not be found under
     ///   Configuration:ContentTypes. There are <c>ContentTypes.Count</c> ContentTypes in cached in the Repository.
@@ -845,10 +845,10 @@ namespace Ignia.Topics.Data.Sql {
         | Establish command type (insert or update)
         \---------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
-          command = new SqlCommand("topics_UpdateTopic", connection);
+          command = new SqlCommand("UpdateTopic", connection);
         }
         else {
-          command = new SqlCommand("topics_CreateTopic", connection);
+          command = new SqlCommand("CreateTopic", connection);
         }
 
         command.CommandType = CommandType.StoredProcedure;
@@ -920,7 +920,7 @@ namespace Ignia.Topics.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume<InvalidOperationException>(
           command.Parameters["@ReturnCode"] != null,
-          "The call to the topics_CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
+          "The call to the CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
         );
         returnVal = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
@@ -964,7 +964,7 @@ namespace Ignia.Topics.Data.Sql {
         foreach (var childTopic in topic.Children) {
           Contract.Assume<InvalidOperationException>(
             childTopic.Attributes.GetInteger("ParentID", -1) > 0,
-            "The call to the topics_CreateTopic stored procedure did not return the expected 'ParentID' parameter."
+            "The call to the CreateTopic stored procedure did not return the expected 'ParentID' parameter."
           );
           childTopic.Attributes.SetValue("ParentID", returnVal.ToString(CultureInfo.InvariantCulture));
           Save(childTopic, isRecursive, isDraft);
@@ -1011,7 +1011,7 @@ namespace Ignia.Topics.Data.Sql {
 
       try {
 
-        command = new SqlCommand("topics_MoveTopic", connection) {
+        command = new SqlCommand("MoveTopic", connection) {
           CommandType = CommandType.StoredProcedure
         };
 
@@ -1089,7 +1089,7 @@ namespace Ignia.Topics.Data.Sql {
 
       try {
 
-        command = new SqlCommand("topics_DeleteTopic", connection) {
+        command = new SqlCommand("DeleteTopic", connection) {
           CommandType = CommandType.StoredProcedure
         };
 
@@ -1173,7 +1173,7 @@ namespace Ignia.Topics.Data.Sql {
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
 
-          command               = new SqlCommand("topics_PersistRelations", connection) {
+          command               = new SqlCommand("PersistRelations", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
