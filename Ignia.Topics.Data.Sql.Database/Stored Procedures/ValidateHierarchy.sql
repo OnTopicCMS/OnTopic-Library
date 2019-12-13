@@ -8,7 +8,7 @@
 -- safety precaution, it provides a means of identifying potential sources of corruption. It won't resolve the corruption, nor
 -- fully identify where it is. But it'll help identify scenarios that should never occur.
 --------------------------------------------------------------------------------------------------------------------------------
-CREATE PROCEDURE [dbo].[DetectHierarchyCorruption]
+CREATE PROCEDURE [dbo].[ValidateHierarchy]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
