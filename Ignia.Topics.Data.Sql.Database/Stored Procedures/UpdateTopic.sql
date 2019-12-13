@@ -8,7 +8,7 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@TopicID		INT		= -1		,
 	@Attributes		AttributeValues		READONLY		,
 	@ParentID		INT		= -1		,
-	@AttributesXml		XML		= null		,
+	@ExtendedAttributes	XML		= null		,
 	@Version		DATETIME		= null		,
 	@IsDraft		BIT		= 0		,
 	@DeleteRelationships	BIT		= 0
@@ -41,7 +41,7 @@ WHERE	IsNull(AttributeValue, '')	!= ''
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES (XML)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @AttributesXml is not null
+IF @ExtendedAttributes is not null
   BEGIN
     INSERT
     INTO	ExtendedAttributes (
@@ -51,7 +51,7 @@ IF @AttributesXml is not null
 	)
     VALUES (
 	@TopicID		,
-	@AttributesXml		,
+	@ExtendedAttributes	,
 	@Version
     )
   END
