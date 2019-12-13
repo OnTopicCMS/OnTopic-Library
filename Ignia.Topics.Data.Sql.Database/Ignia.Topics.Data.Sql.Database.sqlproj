@@ -75,7 +75,7 @@
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Tables\Attributes.sql" />
-    <Build Include="Views\LftRgt.sql" />
+    <Build Include="Views\LeftRightRange.sql" />
     <Build Include="Views\TopicIndex.sql" />
     <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\BlobIndex.sql" />

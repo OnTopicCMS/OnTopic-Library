@@ -15,11 +15,11 @@ SET NOCOUNT ON;
 UPDATE	Topics
 SET	RangeLeft = (
   SELECT	COUNT(*)
-  FROM	LftRgt
+  FROM	LeftRightRange
   WHERE	seq <= RangeLeft
 ),
 	RangeRight = (
   SELECT	COUNT(*)
-  FROM	LftRgt
+  FROM	LeftRightRange
   WHERE	seq <= ISNULL(RangeRight, 0)
 );
