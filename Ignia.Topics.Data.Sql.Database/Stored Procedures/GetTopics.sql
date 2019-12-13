@@ -100,12 +100,12 @@ ORDER BY	SortOrder
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	TopicAttributes.TopicID,
-	TopicAttributes.AttributeKey,
-	TopicAttributes.AttributeValue
-FROM	TopicAttributeIndex	TopicAttributes
+SELECT	Attributes.TopicID,
+	Attributes.AttributeKey,
+	Attributes.AttributeValue
+FROM	TopicAttributeIndex	Attributes
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= TopicAttributes.TopicID
+  ON	Storage.TopicID		= Attributes.TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT BLOB

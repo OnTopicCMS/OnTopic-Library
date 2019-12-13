@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------------------------------------------------------
 -- Returns a list of attributes associated with a particular topic.
 --------------------------------------------------------------------------------------------------------------------------------
-CREATE PROCEDURE [dbo].[GetTopicAttributes]
+CREATE PROCEDURE [dbo].[GetAttributes]
 	@TopicID		INT	= -1
 AS
 
@@ -17,6 +17,6 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	AttributeKey,
 	AttributeValue
-FROM	TopicAttributes
+FROM	Attributes
 WHERE	TopicID		= @TopicID
 ORDER BY	AttributeKey

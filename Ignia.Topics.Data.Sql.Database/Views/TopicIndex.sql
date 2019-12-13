@@ -11,7 +11,7 @@ VIEW	[dbo].[TopicIndex]
 WITH	SCHEMABINDING
 AS
 
-WITH KeyTopicAttributes AS (
+WITH KeyAttributes AS (
   SELECT	TopicID,
                 AttributeKey,
                 AttributeValue,
@@ -20,7 +20,7 @@ WITH KeyTopicAttributes AS (
 			AttributeKey
                   ORDER BY		Version DESC
                 )
-  FROM	[dbo].[TopicAttributes]
+  FROM	[dbo].[Attributes]
   WHERE	AttributeKey
   IN (	'Key',
 	'ParentID',
@@ -31,7 +31,7 @@ SELECT	TopicID,
 	ContentType,
 	ParentID,
 	[Key]		AS 'TopicKey'
-FROM	KeyTopicAttributes
+FROM	KeyAttributes
 PIVOT (	MIN(AttributeValue)
   FOR	AttributeKey IN (
 	  [Key],

@@ -9,7 +9,7 @@ VIEW	[dbo].[TopicAttributeIndex]
 WITH	SCHEMABINDING
 AS
 
-WITH TopicAttributes AS (
+WITH Attributes AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
@@ -18,15 +18,15 @@ WITH TopicAttributes AS (
 			AttributeKey
 	  ORDER BY		Version	DESC
 	)
-  FROM	[dbo].[TopicAttributes]
+  FROM	[dbo].[Attributes]
   WHERE	AttributeKey
   NOT IN (	'Key',
 	'ParentID',
 	'ContentType'
   )
 )
-SELECT	TopicAttributes.TopicID,
-	TopicAttributes.AttributeKey,
-	TopicAttributes.AttributeValue
-FROM	TopicAttributes
+SELECT	Attributes.TopicID,
+	Attributes.AttributeKey,
+	Attributes.AttributeValue
+FROM	Attributes
 WHERE	RowNumber		= 1

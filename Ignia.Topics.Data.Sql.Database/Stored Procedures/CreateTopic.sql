@@ -69,7 +69,7 @@ SELECT	@TopicID		= SCOPE_IDENTITY()
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE ATTRIBUTES FROM STRING
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	TopicAttributes (
+INSERT INTO	Attributes (
 	TopicID		,
 	AttributeKey		,
 	AttributeValue		,
@@ -103,7 +103,7 @@ IF @Blob is not null
 --------------------------------------------------------------------------------------------------------------------------------
 -- CACHE PARENT ID FOR DATA INTEGRITY PURPOSES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	TopicAttributes (
+INSERT INTO	Attributes (
 	TopicID		,
 	AttributeKey		,
 	AttributeValue		,

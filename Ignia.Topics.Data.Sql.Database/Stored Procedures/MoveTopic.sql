@@ -140,9 +140,9 @@ IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
 --------------------------------------------------------------------------------------------------------------------------------
 SET	@Offset =
   CASE
-    WHEN	@InsertionPoint < @OriginalLeft
-    THEN	@OriginalLeft - @InsertionPoint
-  ELSE	@InsertionPoint - @OriginalRight
+    WHEN	@InsertionPoint		< @OriginalLeft
+    THEN	@OriginalLeft		- @InsertionPoint
+  ELSE	@InsertionPoint		- @OriginalRight
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ END
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
 --------------------------------------------------------------------------------------------------------------------------------
-UPDATE	TopicAttributes
+UPDATE	Attributes
 SET	AttributeValue		= CONVERT(NVarChar(255), @ParentID)
 WHERE	TopicID		= @TopicID
   AND	AttributeKey		= 'ParentID'

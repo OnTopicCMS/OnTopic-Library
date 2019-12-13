@@ -18,7 +18,7 @@ AS (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version DESC
 	)
-  FROM	[dbo].[TopicAttributes]
+  FROM	[dbo].[Attributes]
   GROUP BY	TopicID,
 	Version
 )

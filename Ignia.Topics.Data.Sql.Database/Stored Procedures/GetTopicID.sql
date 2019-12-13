@@ -20,7 +20,7 @@ DECLARE	@TopicID		INT
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	TOP 1
 	@TopicID		= Topics.TopicID
-FROM	TopicAttributes		Attributes
+FROM	Attributes		Attributes
 JOIN	Topics		Topics
   ON	Attributes.TopicID	= Topics.TopicID
 WHERE	AttributeKey		= 'Key'

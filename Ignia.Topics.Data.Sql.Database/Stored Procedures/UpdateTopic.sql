@@ -25,7 +25,7 @@ SET	@Version		= getdate()
 -- INSERT NEW ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
-INTO	TopicAttributes (
+INTO	Attributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
@@ -59,7 +59,7 @@ IF @Blob is not null
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NULL ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	TopicAttributes (
+INSERT INTO	Attributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
@@ -74,7 +74,7 @@ WHERE	IsNull(AttributeValue, '')	= ''
   AND (
     SELECT	TOP 1
 	AttributeValue
-    FROM	TopicAttributes
+    FROM	Attributes
     WHERE	TopicID		= @TopicID
       AND	AttributeKey		= NullAttributes.AttributeKey
     ORDER BY	Version DESC

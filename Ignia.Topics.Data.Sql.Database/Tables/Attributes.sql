@@ -7,7 +7,7 @@
 -- only needed in narrow cases, should instead be store in the attribute blob.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-TABLE	[dbo].[TopicAttributes] (
+TABLE	[dbo].[Attributes] (
 	  [TopicID]		INT	NOT NULL,
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
 	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
@@ -15,12 +15,12 @@ TABLE	[dbo].[TopicAttributes] (
   CONSTRAINT	  [DF_Attributes_DateModified]	DEFAULT	(GetDate())	NOT NULL,
 	  [Version]		DATETIME
   CONSTRAINT	  [DF_Attributes_Version]	DEFAULT	(GetDate())	NOT NULL,
-  CONSTRAINT	  [PK_TopicAttributes]	PRIMARY KEY
+  CONSTRAINT	  [PK_Attributes]	PRIMARY KEY
   CLUSTERED (	    [TopicID]		ASC,
 	    [AttributeKey]	ASC,
 	    [Version]		DESC
   ),
-  CONSTRAINT	  [FK_TopicAttributes_TopicID]
+  CONSTRAINT	  [FK_Attributes_TopicID]
   FOREIGN KEY (	    [TopicID]
 	  )
   REFERENCES	  [dbo].[Topics] (
@@ -37,8 +37,8 @@ GO
 -- ParentID.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE	NONCLUSTERED
-INDEX	[IX_TopicAttributes_AttributeKey]
-  ON	[dbo].[TopicAttributes] (
+INDEX	[IX_Attributes_AttributeKey]
+  ON	[dbo].[Attributes] (
 	  [TopicID]		ASC,
 	  [AttributeKey]	ASC,
 	  [Version]		DESC

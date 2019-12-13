@@ -30,7 +30,7 @@ BEGIN TRY
 --------------------------------------------------------------------------------------------------------------------------------
 -- ### NOTE JJC20191208: This application includes a number of read operations that join the Topics table with other
 -- tables modified as part of this procedure. Many of those read operations will fail while this operation is happening. For
--- example, common joins between Topics and TopicAttributes may fail since critical AttributeKeys such as Key,
+-- example, common joins between Topics and Attributes may fail since critical AttributeKeys such as Key,
 -- ParentId, and ContentType may be missing during this operation. For this reason, we are opting to use an aggressive isolation
 -- level—SERIALIZABLE—to ensure that all callers outside of this transcation receive a stable (pre-transaction) state of the
 -- data until this transaction is committed.
@@ -59,7 +59,7 @@ SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 -- operations against the topics table which will fail if the topic range shifts. Locking the table helps ensure that data
 -- integrity issues aren't introduced by concurrent modification of the nested set.
 --------------------------------------------------------------------------------------------------------------------------------
--- ### NOTE JJC20191208: Note that locks are NOT required on the child tables, such as TopicAttributes, Blob, and
+-- ### NOTE JJC20191208: Note that locks are NOT required on the child tables, such as Attributes, Blob, and
 -- Relationships. This is because those queries are much narrower in scope, and the standard out-of-the-box row locks
 -- that come with the SERIALIZABLE isolation level when those calls are executed will be more than sufficient.
 --------------------------------------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ WHERE	RangeLeft
 -- DELETE RELATED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE	Attributes
-FROM	TopicAttributes	Attributes
+FROM	Attributes		Attributes
 INNER JOIN	@Topics                         Topics
   ON	Topics.TopicId                  = Attributes.TopicID
 

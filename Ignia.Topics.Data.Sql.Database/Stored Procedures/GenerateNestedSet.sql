@@ -1,7 +1,7 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- GENERATE NESTED SET
 --------------------------------------------------------------------------------------------------------------------------------
--- Creates an adjacency list using the _ParentID fields in TopicAttributes then takes the newly created adjacency list
+-- Creates an adjacency list using the _ParentID fields in Attributes then takes the newly created adjacency list
 -- and uses it to generate a nested set based table in Topics.  Useful for recovering from a corrupted nested set model.
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -17,13 +17,13 @@ SET IDENTITY_INSERT Topics ON
 DELETE
 FROM	Hierarchy
 
--- Insert data from TopicAttributes
+-- Insert data from Attributes
 INSERT
 INTO	Hierarchy
 SELECT	TopicID		AS TopicID,
 	CONVERT(Int, AttributeValue)	AS ParentID,
 	GETDATE()		AS DateAdded
-FROM	TopicAttributes
+FROM	Attributes
 WHERE	AttributeKey		= 'ParentID'
 
 -- Address root node

@@ -2,7 +2,7 @@
 -- BLOB (TABLE)
 --------------------------------------------------------------------------------------------------------------------------------
 -- Provides a storage blob (in XML format) for attribute key/value pairs. Attributes can also be stored in the
--- TopicAttributes table. The difference is that the latter limits attribute values to 255 characters per AttributeValue,
+-- Attributes table. The difference is that the latter limits attribute values to 255 characters per AttributeValue,
 -- whereas the blob offers virtually unlimited storage capacity (at least in practical terms).
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE

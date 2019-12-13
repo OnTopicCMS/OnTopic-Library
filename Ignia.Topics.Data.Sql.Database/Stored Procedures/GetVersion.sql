@@ -16,7 +16,7 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	KeyTopicAttributes
+;WITH	KeyAttributes
 AS (
   SELECT	Attributes.TopicID,
                 Attributes.AttributeKey,
@@ -24,19 +24,23 @@ AS (
                 RowNumber		= ROW_NUMBER() OVER (
                   PARTITION BY		Attributes.TopicID,
 			Attributes.AttributeKey
-                  ORDER BY		Version	DESC
+                  ORDER BY		Version		DESC
                 )
-  FROM	TopicAttributes	AS Attributes
+  FROM	Attributes		AS Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND	AttributeKey		IN ('Key', 'ParentID', 'ContentType')
+    AND	AttributeKey
+    IN (	'Key',
+	'ParentID',
+	'ContentType'
+    )
 )
 SELECT	TopicID,
 	ContentType,
 	ParentID,
 	[Key]		AS 'TopicKey',
 	1		AS 'SortOrder'
-FROM	KeyTopicAttributes
+FROM	KeyAttributes
 PIVOT (	MIN(AttributeValue)
   FOR	AttributeKey
   IN (	[ContentType],
@@ -55,13 +59,18 @@ AS (
 	Attributes.AttributeKey,
 	Attributes.AttributeValue,
 	RowNumber		= ROW_NUMBER() OVER (
-	  PARTITION BY		Attributes.TopicID, Attributes.AttributeKey
-	  ORDER BY		Attributes.Version DESC
+	  PARTITION BY		Attributes.TopicID,
+			Attributes.AttributeKey
+	  ORDER BY		Attributes.Version	DESC
 	)
-  FROM	TopicAttributes		AS Attributes
+  FROM	Attributes		AS Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND 	Attributes.AttributeKey	not in ('Key', 'ParentID', 'ContentType')
+    AND 	Attributes.AttributeKey
+    NOT IN (	'Key',
+	'ParentID',
+	'ContentType'
+    )
 )
 SELECT	Attributes.TopicID,
 	Attributes.AttributeKey,
@@ -78,7 +87,7 @@ AS (
 	Blob.Blob,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		Blob.TopicID
-	  ORDER BY		Blob.Version DESC
+	  ORDER BY		Blob.Version		DESC
 	)
   FROM	Blob		AS Blob
   WHERE	TopicID		= @TopicID
@@ -92,12 +101,11 @@ WHERE	RowNumber		= 1
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-;SELECT	Relationships.RelationshipTypeID,
-	Relationships.Source_TopicID,
-	Relationships.Target_TopicID
-FROM	Relationships		Relationships
+;SELECT	RelationshipTypeID,
+	Source_TopicID,
+	Target_TopicID
+FROM	Relationships
 WHERE	Source_TopicID		= @TopicID
-
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
