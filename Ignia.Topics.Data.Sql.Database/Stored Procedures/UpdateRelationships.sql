@@ -4,7 +4,7 @@
 -- Saves the n:n mappings for related topics.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[PersistRelations]
+CREATE PROCEDURE [dbo].[UpdateRelationships]
 	@TopicID		INT	= -1,
 	@RelationshipKey	VARCHAR(255)	= 'related',
 	@RelatedTopics		TopicList	READONLY
