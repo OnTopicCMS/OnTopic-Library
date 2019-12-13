@@ -1,24 +1,24 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- BLOB (INDEX)
+-- EXTENDED ATTRIBUTES (INDEX)
 --------------------------------------------------------------------------------------------------------------------------------
--- Filters the Blob table by the latest version for each topic. For most use cases, this should be the primary sources for
--- retrieving a blob, since it excludes historical versions.
+-- Filters the Extended Attributes table by the latest version for each topic. For most use cases, this should be the primary
+-- source for retrieving extended attributes, since it excludes historical versions.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[BlobIndex]
+VIEW	[dbo].[ExtendedAttributesIndex]
 WITH	SCHEMABINDING
 AS
 
-WITH	TopicBlob AS (
+WITH	TopicExtendedAttributes AS (
   SELECT	TopicID,
-	Blob,
+	AttributesXml,
 	RowNumber = ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
-	  ORDER BY		Version DESC
+	  ORDER BY		Version		DESC
 	)
-  FROM	[dbo].[Blobs]
+  FROM	[dbo].[ExtendedAttributes]
 )
-SELECT	TopicBlob.TopicID,
-	TopicBlob.Blob
-FROM	TopicBlob
+SELECT	TopicID,
+	AttributesXml
+FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1

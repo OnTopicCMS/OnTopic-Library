@@ -59,7 +59,7 @@ SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 -- operations against the topics table which will fail if the topic range shifts. Locking the table helps ensure that data
 -- integrity issues aren't introduced by concurrent modification of the nested set.
 --------------------------------------------------------------------------------------------------------------------------------
--- ### NOTE JJC20191208: Note that locks are NOT required on the child tables, such as Attributes, Blob, and
+-- ### NOTE JJC20191208: Note that locks are NOT required on the child tables, such as Attributes, AttributeXml, and
 -- Relationships. This is because those queries are much narrower in scope, and the standard out-of-the-box row locks
 -- that come with the SERIALIZABLE isolation level when those calls are executed will be more than sufficient.
 --------------------------------------------------------------------------------------------------------------------------------
@@ -90,10 +90,10 @@ FROM	Attributes		Attributes
 INNER JOIN	@Topics                         Topics
   ON	Topics.TopicId                  = Attributes.TopicID
 
-DELETE	Blobs
-FROM	Blobs		Blobs
+DELETE	ExtendedAttributes
+FROM	ExtendedAttributes	ExtendedAttributes
 INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = Blobs.TopicID
+  ON	Topics.TopicId                  = ExtendedAttributes.TopicID
 
 DELETE	Relationships
 FROM	Relationships		Relationships

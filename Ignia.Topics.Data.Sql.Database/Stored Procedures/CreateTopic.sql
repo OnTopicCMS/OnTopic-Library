@@ -7,7 +7,7 @@
 CREATE PROCEDURE [dbo].[CreateTopic]
 	@ParentID		int		= -1,
 	@Attributes		AttributeValues		READONLY,
-	@Blob		Xml		= null,
+	@AttributesXml		Xml		= null,
 	@Version		datetime		= null,
 	@IsDraft		bit		= 0
 AS
@@ -84,18 +84,18 @@ WHERE	AttributeKey		!= 'ParentID'
   AND 	IsNull(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
--- CREATE BLOB
+-- ADD EXTENDED ATTRIBUTES (XML)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @Blob is not null
+IF @AttributesXml is not null
   BEGIN
     INSERT
-    INTO	Blobs (
+    INTO	ExtendedAttributes (
 	TopicID		,
-	Blob		,
+	AttributesXml		,
 	Version
     )
     VALUES (	@TopicID		,
-	@Blob		,
+	@AttributesXml		,
 	@Version
     )
   END

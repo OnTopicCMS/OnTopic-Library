@@ -108,13 +108,13 @@ JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT BLOB
+-- SELECT AttributeXml
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	TopicBlob.TopicID,
-	TopicBlob.Blob
-FROM	BlobIndex		AS TopicBlob
+SELECT	Attributes.TopicID,
+	Attributes.AttributeXml
+FROM	ExtendedAttributesIndex	AS Attributes
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= TopicBlob.TopicID
+  ON	Storage.TopicID		= TopicAttributeXml.TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS

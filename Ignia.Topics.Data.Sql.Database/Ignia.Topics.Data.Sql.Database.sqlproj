@@ -70,7 +70,7 @@
     <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Blobs.sql" />
+    <Build Include="Tables\ExtendedAttributes.sql" />
     <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
@@ -78,7 +78,7 @@
     <Build Include="Views\LeftRightRange.sql" />
     <Build Include="Views\TopicIndex.sql" />
     <Build Include="Views\AttributeIndex.sql" />
-    <Build Include="Views\BlobIndex.sql" />
+    <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Functions\GetParentID.sql" />
     <Build Include="Functions\SimpleIntListToTbl.sql" />

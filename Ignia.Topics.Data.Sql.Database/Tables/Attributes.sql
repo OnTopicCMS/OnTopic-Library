@@ -4,7 +4,7 @@
 -- Provides the primary storage for topic attributes, including not only core identifiers such as Key, ContentType, and
 -- ParentID, but additionally any other key/value pairs associated with a topic. This table limits values to 255 and is intended
 -- for "indexed" attributes—i.e., attributes that are widely referenced and should be easy to access. Longer values, or those
--- only needed in narrow cases, should instead be store in the attribute blob.
+-- only needed in narrow cases, should instead be store in the attribute AttributeXml.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
 TABLE	[dbo].[Attributes] (

@@ -292,28 +292,33 @@ namespace Ignia.Topics.Metadata {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: STORE IN BLOB?
+    | PROPERTY: IS EXTENDED ATTRIBUTE?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets whether or not the attribute is stored in the XML blob.
+    ///   Gets or sets whether or not the attribute is stored as part of the attributes XML.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     By default, all attributes are stored in the blob, which means they may not be loaded initially, and not accessible
-    ///     to in-memory queries. This is more efficient to store, and is required for larger values.
+    ///     Optionally, attributes may be stored as extended attributes, which means they may not be loaded initially, and not
+    ///     initially accessible to in-memory queries. On the backend, these may be stored independently, such as in an XML,
+    ///     which may be more efficient to store. This is required for larger values, as indexed attributes are limited to 255
+    ///     characters.
     ///   </para>
     ///   <para>
     ///     Attributes that are needed to provide indexes, sitemaps, navigation, etc. should be indexed so that they're always
     ///     available in memory without requiring an additional database query. These increase the memory requirements of the
     ///     application, but reduce the number of database round-trips required for topics that are accessed outside of a single
     ///     page. For instance, the title and description of a topic may be cross-referenced on other pages or as part of the
-    ///     navigation, and should thus be indexed.
+    ///     navigation, and should thus be indexed. Indexed attributes are those not stored as extended attributes.
+    ///   </para>
+    ///   <para>
+    ///     This property and its corresponding attribute was named <c>StoreInBlob</c> in versions of OnTopic prior to 4.0.
     ///   </para>
     /// </remarks>
     [AttributeSetter]
-    public bool StoreInBlob {
-      get => Attributes.GetBoolean("StoreInBlob", true);
-      set => SetAttributeValue("StoreInBlob", value ? "1" : "0");
+    public bool IsExtendedAttribute {
+      get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob", false));
+      set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
     }
 
   } //Class

@@ -138,7 +138,7 @@ namespace Ignia.Topics.Tests {
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
       target.IsRequired         = true;
-      target.StoreInBlob        = false;
+      target.IsExtendedAttribute        = false;
       target.Description        = "Original Description";
 
       target                    = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
@@ -148,7 +148,7 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual<string>("Test", target.Title); //Should inherit from "Key" since it will be null
       Assert.AreEqual<string>("World", target.DefaultValue);
       Assert.AreEqual<bool>(false, target.IsRequired);
-      Assert.AreEqual<bool>(false, target.StoreInBlob);
+      Assert.AreEqual<bool>(false, target.IsExtendedAttribute);
       Assert.AreEqual<string>("Original Description", target.Description);
 
     }

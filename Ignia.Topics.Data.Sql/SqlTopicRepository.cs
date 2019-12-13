@@ -146,18 +146,18 @@ namespace Ignia.Topics.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: SET BLOB ATTRIBUTES
+    | METHOD: SET EXTENDED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds attributes retrieved from an individual blob record to their associated topic.
+    ///   Adds attributes retrieved from an individual XML record to their associated topic.
     /// </summary>
     /// <remarks>
-    ///   Values of arbitrary length are stored in an XML blob. This makes them more efficient to store, but more difficult to
-    ///   query; as such, it's ideal for content-oriented data. The blob values are returned as a separate data set.
+    ///   Values of arbitrary length are stored in an XML entry. This makes them more efficient to store, but more difficult to
+    ///   query; as such, it's ideal for content-oriented data. The XML values are returned as a separate data set.
     /// </remarks>
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetBlobAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetExtendedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -176,7 +176,7 @@ namespace Ignia.Topics.Data.Sql {
       Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Load blob into XmlDocument
+      | Load SQL XML into XmlDocument
       \-----------------------------------------------------------------------------------------------------------------------*/
       var xmlData               = reader.GetSqlXml(1);
       var xmlReader             = xmlData.CreateReader();
@@ -490,16 +490,16 @@ namespace Ignia.Topics.Data.Sql {
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Read blob
+        | Read extended attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetBlobAttributes() [" + DateTime.Now + "]");
+        Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
 
-        // Move to blob dataset
+        // Move to extened attributes dataset
         reader.NextResult();
 
-        // Loop through each blob, each record associated with a specific record
+        // Loop through each extended attribute record associated with a specific topic
         while (reader.Read()) {
-          SetBlobAttributes(reader, topics);
+          SetExtendedAttributes(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -638,15 +638,15 @@ namespace Ignia.Topics.Data.Sql {
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Read blob
+        | Read extended attributes
         \---------------------------------------------------------------------------------------------------------------------*/
 
-        // Move to blob dataset
+        // Move to extended attributes dataset
         reader.NextResult();
 
-        // Loop through each blob, each record associated with a specific record
+        // Loop through each extended attribute set, each record associated with a specific record
         while (reader.Read()) {
-          SetBlobAttributes(reader, topics);
+          SetExtendedAttributes(reader, topics);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -754,7 +754,7 @@ namespace Ignia.Topics.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var blob                  = new StringBuilder();
+      var extendedAttributes    = new StringBuilder();
       var attributes            = new DataTable();
 
       attributes.Columns.Add(
@@ -773,12 +773,12 @@ namespace Ignia.Topics.Data.Sql {
         "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
       );
 
-      blob.Append("<attributes>");
+      extendedAttributes.Append("<attributes>");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through the attributes, adding the names and values to the string builder
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // Process attributes not stored in the Blob
+      // Process attributes not stored in the extended attributes
       foreach (var attributeValue in topic.Attributes) {
 
         var key = attributeValue.Key;
@@ -788,15 +788,15 @@ namespace Ignia.Topics.Data.Sql {
           attribute = contentType.AttributeDescriptors[key];
         }
 
-        // For attributes not stored in the Blob, only add the AttributeValue item to store if it has changed
-        if (attribute != null && !attribute.StoreInBlob && attributeValue.IsDirty) {
+        // For attributes not stored in the extended attributes, only add the AttributeValue item to store if it has changed
+        if (attribute != null && !attribute.IsExtendedAttribute && attributeValue.IsDirty) {
           var record = attributes.NewRow();
           record["AttributeKey"] = key;
           record["AttributeValue"] = attributeValue.Value;
           attributes.Rows.Add(record);
         }
-        else if (attribute != null && attribute.StoreInBlob) {
-          blob.Append("<attribute key=\"" + key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>");
+        else if (attribute != null && attribute.IsExtendedAttribute) {
+          extendedAttributes.Append("<attribute key=\"" + key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>");
         }
 
         // Reset IsDirty (changed) state
@@ -804,7 +804,7 @@ namespace Ignia.Topics.Data.Sql {
 
       }
 
-      blob.Append("</attributes>");
+      extendedAttributes.Append("</attributes>");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
@@ -816,7 +816,7 @@ namespace Ignia.Topics.Data.Sql {
         var isPrimaryAttribute  = (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID");
         var isRelationships     = (attribute.EditorType == "Relationships.ascx");
         var isNestedTopic       = (attribute.EditorType == "TopicList.ascx");
-        var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.StoreInBlob && !isRelationships && !isNestedTopic && topic.Id != -1);
+        var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.IsExtendedAttribute && !isRelationships && !isNestedTopic && topic.Id != -1);
 
         if (conditionsMet) {
           var record = attributes.NewRow();
@@ -899,8 +899,8 @@ namespace Ignia.Topics.Data.Sql {
         }
         AddSqlParameter(
           command,
-          "Blob",
-          blob.ToString(),
+          "ExtendedAttributes",
+          extendedAttributes.ToString(),
           SqlDbType.Xml
         );
         AddSqlParameter(
@@ -1128,19 +1128,19 @@ namespace Ignia.Topics.Data.Sql {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
-    ///   appending to the attribute 'blob' unless <c>skipBlob == true</c>.
+    ///   appending to the extended attributes unless <c>skipXml == true</c>.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    /// <param name="skipBlob">
-    ///   Boolean indicator noting whether attributes saved in the blob should be skipped as part of the operation.
+    /// <param name="skipXml">
+    ///   Boolean indicator noting whether attributes saved in the XML should be skipped as part of the operation.
     /// </param>
     /// <returns>
-    ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> blob content, or a blank string if
-    ///   <c>skipBlob == true</c>.
+    ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> XML content, or a blank string if
+    ///   <c>skipXml == true</c>.
     /// </returns>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
-    private static string PersistRelations(Topic topic, SqlConnection connection, bool skipBlob) {
+    private static string PersistRelations(Topic topic, SqlConnection connection, bool skipXml) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -1215,23 +1215,23 @@ namespace Ignia.Topics.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return the relationship attributes to append to the XML blob (unless skipBlob is set to true)
+      | Return the relationship attributes to append to the XML attributes (unless skipXml is set to true)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (skipBlob) return "";
-      else return CreateRelationshipsBlob(topic);
+      if (skipXml) return "";
+      else return CreateRelationshipsXml(topic);
 
     }
 
     /*==========================================================================================================================
-    | METHOD: CREATE RELATIONSHIPS BLOB
+    | METHOD: CREATE RELATIONSHIPS XML
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal helper function to build string of related XML nodes for each scope of related items in model.
     /// </summary>
     /// <param name="topic">The topic object for which to create the relationships.</param>
-    /// <returns>The blob string.</returns>
+    /// <returns>The XML string.</returns>
     /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
-    private static string CreateRelationshipsBlob(Topic topic) {
+    private static string CreateRelationshipsXml(Topic topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -1239,18 +1239,18 @@ namespace Ignia.Topics.Data.Sql {
       Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Create blob string container
+      | Create XML string container
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var blob = new StringBuilder("");
+      var attributesXml = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in topic.Relationships.Keys) {
         var scope = topic.Relationships.GetTopics(key);
-        blob.Append("<related scope=\"");
-        blob.Append(key);
-        blob.Append("\">");
+        attributesXml.Append("<related scope=\"");
+        attributesXml.Append(key);
+        attributesXml.Append("\">");
 
         // Build out string array of related items in this scope
         var targetIds = new string[scope.Count()];
@@ -1259,11 +1259,11 @@ namespace Ignia.Topics.Data.Sql {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
           count++;
         }
-        blob.Append(String.Join(",", targetIds));
-        blob.Append("</related>");
+        attributesXml.Append(String.Join(",", targetIds));
+        attributesXml.Append("</related>");
       }
 
-      return blob.ToString();
+      return attributesXml.ToString();
     }
 
     /*==========================================================================================================================

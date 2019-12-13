@@ -79,23 +79,23 @@ FROM	TopicAttributes
 WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT BLOB
+-- SELECT EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	TopicBlob
+;WITH	TopicExtendedAttributes
 AS (
   SELECT	TopicID,
-	Blob,
+	AttributesXml,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
 	)
-  FROM	Blobs
+  FROM	ExtendedAttributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
 )
 SELECT	TopicID,
-	Blob
-FROM	TopicBlob
+	AttributesXml
+FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
