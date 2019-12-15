@@ -6,28 +6,28 @@
 using System;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Collections;
-using Target = Ignia.Topics;
+using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics.Querying {
 
   /*============================================================================================================================
-  | CLASS: TOPIC
+  | CLASS: TOPIC (EXTENSIONS)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides extensions for querying <see cref="Ignia.Topics.Topic"/>.
   /// </summary>
-  public static class Topic {
+  public static class TopicExtensions {
 
     /*==========================================================================================================================
     | METHOD: FIND FIRST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Finds the first instance of a <see cref="Target.Topic"/> in the topic tree that satisfies the delegate.
+    ///   Finds the first instance of a <see cref="Topic"/> in the topic tree that satisfies the delegate.
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>The first instance of the topic to be satisfied.</returns>
-    public static Target.Topic? FindFirst(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+    public static Topic? FindFirst(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -68,7 +68,7 @@ namespace Ignia.Topics.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
-    public static ReadOnlyTopicCollection<Target.Topic> FindAll(this Target.Topic topic, Func<Target.Topic, bool> predicate) {
+    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -122,7 +122,7 @@ namespace Ignia.Topics.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static ReadOnlyTopicCollection<Target.Topic> FindAllByAttribute(this Target.Topic topic, string name, string value) {
+    public static ReadOnlyTopicCollection<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
