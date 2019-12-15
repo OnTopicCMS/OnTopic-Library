@@ -9,7 +9,7 @@ using Ignia.Topics.Metadata;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Attributes {
 
   /*============================================================================================================================
   | CLASS: ATTRIBUTE VALUE

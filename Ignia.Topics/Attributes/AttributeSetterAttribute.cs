@@ -6,7 +6,7 @@
 using System;
 using Ignia.Topics.Collections;
 
-namespace Ignia.Topics {
+namespace Ignia.Topics.Attributes {
 
   /*============================================================================================================================
   | CLASS: ATTRIBUTE SETTER [ATTRIBUTE]

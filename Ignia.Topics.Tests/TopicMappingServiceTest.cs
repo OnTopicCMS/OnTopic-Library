@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Ignia.Topics.Attributes;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;

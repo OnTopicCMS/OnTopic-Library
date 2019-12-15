@@ -17,6 +17,7 @@ using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
 using Ignia.Topics.Repositories;
 using System.ComponentModel;
+using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics.Mapping {
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using Ignia.Topics.Attributes;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Metadata;

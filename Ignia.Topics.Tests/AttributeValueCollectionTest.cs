@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Reflection;
+using Ignia.Topics.Attributes;
 using Ignia.Topics.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

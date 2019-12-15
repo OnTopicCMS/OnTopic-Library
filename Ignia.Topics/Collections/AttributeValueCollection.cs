@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using Ignia.Topics.Attributes;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Repositories;
