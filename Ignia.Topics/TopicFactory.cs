@@ -6,6 +6,7 @@
 using System;
 using Ignia.Topics.Internal.Diagnostics;
 using System.Text.RegularExpressions;
+using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics {
 
