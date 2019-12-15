@@ -51,7 +51,11 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     | PROPERTY: EDITOR TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override string EditorType => GetType().Name.Replace("Attribute", "");
+    #if NETSTANDARD2_0
+      public override string EditorType => GetType().Name.Replace("Attribute", "");
+    #else
+      public override string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.InvariantCultureIgnoreCase);
+    #endif
 
   } //Class
 } //Namespace
