@@ -59,6 +59,5 @@
     <Folder Include="Internal\Collections\" />
     <Folder Include="Internal\Mapping\" />
     <Folder Include="Internal\Reflection\" />
-    <Folder Include="Attributes\" />
   </ItemGroup>
 </Project>

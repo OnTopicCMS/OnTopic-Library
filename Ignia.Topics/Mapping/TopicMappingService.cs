@@ -17,6 +17,7 @@ using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
 using System.Diagnostics.CodeAnalysis;
+using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics.Mapping {
 

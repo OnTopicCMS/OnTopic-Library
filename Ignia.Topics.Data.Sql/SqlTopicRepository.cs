@@ -17,6 +17,7 @@ using System.Net;
 using System.Xml;
 using Ignia.Topics.Repositories;
 using System.Diagnostics.CodeAnalysis;
+using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics.Data.Sql {
 
