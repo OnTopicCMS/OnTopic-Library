@@ -21,7 +21,7 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class TextAreaAttribute : AttributeDescriptor {
+  public class TextAreaAttribute : AttributeTypeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -39,6 +39,12 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
       id
     ) {
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: IS EXTENDED ATTRIBUTE?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override bool IsExtendedAttribute => true;
 
   } //Class
 } //Namespace

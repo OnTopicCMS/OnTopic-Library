@@ -40,5 +40,12 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     ) {
     }
 
+    /*==========================================================================================================================
+    | PROPERTY: MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override ModelType ModelType =>
+      Attributes.GetBoolean("SaveAsRelationship", false)? ModelType.Relationship : ModelType.ScalarValue;
+
   } //Class
 } //Namespace

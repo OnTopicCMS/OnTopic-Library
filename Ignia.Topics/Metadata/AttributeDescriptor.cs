@@ -96,7 +96,7 @@ namespace Ignia.Topics.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public ModelType ModelType {
+    public virtual ModelType ModelType {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -152,10 +152,10 @@ namespace Ignia.Topics.Metadata {
     ///   Gets or sets the filename reference to the Attribute Type control associate with the Topic object.
     /// </summary>
     /// <remarks>
-    ///   The type attribute maps to the name of a control, directive, or partial view in the editor representing the specific
-    ///   type of attribute. For instance, a value of "Checkbox" might map to a file "Checkbox.ascx" which displays an
-    ///   attribute's value as a standard HTML checkbox. There is no validation of the type at the library level; it is up to
-    ///   the editor to provide a match and, if not found, display an error.
+    ///   The type attribute maps to the name of a control or view component in the editor representing the specific type of
+    ///   attribute. For instance, a value of "Boolean" might map to a <c>BooleanViewComponent</c> which displays an attribute's
+    ///   value as a standard HTML checkbox. There is no validation of the type at the library level; it is up to the editor to
+    ///   provide a match and, if not found, display an error.
     /// </remarks>
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
@@ -164,7 +164,7 @@ namespace Ignia.Topics.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public string? EditorType {
+    public virtual string? EditorType {
       get => Attributes.GetValue("Type", "");
       set {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
@@ -316,7 +316,7 @@ namespace Ignia.Topics.Metadata {
     ///   </para>
     /// </remarks>
     [AttributeSetter]
-    public bool IsExtendedAttribute {
+    public virtual bool IsExtendedAttribute {
       get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob", false));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
     }

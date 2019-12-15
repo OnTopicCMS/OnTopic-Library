@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 
-namespace Ignia.Topics.Metadata {
+namespace Ignia.Topics.Metadata.AttributeTypes {
 
   /*============================================================================================================================
   | CLASS: TOPIC REFERENCE ATTRIBUTE (DESCRIPTOR)
@@ -21,7 +21,7 @@ namespace Ignia.Topics.Metadata {
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class TopicReferenceAttribute : AttributeDescriptor {
+  public class TopicReferenceAttribute : AttributeTypeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -39,6 +39,12 @@ namespace Ignia.Topics.Metadata {
       id
     ) {
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override ModelType ModelType => ModelType.Reference;
 
   } //Class
 } //Namespace

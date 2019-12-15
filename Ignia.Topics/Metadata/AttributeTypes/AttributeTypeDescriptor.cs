@@ -11,23 +11,24 @@ using System.Linq;
 namespace Ignia.Topics.Metadata.AttributeTypes {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP ATTRIBUTE (DESCRIPTOR)
+  | CLASS: ATTRIBUTE TYPE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a relationship attribute type, including information on how it will be presented and
-  ///   validated in the editor.
+  ///   Provides a base class for attribute type classes.
   /// </summary>
   /// <remarks>
-  ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
-  ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
+  ///   In the OnTopic Editor, every attribute is assigned a type, which represents how the data should be presented in the
+  ///   editor, what constraints those data have, and how those data should be stored in the data source. In Version 4.0.0 and
+  ///   above, these attribute types are described by their own <see cref="ContentTypeDescriptor"/>s, which offer a strongly
+  ///   typed representation of those properties. This class provides a base for those representations.
   /// </remarks>
-  public class RelationshipAttribute : QueryableTopicListAttribute {
+  public abstract class AttributeTypeDescriptor : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public RelationshipAttribute(
+    public AttributeTypeDescriptor(
       string key,
       string contentType,
       Topic parent,
@@ -44,7 +45,13 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     | PROPERTY: MODEL TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override ModelType ModelType => ModelType.Relationship;
+    public override ModelType ModelType => ModelType.ScalarValue;
+
+    /*==========================================================================================================================
+    | PROPERTY: EDITOR TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override string EditorType => this.GetType().Name.Replace("Attribute", "");
 
   } //Class
 } //Namespace
