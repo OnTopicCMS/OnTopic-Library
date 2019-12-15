@@ -183,7 +183,6 @@ namespace Ignia.Topics.Tests {
 
     }
 
-
     /*==========================================================================================================================
     | TEST: ALTERNATE ATTRIBUTE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -242,7 +241,6 @@ namespace Ignia.Topics.Tests {
       Assert.IsFalse(target.PermittedContentTypes.Contains(contentTypes[3]));
 
     }
-
 
     /*==========================================================================================================================
     | TEST: MAP NESTED TOPICS
@@ -536,7 +534,6 @@ namespace Ignia.Topics.Tests {
       Assert.IsNull(target.Attributes.GetValue("UnmappedAttribute", null));
 
     }
-
 
   } //Class
 } //Namespace

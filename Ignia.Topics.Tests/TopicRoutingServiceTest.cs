@@ -116,6 +116,5 @@ namespace Ignia.Topics.Tests {
 
     }
 
-
   } //Class
 } //Namespace
