@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 using Ignia.Topics.Internal.Diagnostics;
 
-#if NETFRAMEWORK
+#if NETSTANDARD2_0
 
 namespace System.Diagnostics.CodeAnalysis {
 
