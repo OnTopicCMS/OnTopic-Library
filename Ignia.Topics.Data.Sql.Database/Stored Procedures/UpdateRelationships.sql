@@ -20,7 +20,7 @@ DECLARE	@Existing_TopicIDs	TopicList
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
 INTO	@Existing_TopicIDs (
-	  TopicID
+	  TopicId
 	)
 SELECT	Target_TopicID
 FROM	Relationships
