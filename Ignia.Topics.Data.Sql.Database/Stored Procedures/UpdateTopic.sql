@@ -37,9 +37,18 @@ WHERE	AttributeKey		!= 'ParentId'
   AND	IsNull(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
--- ADD EXTENDED ATTRIBUTES (XML)
+-- PULL PREVIOUS EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-IF @ExtendedAttributes is not null
+DECLARE	@PreviousExtendedAttributes	XML
+
+SELECT	@PreviousExtendedAttributes	= AttributesXml
+FROM	ExtendedAttributeIndex
+WHERE	TopicID		= @TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ADD EXTENDED ATTRIBUTES, IF CHANGED
+--------------------------------------------------------------------------------------------------------------------------------
+IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
   BEGIN
     INSERT
     INTO	ExtendedAttributes (
