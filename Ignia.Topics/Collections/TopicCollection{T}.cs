@@ -19,32 +19,18 @@ namespace Ignia.Topics.Collections {
   public class TopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    Topic?                          _parent                         = null;
-
-    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/> class with a parent <see cref="Topic"/>.
+    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/> class.
     /// </summary>
-    /// <param name="parent">A reference to the parent <see cref="Topic"/>.</param>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(Topic? parent, IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      _parent = parent;
+    public TopicCollection(IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       if (topics != null) {
         foreach (var topic in topics) {
           Add(topic);
         }
       }
-    }
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>; assumes no parent.
-    /// </summary>
-    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<T>? topics = null) : this(null, topics) {
     }
 
     /*==========================================================================================================================

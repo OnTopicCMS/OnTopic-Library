@@ -21,7 +21,7 @@ namespace Ignia.Topics.Metadata {
     /// <summary>
     ///   Initializes a new instance of the <see cref="AttributeDescriptorCollection"/> class.
     /// </summary>
-    public AttributeDescriptorCollection() : base(null, null) {
+    public AttributeDescriptorCollection() : base(null) {
     }
 
   } //Class

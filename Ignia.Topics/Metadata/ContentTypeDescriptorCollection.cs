@@ -21,7 +21,7 @@ namespace Ignia.Topics.Metadata {
     /// <summary>
     ///   Initializes a new instance of the <see cref="ContentTypeDescriptorCollection"/> class.
     /// </summary>
-    public ContentTypeDescriptorCollection() : base(null, null) {
+    public ContentTypeDescriptorCollection() : base(null) {
     }
 
   } //Class

@@ -60,7 +60,7 @@ namespace Ignia.Topics {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Children                  = new TopicCollection(this);
+      Children                  = new TopicCollection();
       Attributes                = new AttributeValueCollection(this);
       IncomingRelationships     = new RelatedTopicCollection(this, true);
       Relationships             = new RelatedTopicCollection(this, false);
