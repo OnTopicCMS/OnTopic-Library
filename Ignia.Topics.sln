@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ignia.Topics.AspNetCore.Mvc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ignia.Topics.AspNetCore.Mvc.Host", "Ignia.Topics.AspNetCore.Mvc.Host\Ignia.Topics.AspNetCore.Mvc.Host.csproj", "{2A9B757D-1BB4-4BB2-B1E0-CC58C71DE51C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.Web.Mvc.Tests", "Ignia.Topics.Web.Mvc.Tests\Ignia.Topics.Web.Mvc.Tests.csproj", "{2AC4B63B-16D3-4398-BAEB-E9EF3A7636A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ignia.Topics.TestFixtures", "Ignia.Topics.TestFixtures\Ignia.Topics.TestFixtures.csproj", "{8C07AC2C-EACF-4AB4-A91B-415804B2ED2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{2A9B757D-1BB4-4BB2-B1E0-CC58C71DE51C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A9B757D-1BB4-4BB2-B1E0-CC58C71DE51C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A9B757D-1BB4-4BB2-B1E0-CC58C71DE51C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC4B63B-16D3-4398-BAEB-E9EF3A7636A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC4B63B-16D3-4398-BAEB-E9EF3A7636A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC4B63B-16D3-4398-BAEB-E9EF3A7636A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC4B63B-16D3-4398-BAEB-E9EF3A7636A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C07AC2C-EACF-4AB4-A91B-415804B2ED2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C07AC2C-EACF-4AB4-A91B-415804B2ED2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C07AC2C-EACF-4AB4-A91B-415804B2ED2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C07AC2C-EACF-4AB4-A91B-415804B2ED2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

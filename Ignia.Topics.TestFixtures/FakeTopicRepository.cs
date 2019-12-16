@@ -28,8 +28,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    int                         _identity                       = 1;
-    Topic?                      _cache                          = null;
+    private                     int                             _identity                       = 1;
+    private readonly            Topic                           _cache                          ;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -39,7 +39,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// </summary>
     /// <returns>A new instance of the FakeTopicRepository.</returns>
     public FakeTopicRepository() : base() {
-      CreateFakeData();
+      _cache = CreateFakeData();
+      Contract.Assume(_cache);
     }
 
     /*==========================================================================================================================
@@ -65,7 +66,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrWhiteSpace(topicKey)) {
+      if (topicKey != null && topicKey.Length > 0) {
         topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
         return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.InvariantCultureIgnoreCase));
       }
@@ -223,7 +224,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     /// <summary>
     ///   Creates a collection of fake data that loosely mimics a bare bones database.
     /// </summary>
-    private void CreateFakeData() {
+    private Topic CreateFakeData() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish root
@@ -309,7 +310,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _cache = rootTopic;
+      return rootTopic;
 
     }
 

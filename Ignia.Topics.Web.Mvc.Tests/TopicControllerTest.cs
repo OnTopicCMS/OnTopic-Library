@@ -73,7 +73,7 @@ namespace Ignia.Topics.Tests {
     public async Task TopicController_IndexAsync() {
 
       var topicRoutingService   = new MvcTopicRoutingService(_topicRepository, _uri, _routeData);
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
       var controller            = new TopicController(_topicRepository, topicRoutingService, mappingService);
       var result                = await controller.IndexAsync(_topic.GetWebPath()).ConfigureAwait(false) as TopicViewResult;
@@ -228,7 +228,7 @@ namespace Ignia.Topics.Tests {
         _topicRepository,
         new TopicMappingService(
           _topicRepository,
-          new FakeViewModelLookupService()
+          new TopicViewModelLookupService()
         )
       );
 

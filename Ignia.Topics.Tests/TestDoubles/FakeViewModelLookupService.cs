@@ -17,7 +17,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
   /// <remarks>
   ///   Allows testing of services that depend on <see cref="ITypeLookupService"/> without using expensive reflection.
   /// </remarks>
-  internal class FakeViewModelLookupService: TopicViewModelLookupService {
+  public class FakeViewModelLookupService: TopicViewModelLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -26,7 +26,7 @@ namespace Ignia.Topics.Tests.TestDoubles {
     ///   Instantiates a new instance of the <see cref="FakeViewModelLookupService"/>.
     /// </summary>
     /// <returns>A new instance of the <see cref="FakeViewModelLookupService"/>.</returns>
-    internal FakeViewModelLookupService(): base(null, typeof(object)) {
+    public FakeViewModelLookupService(): base(null, typeof(object)) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
