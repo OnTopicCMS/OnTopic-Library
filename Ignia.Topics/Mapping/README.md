@@ -11,6 +11,7 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
     - [Parent](#parent)
   - [Example](#example)
 - [Attributes](#attributes)
+  - [ReverseTopicMappingService](#reversetopicmappingservice)
   - [Example](#example-1)
 - [Polymorphism](#polymorphism)
   - [Filtering](#filtering)
@@ -18,9 +19,15 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
 - [Caching](#caching)
   - [Internal Caching](#internal-caching)
   - [`CachedTopicMappingService`](#cachedtopicmappingservice)
+    - [Limitations](#limitations)
 - [`HierarchicalTopicMappingService`](#hierarchicaltopicmappingservice)
   - [`CachedHierarchicalTopicMappingService`](#cachedhierarchicaltopicmappingservice)
   - [Example](#example-2)
+- [`ReverseTopicMappingService`](#reversetopicmappingservice-2)
+  - [Model Validation](#model-validation)
+  - [`ITopicRepository` Integration](#itopicrepository-integration)
+  - [Mapping Hierarchies](#mapping-hierarchies)
+  - [Complex Models](#complex-models)
 
 ## `TopicMappingService`
 The [`TopicMappingService`](TopicMappingService.cs) provides a concrete implementation that is expected to satisfy the requirements of most consumers. This supports the following conventions.
@@ -104,6 +111,10 @@ To support the mapping, a variety of `Attribute` classes are provided for decora
 - **`[Relationship(key, type)]`**: For a collection, optionally specifies the name of the key to look for, instead of the property name, and the relationship type, in case the key name is ambiguous.
 - **`[Follow(relationships)]`**: Instructs the code to populate the specified relationships on any view models within a collection.
 - **`[Flatten]`**: Includes all descendants for every item in the collection. If the collection enforces uniqueness, duplicates will be removed.
+
+### `ReverseTopicMappingService`
+- **`[DisableMapping]`**: Prevents the `ReverseTopicMappingService` from attempting to map the property back to the target `Topic`.
+- **`[MapToParent]`**: Allows the `ReverseTopicMappingService` to map a complex property type back to a `Topic`.
 
 ### Example
 The following is an example of a data transfer object that implements the above attributes:
@@ -230,3 +241,32 @@ In this code example, the following arguments are used:
 1. **`Topic sourceTopic`:** The `GetHierarchicalRoot()` helper function is used to find a root that is at the second tier of the topic graph (right below the database root), but within the path of the current topic. So, for instance, if the current topic is at `Root:Customers:Support:Email`, then the `GetHierarchicalRoot()` would return `Root:Customers`.
 2. **`int tiers = 1`:** The number of tiers is set to 2. So in the above example, `Root:Customers:Support:Email` would be included (since `Email` is two tiers from the hierarchical root), but e.g. `Root:Customers:Support:Email:Priority` wouldn't be. '
 3. **`Func<Topic, bool> validationDelegate = null`:** The validation delegate will reject any topics of the type `PageGroup`. Typically, pages of type `PageGroup` have their own internal navigation, which shouldn't be duplicated in the primary navigation of the site.
+
+## `ReverseTopicMappingService`
+The [`IReverseTopicMappingService`](IReverseTopicMappingService.cs) and its concrete implementation, [`ReverseTopicMappingService`](ReverseTopicMappingService.cs), provide handling for mapping data transfer objects (and typing binding models) _back_ to topics. Generally, it follows similar conventions as the `ITopicMappingService` and honors most of the same attribute hints, albeit with some important restrictions and limitations outlined below.
+
+### Interfaces
+Unlike the `TopicMappingService`, the `ReverseTopicMappingService` will not map any plain-old C# object (POCO); binding models must implement the `ITopicBindingModel` interface, which requires a `Key` and `ContentType` property; without these, it can't create a new `Topic` instance. For relationships, it expects implementation of the `IReverseTopicMappingService`, which has a single `UniqueKey` property.
+
+### Model Validation
+The `ReverseTopicMappingService` is deliberately more conservative than the `TopicMappingService` since assumptions in mapping won't just impact a view, but will be committed to the database.  As a result, all properties are validated against the corresponding `ContentTypeDescriptor`'s `AttributeDescriptors` collection. If a property cannot be mapped back to an attribute, an `InvalidOperationException` is thrown.
+
+> _Important:_ If a binding model contains properties that are not intended to be mapped, they must explicitly be excluded from mapping using the `[DisableMapping]` attribute.
+
+### `ITopicRepository` Integration
+While the `ReverseTopicMappingService` maintains a dependency on the `ITopicRepository`, it makes no effort to look up and map to an existing topic. If an existing `Topic` is passed in, it will map to it. Otherwise, it will always return a new `Topic`. It is up to the controller to set the parent topic, if appropriate, and call `ITopicRepository.Save()`. This allows more flexibility, and avoids potential security issues, by allowing the caller to explicitly control what topics are modified based on its own business logic.
+
+### Mapping Hierarchies
+Because the `ReverseTopicMappingService` doesn't map directly to the `ITopicRepository`, it makes no effort to crawl a hierarchy of binding models. If this is needed, the calling code can iterate over the hierarchy, determining how best to handle e.g. new v. existing topics. That said, this is generally not expected to be needed, since form pages will usually only model a single topic.
+
+### Complex Models
+The `ReverseTopicMappingService` allows complex models with nested objects to be mapped to a single `Topic` by using the `[MapToParent]` attribute. By default, any properties on a complex property will be prefixed with the property name. This prefix can be modified—or even removed—by passing an `AttributePrefix` argument to `[MapToParent]`. For example:
+```
+public class ContentBindingModel: ITopicBindingModel {
+  public string Key { get; set; }
+  public string ContentType { get; set; }
+  [MapToParent(AttributePrefix="Billing")]
+  public AddressBindingModel BillingContact { get; set; }
+}
+```
+In this case, a `City` property on the `AddressBindingModel` would attempt to bind to a `BillingCity` attribute on the target `Topic`. If the `[MapToParent]` attribute is not present, then properties with complex types are ignored.
