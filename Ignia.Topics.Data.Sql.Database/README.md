@@ -41,4 +41,3 @@ The majority of the views provide records corresponding to the latest version of
 User-defined table valued types are used to relay arrays of information to (and between) the stored procedures. These can be mimicked in C# using e.g. a `DataTable`. These include:
 - **[`AttributeValues`](Types/AttributeValues.sql)**: Defines a table with an `AttributeKey` `Varchar(128)` and `AttributeValue` `Varchar(255)` columns.
 - **[`TopicList`](Types/TopicList.sql)**: Defines a table with a single `TopicId` `Int` column for passing lists of topics.
-- 

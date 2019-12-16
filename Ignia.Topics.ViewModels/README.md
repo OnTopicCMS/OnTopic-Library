@@ -20,16 +20,15 @@ The `Ignia.Topics.ViewModels` assembly includes default implementations of basic
 - [`TopicViewModelCollection<>`](TopicViewModelCollection.cs)
 
 ## Usage
-By default, the [`Ignia.Topics.Web.Mvc`](../Ignia.Topics.Web.Mvc)'s [`TopicController`](../Ignia.Topics.Web.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../Ignia.Topics/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
+By default, the [`Ignia.Topics.AspNetCore.Mvc`](../Ignia.Topics.AspNetCore.Mvc)'s [`TopicController`](../Ignia.Topics.AspNetCore.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../Ignia.Topics/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
 
 ### `DynamicTopicViewModelLookupService`
 For applications with a large number of view models, it may be preferable to use the `DynamicTopicViewModelLookupService`, which will attempt to map topics to view models based on the naming convention `{ContentType}TopicViewModel`, from any assembly or namespace. If the `Ignia.Topics.ViewModels.dll` is in an application's `/bin` directory then these view models will be available to the lookup service and, thus, the mapping service. If any classes with the same name are available in _any other assembly or namespace_ then they will override the `ViewModels`  from this assembly. That allows these classes to be treated as default fallbacks.
 
 > *Note:* If a base class is overwritten then topics that derive from the original version will continue to do so unless they are _also_ overwritten. For example, if a `Theme` property is added to a customer-specific `PageTopicViewModel`, the `Theme` property won't be available on e.g. `SlideShowTopicViewModel` unless it is _also_ overwritten by the customer to inherit from their `PageTopicViewModel`.
 
-
 ## Design Considerations
-As view models, not all attributes and relationships are exposed by the view models. The properties chosen are optimized around values that are expected to be of common interest to most views.
+As view models, not all attributes and relationships are exposed. The properties chosen are optimized around values that are expected to be of common interest to most views.
 
 ### Default Constructor
 All of the view models assume a default constructor (e.g., `new TopicViewModel()`). This is necessary to provide compatibility with the `TopicMappingService` which will attempt to create new instances of view models based on the default constructor.
