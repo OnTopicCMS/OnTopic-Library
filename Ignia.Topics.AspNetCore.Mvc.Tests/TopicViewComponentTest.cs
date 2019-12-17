@@ -39,7 +39,6 @@ namespace Ignia.Topics.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    RouteData                       _routeData                      = new RouteData();
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _topicMappingService;
     readonly                    Topic                           _topic;
