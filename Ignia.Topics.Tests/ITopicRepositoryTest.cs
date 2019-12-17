@@ -9,7 +9,7 @@ using Ignia.Topics.Collections;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.TestFixtures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {

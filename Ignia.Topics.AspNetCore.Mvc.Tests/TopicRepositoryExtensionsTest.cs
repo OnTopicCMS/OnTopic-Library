@@ -6,7 +6,7 @@
 using System;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.TestFixtures;
 using Ignia.Topics.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Routing;

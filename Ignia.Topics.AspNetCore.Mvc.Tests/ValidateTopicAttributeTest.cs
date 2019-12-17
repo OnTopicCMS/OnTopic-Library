@@ -11,7 +11,6 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.AspNetCore.Mvc;
 using Ignia.Topics.AspNetCore.Mvc.Controllers;
@@ -25,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
+using Ignia.Topics.TestFixtures;
 
 namespace Ignia.Topics.Tests {
 

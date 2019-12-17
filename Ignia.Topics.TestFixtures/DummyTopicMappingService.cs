@@ -3,16 +3,16 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 #pragma warning disable IDE0060 // Remove unused parameter
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.TestFixtures {
 
   /*============================================================================================================================
   | DUMMY: TOPIC MAPPING SERVICE

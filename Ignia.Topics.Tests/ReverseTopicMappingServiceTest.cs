@@ -12,7 +12,7 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.TestFixtures;
 using Ignia.Topics.Tests.BindingModels;
 using Ignia.Topics.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

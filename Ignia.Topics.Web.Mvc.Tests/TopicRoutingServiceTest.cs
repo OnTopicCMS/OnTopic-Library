@@ -7,11 +7,10 @@ using System;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
-using Ignia.Topics.Web.Mvc;
+using Ignia.Topics.TestFixtures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Ignia.Topics.Tests {
+namespace Ignia.Topics.Web.Mvc.Tests {
 
   /*============================================================================================================================
   | CLASS: TOPIC ROUTING SERVICE TEST

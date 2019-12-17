@@ -6,7 +6,7 @@
 using Ignia.Topics.Repositories;
 using System;
 
-namespace Ignia.Topics.Tests.TestDoubles {
+namespace Ignia.Topics.TestFixtures {
 
   /*============================================================================================================================
   | DUMMY: TOPIC DATA REPOSITORY

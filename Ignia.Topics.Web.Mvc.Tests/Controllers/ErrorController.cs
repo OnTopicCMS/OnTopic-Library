@@ -6,7 +6,7 @@
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Controllers;
 
-namespace Ignia.Topics.Tests {
+namespace Ignia.Topics.Web.Mvc.Tests {
 
   /*============================================================================================================================
   | CLASS: ERROR CONTROLLER

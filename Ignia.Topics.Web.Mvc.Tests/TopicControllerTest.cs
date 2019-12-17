@@ -12,14 +12,14 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.TestFixtures;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc;
 using Ignia.Topics.Web.Mvc.Controllers;
 using Ignia.Topics.Web.Mvc.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Ignia.Topics.Tests {
+namespace Ignia.Topics.Web.Mvc.Tests {
 
   /*============================================================================================================================
   | CLASS: TOPIC CONTROLLER TEST
