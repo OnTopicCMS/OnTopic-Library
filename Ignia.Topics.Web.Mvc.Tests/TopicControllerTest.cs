@@ -241,7 +241,7 @@ namespace Ignia.Topics.Web.Mvc.Tests {
       Assert.IsNotNull(model);
       Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
       Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
-      Assert.AreEqual<int>(2, model.NavigationRoot.Children.Count());
+      Assert.AreEqual<int>(3, model.NavigationRoot.Children.Count());
       Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
 
     }
