@@ -70,7 +70,11 @@ namespace Ignia.Topics.Internal.Reflection {
     /// <param name="type">The type for which the members should be retrieved.</param>
     public MemberInfoCollection GetMembers(Type type) {
       if (!Contains(type)) {
-        Add(new MemberInfoCollection(type));
+        lock(Items) {
+          if (!Contains(type)) {
+            Add(new MemberInfoCollection(type));
+          }
+        }
       }
       return this[type];
     }
