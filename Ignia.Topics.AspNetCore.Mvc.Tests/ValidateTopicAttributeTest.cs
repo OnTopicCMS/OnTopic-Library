@@ -86,7 +86,7 @@ namespace Ignia.Topics.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    public TopicController GetTopicController(Topic? topic) =>
+    public TopicController GetTopicController(Topic topic) =>
       new TopicController(
           new DummyTopicRepository(),
           new DummyTopicMappingService()
@@ -104,7 +104,7 @@ namespace Ignia.Topics.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidController_Throws_Exception() {
+    public void InvalidController_Throws_Exception() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var controller            = new DummyController() {
@@ -127,7 +127,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [TestMethod]
-    public async Task NullTopic_Returns_NotFound() {
+    public void NullTopic_Returns_NotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var controller            = GetTopicController(null);
@@ -148,7 +148,7 @@ namespace Ignia.Topics.Tests {
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [TestMethod]
-    public async Task DisabledTopic_Returns_NotFound() {
+    public void DisabledTopic_Returns_NotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "Page");
@@ -173,7 +173,7 @@ namespace Ignia.Topics.Tests {
     ///   a <c>Url</c> attribute.
     /// </summary>
     [TestMethod]
-    public async Task TopicWithUrl_Returns_Redirect() {
+    public void TopicWithUrl_Returns_Redirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "Page");
@@ -198,7 +198,7 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
     [TestMethod]
-    public async Task NestedTopic_Returns_403() {
+    public void NestedTopic_Returns_403() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "List");
@@ -224,13 +224,14 @@ namespace Ignia.Topics.Tests {
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c>.
     /// </summary>
     [TestMethod]
-    public async Task PageGroupTopic_Returns_Redirect() {
+    public void PageGroupTopic_Returns_Redirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "PageGroup");
-      var childTopic            = TopicFactory.Create("Home", "Page", topic);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
+
+      TopicFactory.Create("Home", "Page", topic);
 
       validateFilter.OnActionExecuting(context);
 
@@ -239,7 +240,6 @@ namespace Ignia.Topics.Tests {
       Assert.AreEqual(typeof(RedirectResult), context.Result.GetType());
 
     }
-
 
   } //Class
 } //Namespace
