@@ -14,16 +14,17 @@ using Ignia.Topics.Repositories;
 namespace Ignia.Topics.Tests.TestDoubles {
 
   /*============================================================================================================================
-  | CLASS: FAKE TOPIC DATA REPOSITORY
+  | CLASS: STUB TOPIC DATA REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides data access to topics hard-coded in this fake implementation of a <see cref="ITopicRepository"/>.
+  ///   Provides data access to topics hard-coded in this stub implementation of a <see cref="ITopicRepository"/>.
   /// </summary>
   /// <remarks>
   ///   Allows testing of services that depend on <see cref="ITopicRepository"/> without maintaining a dependency on a live
-  ///   database, or working against actual data. This is faster and safer for test methods.
+  ///   database, or working against actual data. This is faster and safer for test methods since it doesn't maintain a
+  ///   dependency on a live database or persistent data.
   /// </remarks>
-  public class FakeTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class StubTopicRepository : TopicRepositoryBase, ITopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES
@@ -35,10 +36,10 @@ namespace Ignia.Topics.Tests.TestDoubles {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the FakeTopicRepository.
+    ///   Instantiates a new instance of the StubTopicRepository.
     /// </summary>
-    /// <returns>A new instance of the FakeTopicRepository.</returns>
-    public FakeTopicRepository() : base() {
+    /// <returns>A new instance of the StubTopicRepository.</returns>
+    public StubTopicRepository() : base() {
       _cache = CreateFakeData();
       Contract.Assume(_cache);
     }

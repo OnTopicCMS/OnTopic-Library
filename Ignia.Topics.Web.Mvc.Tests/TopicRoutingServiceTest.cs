@@ -34,13 +34,13 @@ namespace Ignia.Topics.Tests {
     ///   Initializes a new instance of the <see cref="TopicRoutingServiceTest"/> with shared resources.
     /// </summary>
     /// <remarks>
-    ///   This uses the <see cref="FakeTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
+    ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
     ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
     public TopicRoutingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new FakeTopicRepository());
+      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
     }
 
     /*==========================================================================================================================

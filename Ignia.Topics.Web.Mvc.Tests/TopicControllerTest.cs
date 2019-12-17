@@ -46,7 +46,7 @@ namespace Ignia.Topics.Tests {
     ///   Initializes a new instance of the <see cref="TopicControllerTest"/> with shared resources.
     /// </summary>
     /// <remarks>
-    ///   This uses the <see cref="FakeTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
+    ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
     ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph. In addition, it initializes a shared <see cref="Topic"/> reference to use for the various
@@ -57,7 +57,7 @@ namespace Ignia.Topics.Tests {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new FakeTopicRepository());
+      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
       _uri                      = new Uri("http://localhost/Web/Web_0/Web_0_1/Web_0_1_1");
       _topic                    = _topicRepository.Load("Root" + _uri.PathAndQuery.Replace("/", ":"))!;
 
