@@ -96,6 +96,31 @@ namespace Ignia.Topics.Tests {
       };
 
     /*==========================================================================================================================
+    | TEST: INVALID CONTROLLER THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a controller that doesn't derive from <see cref="TopicController"/> throws a <see
+    ///   cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task InvalidController_Throws_Exception() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var controller            = new DummyController() {
+        ControllerContext       = GetControllerContext()
+      };
+      var context               = GetActionExecutingContext(controller);
+
+      try {
+        validateFilter.OnActionExecuting(context);
+      }
+      finally {
+        controller.Dispose();
+      }
+
+    }
+    /*==========================================================================================================================
     | TEST: NULL TOPIC RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
