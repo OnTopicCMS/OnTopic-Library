@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
-  | CLASS: TOPIC TEST
+  | CLASS: TOPIC CONTROLLER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a default ASP.NET MVC Controller for any paths associated with the Ignia Topic Library. Responsible for
