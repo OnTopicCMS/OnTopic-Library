@@ -3,21 +3,14 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Ignia.Topics.Internal.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Ignia.Topics.Internal.Mapping;
-using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Mapping.Annotations;
-using Ignia.Topics.Repositories;
-using Ignia.Topics.Models;
+using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using Ignia.Topics.Attributes;
+using System.Threading.Tasks;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Ignia.Topics.Mapping {
 
@@ -47,10 +40,6 @@ namespace Ignia.Topics.Mapping {
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All)
       => throw new NotImplementedException();
 
-    /// <inheritdoc/>
-    private async Task<object?> MapAsync(Topic? topic, Relationships relationships, ConcurrentDictionary<int, object> cache)
-      => throw new NotImplementedException();
-
     /*==========================================================================================================================
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -67,3 +56,6 @@ namespace Ignia.Topics.Mapping {
 
   } //Class
 } //Namespace
+
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore IDE0060 // Remove unused parameter
