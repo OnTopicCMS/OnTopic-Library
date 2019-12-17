@@ -76,9 +76,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
         }
         return _currentTopic;
       }
-      set {
-        _currentTopic = value;
-      }
+      set => _currentTopic = value;
     }
 
     /*==========================================================================================================================
