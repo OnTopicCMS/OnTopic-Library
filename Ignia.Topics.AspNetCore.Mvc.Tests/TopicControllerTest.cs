@@ -73,7 +73,7 @@ namespace Ignia.Topics.Tests {
       routes.Values.Add("rootTopic", "Web");
       routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
 
-      var actionContext = new ActionContext {
+      var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
         RouteData               = routes,
         ActionDescriptor        = new ControllerActionDescriptor()
