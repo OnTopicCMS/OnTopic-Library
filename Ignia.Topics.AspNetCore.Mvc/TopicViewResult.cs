@@ -38,7 +38,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// </remarks>
     public TopicViewResult(
       ViewDataDictionary        viewData,
-      ITempDataDictionary       tempData,
+      ITempDataDictionary?      tempData,
       object                    viewModel,
       string?                   contentType                     = null,
       string?                   view                            = null
@@ -48,7 +48,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(viewData, nameof(viewData));
-      Contract.Requires(tempData, nameof(tempData));
       Contract.Requires(viewModel, nameof(viewModel));
 
       /*------------------------------------------------------------------------------------------------------------------------

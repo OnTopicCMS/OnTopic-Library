@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ignia.Topics.AspNetCore.Mvc.Host\Ignia.Topics.AspNetCore.Mvc.Host.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.AspNetCore.Mvc\Ignia.Topics.AspNetCore.Mvc.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.TestFixtures\Ignia.Topics.TestFixtures.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj" />
+    <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj" />
+  </ItemGroup>
+
+</Project>

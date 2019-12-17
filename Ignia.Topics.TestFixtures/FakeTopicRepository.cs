@@ -307,6 +307,11 @@ namespace Ignia.Topics.Tests.TestDoubles {
 
       CreateFakeData(web, 2, 3);
 
+      var pageGroup = TopicFactory.Create("Web_3", "PageGroup", web);
+
+      TopicFactory.Create("Web_3_0", "Page", pageGroup);
+      TopicFactory.Create("Web_3_1", "Page", pageGroup);
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
