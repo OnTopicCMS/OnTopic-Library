@@ -123,9 +123,9 @@ namespace Ignia.Topics.Collections {
     ///   !String.IsNullOrWhiteSpace(name)
     /// </requires>
     /// <requires
-    ///   description="The scope should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   description="The name should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentException">
-    ///   !scope.Contains(" ")
+    ///   !name.Contains(" ")
     /// </requires>
     /// <requires
     ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">

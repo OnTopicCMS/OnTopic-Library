@@ -581,7 +581,7 @@ namespace Ignia.Topics {
     | PROPERTY: RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The relationships property exposes a <see cref="Topic" /> with child topics representing named relationships (e.g.,
@@ -595,7 +595,7 @@ namespace Ignia.Topics {
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing related topics based on a scope name; can be used for tags, related topics, etc.
+    ///   A façade for accessing related topics based on a relationship key; can be used for tags, related topics, etc.
     /// </summary>
     /// <remarks>
     ///   The incoming relationships property provides a reverse index of the <see cref="Relationships" /> property, in order to

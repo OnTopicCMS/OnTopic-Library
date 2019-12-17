@@ -50,10 +50,10 @@ namespace Ignia.Topics.Collections {
     | PROPERTY: KEYS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of relationship scopes available.
+    ///   Retrieves a list of relationship key available.
     /// </summary>
     /// <returns>
-    ///   Returns an enumerable list of relationship scopes.
+    ///   Returns an enumerable list of relationship keys.
     /// </returns>
     public ReadOnlyCollection<string> Keys => new ReadOnlyCollection<string>(Items.Select(t => t.Name).ToList());
 
@@ -61,7 +61,7 @@ namespace Ignia.Topics.Collections {
     | METHOD: GET ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of scope.
+    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of relationship key.
     /// </summary>
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
@@ -79,7 +79,8 @@ namespace Ignia.Topics.Collections {
     }
 
     /// <summary>
-    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of scope, filtered by content type.
+    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of relationship key, filtered by content
+    ///   type.
     /// </summary>
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
@@ -93,17 +94,17 @@ namespace Ignia.Topics.Collections {
     | METHOD: GET TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship scope.
+    ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific relationship key.
     /// </summary>
     /// <remarks>
     ///   Returns a reference to the underlying <see cref="NamedTopicCollection"/>; modifications to this collection will modify
     ///   the <see cref="Topic"/>'s <see cref="Topic.Relationships"/>. As such, this should be used with care.
     /// </remarks>
-    /// <param name="scope">The scope of the relationship to be returned.</param>
-    public NamedTopicCollection GetTopics(string scope) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      if (Contains(scope)) {
-        return this[scope];
+    /// <param name="relationshipKey">The key of the relationship to be returned.</param>
+    public NamedTopicCollection GetTopics(string relationshipKey) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      if (Contains(relationshipKey)) {
+        return this[relationshipKey];
       }
       return new NamedTopicCollection();
     }
@@ -112,13 +113,13 @@ namespace Ignia.Topics.Collections {
     | METHOD: CLEAR TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes all <see cref="Topic"/> objects grouped by a specific relationship scope.
+    ///   Removes all <see cref="Topic"/> objects grouped by a specific relationship key.
     /// </summary>
-    /// <param name="scope">The scope of the relationship to be cleared.</param>
-    public void ClearTopics(string scope) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
-      if (Contains(scope)) {
-        this[scope].Clear();
+    /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
+    public void ClearTopics(string relationshipKey) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      if (Contains(relationshipKey)) {
+        this[relationshipKey].Clear();
       }
     }
 
@@ -126,38 +127,38 @@ namespace Ignia.Topics.Collections {
     | METHOD: REMOVE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship scope.
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
     /// </summary>
-    /// <param name="scope">The scope of the relationship.</param>
+    /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topicKey">The key of the topic to be removed.</param>
     /// <returns>
-    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship scope or the
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string scope, string topicKey) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
+    public bool RemoveTopic(string relationshipKey, string topicKey) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey));
-      if (Contains(scope)) {
-        var topics = this[scope];
+      if (Contains(relationshipKey)) {
+        var topics = this[relationshipKey];
         return topics.Remove(topicKey);
       }
       return false;
     }
 
     /// <summary>
-    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship scope.
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
     /// </summary>
-    /// <param name="scope">The scope of the relationship.</param>
+    /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be removed.</param>
     /// <returns>
-    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship scope or the
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string scope, Topic topic) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
+    public bool RemoveTopic(string relationshipKey, Topic topic) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires(topic);
-      if (Contains(scope)) {
-        var topics = this[scope];
+      if (Contains(relationshipKey)) {
+        var topics = this[relationshipKey];
         return topics.Remove(topic);
       }
       return false;
@@ -167,42 +168,42 @@ namespace Ignia.Topics.Collections {
     | METHOD: SET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that a <see cref="Topic"/> is associated with the specified relationship scope.
+    ///   Ensures that a <see cref="Topic"/> is associated with the specified relationship key.
     /// </summary>
     /// <remarks>
-    ///   If a relationship by a given scope is not currently established, it will automatically be created.
+    ///   If a relationship by a given key is not currently established, it will automatically be created.
     /// </remarks>
-    /// <param name="scope">The scope of the relationship.</param>
+    /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
-    public void SetTopic(string scope, Topic topic) => SetTopic(scope, topic, false);
+    public void SetTopic(string relationshipKey, Topic topic) => SetTopic(relationshipKey, topic, false);
 
     /// <summary>
-    ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified relationship scope.
+    ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified relationship key.
     /// </summary>
     /// <remarks>
-    ///   If a relationship by a given scope is not currently established, it will automatically be c.
+    ///   If a relationship by a given key is not currently established, it will automatically be c.
     /// </remarks>
-    /// <param name="scope">The scope of the relationship.</param>
+    /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
-    public void SetTopic(string scope, Topic topic, bool isIncoming) {
+    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(scope));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires(topic);
-      TopicFactory.ValidateKey(scope);
+      TopicFactory.ValidateKey(relationshipKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Contains(scope)) {
-        Add(new NamedTopicCollection(scope));
+      if (!Contains(relationshipKey)) {
+        Add(new NamedTopicCollection(relationshipKey));
       }
-      var topics = this[scope];
+      var topics = this[relationshipKey];
       if (!topics.Contains(topic.Key)) {
         topics.Add(topic);
       }
@@ -217,7 +218,7 @@ namespace Ignia.Topics.Collections {
             nameof(isIncoming)
           );
         }
-        topic.IncomingRelationships.SetTopic(scope, _parent, true);
+        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, true);
       }
 
     }
