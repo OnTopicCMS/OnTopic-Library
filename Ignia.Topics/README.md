@@ -21,15 +21,15 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 ## Key Abstractions
 - **[`ITopicRepository`](Repositories/ITopicRepository.cs)**: Defines the data access layer interface, with `Load()`, `Save()`, `Delete()`, `Move()`, and `Rollback()` methods.
 - **[`ITopicMappingService`](Mapping)**: Defines interface for a service that can convert a `Topic` class into any arbitrary data transfer object based on predetermined conventions—or vice versa (via the `IReverseTopicMappingService`. 
-- **[`IHierarchicalTopicMappingService<T>`](Mapping)**: Defines an interface for applying the `ITopicMappingService` to hierarchical data with constraints on depth. Used primarily for mapping navigation, such as in the [`NavigationTopicViewComponentBase<T>`](../Ignia.Topics.AspNetCore.Mvc/Components/NavigationTopicViewComponentBase{T}.cs).
+- **[`IHierarchicalTopicMappingService<T>`](Mapping/Hierarchical)**: Defines an interface for applying the `ITopicMappingService` to hierarchical data with constraints on depth. Used primarily for mapping navigation, such as in the [`NavigationTopicViewComponentBase<T>`](../Ignia.Topics.AspNetCore.Mvc/Components/NavigationTopicViewComponentBase{T}.cs).
 - **[`ITypeLookupService`](ITypeLookupService.cs)**: Defines the interface that can identify `Type` objects based on a `GetType(typeName)` query. Used by e.g. `ITopicMappingService` to find corresponding `TopicViewModel` classes to map to.
 
 ## Implementations
 - **[`TopicMappingService`](Mapping)**: A default implementation of the `ITopicMappingService`, with built-in conventions that should address that majority of mapping requirements. This also includes a number of attributes for annotating view models with hints that the `TopicMappingService` can use in populating target objects.
   - **[`CachedTopicMappingService`](Mapping)**: Provides an optional caching layer for the `TopicMappingService`—or any `ITopicMappingService` implementation.
-- **[`ReverseTopicMappingService`](Mapping)**: A default implementation of the `IReverseTopicMappingService`, honoring similar conventions and attribute hints as the `TopicMappingService`.
-- **[`HierarchicalTopicMappingService<T>`](Mapping)**: A default implementation of the `IHierarchicalTopicMappingService<T>`, which accepts an `ITopicMappingService` for mapping each individual node in the hierarchy.
-  - **[`CachedHierarchicalTopicMappingService<T>`](Mapping)**: Provides an optional caching layer for the `HierarchicalTopicMappingService`—or any `IHierarchicalTopicMappingService` implementation.
+- **[`ReverseTopicMappingService`](Mapping/Reverse)**: A default implementation of the `IReverseTopicMappingService`, honoring similar conventions and attribute hints as the `TopicMappingService`.
+- **[`HierarchicalTopicMappingService<T>`](Mapping/Hierarchical)**: A default implementation of the `IHierarchicalTopicMappingService<T>`, which accepts an `ITopicMappingService` for mapping each individual node in the hierarchy.
+  - **[`CachedHierarchicalTopicMappingService<T>`](Mapping/Hierarchical)**: Provides an optional caching layer for the `HierarchicalTopicMappingService`—or any `IHierarchicalTopicMappingService` implementation.
 - **[`StaticTypeLookupService`](StaticTypeLookupService.cs)**: A basic implementation of the `ITypeLookupService` interface that allows types to be explicitly registered; useful when a small number of types are expected.
   - **[`DynamicTypeLookupService`](Reflection/DynamicTypeLookupService.cs)**: A reflection-based implementation of the `ITypeLookupService` interface that looks up types from all loaded assemblies based on a `Func<Type, bool>` delegate.
     - **[`DynamicTopicLookupService`](Reflection/DynamicTopicLookupService.cs)**: A version of `DynamicTypeLookupService` that returns all classes that derive from `Topic`; this is the default implementation for `TopicFactory`.

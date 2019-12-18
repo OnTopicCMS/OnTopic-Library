@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Controllers;
 

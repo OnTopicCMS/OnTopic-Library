@@ -12,7 +12,7 @@ using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Models;
 using Ignia.Topics.Internal.Diagnostics;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Hierarchical {
 
   /*============================================================================================================================
   | CLASS: NAVIGATION MAPPING SERVICE

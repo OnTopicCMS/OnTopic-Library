@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Ignia.Topics.Models;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Hierarchical {
 
   /*============================================================================================================================
   | CLASS: CACHED HIERARCHICAL TOPIC MAPPING SERVICE

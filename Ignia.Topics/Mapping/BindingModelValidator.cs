@@ -16,6 +16,7 @@ using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Mapping.Annotations;
+using Ignia.Topics.Mapping.Reverse;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
 using Ignia.Topics.Reflection;

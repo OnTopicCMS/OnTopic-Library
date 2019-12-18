@@ -11,6 +11,7 @@ using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
 using Ignia.Topics.ViewModels;

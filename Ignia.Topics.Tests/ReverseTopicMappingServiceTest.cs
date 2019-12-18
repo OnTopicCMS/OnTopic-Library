@@ -20,6 +20,7 @@ using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
 using System.Collections.Generic;
 using System.Collections;
+using Ignia.Topics.Mapping.Reverse;
 
 namespace Ignia.Topics.Tests {
 

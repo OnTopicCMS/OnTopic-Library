@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Ignia.Topics.AspNetCore.Mvc.Host.Components;
+using Ignia.Topics.Mapping.Hierarchical;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Host {
 

@@ -10,7 +10,7 @@ using Ignia.Topics.Models;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Mapping.Annotations;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Reverse {
 
   /*============================================================================================================================
   | INTERFACE: REVERSE TOPIC MAPPING SERVICE

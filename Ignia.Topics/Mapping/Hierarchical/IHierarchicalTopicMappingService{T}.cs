@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Ignia.Topics.Models;
 
-namespace Ignia.Topics.Mapping {
+namespace Ignia.Topics.Mapping.Hierarchical {
 
   /*============================================================================================================================
   | INTERFACE: HIERARCHICAL TOPIC MAPPING SERVICE

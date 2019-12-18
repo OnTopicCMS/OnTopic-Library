@@ -9,6 +9,7 @@ using Ignia.Topics.Mapping;
 using Ignia.Topics.Models;
 using Ignia.Topics.AspNetCore.Mvc.Models;
 using Ignia.Topics.Repositories;
+using Ignia.Topics.Mapping.Hierarchical;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
