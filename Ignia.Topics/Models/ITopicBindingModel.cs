@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
+using Ignia.Topics.Mapping.Reverse;
 using Ignia.Topics.Metadata;
 
 namespace Ignia.Topics.Models {

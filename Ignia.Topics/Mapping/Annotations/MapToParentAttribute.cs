@@ -3,8 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-
 using System;
+using Ignia.Topics.Mapping.Reverse;
 
 namespace Ignia.Topics.Mapping.Annotations {
 
