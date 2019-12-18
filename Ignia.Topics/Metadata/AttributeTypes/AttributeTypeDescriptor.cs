@@ -28,7 +28,7 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public AttributeTypeDescriptor(
+    protected AttributeTypeDescriptor(
       string key,
       string contentType,
       Topic parent,
