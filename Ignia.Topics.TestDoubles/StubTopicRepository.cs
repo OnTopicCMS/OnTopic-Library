@@ -11,7 +11,7 @@ using Ignia.Topics.Metadata;
 using Ignia.Topics.Querying;
 using Ignia.Topics.Repositories;
 
-namespace Ignia.Topics.TestFixtures {
+namespace Ignia.Topics.TestDoubles {
 
   /*============================================================================================================================
   | CLASS: STUB TOPIC DATA REPOSITORY

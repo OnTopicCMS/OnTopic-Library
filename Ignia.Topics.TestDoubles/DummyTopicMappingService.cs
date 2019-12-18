@@ -3,58 +3,59 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Repositories;
+using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Annotations;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
-namespace Ignia.Topics.TestFixtures {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable IDE0060 // Remove unused parameter
+
+namespace Ignia.Topics.TestDoubles {
 
   /*============================================================================================================================
-  | DUMMY: TOPIC DATA REPOSITORY
+  | DUMMY: TOPIC MAPPING SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
-  ///   but is not intended to be called.
+  ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
+  ///   Data Transfer Objects, such as View Models.
   /// </summary>
-  public class DummyTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class DummyTopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the <see cref="DummyTopicRepository"/>.
+    ///   Establishes a new instance of a <see cref="DummmyTopicMappingService"/> with required dependencies.
     /// </summary>
-    /// <returns>A new instance of the <see cref="DummyTopicRepository"/>.</returns>
-    public DummyTopicRepository() : base() {}
+    public DummyTopicMappingService() {
+    }
 
     /*==========================================================================================================================
-    | METHOD: LOAD
+    | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override Topic? Load(int topicId, bool isRecursive = true) => null;
-
-    /// <inheritdoc/>
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) => null;
-
-    /// <inheritdoc/>
-    public override Topic? Load(int topicId, DateTime version) => throw new NotImplementedException();
+    [return: NotNullIfNotNull("topic")]
+    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All)
+      => throw new NotImplementedException();
 
     /*==========================================================================================================================
-    | METHOD: SAVE
+    | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) => throw new NotImplementedException();
+    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new()
+      => throw new NotImplementedException();
 
     /*==========================================================================================================================
-    | METHOD: MOVE
+    | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override void Move(Topic topic, Topic target, Topic? sibling) => throw new NotImplementedException();
-
-    /*==========================================================================================================================
-    | METHOD: DELETE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All)
+      => throw new NotImplementedException();
 
   } //Class
 } //Namespace
+
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore IDE0060 // Remove unused parameter

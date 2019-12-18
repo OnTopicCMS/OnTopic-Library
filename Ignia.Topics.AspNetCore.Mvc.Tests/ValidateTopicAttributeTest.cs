@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
-using Ignia.Topics.TestFixtures;
+using Ignia.Topics.TestDoubles;
 
 namespace Ignia.Topics.Tests {
 

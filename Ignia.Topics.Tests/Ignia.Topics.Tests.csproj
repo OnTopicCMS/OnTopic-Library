@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj" />
-    <ProjectReference Include="..\Ignia.Topics.TestFixtures\Ignia.Topics.TestFixtures.csproj" />
+    <ProjectReference Include="..\Ignia.Topics.TestDoubles\Ignia.Topics.TestDoubles.csproj" />
     <ProjectReference Include="..\Ignia.Topics.ViewModels\Ignia.Topics.ViewModels.csproj" />
     <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj" />
   </ItemGroup>

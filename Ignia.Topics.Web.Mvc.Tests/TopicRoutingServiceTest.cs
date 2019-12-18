@@ -7,7 +7,7 @@ using System;
 using System.Web.Routing;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.TestFixtures;
+using Ignia.Topics.TestDoubles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Web.Mvc.Tests {

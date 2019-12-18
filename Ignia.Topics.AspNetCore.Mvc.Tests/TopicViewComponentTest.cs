@@ -10,7 +10,7 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
-using Ignia.Topics.TestFixtures;
+using Ignia.Topics.TestDoubles;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.AspNetCore.Mvc;
 using Ignia.Topics.AspNetCore.Mvc.Controllers;
