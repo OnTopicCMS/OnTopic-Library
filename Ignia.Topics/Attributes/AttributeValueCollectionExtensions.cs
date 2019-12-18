@@ -4,9 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
-using Ignia.Topics.Collections;
 using System.Globalization;
+using Ignia.Topics.Collections;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Attributes {

@@ -3,12 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Threading.Tasks;
-using Ignia.Topics.Repositories;
-using Ignia.Topics.Models;
-using Ignia.Topics.Metadata;
 using Ignia.Topics.Mapping.Annotations;
+using Ignia.Topics.Metadata;
+using Ignia.Topics.Models;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Mapping.Reverse {
 

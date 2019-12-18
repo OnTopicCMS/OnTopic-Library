@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using Ignia.Topics.Models;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.ViewModels {
 

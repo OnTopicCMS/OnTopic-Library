@@ -3,10 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Ignia.Topics.Mapping;
-using Ignia.Topics.Models;
 using Ignia.Topics.Metadata;
 
 namespace Ignia.Topics.Tests.BindingModels {

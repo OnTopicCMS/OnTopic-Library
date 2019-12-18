@@ -6,9 +6,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ignia.Topics.Attributes;
 using Ignia.Topics.Collections;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Mapping;
@@ -16,8 +18,6 @@ using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
 using Ignia.Topics.Repositories;
-using System.ComponentModel;
-using Ignia.Topics.Attributes;
 
 namespace Ignia.Topics.Mapping.Reverse {
 

@@ -4,13 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
-using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Web.Mvc.Controllers {

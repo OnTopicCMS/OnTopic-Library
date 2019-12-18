@@ -7,17 +7,17 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Ignia.Topics.Internal.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ignia.Topics.Attributes;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
 using Ignia.Topics.Mapping.Annotations;
-using Ignia.Topics.Repositories;
 using Ignia.Topics.Models;
-using System.Diagnostics.CodeAnalysis;
-using Ignia.Topics.Attributes;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Mapping {
 

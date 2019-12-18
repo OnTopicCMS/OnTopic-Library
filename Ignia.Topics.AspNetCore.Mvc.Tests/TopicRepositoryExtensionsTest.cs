@@ -3,13 +3,12 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
+using Ignia.Topics.AspNetCore.Mvc;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
-using Ignia.Topics.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 

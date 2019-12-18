@@ -4,11 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Security;
 using System.Web.UI;
-using System.Diagnostics.CodeAnalysis;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Web {
 

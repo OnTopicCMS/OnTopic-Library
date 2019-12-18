@@ -3,8 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Repositories;
 using System;
+using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.TestDoubles {
 
@@ -24,7 +24,7 @@ namespace Ignia.Topics.TestDoubles {
     ///   Instantiates a new instance of the <see cref="DummyTopicRepository"/>.
     /// </summary>
     /// <returns>A new instance of the <see cref="DummyTopicRepository"/>.</returns>
-    public DummyTopicRepository() : base() {}
+    public DummyTopicRepository() : base() { }
 
     /*==========================================================================================================================
     | METHOD: LOAD

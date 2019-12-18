@@ -3,11 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
+using System.Collections.Generic;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Repositories;
 using Microsoft.AspNetCore.Routing;
-using System;
-using System.Collections.Generic;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 

@@ -4,9 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Text.RegularExpressions;
 using Ignia.Topics.Attributes;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics {
 

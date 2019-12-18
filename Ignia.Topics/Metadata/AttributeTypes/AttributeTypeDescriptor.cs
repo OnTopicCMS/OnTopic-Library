@@ -4,9 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using Ignia.Topics.Internal.Diagnostics;
-using System.Linq;
 
 namespace Ignia.Topics.Metadata.AttributeTypes {
 

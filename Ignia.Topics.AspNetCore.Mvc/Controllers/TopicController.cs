@@ -3,11 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Threading.Tasks;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 

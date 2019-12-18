@@ -4,8 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft;
 
 namespace Ignia.Topics.Internal.Diagnostics {

@@ -4,11 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Ignia.Topics.Internal.Diagnostics;
-using System.Collections;
 using System.Reflection;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Internal.Collections {
 

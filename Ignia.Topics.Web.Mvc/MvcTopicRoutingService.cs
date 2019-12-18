@@ -4,8 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Web.Routing;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Web.Mvc {

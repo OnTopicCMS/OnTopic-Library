@@ -7,11 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using Ignia.Topics.Internal.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics {

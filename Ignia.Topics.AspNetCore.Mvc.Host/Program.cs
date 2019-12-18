@@ -3,9 +3,9 @@
 | Client        Ignia, LLC
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Host {
 

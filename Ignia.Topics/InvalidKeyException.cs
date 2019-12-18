@@ -4,8 +4,8 @@
 | Project Topics Library
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Runtime.Serialization;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics {
 

@@ -3,27 +3,21 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ignia.Topics.AspNetCore.Mvc.Host.Components;
+using Ignia.Topics.AspNetCore.Mvc.Models;
 using Ignia.Topics.Data.Caching;
-using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
 using Ignia.Topics.ViewModels;
-using Ignia.Topics.AspNetCore.Mvc;
-using Ignia.Topics.AspNetCore.Mvc.Controllers;
-using Ignia.Topics.AspNetCore.Mvc.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
-using Ignia.Topics.AspNetCore.Mvc.Host.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Ignia.Topics.Mapping.Hierarchical;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {
 

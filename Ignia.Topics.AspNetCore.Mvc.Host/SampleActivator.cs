@@ -4,21 +4,18 @@
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
 using System;
-using Ignia.Topics;
-using Ignia.Topics.AspNetCore.Mvc;
-using Ignia.Topics.AspNetCore.Mvc.Components;
 using Ignia.Topics.AspNetCore.Mvc.Controllers;
+using Ignia.Topics.AspNetCore.Mvc.Host.Components;
 using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Data.Sql;
 using Ignia.Topics.Mapping;
+using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Ignia.Topics.AspNetCore.Mvc.Host.Components;
-using Ignia.Topics.Mapping.Hierarchical;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Host {
 

@@ -6,9 +6,8 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using Ignia.Topics.Querying;
 using Ignia.Topics.Metadata;
-using Ignia.Topics.Tests.TestDoubles;
+using Ignia.Topics.Querying;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ignia.Topics.Tests {

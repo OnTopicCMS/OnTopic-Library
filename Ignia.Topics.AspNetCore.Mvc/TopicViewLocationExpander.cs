@@ -3,10 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Internal.Diagnostics;
-using Microsoft.AspNetCore.Mvc.Razor;
 using System;
 using System.Collections.Generic;
+using Ignia.Topics.Internal.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 

@@ -4,23 +4,21 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Ignia.Topics.Attributes;
 using Ignia.Topics.Data.Caching;
-using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;
+using Ignia.Topics.Mapping.Reverse;
+using Ignia.Topics.Metadata;
+using Ignia.Topics.Models;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
 using Ignia.Topics.Tests.BindingModels;
 using Ignia.Topics.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Ignia.Topics.Metadata;
-using Ignia.Topics.Models;
-using System.Collections.Generic;
-using System.Collections;
-using Ignia.Topics.Mapping.Reverse;
 
 namespace Ignia.Topics.Tests {
 

@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Internal.Mapping;
 using Ignia.Topics.Internal.Reflection;
@@ -19,7 +17,6 @@ using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Mapping.Reverse;
 using Ignia.Topics.Metadata;
 using Ignia.Topics.Models;
-using Ignia.Topics.Reflection;
 using Ignia.Topics.Repositories;
 
 namespace Ignia.Topics.Mapping {

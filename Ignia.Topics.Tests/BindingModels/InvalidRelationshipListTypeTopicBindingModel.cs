@@ -6,12 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using Ignia.Topics.Mapping;
 using Ignia.Topics.Models;
-using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Tests.BindingModels {
 

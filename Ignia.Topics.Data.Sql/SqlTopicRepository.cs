@@ -8,16 +8,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using Ignia.Topics.Internal.Diagnostics;
-using Ignia.Topics.Metadata;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Net;
-using System.Xml;
-using Ignia.Topics.Repositories;
-using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Ignia.Topics.Attributes;
+using Ignia.Topics.Repositories;
+using Ignia.Topics.Metadata;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Data.Sql {
 

@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ignia.Topics.Repositories {
 

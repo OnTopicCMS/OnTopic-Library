@@ -3,18 +3,17 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Microsoft.AspNetCore.Mvc;
-using Ignia.Topics.Repositories;
-using Ignia.Topics.AspNetCore.Mvc.Models;
-using Ignia.Topics.Internal.Diagnostics;
-using System.Xml;
-using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using Ignia.Topics.Internal.Diagnostics;
+using Ignia.Topics.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ignia.Topics.AspNetCore.Mvc.Controllers {
 

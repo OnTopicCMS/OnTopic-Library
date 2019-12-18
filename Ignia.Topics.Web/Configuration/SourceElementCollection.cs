@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Configuration;
 using Ignia.Topics.Internal.Diagnostics;
 

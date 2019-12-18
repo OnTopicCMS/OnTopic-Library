@@ -5,9 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using Ignia.Topics.Attributes;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Metadata {
 

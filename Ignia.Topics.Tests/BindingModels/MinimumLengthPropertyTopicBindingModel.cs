@@ -4,8 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
-using Ignia.Topics.Models;
-using Ignia.Topics.ViewModels;
 
 namespace Ignia.Topics.Tests.BindingModels {
 

@@ -3,10 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Metadata.AttributeTypes {
 

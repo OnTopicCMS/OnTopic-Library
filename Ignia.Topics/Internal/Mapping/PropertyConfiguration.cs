@@ -4,16 +4,16 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Ignia.Topics.Collections;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;
-using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Internal.Mapping {
 

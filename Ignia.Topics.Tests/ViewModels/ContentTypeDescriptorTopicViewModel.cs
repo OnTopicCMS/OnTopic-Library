@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.ViewModels;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ignia.Topics.Tests.ViewModels {
 

@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using Ignia.Topics.AspNetCore.Mvc.Components;
 using Ignia.Topics.AspNetCore.Mvc.Models;
-using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;

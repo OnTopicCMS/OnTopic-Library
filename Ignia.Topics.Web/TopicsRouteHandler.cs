@@ -5,11 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Configuration;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Web;
 using System.Web.Compilation;
 using System.Web.Routing;
 using System.Web.UI;
+using Ignia.Topics.Internal.Diagnostics;
 using Ignia.Topics.Web.Configuration;
 
 namespace Ignia.Topics.Web {

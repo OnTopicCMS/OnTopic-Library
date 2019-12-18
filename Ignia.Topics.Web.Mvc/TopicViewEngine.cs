@@ -3,12 +3,12 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Internal.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Web.Mvc {
 

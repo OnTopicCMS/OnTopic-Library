@@ -3,12 +3,12 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
+using System.Linq;
 using Ignia.Topics.AspNetCore.Mvc.Controllers;
 using Ignia.Topics.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
 
 namespace Ignia.Topics.AspNetCore.Mvc {
 

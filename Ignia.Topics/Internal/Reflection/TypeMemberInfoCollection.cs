@@ -6,9 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Ignia.Topics.Internal.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Ignia.Topics.Internal.Diagnostics;
 
 namespace Ignia.Topics.Internal.Reflection {
 
