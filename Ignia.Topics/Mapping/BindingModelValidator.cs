@@ -150,8 +150,7 @@ namespace Ignia.Topics.Mapping {
       [AllowNull]PropertyInfo property,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
       string? attributePrefix
-    )
-    {
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -249,8 +248,7 @@ namespace Ignia.Topics.Mapping {
         attributeDescriptor.ModelType == ModelType.NestedTopic &&
         !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
         listType != null
-      )
-      {
+      ) {
         throw new InvalidOperationException(
           $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
           $"the generic type {listType.Name} does not implement the {nameof(ITopicBindingModel)} interface. This is " +
@@ -326,7 +324,7 @@ namespace Ignia.Topics.Mapping {
       Contract.Requires(sourceType, nameof(sourceType));
       Contract.Requires(configuration, nameof(configuration));
       Contract.Requires(attributeDescriptor, nameof(attributeDescriptor));
-    //Contract.Requires(listType, nameof(listType));
+      //Contract.Requires(listType, nameof(listType));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables

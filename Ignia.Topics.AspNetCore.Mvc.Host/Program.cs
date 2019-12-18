@@ -38,7 +38,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Host {
         .CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder => {
           webBuilder.UseStartup<Startup>();
-          });
+        });
 
   } //Class
 } //Namespace

@@ -30,7 +30,7 @@ namespace Ignia.Topics.Tests {
 
       var topics = new TopicCollection();
 
-      for(var i=0; i<10; i++) {
+      for (var i = 0; i < 10; i++) {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 

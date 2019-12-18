@@ -25,7 +25,7 @@ namespace Ignia.Topics.Reflection {
     public DynamicTopicViewModelLookupService() : base(
       t => t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase),
       typeof(object)
-    ) {}
+    ) { }
 
   } //Class
 } //Namespace

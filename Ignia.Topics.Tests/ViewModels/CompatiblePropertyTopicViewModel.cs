@@ -32,5 +32,5 @@ namespace Ignia.Topics.Tests.ViewModels {
 
     public List<DateTime>? VersionHistory { get; set; }
 
-    } //Class
-  } //Namespace
+  } //Class
+} //Namespace

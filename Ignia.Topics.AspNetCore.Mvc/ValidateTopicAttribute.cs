@@ -26,7 +26,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
   ///   cref="RedirectResult"/>. All of this logic can be enforced by adding the <see cref="ValidateTopicFilter"/> to an action.
   /// </remarks>
   [AttributeUsage(AttributeTargets.Method)]
-  public sealed class ValidateTopicAttribute: ActionFilterAttribute {
+  public sealed class ValidateTopicAttribute : ActionFilterAttribute {
 
     /*==========================================================================================================================
     | PROPERTY: ALLOW NULL?

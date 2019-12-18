@@ -38,7 +38,7 @@ namespace Ignia.Topics.Web.Mvc.Controllers {
     /// </summary>
     /// <returns>The site's default error view.</returns>
     [HttpGet]
-    public virtual ActionResult Index (string title = "General Error") {
+    public virtual ActionResult Index(string title = "General Error") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate view model

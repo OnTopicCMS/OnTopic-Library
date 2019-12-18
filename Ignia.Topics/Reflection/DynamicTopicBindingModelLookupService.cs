@@ -25,7 +25,7 @@ namespace Ignia.Topics.Reflection {
     public DynamicTopicBindingModelLookupService() : base(
       t => t.Name.EndsWith("TopicBindingModel", StringComparison.InvariantCultureIgnoreCase),
       typeof(object)
-    ) {}
+    ) { }
 
   } //Class
 } //Namespace

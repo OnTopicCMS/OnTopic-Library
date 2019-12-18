@@ -39,7 +39,7 @@ namespace Ignia.Topics.Repositories {
     ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message.
     /// </summary>
     /// <param name="message">The message to display for this exception.</param>
-    public TopicRepositoryException(string message) : base(message) {}
+    public TopicRepositoryException(string message) : base(message) { }
 
     /// <summary>
     ///   Initializes a new <see cref="TopicRepositoryException" /> instance with a specific error message and nested exception.

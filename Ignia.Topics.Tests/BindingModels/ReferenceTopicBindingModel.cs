@@ -22,7 +22,7 @@ namespace Ignia.Topics.Tests.BindingModels {
   /// </remarks>
   public class ReferenceTopicBindingModel : BasicTopicBindingModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "AttributeDescriptor") {}
+    public ReferenceTopicBindingModel(string key) : base(key, "AttributeDescriptor") { }
 
     [AttributeKey("TopicId")]
     public RelatedTopicBindingModel? DerivedTopic { get; set; }

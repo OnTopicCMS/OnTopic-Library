@@ -45,7 +45,7 @@ namespace Ignia.Topics.Mapping.Annotations {
     /// <summary>
     ///   Annotates a property with the <see cref="MapToParentAttribute"/> class.
     /// </summary>
-    public MapToParentAttribute() {}
+    public MapToParentAttribute() { }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE PREFIX

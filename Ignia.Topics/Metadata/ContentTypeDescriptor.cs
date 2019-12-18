@@ -35,9 +35,9 @@ namespace Ignia.Topics.Metadata {
   //  ### TODO JJC082515: Should add a Get() to simply checks against the collection (e.g., via Contains() then indexer[]).
   public class ContentTypeDescriptor : Topic {
 
-  /*============================================================================================================================
-  | PRIVATE VARIABLES
-  \---------------------------------------------------------------------------------------------------------------------------*/
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
     private   AttributeDescriptorCollection?                    _attributeDescriptors           = null;
     private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes          = null;
 

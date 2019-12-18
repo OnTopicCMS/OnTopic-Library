@@ -100,5 +100,5 @@ namespace Ignia.Topics.Mapping.Hierarchical {
     );
 
 
-    } //Interface
-  } //Class
+  } //Interface
+} //Class

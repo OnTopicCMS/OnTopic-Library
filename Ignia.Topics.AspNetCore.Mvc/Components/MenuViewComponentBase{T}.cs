@@ -80,7 +80,7 @@ namespace Ignia.Topics.AspNetCore.Mvc.Components {
 
       if (!String.IsNullOrEmpty(configuredRoot)) {
         navigationRootTopic = TopicRepository.Load(configuredRoot);
-       }
+      }
       if (navigationRootTopic is null) {
         navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
       }

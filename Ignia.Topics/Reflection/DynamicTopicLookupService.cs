@@ -25,7 +25,7 @@ namespace Ignia.Topics.Reflection {
     public DynamicTopicLookupService() : base(
       t => typeof(Topic).IsAssignableFrom(t),
       typeof(Topic)
-    ) {}
+    ) { }
 
   } //Class
 } //Namespace

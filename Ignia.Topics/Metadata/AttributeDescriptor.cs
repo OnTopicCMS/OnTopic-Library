@@ -121,7 +121,7 @@ namespace Ignia.Topics.Metadata {
           editorType = editorType.Substring(0, editorType.LastIndexOf(".", StringComparison.InvariantCulture));
         }
 
-        if (new [] { "Relationships", "TokenizedTopicList"}.Contains(editorType)) {
+        if (new[] { "Relationships", "TokenizedTopicList" }.Contains(editorType)) {
           _modelType = ModelType.Relationship;
         }
         else if (

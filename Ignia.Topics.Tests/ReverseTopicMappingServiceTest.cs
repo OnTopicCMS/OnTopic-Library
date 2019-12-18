@@ -257,7 +257,7 @@ namespace Ignia.Topics.Tests {
 
       bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute1"));
       bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute2"));
-      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute3") { DefaultValue = "New Value" } );
+      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute3") { DefaultValue = "New Value" });
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
       var attributes            = TopicFactory.Create("Attributes", "List", topic);

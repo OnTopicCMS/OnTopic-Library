@@ -541,8 +541,7 @@ namespace Ignia.Topics.Mapping {
             sourceProperty.GetValue(source) is IList sourcePropertyValue &&
             sourcePropertyValue.Count > 0 &&
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0].GetType())
-          )
-          {
+          ) {
             listSource = GetRelationship(
               RelationshipType.MappedCollection,
               s => true,
@@ -655,7 +654,8 @@ namespace Ignia.Topics.Mapping {
         var childDto = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
           taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
-        } else {
+        }
+        else {
           AddToList(childDto);
         }
 

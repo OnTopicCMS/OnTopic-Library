@@ -99,7 +99,7 @@ namespace Ignia.Topics.Internal.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
     ///   instance.
     /// </summary>
-    public MemberInfo? GetMember(Type type, string name)  {
+    public MemberInfo? GetMember(Type type, string name) {
       var members = GetMembers(type);
       if (members.Contains(name)) {
         return members[name];
@@ -311,7 +311,7 @@ namespace Ignia.Topics.Internal.Reflection {
         return false;
       }
 
-      method.Invoke(target, new object[] {valueObject});
+      method.Invoke(target, new object[] { valueObject });
 
       return true;
 

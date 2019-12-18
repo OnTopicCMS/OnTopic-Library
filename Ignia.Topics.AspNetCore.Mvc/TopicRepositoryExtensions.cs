@@ -96,7 +96,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
       | Clean path
       \-----------------------------------------------------------------------------------------------------------------------*/
       static string? cleanPath(string? path) => path?
-        .Trim(new char[] {'/'})
+        .Trim(new char[] { '/' })
         .Replace("//", "/", StringComparison.InvariantCulture)
         .Replace("/", ":", StringComparison.InvariantCulture);
 

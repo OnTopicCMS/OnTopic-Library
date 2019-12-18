@@ -334,7 +334,7 @@ namespace Ignia.Topics.Tests {
     ///   collection compatible with <see cref="IList{T}"/>, where <c>{T}</c> is a <see cref="Topic"/>, or derivative.
     /// </summary>
     [TestMethod]
-    public async Task CustomCollection () {
+    public async Task CustomCollection() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
@@ -788,9 +788,9 @@ namespace Ignia.Topics.Tests {
 
       var topic                 = TopicFactory.Create("Test", "FlattenChildren");
 
-      for (var i=0; i<5; i++) {
+      for (var i = 0; i < 5; i++) {
         var childTopic          = TopicFactory.Create("Child" + i, "Page", topic);
-        for (var j=0; j<5; j++) {
+        for (var j = 0; j < 5; j++) {
           TopicFactory.Create("GrandChild" + i + j, "FlattenChildren", childTopic);
         }
       }
