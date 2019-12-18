@@ -30,12 +30,12 @@ namespace Ignia.Topics.Collections {
     | FACTORY METHOD: FROM LIST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="List{T}"/>.
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="List{Topic}"/>.
     /// </summary>
     /// <remarks>
-    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{Topic}"/>.
     /// </remarks>
-    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    /// <param name="innerCollection">The underlying <see cref="TopicCollection{Topic}"/>.</param>
     public new static ReadOnlyTopicCollection FromList(IList<Topic> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
       return new ReadOnlyTopicCollection(innerCollection);

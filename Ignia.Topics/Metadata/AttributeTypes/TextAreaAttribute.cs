@@ -39,7 +39,7 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     /*==========================================================================================================================
     | PROPERTY: IS EXTENDED ATTRIBUTE?
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override bool IsExtendedAttribute => true;
 
   } //Class

@@ -73,7 +73,7 @@ namespace Ignia.Topics.Mapping.Hierarchical {
     /*==========================================================================================================================
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdocs />
+    /// <inheritdoc />
     public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ namespace Ignia.Topics.Mapping.Hierarchical {
     /*==========================================================================================================================
     | GET ROOT VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdocs />
+    /// <inheritdoc />
     public virtual async Task<T?> GetRootViewModelAsync(
       Topic? sourceTopic,
       int tiers = 1,
@@ -147,7 +147,7 @@ namespace Ignia.Topics.Mapping.Hierarchical {
     /*==========================================================================================================================
     | GET VIEW MODEL (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdocs />
+    /// <inheritdoc />
     public async Task<T?> GetViewModelAsync(
       Topic? sourceTopic,
       int tiers = 1,

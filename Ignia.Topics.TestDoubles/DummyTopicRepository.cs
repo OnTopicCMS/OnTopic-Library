@@ -29,31 +29,31 @@ namespace Ignia.Topics.TestDoubles {
     /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override Topic? Load(int topicId, bool isRecursive = true) => null;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override Topic? Load(string? topicKey = null, bool isRecursive = true) => null;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override Topic? Load(int topicId, DateTime version) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override void Move(Topic topic, Topic target, Topic? sibling) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
 
   } //Class

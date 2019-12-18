@@ -39,7 +39,7 @@ namespace Ignia.Topics.Metadata.AttributeTypes {
     /*==========================================================================================================================
     | PROPERTY: MODEL TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override ModelType ModelType => ModelType.Reference;
 
   } //Class

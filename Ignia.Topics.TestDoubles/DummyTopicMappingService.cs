@@ -35,7 +35,7 @@ namespace Ignia.Topics.TestDoubles {
     /*==========================================================================================================================
     | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All)
       => throw new NotImplementedException();
@@ -43,14 +43,14 @@ namespace Ignia.Topics.TestDoubles {
     /*==========================================================================================================================
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new()
       => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All)
       => throw new NotImplementedException();
 
