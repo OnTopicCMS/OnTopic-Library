@@ -91,8 +91,6 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /// <summary>
     ///   Introduces additional routes
     /// </summary>
-    /// <remarks>
-    /// </remarks>
     /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
     public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations) {
 

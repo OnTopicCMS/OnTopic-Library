@@ -14,7 +14,8 @@ namespace Ignia.Topics {
   | CLASS: TYPE INDEX
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="StaticTypeLookupService"/> can be configured to provide a lookup of .
+  ///   The <see cref="StaticTypeLookupService"/> can be configured to provide a lookup of <see cref="Type"/> classes based on
+  ///   its name.
   /// </summary>
   public class StaticTypeLookupService: ITypeLookupService {
 
