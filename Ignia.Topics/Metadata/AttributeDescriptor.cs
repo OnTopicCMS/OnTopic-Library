@@ -215,6 +215,11 @@ namespace Ignia.Topics.Metadata {
     ///     User Controls as well as AngularJS Directives, the format is Property1="Value" Propert2="Value".
     ///   </para>
     /// </remarks>
+    [Obsolete(
+      "The DefaultConfiguration property is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
+      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
+      "instead."
+    )]
     public string DefaultConfiguration {
       get => Attributes.GetValue("DefaultConfiguration", "")?? "";
       set {
@@ -230,6 +235,11 @@ namespace Ignia.Topics.Metadata {
     ///   Retrieves a dictionary representing a parsed collection of key/value pairs from the
     ///   <see cref="DefaultConfiguration"/>.
     /// </summary>
+    [Obsolete(
+      "The Configuration property is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
+      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
+      "instead."
+    )]
     public IDictionary<string, string?> Configuration {
       get {
         if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
@@ -252,6 +262,11 @@ namespace Ignia.Topics.Metadata {
     ///   Retrieves a configuration value from the <see cref="Configuration"/> dictionary; if the value doesn't exist, then
     ///   optionally returns a default value.
     /// </summary>
+    [Obsolete(
+      "The GetConfigurationValue method is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
+      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
+      "instead."
+    )]
     public string? GetConfigurationValue(string key, string? defaultValue = null) {
       Contract.Requires(!String.IsNullOrWhiteSpace(key));
       if (Configuration.ContainsKey(key) && Configuration[key] != null) {

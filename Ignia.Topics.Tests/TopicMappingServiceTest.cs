@@ -639,7 +639,6 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = (AttributeDescriptor)TopicFactory.Create("Attribute", "AttributeDescriptor");
 
-      topic.DefaultConfiguration = "Value1=1&Value2=2";
       topic.EditorType          = "TopicList";
 
       topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
@@ -647,7 +646,6 @@ namespace Ignia.Topics.Tests {
       var target                = (CompatiblePropertyTopicViewModel?)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
-      Assert.AreEqual<IDictionary<string, string?>>(topic.Configuration, target.Configuration);
       Assert.AreEqual<int>(1, target.VersionHistory.Count);
 
     }

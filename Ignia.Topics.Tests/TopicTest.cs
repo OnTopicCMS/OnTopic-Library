@@ -273,6 +273,8 @@ namespace Ignia.Topics.Tests {
     [TestMethod]
     public void AttributeConfiguration() {
 
+      #pragma warning disable CS0618 // Type or member is obsolete
+
       var attribute = (AttributeDescriptor)TopicFactory.Create("Topic", "AttributeDescriptor");
       attribute.DefaultConfiguration = "IsRequired=\"True\" DisplayName=\"Display Name\"";
 
@@ -283,6 +285,8 @@ namespace Ignia.Topics.Tests {
       Assert.ReferenceEquals("Display Name", attribute.Configuration["DisplayName"]);
       Assert.ReferenceEquals("True", attribute.GetConfigurationValue("DisplayName"));
       Assert.ReferenceEquals("NotFound", attribute.GetConfigurationValue("MissingAttribute", "NotFound"));
+
+      #pragma warning restore CS0618 // Type or member is obsolete
 
     }
 
