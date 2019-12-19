@@ -43,6 +43,8 @@ namespace Ignia.Topics.Tests.TestDoubles {
       Add(typeof(SampleTopicViewModel));
       Add(typeof(ContentTypeDescriptorTopicViewModel));
       Add(typeof(AttributeDescriptorTopicViewModel));
+      Add(typeof(TextAttributeTopicViewModel));
+      Add(typeof(TopicReferenceAttributeTopicViewModel));
 
     }
 

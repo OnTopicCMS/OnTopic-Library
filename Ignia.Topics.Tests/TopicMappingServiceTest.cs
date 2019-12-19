@@ -13,6 +13,7 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping;
 using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Metadata;
+using Ignia.Topics.Metadata.AttributeTypes;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
 using Ignia.Topics.Tests.TestDoubles;
@@ -287,11 +288,11 @@ namespace Ignia.Topics.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
-    ///   type specified by <see cref="RelationshipAttribute"/>.
+    ///   type specified by <see cref="Mapping.Annotations.RelationshipAttribute"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses a <see cref="RelationshipAttribute"/> to set the
-    ///   relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
+    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses <see cref="Mapping.Annotations.RelationshipAttribute"/>
+    ///   to set the relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
     ///   cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
     ///   outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
     ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
@@ -637,9 +638,7 @@ namespace Ignia.Topics.Tests {
     public async Task MapCompatibleProperties() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var topic                 = (AttributeDescriptor)TopicFactory.Create("Attribute", "AttributeDescriptor");
-
-      topic.EditorType          = "TopicList";
+      var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
 
       topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
 

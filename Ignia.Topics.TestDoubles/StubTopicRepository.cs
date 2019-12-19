@@ -183,15 +183,15 @@ namespace Ignia.Topics.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      addAttribute(contentTypes, "Key", "FormField", true);
-      addAttribute(contentTypes, "ContentType", "FormField", true);
-      addAttribute(contentTypes, "Title", "FormField", true);
-      addAttribute(contentTypes, "TopicId", "TopicPointer");
+      addAttribute(contentTypes, "Key", "TextAttribute", true);
+      addAttribute(contentTypes, "ContentType", "TextAttribute", true);
+      addAttribute(contentTypes, "Title", "TextAttribute", true);
+      addAttribute(contentTypes, "TopicId", "TopicReferenceAttribute");
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(contentTypeDescriptor, "ContentTypes", "Relationships");
-      addAttribute(contentTypeDescriptor, "Attributes", "TopicList");
+      addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttribute");
+      addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttribute");
 
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
@@ -200,15 +200,22 @@ namespace Ignia.Topics.TestDoubles {
 
       var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(attributeDescriptor, "DefaultValue", "FormField", true);
-      addAttribute(attributeDescriptor, "IsRequired", "Checkbox", true);
+      addAttribute(attributeDescriptor, "DefaultValue", "TextAttribute", true);
+      addAttribute(attributeDescriptor, "IsRequired", "BooleanAttribute", true);
+
+      TopicFactory.Create("BooleanAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NestedTopicListAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NumberAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("RelationshipAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TextAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TopicReferenceAttribute", "ContentTypeDescriptor", attributeDescriptor);
 
       var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
       addAttribute(pageContentType, "IsHidden");
-      addAttribute(pageContentType, "TopicReference", "TopicPointer");
+      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttribute");
 
       pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
       pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
@@ -222,14 +229,13 @@ namespace Ignia.Topics.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeDescriptor addAttribute(Topic contentType, string attributeKey, string editorType = "FormField", bool isRequired = false) {
+      AttributeDescriptor addAttribute(Topic contentType, string attributeKey, string editorType = "TextAttribute", bool isRequired = false) {
         var container = contentType.Children.GetTopic("Attributes");
         if (container == null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, "AttributeDescriptor", currentAttributeId++, container);
-        attribute.EditorType = editorType;
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, currentAttributeId++, container);
         attribute.IsRequired = isRequired;
         return attribute;
       }

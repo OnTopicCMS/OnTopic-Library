@@ -3,27 +3,24 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using Ignia.Topics.Mapping.Annotations;
-using Ignia.Topics.Models;
+using Ignia.Topics.Metadata;
+using Ignia.Topics.Metadata.AttributeTypes;
 
 namespace Ignia.Topics.Tests.BindingModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: REFERENCE TOPIC
+  | BINDING MODEL: TEXT ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a property associated with a topic pointer—i.e. a reference
-  ///   to another topic.
+  ///   Provides a minimal implementation of a custom topic binding model with a couple of scalar values mapping to properties
+  ///   on the <see cref="TextAttribute"/> content type.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class ReferenceTopicBindingModel : BasicTopicBindingModel {
+  public class TextAttributeTopicBindingModel : AttributeDescriptorTopicBindingModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttribute") { }
-
-    [AttributeKey("TopicId")]
-    public RelatedTopicBindingModel? DerivedTopic { get; set; }
+    public TextAttributeTopicBindingModel(string? key = null) : base(key, "TextAttribute") { }
 
   } //Class
 } //Namespace

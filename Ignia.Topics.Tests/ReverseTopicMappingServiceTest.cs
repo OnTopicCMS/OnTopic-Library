@@ -13,6 +13,7 @@ using Ignia.Topics.Data.Caching;
 using Ignia.Topics.Mapping.Annotations;
 using Ignia.Topics.Mapping.Reverse;
 using Ignia.Topics.Metadata;
+using Ignia.Topics.Metadata.AttributeTypes;
 using Ignia.Topics.Models;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.TestDoubles;
@@ -64,18 +65,18 @@ namespace Ignia.Topics.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new AttributeDescriptorTopicBindingModel() {
+      var bindingModel          = new TextAttributeTopicBindingModel() {
         Key                     = "Test",
-        ContentType             = "AttributeDescriptor",
+        ContentType             = "TextAttribute",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
         IsRequired              = true
       };
 
-      var target                = await mappingService.MapAsync<AttributeDescriptor>(bindingModel).ConfigureAwait(false);
+      var target                = await mappingService.MapAsync<TextAttribute>(bindingModel).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
+      Assert.AreEqual<string>("TextAttribute", target.ContentType);
       Assert.AreEqual<string>("Test Attribute", target.Title);
       Assert.AreEqual<string>("Hello", target.DefaultValue);
       Assert.AreEqual<bool>(true, target.IsRequired);
@@ -94,19 +95,19 @@ namespace Ignia.Topics.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new AttributeDescriptorTopicBindingModel {
+      var bindingModel          = new TextAttributeTopicBindingModel {
         Key                     = "Test",
-        ContentType             = "AttributeDescriptor",
+        ContentType             = "TextAttribute",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
         IsRequired              = true
       };
 
-      var target                = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
+      Assert.AreEqual<string>("TextAttribute", target.ContentType);
       Assert.AreEqual<string>("Test Attribute", target.Title);
       Assert.AreEqual<string>("Hello", target.DefaultValue);
       Assert.AreEqual<bool>(true, target.IsRequired);
@@ -125,15 +126,15 @@ namespace Ignia.Topics.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new AttributeDescriptorTopicBindingModel() {
+      var bindingModel          = new TextAttributeTopicBindingModel() {
         Key                     = "Test",
-        ContentType             = "AttributeDescriptor",
+        ContentType             = "TextAttribute",
         Title                   = null,
         DefaultValue            = "World",
         IsRequired              = false
       };
 
-      var target                = (AttributeDescriptor?)TopicFactory.Create("Test", "AttributeDescriptor");
+      var target                = (TextAttribute?)TopicFactory.Create("Test", "TextAttribute");
 
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
@@ -141,10 +142,10 @@ namespace Ignia.Topics.Tests {
       target.IsExtendedAttribute        = false;
       target.Description        = "Original Description";
 
-      target                    = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+      target                    = (TextAttribute?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("AttributeDescriptor", target.ContentType);
+      Assert.AreEqual<string>("TextAttribute", target.ContentType);
       Assert.AreEqual<string>("Test", target.Title); //Should inherit from "Key" since it will be null
       Assert.AreEqual<string>("World", target.DefaultValue);
       Assert.AreEqual<bool>(false, target.IsRequired);
@@ -253,15 +254,15 @@ namespace Ignia.Topics.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
 
-      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute1"));
-      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute2"));
-      bindingModel.Attributes.Add(new AttributeDescriptorTopicBindingModel("Attribute3") { DefaultValue = "New Value" });
+      bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute1"));
+      bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute2"));
+      bindingModel.Attributes.Add(new TextAttributeTopicBindingModel("Attribute3") { DefaultValue = "New Value" });
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
       var attributes            = TopicFactory.Create("Attributes", "List", topic);
 
-      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "AttributeDescriptor", attributes);
-      var attribute4            = TopicFactory.Create("Attribute4", "AttributeDescriptor", attributes);
+      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttribute", attributes);
+      var attribute4            = TopicFactory.Create("Attribute4", "TextAttribute", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 
@@ -293,12 +294,12 @@ namespace Ignia.Topics.Tests {
         }
       };
 
-      var target                = (AttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TopicReferenceAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
 
       Assert.IsNotNull(target.DerivedTopic);
-      Assert.AreEqual<string>("FormField", target.EditorType);
+      Assert.AreEqual<string>("TopicReference", target.EditorType);
 
     }
 
