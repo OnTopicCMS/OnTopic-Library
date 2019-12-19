@@ -12,7 +12,7 @@
 
     <!-- Site Navigation Area -->
     <navigation id="SiteNavigation">
-      <vc:menu />
+      @Html.Action("Menu", "Layout")
     </navigation>
     <!-- /Site Navigation Area -->
 
@@ -21,7 +21,7 @@
 
       <!-- Page Header Area -->
       <section id="PageHeaderSection">
-        <vc:page-level-navigation />
+        @Html.Action("PageLevelNavigation", "Layout")
       </section>
       <!-- /Page Header Area -->
 

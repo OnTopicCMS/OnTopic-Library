@@ -14,6 +14,7 @@ using Ignia.Topics.Mapping.Hierarchical;
 using Ignia.Topics.Repositories;
 using Ignia.Topics.ViewModels;
 using Ignia.Topics.Web.Mvc.Controllers;
+using Ignia.Topics.Web.Mvc.Host.Controllers;
 
 namespace Ignia.Topics.Web.Mvc.Host {
 
@@ -102,13 +103,11 @@ namespace Ignia.Topics.Web.Mvc.Host {
         case nameof(SitemapController):
           return new SitemapController(_topicRepository);
 
-        /*
         case nameof(ErrorController):
           return new ErrorController();
 
         case nameof(LayoutController):
           return new LayoutController(mvcTopicRoutingService, _hierarchicalTopicMappingService, _topicRepository);
-        */
 
         case nameof(TopicController):
           return new TopicController(_topicRepository, mvcTopicRoutingService, _topicMappingService);

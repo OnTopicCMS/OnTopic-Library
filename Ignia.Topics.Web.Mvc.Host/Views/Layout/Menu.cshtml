@@ -1,0 +1,28 @@
+﻿@model NavigationViewModel<NavigationTopicViewModel>
+
+<h2>Menu</h2>
+<nav id="PrimaryNavigationSmallScreen" role="navigation" vocab="http://schema.org" typeof="SiteNavigationElement">
+  <ul>
+    @foreach (var topic in Model.NavigationRoot.Children) {
+      @WriteMenu(topic);
+    }
+  </ul>
+</nav>
+
+@helper WriteMenu(NavigationTopicViewModel topic, int indentLevel = 1) {
+
+  <li>
+    <a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title?? topic.Key)</a>
+    <ul>
+      @foreach (var childTopic in topic.Children) {
+        @WriteMenu(childTopic, indentLevel+1);
+      }
+    </ul>
+  </li>
+
+}
+
+<!--
+  Content Type: NavigationViewModel<NavigationTopicViewModel
+  View Location: ~/Views/Layout/Menu.cshtml
+-->
