@@ -115,6 +115,17 @@
     <Content Include="Views\web.config" />
     <Content Include="Configuration\ConnectionStrings.config" />
     <None Include="packages.config" />
+    <Content Include="Views\ContentList\Accordion.cshtml" />
+    <Content Include="Views\ContentList\ContentList.cshtml" />
+    <Content Include="Views\ContentList\IndexedList.cshtml" />
+    <Content Include="Views\ContentList\LinkedList.cshtml" />
+    <Content Include="Views\ContentTypes\Page.cshtml" />
+    <Content Include="Views\ContentTypes\PageGroup.cshtml" />
+    <Content Include="Views\ContentTypes\Video.cshtml" />
+    <Content Include="Views\Layout\_Layout.cshtml" />
+    <Content Include="Views\Shared\_PageAttributes.cshtml" />
+    <Content Include="Views\Shared\_TopicAttributes.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
