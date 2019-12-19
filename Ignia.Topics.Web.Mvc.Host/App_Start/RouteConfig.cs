@@ -1,7 +1,7 @@
 ﻿/*==============================================================================================================================
 | Author        Ignia, LLC
-| Client        GoldSim
-| Project       Website
+| Client        Ignia, LLC
+| Project       OnTopicSample OnTopic Site
 \=============================================================================================================================*/
 using System.Web.Mvc;
 using System.Web.Routing;
