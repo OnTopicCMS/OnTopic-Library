@@ -39,13 +39,7 @@ namespace Ignia.Topics.Metadata {
   ///     the CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   ///   </para>
   /// </remarks>
-  public class AttributeDescriptor : Topic {
-
-    /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Dictionary<string, string?>     _configuration;
-    private                     ModelType?                      _modelType                      = null;
+  public abstract class AttributeDescriptor : Topic {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -70,7 +64,7 @@ namespace Ignia.Topics.Metadata {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public AttributeDescriptor(
+    protected AttributeDescriptor(
       string key,
       string contentType,
       Topic parent,
@@ -81,7 +75,6 @@ namespace Ignia.Topics.Metadata {
       parent,
       id
     ) {
-      _configuration = new Dictionary<string, string?>();
     }
 
     /*==========================================================================================================================
@@ -97,54 +90,7 @@ namespace Ignia.Topics.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public virtual ModelType ModelType {
-      get {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return cached value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (_modelType.HasValue) {
-          return _modelType.Value;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Determine value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var editorType = EditorType;
-
-        Contract.Assume(
-          editorType,
-          $"The 'EditorType' property is not set for the '{Key}' attribute, and thus a 'ModelType' cannot be determined."
-        );
-
-        if (editorType.LastIndexOf(".", StringComparison.InvariantCulture) >= 0) {
-          editorType = editorType.Substring(0, editorType.LastIndexOf(".", StringComparison.InvariantCulture));
-        }
-
-        if (new[] { "Relationships", "TokenizedTopicList" }.Contains(editorType)) {
-          _modelType = ModelType.Relationship;
-        }
-        else if (
-          new[] { "TopicPointer" }.Contains(editorType) ||
-          Key.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase) &&
-          !Key.Equals("Id", StringComparison.InvariantCultureIgnoreCase)
-        ) {
-          _modelType = ModelType.Reference;
-        }
-        else if (new[] { "TopicList" }.Contains(editorType)) {
-          _modelType = ModelType.NestedTopic;
-        }
-        else {
-          _modelType = ModelType.ScalarValue;
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        return _modelType.Value;
-
-      }
-    }
+    public abstract ModelType ModelType { get; }
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
@@ -165,14 +111,7 @@ namespace Ignia.Topics.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public virtual string? EditorType {
-      get => Attributes.GetValue("Type", "");
-      set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
-        TopicFactory.ValidateKey(value);
-        SetAttributeValue("Type", value);
-      }
-    }
+    public abstract string? EditorType { get; }
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
@@ -196,83 +135,6 @@ namespace Ignia.Topics.Metadata {
         Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
         SetAttributeValue("DisplayGroup", value);
       }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: DEFAULT CONFIGURATION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the default configuration.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     When an attribute is bound to an attribute type control in the editor, the default configuration is injected into
-    ///     the control's configuration. This allows attribute type-specific properties to be set on a per-attribute basis.
-    ///   </para>
-    ///   <para>
-    ///     Properties available for configuration are up to the control associated with the <see cref="EditorType"/>, and the
-    ///     format will be  dependent on the framework in which the attribute type control is written. For example, for ASP.NET
-    ///     User Controls as well as AngularJS Directives, the format is Property1="Value" Propert2="Value".
-    ///   </para>
-    /// </remarks>
-    [Obsolete(
-      "The DefaultConfiguration property is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
-      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
-      "instead."
-    )]
-    public string DefaultConfiguration {
-      get => Attributes.GetValue("DefaultConfiguration", "")?? "";
-      set {
-        SetAttributeValue("DefaultConfiguration", value);
-        _configuration.Clear();
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONFIGURATION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a dictionary representing a parsed collection of key/value pairs from the
-    ///   <see cref="DefaultConfiguration"/>.
-    /// </summary>
-    [Obsolete(
-      "The Configuration property is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
-      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
-      "instead."
-    )]
-    public IDictionary<string, string?> Configuration {
-      get {
-        if (_configuration.Count.Equals(0) && DefaultConfiguration.Length > 0) {
-          _configuration = DefaultConfiguration
-            .Split(' ')
-            .Select(value => value.Split('='))
-            .ToDictionary(
-              pair => pair[0],
-              pair => pair.Count().Equals(2)? pair[1]?.Replace("\"", "") : null
-            );
-        }
-        return _configuration;
-      }
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: GET CONFIGURATION VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a configuration value from the <see cref="Configuration"/> dictionary; if the value doesn't exist, then
-    ///   optionally returns a default value.
-    /// </summary>
-    [Obsolete(
-      "The GetConfigurationValue method is exclusively provided for backward compatibility with the legacy ASP.NET WebForms " +
-      "version of the OnTopic Editor. New implementations should use the new strongly typed AttributeTypeDescriptor model " +
-      "instead."
-    )]
-    public string? GetConfigurationValue(string key, string? defaultValue = null) {
-      Contract.Requires(!String.IsNullOrWhiteSpace(key));
-      if (Configuration.ContainsKey(key) && Configuration[key] != null) {
-        return Configuration[key];
-      }
-      return defaultValue;
     }
 
     /*==========================================================================================================================

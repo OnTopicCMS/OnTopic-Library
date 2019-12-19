@@ -263,32 +263,5 @@ namespace Ignia.Topics.Tests {
 
     }
 
-    /*==========================================================================================================================
-    | TEST: ATTRIBUTE CONFIGURATION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets the <see cref="AttributeDescriptor.DefaultConfiguration"/> property, then confirms that it is
-    ///   correctly parsed via the <see cref="AttributeDescriptor.Configuration"/> property.
-    /// </summary>
-    [TestMethod]
-    public void AttributeConfiguration() {
-
-      #pragma warning disable CS0618 // Type or member is obsolete
-
-      var attribute = (AttributeDescriptor)TopicFactory.Create("Topic", "AttributeDescriptor");
-      attribute.DefaultConfiguration = "IsRequired=\"True\" DisplayName=\"Display Name\"";
-
-      Assert.IsFalse(attribute.Configuration.ContainsKey("MissingAttribute"));
-      Assert.IsTrue(attribute.Configuration.ContainsKey("IsRequired"));
-      Assert.IsTrue(attribute.Configuration.ContainsKey("DisplayName"));
-      Assert.ReferenceEquals("True", attribute.Configuration["IsRequired"]);
-      Assert.ReferenceEquals("Display Name", attribute.Configuration["DisplayName"]);
-      Assert.ReferenceEquals("True", attribute.GetConfigurationValue("DisplayName"));
-      Assert.ReferenceEquals("NotFound", attribute.GetConfigurationValue("MissingAttribute", "NotFound"));
-
-      #pragma warning restore CS0618 // Type or member is obsolete
-
-    }
-
   } //Class
 } //Namespace
