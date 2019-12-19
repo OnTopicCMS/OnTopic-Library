@@ -85,11 +85,7 @@ namespace Ignia.Topics.AspNetCore.Mvc {
     /*==========================================================================================================================
     | METHOD: EXECUTE RESULT (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Called by the framework to execute the current <see cref="TopicViewResult"/>.
-    /// </summary>
-    /// <param name="context">The <see cref="ActionContext"/> for the current request.</param>
-    /// <returns>A <see cref="Task"/> representing the current state of execution.</returns>
+    /// <inheritdoc/>
     public override async Task ExecuteResultAsync(ActionContext context) {
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -22,14 +22,30 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class TopicViewModel: ITopicViewModel {
 
+    /// <inheritdoc />
     public int Id { get; set; }
+
+    /// <inheritdoc />
     public string? Key { get; set; }
+
+    /// <inheritdoc />
     public string? ContentType { get; set; }
+
+    /// <inheritdoc />
     public string? UniqueKey { get; set; }
+
+    /// <inheritdoc />
     public string? WebPath { get; set; }
+
+    /// <inheritdoc />
     public string? View { get; set; }
+
+    /// <inheritdoc />
     public string? Title { get; set; }
+
+    /// <inheritdoc />
     public bool IsHidden { get; set; }
+
     public DateTime LastModified { get; set; }
 
     [Follow(Relationships.Parents)]

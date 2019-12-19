@@ -21,11 +21,19 @@ namespace Ignia.Topics.ViewModels {
   public class PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
 
     public string? Subtitle { get; set; }
+
     public string? MetaTitle { get; set; }
+
+    /// <inheritdoc />
     public string? MetaDescription { get; set; }
+
+    /// <inheritdoc />
     public string? MetaKeywords { get; set; }
+
     public bool? NoIndex { get; set; }
+
     public string? ShortTitle { get; set; }
+
     public string? Body { get; set; }
 
   } //Class

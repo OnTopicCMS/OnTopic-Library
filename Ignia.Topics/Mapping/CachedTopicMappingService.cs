@@ -45,26 +45,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
-    ///   according to the rules of the mapping implementation.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Because the underlying implementation is using reflection to determine the target View Models, the return type is
-    ///     <see cref="Object"/>. These results may need to be cast to a specific type, depending on the context. That said,
-    ///     strongly-typed views should be able to cast the object to the appropriate View Model type. If the type of the View
-    ///     Model is known upfront, and it is imperative that it be strongly-typed, then prefer <see
-    ///     cref="MapAsync{T}(Topic, Relationships)"/>.
-    ///   </para>
-    ///   <para>
-    ///     Because the target object is being dynamically constructed by the underlying implementation, it must implement a
-    ///     default constructor.
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
+    /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -102,21 +83,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic and a generic type, will instantiate a new instance of the generic type and populate it according to the
-    ///   rules of the mapping implementation.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     Because the target object is being dynamically constructed by the underlying implementation, it must implement a
-    ///     default constructor.
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>
-    ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
-    /// </returns>
+    /// <inheritdoc />
     public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -154,15 +121,7 @@ namespace Ignia.Topics.Mapping {
     /*==========================================================================================================================
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a topic and an instance of a DTO, will populate the DTO according to the default mapping rules.
-    /// </summary>
-    /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
-    /// <returns>
-    ///   The target view model with the properties appropriately mapped.
-    /// </returns>
+    /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
 
       /*------------------------------------------------------------------------------------------------------------------------
