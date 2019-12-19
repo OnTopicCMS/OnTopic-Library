@@ -30,8 +30,29 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public sealed class NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
 
+    /*==========================================================================================================================
+    | SHORT TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
+    /// </summary>
     public string? ShortTitle { get; set; }
+
+    /*==========================================================================================================================
+    | CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a list of nested <see cref="NavigationTopicViewModel"/> objects, for handling hierarchical navigation.
+    /// </summary>
     public Collection<NavigationTopicViewModel> Children { get; } = new Collection<NavigationTopicViewModel>();
+
+    /*==========================================================================================================================
+    | IS SELECTED?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether or not the node represented by this <see cref="NavigationTopicViewModel"/> is currently selected,
+    ///   typically meaning the user is on the page this object is pointing to.
+    /// </summary>
     public bool IsSelected(string uniqueKey) =>
       $"{uniqueKey}:"?.StartsWith($"{UniqueKey}:", StringComparison.InvariantCultureIgnoreCase) ?? false;
 

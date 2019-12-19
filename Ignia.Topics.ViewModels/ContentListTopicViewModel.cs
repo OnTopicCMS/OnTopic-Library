@@ -19,7 +19,21 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class ContentListTopicViewModel: PageTopicViewModel {
 
+    /*==========================================================================================================================
+    | CONTENT ITEMS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a list of <see cref="ContentItemTopicViewModel"/>, representing the contents of the <see
+    ///   cref="ContentListTopicViewModel"/>.
+    /// </summary>
     public TopicViewModelCollection<ContentItemTopicViewModel> ContentItems { get; } = new TopicViewModelCollection<ContentItemTopicViewModel>();
+
+    /*==========================================================================================================================
+    | CATEGORIES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a list of valid categories that each of the <see cref="ContentItems"/> may optionally be associated with.
+    /// </summary>
     public TopicViewModelCollection<TopicViewModel> Categories { get; } = new TopicViewModelCollection<TopicViewModel>();
 
   } //Class

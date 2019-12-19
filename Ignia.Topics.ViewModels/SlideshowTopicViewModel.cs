@@ -19,6 +19,17 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class SlideshowTopicViewModel: ContentListTopicViewModel {
 
+    /*==========================================================================================================================
+    | TRANSITION EFFECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides the transition effect to use when flipping between slides.
+    /// </summary>
+    /// <remarks>
+    ///   The effective values for <see cref="TransitionEffect"/> are dependent on the library used for presenting the
+    ///   slideshow. Typically, they will map to standard HTML5/CSS3 transition effects, but they could differ depending on the
+    ///   implementation.
+    /// </remarks>
     public string? TransitionEffect { get; set; }
 
   } //Class

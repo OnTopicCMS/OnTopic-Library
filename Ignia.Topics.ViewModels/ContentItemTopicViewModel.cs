@@ -19,9 +19,36 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class ContentItemTopicViewModel: ItemTopicViewModel {
 
+    /*==========================================================================================================================
+    | DESCRIPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the description; for Content Items, this is effectively the body.
+    /// </summary>
     public string Description { get; set; } = default!;
+
+    /*==========================================================================================================================
+    | LEARN MORE URL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an optional URL for additional information that should be linked to.
+    /// </summary>
     public string? LearnMoreUrl { get; set; }
+
+    /*==========================================================================================================================
+    | THUMBNAIL IMAGE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets an optional path to a thumbnail image that should accompany the content item.
+    /// </summary>
     public string? ThumbnailImage { get; set; }
+
+    /*==========================================================================================================================
+    | CATEGORY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the category that the content item should be grouped under.
+    /// </summary>
     public string? Category { get; set; }
 
   } //Class

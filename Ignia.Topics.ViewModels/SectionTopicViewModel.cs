@@ -19,6 +19,12 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class SectionTopicViewModel : TopicViewModel {
 
+    /*==========================================================================================================================
+    | HEADER IMAGE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a header image which may be displayed at the top of a section.
+    /// </summary>
     public string? HeaderImageUrl { get; set; }
 
   } //Class

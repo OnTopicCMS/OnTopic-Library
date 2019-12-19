@@ -19,7 +19,20 @@ namespace Ignia.Topics.ViewModels {
   /// </remarks>
   public class VideoTopicViewModel: PageTopicViewModel {
 
+    /*==========================================================================================================================
+    | VIDEO URL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a URL reference to a video to display on the page.
+    /// </summary>
     public string? VideoUrl { get; set; }
+
+    /*==========================================================================================================================
+    | POSTER URL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a URL reference to an image to display prior to playing the video.
+    /// </summary>
     public string? PosterUrl { get; set; }
 
   } //Class
