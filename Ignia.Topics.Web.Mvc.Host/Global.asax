@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Ignia.Topics.Web.Mvc.Host.MvcApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Ignia.Topics.Web.Mvc.Host.Global" Language="C#" %>
