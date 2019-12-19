@@ -1,11 +1,15 @@
 ﻿@model NavigationViewModel<NavigationTopicViewModel>
 
-<h2>PageLevelNavigation</h2>
-<ul>
-  @foreach (var topic in Model.NavigationRoot.Children) {
-    <li><a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title)</a></li>
-  }
-</ul>
+@if (Model.NavigationRoot != null) {
+
+  <h2>PageLevelNavigation</h2>
+  <ul>
+    @foreach (var topic in Model.NavigationRoot.Children) {
+      <li><a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title)</a></li>
+    }
+  </ul>
+
+}
 
 <!--
   Content Type: NavigationViewModel<NavigationTopicViewModel>
