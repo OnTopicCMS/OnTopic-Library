@@ -99,10 +99,11 @@ namespace Ignia.Topics.Web {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set route data
       \-----------------------------------------------------------------------------------------------------------------------*/
+      routeData.Values          ["view"]                        = viewName;
       routeData.Values          ["targetPath"]                  = targetPath;
       routeData.Values          ["contentType"]                 = topic.ContentType;
       routeData.Values          ["directory"]                   = requestContext.HttpContext.Request.Url.AbsolutePath;
-      routeData.Values          ["path"]                        = topic.GetUniqueKey();
+      routeData.Values          ["uniqueKey"]                   = topic.GetUniqueKey();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | SET TARGET TYPES
