@@ -44,6 +44,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.SqlClient, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.7.0\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -77,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Configuration\ConnectionStrings.config" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -88,6 +92,24 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ignia.Topics.Data.Caching\Ignia.Topics.Data.Caching.csproj">
+      <Project>{206b7f91-ca25-4e9d-9576-60d2e54a2c0a}</Project>
+      <Name>Ignia.Topics.Data.Caching</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ignia.Topics.Data.Sql\Ignia.Topics.Data.Sql.csproj">
+      <Project>{1de1f923-c7c2-435b-b49a-975acbcb5ff0}</Project>
+      <Name>Ignia.Topics.Data.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ignia.Topics.Web\Ignia.Topics.Web.csproj">
+      <Project>{c98f7b48-a085-4394-b820-c244f23868ce}</Project>
+      <Name>Ignia.Topics.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ignia.Topics\Ignia.Topics.csproj">
+      <Project>{b8d5b290-4451-4c3b-ae9e-0ff075958a74}</Project>
+      <Name>Ignia.Topics</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -120,7 +142,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
