@@ -70,10 +70,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Common\Templates\Page.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Templates\Layout.master.cs">
+      <DependentUpon>Layout.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Common\Templates\Layout.master.designer.cs">
+      <DependentUpon>Layout.master</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -81,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\ConnectionStrings.config" />
+    <Content Include="Common\Templates\Layout.master" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -91,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Common\Controls\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

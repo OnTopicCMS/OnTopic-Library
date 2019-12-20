@@ -4,60 +4,58 @@
 | Project       OnTopicSample OnTopic Site
 \=============================================================================================================================*/
 using System;
-using System.Configuration;
-using System.Web.Routing;
-using Ignia.Topics.Data.Caching;
-using Ignia.Topics.Data.Sql;
+using System.Linq;
+using System.Web.UI;
 
-namespace Ignia.Topics.Web.Host {
+namespace Ignia.Topics.Web.Host.Common.Templates {
 
   /*============================================================================================================================
-  | CLASS: GLOBAL
+  | CLASS: LAYOUT MASTER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides default configuration for the application, including any special processing that needs to happen relative to
-  ///   application events (such as <see cref="Application_Start"/> or <see cref="System.Web.HttpApplication.Error"/>.
+  ///   Provides properties and functionality necessary for use with the master page template and dependent pages.
   /// </summary>
-  public class Global : System.Web.HttpApplication {
+  public partial class Layout: System.Web.UI.MasterPage {
+
 
     /*==========================================================================================================================
-    | EVENT: APPLICATION START
-    >===========================================================================================================================
-    | Runs once when the first page of your application is run for the first time by any user
+    | PAGE LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
-    [Obsolete]
-    protected void Application_Start(object sender, EventArgs e) {
+    void Page_Load(Object Src, EventArgs E) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | CONFIGURE REPOSITORY
+      | Set page title
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connectionString      = ConfigurationManager.ConnectionStrings["OnTopic"].ConnectionString;
-      var sqlTopicRepository    = new SqlTopicRepository(connectionString);
-      var topicRepository       = new CachedTopicRepository(sqlTopicRepository);
-
-      TopicRepository.DataProvider = topicRepository;
+      Page.Title                        = Page.Title;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | REGISTER ROUTES
+      | Set data sources
       \-----------------------------------------------------------------------------------------------------------------------*/
-      RegisterRoutes(RouteTable.Routes);
+      Attributes.DataSource     = PageTopic.Attributes.Where(t => t.Key != "Body");
+      Relationships.DataSource  = PageTopic.Relationships;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure data binding
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      this.DataBind();
 
     }
 
     /*==========================================================================================================================
-    | METHOD: REGISTER ROUTES
-    >===========================================================================================================================
-    | Establishes URL routes and maps them to the appropriate page handlers.
+    | PROPERTY: PAGE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
-    void RegisterRoutes(RouteCollection routes) {
-      routes.Add(
-        "TopicUrl",
-        new Route(
-          "{rootTopic}/{*path}",
-          new TopicsRouteHandler()
-        )
-      );
+    /// <summary>
+    ///   Identifies the topic associated with the page based on the RouteData.  If the topic cannot be identified then a null
+    ///   reference is returned.
+    /// </summary>
+    public Topic PageTopic {
+      get {
+        if (Page is TopicPage) {
+          return ((TopicPage)Page).Topic;
+        }
+        return TopicRepository.DataProvider.Load("Web");
+      }
     }
 
-  } //Class
-} //Namespace
+  }
+}
