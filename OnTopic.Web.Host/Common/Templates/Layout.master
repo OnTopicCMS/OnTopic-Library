@@ -1,0 +1,66 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Layout.master.cs" Inherits="OnTopic.Web.Host.Common.Templates.Layout" %>
+
+<html>
+  <head runat="server">
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="keywords" content="<%# PageTopic.Attributes.GetValue("MetaKeywords") %>" />
+    <meta name="description" content="<%# PageTopic.Attributes.GetValue("MetaDescription") %>" />
+    <asp:ContentPlaceHolder ID="Head" runat="server"></asp:ContentPlaceHolder>
+  </head>
+  <body vocab="http://schema.org/" typeof="WebPage">
+
+    <!-- Site Navigation Area -->
+    <navigation id="SiteNavigation">
+      <vc:menu />
+    </navigation>
+    <!-- /Site Navigation Area -->
+
+    <!-- Main Site Content Area -->
+    <main id="MainContentArea" class="page content" role="main">
+
+      <!-- Page Header Area -->
+      <section id="PageHeaderSection">
+        <vc:page-level-navigation />
+      </section>
+      <!-- /Page Header Area -->
+
+      <article itemscope itemtype="http://schema.org/WebPageElement" itemprop="mainContentOfPage" class="grid-container">
+        <h1><%# PageTopic.Title %></h1>
+        <p class="subtitle"><%# PageTopic.Attributes.GetValue("Subtitle") %></p>
+        <section class="body">
+
+          <asp:ContentPlaceHolder ID="Content" runat="server"></asp:ContentPlaceHolder>
+
+          <h2>Attributes</h2>
+          <asp:Repeater ID="Attributes" runat="server">
+            <ItemTemplate>
+              <li><b><%# ((AttributeValue)Container.DataItem).Key %>:</b> <%# ((AttributeValue)Container.DataItem).Value %></li>
+            </ItemTemplate>
+          </asp:Repeater>
+
+          <h2>Relationships</h2>
+          <asp:Repeater ID="Relationships" runat="server">
+            <ItemTemplate>
+              <h3><%# ((NamedTopicCollection)Container.DataItem).Name %></h3>
+              <asp:Repeater ID="Relationship" DataSource=<%# ((NamedTopicCollection)Container.DataItem) %> runat="server">
+                <ItemTemplate>
+                  <li><b><%# ((Topic)Container.DataItem).Title %></b> (<%# ((Topic)Container.DataItem).GetUniqueKey() %></li>
+                </ItemTemplate>
+              </asp:Repeater>
+
+            </ItemTemplate>
+          </asp:Repeater>
+
+          <h2>Body</h2>
+          <%# PageTopic.Attributes.GetValue("Body") %>
+
+        </section>
+      </article>
+    </main>
+    <!-- /Main Site Content Area -->
+
+    <asp:ContentPlaceHolder ID="Scripts" runat="server"></asp:ContentPlaceHolder>
+
+  </body>
+</html>

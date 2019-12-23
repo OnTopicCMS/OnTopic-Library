@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OnTopic.AspNetCore.Mvc.Host\OnTopic.AspNetCore.Mvc.Host.csproj" />
+    <ProjectReference Include="..\OnTopic.AspNetCore.Mvc\OnTopic.AspNetCore.Mvc.csproj" />
+    <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
+    <ProjectReference Include="..\OnTopic.TestDoubles\OnTopic.TestDoubles.csproj" />
+    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
+    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
+  </ItemGroup>
+
+</Project>

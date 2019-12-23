@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>62eb85bf-f802-4afd-8bec-3d344e1cfc79</UserSecretsId>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OnTopic.AspNetCore.Mvc\OnTopic.AspNetCore.Mvc.csproj" />
+    <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
+    <ProjectReference Include="..\OnTopic.Data.Sql\OnTopic.Data.Sql.csproj" />
+    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
+    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
+  </ItemGroup>
+
+</Project>
