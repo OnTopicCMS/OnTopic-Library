@@ -30,7 +30,7 @@ namespace OnTopic.Tests.ViewModels {
 
     public Uri? NullableUrl { get; set; }
 
-    public String? Title { get; set; }
+    public string? Title { get; set; }
 
     public bool? IsHidden { get; set; }
 
