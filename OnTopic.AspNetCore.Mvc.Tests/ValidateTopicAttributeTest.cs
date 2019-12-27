@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Given a <see cref="Controller"/>, generates a barebones <see cref="ActionExecutingContext"/> for testing.
     /// </summary>
-    public ActionExecutingContext GetActionExecutingContext(Controller controller) {
+    public static ActionExecutingContext GetActionExecutingContext(Controller controller) {
 
       var modelState            = new ModelStateDictionary();
 
@@ -62,7 +62,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    public ControllerContext GetControllerContext() =>
+    public static ControllerContext GetControllerContext() =>
       new ControllerContext(
         new ActionContext() {
           HttpContext               = new DefaultHttpContext(),
@@ -77,7 +77,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    public TopicController GetTopicController(Topic topic) =>
+    public static TopicController GetTopicController(Topic topic) =>
       new TopicController(
           new DummyTopicRepository(),
           new DummyTopicMappingService()
