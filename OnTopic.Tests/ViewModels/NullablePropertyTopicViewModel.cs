@@ -28,11 +28,14 @@ namespace OnTopic.Tests.ViewModels {
 
     public DateTime? NullableDateTime { get; set; }
 
-    public String? Title { get; set; }
+    public Uri? NullableUrl { get; set; }
+
+    public string? Title { get; set; }
 
     public bool? IsHidden { get; set; }
 
     public DateTime? LastModified { get; set; }
+
 
   } //Class
 } //Namespace

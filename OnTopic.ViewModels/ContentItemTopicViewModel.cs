@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
+using System;
+
 namespace OnTopic.ViewModels {
 
   /*============================================================================================================================
@@ -33,7 +35,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets an optional URL for additional information that should be linked to.
     /// </summary>
-    public string? LearnMoreUrl { get; set; }
+    public Uri? LearnMoreUrl { get; set; }
 
     /*==========================================================================================================================
     | THUMBNAIL IMAGE
@@ -41,7 +43,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets an optional path to a thumbnail image that should accompany the content item.
     /// </summary>
-    public string? ThumbnailImage { get; set; }
+    public Uri? ThumbnailImage { get; set; }
 
     /*==========================================================================================================================
     | CATEGORY

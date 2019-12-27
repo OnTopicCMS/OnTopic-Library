@@ -182,12 +182,14 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("NullableInteger", "A");
       topic.Attributes.SetValue("NullableBoolean", "43");
       topic.Attributes.SetValue("NullableDateTime", "Hello World");
+      topic.Attributes.SetValue("NullableUrl", "invalid://Web\\Path\\File!?@Query=String?");
 
       var target                = await mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.IsNull(target.NullableInteger);
       Assert.IsNull(target.NullableBoolean);
       Assert.IsNull(target.NullableDateTime);
+      Assert.IsNull(target.NullableUrl);
 
       //The following should not be null since they map to non-nullable properties which will have default values
       Assert.AreEqual(topic.Title, target.Title);
@@ -214,6 +216,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("NullableDouble", "3.14159265359");
       topic.Attributes.SetValue("NullableBoolean", "tRuE");
       topic.Attributes.SetValue("NullableDateTime", "10/15/1976");
+      topic.Attributes.SetValue("NullableUrl", "/Web/Path/File?Query=String");
 
       topic.Attributes.SetValue("Title", "Hello World.");
       topic.Attributes.SetValue("IsHidden", "true");
@@ -226,6 +229,7 @@ namespace OnTopic.Tests {
       Assert.AreEqual<double?>(3.14159265359, target.NullableDouble);
       Assert.AreEqual<bool?>(true, target.NullableBoolean);
       Assert.AreEqual<DateTime?>(new DateTime(1976, 10, 15), target.NullableDateTime);
+      Assert.AreEqual<Uri?>(new Uri("/Web/Path/File?Query=String", UriKind.RelativeOrAbsolute), target.NullableUrl);
 
       Assert.AreEqual<string?>(topic.Title, target.Title);
       Assert.AreEqual<bool?>(target.IsHidden, target.IsHidden);
