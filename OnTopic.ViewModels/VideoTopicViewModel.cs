@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
+using System;
+
 namespace OnTopic.ViewModels {
 
   /*============================================================================================================================
@@ -25,7 +27,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to a video to display on the page.
     /// </summary>
-    public string? VideoUrl { get; set; }
+    public Uri? VideoUrl { get; set; }
 
     /*==========================================================================================================================
     | POSTER URL
@@ -33,7 +35,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to an image to display prior to playing the video.
     /// </summary>
-    public string? PosterUrl { get; set; }
+    public Uri? PosterUrl { get; set; }
 
   } //Class
 } //Namespace
