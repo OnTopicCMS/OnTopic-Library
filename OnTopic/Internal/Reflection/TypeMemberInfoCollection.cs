@@ -41,7 +41,8 @@ namespace OnTopic.Internal.Reflection {
         typeof(double?),
         typeof(string),
         typeof(DateTime),
-        typeof(DateTime?)
+        typeof(DateTime?),
+        typeof(Uri)
       };
     }
 
@@ -432,6 +433,11 @@ namespace OnTopic.Internal.Reflection {
       else if (type.Equals(typeof(DateTime)) || type.Equals(typeof(DateTime?))) {
         if (DateTime.TryParse(value, out var date)) {
           valueObject = date;
+        }
+      }
+      else if (type.Equals(typeof(Uri))) {
+        if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out var uri)) {
+          valueObject = uri;
         }
       }
 
