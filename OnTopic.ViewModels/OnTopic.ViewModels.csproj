@@ -13,7 +13,7 @@
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
     <Description>Provides view models that map to the factory default content type schemas.</Description>
-    <Copyright>Copyright © 2018 Ignia, LLC</Copyright>
+    <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>

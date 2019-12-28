@@ -12,7 +12,7 @@
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
     <Description>Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.</Description>
-    <Copyright>Copyright © 2018 Ignia, LLC</Copyright>
+    <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>

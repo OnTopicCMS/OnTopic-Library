@@ -11,7 +11,7 @@
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
     <Description>Test doubles, such as dummies and stubs, useful in setting up unit and integration tests for OnTopic.</Description>
-    <Copyright>Copyright © 2019 Ignia, LLC</Copyright>
+    <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>
