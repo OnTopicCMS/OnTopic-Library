@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyTitle>Ignia OnTopic Test Doubles</AssemblyTitle>
+    <Company>Ignia</Company>
+    <Product>Ignia OnTopic Library</Product>
+    <Description>Test doubles, such as dummies and stubs, useful in setting up unit and integration tests for OnTopic.</Description>
+    <Copyright>©2020 Ignia, LLC</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Authors>Ignia</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
+    <PackageTags>C# .NET AspDotNet Unit-Tests CMS Test-Doubles</PackageTags>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
+    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
+  </ItemGroup>
+
+</Project>

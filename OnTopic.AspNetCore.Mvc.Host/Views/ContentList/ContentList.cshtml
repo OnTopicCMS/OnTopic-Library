@@ -1,0 +1,30 @@
+﻿@model ContentListTopicViewModel
+
+<partial name="_PageAttributes" />
+
+<h2>Collections</h2>
+
+<h3>Categories</h3>
+<ul>
+  @foreach (var category in Model.Categories) {
+    <li>@category.Title</li>
+  }
+</ul>
+
+<h3>Content Items</h3>
+@foreach (var contentItem in Model.ContentItems) {
+  <h4>@contentItem.Key</h4>
+  <ul>
+    <li>Title: @contentItem.Title</li>
+    <li>Category: @contentItem.Category</li>
+    <li><a href="@contentItem.LearnMoreUrl">Learn More</a></li>
+    <li><img src="@contentItem.ThumbnailImage" /></li>
+    <li>Description: @contentItem.Description</li>
+  </ul>
+}
+
+<!--
+  Content Type: Content List
+  View Type: Accordion
+  View Location: ~/Views/ContentList/Accordion.cshtml
+-->

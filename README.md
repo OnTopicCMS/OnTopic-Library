@@ -1,5 +1,5 @@
 # OnTopic Library
-The OnTopic library (`Ignia.Topics.*`) is a .NET Framework-based content management system (CMS) established on the separation of concerns (SoC) design principle. 
+The OnTopic library (`Ignia.Topics.*`) is a .NET Framework-based content management system (CMS) established on the separation of concerns (SoC) design principle.
 
 ### Roles
 Specifically, it attempts to ensure that the responsibilities of the developer, designer, and content owner are compartmentalized and optimized for the needs of each.
@@ -23,11 +23,12 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 - **[`Ignia.Topics.Data.Sql`](Ignia.Topics.Data.Sql)**: [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) implementation for storing and retrieving [`Topic`](Ignia.Topics/Topic.cs) entities in a Microsoft SQL Server database.
   - **[`Ignia.Topics.Data.Sql.Database`](Ignia.Topics.Data.Sql.Database)**: Microsoft SQL Server database definition, including tables, views, and stored procedures needed to support the [`Ignia.Topics.Data.Sql`](Ignia.Topics.Data.Sql) library.
 
-> *Note*: Additional data access layers can be created by implementing the [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) interface. 
+> *Note*: Additional data access layers can be created by implementing the [`ITopicRepository`](Ignia.Topics/Repositories/ITopicRepository.cs) interface.
 
 ### Presentation Layer
 - **[`Ignia.Topics.Web`](Ignia.Topics.Web)**: ASP.NET WebForms implementation, allowing templates to be created using `*.aspx` pages. This is considered deprecated, and intended exclusively for backward compatibility.
 - **[`Ignia.Topics.Web.Mvc`](Ignia.Topics.Web.Mvc)**: ASP.NET MVC 5.x implementation, including a default [`TopicController`](Ignia.Topics.Web.Mvc/TopicController.cs) implementation, allowing templates to be created using `*.cshtml` pages.
+- **[`Ignia.Topics.AspNetCore.Mvc`](Ignia.Topics.AspNetCore.Mvc)**: ASP.NET Core 2.x implementation, including a default [`TopicController`](Ignia.Topics.Web.Mvc/TopicController.cs) implementation, allowing templates to be created using `*.cshtml` pages.
 - **[`Ignia.Topics.ViewModels`](Ignia.Topics.ViewModels)**: Standard view models for exposing factory default schemas of shared content types. These can be extended, overwritten, or ignored entirely by the presentation layer implementation; they are provided for convenience.
 
 ### Unit Tests
@@ -37,6 +38,5 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 - **[`Ignia.Topics.Editor`](https://github.com/Ignia/Topic-Editor/)**: ASP.NET WebForms implementation of the editor interface.
 - **[`Ignia.Topics.Editor.Mvc`](https://github.com/Ignia/Topic-Editor-MVC/)**: ASP.NET MVC implementation of the editor interface.
 
-
 ## Credits
-OnTopic is owned and maintained by [Ignia](http://www.ignia.com/). 
+OnTopic is owned and maintained by [Ignia](http://www.ignia.com/).

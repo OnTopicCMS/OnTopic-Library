@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <!-- Tables -->
+  <Operation Name="Rename Refactor" Key="130bc4c1-fcf9-47e8-93a3-a9328bc70ec7" ChangeDateTime="12/13/2019 04:56:18">
+    <Property Name="ElementName" Value="[dbo].[topics_TopicAttributes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Attributes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="45a30c59-6280-4c43-b34a-70f714771db0" ChangeDateTime="12/13/2019 04:56:36">
+    <Property Name="ElementName" Value="[dbo].[topics_Blob]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ExtendedAttributes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="01974762-c8ed-4bae-ad29-ba6982dc9f9d" ChangeDateTime="12/13/2019 04:56:36">
+    <Property Name="ElementName" Value="[dbo].[topics_Hierarchy]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Hierarchy]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ad36e54-0ba1-41a3-ab95-a75dcc69255a" ChangeDateTime="12/13/2019 04:56:36">
+    <Property Name="ElementName" Value="[dbo].[topics_Relationships]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Relationships]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a07f428-c9ce-4c3c-999b-69dc8e5cc64b" ChangeDateTime="12/13/2019 04:56:36">
+    <Property Name="ElementName" Value="[dbo].[topics_Topics]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Topics]" />
+  </Operation>
+  <!-- Columns -->
+  <Operation Name="Rename Refactor" Key="49357393-f2e7-4b42-b870-e4020f5cfd94" ChangeDateTime="12/13/2019 05:08:11">
+    <Property Name="ElementName" Value="[dbo].[Relationships].[RelationshipTypeID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Relationships]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RelationshipKey" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="23108bab-584d-4e40-8c56-fbefac12c11e" ChangeDateTime="12/13/2019 05:53:50">
+    <Property Name="ElementName" Value="[dbo].[ExtendedAttributes].[Blob]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ExtendedAttributes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="AttributesXml" />
+  </Operation>
+  <!-- Stored Procedures -->
+  <Operation Name="Rename Refactor" Key="79fb57e0-5257-4a99-a661-331fb1cbd531" ChangeDateTime="12/13/2019 04:46:42">
+    <Property Name="ElementName" Value="[dbo].[topics_CompressTopics]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CompressTopics]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0a28a959-a3fb-46b7-84f3-dad35bff3f35" ChangeDateTime="12/13/2019 04:51:56">
+    <Property Name="ElementName" Value="[dbo].[topics_CreateTopic]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CreateTopic]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="47b11a1c-6123-4b9b-a21b-9cc4df854bea" ChangeDateTime="12/13/2019 04:52:24">
+    <Property Name="ElementName" Value="[dbo].[topics_DeleteTopic]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DeleteTopic]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a000657-e4f7-4f17-a3b1-3a231d0194b9" ChangeDateTime="12/13/2019 04:52:47">
+    <Property Name="ElementName" Value="[dbo].[topics_GenerateNestedSet]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GenerateNestedSet]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aea7199a-1795-4b19-9187-3ee165b0447d" ChangeDateTime="12/13/2019 04:53:04">
+    <Property Name="ElementName" Value="[dbo].[topics_GetTopicAttributes]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GetAttributes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7b5e2fc4-f096-4f36-b056-7ec6f1fd6be2" ChangeDateTime="12/13/2019 04:53:27">
+    <Property Name="ElementName" Value="[dbo].[topics_GetTopicID]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GetTopicID]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6245d080-6b86-4034-a8ff-4df10adf115d" ChangeDateTime="12/13/2019 04:53:49">
+    <Property Name="ElementName" Value="[dbo].[topics_GetTopics]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GetTopics]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="68bca8bf-747f-4b27-8b53-36efdd53ca1a" ChangeDateTime="12/13/2019 04:54:06">
+    <Property Name="ElementName" Value="[dbo].[topics_GetVersion]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GetTopicVersion]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d87cd6e7-6a88-4b64-b59f-7e899fa55681" ChangeDateTime="12/13/2019 04:54:23">
+    <Property Name="ElementName" Value="[dbo].[topics_MoveTopic]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MoveTopic]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="73c6516c-027d-4b30-aa96-b814d8cc3280" ChangeDateTime="12/13/2019 04:54:45">
+    <Property Name="ElementName" Value="[dbo].[topics_pr_Disable_Foreign_Keys]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="pr_Disable_Foreign_Keys" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0643b769-16e1-4f7e-bb64-4af72070949b" ChangeDateTime="12/13/2019 04:55:08">
+    <Property Name="ElementName" Value="[dbo].[topics_PersistRelations]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[UpdateRelationships]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a10f7e00-b69d-47d2-a748-0e49d9bf9b74" ChangeDateTime="12/13/2019 04:55:27">
+    <Property Name="ElementName" Value="[dbo].[topics_UpdateTopic]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[UpdateTopic]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c4b149bf-d4c7-4c8e-8acf-1d7986a83a7c" ChangeDateTime="12/13/2019 04:46:42">
+    <Property Name="ElementName" Value="[dbo].[topics_DetectHierarchyCorruption]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ValidateHierarchy]" />
+  </Operation>
+  <!-- Views -->
+  <Operation Name="Rename Refactor" Key="5485015b-6a38-4521-b304-1bd96ad04057" ChangeDateTime="12/13/2019 05:06:02">
+    <Property Name="ElementName" Value="[dbo].[topics_TopicAttributeIndex]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AttributeIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="224efda7-4c57-4eba-8805-9375dfa19ac4" ChangeDateTime="12/13/2019 05:06:19">
+    <Property Name="ElementName" Value="[dbo].[topics_BlobIndex]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ExtendedAttributeIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9d5e5dc4-f776-4223-877b-779988fc8690" ChangeDateTime="12/13/2019 05:06:39">
+    <Property Name="ElementName" Value="[dbo].[topics_LftRgt]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LeftRightRange]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="feffb094-4f2d-48c9-8cdc-d418da4e9df7" ChangeDateTime="12/13/2019 05:06:39">
+    <Property Name="ElementName" Value="[dbo].[topics_TopicIndex]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[TopicIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="92880150-fab7-496c-9aee-76604b57e90c" ChangeDateTime="12/13/2019 05:06:39">
+    <Property Name="ElementName" Value="[dbo].[topics_VersionHistoryIndex]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[VersionHistoryIndex]" />
+  </Operation>
+  <!-- Functions -->
+  <Operation Name="Rename Refactor" Key="b4574959-be37-415e-88c9-70fce8f60650" ChangeDateTime="12/13/2019 05:28:36">
+    <Property Name="ElementName" Value="[dbo].[topics_SimpleIntListToTbl]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[SimpleIntListToTbl]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e49cd8c7-42c1-496d-bc14-76fec77c8ef9" ChangeDateTime="12/13/2019 05:28:36">
+    <Property Name="ElementName" Value="[dbo].[topics_GetParentID]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GetParentID]" />
+  </Operation>
+</Operations>
