@@ -36,11 +36,6 @@
     <DebugType>pdbonly</DebugType>
     <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Backup\**" />
-    <EmbeddedResource Remove="Backup\**" />
-    <None Remove="Backup\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
