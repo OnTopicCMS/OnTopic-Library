@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <ProjectGuid>{B8D5B290-4451-4C3B-AE9E-0FF075958A74}</ProjectGuid>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
@@ -7,6 +8,7 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
   <PropertyGroup>
     <AssemblyTitle>Ignia OnTopic Library</AssemblyTitle>
     <Company>Ignia</Company>
@@ -16,11 +18,13 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>
+
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Domain</PackageTags>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DocumentationFile>bin\$(Configuration)\OnTopic.XML</DocumentationFile>
@@ -32,6 +36,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -47,6 +52,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
   <ItemGroup>
     <None Include="Mapping\README.md" />
     <None Include="README.md" />
@@ -56,4 +62,5 @@
     <Folder Include="Internal\Mapping\" />
     <Folder Include="Internal\Reflection\" />
   </ItemGroup>
+
 </Project>
