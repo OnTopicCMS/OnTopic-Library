@@ -13,7 +13,7 @@
   <PropertyGroup>
     <AssemblyTitle>OnTopic Cached Repository</AssemblyTitle>
     <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
+    <Product>OnTopic</Product>
     <Description>Provides a caching decorator for ITopicRepository implementations.</Description>
     <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>

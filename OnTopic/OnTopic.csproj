@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyTitle>Ignia OnTopic Library</AssemblyTitle>
+    <AssemblyTitle>OnTopic Library</AssemblyTitle>
     <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
+    <Product>OnTopic</Product>
     <Description>Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.</Description>
     <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
