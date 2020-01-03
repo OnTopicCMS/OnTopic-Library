@@ -1,26 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <ProjectGuid>{B7F136A1-C86D-4A74-AC4F-3693CD1358A4}</ProjectGuid>
+    <RootNamespace>OnTopic.AspNetCore.Mvc</RootNamespace>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
   <PropertyGroup>
-    <AssemblyTitle>Ignia OnTopic ASP.NET Core Library</AssemblyTitle>
+    <AssemblyTitle>OnTopic ASP.NET Core Library</AssemblyTitle>
     <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
+    <Product>OnTopic</Product>
     <Description>Provides presentation-layer support for the ASP.NET Core Framework.</Description>
     <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>
+
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation Web MVC ASP.NET Core Controller</PackageTags>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -31,11 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Backup\**" />
-    <EmbeddedResource Remove="Backup\**" />
-    <None Remove="Backup\**" />
-  </ItemGroup>
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="GitVersionTask" Version="5.0.1">
@@ -45,16 +46,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UtilPack.NuGet.MSBuild" Version="2.9.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Include="README.md" />
   </ItemGroup>
+
 </Project>

@@ -1,24 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <ProjectGuid>{1DE1F923-C7C2-435B-B49A-975ACBCB5FF0}</ProjectGuid>
+    <RootNamespace>OnTopic.Data.Sql</RootNamespace>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
   <PropertyGroup>
-    <AssemblyTitle>Ignia SQL Server Repository</AssemblyTitle>
+    <AssemblyTitle>OnTopic SQL Server Repository</AssemblyTitle>
     <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
+    <Product>OnTopic</Product>
     <Description>Provides Microsoft SQL Server support for persisting the OnTopic graph to a database.</Description>
     <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>
+
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS SQL Data Repository</PackageTags>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -29,6 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -37,20 +43,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UtilPack.NuGet.MSBuild" Version="2.9.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Include="README.md" />
   </ItemGroup>
+
 </Project>
