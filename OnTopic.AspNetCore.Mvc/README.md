@@ -12,6 +12,7 @@ The `Ignia.Topics.AspNetCore.Mvc` assembly provides a default implementation for
   - [View Locations](#view-locations)
   - [Example](#example)
 - [Configuration](#configuration)
+  - [Dependencies](#dependencies)
   - [Application](#application)
   - [Route Configuration](#route-configuration)
   - [Composition Root](#composition-root)
@@ -80,6 +81,19 @@ If no match is found, then the next `Accept` header will be searched. Eventually
 - `~/Views/ContentTypes/ContentList.cshtml`
 
 ## Configuration
+
+### Dependencies
+Installation can be performed by providing a `<PackageReference /`> to the `OnTopic.AspNetCore.Mvc` **NuGet** package.
+```xml
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  …
+  <ItemGroup>
+    <PackageReference Include="OnTopic.AspNetCore.Mvc" Version="4.0.0" />
+  </ItemGroup>
+</Project>
+```
+
+> *Note:* This package is currently only available on Ignia's private **NuGet** repository. For access, please contact [Ignia](http://www.ignia.com/).
 
 ### Application
 In the `Startup` class, OnTopic's ASP.NET Core support can be registered by calling the `AddTopicSupport()` extension method:
