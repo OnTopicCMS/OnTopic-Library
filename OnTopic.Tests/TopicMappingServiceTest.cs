@@ -377,26 +377,36 @@ namespace OnTopic.Tests {
     | TEST: MAP CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls child topics.
     /// </summary>
     [TestMethod]
     public async Task MapChildren() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var topic                 = TopicFactory.Create("Test", "Sample");
-      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", topic);
-      var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+      var topic                 = TopicFactory.Create("Test", "Descendent");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Descendent", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Descendent", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", topic);
+      var invalidChildTopic     = TopicFactory.Create("invalidChildTopic", "KeyOnly", topic);
+      var grandchildTopic       = TopicFactory.Create("GrandchildTopic", "Descendent", childTopic3);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      childTopic4.Attributes.SetBoolean("IsLeaf", true);
 
-      Assert.AreEqual<int>(3, target.Children.Count);
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
-      Assert.IsNull(target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
-      Assert.AreEqual<int>(0, ((SampleTopicViewModel)target.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture))).Children.Count);
+      var target                = (DescendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(4, target.Children.Count);
+      Assert.IsNotNull(getTopic(target, "ChildTopic1"));
+      Assert.IsNotNull(getTopic(target, "ChildTopic2"));
+      Assert.IsNotNull(getTopic(target, "ChildTopic3"));
+      Assert.IsNotNull(getTopic(target, "ChildTopic4"));
+      Assert.IsTrue(((DescendentSpecializedTopicViewModel)getTopic(target, "ChildTopic4")).IsLeaf);
+      Assert.IsNull(getTopic(target, "invalidChildTopic"));
+      Assert.IsNull(getTopic(target, "GrandchildTopic"));
+      Assert.IsNotNull(getTopic(getTopic(target, "ChildTopic3"), "GrandchildTopic"));
+
+      DescendentTopicViewModel getTopic(DescendentTopicViewModel parent, string key) =>
+        parent.Children.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
 
     }
 
