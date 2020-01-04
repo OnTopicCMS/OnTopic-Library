@@ -18,7 +18,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class FilteredTopicViewModel : TopicViewModel {
+  public class FilteredTopicViewModel {
 
     [FilterByAttribute("ContentType", "Page")]
     [FilterByAttribute("SomeAttribute", "ValueA")]

@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -17,7 +16,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class AttributeDescriptorTopicViewModel : PageTopicViewModel {
+  public class AttributeDescriptorTopicViewModel {
 
   } //Class
 } //Namespace

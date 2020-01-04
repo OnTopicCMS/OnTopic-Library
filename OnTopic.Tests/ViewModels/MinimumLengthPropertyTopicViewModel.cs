@@ -17,7 +17,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class MinimumLengthPropertyTopicViewModel : TopicViewModel {
+  public class MinimumLengthPropertyTopicViewModel {
 
     [MinLength(13)]
     public string? MinimumLength { get; set; }
