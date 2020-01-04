@@ -1,5 +1,5 @@
 # SQL Schema
-The `Ignia.Topics.Data.Sql.Database` provides a default schema for supporting the [`SqlTopicRepository`](../Ignia.Topics.Data.Sql).
+The `OnTopic.Data.Sql.Database` provides a default schema for supporting the [`SqlTopicRepository`](../OnTopic.Data.Sql).
 
 > *Note:* Not all SQL objects are documented here. Missing objects are primarily intended for infrastructure support and used exclusively by stored procedures or administrators.
 
