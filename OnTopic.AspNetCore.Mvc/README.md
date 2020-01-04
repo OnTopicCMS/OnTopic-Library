@@ -1,5 +1,5 @@
-﻿# `Ignia.Topics.AspNetCore.Mvc`
 The `Ignia.Topics.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with the ASP.NET Core 3.x Framework.
+﻿# OnTopic for ASP.NET Core 3.x
 
 [![OnTopic.AspNetCore.Mvc package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/4db5e20c-69c6-4134-823a-c3de06d1176e/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=4db5e20c-69c6-4134-823a-c3de06d1176e&preferRelease=true)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
