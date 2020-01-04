@@ -1,8 +1,8 @@
 ﻿# OnTopic Library
 
-![Continuous Integration (CI) Build status](https://igniasoftware.visualstudio.com/_apis/public/build/definitions/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/1/badge)
+[![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
 ![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
-[![Ignia.Topics package in Internal feed in Visual Studio Team Services](https://feedsprodcus1.feeds.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/c4d6e7c6-5328-4794-8ce2-608c9c557052/Badge)](https://igniasoftware.visualstudio.com/_Packaging?feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=c4d6e7c6-5328-4794-8ce2-608c9c557052&preferRelease=true&_a=package)
+[![OnTopic package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/fb67677f-2b83-4318-9007-0c46b4da55c1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=fb67677f-2b83-4318-9007-0c46b4da55c1&preferRelease=true)
 
 The `OnTopic` assembly represents the core domain layer of the OnTopic library. It includes the primary entity ([`Topic`](Topic.cs)), abstractions (e.g., [`ITopicRepository`](Repositories/ITopicRepository.cs)), and associated classes (e.g., [`TopicCollection<>`](Collections/TopicCollection{T}.cs)).
 
