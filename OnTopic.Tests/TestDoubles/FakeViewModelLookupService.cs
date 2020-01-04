@@ -31,10 +31,13 @@ namespace OnTopic.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Add(typeof(AscendentTopicViewModel));
+      Add(typeof(AscendentSpecializedTopicViewModel));
       Add(typeof(CircularTopicViewModel));
       Add(typeof(DefaultValueTopicViewModel));
       Add(typeof(FilteredTopicViewModel));
       Add(typeof(FlattenChildrenTopicViewModel));
+      Add(typeof(KeyOnlyTopicViewModel));
       Add(typeof(MetadataLookupTopicViewModel));
       Add(typeof(MethodBasedViewModel));
       Add(typeof(MinimumLengthPropertyTopicViewModel));

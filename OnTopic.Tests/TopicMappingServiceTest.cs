@@ -112,32 +112,24 @@ namespace OnTopic.Tests {
     public async Task MapParents() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var grandParent           = TopicFactory.Create("Grandparent", "Sample");
-      var parent                = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var grandParent           = TopicFactory.Create("Grandparent", "AscendentSpecialized");
+      var parent                = TopicFactory.Create("Parent", "Ascendent", grandParent);
+      var topic                 = TopicFactory.Create("Test", "Ascendent", parent);
 
-      topic.Attributes.SetValue("MetaTitle", "ValueA");
-      topic.Attributes.SetValue("Title", "Value1");
-      topic.Attributes.SetValue("IsHidden", "1");
+      grandParent.Attributes.SetValue("IsRoot", "1");
 
-      parent.Attributes.SetValue("Title", "Value2");
-
-      grandParent.Attributes.SetValue("Title", "Value3");
-      grandParent.Attributes.SetValue("Property", "ValueB");
-
-      var viewModel             = (PageTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (AscendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
       var parentViewModel       = viewModel?.Parent;
-      var grandParentViewModel  = parentViewModel?.Parent as SampleTopicViewModel;
+      var grandParentViewModel  = parentViewModel?.Parent as AscendentSpecializedTopicViewModel;
 
       Assert.IsNotNull(viewModel);
       Assert.IsNotNull(parentViewModel);
       Assert.IsNotNull(grandParentViewModel);
-      Assert.AreEqual<string>("ValueA", viewModel.MetaTitle);
-      Assert.AreEqual<string>("Value1", viewModel.Title);
-      Assert.AreEqual<bool>(true, viewModel.IsHidden);
-      Assert.AreEqual<string>("Value2", parentViewModel.Title);
-      Assert.AreEqual<string>("Value3", grandParentViewModel.Title);
-      Assert.AreEqual<string>("ValueB", grandParentViewModel.Property);
+      Assert.AreEqual<string>("Test", viewModel.Key);
+      Assert.AreEqual<string>("Parent", parentViewModel.Key);
+      Assert.AreEqual<string>("Grandparent", grandParentViewModel.Key);
+      Assert.IsTrue(grandParentViewModel.IsRoot);
+      Assert.IsNull(grandParentViewModel.Parent);
 
     }
 
