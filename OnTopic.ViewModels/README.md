@@ -1,10 +1,10 @@
 ﻿# Topic View Models
-The `Ignia.Topics.ViewModels` assembly includes default implementations of basic view models which map to the stock content types that ship with OnTopic. These can optionally be used or extended by client implementations.
-
-> *Note:* It is not necessary to use or derive from these view models. They are provided exclusively for convenience so implementers don't need to recreate basic data models.
+The `OnTopic.ViewModels` assembly includes default implementations of basic view models which map to the stock content types that ship with OnTopic. These can optionally be used or extended by client implementations.
 
 [![OnTopic.ViewModels package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/b22ec8a0-3966-4dc8-8bf5-69e6264dabd1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=b22ec8a0-3966-4dc8-8bf5-69e6264dabd1&preferRelease=true)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
+
+> *Note:* It is not necessary to use or derive from these view models. They are provided exclusively for convenience so implementers don't need to recreate basic data models.
 
 ## Installation
 Installation can be performed by providing a `<PackageReference /`> to the `OnTopic.ViewModels` **NuGet** package.
@@ -25,21 +25,22 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
     - [`ContentListTopicViewModel`](ContentListTopicViewModel.cs) ([`ContentItemTopicViewModel`](ContentItemTopicViewModel.cs))
     - [`IndexTopicViewModel`](IndexTopicViewModel.cs)
     - [`SlideshowTopicViewModel`](SlideshowTopicViewModel.cs) ([`SlideTopicViewModel`](SlideTopicViewModel.cs))
-    - [`SlideTopicViewModel`](SlideTopicViewModel.cs)
     - [`VideoTopicViewModel`](VideoTopicViewModel.cs)
   - [`SectionTopicViewModel`](SectionTopicViewModel.cs)
     - [`PageGroupTopicViewModel`](PageGroupTopicViewModel.cs)
+  - [`NavigationTopicViewModel`](NavigationTopicViewModel.cs) 
   - [`ItemTopicViewModel`](ItemTopicViewModel.cs)
     - [`ContentItemTopicViewModel`](ContentItemTopicViewModel.cs)
     - [`LookupListItemTopicViewModel`](LookupListItemTopicViewModel.cs)
+    - [`SlideTopicViewModel`](SlideTopicViewModel.cs)
 - [`TopicViewModelLookupService`](TopicViewModelLookupService.cs)
 - [`TopicViewModelCollection<>`](TopicViewModelCollection.cs)
 
 ## Usage
-By default, the [`Ignia.Topics.AspNetCore.Mvc`](../Ignia.Topics.AspNetCore.Mvc)'s [`TopicController`](../Ignia.Topics.AspNetCore.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../Ignia.Topics/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
+By default, the [`OnTopic.AspNetCore.Mvc`](../OnTopic.AspNetCore.Mvc/README.md)'s [`TopicController`](../OnTopic.AspNetCore.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../OnTopic/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
 
 ### `DynamicTopicViewModelLookupService`
-For applications with a large number of view models, it may be preferable to use the `DynamicTopicViewModelLookupService`, which will attempt to map topics to view models based on the naming convention `{ContentType}TopicViewModel`, from any assembly or namespace. If the `Ignia.Topics.ViewModels.dll` is in an application's `/bin` directory then these view models will be available to the lookup service and, thus, the mapping service. If any classes with the same name are available in _any other assembly or namespace_ then they will override the `ViewModels`  from this assembly. That allows these classes to be treated as default fallbacks.
+For applications with a large number of view models, it may be preferable to use the `DynamicTopicViewModelLookupService`, which will attempt to map topics to view models based on the naming convention `{ContentType}TopicViewModel`, from any assembly or namespace. If the `OnTopic.ViewModels.dll` is in an application's `/bin` directory then these view models will be available to the lookup service and, thus, the mapping service. If any classes with the same name are available in _any other assembly or namespace_ then they will override the `ViewModels`  from this assembly. That allows these classes to be treated as default fallbacks.
 
 > *Note:* If a base class is overwritten then topics that derive from the original version will continue to do so unless they are _also_ overwritten. For example, if a `Theme` property is added to a customer-specific `PageTopicViewModel`, the `Theme` property won't be available on e.g. `SlideShowTopicViewModel` unless it is _also_ overwritten by the customer to inherit from their `PageTopicViewModel`.
 
