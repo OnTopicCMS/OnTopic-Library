@@ -3,6 +3,9 @@ The `Ignia.Topics.ViewModels` assembly includes default implementations of basic
 
 > *Note:* It is not necessary to use or derive from these view models. They are provided exclusively for convenience so implementers don't need to recreate basic data models.
 
+[![OnTopic.ViewModels package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/b22ec8a0-3966-4dc8-8bf5-69e6264dabd1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=b22ec8a0-3966-4dc8-8bf5-69e6264dabd1&preferRelease=true)
+[![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
+
 ## Inventory
 - [`TopicViewModel`](TopicViewModel.cs)
   - [`PageTopicViewModel`](PageTopicViewModel.cs)

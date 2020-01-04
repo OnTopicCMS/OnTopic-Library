@@ -1,6 +1,9 @@
 # OnTopic Library
 The OnTopic library (`Ignia.Topics.*`) is a .NET Framework-based content management system (CMS) established on the separation of concerns (SoC) design principle.
 
+[![OnTopic package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/fb67677f-2b83-4318-9007-0c46b4da55c1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=fb67677f-2b83-4318-9007-0c46b4da55c1&preferRelease=true)
+[![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
+
 ### Roles
 Specifically, it attempts to ensure that the responsibilities of the developer, designer, and content owner are compartmentalized and optimized for the needs of each.
 
