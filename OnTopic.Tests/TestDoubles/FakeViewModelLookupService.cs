@@ -44,7 +44,6 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(FilteredTopicViewModel));
       Add(typeof(FlattenChildrenTopicViewModel));
       Add(typeof(KeyOnlyTopicViewModel));
-      Add(typeof(MetadataLookupTopicViewModel));
       Add(typeof(MethodBasedViewModel));
       Add(typeof(MinimumLengthPropertyTopicViewModel));
       Add(typeof(NestedTopicViewModel));
@@ -52,12 +51,18 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(RequiredObjectTopicViewModel));
       Add(typeof(RequiredTopicViewModel));
       Add(typeof(SampleTopicViewModel));
-      Add(typeof(ContentTypeDescriptorTopicViewModel));
-      Add(typeof(AttributeDescriptorTopicViewModel));
-      Add(typeof(TextAttributeTopicViewModel));
       Add(typeof(RelatedEntityTopicViewModel));
       Add(typeof(TopicReferenceTopicViewModel));
       Add(typeof(TopicReferenceAttributeTopicViewModel));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add test specific metadata view models
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Add(typeof(AttributeDescriptorTopicViewModel));
+      Add(typeof(ContentTypeDescriptorTopicViewModel));
+      Add(typeof(MetadataLookupTopicViewModel));
+      Add(typeof(TextAttributeTopicViewModel));
+
 
     }
 
