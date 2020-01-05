@@ -26,9 +26,6 @@ namespace OnTopic.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
 
-    [DisallowNull]
-    public IDictionary<string, string?>? Configuration { get; set; }
-
     public List<DateTime>? VersionHistory { get; set; }
 
   } //Class
