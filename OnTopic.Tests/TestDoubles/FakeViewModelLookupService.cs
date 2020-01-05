@@ -31,6 +31,7 @@ namespace OnTopic.Tests.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
       \-----------------------------------------------------------------------------------------------------------------------*/
+      Add(typeof(AmbiguousRelationTopicViewModel));
       Add(typeof(AscendentTopicViewModel));
       Add(typeof(AscendentSpecializedTopicViewModel));
       Add(typeof(RelationTopicViewModel));

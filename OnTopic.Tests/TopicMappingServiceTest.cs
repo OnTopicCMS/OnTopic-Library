@@ -290,40 +290,38 @@ namespace OnTopic.Tests {
     ///   type specified by <see cref="Mapping.Annotations.RelationshipAttribute"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="SampleTopicViewModel.RelationshipAlias"/> uses <see cref="Mapping.Annotations.RelationshipAttribute"/>
-    ///   to set the relationship key to <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
-    ///   cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
-    ///   outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
-    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
+    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see
+    ///   cref="Mapping.Annotations.RelationshipAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
+    ///   <see cref="RelationshipType"/> to <see cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c>
+    ///   refers to a relationship that is both outgoing and incoming. It should be smart enough to a) look for the
+    ///   <c>AmbigousRelationship</c> instead of the <c>RelationshipAlias</c>, and b) source from the <see
+    ///   cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
     public async Task AlternateRelationship() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
-      var relatedTopic4         = TopicFactory.Create("RelatedTopic4", "Page");
-      var relatedTopic5         = TopicFactory.Create("RelatedTopic5", "Page");
-      var relatedTopic6         = TopicFactory.Create("RelatedTopic6", "Page");
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var outgoingRelation      = TopicFactory.Create("OutgoingRelation", "KeyOnly");
+      var incomingRelation      = TopicFactory.Create("IncomingRelation", "KeyOnly");
+      var ambiguousRelation     = TopicFactory.Create("AmbiguousRelation", "KeyOnly");
+
+      var topic                 = TopicFactory.Create("Test", "AmbiguousRelation");
 
       //Set outgoing relationships
-      topic.Relationships.SetTopic("RelationshipAlias", relatedTopic1);
-      topic.Relationships.SetTopic("AmbiguousRelationship", relatedTopic2);
-      topic.Relationships.SetTopic("AmbiguousRelationship", relatedTopic3);
+      topic.Relationships.SetTopic("RelationshipAlias", ambiguousRelation);
+      topic.Relationships.SetTopic("AmbiguousRelationship", outgoingRelation);
 
       //Set incoming relationships
-      relatedTopic4.Relationships.SetTopic("RelationshipAlias", topic);
-      relatedTopic5.Relationships.SetTopic("AmbiguousRelationship", topic);
-      relatedTopic6.Relationships.SetTopic("AmbiguousRelationship", topic);
+      ambiguousRelation.Relationships.SetTopic("RelationshipAlias", topic);
+      incomingRelation.Relationships.SetTopic("AmbiguousRelationship", topic);
 
-      var target = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (AmbiguousRelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int>(2, target.RelationshipAlias.Count);
-      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic5", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic6", StringComparison.InvariantCulture)));
+      Assert.AreEqual<int>(1, target.RelationshipAlias.Count);
+      Assert.IsNotNull(getRelation(target, "IncomingRelation"));
 
+      KeyOnlyTopicViewModel getRelation(AmbiguousRelationTopicViewModel topic, string key)
+        => topic.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
     }
 
     /*==========================================================================================================================
