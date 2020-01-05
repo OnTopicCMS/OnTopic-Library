@@ -37,6 +37,7 @@ namespace OnTopic.Tests {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    ITopicRepository                _topicRepository;
+    readonly                    ITopicMappingService            _mappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -52,6 +53,7 @@ namespace OnTopic.Tests {
     /// </remarks>
     public TopicMappingServiceTest() {
       _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+      _mappingService = new TopicMappingService(new DummyTopicRepository(), new FakeViewModelLookupService());
     }
 
     /*==========================================================================================================================
@@ -63,14 +65,13 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapGeneric() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target                = await mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -88,14 +89,13 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapDynamic() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
       topic.Attributes.SetValue("IsHidden", "1");
 
-      var target                = (PageTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (PageTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
@@ -112,14 +112,13 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapParents() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "AscendentSpecialized");
       var parent                = TopicFactory.Create("Parent", "Ascendent", grandParent);
       var topic                 = TopicFactory.Create("Test", "Ascendent", parent);
 
       grandParent.Attributes.SetValue("IsRoot", "1");
 
-      var viewModel             = (AscendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (AscendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
       var parentViewModel       = viewModel?.Parent;
       var grandParentViewModel  = parentViewModel?.Parent as AscendentSpecializedTopicViewModel;
 
@@ -144,7 +143,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task InheritValues() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "Page");
       var parent                = TopicFactory.Create("Parent", "Page", grandParent);
       var topic                 = TopicFactory.Create("Test", "InheritedProperty", parent);
@@ -152,7 +150,7 @@ namespace OnTopic.Tests {
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel             = (InheritedPropertyTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (InheritedPropertyTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.IsNull(viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
@@ -169,7 +167,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapNullablePropertiesWithInvalidValues() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("NullableInteger", "A");
@@ -177,7 +174,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("NullableDateTime", "Hello World");
       topic.Attributes.SetValue("NullableUrl", "invalid://Web\\Path\\File!?@Query=String?");
 
-      var target                = await mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.IsNull(target.NullableInteger);
       Assert.IsNull(target.NullableBoolean);
@@ -201,7 +198,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapNullablePropertiesWithValidValues() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Page");
 
       topic.Attributes.SetValue("NullableString", "Hello World.");
@@ -215,7 +211,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("IsHidden", "true");
       topic.Attributes.SetValue("LastModified", "10/15/1976");
 
-      var target                = await mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<NullablePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string?>("Hello World.", target.NullableString);
       Assert.AreEqual<int?>(43, target.NullableInteger);
@@ -240,13 +236,12 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task AlternateAttributeKey() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "PropertyAlias");
 
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel             = (PropertyAliasTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (PropertyAliasTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
@@ -261,7 +256,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapRelationships() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
       var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
       var relatedTopic3         = TopicFactory.Create("Sibling", "Relation");
@@ -271,7 +265,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target                = (RelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
       Assert.IsNotNull(getCousin(target, "Cousin1"));
@@ -301,7 +295,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task AlternateRelationship() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var outgoingRelation      = TopicFactory.Create("OutgoingRelation", "KeyOnly");
       var incomingRelation      = TopicFactory.Create("IncomingRelation", "KeyOnly");
       var ambiguousRelation     = TopicFactory.Create("AmbiguousRelation", "KeyOnly");
@@ -316,7 +309,7 @@ namespace OnTopic.Tests {
       ambiguousRelation.Relationships.SetTopic("RelationshipAlias", topic);
       incomingRelation.Relationships.SetTopic("AmbiguousRelationship", topic);
 
-      var target = (AmbiguousRelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (AmbiguousRelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(1, target.RelationshipAlias.Count);
       Assert.IsNotNull(getRelation(target, "IncomingRelation"));
@@ -335,9 +328,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task CustomCollection() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var target                = (ContentTypeDescriptorTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (ContentTypeDescriptorTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(8, target.AttributeDescriptors.Count);
       Assert.AreEqual<int>(2, target.PermittedContentTypes.Count);
@@ -356,7 +348,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapNestedTopics() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Nested");
       var childTopic            = TopicFactory.Create("ChildTopic", "KeyOnly", topic);
       var topicList             = TopicFactory.Create("Categories", "List", topic);
@@ -365,7 +356,7 @@ namespace OnTopic.Tests {
 
       topicList.IsHidden        = true;
 
-      var target                = (NestedTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (NestedTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
 
@@ -388,7 +379,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapChildren() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
       var childTopic2           = TopicFactory.Create("ChildTopic2", "Descendent", topic);
@@ -399,7 +389,7 @@ namespace OnTopic.Tests {
 
       childTopic4.Attributes.SetBoolean("IsLeaf", true);
 
-      var target                = (DescendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (DescendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.Children.Count);
       Assert.IsNotNull(getTopic(target, "ChildTopic1"));
@@ -449,8 +439,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task RecursiveRelationships() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-
       //Self
       var topic                 = TopicFactory.Create("Test", "Relation");
 
@@ -476,7 +464,7 @@ namespace OnTopic.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target                = (RelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       var cousinTarget          = getCousin(target, "CousinTopic3") as RelationWithChildrenTopicViewModel;
       var distantCousinTarget   = getChild(cousinTarget, "ChildTopic3");
@@ -509,7 +497,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapSlideshow() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Slideshow");
       var slides                = TopicFactory.Create("ContentItems", "List", topic);
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Slide", slides);
@@ -517,7 +504,7 @@ namespace OnTopic.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Slide", slides);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
 
-      var target                = (SlideshowTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (SlideshowTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
       Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
@@ -537,7 +524,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapTopics() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "KeyOnly");
       var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "KeyOnly");
       var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "KeyOnly");
@@ -547,7 +533,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetTopic("RelatedTopics", relatedTopic2);
       topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
 
-      var target                = (RelatedEntityTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RelatedEntityTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
       var relatedTopic3copy     = ((Topic)target.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
 
       Assert.AreEqual<int>(3, target.RelatedTopics.Count);
@@ -592,12 +578,10 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapCircularReference() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
 
-      var mappedTopic           = (CircularTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var mappedTopic           = (CircularTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<CircularTopicViewModel>(mappedTopic, mappedTopic.Children.First().Parent);
 
@@ -613,14 +597,13 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task FilterByContentType() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
       var childTopic2           = TopicFactory.Create("ChildTopic2", "DescendentSpecialized", topic);
       var childTopic3           = TopicFactory.Create("ChildTopic3", "DescendentSpecialized", topic);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", childTopic3);
 
-      var target                = (DescendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (DescendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       var specialized           = target.Children.GetByContentType("DescendentSpecialized");
 
@@ -644,12 +627,11 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapGetterMethods() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Sample");
       var childTopic            = TopicFactory.Create("Child", "Page", topic);
       var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
 
-      var target = (IndexTopicViewModel?)await mappingService.MapAsync(grandChildTopic).ConfigureAwait(false);
+      var target = (IndexTopicViewModel?)await _mappingService.MapAsync(grandChildTopic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
 
@@ -665,12 +647,11 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapCompatibleProperties() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
 
       topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
 
-      var target                = (CompatiblePropertyTopicViewModel?)await mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = (CompatiblePropertyTopicViewModel?)await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
       Assert.AreEqual<int>(1, target.VersionHistory.Count);
@@ -686,12 +667,11 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapRequiredProperty() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Required");
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
-      var target = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Required", target.RequiredAttribute);
 
@@ -707,10 +687,9 @@ namespace OnTopic.Tests {
     [ExpectedException(typeof(ValidationException))]
     public async Task MapRequiredPropertyException() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "Required");
 
-      var target = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -724,10 +703,9 @@ namespace OnTopic.Tests {
     [ExpectedException(typeof(ValidationException))]
     public async Task MapRequiredObjectPropertyException() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
-      var target                = (RequiredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -740,10 +718,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task MapDefaultValueProperties() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
-      var target                = (DefaultValueTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (DefaultValueTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Default", target.DefaultString);
       Assert.AreEqual<int>(10, target.DefaultInt);
@@ -761,12 +738,11 @@ namespace OnTopic.Tests {
     [ExpectedException(typeof(ValidationException))]
     public async Task MapMinimumValueProperties() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
-      var target = (MinimumLengthPropertyTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (MinimumLengthPropertyTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
     }
 
@@ -775,13 +751,12 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
-    ///   cref="SampleTopicViewModel.Children"/> property can be filtered using stacked <see cref="FilterByAttributeAttribute"/>
+    ///   cref="FilteredTopicViewModel.Children"/> property can be filtered using stacked <see cref="FilterByAttributeAttribute"/>
     ///   instances.
     /// </summary>
     [TestMethod]
     public async Task FilterByAttribute() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "Filtered");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
       var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
@@ -793,7 +768,7 @@ namespace OnTopic.Tests {
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
 
-      var target = (FilteredTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (FilteredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
 
@@ -809,8 +784,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Flatten() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-
       var topic                 = TopicFactory.Create("Test", "FlattenChildren");
 
       for (var i = 0; i < 5; i++) {
@@ -820,7 +793,7 @@ namespace OnTopic.Tests {
         }
       }
 
-      var target = (FlattenChildrenTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = (FlattenChildrenTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(25, target.Children.Count);
 
@@ -836,8 +809,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Caching() {
 
-      var mappingService = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var cachedMappingService = new CachedTopicMappingService(mappingService);
+      var cachedMappingService = new CachedTopicMappingService(_mappingService);
 
       var topic = TopicFactory.Create("Test", "Filtered", 5);
 
