@@ -97,13 +97,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MENU
+    | TEST: MENU: INVOKE: RETURNS NAVIGATION VIEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads a new <see cref="MenuViewComponent"/> and confirms the resulting values.
     /// </summary>
     [TestMethod]
-    public async Task Menu() {
+    public async Task Menu_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
         ViewComponentContext    = _context
@@ -122,13 +122,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PAGE-LEVEL NAVIGATION
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE: RETURNS NAVIGATION VIEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> and confirms the resulting values.
     /// </summary>
     [TestMethod]
-    public async Task PageLevelNavigation() {
+    public async Task PageLevelNavigation_Invoke_ReturnsNavigationViewModel() {
 
       var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
         ViewComponentContext    = _context

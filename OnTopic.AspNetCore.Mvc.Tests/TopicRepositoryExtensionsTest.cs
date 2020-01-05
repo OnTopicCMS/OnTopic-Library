@@ -43,13 +43,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: LOAD (ROUTE)
+    | TEST: LOAD: BY ROUTE: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes route data and ensures that a topic is correctly identified based on that route.
     /// </summary>
     [TestMethod]
-    public void LoadRoute() {
+    public void Load_ByRoute_ReturnsTopic() {
 
       var routes                = new RouteData();
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1");
