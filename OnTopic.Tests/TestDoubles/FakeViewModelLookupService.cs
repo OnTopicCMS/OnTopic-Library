@@ -63,7 +63,6 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(MetadataLookupTopicViewModel));
       Add(typeof(TextAttributeTopicViewModel));
 
-
     }
 
   } //Class
