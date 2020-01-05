@@ -426,15 +426,16 @@ namespace OnTopic.Tests {
     public async Task MapTopicReferences() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var topicReference        = _topicRepository.Load(11111);
 
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var topic                 = TopicFactory.Create("Test", "TopicReference");
 
-      topic.Attributes.SetInteger("TopicReferenceId", 11111);
+      topic.Attributes.SetInteger("TopicReferenceId", topicReference.Id);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.IsNotNull(target.TopicReference);
-      Assert.AreEqual<int>(11111, target.TopicReference.Id);
+      Assert.AreEqual<string>(topicReference.Key, target.TopicReference.Key);
 
     }
 

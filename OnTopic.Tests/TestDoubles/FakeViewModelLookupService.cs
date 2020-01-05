@@ -55,6 +55,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(AttributeDescriptorTopicViewModel));
       Add(typeof(TextAttributeTopicViewModel));
       Add(typeof(RelatedEntityTopicViewModel));
+      Add(typeof(TopicReferenceTopicViewModel));
       Add(typeof(TopicReferenceAttributeTopicViewModel));
 
     }
