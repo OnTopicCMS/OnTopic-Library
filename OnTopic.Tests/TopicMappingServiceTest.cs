@@ -268,12 +268,9 @@ namespace OnTopic.Tests {
       var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
-      Assert.IsNotNull(getCousin(target, "Cousin1"));
-      Assert.IsNotNull(getCousin(target, "Cousin2"));
-      Assert.IsNull(getCousin(target, "Sibling"));
-
-      RelationTopicViewModel getCousin(RelationTopicViewModel topic, string key)
-        => topic.Cousins.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      Assert.IsNotNull(GetChildTopic(target.Cousins, "Cousin1"));
+      Assert.IsNotNull(GetChildTopic(target.Cousins, "Cousin2"));
+      Assert.IsNull(GetChildTopic(target.Cousins, "Sibling"));
 
     }
 
@@ -312,10 +309,8 @@ namespace OnTopic.Tests {
       var target = (AmbiguousRelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(1, target.RelationshipAlias.Count);
-      Assert.IsNotNull(getRelation(target, "IncomingRelation"));
+      Assert.IsNotNull(GetChildTopic(target.RelationshipAlias, "IncomingRelation"));
 
-      KeyOnlyTopicViewModel getRelation(AmbiguousRelationTopicViewModel topic, string key)
-        => topic.RelationshipAlias.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
     }
 
     /*==========================================================================================================================
@@ -360,13 +355,10 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(2, target.Categories.Count);
 
-      Assert.IsNotNull(getCategory(target, "NestedTopic1"));
-      Assert.IsNotNull(getCategory(target, "NestedTopic2"));
-      Assert.IsNull(getCategory(target, "Categories"));
-      Assert.IsNull(getCategory(target, "ChildTopic"));
-
-      KeyOnlyTopicViewModel getCategory(NestedTopicViewModel topic, string key)
-        => topic.Categories.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      Assert.IsNotNull(GetChildTopic(target.Categories, "NestedTopic1"));
+      Assert.IsNotNull(GetChildTopic(target.Categories, "NestedTopic2"));
+      Assert.IsNull(GetChildTopic(target.Categories, "Categories"));
+      Assert.IsNull(GetChildTopic(target.Categories, "ChildTopic"));
 
     }
 
@@ -392,18 +384,17 @@ namespace OnTopic.Tests {
       var target                = (DescendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.Children.Count);
-      Assert.IsNotNull(getTopic(target, "ChildTopic1"));
-      Assert.IsNotNull(getTopic(target, "ChildTopic2"));
-      Assert.IsNotNull(getTopic(target, "ChildTopic3"));
-      Assert.IsNotNull(getTopic(target, "ChildTopic4"));
-      Assert.IsTrue(((DescendentSpecializedTopicViewModel)getTopic(target, "ChildTopic4")).IsLeaf);
-      Assert.IsNull(getTopic(target, "invalidChildTopic"));
-      Assert.IsNull(getTopic(target, "GrandchildTopic"));
-      Assert.IsNotNull(getTopic(getTopic(target, "ChildTopic3"), "GrandchildTopic"));
-
-      DescendentTopicViewModel getTopic(DescendentTopicViewModel parent, string key) =>
-        parent.Children.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic1"));
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic2"));
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic3"));
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic4"));
+      Assert.IsTrue(((DescendentSpecializedTopicViewModel)GetChildTopic(target.Children, "ChildTopic4")).IsLeaf);
+      Assert.IsNull(GetChildTopic(target.Children, "invalidChildTopic"));
+      Assert.IsNull(GetChildTopic(target.Children, "GrandchildTopic"));
+      Assert.IsNotNull(GetChildTopic(
+        ((DescendentTopicViewModel)GetChildTopic(target.Children, "ChildTopic3")).Children,
+        "GrandchildTopic"
+      ));
     }
 
     /*==========================================================================================================================
@@ -466,8 +457,8 @@ namespace OnTopic.Tests {
 
       var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
-      var cousinTarget          = getCousin(target, "CousinTopic3") as RelationWithChildrenTopicViewModel;
-      var distantCousinTarget   = getChild(cousinTarget, "ChildTopic3");
+      var cousinTarget          = GetChildTopic(target.Cousins, "CousinTopic3") as RelationWithChildrenTopicViewModel;
+      var distantCousinTarget   = GetChildTopic(cousinTarget.Children, "ChildTopic3") as RelationWithChildrenTopicViewModel;
 
       //Because Cousins is set to recurse over Children, its children should be set
       Assert.AreEqual<int>(3, cousinTarget.Children.Count);
@@ -477,12 +468,6 @@ namespace OnTopic.Tests {
 
       //Because Children is not set to recurse over Children, the grandchildren of a cousin should NOT be set
       Assert.AreEqual<int>(0, distantCousinTarget.Children.Count);
-
-      RelationTopicViewModel getCousin(RelationTopicViewModel topic, string key) =>
-        topic.Cousins.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-
-      RelationWithChildrenTopicViewModel getChild(RelationWithChildrenTopicViewModel topic, string key) =>
-        topic.Children.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
 
     }
 
@@ -507,10 +492,10 @@ namespace OnTopic.Tests {
       var target                = (SlideshowTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic1", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.ContentItems.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(GetChildTopic(target.ContentItems, "ChildTopic1"));
+      Assert.IsNotNull(GetChildTopic(target.ContentItems, "ChildTopic2"));
+      Assert.IsNotNull(GetChildTopic(target.ContentItems, "ChildTopic3"));
+      Assert.IsNotNull(GetChildTopic(target.ContentItems, "ChildTopic4"));
 
     }
 
@@ -534,7 +519,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
 
       var target                = (RelatedEntityTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
-      var relatedTopic3copy     = ((Topic)target.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
+      var relatedTopic3copy     = (getRelatedTopic(target, "RelatedTopic3"));
 
       Assert.AreEqual<int>(3, target.RelatedTopics.Count);
 
@@ -608,12 +593,9 @@ namespace OnTopic.Tests {
       var specialized           = target.Children.GetByContentType("DescendentSpecialized");
 
       Assert.AreEqual<int>(2, specialized.Count);
-      Assert.IsNotNull(getTopic(specialized, "ChildTopic2"));
-      Assert.IsNotNull(getTopic(specialized, "ChildTopic3"));
-      Assert.IsNull(getTopic(specialized, "ChildTopic4"));
-
-      DescendentTopicViewModel getTopic(TopicViewModelCollection<DescendentTopicViewModel> collection, string key)
-        => collection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      Assert.IsNotNull(GetChildTopic(specialized, "ChildTopic2"));
+      Assert.IsNotNull(GetChildTopic(specialized, "ChildTopic3"));
+      Assert.IsNull(GetChildTopic(specialized, "ChildTopic4"));
 
     }
 
@@ -819,6 +801,18 @@ namespace OnTopic.Tests {
       Assert.AreEqual<FilteredTopicViewModel>(target1, target2);
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET CHILD TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A helper function which retrieves a child topic based on the key.
+    /// </summary>
+    public static KeyOnlyTopicViewModel GetChildTopic(IEnumerable<KeyOnlyTopicViewModel> topicCollection, string key)
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+
+    public static TopicViewModel GetChildTopic(IEnumerable<TopicViewModel> topicCollection, string key)
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
 
   } //Class
 } //Namespace
