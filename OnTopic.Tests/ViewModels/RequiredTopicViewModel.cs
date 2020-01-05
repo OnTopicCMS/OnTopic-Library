@@ -16,7 +16,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class RequiredTopicViewModel : SampleTopicViewModel {
+  public class RequiredTopicViewModel {
 
     [Required]
     public string? RequiredAttribute { get; set; }

@@ -20,13 +20,13 @@ namespace OnTopic.Tests {
   public class RelatedTopicCollectionTest {
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC
+    | TEST: SET TOPIC: CREATES RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible.
     /// </summary>
     [TestMethod]
-    public void SetTopic() {
+    public void SetTopic_CreatesRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -38,13 +38,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: INCOMING RELATIONSHIP
+    | TEST: SET TOPIC: CREATES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
     /// </summary>
     [TestMethod]
-    public void IncomingRelationship() {
+    public void SetTopic_CreatesIncomingRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -57,13 +57,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: KEYS
+    | TEST: SET TOPIC: UPDATES KEY COUNT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, and the correct number of keys are returned.
     /// </summary>
     [TestMethod]
-    public void Keys() {
+    public void SetTopic_UpdatesKeyCount() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
@@ -78,13 +78,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET ALL TOPICS
+    | TEST: GET ALL TOPICS: RETURNS ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, and ensures they are all returned via GetAllTopics().
     /// </summary>
     [TestMethod]
-    public void GetAllTopics() {
+    public void GetAllTopics_ReturnsAllTopics() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
@@ -100,14 +100,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET ALL CONTENT TYPES
+    | TEST: GET ALL CONTENT TYPES: RETURNS ALL CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
     ///   <see cref="RelatedTopicCollection.GetAllTopics(String)"/> by content type.
     /// </summary>
     [TestMethod]
-    public void GetAllContentTypes() {
+    public void GetAllContentTypes_ReturnsAllContentTypes() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);

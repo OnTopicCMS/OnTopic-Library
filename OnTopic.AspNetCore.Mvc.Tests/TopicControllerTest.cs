@@ -78,13 +78,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: TOPIC
+    | TEST: TOPIC CONTROLLER: INDEX ASYNC: RETURNS TOPIC VIEW RESULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Triggers the <see cref="TopicController.IndexAsync(String)" /> action.
     /// </summary>
     [TestMethod]
-    public async Task TopicController_IndexAsync() {
+    public async Task TopicController_IndexAsync_ReturnsTopicViewResult() {
 
       var controller            = new TopicController(_topicRepository, _topicMappingService) {
         ControllerContext       = _context
@@ -101,13 +101,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REDIRECT
+    | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS REDIRECT RESULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Triggers the <see cref="FallbackController.Index()" /> action.
     /// </summary>
     [TestMethod]
-    public void RedirectController_TopicRedirect() {
+    public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
 
       var controller            = new RedirectController(_topicRepository);
       var result                = controller.Redirect(11110) as RedirectResult;
@@ -121,7 +121,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SITEMAP
+    | TEST: SITEMAP CONTROLLER: INDEX: RETURNS SITEMAP XML
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action.
@@ -133,7 +133,7 @@ namespace OnTopic.Tests {
     /// </remarks>
     [TestMethod]
     [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
-    public void SitemapController_Index() {
+    public void SitemapController_Index_ReturnsSitemapXml() {
 
       var controller            = new SitemapController(_topicRepository);
       var result                = controller.Index() as ViewResult;

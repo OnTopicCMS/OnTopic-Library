@@ -20,13 +20,13 @@ namespace OnTopic.Tests {
   public class TopicCollectionTest {
 
     /*==========================================================================================================================
-    | TEST: INDEXER
+    | TEST: SET TOPIC: INDEXER: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a number of topics, then accesses them by key.
     /// </summary>
     [TestMethod]
-    public void SetTopic() {
+    public void SetTopic_Indexer_ReturnsTopic() {
 
       var topics = new TopicCollection();
 
@@ -39,13 +39,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PREPOPULATE
+    | TEST: CONSTRUCTOR: IENUMERABLE: SEEDS TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a number of topics, then seeds a new <see cref="TopicCollection{T}"/> with them.
     /// </summary>
     [TestMethod]
-    public void Prepopulate() {
+    public void Constructor_IEnumerable_SeedsTopics() {
 
       var topics = new List<Topic>();
 
@@ -60,13 +60,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: AS READ ONLY
+    | TEST: AS READ ONLY: RETURNS READ ONLY TOPIC COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
     /// </summary>
     [TestMethod]
-    public void AsReadOnly() {
+    public void AsReadOnly_ReturnsReadOnlyTopicCollection() {
 
       var topics = new TopicCollection();
 

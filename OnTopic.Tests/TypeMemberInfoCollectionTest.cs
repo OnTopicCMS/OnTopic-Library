@@ -26,33 +26,63 @@ namespace OnTopic.Tests {
   public class TypeMemberInfoCollectionTest {
 
     /*==========================================================================================================================
-    | TEST: PROPERTY INFO COLLECTION CONSTRUCTOR
+    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection is
-    ///   returning expected types.
+    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   properties of the type.
     /// </summary>
     [TestMethod]
-    public void Constructor() {
+    public void Constructor_ValidType_IdentifiesProperty() {
 
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
-      Assert.IsTrue(properties.Contains("Key")); //Inherited string property
       Assert.IsTrue(properties.Contains("AttributeDescriptors")); //First class collection property
-      Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
       Assert.IsFalse(properties.Contains("InvalidPropertyName")); //Invalid property
 
     }
 
     /*==========================================================================================================================
-    | TEST: GET TYPE
+    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES DERIVED PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   properties derived from the base class.
+    /// </summary>
+    [TestMethod]
+    public void Constructor_ValidType_IdentifiesDerivedProperty() {
+
+      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
+
+      Assert.IsTrue(properties.Contains("Key")); //Inherited string property
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES METHOD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberInfoCollection"/> based on a type, and confirms that the property collection returns
+    ///   methods of the type.
+    /// </summary>
+    [TestMethod]
+    public void Constructor_ValidType_IdentifiesMethod() {
+
+      var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
+
+      Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET MEMBERS: PROPERTY INFO: RETURNS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
     ///   cref="TypeMemberInfoCollection.GetMembers{T}(Type)"/> functions.
     /// </summary>
     [TestMethod]
-    public void GetProperties() {
+    public void GetMembers_PropertyInfo_ReturnsProperties() {
 
       var types = new TypeMemberInfoCollection();
 
@@ -66,91 +96,214 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET MEMBER
+    | TEST: GET MEMBER: PROPERTY INFO BY KEY: RETURNS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMember(Type, String)"/> correctly returns the expected properties.
+    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> correctly returns the expected properties.
     /// </summary>
     [TestMethod]
-    public void GetMember() {
+    public void GetMember_PropertyInfoByKey_ReturnsValue() {
 
       var types = new TypeMemberInfoCollection();
 
-      Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key") != null);
-      Assert.IsTrue(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
-      Assert.IsFalse(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf") != null);
-      Assert.IsFalse(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName") != null);
-      Assert.IsTrue(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath") != null);
-      Assert.IsFalse(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors") != null);
+      Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key"));
+      Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+      Assert.IsNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "InvalidPropertyName"));
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY
+    | TEST: GET MEMBER: METHOD INFO BY KEY: RETURNS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value can be properly set using the
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
+    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> correctly returns the expected methods.
+    /// </summary>
+    [TestMethod]
+    public void GetMember_MethodInfoByKey_ReturnsValue() {
+
+      var types = new TypeMemberInfoCollection();
+
+      Assert.IsNotNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath"));
+      Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET MEMBER: GENERIC TYPE MISMATCH: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
+    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, string)"/> does not return values if the
+    /// </summary>
+    [TestMethod]
+    public void GetMember_GenericTypeMismatch_ReturnsNull() {
+
+      var types = new TypeMemberInfoCollection();
+
+      Assert.IsNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf"));
+      Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: KEY: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a key value can be properly set using the
     ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void SetProperty() {
+    public void SetPropertyValue_Key_SetsValue() {
+
+      var types                 = new TypeMemberInfoCollection();
+      var topic                 = TopicFactory.Create("Test", "ContentType");
+
+      var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
+
+      var key                   = types.GetPropertyValue(topic, "Key", typeof(string)).ToString();
+
+      Assert.IsTrue(isKeySet);
+      Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<string>("NewKey", key);
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a boolean value can be properly set using the
+    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_Boolean_SetsValue() {
 
       var types                 = new TypeMemberInfoCollection();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       types.SetPropertyValue(topic, "IsHidden", "1");
 
-      var isDateSet             = types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "2008-06-03") && isDateSet;
-          isDateSet             = types.SetPropertyValue(topic, "LastModified", "06/03/2008") && isDateSet;
-      var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
-      var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
-
-      var lastModified          = DateTime.Parse(
-        types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString(),
-        CultureInfo.InvariantCulture
-      );
-      var key                   = types.GetPropertyValue(topic, "Key", typeof(string)).ToString();
-
-      Assert.IsTrue(isDateSet);
-      Assert.IsTrue(isKeySet);
-      Assert.IsFalse(isInvalidPropertySet);
-      Assert.AreEqual<string>("NewKey", topic.Key);
-      Assert.AreEqual<string>("NewKey", key);
-      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
-      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), lastModified);
       Assert.IsTrue(topic.IsHidden);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD
+    | TEST: SET PROPERTY VALUE: DATE/TIME: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a date/time value can be properly set using the
+    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_DateTime_SetsValue() {
+
+      var types                 = new TypeMemberInfoCollection();
+      var topic                 = TopicFactory.Create("Test", "ContentType");
+
+      var isDateSet             = types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
+          isDateSet             = types.SetPropertyValue(topic, "LastModified", "2008-06-03") && isDateSet;
+          isDateSet             = types.SetPropertyValue(topic, "LastModified", "06/03/2008") && isDateSet;
+
+      var lastModified          = DateTime.Parse(
+        types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString(),
+        CultureInfo.InvariantCulture
+      );
+
+      Assert.IsTrue(isDateSet);
+      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
+      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), lastModified);
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that an invalid property being set via the
+    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method returns false.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
+
+      var types                 = new TypeMemberInfoCollection();
+      var topic                 = TopicFactory.Create("Test", "ContentType");
+
+      var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
+
+      Assert.IsFalse(isInvalidPropertySet);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD: VALID VALUE: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value can be properly set using the
     ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void SetMethod() {
+    public void SetMethod_ValidValue_SetsValue() {
 
       var types                 = new TypeMemberInfoCollection();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
-      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
-
       var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsTrue(isValueSet);
-      Assert.IsFalse(isInvalidSet);
       Assert.IsTrue(value is int);
       Assert.AreEqual<int>(123, (int)value);
 
     }
 
     /*==========================================================================================================================
-    | TEST: REFLECTION PERFORMANCE
+    | TEST: SET METHOD: INVALID VALUE: DOESN'T SET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value set with an invalid value using the
+    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method returns an exception.
+    /// </summary>
+    [TestMethod]
+    public void SetMethod_InvalidValue_DoesNotSetValue() {
+
+      var types                 = new TypeMemberInfoCollection();
+      var source                = new MethodBasedViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
+      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
+
+      Assert.IsFalse(isValueSet);
+      Assert.IsTrue(value is int);
+      Assert.AreEqual<int>(0, (int)value);
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that setting an invalid property name using the
+    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method returns false.
+    /// </summary>
+    [TestMethod]
+    public void SetMethod_Integer_SetsValue() {
+
+      var types                 = new TypeMemberInfoCollection();
+      var source                = new MethodBasedViewModel();
+
+      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
+
+      Assert.IsFalse(isInvalidSet);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: REFLECTION PERFORMANCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets properties via reflection n number of times; quick way of evaluating the relative performance impact of changes.
@@ -162,7 +315,7 @@ namespace OnTopic.Tests {
     ///   the number of iterations, simply increment the "totalIterations" variable.
     /// </remarks>
     [TestMethod]
-    public void ReflectionPerformance() {
+    public void SetPropertyValue_ReflectionPerformance() {
 
       var totalIterations = 1;
       var types = new TypeMemberInfoCollection();

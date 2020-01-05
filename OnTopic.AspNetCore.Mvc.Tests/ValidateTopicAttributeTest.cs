@@ -87,7 +87,7 @@ namespace OnTopic.Tests {
       };
 
     /*==========================================================================================================================
-    | TEST: INVALID CONTROLLER THROWS EXCEPTION
+    | TEST: INVALID CONTROLLER TYPE THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a controller that doesn't derive from <see cref="TopicController"/> throws a <see
@@ -95,7 +95,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public void InvalidController_Throws_Exception() {
+    public void InvalidControllerType_ThrowsException() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var controller            = new DummyController() {
@@ -112,13 +112,13 @@ namespace OnTopic.Tests {
 
     }
     /*==========================================================================================================================
-    | TEST: NULL TOPIC RETURNS NOT FOUND
+    | TEST: NULL TOPIC: RETURNS NOT FOUND
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [TestMethod]
-    public void NullTopic_Returns_NotFound() {
+    public void NullTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var controller            = GetTopicController(null);
@@ -133,13 +133,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DISABLED TOPIC RETURNS NOT AUTHORIZED
+    | TEST: DISABLED TOPIC: RETURNS NOT AUTHORIZED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="NotFoundObjectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> is null.
     /// </summary>
     [TestMethod]
-    public void DisabledTopic_Returns_NotFound() {
+    public void DisabledTopic_ReturnsNotFound() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "Page");
@@ -157,14 +157,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: TOPIC WITH URL RETURNS REDIRECT
+    | TEST: TOPIC WITH URL: RETURNS REDIRECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> contains
     ///   a <c>Url</c> attribute.
     /// </summary>
     [TestMethod]
-    public void TopicWithUrl_Returns_Redirect() {
+    public void TopicWithUrl_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "Page");
@@ -182,14 +182,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: NESTED TOPIC RETURNS 403
+    | TEST: NESTED TOPIC: RETURNS 403
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
     [TestMethod]
-    public void NestedTopic_Returns_403() {
+    public void NestedTopic_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "List");
@@ -208,14 +208,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PAGE GROUP TOPIC RETURNS REDIRECT
+    | TEST: PAGE GROUP TOPIC: RETURNS REDIRECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c>.
     /// </summary>
     [TestMethod]
-    public void PageGroupTopic_Returns_Redirect() {
+    public void PageGroupTopic_ReturnsRedirect() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "PageGroup");

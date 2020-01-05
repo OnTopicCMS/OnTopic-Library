@@ -3,30 +3,27 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.ComponentModel;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: DEFAULT VALUE TOPIC
+  | VIEW MODEL: KEY ONLY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing views properties annotated with default value attributes.
+  ///   Provides a simple view model with a single property (<see cref="Key"/>).
   /// </summary>
   /// <remarks>
-  ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+  ///   <para>
+  ///     Intended as a stand-in for cases where a very simple view model is required for test purposes, without introducing
+  ///     other mapping scenarios that might introduce errors, even though they've not part of the test.
+  ///   </para>
+  ///   <para>
+  ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+  ///   </para>
   /// </remarks>
-  public class DefaultValueTopicViewModel {
+  public class KeyOnlyTopicViewModel {
 
-    [DefaultValue("Default")]
-    public string? DefaultString { get; set; }
-
-    [DefaultValue(10)]
-    public int DefaultInt { get; set; }
-
-    [DefaultValue(true)]
-    public bool DefaultBool { get; set; }
+    public string? Key { get; set; }
 
   } //Class
 } //Namespace
