@@ -147,12 +147,12 @@ namespace OnTopic.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var grandParent           = TopicFactory.Create("Grandparent", "Page");
       var parent                = TopicFactory.Create("Parent", "Page", grandParent);
-      var topic                 = TopicFactory.Create("Test", "Sample", parent);
+      var topic                 = TopicFactory.Create("Test", "InheritedProperty", parent);
 
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel             = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (InheritedPropertyTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.IsNull(viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
