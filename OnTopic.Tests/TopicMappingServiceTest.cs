@@ -57,13 +57,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (GENERIC)
+    | TEST: MAP: GENERIC: RETURNS NEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by specifying an explicit type.
     /// </summary>
     [TestMethod]
-    public async Task MapGeneric() {
+    public async Task Map_Generic_ReturnsNewModel() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
 
@@ -80,14 +80,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (DYNAMIC)
+    | TEST: MAP: DYNAMIC: RETURNS NEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests setting basic scalar values by allowing it to dynamically
     ///   determine the instance type.
     /// </summary>
     [TestMethod]
-    public async Task MapDynamic() {
+    public async Task Map_Dynamic_ReturnsNewModel() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
 
@@ -104,13 +104,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP PARENTS
+    | TEST: MAP: PARENTS: RETURNS ASCENDENTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the parent tree.
     /// </summary>
     [TestMethod]
-    public async Task MapParents() {
+    public async Task Map_Parents_ReturnsAscendents() {
 
       var grandParent           = TopicFactory.Create("Grandparent", "AscendentSpecialized");
       var parent                = TopicFactory.Create("Parent", "Ascendent", grandParent);
@@ -134,14 +134,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: INHERIT VALUES
+    | TEST: MAP: INHERIT ATTRIBUTE: INHERITS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully inherits values as specified by
     ///   <see cref="InheritAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task InheritValues() {
+    public async Task Map_InheritAttribute_InheritsValue() {
 
       var grandParent           = TopicFactory.Create("Grandparent", "Page");
       var parent                = TopicFactory.Create("Parent", "Page", grandParent);
@@ -158,14 +158,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP NULLABLE PROPERTIES WITH INVALID VALUES
+    | TEST: MAP: NULLABLE PROPERTIES WITH INVALID VALUES: RETURNS NULL OR DEFAULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests setting nullable scalar values with invalid values with the
     ///   expectation that they will be returned as null.
     /// </summary>
     [TestMethod]
-    public async Task MapNullablePropertiesWithInvalidValues() {
+    public async Task Map_NullablePropertiesWithInvalidValues_ReturnsNullOrDefault() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
 
@@ -189,14 +189,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP NULLABLE PROPERTIES WITH VALID VALUES
+    | TEST: MAP: NULLABLE PROPERTIES WITH VALID VALUES: RETURNS VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests setting nullable scalar values with valid values with the
     ///   expectation that they will be mapped correctly.
     /// </summary>
     [TestMethod]
-    public async Task MapNullablePropertiesWithValidValues() {
+    public async Task Map_NullablePropertiesWithInvalidValues_ReturnsValues() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
 
@@ -227,14 +227,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ALTERNATE ATTRIBUTE KEY
+    | TEST: MAP: ALTERNATE ATTRIBUTE KEY: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key
     ///   specified by <see cref="AttributeKeyAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task AlternateAttributeKey() {
+    public async Task Map_AlternateAttributeKey_ReturnsMappedModel() {
 
       var topic                 = TopicFactory.Create("Test", "PropertyAlias");
 
@@ -248,13 +248,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP RELATIONSHIPS
+    | TEST: MAP: RELATIONSHIPS: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the relationships.
     /// </summary>
     [TestMethod]
-    public async Task MapRelationships() {
+    public async Task Map_Relationships_ReturnsMappedModel() {
 
       var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
       var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
@@ -275,7 +275,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ALTERNATE RELATIONSHIP
+    | TEST: MAP: ALTERNATE RELATIONSHIP: RETURNS CORRECT RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
@@ -290,7 +290,7 @@ namespace OnTopic.Tests {
     ///   cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
-    public async Task AlternateRelationship() {
+    public async Task Map_AlternateRelationship_ReturnsCorrectRelationship() {
 
       var outgoingRelation      = TopicFactory.Create("OutgoingRelation", "KeyOnly");
       var incomingRelation      = TopicFactory.Create("IncomingRelation", "KeyOnly");
@@ -314,14 +314,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: CUSTOM COLLECTION
+    | TEST: MAP: CUSTOM COLLECTION: RETURNS COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from a custom source
     ///   collection compatible with <see cref="IList{T}"/>, where <c>{T}</c> is a <see cref="Topic"/>, or derivative.
     /// </summary>
     [TestMethod]
-    public async Task CustomCollection() {
+    public async Task Map_CustomCollection_ReturnsCollection() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
       var target                = await _mappingService.MapAsync<ContentTypeDescriptorTopicViewModel>(topic).ConfigureAwait(false);
@@ -335,13 +335,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP NESTED TOPICS
+    | TEST: MAP: NESTED TOPICS: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public async Task MapNestedTopics() {
+    public async Task Map_NestedTopics_ReturnsMappedModel() {
 
       var topic                 = TopicFactory.Create("Test", "Nested");
       var childTopic            = TopicFactory.Create("ChildTopic", "KeyOnly", topic);
@@ -363,13 +363,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP CHILDREN
+    | TEST: MAP: CHILDREN: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls child topics.
     /// </summary>
     [TestMethod]
-    public async Task MapChildren() {
+    public async Task Map_Children_ReturnsMappedModel() {
 
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
@@ -398,13 +398,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP TOPIC REFERENCES
+    | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
     /// </summary>
     [TestMethod]
-    public async Task MapTopicReferences() {
+    public async Task Map_TopicReferences_ReturnsMappedModel() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topicReference        = _topicRepository.Load(11111);
@@ -421,14 +421,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: RECURSIVE RELATIONSHIPS
+    | TEST: MAP: RECURSIVE RELATIONSHIPS: RETURNS GRAPH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully follows relationships per the
     ///   instructions of each model class.
     /// </summary>
     [TestMethod]
-    public async Task RecursiveRelationships() {
+    public async Task Map_RecursiveRelationships_ReturnsGraph() {
 
       //Self
       var topic                 = TopicFactory.Create("Test", "Relation");
@@ -472,7 +472,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP SLIDE SHOW
+    | TEST: MAP: SLIDE SHOW: RETURNS DERIVED VIEW MODELS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully crawls a <see
@@ -480,7 +480,7 @@ namespace OnTopic.Tests {
     ///   collection of <see cref="ContentItemTopicViewModel"/> objects (from which <see cref="SlideTopicViewModel"/>.
     /// </summary>
     [TestMethod]
-    public async Task MapSlideshow() {
+    public async Task Map_Slideshow_ReturnsDerivedViewModels() {
 
       var topic                 = TopicFactory.Create("Test", "Slideshow");
       var slides                = TopicFactory.Create("ContentItems", "List", topic);
@@ -500,14 +500,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP TOPICS
+    | TEST: MAP: TOPIC ENTITIES: RETURNS TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully includes <see cref="Topic"/>
     ///   instances if called for by the model. This isn't a best practice, but is maintained for edge cases.
     /// </summary>
     [TestMethod]
-    public async Task MapTopics() {
+    public async Task Map_TopicEntities_ReturnsTopics() {
 
       var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "KeyOnly");
       var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "KeyOnly");
@@ -535,14 +535,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP METADATA
+    | TEST: MAP: METADATA LOOKUP: RETURNS LOOKUP ITEMS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether is able to lookup metadata successfully using the
     ///   <see cref="MetadataAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task MapMetadata() {
+    public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
@@ -554,14 +554,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP CIRCULAR REFERENCE
+    | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully handles a circular reference by
     ///   taking advantage of its internal caching mechanism.
     /// </summary>
     [TestMethod]
-    public async Task MapCircularReference() {
+    public async Task Map_CircularReference_ReturnsCachedParent() {
 
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
@@ -573,14 +573,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: FILTER BY CONTENT TYPE
+    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
     ///   cref="DescendentTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public async Task FilterByContentType() {
+    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
 
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
@@ -600,14 +600,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP GETTER METHODS
+    | TEST: MAP: GETTER METHODS: MAP METHOD OUTPUT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a property corresponding to a getter method on <see cref="Topic"/> to ensure that it is
     ///   correctly populated.
     /// </summary>
     [TestMethod]
-    public async Task MapGetterMethods() {
+    public async Task Map_GetterMethods_MapMethodOutput() {
 
       var topic                 = TopicFactory.Create("Topic", "Sample");
       var childTopic            = TopicFactory.Create("Child", "Page", topic);
@@ -620,14 +620,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP COMPATIBLE PROPERTIES
+    | TEST: MAP: COMPATIBLE PROPERTIES: MAP OBJECT REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps two properties with compatible types without attempting a conversion. This can be used for mapping types that are
     ///   appropriate for the target view model, such as enums.
     /// </summary>
     [TestMethod]
-    public async Task MapCompatibleProperties() {
+    public async Task Map_CompatibleProperties_MapObjectReference() {
 
       var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
 
@@ -641,13 +641,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP REQUIRED PROPERTY
+    | TEST: MAP: VALID REQUIRED PROPERTY: IS MAPPED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a required property. Ensures that an error is not thrown if it is set.
     /// </summary>
     [TestMethod]
-    public async Task MapRequiredProperty() {
+    public async Task Map_ValidRequiredProperty_IsMapped() {
 
       var topic                 = TopicFactory.Create("Topic", "Required");
 
@@ -660,14 +660,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP REQUIRED PROPERTY EXCEPTION
+    | TEST: MAP: INVALID REQUIRED PROPERTY: THROWS VALIDATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task MapRequiredPropertyException() {
+    public async Task Map_InvalidRequiredProperty_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "Required");
 
@@ -676,14 +676,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REQUIRED OBJECT PROPERTY EXCEPTION
+    | TEST: MAP: INVALID REQUIRED OBJECT: THROWS VALIDATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it isn't set.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task MapRequiredObjectPropertyException() {
+    public async Task Map_InvalidRequiredObject_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
@@ -692,13 +692,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DEFAULT VALUE PROPERTIES
+    | TEST: MAP: NULL PROPERTY: MAPS DEFAULT VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has default properties. Ensures that each is set appropriately.
     /// </summary>
     [TestMethod]
-    public async Task MapDefaultValueProperties() {
+    public async Task Map_NullProperty_MapsDefaultValue() {
 
       var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
@@ -711,14 +711,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MINIMUM VALUE PROPERTIES
+    | TEST: MAP: EXCEEDS MINIMUM VALUE: THROWS VALIDATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task MapMinimumValueProperties() {
+    public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
 
       var topic                 = TopicFactory.Create("Topic", "MinimumLengthProperty");
 
@@ -729,7 +729,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: FILTER BY ATTRIBUTE
+    | TEST: MAP: FILTER BY ATTRIBUTE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
@@ -737,7 +737,7 @@ namespace OnTopic.Tests {
     ///   instances.
     /// </summary>
     [TestMethod]
-    public async Task FilterByAttribute() {
+    public async Task Map_FilterByAttribute_ReturnsFilteredCollection() {
 
       var topic                 = TopicFactory.Create("Test", "Filtered");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
@@ -757,14 +757,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: FLATTEN
+    | TEST: MAP: FLATTEN ATTRIBUTE: RETURNS FLAT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
     ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
     /// </summary>
     [TestMethod]
-    public async Task Flatten() {
+    public async Task Map_FlattenAttribute_ReturnsFlatCollection() {
 
       var topic                 = TopicFactory.Create("Test", "FlattenChildren");
 
@@ -782,14 +782,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: CACHING
+    | TEST: MAP: CACHED TOPIC: RETURNS CACHED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
     ///   the same instance of a mapped object is turned after two calls.
     /// </summary>
     [TestMethod]
-    public async Task Caching() {
+    public async Task Map_CachedTopic_ReturnsCachedModel() {
 
       var cachedMappingService = new CachedTopicMappingService(_mappingService);
 
