@@ -3,8 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
 using OnTopic.Mapping.Annotations;
+using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -23,10 +23,11 @@ namespace OnTopic.Tests.ViewModels {
   ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   ///   </para>
   /// </remarks>
-  public class DescendentTopicViewModel: KeyOnlyTopicViewModel {
+  public class DescendentTopicViewModel: TopicViewModel {
 
     [Follow(Relationships.Children)]
-    public List<DescendentTopicViewModel> Children { get; set; } = new List<DescendentTopicViewModel>();
+    public TopicViewModelCollection<DescendentTopicViewModel> Children { get; }
+      = new TopicViewModelCollection<DescendentTopicViewModel>();
 
   } //Class
 } //Namespace

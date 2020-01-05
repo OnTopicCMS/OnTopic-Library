@@ -602,26 +602,29 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
-    ///   cref="SampleTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
+    ///   cref="DescendentTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
     public async Task FilterByContentType() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var topic                 = TopicFactory.Create("Test", "Sample");
-      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
-      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Index", topic);
-      var childTopic4           = TopicFactory.Create("ChildTopic4", "Index", childTopic3);
+      var topic                 = TopicFactory.Create("Test", "Descendent");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "DescendentSpecialized", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "DescendentSpecialized", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", childTopic3);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (DescendentTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
-      var indexes               = target.Children.GetByContentType("Index");
+      var specialized           = target.Children.GetByContentType("DescendentSpecialized");
 
-      Assert.AreEqual<int>(2, indexes.Count);
-      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture)));
-      Assert.IsNull(indexes.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic4", StringComparison.InvariantCulture)));
+      Assert.AreEqual<int>(2, specialized.Count);
+      Assert.IsNotNull(getTopic(specialized, "ChildTopic2"));
+      Assert.IsNotNull(getTopic(specialized, "ChildTopic3"));
+      Assert.IsNull(getTopic(specialized, "ChildTopic4"));
+
+      DescendentTopicViewModel getTopic(TopicViewModelCollection<DescendentTopicViewModel> collection, string key)
+        => collection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
 
     }
 
