@@ -532,23 +532,28 @@ namespace OnTopic.Tests {
     public async Task MapTopics() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "KeyOnly");
+      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "KeyOnly");
+      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "KeyOnly");
+      var topic                 = TopicFactory.Create("Test", "RelatedEntity");
 
-      topic.Relationships.SetTopic("Related", relatedTopic1);
-      topic.Relationships.SetTopic("Related", relatedTopic2);
-      topic.Relationships.SetTopic("Related", relatedTopic3);
+      topic.Relationships.SetTopic("RelatedTopics", relatedTopic1);
+      topic.Relationships.SetTopic("RelatedTopics", relatedTopic2);
+      topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
-      var relatedTopic3copy     = ((Topic)target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
+      var target                = (RelatedEntityTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var relatedTopic3copy     = ((Topic)target.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
 
-      Assert.AreEqual<int>(3, target.Related.Count);
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Related.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
+      Assert.AreEqual<int>(3, target.RelatedTopics.Count);
+
+      Assert.IsNotNull(getRelatedTopic(target, "RelatedTopic1"));
+      Assert.IsNotNull(getRelatedTopic(target, "RelatedTopic2"));
+      Assert.IsNotNull(getRelatedTopic(target, "RelatedTopic3"));
+
       Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy.Key);
+
+      Topic getRelatedTopic(RelatedEntityTopicViewModel topic, string key)
+        => topic.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
 
     }
 
