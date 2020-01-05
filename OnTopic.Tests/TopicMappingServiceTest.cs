@@ -241,12 +241,12 @@ namespace OnTopic.Tests {
     public async Task AlternateAttributeKey() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var topic                 = TopicFactory.Create("Test", "PropertyAlias");
 
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel             = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = (PropertyAliasTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
