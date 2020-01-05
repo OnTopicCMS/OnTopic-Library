@@ -118,7 +118,7 @@ namespace OnTopic.Tests {
 
       grandParent.Attributes.SetValue("IsRoot", "1");
 
-      var viewModel             = (AscendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = await _mappingService.MapAsync<AscendentTopicViewModel>(topic).ConfigureAwait(false);
       var parentViewModel       = viewModel?.Parent;
       var grandParentViewModel  = parentViewModel?.Parent as AscendentSpecializedTopicViewModel;
 
@@ -150,7 +150,7 @@ namespace OnTopic.Tests {
       grandParent.Attributes.SetValue("Property", "ValueA");
       grandParent.Attributes.SetValue("InheritedProperty", "ValueB");
 
-      var viewModel             = (InheritedPropertyTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = await _mappingService.MapAsync<InheritedPropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.IsNull(viewModel.Property);
       Assert.AreEqual<string>("ValueB", viewModel.InheritedProperty);
@@ -241,7 +241,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Property", "ValueA");
       topic.Attributes.SetValue("PropertyAlias", "ValueB");
 
-      var viewModel             = (PropertyAliasTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var viewModel             = await _mappingService.MapAsync<PropertyAliasTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
 
@@ -265,7 +265,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
       Assert.IsNotNull(GetChildTopic(target.Cousins, "Cousin1"));
@@ -306,7 +306,7 @@ namespace OnTopic.Tests {
       ambiguousRelation.Relationships.SetTopic("RelationshipAlias", topic);
       incomingRelation.Relationships.SetTopic("AmbiguousRelationship", topic);
 
-      var target = (AmbiguousRelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(1, target.RelationshipAlias.Count);
       Assert.IsNotNull(GetChildTopic(target.RelationshipAlias, "IncomingRelation"));
@@ -324,7 +324,7 @@ namespace OnTopic.Tests {
     public async Task CustomCollection() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var target                = (ContentTypeDescriptorTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<ContentTypeDescriptorTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(8, target.AttributeDescriptors.Count);
       Assert.AreEqual<int>(2, target.PermittedContentTypes.Count);
@@ -351,7 +351,7 @@ namespace OnTopic.Tests {
 
       topicList.IsHidden        = true;
 
-      var target                = (NestedTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<NestedTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
 
@@ -381,7 +381,7 @@ namespace OnTopic.Tests {
 
       childTopic4.Attributes.SetBoolean("IsLeaf", true);
 
-      var target                = (DescendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<DescendentTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.Children.Count);
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic1"));
@@ -455,7 +455,7 @@ namespace OnTopic.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target                = (RelationTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
       var cousinTarget          = GetChildTopic(target.Cousins, "CousinTopic3") as RelationWithChildrenTopicViewModel;
       var distantCousinTarget   = GetChildTopic(cousinTarget.Children, "ChildTopic3") as RelationWithChildrenTopicViewModel;
@@ -489,7 +489,7 @@ namespace OnTopic.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "Slide", slides);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "ContentItem", slides);
 
-      var target                = (SlideshowTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<SlideshowTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(4, target.ContentItems.Count);
       Assert.IsNotNull(GetChildTopic(target.ContentItems, "ChildTopic1"));
@@ -518,7 +518,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetTopic("RelatedTopics", relatedTopic2);
       topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
 
-      var target                = (RelatedEntityTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<RelatedEntityTopicViewModel>(topic).ConfigureAwait(false);
       var relatedTopic3copy     = (getRelatedTopic(target, "RelatedTopic3"));
 
       Assert.AreEqual<int>(3, target.RelatedTopics.Count);
@@ -566,7 +566,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
 
-      var mappedTopic           = (CircularTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var mappedTopic           = await _mappingService.MapAsync<CircularTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<CircularTopicViewModel>(mappedTopic, mappedTopic.Children.First().Parent);
 
@@ -588,7 +588,7 @@ namespace OnTopic.Tests {
       var childTopic3           = TopicFactory.Create("ChildTopic3", "DescendentSpecialized", topic);
       var childTopic4           = TopicFactory.Create("ChildTopic4", "DescendentSpecialized", childTopic3);
 
-      var target                = (DescendentTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<DescendentTopicViewModel>(topic).ConfigureAwait(false);
 
       var specialized           = target.Children.GetByContentType("DescendentSpecialized");
 
@@ -613,7 +613,7 @@ namespace OnTopic.Tests {
       var childTopic            = TopicFactory.Create("Child", "Page", topic);
       var grandChildTopic       = TopicFactory.Create("GrandChild", "Index", childTopic);
 
-      var target = (IndexTopicViewModel?)await _mappingService.MapAsync(grandChildTopic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<IndexTopicViewModel>(grandChildTopic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Topic:Child:GrandChild", target.UniqueKey);
 
@@ -633,7 +633,7 @@ namespace OnTopic.Tests {
 
       topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
 
-      var target                = (CompatiblePropertyTopicViewModel?)await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<ModelType>(topic.ModelType, target.ModelType);
       Assert.AreEqual<int>(1, target.VersionHistory.Count);
@@ -653,7 +653,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("RequiredAttribute", "Required");
 
-      var target = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Required", target.RequiredAttribute);
 
@@ -671,7 +671,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Topic", "Required");
 
-      var target = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false);
 
     }
 
@@ -687,7 +687,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Topic", "RequiredObject");
 
-      var target                = (RequiredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<RequiredTopicViewModel>(topic).ConfigureAwait(false);
 
     }
 
@@ -702,7 +702,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Topic", "DefaultValue");
 
-      var target                = (DefaultValueTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = await _mappingService.MapAsync<DefaultValueTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Default", target.DefaultString);
       Assert.AreEqual<int>(10, target.DefaultInt);
@@ -724,7 +724,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("MinimumLength", "Hello World");
 
-      var target = (MinimumLengthPropertyTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<MinimumLengthPropertyTopicViewModel>(topic).ConfigureAwait(false);
 
     }
 
@@ -750,7 +750,7 @@ namespace OnTopic.Tests {
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
 
-      var target = (FilteredTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
 
@@ -775,7 +775,7 @@ namespace OnTopic.Tests {
         }
       }
 
-      var target = (FlattenChildrenTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(25, target.Children.Count);
 
