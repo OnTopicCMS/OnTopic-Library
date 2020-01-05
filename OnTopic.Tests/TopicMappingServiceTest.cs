@@ -261,21 +261,24 @@ namespace OnTopic.Tests {
     public async Task MapRelationships() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var relatedTopic1         = TopicFactory.Create("RelatedTopic1", "Page");
-      var relatedTopic2         = TopicFactory.Create("RelatedTopic2", "Index");
-      var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "Page");
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
+      var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
+      var relatedTopic3         = TopicFactory.Create("Sibling", "Relation");
+      var topic                 = TopicFactory.Create("Test", "Relation");
 
       topic.Relationships.SetTopic("Cousins", relatedTopic1);
       topic.Relationships.SetTopic("Cousins", relatedTopic2);
       topic.Relationships.SetTopic("Siblings", relatedTopic3);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (RelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Cousins.Count);
-      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic1", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNull(target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("RelatedTopic3", StringComparison.InvariantCulture)));
+      Assert.IsNotNull(getCousin(target, "Cousin1"));
+      Assert.IsNotNull(getCousin(target, "Cousin2"));
+      Assert.IsNull(getCousin(target, "Sibling"));
+
+      RelationTopicViewModel getCousin(RelationTopicViewModel topic, string key)
+        => topic.Cousins.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
 
     }
 
@@ -445,21 +448,21 @@ namespace OnTopic.Tests {
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
 
       //Self
-      var topic                 = TopicFactory.Create("Test", "Sample");
+      var topic                 = TopicFactory.Create("Test", "Relation");
 
       //First cousins
-      var cousinTopic1          = TopicFactory.Create("CousinTopic1", "Page");
-      var cousinTopic2          = TopicFactory.Create("CousinTopic2", "Index");
-      var cousinTopic3          = TopicFactory.Create("CousinTopic3", "Sample");
+      var cousinTopic1          = TopicFactory.Create("CousinTopic1", "Relation");
+      var cousinTopic2          = TopicFactory.Create("CousinTopic2", "Relation");
+      var cousinTopic3          = TopicFactory.Create("CousinTopic3", "RelationWithChildren");
 
-      //Children of cousins
-      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", cousinTopic3);
-      var childTopic2           = TopicFactory.Create("ChildTopic2", "Page", cousinTopic3);
-      var childTopic3           = TopicFactory.Create("ChildTopic3", "Sample", cousinTopic3);
+      //First cousins once removed
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "RelationWithChildren", cousinTopic3);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "RelationWithChildren", cousinTopic3);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "RelationWithChildren", cousinTopic3);
 
       //Other cousins
-      var secondCousin          = TopicFactory.Create("SecondCousin", "Page");
-      var cousinTwiceRemoved    = TopicFactory.Create("CousinOnceRemoved", "Page", childTopic3);
+      var secondCousin          = TopicFactory.Create("SecondCousin", "Relation");
+      var cousinOnceRemoved     = TopicFactory.Create("CousinOnceRemoved", "Relation", childTopic3);
 
       //Set first cousins
       topic.Relationships.SetTopic("Cousins", cousinTopic1);
@@ -469,9 +472,10 @@ namespace OnTopic.Tests {
       //Set ancillary relationships
       cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
-      var cousinTarget          = (SampleTopicViewModel)target.Cousins.FirstOrDefault((t) => t.Key.StartsWith("CousinTopic3", StringComparison.InvariantCulture));
-      var distantCousinTarget   = (SampleTopicViewModel)cousinTarget.Children.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic3", StringComparison.InvariantCulture));
+      var target                = (RelationTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      var cousinTarget          = getCousin(target, "CousinTopic3") as RelationWithChildrenTopicViewModel;
+      var distantCousinTarget   = getChild(cousinTarget, "ChildTopic3");
 
       //Because Cousins is set to recurse over Children, its children should be set
       Assert.AreEqual<int>(3, cousinTarget.Children.Count);
@@ -481,6 +485,12 @@ namespace OnTopic.Tests {
 
       //Because Children is not set to recurse over Children, the grandchildren of a cousin should NOT be set
       Assert.AreEqual<int>(0, distantCousinTarget.Children.Count);
+
+      RelationTopicViewModel getCousin(RelationTopicViewModel topic, string key) =>
+        topic.Cousins.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+
+      RelationWithChildrenTopicViewModel getChild(RelationWithChildrenTopicViewModel topic, string key) =>
+        topic.Children.FirstOrDefault((t) => t.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
 
     }
 

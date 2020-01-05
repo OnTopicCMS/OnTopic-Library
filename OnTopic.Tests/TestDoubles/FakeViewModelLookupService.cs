@@ -33,6 +33,8 @@ namespace OnTopic.Tests.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Add(typeof(AscendentTopicViewModel));
       Add(typeof(AscendentSpecializedTopicViewModel));
+      Add(typeof(RelationTopicViewModel));
+      Add(typeof(RelationWithChildrenTopicViewModel));
       Add(typeof(CircularTopicViewModel));
       Add(typeof(DefaultValueTopicViewModel));
       Add(typeof(DescendentTopicViewModel));
