@@ -111,10 +111,27 @@ namespace OnTopic.Internal.Diagnostics {
     | METHOD: ASSUME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Ensures that a condition is met. If not, an <see cref="Exception"/> is thrown.
+    /// </summary>
+    /// <remarks>
+    ///   This is virtually identical to <see cref="Requires(Boolean, String)"/> except that, syntactically, it is expected to
+    ///   live within the body of a method—where as <see cref="Requires(Boolean, String)"/> is expected to live at the beginning
+    ///   of a method. This communicates to readers that <see cref="Assume(Boolean, String)"/> is validating runtime state,
+    ///   whereas <see cref="Requires(Boolean, String)"/> is validating preconditions.
+    /// </remarks>
+    /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
+    /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
+    /// <exception cref="Exception">
+    ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
+    /// </exception>
+    public static void Assume(bool isValid, string? errorMessage = null) =>
+      Requires<Exception>(isValid, errorMessage);
+
+    /// <summary>
     ///   Ensures that a condition is met. If not, the provided exception is thrown.
     /// </summary>
     /// <remarks>
-    ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom oerload accepts a generic <typeparamref
+    ///   Unlike the standard <c>Assumes()</c> method that ships with .NET, this custom overload accepts a generic <typeparamref
     ///   name="T"/>, of type <see cref="Exception"/>, which will be thrown if the condition is not met. This is virtually
     ///   identical to <see cref="Requires{T}(Boolean, String)"/> except that, syntactically, it is expected to live within the
     ///   body of a method—where as <see cref="Requires{T}(Boolean, String)"/> is expected to live at the beginning of a method.
