@@ -52,7 +52,6 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(RelationWithChildrenTopicViewModel));
       Add(typeof(RequiredObjectTopicViewModel));
       Add(typeof(RequiredTopicViewModel));
-      Add(typeof(SampleTopicViewModel));
       Add(typeof(TopicReferenceAttributeTopicViewModel));
       Add(typeof(TopicReferenceTopicViewModel));
 
