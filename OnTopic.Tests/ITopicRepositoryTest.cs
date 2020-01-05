@@ -49,37 +49,81 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: LOAD
+    | TEST: LOAD: DEFAULT: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the default topic and ensures there are the expected number of children.
+    /// </summary>
+    [TestMethod]
+    public void Load_Default_ReturnsTopicTopic() {
+
+      var rootTopic             = _topicRepository.Load();
+
+      Assert.AreEqual<int>(2, rootTopic.Children.Count);
+      Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);
+      Assert.AreEqual<string>("Web", rootTopic.Children.Last().Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: VALID UNIQUE KEY: RETURNS CORRECT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads topics and ensures there are the expected number of children.
     /// </summary>
     [TestMethod]
-    public void Load() {
+    public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
-      var rootTopic             = _topicRepository.Load();
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
       var child                 = TopicFactory.Create("Child", "ContentType", Int32.MaxValue, topic);
 
-      Assert.AreEqual<int>(2, rootTopic.Children.Count);
-      Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);
-      Assert.AreEqual<int>(Int32.MaxValue, _topicRepository.Load(Int32.MaxValue).Id);
+      Assert.AreEqual<string>("Page", topic.Key);
 
     }
 
     /*==========================================================================================================================
-    | TEST: LOAD BY ID
+    | TEST: LOAD: INVALID UNIQUE KEY: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads invalid topic key and ensures a null is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_InvalidUniqueKey_ReturnsTopic() {
+
+      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:InvalidContentType");
+
+      Assert.IsNull(topic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: VALID TOPIC ID: RETURNS CORRECT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads topic by ID and ensures it is found.
     /// </summary>
     [TestMethod]
-    public void LoadById() {
+    public void Load_ValidTopicId_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load(11111);
 
       Assert.IsNotNull(topic);
       Assert.AreEqual<string>("Web_1_1_1_1", topic.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: INVALID TOPIC ID: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads topic by an incorrect ID and ensures it a null is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_InvalidTopicId_ReturnsNull() {
+
+      var topic                 = _topicRepository.Load(9999999);
+
+      Assert.IsNull(topic);
 
     }
 
@@ -110,13 +154,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MOVE
+    | TEST: MOVE: TO NEW PARENT: CONFIRMED MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Moves topics and ensures their parents are correctly set.
     /// </summary>
     [TestMethod]
-    public void Move() {
+    public void Move_ToNewParent_ConfirmedMove() {
 
       var source                = _topicRepository.Load("Root:Web:Web_0");
       var destination           = _topicRepository.Load("Root:Web:Web_1");
@@ -135,13 +179,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MOVE TO SIBLING
+    | TEST: MOVE: TO NEW SIBLING: CONFIRMED MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Moves topic next to a different sibling and ensures it ends up in the correct location.
     /// </summary>
     [TestMethod]
-    public void MoveToSibling() {
+    public void Move_ToNewSibling_ConirmedMove() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_0");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
@@ -161,13 +205,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE
+    | TEST: DELETE: TOPIC: REMOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Deletes a topic to ensure it is properly removed.
     /// </summary>
     [TestMethod]
-    public void Delete() {
+    public void Delete_Topic_Removed() {
 
       var parent                = _topicRepository.Load("Root:Web:Web_1");
       var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
@@ -179,23 +223,17 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(1, parent.Children.Count());
 
-      topic = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
-      child = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
-
-      Assert.IsNull(topic);
-      Assert.IsNull(child);
-
     }
 
     /*==========================================================================================================================
-    | TEST: GET CONTENT TYPE DESCRIPTORS
+    | TEST: GET CONTENT TYPE DESCRIPTORS: RETURNS TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
     ///   the expected number (2) are present.
     /// </summary>
     [TestMethod]
-    public void GetContentTypeDescriptors() {
+    public void GetContentTypeDescriptors_ReturnsTopics() {
 
       var contentTypes = _topicRepository.GetContentTypeDescriptors();
 
