@@ -356,21 +356,25 @@ namespace OnTopic.Tests {
     public async Task MapNestedTopics() {
 
       var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
-      var topic                 = TopicFactory.Create("Test", "Sample");
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", topic);
+      var topic                 = TopicFactory.Create("Test", "Nested");
+      var childTopic            = TopicFactory.Create("ChildTopic", "KeyOnly", topic);
       var topicList             = TopicFactory.Create("Categories", "List", topic);
-      var nestedTopic1          = TopicFactory.Create("NestedTopic1", "Page", topicList);
-      var nestedTopic2          = TopicFactory.Create("NestedTopic2", "Index", topicList);
+      var nestedTopic1          = TopicFactory.Create("NestedTopic1", "KeyOnly", topicList);
+      var nestedTopic2          = TopicFactory.Create("NestedTopic2", "KeyOnly", topicList);
 
       topicList.IsHidden        = true;
 
-      var target                = (SampleTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+      var target                = (NestedTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Categories.Count);
-      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic1", StringComparison.InvariantCulture)));
-      Assert.IsNotNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("NestedTopic2", StringComparison.InvariantCulture)));
-      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("Categories", StringComparison.InvariantCulture)));
-      Assert.IsNull(target.Categories.FirstOrDefault((t) => t.Key.StartsWith("ChildTopic", StringComparison.InvariantCulture)));
+
+      Assert.IsNotNull(getCategory(target, "NestedTopic1"));
+      Assert.IsNotNull(getCategory(target, "NestedTopic2"));
+      Assert.IsNull(getCategory(target, "Categories"));
+      Assert.IsNull(getCategory(target, "ChildTopic"));
+
+      KeyOnlyTopicViewModel getCategory(NestedTopicViewModel topic, string key)
+        => topic.Categories.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
 
     }
 
