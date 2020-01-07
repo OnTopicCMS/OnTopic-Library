@@ -47,7 +47,8 @@ namespace OnTopic.Internal.Mapping {
     ///   instances.
     /// </summary>
     /// <param name="property">The <see cref="PropertyInfo"/> instance to check for <see cref="Attribute"/> values.</param>
-    public PropertyConfiguration(PropertyInfo property) {
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    public PropertyConfiguration(PropertyInfo property, string? attributePrefix = "") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -62,7 +63,8 @@ namespace OnTopic.Internal.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default values
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeKey              = property.Name;
+      AttributeKey              = attributePrefix + property.Name;
+      AttributePrefix           = attributePrefix;
       DefaultValue              = null;
       InheritValue              = false;
       RelationshipKey           = AttributeKey;
@@ -78,9 +80,9 @@ namespace OnTopic.Internal.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = a.Value);
+      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Value);
       GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
-      GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix = a.AttributePrefix?? property.Name);
+      GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
       GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
@@ -177,12 +179,24 @@ namespace OnTopic.Internal.Mapping {
     ///     (such as <see cref="IList{T}"/>). The <see cref="MapToParentAttribute"/> allows this behavior to be overwritten.
     ///     When this occurs, the properties of the referenced object are treated as attributes on the topic. To distinguish
     ///     them from properties on the parent topic, they are (by default) prefixed with the name of the property that the
-    ///     complex object is assigned to. Optionally, however, this can be overridden, or set to <see cref="String.Empty"/>.
+    ///     complex object is assigned to. Optionally, however, this can be overridden, or even set to <see
+    ///     cref="String.Empty"/>. In the latter case, the properties on the child object will be treated as synonymous with the
+    ///     properties on the parent object. And, in fact, the same property could even be applied to <i>both</i> the child
+    ///     object <i>and</i> the parent object—though this probably doesn't make much sense from a modeling perspective.
+    ///   </para>
+    ///   <para>
+    ///     Be aware that the <see cref="AttributePrefix"/> should <i>only</i> apply to actual attributes on the mapped <see
+    ///     cref="Topic"/> entity; it is <i>not</i> intended to be applied to e.g. collections or relationships.
     ///   </para>
     ///   <para>
     ///     The <see cref="AttributePrefix"/> property corresponds to the <see cref="MapToParentAttribute.AttributePrefix"/>
     ///     property. It can be assigned by decorating a DTO property with e.g. <c>[MapToParent(AttributePrefix
     ///     = "AlternateAttributeKey")]</c>.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributePrefix"/> can be compounded. That is, if a complex object is added to another complex object
+    ///     using <see cref="MapToParentAttribute"/>, then the <see cref="AttributePrefix"/> will reflect the combination of
+    ///     those two prefixes. This allows potentially very deep object models.
     ///   </para>
     /// </remarks>
     public string? AttributePrefix { get; set; }
