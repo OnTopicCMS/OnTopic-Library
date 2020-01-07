@@ -398,6 +398,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: MAP TO PARENT: RETURNS MAPPED MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's nested complex objects are
+    ///   property mapped with attribute values from the parent, based on their <see cref="MapToParentAttribute"/>
+    ///   configuration.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_MapToParent_ReturnsMappedModel() {
+
+      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+
+      topic.Attributes.SetValue("PrimaryKey", "Primary Key");
+      topic.Attributes.SetValue("AlternateKey", "Alternate Key");
+      topic.Attributes.SetValue("AncillaryKey", "Ancillary Key");
+      topic.Attributes.SetValue("AliasedKey", "Aliased Key");
+
+      var target = await _mappingService.MapAsync<MapToParentTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<string>("Test", target.Primary.Key);
+      Assert.AreEqual<string>("Aliased Key", target.Alternate.Key);
+      Assert.AreEqual<string>("Ancillary Key", target.Ancillary.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
