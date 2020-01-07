@@ -104,9 +104,7 @@ To support the mapping, a variety of `Attribute` classes are provided for decora
 - **`[Follow(relationships)]`**: Instructs the code to populate the specified relationships on any view models within a collection.
 - **`[Flatten]`**: Includes all descendants for every item in the collection. If the collection enforces uniqueness, duplicates will be removed.
 - **`[MapToParent]`**: Allows the attributes of a topic to be applied to a child complex object, optionally including a prefix.
-
-### `ReverseTopicMappingService`
-- **`[DisableMapping]`**: Prevents the `ReverseTopicMappingService` from attempting to map the property back to the target `Topic`.
+- **`[DisableMapping]`**: Prevents the mapping service from attempting to map the property to an attribute.
 
 ### Example
 The following is an example of a data transfer object that implements the above attributes:

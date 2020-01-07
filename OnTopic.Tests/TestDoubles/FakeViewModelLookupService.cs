@@ -39,6 +39,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(DefaultValueTopicViewModel));
       Add(typeof(DescendentSpecializedTopicViewModel));
       Add(typeof(DescendentTopicViewModel));
+      Add(typeof(DisableMappingTopicViewModel));
       Add(typeof(FilteredTopicViewModel));
       Add(typeof(FlattenChildrenTopicViewModel));
       Add(typeof(InheritedPropertyTopicViewModel));

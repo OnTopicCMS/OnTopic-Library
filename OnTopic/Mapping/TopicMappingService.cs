@@ -264,7 +264,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (SetCompatibleProperty(source, target, configuration)) {
+      if (configuration.DisableMapping) {
+        return;
+      }
+      else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
       else if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {

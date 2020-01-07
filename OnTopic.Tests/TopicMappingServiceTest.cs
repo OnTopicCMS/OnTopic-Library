@@ -104,6 +104,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: DISABLED PROPERTY: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it maps a property decorated with the <see
+    ///   cref="DisableMappingAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_DisabledProperty_ReturnsNull() {
+
+      var topic                 = TopicFactory.Create("Test", "DisableMapping");
+
+      var viewModel             = await _mappingService.MapAsync<DisableMappingTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(viewModel);
+      Assert.IsNull(viewModel.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: PARENTS: RETURNS ASCENDENTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
