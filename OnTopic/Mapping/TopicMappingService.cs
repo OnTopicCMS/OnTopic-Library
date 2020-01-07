@@ -85,8 +85,14 @@ namespace OnTopic.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    private async Task<object?> MapAsync(Topic? topic, Relationships relationships, ConcurrentDictionary<int, object> cache) {
+    private async Task<object?> MapAsync(
+      Topic?                    topic,
+      Relationships             relationships,
+      ConcurrentDictionary<int, object> cache,
+      string?                   attributePrefix                 = null
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -119,7 +125,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return await MapAsync(topic, target, relationships, cache).ConfigureAwait(false);
+      return await MapAsync(topic, target, relationships, cache, attributePrefix).ConfigureAwait(false);
 
     }
 
@@ -150,6 +156,7 @@ namespace OnTopic.Mapping {
     /// <param name="target">The target object to map the data to.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <remarks>
     ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
@@ -162,7 +169,8 @@ namespace OnTopic.Mapping {
       Topic? topic,
       object target,
       Relationships relationships,
-      ConcurrentDictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache,
+      string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -194,7 +202,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache));
+        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
@@ -217,12 +225,14 @@ namespace OnTopic.Mapping {
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected async Task SetPropertyAsync(
       Topic source,
       object target,
       Relationships relationships,
       PropertyInfo property,
-      ConcurrentDictionary<int, object> cache
+      ConcurrentDictionary<int, object> cache,
+      string?                   attributePrefix                 = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -237,7 +247,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var configuration         = new PropertyConfiguration(property);
+      var configuration         = new PropertyConfiguration(property, attributePrefix);
       var topicReferenceId      = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
 
       if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase)) {
@@ -254,7 +264,10 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle by type, attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (SetCompatibleProperty(source, target, configuration)) {
+      if (configuration.DisableMapping) {
+        return;
+      }
+      else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
       else if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
@@ -273,6 +286,15 @@ namespace OnTopic.Mapping {
         if (topicReference != null) {
           await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
         }
+      }
+      else if (configuration.MapToParent) {
+        await MapAsync(
+          source,
+          property.GetValue(target),
+          relationships,
+          cache,
+          configuration.AttributePrefix
+        ).ConfigureAwait(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
