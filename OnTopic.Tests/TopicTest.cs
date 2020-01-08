@@ -9,6 +9,7 @@ using System.Linq;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Collections;
 
 namespace OnTopic.Tests {
 
@@ -22,29 +23,42 @@ namespace OnTopic.Tests {
   public class TopicTest {
 
     /*==========================================================================================================================
-    | TEST: CREATE
+    | TEST: CREATE: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures it's correctly returned.
     /// </summary>
     [TestMethod]
-    public void Create() {
-      var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
+    public void Create_ReturnsTopic() {
+      var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
-      Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "ContentTypeDescriptor");
+      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "Page");
     }
 
     /*==========================================================================================================================
-    | TEST: CHANGE ID
+    | TEST: CREATE: CONTENT TYPE: RETURNS DERIVED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a topic of a content type which has been derived, and ensures the derived version of <see cref="Topic"/> is
+    ///   returned.
+    /// </summary>
+    [TestMethod]
+    public void Create_ContentType_ReturnsDerivedTopic() {
+      var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
+      Assert.IsNotNull(topic);
+      Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
+    }
+
+    /*==========================================================================================================================
+    | TEST: ID: CHANGE VALUE: THROWS ARGUMENT EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
-    public void Change_IdTest() {
+    public void Id_ChangeValue_ThrowsArgumentException() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
@@ -55,14 +69,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IS (CONTENT) TYPE OF
+    | TEST: IS TYPE OF: DERIVED CONTENT TYPE: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
     ///   types.
     /// </summary>
     [TestMethod]
-    public void IsContentTypeOf() {
+    public void IsTypeOf_DerivedContentType_ReturnsTrue() {
 
       var contentType = (ContentTypeDescriptor)TopicFactory.Create("Root", "ContentTypeDescriptor");
       for (var i = 0; i < 5; i++) {
@@ -75,13 +89,33 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET PARENT
+    | TEST: IS TYPE OF: INVALID CONTENT TYPE: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Associates a new topic with several content types, and confirms that the topic is not reported as a type of a content
+    ///   type that is not in that chain.
+    /// </summary>
+    [TestMethod]
+    public void IsTypeOf_InvalidContentType_ReturnsFalse() {
+
+      var contentType = (ContentTypeDescriptor)TopicFactory.Create("Root", "ContentTypeDescriptor");
+      for (var i = 0; i < 5; i++) {
+        var childContentType = (ContentTypeDescriptor)TopicFactory.Create("ContentType" + i, "ContentTypeDescriptor", contentType);
+        contentType             = childContentType;
+      }
+
+      Assert.IsTrue(contentType.IsTypeOf("DifferentRoot"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PARENT: SET VALUE: UPDATES PARENT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Set_ParentTest() {
+    public void Parent_SetValue_UpdatesParentTopic() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
       var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
@@ -98,13 +132,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: CHANGE PARENT
+    | TEST: PARENT: CHANGE VALUE: UPDATES PARENT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Change_ParentTest() {
+    public void Parent_ChangeValue_UpdatesParentTopic() {
 
       var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
       var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor");
@@ -125,13 +159,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: UNIQUE KEY
+    | TEST: UNIQUE KEY: RETURNS UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures the Unique Key is correct for a deeply nested child.
     /// </summary>
     [TestMethod]
-    public void UniqueKey() {
+    public void UniqueKey_ReturnsUniqueKey() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page");
       var childTopic            = TopicFactory.Create("ChildTopic", "Page");
@@ -146,13 +180,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: FIND ALL BY ATTRIBUTE VALUE
+    | TEST: FIND ALL BY ATTRIBUTE: RETURNS CORRECT TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Looks for a deeply nested child topic using only the attribute value.
     /// </summary>
     [TestMethod]
-    public void FindAllByAttributeValue() {
+    public void FindAllByAttribute_ReturnsCorrectTopics() {
 
       var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
       var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5);
@@ -176,13 +210,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IS VISIBLE
+    | TEST: IS VISIBLE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that IsVisible returns expected values based on IsHidden and IsDisabled.
+    ///   Ensures that <see cref="Topic.IsVisible(Boolean)"/> returns expected values based on <see cref="Topic.IsHidden"/> and
+    ///   <see cref="Topic.IsDisabled"/>.
     /// </summary>
     [TestMethod]
-    public void IsVisible() {
+    public void IsVisible_ReturnsExpectedValue() {
 
       var hiddenTopic           = TopicFactory.Create("HiddenTopic", "Page");
       var disabledTopic         = TopicFactory.Create("DisabledTopic", "Page");
@@ -201,13 +236,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: TITLE
+    | TEST: TITLE: NULL VALUE: RETURNS KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that the title falls back appropriately.
     /// </summary>
     [TestMethod]
-    public void Title() {
+    public void Title_NullValue_ReturnsKey() {
 
       var untitledTopic         = TopicFactory.Create("UntitledTopic", "Page");
       var titledTopic           = TopicFactory.Create("TitledTopic", "Page");
@@ -220,39 +255,68 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: LAST MODIFIED
+    | TEST: LAST MODIFIED: UPDATE VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns the last modified date using a couple of techniques, and ensures it's returned correctly.
+    ///   Returns the last modified date via <see cref="Topic.LastModified"/>, and ensures it's returned correctly.
     /// </summary>
     [TestMethod]
-    public void LastModified() {
+    public void LastModified_UpdateLastModified_ReturnsExpectedValue() {
 
-      var topic1                = TopicFactory.Create("Topic1", "Page");
-      var topic2                = TopicFactory.Create("Topic2", "Page");
-      var topic3                = TopicFactory.Create("Topic3", "Page");
-
+      var topic                 = TopicFactory.Create("Topic1", "Page");
       var lastModified          = new DateTime(1976, 10, 15);
 
-      topic1.LastModified       = lastModified;
+      topic.LastModified        = lastModified;
 
-      topic2.VersionHistory.Add(lastModified);
-      topic3.Attributes.SetValue("LastModified", lastModified.ToShortDateString());
-
-      Assert.AreEqual<DateTime>(lastModified, topic1.LastModified);
-      Assert.AreEqual<DateTime>(lastModified, topic2.LastModified);
-      Assert.AreEqual<DateTime>(lastModified, topic3.LastModified);
+      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
 
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC
+    | TEST: LAST MODIFIED: UPDATE VALUE: RETURNS EXPECTED VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the last modified date via <see cref="Topic.VersionHistory"/>, and ensures it's returned correctly.
+    /// </summary>
+    [TestMethod]
+    public void LastModified_UpdateVersionHistory_ReturnsExpectedValue() {
+
+      var topic                 = TopicFactory.Create("Topic2", "Page");
+
+      var lastModified          = new DateTime(1976, 10, 15);
+
+      topic.VersionHistory.Add(lastModified);
+
+      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LAST MODIFIED: UPDATE ATTRIBUTE: RETURNS EXPECTED VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns the last modified date via <see cref="AttributeValueCollection"/>, and ensures it's returned correctly.
+    /// </summary>
+    [TestMethod]
+    public void LastModified_UpdateValue_ReturnsExpectedValue() {
+
+      var topic                 = TopicFactory.Create("Topic3", "Page");
+
+      var lastModified          = new DateTime(1976, 10, 15);
+
+      topic.Attributes.SetValue("LastModified", lastModified.ToShortDateString());
+
+      Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
+
+    }
+    /*==========================================================================================================================
+    | TEST: DERIVED TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a derived topic, and ensures it is referenced correctly.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic() {
+    public void DerivedTopic_UpdateValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");

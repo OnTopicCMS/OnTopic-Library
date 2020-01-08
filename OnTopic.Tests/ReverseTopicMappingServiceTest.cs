@@ -54,14 +54,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (GENERIC)
+    | TEST: MAP: GENERIC: RETURNS NEW TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values by specifying an explicit
     ///   type.
     /// </summary>
     [TestMethod]
-    public async Task MapGeneric() {
+    public async Task Map_Generic_ReturnsNewTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -84,14 +84,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (DYNAMIC)
+    | TEST: MAP: DYNAMIC: RETURNS NEW TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values by allowing it to
     ///   dynamically determine the instance type.
     /// </summary>
     [TestMethod]
-    public async Task MapDynamic() {
+    public async Task Map_Dynamic_ReturnsNewTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -115,14 +115,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP (EXISTING)
+    | TEST: MAP: EXISTING: RETURNS UPDATED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting basic scalar values on an existing object,
     ///   ensuring that all mapped values are overwritten, and unmapped valued are not.
     /// </summary>
     [TestMethod]
-    public async Task MapExisting() {
+    public async Task Map_Existing_ReturnsUpdatedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -155,13 +155,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP COMPLEX OBJECTS
+    | TEST: MAP: COMPLEX OBJECT: RETURNS FLATTENED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests setting values from complex objects.
     /// </summary>
     [TestMethod]
-    public async Task MapComplexObjects() {
+    public async Task Map_ComplexObject_ReturnsFlattenedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -184,14 +184,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ALTERNATE ATTRIBUTE KEY
+    | TEST: MAP: ALTERNATE ATTRIBUTE KEY: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully derives values from the key
     ///   specified by <see cref="AttributeKeyAttribute"/>.
     /// </summary>
     [TestMethod]
-    public async Task AlternateAttributeKey() {
+    public async Task Map_AlternateAttributeKey_ReturnsMappedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -209,13 +209,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP RELATIONSHIPS
+    | TEST: MAP: RELATIONSHIPS: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the relationships.
     /// </summary>
     [TestMethod]
-    public async Task MapRelationships() {
+    public async Task Map_Relationships_ReturnsMappedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
@@ -243,13 +243,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP NESTED TOPICS
+    | TEST: MAP: NESTED TOPICS: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully crawls the nested topics.
     /// </summary>
     [TestMethod]
-    public async Task MapNestedTopics() {
+    public async Task Map_NestedTopics_ReturnsMappedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
@@ -278,13 +278,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP TOPIC REFERENCES
+    | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it successfully maps referenced topics.
     /// </summary>
     [TestMethod]
-    public async Task MapTopicReferences() {
+    public async Task Map_TopicReferences_ReturnsMappedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -304,14 +304,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP REQUIRED PROPERTY
+    | TEST: MAP: VALID REQUIRED PROPERTY: IS MAPPED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a required property. Ensures that an error is thrown if it is not set.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task MapRequiredProperty() {
+    public async Task Map_ValidRequiredProperty_IsMapped() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
@@ -321,13 +321,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DEFAULT VALUE PROPERTIES
+    | TEST: MAP: NULL PROPERTY: MAPS DEFAULT VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has default properties. Ensures that each is set appropriately.
     /// </summary>
     [TestMethod]
-    public async Task MapDefaultValueProperties() {
+    public async Task Map_NullProperty_MapsDefaultValue() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -342,14 +342,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MINIMUM VALUE PROPERTIES
+    | TEST: MAP: EXCEEDS MINIMUM VALUE: THROWS VALIDATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has minimum value properties. Ensures that an error is thrown if the minimum is not met.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ValidationException))]
-    public async Task MapMinimumValueProperties() {
+    public async Task Map_ExceedsMinimumValue_ThrowsValidationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -362,7 +362,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: CHILDREN PROPERTY (INVALID)
+    | TEST: MAP: INVALID CHILDREN PROPERTY: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has children property. This is invalid, and expected to throw an <see
@@ -370,7 +370,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidChildrenProperty() {
+    public async Task Map_InvalidChildrenProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
@@ -380,7 +380,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PARENT PROPERTY (INVALID)
+    | TEST: MAP: INVALID PARENT PROPERTY: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has parent property. This is invalid, and expected to throw an <see
@@ -388,7 +388,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidParentProperty() {
+    public async Task Map_InvalidParentProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
@@ -401,7 +401,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ATTRIBUTE PROPERTY (INVALID)
+    | TEST: MAP: INVALID ATTRIBUTE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a property that doesn't map to any attributes. This is invalid, and expected to throw an
@@ -409,7 +409,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidAttributeProperty() {
+    public async Task Map_InvalidAttribute_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
@@ -419,7 +419,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: RELATIONSHIP BASE TYPE PROPERTY (INVALID)
+    | TEST: MAP: INVALID RELATIONSHIP BASE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a relationship whose type doesn't implement <see cref="IRelatedTopicBindingModel"/>. This
@@ -427,7 +427,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidRelationshipBaseTypeProperty() {
+    public async Task Map_InvalidRelationshipBaseType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
@@ -437,25 +437,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REFERENCE NAME PROPERTY (INVALID)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Maps a content type that has a reference that does not end in <c>Id</c>. This is invalid, and expected to throw an
-    ///   <see cref="InvalidOperationException"/>.
-    /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidReferenceNameProperty() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
-      var bindingModel          = new InvalidReferenceNameTopicBindingModel("Test");
-
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: RELATIONSHIP TYPE PROPERTY (INVALID)
+    | TEST: MAP: INVALID RELATIONSHIP TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a relationship an invalid <see cref="RelationshipType"/>—i.e., it refers to <see
@@ -465,7 +447,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidRelationshipTypeProperty() {
+    public async Task Map_InvalidRelationshipType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
@@ -475,7 +457,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: RELATIONSHIP LIST TYPE PROPERTY (INVALID)
+    | TEST: MAP: INVALID RELATIONSHIP LIST TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a relationship that implements an invalid collection type—i.e., it implements a <see
@@ -484,7 +466,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidRelationshipListTypeProperty() {
+    public async Task Map_InvalidRelationshipListType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
@@ -494,7 +476,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REFERENCE TYPE PROPERTY (INVALID)
+    | TEST: MAP: INVALID TOPIC REFERENCE NAME: THROWS INVALID OPERATION EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a reference that does not end in <c>Id</c>. This is invalid, and expected to throw an
+    ///   <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task Map_InvalidTopicReferenceName_ThrowsInvalidOperationException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var bindingModel          = new InvalidReferenceNameTopicBindingModel("Test");
+
+      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see
@@ -503,7 +503,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public async Task InvalidReferenceTypeProperty() {
+    public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
@@ -513,7 +513,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ATTRIBUTE PROPERTY (DISABLED)
+    | TEST: MAP: DISABLED PROPERTY: IS NOT MAPPED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Maps a content type that has a property that doesn't map to any attributes. This is invalid. However, the property
@@ -521,7 +521,7 @@ namespace OnTopic.Tests {
     ///   cref="ReverseTopicMappingService"/> from validating or mapping the property.
     /// </summary>
     [TestMethod]
-    public async Task DisabledAttributeProperty() {
+    public async Task Map_DisabledProperty_IsNotMapped() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 

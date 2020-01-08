@@ -17,7 +17,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class MetadataLookupTopicViewModel : TopicViewModel {
+  public class MetadataLookupTopicViewModel {
 
     [Metadata("Categories")]
     public TopicViewModelCollection<TopicViewModel> Categories { get; } = new TopicViewModelCollection<TopicViewModel>();

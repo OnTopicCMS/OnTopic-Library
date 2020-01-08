@@ -3,30 +3,24 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Metadata;
-using OnTopic.ViewModels;
+using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: COMPATIBLE PROPERTY TOPIC
+  | VIEW MODEL: PROPERTY ALIAS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing views with a property that maps to a source object, but isn't
-  ///   otherwise mapped by any of the conversion functions.
+  ///   Provides a simple view model with a single property (<see cref="PropertyAlias"/>) for mapping a property annotated with
+  ///   a <see cref="AttributeKeyAttribute"/>.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  [SuppressMessage("Usage", "CA2227", Justification = "This is intended to be initialized by the mapping service.")]
-  public class CompatiblePropertyTopicViewModel {
+  public class PropertyAliasTopicViewModel {
 
-    public ModelType ModelType { get; set; }
-
-    public List<DateTime>? VersionHistory { get; set; }
+    [AttributeKey("Property")]
+    public string? PropertyAlias { get; set; }
 
   } //Class
 } //Namespace

@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyTitle>Ignia OnTopic Test Doubles</AssemblyTitle>
+    <AssemblyTitle>OnTopic Test Doubles</AssemblyTitle>
     <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
+    <Product>OnTopic</Product>
     <Description>Test doubles, such as dummies and stubs, useful in setting up unit and integration tests for OnTopic.</Description>
     <Copyright>©2020 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>

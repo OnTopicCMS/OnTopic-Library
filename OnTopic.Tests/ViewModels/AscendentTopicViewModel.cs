@@ -4,25 +4,28 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Mapping.Annotations;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: FILTERED TOPIC
+  | VIEW MODEL: ASCENDENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing views properties annotated with the <see
-  ///   cref="FilterByAttributeAttribute"/>.
+  ///   Provides a simple view model with a single property (<see cref="Parent"/>) for mapping ascendent relationships.
   /// </summary>
   /// <remarks>
-  ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+  ///   <para>
+  ///     Intended as a stand-in for cases where a very simple view model is required for test purposes, without introducing
+  ///     other mapping scenarios that might introduce errors, even though they've not part of the test.
+  ///   </para>
+  ///   <para>
+  ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
+  ///   </para>
   /// </remarks>
-  public class FilteredTopicViewModel {
+  public class AscendentTopicViewModel: KeyOnlyTopicViewModel {
 
-    [FilterByAttribute("ContentType", "Page")]
-    [FilterByAttribute("SomeAttribute", "ValueA")]
-    public TopicViewModelCollection<TopicViewModel> Children { get; } = new TopicViewModelCollection<TopicViewModel>();
+    [Follow(Relationships.Parents)]
+    public AscendentTopicViewModel? Parent { get; set; }
 
   } //Class
 } //Namespace

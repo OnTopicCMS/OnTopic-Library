@@ -3,30 +3,21 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Mapping.Annotations;
-using OnTopic.ViewModels;
+using OnTopic.Metadata.AttributeTypes;
 
-namespace OnTopic.Tests.ViewModels {
+namespace OnTopic.Tests.ViewModels.Metadata {
 
   /*============================================================================================================================
-  | VIEW MODEL: CONTENT TYPE DESCRIPTOR
+  | VIEW MODEL: TEXT ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing view models with properties that map to custom collections
-  ///   on the source <see cref="Topic"/>.
+  ///   Provides a dummy implementation of a view model for an <see cref="AttributeTypeDescriptor"/> view model, in order to
+  ///   allow the dynamic resolution of mapping <see cref="TextAttribute"/> topics to view models.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class ContentTypeDescriptorTopicViewModel : PageTopicViewModel {
-
-    public TopicViewModelCollection<TopicViewModel> AttributeDescriptors
-      { get; } = new TopicViewModelCollection<TopicViewModel>();
-
-    [Relationship(RelationshipType.MappedCollection)]
-    [Follow(Relationships.None)]
-    public TopicViewModelCollection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes
-      { get; } = new TopicViewModelCollection<ContentTypeDescriptorTopicViewModel>();
+  public class TextAttributeTopicViewModel : AttributeDescriptorTopicViewModel {
 
   } //Class
 } //Namespace

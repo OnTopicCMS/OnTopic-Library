@@ -87,12 +87,10 @@ namespace OnTopic.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
-    /// <param name="attributePrefix">The optional prefix to apply to the attributes.</param>
     static internal void ValidateModel(
       [AllowNull]Type sourceType,
       [AllowNull]MemberInfoCollection<PropertyInfo> properties,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
-      string? attributePrefix = null
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +111,7 @@ namespace OnTopic.Mapping {
       | Validate
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var property in properties) {
-        ValidateProperty(sourceType, property, contentTypeDescriptor, attributePrefix);
+        ValidateProperty(sourceType, property, contentTypeDescriptor);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -141,12 +139,10 @@ namespace OnTopic.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
-    /// <param name="attributePrefix">The optional prefix to apply to the attributes.</param>
     static internal void ValidateProperty(
       [AllowNull]Type sourceType,
       [AllowNull]PropertyInfo property,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
-      string? attributePrefix
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -161,7 +157,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var propertyType          = property.PropertyType;
       var configuration         = new PropertyConfiguration(property);
-      var compositeAttributeKey = attributePrefix + configuration.AttributeKey;
+      var compositeAttributeKey = configuration.AttributeKey;
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
       var childRelationships    = new[] { RelationshipType.Children, RelationshipType.NestedTopics };
       var relationships         = new[] { RelationshipType.Relationship, RelationshipType.IncomingRelationship };
@@ -182,8 +178,7 @@ namespace OnTopic.Mapping {
         ValidateModel(
           propertyType,
           childProperties,
-          contentTypeDescriptor,
-          attributePrefix + configuration.AttributePrefix
+          contentTypeDescriptor
         );
         return;
       }

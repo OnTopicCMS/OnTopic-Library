@@ -22,9 +22,9 @@ INSERT
 INTO	@Existing_TopicIDs (
 	  TopicId
 	)
-SELECT	Target_TopicID
+SELECT	Target_TopicId
 FROM	Relationships
-WHERE	Source_TopicID		= @TopicID
+WHERE	Source_TopicId		= @TopicID
   AND	RelationshipKey		= @RelationshipKey
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -41,8 +41,8 @@ SELECT	@TopicId,
 	Target.TopicId
 FROM	@RelatedTopics		Target
 FULL JOIN	@Existing_TopicIDs	Existing
-  ON	Existing.TopicID	= Target.TopicID
-WHERE	Existing.TopicID	is null
+  ON	Existing.TopicId	= Target.TopicId
+WHERE	Existing.TopicId	is null
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

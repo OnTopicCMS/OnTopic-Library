@@ -3,21 +3,22 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.ViewModels;
+using System.Collections.Generic;
 
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: ATTRIBUTE DESCRIPTOR
+  | VIEW MODEL: NESTED
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing view models with properties that map to custom collections
-  ///   on the source <see cref="Topic"/>, as part of <see cref="TopicMappingServiceTest.CustomCollection"/>.
+  ///   Provides a simple view model with a single property (<see cref="Categories"/>) for mapping nested topics.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class AttributeDescriptorTopicViewModel : PageTopicViewModel {
+  public class NestedTopicViewModel {
+
+    public List<KeyOnlyTopicViewModel> Categories { get; } = new List<KeyOnlyTopicViewModel>();
 
   } //Class
 } //Namespace
