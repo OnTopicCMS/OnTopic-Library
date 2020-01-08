@@ -11,7 +11,7 @@ namespace OnTopic.Tests.ViewModels {
   | VIEW MODEL: DISABLE MAPPING
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a simple view model with a single property (<see cref="Key") which is annotated with the <see
+  ///   Provides a simple view model with a single property (<see cref="Key" />) which is annotated with the <see
   ///   cref="DisableMappingAttribute"/>.
   /// </summary>
   /// <remarks>
