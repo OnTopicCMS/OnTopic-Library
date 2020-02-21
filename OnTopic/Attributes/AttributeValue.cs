@@ -189,7 +189,7 @@ namespace OnTopic.Attributes {
     /// <summary>
     ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
-    public DateTime LastModified { get; } = DateTime.Now;
+    public DateTime LastModified { get; internal set; } = DateTime.Now;
 
   } //Class
 } //Namespace

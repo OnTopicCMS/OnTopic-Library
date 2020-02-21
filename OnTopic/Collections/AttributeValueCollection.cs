@@ -414,6 +414,7 @@ namespace OnTopic.Collections {
         }
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
+        this[originalAttribute.Key].LastModified = originalAttribute.LastModified;
         _setCounter = 0;
         return false;
       }
