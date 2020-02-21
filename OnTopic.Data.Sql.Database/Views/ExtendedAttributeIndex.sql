@@ -12,6 +12,7 @@ AS
 WITH	TopicExtendedAttributes AS (
   SELECT	TopicID,
 	AttributesXml,
+	Version,
 	RowNumber = ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
@@ -19,6 +20,7 @@ WITH	TopicExtendedAttributes AS (
   FROM	[dbo].[ExtendedAttributes]
 )
 SELECT	TopicID,
-	AttributesXml
+	AttributesXml,
+	Version
 FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1
