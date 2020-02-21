@@ -92,12 +92,28 @@ namespace OnTopic.Attributes {
     ///   If disabled, <see cref="AttributeValueCollection"/> will not call local properties on <see cref="Topic"/> that
     ///   correspond to the <paramref name="key"/> as a means of enforcing the business logic.
     /// </param>
+    /// <param name="lastModified">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
+    ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
+    ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
+    /// </param>
     /// <requires
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    internal AttributeValue(string key, string? value, bool isDirty, bool enforceBusinessLogic) : this(key, value, isDirty) {
-      EnforceBusinessLogic = enforceBusinessLogic;
+    internal AttributeValue(
+      string key,
+      string? value,
+      bool isDirty,
+      bool enforceBusinessLogic,
+      DateTime? lastModified = null
+    ): this(
+      key,
+      value,
+      isDirty
+    ) {
+      EnforceBusinessLogic      = enforceBusinessLogic;
+      LastModified              = lastModified?? DateTime.Now;
     }
 
     /*==========================================================================================================================
