@@ -33,7 +33,8 @@ namespace OnTopic.Attributes {
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
   ///     create a new instance of the <see cref="AttributeValue"/> class or, preferably, call the
-  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?)"/> method.
+  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>
+  ///     method.
   ///   </para>
   /// </remarks>
   public class AttributeValue {
@@ -92,12 +93,28 @@ namespace OnTopic.Attributes {
     ///   If disabled, <see cref="AttributeValueCollection"/> will not call local properties on <see cref="Topic"/> that
     ///   correspond to the <paramref name="key"/> as a means of enforcing the business logic.
     /// </param>
+    /// <param name="lastModified">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
+    ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
+    ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
+    /// </param>
     /// <requires
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    internal AttributeValue(string key, string? value, bool isDirty, bool enforceBusinessLogic) : this(key, value, isDirty) {
-      EnforceBusinessLogic = enforceBusinessLogic;
+    internal AttributeValue(
+      string key,
+      string? value,
+      bool isDirty,
+      bool enforceBusinessLogic,
+      DateTime? lastModified = null
+    ): this(
+      key,
+      value,
+      isDirty
+    ) {
+      EnforceBusinessLogic      = enforceBusinessLogic;
+      LastModified              = lastModified?? DateTime.Now;
     }
 
     /*==========================================================================================================================
@@ -147,12 +164,12 @@ namespace OnTopic.Attributes {
     ///   <see cref="AttributeValueCollection"/>.
     /// </summary>
     /// <remarks>
-    ///   By default, when a user attempts to update an attribute's value by calling
-    ///   <see cref="AttributeValueCollection.SetValue(String, String, Boolean?)"/>, or when an <see cref="AttributeValue"/> is
-    ///   added to the <see cref="AttributeValueCollection"/>, the <see cref="AttributeValueCollection"/> will automatically
-    ///   attempt to call any corresponding setters on <see cref="Topic"/> (or a derived instance) to ensure that the business
-    ///   logic is enforced. To avoid an infinite loop, however, this is disabled when properties on <see cref="Topic"/> call
-    ///   <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>. When that happens, the
+    ///   By default, when a user attempts to update an attribute's value by calling <see
+    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>, or when an <see cref="AttributeValue"
+    ///   /> is added to the <see cref="AttributeValueCollection"/>, the <see cref="AttributeValueCollection"/> will
+    ///   automatically attempt to call any corresponding setters on <see cref="Topic"/> (or a derived instance) to ensure that
+    ///   the business logic is enforced. To avoid an infinite loop, however, this is disabled when properties on <see
+    ///   cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>. When that happens, the
     ///   <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see cref="AttributeValueCollection"/>
     ///   that it should not call the local property. This value is only intended for internal use.
     /// </remarks>
@@ -172,7 +189,7 @@ namespace OnTopic.Attributes {
     /// <summary>
     ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
-    public DateTime LastModified { get; } = DateTime.Now;
+    public DateTime LastModified { get; internal set; } = DateTime.Now;
 
   } //Class
 } //Namespace

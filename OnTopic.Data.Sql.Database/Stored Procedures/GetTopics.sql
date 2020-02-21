@@ -102,16 +102,18 @@ ORDER BY	SortOrder
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
 	Attributes.AttributeKey,
-	Attributes.AttributeValue
+	Attributes.AttributeValue,
+	Attributes.Version
 FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
--- SELECT AttributeXml
+-- SELECT EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
-	Attributes.AttributesXml
+	Attributes.AttributesXml,
+	Attributes.Version
 FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
