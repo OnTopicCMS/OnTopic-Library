@@ -121,6 +121,13 @@ namespace OnTopic.Data.Sql {
       var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       var name                  = reader["AttributeKey"]?.ToString();
       var value                 = reader["AttributeValue"]?.ToString();
+      var version               = DateTime.Now;
+
+      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
+      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
+      if (reader.FieldCount > 3) {
+        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate conditions
@@ -141,7 +148,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(name, value, false);
+      current.Attributes.SetValue(name, value, false, version);
 
     }
 
@@ -169,6 +176,13 @@ namespace OnTopic.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var version               = DateTime.Now;
+
+      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
+      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
+      if (reader.FieldCount > 2) {
+        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate conditions
@@ -214,7 +228,7 @@ namespace OnTopic.Data.Sql {
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (String.IsNullOrEmpty(value)) continue;
-        current.Attributes.SetValue(name, value, false);
+        current.Attributes.SetValue(name, value, false, version);
 
       } while (xmlReader.Name == "attribute");
 
