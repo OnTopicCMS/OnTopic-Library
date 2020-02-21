@@ -107,16 +107,13 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish sitemap
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sitemap = GenerateSitemap(rootTopic);
-      var sitemapFile = new StringBuilder();
-      using (var writer = new StringWriter(sitemapFile)) {
-        sitemap.Save(writer);
-      }
+      var declaration           = new XDeclaration("1.0", "utf-8", "no");
+      var sitemap               = GenerateSitemap(rootTopic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the homepage view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return Content(sitemapFile.ToString(), "text/xml");
+      return Content(declaration.ToString() + sitemap.ToString(), "text/xml");
 
     }
 
@@ -129,7 +126,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>The site's homepage view.</returns>
     public virtual XDocument GenerateSitemap(Topic rootTopic) =>
       new XDocument(
-        new XDeclaration("1.0", "utf-8", String.Empty),
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
           select AddTopic(topic)
