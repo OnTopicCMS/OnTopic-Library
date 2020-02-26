@@ -20,7 +20,9 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 PRINT	'Detect range overlaps'
 
-SELECT	*
+SELECT	TopicID,
+	RangeLeft,
+	RangeRight
 FROM	Topics		OuterTopics
 WHERE (
   SELECT	COUNT(TopicID)
