@@ -90,4 +90,4 @@ SELECT	TopicID,
 	AttributeValue
 FROM	Attributes
 WHERE	AttributeKey		= 'ParentID'
-AND	AttributeValue		!= dbo.GetParentID(TopicID)
+AND	AttributeValue		!= CAST(dbo.GetParentID(TopicID) AS VARCHAR(255))
