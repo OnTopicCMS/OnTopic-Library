@@ -26,12 +26,12 @@ WHERE (
   SELECT	COUNT(TopicID)
   FROM	Topics		InnerTopics
   WHERE (	RangeLeft		< OuterTopics.RangeLeft
-    AND	RangeRight		< OuterTopics.RangeRight
-    AND	RangeRight		> OuterTopics.RangeLeft
+    AND	ISNULL(RangeRight, -1)	< ISNULL(OuterTopics.RangeRight, -1)
+    AND	ISNULL(RangeRight, -1)	> OuterTopics.RangeLeft
   )
   OR (	RangeLeft		> OuterTopics.RangeLeft
-    AND	RangeRight		> OuterTopics.RangeRight
-    AND	RangeLeft		< OuterTopics.RangeRight
+    AND	ISNULL(RangeRight, -1)	> ISNULL(OuterTopics.RangeRight, -1)
+    AND	RangeLeft		< ISNULL(OuterTopics.RangeRight, -1)
   )
 ) > 0
 
@@ -54,11 +54,11 @@ WHERE (
   WHERE	TopicID		!= OuterTopics.TopicID
     AND (	RangeLeft
       IN (	  OuterTopics.RangeLeft,
-	  OuterTopics.RangeRight
+	  ISNULL(OuterTopics.RangeRight, -1)
         )
-    OR	RangeRight
+    OR	ISNULL(RangeRight, 0)
       IN (	  OuterTopics.RangeLeft,
-	  OuterTopics.RangeRight
+	  ISNULL(OuterTopics.RangeRight, -1)
       )
     )
 ) > 0
@@ -74,7 +74,7 @@ SELECT	TopicID,
 	RangeLeft,
 	RangeRight
 FROM	Topics
-WHERE	RangeLeft	>= RangeRight
+WHERE	RangeLeft	>= ISNULL(RangeRight, -1)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DETECT PARENT ID MISMATCHES
