@@ -342,7 +342,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader?["TopicId"]?.ToString(), CultureInfo.InvariantCulture);
+      var sourceTopicId         = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
       var dateTime              = reader?.GetDateTime(reader?.GetOrdinal("Version")?? 0)?? DateTime.Now;
 
       /*------------------------------------------------------------------------------------------------------------------------
