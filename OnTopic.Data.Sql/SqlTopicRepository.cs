@@ -1195,7 +1195,7 @@ namespace OnTopic.Data.Sql {
         attributesXml.Append("\">");
 
         // Build out string array of related items in this scope
-        var targetIds = new string[scope.Count()];
+        var targetIds = new string[scope.Count];
         var count = 0;
         foreach (var relTopic in scope) {
           targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);

@@ -268,7 +268,7 @@ namespace OnTopic.Internal.Reflection {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method != null &&
-        method.GetParameters().Count().Equals(1) &&
+        method.GetParameters().Length.Equals(1) &&
         IsSettableType(method.GetParameters().First().ParameterType) &&
         (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
       );
