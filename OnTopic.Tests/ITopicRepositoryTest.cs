@@ -167,14 +167,14 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
 
       Assert.ReferenceEquals(topic.Parent, source);
-      Assert.AreEqual<int>(2, destination.Children.Count());
-      Assert.AreEqual<int>(2, source.Children.Count());
+      Assert.AreEqual<int>(2, destination.Children.Count);
+      Assert.AreEqual<int>(2, source.Children.Count);
 
       _topicRepository.Move(topic, destination);
 
       Assert.ReferenceEquals(topic.Parent, destination);
-      Assert.AreEqual<int>(1, source.Children.Count());
-      Assert.AreEqual<int>(3, destination.Children.Count());
+      Assert.AreEqual<int>(1, source.Children.Count);
+      Assert.AreEqual<int>(3, destination.Children.Count);
 
     }
 
@@ -193,12 +193,12 @@ namespace OnTopic.Tests {
 
       Assert.ReferenceEquals(topic.Parent, parent);
       Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
-      Assert.AreEqual<int>(2, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count);
 
       _topicRepository.Move(topic, parent, sibling);
 
       Assert.ReferenceEquals(topic.Parent, parent);
-      Assert.AreEqual<int>(2, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count);
       Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
       Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);
 
@@ -217,11 +217,11 @@ namespace OnTopic.Tests {
       var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
       var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
 
-      Assert.AreEqual<int>(2, parent.Children.Count());
+      Assert.AreEqual<int>(2, parent.Children.Count);
 
       _topicRepository.Delete(topic);
 
-      Assert.AreEqual<int>(1, parent.Children.Count());
+      Assert.AreEqual<int>(1, parent.Children.Count);
 
     }
 

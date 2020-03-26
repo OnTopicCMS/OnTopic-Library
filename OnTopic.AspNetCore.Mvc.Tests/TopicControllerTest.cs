@@ -126,23 +126,24 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action.
     /// </summary>
-    /// <remarks>
-    ///   Because the <see cref="SitemapController.Index()"/> method references the <see cref="Controller.Response"/> property,
-    ///   which is not set during unit testing, this test is <i>expected</i> to throw an exception. This is not ideal. In the
-    ///   future, this may be modified to instead use a mock <see cref="ControllerContext"/> for a more sophisticated test.
-    /// </remarks>
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException), AllowDerivedTypes=false)]
     public void SitemapController_Index_ReturnsSitemapXml() {
 
-      var controller            = new SitemapController(_topicRepository);
-      var result                = controller.Index() as ViewResult;
-      var model                 = result.Model as string;
+      var actionContext         = new ActionContext {
+        HttpContext             = new DefaultHttpContext(),
+        RouteData               = new RouteData(),
+        ActionDescriptor        = new ControllerActionDescriptor()
+      };
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new ControllerContext(actionContext)
+      };
+      var result                = controller.Index() as ContentResult;
+      var model                 = result.Content as string;
 
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model.StartsWith("<?xml version=\"1.0\" encoding=\"utf-16\"?>"));
+      Assert.IsTrue(model.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"));
       Assert.IsTrue(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
 
     }

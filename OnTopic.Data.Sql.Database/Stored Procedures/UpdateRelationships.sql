@@ -20,11 +20,11 @@ DECLARE	@Existing_TopicIDs	TopicList
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
 INTO	@Existing_TopicIDs (
-	  TopicId
+	  TopicID
 	)
-SELECT	Target_TopicId
+SELECT	Target_TopicID
 FROM	Relationships
-WHERE	Source_TopicId		= @TopicID
+WHERE	Source_TopicID		= @TopicID
   AND	RelationshipKey		= @RelationshipKey
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -32,17 +32,17 @@ WHERE	Source_TopicId		= @TopicID
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
 INTO	Relationships (
-	  Source_TopicId,
+	  Source_TopicID,
 	  RelationshipKey,
-	  Target_TopicId
+	  Target_TopicID
 	)
 SELECT	@TopicId,
 	@RelationshipKey,
-	Target.TopicId
+	Target.TopicID
 FROM	@RelatedTopics		Target
 FULL JOIN	@Existing_TopicIDs	Existing
-  ON	Existing.TopicId	= Target.TopicId
-WHERE	Existing.TopicId	is null
+  ON	Existing.TopicID	= Target.TopicID
+WHERE	Existing.TopicID	is null
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

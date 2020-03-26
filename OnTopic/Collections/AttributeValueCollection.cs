@@ -204,6 +204,11 @@ namespace OnTopic.Collections {
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
     /// </param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
+    ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
+    ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
+    /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
     ///   exception="T:System.ArgumentNullException">
@@ -219,7 +224,8 @@ namespace OnTopic.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetValue(string key, string? value, bool? isDirty = null) => SetValue(key, value, isDirty, true);
+    public void SetValue(string key, string? value, bool? isDirty = null, DateTime? version = null)
+      => SetValue(key, value, isDirty, true, version);
 
     /// <summary>
     ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
@@ -242,6 +248,11 @@ namespace OnTopic.Collections {
     ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
     ///   This should be set to false if setting attributes from internal properties in order to avoid an infinite loop.
     /// </param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
+    ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
+    ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
+    /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
     ///   exception="T:System.ArgumentNullException">
@@ -257,7 +268,7 @@ namespace OnTopic.Collections {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    internal void SetValue(string key, string? value, bool? isDirty, bool enforceBusinessLogic) {
+    internal void SetValue(string key, string? value, bool? isDirty, bool enforceBusinessLogic, DateTime? version = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -292,7 +303,7 @@ namespace OnTopic.Collections {
         else if (originalAttribute.Value != value) {
           markAsDirty = true;
         }
-        var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic);
+        var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic, version);
         this[IndexOf(originalAttribute)] = newAttribute;
       }
 
@@ -300,7 +311,7 @@ namespace OnTopic.Collections {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(key, value, isDirty ?? true, enforceBusinessLogic));
+        Add(new AttributeValue(key, value, isDirty ?? true, enforceBusinessLogic, version));
       }
 
     }
@@ -316,8 +327,8 @@ namespace OnTopic.Collections {
     ///   <para>
     ///     If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///     through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
-    ///     infinite loop, internal setters _must_ call this overload.
+    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?)"/>'s enforceBusinessLogic parameter. To
+    ///     avoid an infinite loop, internal setters _must_ call this overload.
     ///   </para>
     ///   <para>
     ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
@@ -357,8 +368,8 @@ namespace OnTopic.Collections {
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
-    ///   infinite loop, internal setters _must_ call this overload.
+    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?)"/>'s enforceBusinessLogic parameter. To
+    ///   avoid an infinite loop, internal setters _must_ call this overload.
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
@@ -379,8 +390,8 @@ namespace OnTopic.Collections {
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean)"/>'s enforceBusinessLogic parameter. To avoid an
-    ///   infinite loop, internal setters _must_ call this overload.
+    ///   set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?)"/>'s enforceBusinessLogic parameter. To
+    ///   avoid an infinite loop, internal setters _must_ call this overload.
     /// </remarks>
     /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
     /// <param name="settableAttribute">
@@ -403,6 +414,7 @@ namespace OnTopic.Collections {
         }
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
+        this[originalAttribute.Key].LastModified = originalAttribute.LastModified;
         _setCounter = 0;
         return false;
       }

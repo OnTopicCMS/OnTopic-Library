@@ -220,7 +220,7 @@ BEGIN
   WHERE	RangeLeft
     BETWEEN	@InsertionPoint
       AND	@OriginalRight
-  OR	RangeRight
+  OR	ISNULL(RangeRight, -1)
     BETWEEN	@InsertionPoint
     AND	@OriginalRight
 
@@ -290,7 +290,7 @@ BEGIN
   WHERE	RangeLeft
     BETWEEN	@OriginalLeft
       AND	@InsertionPoint - 1
-  OR	RangeRight
+  OR	ISNULL(RangeRight, 0)
     BETWEEN	@OriginalLeft
       AND	@InsertionPoint - 1
 

@@ -13,6 +13,7 @@ WITH Attributes AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
+	Version,
 	RowNumber = ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID,
 			AttributeKey
@@ -27,6 +28,7 @@ WITH Attributes AS (
 )
 SELECT	Attributes.TopicID,
 	Attributes.AttributeKey,
-	Attributes.AttributeValue
+	Attributes.AttributeValue,
+	Attributes.Version
 FROM	Attributes
 WHERE	RowNumber		= 1
