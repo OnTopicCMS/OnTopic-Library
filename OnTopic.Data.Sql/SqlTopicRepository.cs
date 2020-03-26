@@ -6,17 +6,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
+using Microsoft.Data.SqlClient;
 using OnTopic.Attributes;
-using OnTopic.Repositories;
-using OnTopic.Metadata;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
+using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql {
 
