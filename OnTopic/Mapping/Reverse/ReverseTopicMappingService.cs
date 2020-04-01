@@ -213,7 +213,7 @@ namespace OnTopic.Mapping.Reverse {
       var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
       var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
 
-      BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor);
+      BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Loop through properties, mapping each one
