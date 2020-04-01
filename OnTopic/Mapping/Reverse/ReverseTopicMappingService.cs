@@ -608,7 +608,7 @@ namespace OnTopic.Mapping.Reverse {
         var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(topicTask);
         var topic = await topicTask.ConfigureAwait(false);
-        if (!targetList.Contains(topic.Key)) {
+        if (topic != null && !targetList.Contains(topic.Key)) {
           targetList.Add(topic);
         }
       }
