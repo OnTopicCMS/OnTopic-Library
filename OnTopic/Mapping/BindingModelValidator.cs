@@ -92,7 +92,7 @@ namespace OnTopic.Mapping {
       [AllowNull]Type sourceType,
       [AllowNull]MemberInfoCollection<PropertyInfo> properties,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
-      [AllowNull]String attributePrefix = ""
+      [AllowNull]string attributePrefix = ""
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ namespace OnTopic.Mapping {
       [AllowNull]Type sourceType,
       [AllowNull]PropertyInfo property,
       [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
-      [AllowNull]String attributePrefix = ""
+      [AllowNull]string attributePrefix = ""
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor == null) {
         throw new InvalidOperationException(
-          $"A {nameof(sourceType)} object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
+          $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
           $"'{configuration.Property.Name}' property. If this property is not intended to be mapped by the " +
           $"{nameof(ReverseTopicMappingService)}, then it should be decorated with {nameof(DisableMappingAttribute)}."
