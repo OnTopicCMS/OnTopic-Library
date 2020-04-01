@@ -22,10 +22,10 @@ namespace OnTopic.Tests.BindingModels {
     public ContactTopicBindingModel PrimaryContact { get; set; } = new ContactTopicBindingModel();
 
     [MapToParent(AttributePrefix="Alternate")]
-    public ContactTopicBindingModel AlternateContact { get; set; } = new ContactTopicBindingModel();
+    public EmailTopicBindingModel AlternateContact { get; set; } = new EmailTopicBindingModel();
 
     [MapToParent]
-    public ContactTopicBindingModel BillingContact { get; set; } = new ContactTopicBindingModel();
+    public EmailTopicBindingModel BillingContact { get; set; } = new EmailTopicBindingModel();
 
   } //Class
 } //Namespace
