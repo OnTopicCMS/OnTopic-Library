@@ -87,10 +87,12 @@ namespace OnTopic.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateModel(
       [AllowNull]Type sourceType,
       [AllowNull]MemberInfoCollection<PropertyInfo> properties,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
+      [AllowNull]string attributePrefix = ""
       ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -111,7 +113,7 @@ namespace OnTopic.Mapping {
       | Validate
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var property in properties) {
-        ValidateProperty(sourceType, property, contentTypeDescriptor);
+        ValidateProperty(sourceType, property, contentTypeDescriptor, attributePrefix);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -139,10 +141,12 @@ namespace OnTopic.Mapping {
     /// <param name="contentTypeDescriptor">
     ///   The <see cref="ContentTypeDescriptor"/> object against which to validate the model.
     /// </param>
+    /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     static internal void ValidateProperty(
       [AllowNull]Type sourceType,
       [AllowNull]PropertyInfo property,
-      [AllowNull]ContentTypeDescriptor contentTypeDescriptor
+      [AllowNull]ContentTypeDescriptor contentTypeDescriptor,
+      [AllowNull]string attributePrefix = ""
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -156,7 +160,7 @@ namespace OnTopic.Mapping {
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var propertyType          = property.PropertyType;
-      var configuration         = new PropertyConfiguration(property);
+      var configuration         = new PropertyConfiguration(property, attributePrefix);
       var compositeAttributeKey = configuration.AttributeKey;
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
       var childRelationships    = new[] { RelationshipType.Children, RelationshipType.NestedTopics };
@@ -178,7 +182,8 @@ namespace OnTopic.Mapping {
         ValidateModel(
           propertyType,
           childProperties,
-          contentTypeDescriptor
+          contentTypeDescriptor,
+          configuration.AttributePrefix
         );
         return;
       }
@@ -219,9 +224,9 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor == null) {
         throw new InvalidOperationException(
-          $"A {nameof(sourceType)} object was provided with a content type set to {contentTypeDescriptor.Key}'. This " +
+          $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
-          $"{configuration.Property.Name} property. If this property is not intended to be mapped by the " +
+          $"'{configuration.Property.Name}' property. If this property is not intended to be mapped by the " +
           $"{nameof(ReverseTopicMappingService)}, then it should be decorated with {nameof(DisableMappingAttribute)}."
         );
       }
@@ -242,12 +247,12 @@ namespace OnTopic.Mapping {
         listType != null
       ) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
-          $"the generic type {listType.Name} does not implement the {nameof(ITopicBindingModel)} interface. This is " +
-          $"required for binding models. If this collection is not intended to be mapped to " +
-          $"{ModelType.NestedTopic} then update the definition in the associated {nameof(ContentTypeDescriptor)}. If this " +
-          $"collection is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)} to exclude it from " +
-          $"mapping."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"{configuration.RelationshipType}, but the generic type '{listType.Name}' does not implement the " +
+          $"{nameof(ITopicBindingModel)} interface. This is required for binding models. If this collection is not intended " +
+          $"to be mapped as a {ModelType.NestedTopic} then update the definition in the associated " +
+          $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
+          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 
@@ -259,11 +264,12 @@ namespace OnTopic.Mapping {
         !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} has been determined to be a {ModelType.Reference}, but " +
-          $"the generic type {propertyType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} interface. This " +
-          $"is required for references. If this property is not intended to be mapped to {ModelType.Reference} then update " +
-          $"the definition in the associated {nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped " +
-          $"at all, include the {nameof(DisableMappingAttribute)} to exclude it from mapping."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"{ModelType.Reference}, but the generic type '{propertyType.Name}' does not implement the " +
+          $"{nameof(IRelatedTopicBindingModel)} interface. This is required for references. If this property is not intended " +
+          $"to be mapped as a {ModelType.Reference} then update the definition in the associated " +
+          $"{nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped at all, include the " +
+          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 
@@ -275,12 +281,13 @@ namespace OnTopic.Mapping {
         !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
       ) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} has been determined to be a topic reference, but the generic type " +
-          $"{compositeAttributeKey} does not end in <c>Id</c>. By convention, all topic reference are expected to end " +
-          $"in <c>Id</c>. To keep the property name set to {propertyType.Name}, use the {nameof(AttributeKeyAttribute)} to " +
-          $"specify the name of the topic reference this should map to. If this property is not intended to be mapped at " +
-          $"all, include the {nameof(DisableMappingAttribute)}. If the {contentTypeDescriptor.Key} defines a topic reference " +
-          $"attribute that doesn't follow this convention, then it should be updated."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a topic reference, but " +
+          $"the generic type '{compositeAttributeKey}' does not end in <c>Id</c>. By convention, all topic reference are " +
+          $"expected to end in <c>Id</c>. To keep the property name set to '{propertyType.Name}', use the " +
+          $"{nameof(AttributeKeyAttribute)} to specify the name of the topic reference this should map to. If this property " +
+          $"is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)}. If the " +
+          $"'{contentTypeDescriptor.Key}' defines a topic reference attribute that doesn't follow this convention, then it " +
+          $"should be updated."
         );
       }
 
@@ -328,8 +335,9 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IList).IsAssignableFrom(property.PropertyType)) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} maps to a relationship attribute {attributeDescriptor.Key}, but does" +
-          $"not implement {nameof(IList)}. Relationships must implement {nameof(IList)} or derive from a collection that does."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"'{attributeDescriptor.Key}', but does not implement {nameof(IList)}. Relationships must implement " +
+          $"{nameof(IList)} or derive from a collection that does."
         );
       }
 
@@ -338,9 +346,9 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!new[] { RelationshipType.Any, RelationshipType.Relationship }.Contains(configuration.RelationshipType)) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} maps to a relationship attribute {attributeDescriptor.Key}, but is " +
-          $"configured as a {configuration.RelationshipType}. The property should be flagged as either " +
-          $"{nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
+          $"'{attributeDescriptor.Key}', but is configured as a {configuration.RelationshipType}. The property should be " +
+          $"flagged as either {nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
         );
       }
 
@@ -349,11 +357,12 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new InvalidOperationException(
-          $"The {property.Name} on the {sourceType.Name} has been determined to be a {configuration.RelationshipType}, but " +
-          $"the generic type {listType.Name} does not implement the {nameof(IRelatedTopicBindingModel)} interface. This is " +
-          $"required for binding models. If this collection is not intended to be mapped to {configuration.RelationshipType} " +
-          $"then update the definition in the associated {nameof(ContentTypeDescriptor)}. If this collection is not intended " +
-          $"to be mapped at all, include the {nameof(DisableMappingAttribute)} to exclude it from mapping."
+          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
+          $"{configuration.RelationshipType}, but the generic type '{listType?.Name}' does not implement the " +
+          $"{nameof(IRelatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
+          $"intended to be mapped as a {configuration.RelationshipType} then update the definition in the associated " +
+          $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
+          $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
       }
 

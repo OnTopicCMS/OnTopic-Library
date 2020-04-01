@@ -222,7 +222,7 @@ namespace OnTopic.TestDoubles {
 
       var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(contactContentType, "Email");
+      addAttribute(contactContentType, "Name");
       addAttribute(contactContentType, "AlternateEmail");
       addAttribute(contactContentType, "BillingContactEmail");
 

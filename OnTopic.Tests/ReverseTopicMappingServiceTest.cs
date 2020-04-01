@@ -139,7 +139,7 @@ namespace OnTopic.Tests {
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
       target.IsRequired         = true;
-      target.IsExtendedAttribute        = false;
+      target.IsExtendedAttribute= false;
       target.Description        = "Original Description";
 
       target                    = (TextAttribute?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
@@ -170,14 +170,14 @@ namespace OnTopic.Tests {
         ContentType             = "Contact"
       };
 
-      bindingModel.PrimaryContact.Email = "PrimaryContact@Ignia.com";
-      bindingModel.AlternateContact.Email = "AlternateContact@Ignia.com";
-      bindingModel.BillingContact.Email = "BillingContact@Ignia.com";
-
+      bindingModel.PrimaryContact.Name                          = "Jeremy";
+      bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
+      bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
+ 
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.AreEqual<string>("PrimaryContact@Ignia.com", target.Attributes.GetValue("Email"));
+      Assert.AreEqual<string>("Jeremy", target.Attributes.GetValue("Name"));
       Assert.AreEqual<string>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
       Assert.AreEqual<string>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
 
