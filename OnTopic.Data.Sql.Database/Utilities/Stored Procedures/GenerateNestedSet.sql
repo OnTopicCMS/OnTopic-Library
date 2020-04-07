@@ -5,7 +5,7 @@
 -- and uses it to generate a nested set based table in Topics.  Useful for recovering from a corrupted nested set model.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[GenerateNestedSet]
+CREATE PROCEDURE [Utilities].[GenerateNestedSet]
 AS
 
 SET IDENTITY_INSERT Topics ON
