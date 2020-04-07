@@ -68,18 +68,18 @@
     <Folder Include="Functions\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Types" />
-    <Folder Include="Maintenance\" />
-    <Folder Include="Maintenance\Stored Procedures" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Utilities\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Maintenance\Stored Procedures\GenerateNestedSet.sql" />
-    <Build Include="Maintenance\Stored Procedures\CompressHierarchy.sql" />
-    <Build Include="Maintenance\Stored Procedures\DisableForeignKeys.sql" />
-    <Build Include="Maintenance\Stored Procedures\ValidateHierarchy.sql" />
-    <Build Include="Maintenance\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
-    <Build Include="Maintenance\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
-    <Build Include="Maintenance\Stored Procedures\DeleteConsecutiveAttributes.sql" />
-    <Build Include="Maintenance\Stored Procedures\ConsolidateVersions.sql" />
+    <Build Include="Utilities\Stored Procedures\GenerateNestedSet.sql" />
+    <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
+    <Build Include="Utilities\Stored Procedures\DisableForeignKeys.sql" />
+    <Build Include="Utilities\Stored Procedures\ValidateHierarchy.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
