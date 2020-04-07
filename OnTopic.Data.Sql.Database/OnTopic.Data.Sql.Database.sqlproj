@@ -69,12 +69,19 @@
     <Folder Include="Stored Procedures\" />
     <Folder Include="Types" />
     <Folder Include="Maintenance\" />
+    <Folder Include="Maintenance\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Maintenance\GenerateNestedSet.sql" />
-    <Build Include="Maintenance\CompressHierarchy.sql" />
-    <Build Include="Maintenance\DisableForeignKeys.sql" />
-    <Build Include="Maintenance\ValidateHierarchy.sql" />
+    <Build Include="Maintenance\Stored Procedures\GenerateNestedSet.sql" />
+    <Build Include="Maintenance\Stored Procedures\CompressHierarchy.sql" />
+    <Build Include="Maintenance\Stored Procedures\DisableForeignKeys.sql" />
+    <Build Include="Maintenance\Stored Procedures\ValidateHierarchy.sql" />
+    <Build Include="Maintenance\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
+    <Build Include="Maintenance\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
+    <Build Include="Maintenance\Stored Procedures\DeleteConsecutiveAttributes.sql" />
+    <Build Include="Maintenance\Stored Procedures\ConsolidateVersions.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
     <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
@@ -100,10 +107,6 @@
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
     <Build Include="Views\AttributeIndex.sql" />
-    <Build Include="Maintenance\DeleteConsecutiveExtendedAttributes.sql" />
-    <Build Include="Maintenance\DeleteOrphanedLastModifiedAttributes.sql" />
-    <Build Include="Maintenance\DeleteConsecutiveAttributes.sql" />
-    <Build Include="Maintenance\ConsolidateVersions.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
