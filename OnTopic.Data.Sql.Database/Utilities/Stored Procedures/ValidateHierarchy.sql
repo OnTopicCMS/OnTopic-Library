@@ -3,12 +3,12 @@
 --------------------------------------------------------------------------------------------------------------------------------
 -- Helps identify potential sources of corruption in the nested set hierarchy
 --------------------------------------------------------------------------------------------------------------------------------
--- ### NOTE JJC20191211: The nested set model is incredibly useful to fast reads of a hierarchy. But it is also susceptible to
+-- ### NOTE JJC20191211: The nested set model is incredibly useful for fast reads of a hierarchy. But it is also susceptible to
 -- corruption from e.g., errant queries or poorly handled transactions. Ideally, this script shouldn't be necessary. But, as a
 -- safety precaution, it provides a means of identifying potential sources of corruption. It won't resolve the corruption, nor
 -- fully identify where it is. But it'll help identify scenarios that should never occur.
 --------------------------------------------------------------------------------------------------------------------------------
-CREATE PROCEDURE [dbo].[ValidateHierarchy]
+CREATE PROCEDURE [Utilities].[ValidateHierarchy]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------

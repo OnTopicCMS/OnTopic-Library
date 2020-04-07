@@ -13,7 +13,7 @@
 -- granularity.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[DeleteOrphanedLastModifiedAttributes]
+CREATE PROCEDURE [Utilities].[DeleteOrphanedLastModifiedAttributes]
 AS
 
 SET NOCOUNT ON;

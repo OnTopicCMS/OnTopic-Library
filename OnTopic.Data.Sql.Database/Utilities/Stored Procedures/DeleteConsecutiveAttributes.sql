@@ -9,7 +9,7 @@
 -- <c>Title</c> gets changed, then gets reverted, all three versions will be retained in the database.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[DeleteConsecutiveAttributes]
+CREATE PROCEDURE [Utilities].[DeleteConsecutiveAttributes]
 AS
 
 SET NOCOUNT ON;

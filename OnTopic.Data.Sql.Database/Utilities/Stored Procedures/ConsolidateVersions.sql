@@ -7,7 +7,7 @@
 -- collapsed prior to the start date.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[ConsolidateVersions]
+CREATE PROCEDURE [Utilities].[ConsolidateVersions]
 	@StartDate		datetime	= 20000101,
 	@EndDate		datetime	= null
 AS

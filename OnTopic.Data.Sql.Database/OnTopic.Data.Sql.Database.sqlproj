@@ -72,6 +72,7 @@
     <Folder Include="Utilities\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="Utilities\Schema.sql" />
     <Build Include="Utilities\Stored Procedures\GenerateNestedSet.sql" />
     <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Utilities\Stored Procedures\DisableForeignKeys.sql" />

@@ -12,7 +12,7 @@
 -- be patient!
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[DeleteConsecutiveExtendedAttributes]
+CREATE PROCEDURE [Utilities].[DeleteConsecutiveExtendedAttributes]
 AS
 
 SET NOCOUNT ON;
