@@ -103,6 +103,7 @@
     <Build Include="Maintenance\DeleteConsecutiveExtendedAttributes.sql" />
     <Build Include="Maintenance\DeleteOrphanedLastModifiedAttributes.sql" />
     <Build Include="Maintenance\DeleteConsecutiveAttributes.sql" />
+    <Build Include="Maintenance\ConsolidateVersions.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
