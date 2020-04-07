@@ -100,6 +100,7 @@
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
     <Build Include="Views\AttributeIndex.sql" />
+    <Build Include="Maintenance\DeleteConsecutiveExtendedAttributes.sql" />
     <Build Include="Maintenance\DeleteConsecutiveAttributes.sql" />
   </ItemGroup>
   <ItemGroup>
