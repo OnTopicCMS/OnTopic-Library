@@ -68,8 +68,13 @@
     <Folder Include="Functions\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Types" />
+    <Folder Include="Maintenance\" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="Maintenance\GenerateNestedSet.sql" />
+    <Build Include="Maintenance\CompressHierarchy.sql" />
+    <Build Include="Maintenance\DisableForeignKeys.sql" />
+    <Build Include="Maintenance\ValidateHierarchy.sql" />
     <Build Include="Tables\ExtendedAttributes.sql" />
     <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
@@ -89,13 +94,9 @@
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetAttributes.sql" />
-    <Build Include="Stored Procedures\GenerateNestedSet.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
-    <Build Include="Stored Procedures\CompressHierarchy.sql" />
-    <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
-    <Build Include="Stored Procedures\ValidateHierarchy.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
     <Build Include="Views\AttributeIndex.sql" />

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE pr_Disable_Foreign_Keys
+﻿CREATE PROCEDURE DisableForeignKeys
 	@disable		BIT	= 1
 AS
 
