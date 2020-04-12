@@ -756,24 +756,14 @@ namespace OnTopic.Data.Sql {
       extendedAttributes.Append("</attributes>");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
+      | Add unmatch attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in contentType.AttributeDescriptors) {
-
-        // Set preconditions
-        var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));
-        var isPrimaryAttribute  = (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID");
-        var isRelationships     = (attribute.EditorType == "Relationships.ascx");
-        var isNestedTopic       = (attribute.EditorType == "TopicList.ascx");
-        var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.IsExtendedAttribute && !isRelationships && !isNestedTopic && topic.Id != -1);
-
-        if (conditionsMet) {
-          var record = attributes.NewRow();
-          record["AttributeKey"] = attribute.Key;
-          record["AttributeValue"] = null;
-          attributes.Rows.Add(record);
-        }
-
+      //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
+      foreach (var attribute in GetUnmatchedAttributes(topic)) {
+        var record = attributes.NewRow();
+        record["AttributeKey"] = attribute.Key;
+        record["AttributeValue"] = null;
+        attributes.Rows.Add(record);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -367,6 +367,71 @@ namespace OnTopic.Repositories {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: GET UNMATCHED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeValue"/>s that are defined based on the <see
+    ///   cref="ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeValueCollection"/>.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
+    protected IEnumerable<AttributeDescriptor> GetUnmatchedAttributes(Topic topic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get associated content type descriptor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+
+      Contract.Assume(
+        contentType,
+        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get unmatched attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributes            = new List<AttributeDescriptor>();
+
+      foreach (var attribute in contentType.AttributeDescriptors) {
+
+        // Ignore unsaved topics
+        if (topic.Id == -1) {
+          continue;
+        }
+
+        // Ignore system attributes
+        if (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID") {
+          continue;
+        }
+
+        // Ignore valid attributes
+        if (
+          topic.Attributes.Contains(attribute.Key) &&
+          !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false))
+        ) {
+          continue;
+        };
+
+        // Ignore relationships and nested topics
+        if (attribute.ModelType.Equals(ModelType.Relationship) || attribute.ModelType.Equals(ModelType.NestedTopic)) {
+          continue;
+        }
+
+        attributes.Add(attribute);
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return attributes;
+
+    }
 
   } //Class
 } //Namespace
