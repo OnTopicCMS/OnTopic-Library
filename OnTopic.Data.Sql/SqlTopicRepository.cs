@@ -392,8 +392,8 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command,        "TopicKey",             topicKey,                               SqlDbType.VarChar);
-        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
+        command.AddParameter("TopicKey", topicKey);
+        command.AddOutputParameter("ReturnCode");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate topics
@@ -457,8 +457,8 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
-        AddSqlParameter(command, "DeepLoad",     isRecursive.ToString(CultureInfo.InvariantCulture),   SqlDbType.Bit);
+        command.AddParameter("TopicID", topicId);
+        command.AddParameter("DeepLoad", isRecursive);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
@@ -599,12 +599,8 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
-        AddSqlParameter(command,
-          "Version",
-          version.ToString("yyyy-MM-dd hh:mm:ss.fff tt", CultureInfo.InvariantCulture),
-          SqlDbType.DateTime
-        );
+        command.AddParameter("TopicID", topicId);
+        command.AddParameter("Version", version);
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
@@ -832,48 +828,18 @@ namespace OnTopic.Data.Sql {
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
         if (topic.Id != -1) {
-          AddSqlParameter(
-            command,
-            "TopicID",
-            topic.Id.ToString(CultureInfo.InvariantCulture),
-            SqlDbType.Int
-          );
+          command.AddParameter("TopicID", topic.Id);
         }
         else if (topic.Parent != null) {
-          AddSqlParameter(
-            command,
-            "ParentID",
-            topic.Parent.Id.ToString(CultureInfo.InvariantCulture),
-            SqlDbType.Int
-          );
+          command.AddParameter("ParentID", topic.Parent.Id);
         }
-        AddSqlParameter(
-          command,
-          "Version",
-          version.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-          SqlDbType.DateTime
-        );
+        command.AddParameter("Version", version);
         command.Parameters.AddWithValue("@Attributes", attributes);
         if (topic.Id != -1) {
-          AddSqlParameter(
-            command,
-            "DeleteRelationships",
-            "1",
-            SqlDbType.Bit
-          );
+          command.AddParameter("DeleteRelationships", true);
         }
-        AddSqlParameter(
-          command,
-          "ExtendedAttributes",
-          extendedAttributes.ToString(),
-          SqlDbType.Xml
-        );
-        AddSqlParameter(
-          command,
-          "ReturnCode",
-          ParameterDirection.ReturnValue,
-          SqlDbType.Int
-        );
+        command.AddParameter("ExtendedAttributes", extendedAttributes);
+        command.AddOutputParameter("ReturnCode");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query
@@ -972,12 +938,12 @@ namespace OnTopic.Data.Sql {
         };
 
         // Add Parameters
-        AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-        AddSqlParameter(command, "ParentID", target.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        command.AddParameter("TopicID", topic.Id);
+        command.AddParameter("ParentID", target.Id);
 
         // Append sibling ID if set
         if (sibling != null) {
-          AddSqlParameter(command, "SiblingID", sibling.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+          command.AddParameter("SiblingID", sibling.Id);
         }
 
         // Execute Query
@@ -1038,7 +1004,7 @@ namespace OnTopic.Data.Sql {
         };
 
         // Add Parameters
-        AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
+        command.AddParameter("TopicID", topic.Id);
 
         // Execute Query
         connection.Open();
@@ -1208,105 +1174,7 @@ namespace OnTopic.Data.Sql {
       return attributesXml.ToString();
     }
 
-    /*==========================================================================================================================
-    | METHOD: ADD SQL PARAMETER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Wrapper function that adds a SQL parameter to a command object.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      string fieldValue,
-      SqlDbType sqlDbType
-    ) => AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
 
-    /// <summary>
-    ///   Adds a SQL parameter to a command object, additionally setting the specified parameter direction.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      ParameterDirection paramDirection,
-      SqlDbType sqlDbType
-    ) => AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
-
-    /// <summary>
-    ///   Adds a SQL parameter to a command object, additionally setting the specified SQL data length for the field.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlLength">Length limit for the SQL field.</param>
-    /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
-    ///   commandObject != null
-    /// </requires>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      string? fieldValue,
-      SqlDbType sqlDbType,
-      ParameterDirection paramDirection,
-      int sqlLength
-    ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(commandObject, "The SQL command object must be specified.");
-      Contract.Requires(commandObject.Parameters, "The SQL command object's parameters collection must be available");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define primary assumptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sqlLength > 0) {
-        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType, sqlLength));
-      }
-      else {
-        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType));
-      }
-
-      Contract.Assume<InvalidOperationException>(
-        commandObject.Parameters["@" + sqlParameter] != null,
-        $"The {commandObject.CommandText} stored procedure does not contain a parameter named {sqlParameter}."
-      );
-
-      commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
-
-      if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
-        if (fieldValue is null ||fieldValue.Length.Equals(0)) {
-          commandObject.Parameters["@" + sqlParameter].Value = null;
-        }
-        else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
-          commandObject.Parameters["@" + sqlParameter].Value = Int64.Parse(fieldValue, CultureInfo.InvariantCulture);
-        }
-        else if (sqlDbType == SqlDbType.UniqueIdentifier) {
-          commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
-        }
-        else if (sqlDbType == SqlDbType.Bit) {
-          if (fieldValue == "1" || fieldValue.ToUpperInvariant() == "TRUE") {
-            commandObject.Parameters["@" + sqlParameter].Value = true;
-          }
-          else {
-            commandObject.Parameters["@" + sqlParameter].Value = false;
-          }
-        }
-        else {
-          commandObject.Parameters["@" + sqlParameter].Value = fieldValue;
-        }
-      }
-
-    }
 
   } //Class
 } //Namespace
