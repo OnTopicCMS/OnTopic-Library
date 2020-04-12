@@ -73,20 +73,13 @@ namespace OnTopic.Data.Sql {
       Contract.Requires(reader, nameof(reader));
       Contract.Requires(topics, nameof(topics));
 
-      Contract.Requires(reader["ParentID"], "The SqlDataReader is expected to include a 'ParentID' element.");
-      Contract.Requires(reader["TopicID"], "The SqlDataReader is expected to include a 'ParentID' element.");
-      Contract.Requires(reader["ContentType"], "The SqlDataReader is expected to include a 'ContentType' element.");
-      Contract.Requires(reader["TopicKey"], "The SqlDataReader is expected to include a 'TopicKey' element.");
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId              = Int32.TryParse(reader["ParentID"].ToString(), out parentId)? parentId : -1;
-      var id                    = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var contentType           = reader["ContentType"].ToString();
-      var key                   = reader["TopicKey"].ToString();
-
-      // Handle ParentID (could be null for root topic)
+      var id                    = reader.GetInteger("TopicID");
+      var key                   = reader.GetString("TopicKey");
+      var contentType           = reader.GetString("ContentType");
+      var parentId              = reader.GetInteger("ParentID");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
@@ -118,15 +111,15 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var name                  = reader["AttributeKey"]?.ToString();
-      var value                 = reader["AttributeValue"]?.ToString();
+      var id                    = reader.GetInteger("TopicID");
+      var name                  = reader.GetString("AttributeKey");
+      var value                 = reader.GetString("AttributeValue");
       var version               = DateTime.Now;
 
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
       //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
       if (reader.FieldCount > 3) {
-        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
+        version                 = reader.GetDateTime("Version");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -175,13 +168,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
+      var id                    = reader.GetInteger("TopicID");
       var version               = DateTime.Now;
 
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
       //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
       if (reader.FieldCount > 2) {
-        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
+        version                 = reader.GetDateTime("Version");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -254,16 +247,12 @@ namespace OnTopic.Data.Sql {
       Contract.Requires(topics, "The topics Dictionary must not be null.");
       Contract.Requires(reader, "The reader must not be null.");
 
-      Contract.Requires(reader["Source_TopicID"], "The Source_TopicID record must not be null.");
-      Contract.Requires(reader["RelationshipKey"], "The RelationshipKey record must not be null.");
-      Contract.Requires(reader["Target_TopicID"], "The Target_TopicID record must not be null.");
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var targetTopicId         = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var relationshipKey       = (string)reader["RelationshipKey"];
+      var sourceTopicId         = reader.GetInteger("Source_TopicID");
+      var targetTopicId         = reader.GetInteger("Target_TopicID");
+      var relationshipKey       = reader.GetString("RelationshipKey");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
@@ -342,8 +331,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var dateTime              = reader?.GetDateTime(reader?.GetOrdinal("Version")?? 0)?? DateTime.Now;
+      var sourceTopicId         = reader.GetInteger("TopicID");
+      var dateTime              = reader.GetDateTime("Version");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
