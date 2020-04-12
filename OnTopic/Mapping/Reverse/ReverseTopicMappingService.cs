@@ -530,7 +530,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (modelReference?.UniqueKey is null || modelReference.UniqueKey.Length.Equals(0)) {
+      if (modelReference == null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
         return;
       }
 

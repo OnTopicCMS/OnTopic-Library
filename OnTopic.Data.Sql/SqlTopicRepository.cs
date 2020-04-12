@@ -357,7 +357,7 @@ namespace OnTopic.Data.Sql {
       | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is null || topicKey.Trim().Length == 0) {
+      if (String.IsNullOrEmpty(topicKey)) {
         return Load(-1, isRecursive);
       }
 

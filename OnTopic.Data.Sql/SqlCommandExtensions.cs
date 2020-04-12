@@ -79,7 +79,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, string? fieldValue)
-      => AddParameter(command, sqlParameter, (fieldValue?? "").Length.Equals(0)? null : fieldValue, SqlDbType.VarChar);
+      => AddParameter(command, sqlParameter, String.IsNullOrEmpty(fieldValue)? null : fieldValue, SqlDbType.VarChar);
 
     /// <summary>
     ///   Adds a SQL parameter to a command object, additionally setting the specified SQL data length for the field.
