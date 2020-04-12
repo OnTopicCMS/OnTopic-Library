@@ -15,7 +15,6 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql {
@@ -728,35 +727,30 @@ namespace OnTopic.Data.Sql {
         "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
       );
 
-      extendedAttributes.Append("<attributes>");
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add indexed attributes that are dirty
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attributeValue in GetAttributes(topic, false, true)) {
+
+        var record              = attributes.NewRow();
+        record["AttributeKey"]  = attributeValue.Key;
+        record["AttributeValue"]= attributeValue.Value;
+        attributeValue.IsDirty  = false;
+
+        attributes.Rows.Add(record);
+
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through the attributes, adding the names and values to the string builder
+      | Add extended attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // Process attributes not stored in the extended attributes
-      foreach (var attributeValue in topic.Attributes) {
+      extendedAttributes.Append("<attributes>");
 
-        var key = attributeValue.Key;
-        var attribute = (AttributeDescriptor?)null;
-
-        if (contentType.AttributeDescriptors.Contains(key)) {
-          attribute = contentType.AttributeDescriptors[key];
-        }
-
-        // For attributes not stored in the extended attributes, only add the AttributeValue item to store if it has changed
-        if (attribute != null && !attribute.IsExtendedAttribute && attributeValue.IsDirty) {
-          var record = attributes.NewRow();
-          record["AttributeKey"] = key;
-          record["AttributeValue"] = attributeValue.Value;
-          attributes.Rows.Add(record);
-        }
-        else if (attribute != null && attribute.IsExtendedAttribute) {
-          extendedAttributes.Append("<attribute key=\"" + key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>");
-        }
-
-        // Reset IsDirty (changed) state
+      foreach (var attributeValue in GetAttributes(topic, true, null)) {
+        extendedAttributes.Append(
+          "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
+        );
         attributeValue.IsDirty = false;
-
       }
 
       extendedAttributes.Append("</attributes>");

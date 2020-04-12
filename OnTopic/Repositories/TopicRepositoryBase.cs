@@ -10,6 +10,10 @@ using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 using Microsoft;
+using OnTopic.Attributes;
+using System.Collections.Generic;
+using System.Linq;
+using OnTopic.Collections;
 
 namespace OnTopic.Repositories {
 
@@ -305,6 +309,64 @@ namespace OnTopic.Repositories {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="Topic"/>, returns a list of <see cref="AttributeValue"/>, optionally filtering based on <see
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/> and <see cref="AttributeValue.IsDirty"/>.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
+    /// <param name="isExtendedAttribute">
+    ///   Whether or not to filter by <see cref="AttributeDescriptor.IsExtendedAttribute"/>. If <c>null</c>, all <see
+    ///   cref="AttributeValue"/>s are returned.
+    /// </param>
+    /// <param name="isDirty">
+    ///   Whether or not to filter by <see cref="AttributeValue.IsDirty"/>. If <c>null</c>, all <see cref="AttributeValue"/>s
+    ///   are returned.
+    /// </param>
+    protected IEnumerable<AttributeValue> GetAttributes(Topic topic, bool? isExtendedAttribute, bool? isDirty = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get associated content type descriptor
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+
+      Contract.Assume(
+        contentType,
+        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get indexed attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributes            = new List<AttributeValue>();
+
+      foreach (var attributeValue in topic.Attributes.Where(a => isDirty == null || a.IsDirty == isDirty)) {
+
+        var key                 = attributeValue.Key;
+        var attribute           = (AttributeDescriptor?)null;
+
+        if (contentType.AttributeDescriptors.Contains(key)) {
+          attribute             = contentType.AttributeDescriptors[key];
+        }
+
+        if (attribute != null && (isExtendedAttribute == null || attribute.IsExtendedAttribute == isExtendedAttribute)) {
+          attributes.Add(attributeValue);
+        }
+
+      }
+
+      return attributes;
+
+    }
+
 
   } //Class
 } //Namespace
