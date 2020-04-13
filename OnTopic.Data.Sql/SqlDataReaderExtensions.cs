@@ -19,7 +19,6 @@ namespace OnTopic.Data.Sql {
   /// </summary>
   internal static class SqlDataReaderExtensions {
 
-
     /*==========================================================================================================================
     | DELEGATE: TRY PARSE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -48,17 +47,6 @@ namespace OnTopic.Data.Sql {
       GetValue<string>(reader, columnName, (string source, out string value) => { value = source; return true; }, String.Empty);
 
     /*==========================================================================================================================
-    | METHOD: GET DATE/TIME
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a <see cref="DateTime"/> value by column name.
-    /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static DateTime GetDateTime(this SqlDataReader reader, string columnName) =>
-      GetValue<DateTime>(reader, columnName, DateTime.TryParse, DateTime.MinValue);
-
-    /*==========================================================================================================================
     | METHOD: GET VERSION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -67,17 +55,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     internal static DateTime GetVersion(this SqlDataReader reader) =>
       reader.GetDateTime(reader.GetOrdinal("Version"));
-
-    /*==========================================================================================================================
-    | METHOD: GET BOOLEAN
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a <see cref="Boolean"/> value by column name.
-    /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static bool GetBoolean(this SqlDataReader reader, string columnName) =>
-      GetValue<bool>(reader, columnName, Boolean.TryParse, false);
 
     /*==========================================================================================================================
     | METHOD: GET VALUE
