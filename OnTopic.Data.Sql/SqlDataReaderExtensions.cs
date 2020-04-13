@@ -28,7 +28,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static int GetInteger(this SqlDataReader reader, string columnName) =>
-      GetValue<int>(reader, columnName, reader.GetInt32);
+      GetValue<int>(reader, columnName, reader.GetInt32, -1);
 
     /*==========================================================================================================================
     | METHOD: GET STRING
@@ -39,7 +39,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static string GetString(this SqlDataReader reader, string columnName) =>
-      GetValue<string>(reader, columnName, reader.GetString);
+      GetValue<string>(reader, columnName, reader.GetString, String.Empty);
 
     /*==========================================================================================================================
     | METHOD: GET DATE/TIME
@@ -50,7 +50,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static DateTime GetDateTime(this SqlDataReader reader, string columnName) =>
-      GetValue<DateTime>(reader, columnName, reader.GetDateTime);
+      GetValue<DateTime>(reader, columnName, reader.GetDateTime, DateTime.MinValue);
 
     /*==========================================================================================================================
     | METHOD: GET BOOLEAN
@@ -61,7 +61,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static bool GetBoolean(this SqlDataReader reader, string columnName) =>
-      GetValue<bool>(reader, columnName, reader.GetBoolean);
+      GetValue<bool>(reader, columnName, reader.GetBoolean, false);
 
     /*==========================================================================================================================
     | METHOD: GET VALUE
@@ -71,15 +71,20 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    /// <param name="getter">Function to call in order to retrieve the strongly typed value from the reader.</param>
     /// <param name="defaultValue">The default value, in case <see cref="DBNull"/> is returned.</param>
     private static T GetValue<T>(
       SqlDataReader reader,
       string columnName,
-      Func<int, T> getter
+      Func<int, T> getter,
+      object defaultValue
     ) {
       Contract.Requires(columnName, nameof(columnName));
       var ordinal = reader.GetOrdinal(columnName);
-      return getter(ordinal);
+      if (!reader.IsDBNull(ordinal)) {
+        return getter(ordinal);
+      }
+      return (T)defaultValue;
     }
 
   } //Class
