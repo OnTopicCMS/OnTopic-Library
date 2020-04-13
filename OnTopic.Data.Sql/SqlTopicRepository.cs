@@ -57,7 +57,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set private fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _connectionString = connectionString;
+      _connectionString         = connectionString;
 
     }
 
@@ -65,12 +65,6 @@ namespace OnTopic.Data.Sql {
     | METHOD: ADD TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(reader, nameof(reader));
-      Contract.Requires(topics, nameof(topics));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -100,12 +94,6 @@ namespace OnTopic.Data.Sql {
     | METHOD: SET INDEXED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private static void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(reader, nameof(reader));
-      Contract.Requires(topics, nameof(topics));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -157,12 +145,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
     private static void SetExtendedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-      Contract.Requires(reader, nameof(reader));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -241,12 +223,6 @@ namespace OnTopic.Data.Sql {
     private static void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-      Contract.Requires(reader, "The reader must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = reader.GetInteger("Source_TopicID");
@@ -289,11 +265,6 @@ namespace OnTopic.Data.Sql {
     private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var topic in topics.Values) {
@@ -321,11 +292,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
     /// <param name="topics">The index of topics currently being loaded.</param>
     private static void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -1022,13 +988,7 @@ namespace OnTopic.Data.Sql {
     ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> XML content, or a blank string if
     ///   <c>skipXml == true</c>.
     /// </returns>
-    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipXml) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -1111,13 +1071,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object for which to create the relationships.</param>
     /// <returns>The XML string.</returns>
-    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string CreateRelationshipsXml(Topic topic) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create XML string container
@@ -1146,8 +1100,6 @@ namespace OnTopic.Data.Sql {
 
       return attributesXml.ToString();
     }
-
-
 
   } //Class
 } //Namespace
