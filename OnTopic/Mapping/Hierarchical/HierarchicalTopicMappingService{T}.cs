@@ -199,9 +199,12 @@ namespace OnTopic.Mapping.Hierarchical {
       | Process children
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0 && viewModel.Children.Count == 0) {
-        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dtoTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        children.Add(await dtoTask.ConfigureAwait(false));
+        if (dto != null) {
+          children.Add(dto);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

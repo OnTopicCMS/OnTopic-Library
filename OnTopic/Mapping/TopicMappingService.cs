@@ -649,9 +649,12 @@ namespace OnTopic.Mapping {
       | Process mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0) {
-        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dtoTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        AddToList(await dtoTask.ConfigureAwait(false));
+        if (dto != null) {
+          AddToList(dto);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
