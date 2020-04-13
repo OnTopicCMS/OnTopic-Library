@@ -59,6 +59,16 @@ namespace OnTopic.Data.Sql {
       GetValue<DateTime>(reader, columnName, DateTime.TryParse, DateTime.MinValue);
 
     /*==========================================================================================================================
+    | METHOD: GET VERSION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the version column, with precisions appropriate for setting the <see cref="Topic.VersionHistory"/>.
+    /// </summary>
+    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    internal static DateTime GetVersion(this SqlDataReader reader) =>
+      reader.GetDateTime(reader.GetOrdinal("Version"));
+
+    /*==========================================================================================================================
     | METHOD: GET BOOLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

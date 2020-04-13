@@ -118,7 +118,7 @@ namespace OnTopic.Data.Sql {
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
       //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
       if (reader.FieldCount > 3) {
-        version                 = reader.GetDateTime("Version");
+        version                 = reader.GetVersion();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ namespace OnTopic.Data.Sql {
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
       //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
       if (reader.FieldCount > 2) {
-        version                 = reader.GetDateTime("Version");
+        version                 = reader.GetVersion();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ namespace OnTopic.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = reader.GetInteger("TopicID");
-      var dateTime              = reader.GetDateTime("Version");
+      var dateTime              = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
