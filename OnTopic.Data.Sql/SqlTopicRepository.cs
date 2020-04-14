@@ -4,16 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Text;
 using Microsoft.Data.SqlClient;
-using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -59,247 +56,6 @@ namespace OnTopic.Data.Sql {
       | Set private fields
       \-----------------------------------------------------------------------------------------------------------------------*/
       _connectionString         = connectionString;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: ADD TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId               = reader.GetTopicId();
-      var key                   = reader.GetString("TopicKey");
-      var contentType           = reader.GetString("ContentType");
-      var parentId              = reader.GetInteger("ParentID");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = TopicFactory.Create(key, contentType, topicId);
-
-      topics.Add(current.Id, current);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Assign parent
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.SetValue("ParentID", parentId.ToString(CultureInfo.InvariantCulture), false);
-        current.Parent = topics[parentId];
-      }
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET INDEXED ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private static void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId               = reader.GetTopicId();
-      var attributeKey          = reader.GetString("AttributeKey");
-      var attributeValue        = reader.GetString("AttributeValue");
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 3) {
-        version                 = reader.GetVersion();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle empty attributes (treat empty as null)
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[topicId];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set attribute value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(attributeKey, attributeValue, false, version);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET EXTENDED ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds attributes retrieved from an individual XML record to their associated topic.
-    /// </summary>
-    /// <remarks>
-    ///   Values of arbitrary length are stored in an XML entry. This makes them more efficient to store, but more difficult to
-    ///   query; as such, it's ideal for content-oriented data. The XML values are returned as a separate data set.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetExtendedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId               = reader.GetTopicId();
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 2) {
-        version                 = reader.GetVersion();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Load SQL XML into XmlDocument
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var xmlData               = reader.GetSqlXml(1);
-      var xmlReader             = xmlData.CreateReader();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify the current topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[topicId];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle scenario where there isn't an <attribute /> element
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!xmlReader.ReadToFollowing("attribute")) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through nodes to set attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      do {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Identify attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var attributeKey        = (string)xmlReader.GetAttribute("key");
-        var attributeValue      = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate assumptions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(
-          attributeKey,
-          $"The @key attribute of the <attribute /> element is missing for Topic '{topicId}'; the data is not in the " +
-          $"expected format."
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Set attribute value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(attributeValue)) continue;
-        current.Attributes.SetValue(attributeKey, attributeValue, false, version);
-
-      } while (xmlReader.Name == "attribute");
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIPS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds relationships retrieved from an individual relationship record to their associated topics.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via a many-to-many relationships. Once the topics are populated in
-    ///   memory, loop through the data to create these associations.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = reader.GetTopicId("Source_TopicID");
-      var targetTopicId         = reader.GetTopicId("Target_TopicID");
-      var relationshipKey       = reader.GetString("RelationshipKey");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify affected topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[sourceTopicId];
-      var related               = (Topic?)null;
-
-      // Fetch the related topic
-      if (topics.Keys.Contains(targetTopicId)) {
-        related                 = topics[targetTopicId];
-      }
-
-      // Bypass if either of the objects are missing
-      if (related == null) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set relationship on object
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET DERIVED TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets references to <see cref="OnTopic.Topic.DerivedTopic"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via <see cref="OnTopic.Topic.DerivedTopic"/>. Once the topics are
-    ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
-    ///   needing to rely on lazy-loading, which would complicate dependency injection.
-    /// </remarks>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in topics.Values) {
-        var derivedTopicId      = topic.Attributes.GetInteger("TopicId", -1, false, false);
-        if (derivedTopicId < 0) continue;
-        if (topics.Keys.Contains(derivedTopicId)) {
-          topic.DerivedTopic    = topics[derivedTopicId];
-        }
-
-      }
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET VERSION HISTORY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds versions retrieved from an individual topic record to its associated topics.
-    /// </summary>
-    /// <remarks>
-    ///   Every time a value changes for an attribute, a new version is created, represented by the date of the change.This
-    ///   version history is aggregated per topic to allow topic information to be rolled back to a specific date.While version
-    ///   content is not exposed directly via the Load() method, the metadata is.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId               = reader.GetTopicId();
-      var dateTime              = reader.GetVersion();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[topicId];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set history
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.VersionHistory.Add(dateTime);
 
     }
 
@@ -381,7 +137,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topic                 = (Topic?)null;
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopics", connection) {
         CommandType             = CommandType.StoredProcedure,
@@ -409,70 +165,9 @@ namespace OnTopic.Data.Sql {
         reader                  = command.ExecuteReader();
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Populate topics
+        | Construct topic graph from reader
         \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
-        while (reader.Read()) {
-          AddTopic(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetIndexedAttributes() [" + DateTime.Now + "]");
-
-        // Move to TopicAttributes dataset
-        reader.NextResult();
-
-        while (reader.Read()) {
-          SetIndexedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read extended attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
-
-        // Move to extened attributes dataset
-        reader.NextResult();
-
-        // Loop through each extended attribute record associated with a specific topic
-        while (reader.Read()) {
-          SetExtendedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read related items
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetRelationships() [" + DateTime.Now + "]");
-
-        // Move to the relationships dataset
-        reader.NextResult();
-
-        // Loop through each relationship; multiple records may exist per topic
-        while (reader.Read()) {
-          SetRelationships(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read version history
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
-
-        // Move to the version history dataset
-        reader.NextResult();
-
-        // Loop through each version; multiple records may exist per topic
-        while (reader.Read()) {
-          SetVersionHistory(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate strongly typed references
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetDerivedTopics() [" + DateTime.Now + "]");
-
-        SetDerivedTopics(topics);
+        topic = reader.LoadTopicGraph();
 
       }
 
@@ -495,14 +190,14 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) {
+      if (topic == null) {
         throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topics[topics.Keys.ElementAt(0)];
+      return topic;
 
     }
 
@@ -521,7 +216,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topic                 = (Topic?)null;
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopicVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
@@ -550,73 +245,9 @@ namespace OnTopic.Data.Sql {
         reader                  = command.ExecuteReader();
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Populate topic
+        | Construct topic graph from reader
         \---------------------------------------------------------------------------------------------------------------------*/
-        while (reader.Read()) {
-          AddTopic(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate topic
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(
-          topics.Count == 1,
-          "The version requested does not exist in the SQL database."
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to TopicAttributes dataset
-        reader.NextResult();
-
-        while (reader.Read()) {
-          SetIndexedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read extended attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to extended attributes dataset
-        reader.NextResult();
-
-        // Loop through each extended attribute set, each record associated with a specific record
-        while (reader.Read()) {
-          SetExtendedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read related items
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While GetTopicVersion correctly returns relationships, they cannot be correctly set because this
-        | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since
-        | relationships are not currently versioned.
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to the relationships dataset
-        reader.NextResult();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read version history
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to the version history dataset
-        reader.NextResult();
-
-        // Loop through each version; multiple records may exist per topic
-        while (reader.Read()) {
-          SetVersionHistory(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate strongly typed references
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getTopicVersion correctly returns the derived topic, it cannot be correctly set because this
-        | overload doesn't maintain a full set of topics to create relationships to.
-        \---------------------------------------------------------------------------------------------------------------------*/
-        //SetDerivedTopics(topics);
+        topic = reader.LoadTopicGraph(false);
 
       }
 
@@ -639,7 +270,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topics[topics.Keys.ElementAt(0)]?? throw new NullReferenceException("The specified Topic version could not be loaded");
+      return topic?? throw new NullReferenceException("The specified Topic version could not be loaded");
 
     }
 
