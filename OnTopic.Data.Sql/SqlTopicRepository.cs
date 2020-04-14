@@ -349,11 +349,7 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume<InvalidOperationException>(
-          command.Parameters["@ReturnCode"] != null,
-          "The call to the GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
-        );
-        topicId                 = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+        topicId                 = command.GetReturnCode();
 
       }
 
@@ -777,13 +773,7 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Process return value
         \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume<InvalidOperationException>(
-          command.Parameters["@ReturnCode"] != null,
-          "The call to the CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
-        );
-        returnVal               = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
-
-        topic.Id                = returnVal;
+        topic.Id                = command.GetReturnCode();
 
         Contract.Assume<InvalidOperationException>(
           topic.Id > 0,

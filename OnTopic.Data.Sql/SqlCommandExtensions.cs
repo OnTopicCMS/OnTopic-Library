@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
+using System.Globalization;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Internal.Diagnostics;
@@ -18,6 +19,22 @@ namespace OnTopic.Data.Sql {
   ///   Extension methods for the <see cref="SqlCommand"/> class.
   /// </summary>
   internal static class SqlCommandExtensions {
+
+    /*==========================================================================================================================
+    | METHOD: GET RETURN CODE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the return code from a stored procedure.
+    /// </summary>
+    /// <param name="command">The SQL command object.</param>
+    internal static int GetReturnCode(this SqlCommand command, string sqlParameter = "ReturnCode") {
+      Contract.Assume<InvalidOperationException>(
+        command.Parameters.Contains($"@{sqlParameter}"),
+        $"The call to the {command.CommandText} stored procedure did not return the expected 'ReturnCode' parameter."
+      );
+      var returnCode = command.Parameters[$"@{sqlParameter}"].Value.ToString();
+      return Int32.Parse(returnCode, CultureInfo.InvariantCulture);
+    }
 
     /*==========================================================================================================================
     | METHOD: ADD OUTPUT PARAMETER
