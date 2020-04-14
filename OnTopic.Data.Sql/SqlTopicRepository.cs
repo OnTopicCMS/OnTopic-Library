@@ -796,6 +796,11 @@ namespace OnTopic.Data.Sql {
 
         topic.Id = returnVal;
 
+        Contract.Assume<InvalidOperationException>(
+          topic.Id > 0,
+          "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
+        );
+
         /*----------------------------------------------------------------------------------------------------------------------
         | Add version to version history
         \---------------------------------------------------------------------------------------------------------------------*/
@@ -827,16 +832,13 @@ namespace OnTopic.Data.Sql {
         if (attributes != null) attributes.Dispose();
       }
 
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Contract.Assume<InvalidOperationException>(
-            childTopic.Attributes.GetInteger("ParentID", -1) > 0,
-            "The call to the CreateTopic stored procedure did not return the expected 'ParentID' parameter."
-          );
-          childTopic.Attributes.SetValue("ParentID", returnVal.ToString(CultureInfo.InvariantCulture));
+          childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
           Save(childTopic, isRecursive, isDraft);
         }
       }
