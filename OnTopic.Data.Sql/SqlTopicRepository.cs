@@ -739,8 +739,9 @@ namespace OnTopic.Data.Sql {
         | Establish command type (insert or update)
         \---------------------------------------------------------------------------------------------------------------------*/
         var procedureName       = topic.Id > 0? "CreateTopic" : "UpdateTopic";
-        command                 = new SqlCommand(procedureName, connection);
-        command.CommandType     = CommandType.StoredProcedure;
+        command                 = new SqlCommand(procedureName, connection) {
+          CommandType           = CommandType.StoredProcedure
+        };
 
         /*----------------------------------------------------------------------------------------------------------------------
         | SET VERSION DATETIME
