@@ -78,7 +78,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = TopicFactory.Create(key, contentType, topicId);
+      var current               = TopicFactory.Create(key, contentType, topicId);
+
       topics.Add(current.Id, current);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = topics[topicId];
+      var current               = topics[topicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
@@ -228,7 +229,7 @@ namespace OnTopic.Data.Sql {
 
       // Fetch the related topic
       if (topics.Keys.Contains(targetTopicId)) {
-        related = topics[targetTopicId];
+        related                 = topics[targetTopicId];
       }
 
       // Bypass if either of the objects are missing
@@ -259,10 +260,10 @@ namespace OnTopic.Data.Sql {
       | Loop through topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var topic in topics.Values) {
-        var derivedTopicId = topic.Attributes.GetInteger("TopicId", -1, false, false);
+        var derivedTopicId      = topic.Attributes.GetInteger("TopicId", -1, false, false);
         if (derivedTopicId < 0) continue;
         if (topics.Keys.Contains(derivedTopicId)) {
-          topic.DerivedTopic = topics[derivedTopicId];
+          topic.DerivedTopic    = topics[derivedTopicId];
         }
 
       }
@@ -325,7 +326,7 @@ namespace OnTopic.Data.Sql {
       var command               = new SqlCommand("GetTopicID", connection);
       int topicId;
 
-      command.CommandType = CommandType.StoredProcedure;
+      command.CommandType       = CommandType.StoredProcedure;
 
       try {
 
@@ -352,7 +353,7 @@ namespace OnTopic.Data.Sql {
           command.Parameters["@ReturnCode"] != null,
           "The call to the GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
         );
-        topicId = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+        topicId                 = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
       }
 
@@ -409,7 +410,7 @@ namespace OnTopic.Data.Sql {
         | Execute query/reader
         \---------------------------------------------------------------------------------------------------------------------*/
         Debug.WriteLine("SqlTopicRepository.Load(): ExecuteNonQuery [" + DateTime.Now + "]");
-        reader = command.ExecuteReader();
+        reader                  = command.ExecuteReader();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate topics
@@ -550,7 +551,7 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query/reader
         \---------------------------------------------------------------------------------------------------------------------*/
-        reader = command.ExecuteReader();
+        reader                  = command.ExecuteReader();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate topic
@@ -709,7 +710,7 @@ namespace OnTopic.Data.Sql {
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
         );
-        attributeValue.IsDirty = false;
+        attributeValue.IsDirty  = false;
       }
 
       extendedAttributes.Append("</attributes>");
@@ -719,18 +720,18 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       foreach (var attribute in GetUnmatchedAttributes(topic)) {
-        var record = attributes.NewRow();
-        record["AttributeKey"] = attribute.Key;
-        record["AttributeValue"] = null;
+        var record              = attributes.NewRow();
+        record["AttributeKey"]  = attribute.Key;
+        record["AttributeValue"]= null;
         attributes.Rows.Add(record);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      var command = (SqlCommand?)null;
-      var returnVal = -1;
+      var connection            = new SqlConnection(_connectionString);
+      var command               = (SqlCommand?)null;
+      var returnVal             = -1;
 
       try {
 
@@ -742,19 +743,14 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish command type (insert or update)
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (topic.Id != -1) {
-          command = new SqlCommand("UpdateTopic", connection);
-        }
-        else {
-          command = new SqlCommand("CreateTopic", connection);
-        }
-
-        command.CommandType = CommandType.StoredProcedure;
+        var procedureName       = topic.Id > 0? "CreateTopic" : "UpdateTopic";
+        command                 = new SqlCommand(procedureName, connection);
+        command.CommandType     = CommandType.StoredProcedure;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | SET VERSION DATETIME
         \---------------------------------------------------------------------------------------------------------------------*/
-        var version = DateTime.Now;
+        var version             = DateTime.Now;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Establish query parameters
@@ -785,9 +781,9 @@ namespace OnTopic.Data.Sql {
           command.Parameters["@ReturnCode"] != null,
           "The call to the CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
         );
-        returnVal = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+        returnVal               = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
-        topic.Id = returnVal;
+        topic.Id                = returnVal;
 
         Contract.Assume<InvalidOperationException>(
           topic.Id > 0,
@@ -862,13 +858,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move in database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      var command = (SqlCommand?)null;
+      var connection            = new SqlConnection(_connectionString);
+      var command               = (SqlCommand?)null;
 
       try {
 
-        command = new SqlCommand("MoveTopic", connection) {
-          CommandType = CommandType.StoredProcedure
+        command                 = new SqlCommand("MoveTopic", connection) {
+          CommandType           = CommandType.StoredProcedure
         };
 
         // Add Parameters
@@ -928,13 +924,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      SqlCommand? command = null;
+      var connection            = new SqlConnection(_connectionString);
+      SqlCommand? command       = null;
 
       try {
 
-        command = new SqlCommand("DeleteTopic", connection) {
-          CommandType = CommandType.StoredProcedure
+        command                 = new SqlCommand("DeleteTopic", connection) {
+          CommandType           = CommandType.StoredProcedure
         };
 
         // Add Parameters
@@ -1014,8 +1010,8 @@ namespace OnTopic.Data.Sql {
           };
 
           foreach (var targetTopicId in scope.Select<Topic, int>(m => m.Id)) {
-            var record = targetIds.NewRow();
-            record["TopicID"] = targetTopicId;
+            var record          = targetIds.NewRow();
+            record["TopicID"]   = targetTopicId;
             targetIds.Rows.Add(record);
           }
 
@@ -1071,22 +1067,24 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create XML string container
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributesXml = new StringBuilder("");
+      var attributesXml         = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in topic.Relationships.Keys) {
-        var scope = topic.Relationships.GetTopics(key);
+
+        var scope               = topic.Relationships.GetTopics(key);
+
         attributesXml.Append("<related scope=\"");
         attributesXml.Append(key);
         attributesXml.Append("\">");
 
         // Build out string array of related items in this scope
-        var targetIds = new string[scope.Count];
-        var count = 0;
+        var targetIds           = new string[scope.Count];
+        var count               = 0;
         foreach (var relTopic in scope) {
-          targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
+          targetIds[count]      = relTopic.Id.ToString(CultureInfo.InvariantCulture);
           count++;
         }
         attributesXml.Append(String.Join(",", targetIds));
