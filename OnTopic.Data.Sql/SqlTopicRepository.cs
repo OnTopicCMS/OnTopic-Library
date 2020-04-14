@@ -478,8 +478,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
 
-      //return true;
-
     }
 
     /*==========================================================================================================================
@@ -614,7 +612,6 @@ namespace OnTopic.Data.Sql {
         command?.Dispose();
         targetIds.Dispose();
         //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
-        //if (connection != null) connection.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
