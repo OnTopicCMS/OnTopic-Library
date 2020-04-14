@@ -330,18 +330,15 @@ namespace OnTopic.Data.Sql {
       var connection            = new SqlConnection(_connectionString);
       var procedureName         = topic.Id > 0? "CreateTopic" : "UpdateTopic";
       var command               = new SqlCommand(procedureName, connection) {
-        CommandType           = CommandType.StoredProcedure
+        CommandType             = CommandType.StoredProcedure
       };
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set version
-      \-----------------------------------------------------------------------------------------------------------------------*/
       var version               = DateTime.Now;
+      var isNew                 = topic.Id == -1;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Id != -1) {
+      if (!isNew) {
         command.AddParameter("TopicID", topic.Id);
       }
       else if (topic.Parent != null) {
@@ -349,7 +346,7 @@ namespace OnTopic.Data.Sql {
       }
       command.AddParameter("Version", version);
       command.Parameters.AddWithValue("@Attributes", attributes);
-      if (topic.Id != -1) {
+      if (!isNew) {
         command.AddParameter("DeleteRelationships", true);
       }
       command.AddParameter("ExtendedAttributes", extendedAttributes);
