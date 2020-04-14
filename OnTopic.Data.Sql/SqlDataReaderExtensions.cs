@@ -34,6 +34,16 @@ namespace OnTopic.Data.Sql {
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static int GetInteger(this SqlDataReader reader, string columnName) =>
       GetValue<int>(reader, columnName, Int32.TryParse, -1);
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a <see cref="Topic.Id"/> value by column name.
+    /// </summary>
+    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    internal static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+      reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET STRING

@@ -69,7 +69,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetInteger("TopicID");
+      var id                    = reader.GetTopicId();
       var key                   = reader.GetString("TopicKey");
       var contentType           = reader.GetString("ContentType");
       var parentId              = reader.GetInteger("ParentID");
@@ -98,7 +98,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetInteger("TopicID");
+      var id                    = reader.GetTopicId();
       var name                  = reader.GetString("AttributeKey");
       var value                 = reader.GetString("AttributeValue");
       var version               = DateTime.Now;
@@ -149,7 +149,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetInteger("TopicID");
+      var id                    = reader.GetTopicId();
       var version               = DateTime.Now;
 
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
@@ -225,8 +225,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = reader.GetInteger("Source_TopicID");
-      var targetTopicId         = reader.GetInteger("Target_TopicID");
+      var sourceTopicId         = reader.GetTopicId("Source_TopicID");
+      var targetTopicId         = reader.GetTopicId("Target_TopicID");
       var relationshipKey       = reader.GetString("RelationshipKey");
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = reader.GetInteger("TopicID");
+      var sourceTopicId         = reader.GetTopicId();
       var dateTime              = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
