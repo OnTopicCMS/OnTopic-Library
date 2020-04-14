@@ -46,7 +46,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
-    internal static void AddOutputParameter(this SqlCommand command, string sqlParameter) =>
+    internal static void AddOutputParameter(this SqlCommand command, string sqlParameter = "ReturnCode") =>
       AddParameter(command, sqlParameter, null, SqlDbType.Int, ParameterDirection.ReturnValue);
 
     /*==========================================================================================================================

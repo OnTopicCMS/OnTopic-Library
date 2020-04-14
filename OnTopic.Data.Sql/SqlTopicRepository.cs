@@ -339,7 +339,7 @@ namespace OnTopic.Data.Sql {
         | Establish query parameters
         \---------------------------------------------------------------------------------------------------------------------*/
         command.AddParameter("TopicKey", topicKey);
-        command.AddOutputParameter("ReturnCode");
+        command.AddOutputParameter();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate topics
@@ -763,7 +763,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("DeleteRelationships", true);
         }
         command.AddParameter("ExtendedAttributes", extendedAttributes);
-        command.AddOutputParameter("ReturnCode");
+        command.AddOutputParameter();
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Execute query
