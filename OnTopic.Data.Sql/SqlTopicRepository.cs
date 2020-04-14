@@ -495,7 +495,7 @@ namespace OnTopic.Data.Sql {
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection            = new SqlConnection(_connectionString);
-      SqlCommand? command       = new SqlCommand("DeleteTopic", connection) {
+      var command               = new SqlCommand("DeleteTopic", connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
