@@ -33,7 +33,8 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static int GetInteger(this SqlDataReader reader, string columnName) =>
-      GetValue<int>(reader, columnName, Int32.TryParse, -1);
+      Int32.TryParse(reader.GetValue(reader.GetOrdinal(columnName)).ToString(), out var output)? output : -1;
+
     /*==========================================================================================================================
     | METHOD: GET TOPIC ID
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -54,7 +55,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     internal static string GetString(this SqlDataReader reader, string columnName) =>
-      GetValue<string>(reader, columnName, (string source, out string value) => { value = source; return true; }, String.Empty);
+      reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET VERSION
@@ -65,34 +66,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     internal static DateTime GetVersion(this SqlDataReader reader) =>
       reader.GetDateTime(reader.GetOrdinal("Version"));
-
-    /*==========================================================================================================================
-    | METHOD: GET VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a string value by column name.
-    /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    /// <param name="parser">Function to call in order to convert the string value to a strongly typed value.</param>
-    /// <param name="defaultValue">The default value, in case <see cref="DBNull"/> is returned.</param>
-    private static T GetValue<T>(
-      SqlDataReader reader,
-      string columnName,
-      TryParse<string, T, bool> parser,
-      object defaultValue
-    ) {
-      Contract.Requires(columnName, nameof(columnName));
-      var ordinal = reader.GetOrdinal(columnName);
-      if (reader.IsDBNull(ordinal)) {
-        return (T)defaultValue;
-      }
-      var value = reader.GetValue(ordinal).ToString();
-      if (parser(value, out var output)) {
-        return output;
-      }
-      return (T)defaultValue;
-    }
 
   } //Class
 } //Namespace
