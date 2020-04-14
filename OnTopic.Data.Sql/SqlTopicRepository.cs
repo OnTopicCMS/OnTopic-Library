@@ -15,6 +15,7 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql {
@@ -659,7 +660,14 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentTypes          = GetContentTypeDescriptors();
+      var contentType           = topic.Attributes.GetValue("ContentType", "Page")?? "Page";
+      var contentTypeDescriptor = contentTypes.GetTopic(contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(
+        contentTypeDescriptor,
+        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
@@ -676,11 +684,6 @@ namespace OnTopic.Data.Sql {
         new DataColumn("AttributeValue") {
           MaxLength             = 255
         }
-      );
-
-      Contract.Assume(
-        contentType,
-        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
