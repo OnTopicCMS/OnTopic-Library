@@ -69,7 +69,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetTopicId();
+      var topicId               = reader.GetTopicId();
       var key                   = reader.GetString("TopicKey");
       var contentType           = reader.GetString("ContentType");
       var parentId              = reader.GetInteger("ParentID");
@@ -77,7 +77,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = TopicFactory.Create(key, contentType, id);
+      var current = TopicFactory.Create(key, contentType, topicId);
       topics.Add(current.Id, current);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -98,9 +98,9 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetTopicId();
-      var name                  = reader.GetString("AttributeKey");
-      var value                 = reader.GetString("AttributeValue");
+      var topicId               = reader.GetTopicId();
+      var attributeKey          = reader.GetString("AttributeKey");
+      var attributeValue        = reader.GetString("AttributeValue");
       var version               = DateTime.Now;
 
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
@@ -117,12 +117,12 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = topics[id];
+      var current = topics[topicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(name, value, false, version);
+      current.Attributes.SetValue(attributeKey, attributeValue, false, version);
 
     }
 
@@ -143,7 +143,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = reader.GetTopicId();
+      var topicId               = reader.GetTopicId();
       var version               = DateTime.Now;
 
       //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
@@ -161,7 +161,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the current topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[id];
+      var current               = topics[topicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle scenario where there isn't an <attribute /> element
@@ -176,22 +176,23 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        var name = (string)xmlReader.GetAttribute("key");
-        var value = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
+        var attributeKey        = (string)xmlReader.GetAttribute("key");
+        var attributeValue      = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Validate assumptions
         \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Assume(
-          name,
-          $"The @key attribute of the <attribute /> element is missing for Topic '{id}'; the data is not in the expected format."
+          attributeKey,
+          $"The @key attribute of the <attribute /> element is missing for Topic '{topicId}'; the data is not in the " +
+          $"expected format."
         );
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(value)) continue;
-        current.Attributes.SetValue(name, value, false, version);
+        if (String.IsNullOrEmpty(attributeValue)) continue;
+        current.Attributes.SetValue(attributeKey, attributeValue, false, version);
 
       } while (xmlReader.Name == "attribute");
 
@@ -285,13 +286,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = reader.GetTopicId();
+      var topicId               = reader.GetTopicId();
       var dateTime              = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[sourceTopicId];
+      var current               = topics[topicId];
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set history
@@ -679,7 +680,7 @@ namespace OnTopic.Data.Sql {
 
       Contract.Assume(
         contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
