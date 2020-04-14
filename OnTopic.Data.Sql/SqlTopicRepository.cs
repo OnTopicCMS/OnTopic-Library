@@ -110,15 +110,9 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
-      Contract.Assume(name, $"The 'AttributeKey' field is missing from the topic. This is an unexpected condition.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) || DBNull.Value.Equals(value)) return;
+      if (String.IsNullOrEmpty(attributeValue)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
@@ -157,11 +151,6 @@ namespace OnTopic.Data.Sql {
       if (reader.FieldCount > 2) {
         version                 = reader.GetVersion();
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load SQL XML into XmlDocument
