@@ -4,10 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Data;
-using System.Text;
 using Microsoft.Data.SqlClient;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Data.Sql {
 
@@ -18,11 +15,6 @@ namespace OnTopic.Data.Sql {
   ///   Extension methods for the <see cref="SqlDataReader"/> class.
   /// </summary>
   internal static class SqlDataReaderExtensions {
-
-    /*==========================================================================================================================
-    | DELEGATE: TRY PARSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    public delegate bool TryParse<in String, U, out Boolean>(String input, out U output);
 
     /*==========================================================================================================================
     | METHOD: GET INTEGER
