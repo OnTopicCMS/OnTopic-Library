@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -389,9 +388,9 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
-        if (attributes != null) attributes.Dispose();
+        command?.Dispose();
+        connection?.Dispose();
+        attributes.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -473,8 +472,8 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
+        command?.Dispose();
+        connection.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -532,8 +531,8 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
+        command?.Dispose();
+        connection?.Dispose();
       }
 
     }
@@ -615,8 +614,8 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (targetIds != null) targetIds.Dispose();
+        command?.Dispose();
+        targetIds.Dispose();
         //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
         //if (connection != null) connection.Dispose();
       }
