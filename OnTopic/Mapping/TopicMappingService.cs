@@ -649,9 +649,12 @@ namespace OnTopic.Mapping {
       | Process mapping tasks
       \-----------------------------------------------------------------------------------------------------------------------*/
       while (taskQueue.Count > 0) {
-        var dtoTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dtoTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
+        var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        AddToList(await dtoTask.ConfigureAwait(false));
+        if (dto != null) {
+          AddToList(dto);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -662,10 +665,12 @@ namespace OnTopic.Mapping {
           try {
             targetList.Add(dto);
           }
+          #pragma warning disable CA1031 // Do not catch general exception types
           catch (ArgumentException) {
             //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
             //We would defensively check for this, except IList doesn't provide a suitable method to do so
           }
+          #pragma warning restore CA1031 // Do not catch general exception types
         }
       }
 
@@ -705,9 +710,11 @@ namespace OnTopic.Mapping {
       try {
         topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       }
+      #pragma warning disable CA1031 // Do not catch general exception types
       catch (InvalidOperationException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
       }
+      #pragma warning restore CA1031 // Do not catch general exception types
       if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }

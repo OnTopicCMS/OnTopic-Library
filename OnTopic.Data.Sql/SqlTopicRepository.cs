@@ -4,16 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Text;
 using Microsoft.Data.SqlClient;
-using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -58,302 +54,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set private fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _connectionString = connectionString;
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: ADD TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private static void AddTopic(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(reader, nameof(reader));
-      Contract.Requires(topics, nameof(topics));
-
-      Contract.Requires(reader["ParentID"], "The SqlDataReader is expected to include a 'ParentID' element.");
-      Contract.Requires(reader["TopicID"], "The SqlDataReader is expected to include a 'ParentID' element.");
-      Contract.Requires(reader["ContentType"], "The SqlDataReader is expected to include a 'ContentType' element.");
-      Contract.Requires(reader["TopicKey"], "The SqlDataReader is expected to include a 'TopicKey' element.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      int parentId              = Int32.TryParse(reader["ParentID"].ToString(), out parentId)? parentId : -1;
-      var id                    = Int32.Parse(reader["TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var contentType           = reader["ContentType"].ToString();
-      var key                   = reader["TopicKey"].ToString();
-
-      // Handle ParentID (could be null for root topic)
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = TopicFactory.Create(key, contentType, id);
-      topics.Add(current.Id, current);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Assign parent
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.SetValue("ParentID", parentId.ToString(CultureInfo.InvariantCulture), false);
-        current.Parent = topics[parentId];
-      }
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET INDEXED ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private static void SetIndexedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(reader, nameof(reader));
-      Contract.Requires(topics, nameof(topics));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var name                  = reader["AttributeKey"]?.ToString();
-      var value                 = reader["AttributeValue"]?.ToString();
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 3) {
-        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
-      Contract.Assume(name, $"The 'AttributeKey' field is missing from the topic. This is an unexpected condition.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle empty attributes (treat empty as null)
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) || DBNull.Value.Equals(value)) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current = topics[id];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set attribute value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(name, value, false, version);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET EXTENDED ATTRIBUTES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds attributes retrieved from an individual XML record to their associated topic.
-    /// </summary>
-    /// <remarks>
-    ///   Values of arbitrary length are stored in an XML entry. This makes them more efficient to store, but more difficult to
-    ///   query; as such, it's ideal for content-oriented data. The XML values are returned as a separate data set.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetExtendedAttributes(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-      Contract.Requires(reader, nameof(reader));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var id                    = Int32.Parse(reader["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 2) {
-        version                 = DateTime.Parse(reader["Version"]?.ToString(), CultureInfo.InvariantCulture);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(id, $"The 'TopicID' field is missing from the topic. This is an unexpected condition.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Load SQL XML into XmlDocument
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var xmlData               = reader.GetSqlXml(1);
-      var xmlReader             = xmlData.CreateReader();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify the current topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[id];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle scenario where there isn't an <attribute /> element
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!xmlReader.ReadToFollowing("attribute")) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through nodes to set attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      do {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Identify attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var name = (string)xmlReader.GetAttribute("key");
-        var value = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate assumptions
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(
-          name,
-          $"The @key attribute of the <attribute /> element is missing for Topic '{id}'; the data is not in the expected format."
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Set attribute value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (String.IsNullOrEmpty(value)) continue;
-        current.Attributes.SetValue(name, value, false, version);
-
-      } while (xmlReader.Name == "attribute");
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET RELATIONSHIPS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds relationships retrieved from an individual relationship record to their associated topics.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via a many-to-many relationships. Once the topics are populated in
-    ///   memory, loop through the data to create these associations.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetRelationships(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-      Contract.Requires(reader, "The reader must not be null.");
-
-      Contract.Requires(reader["Source_TopicID"], "The Source_TopicID record must not be null.");
-      Contract.Requires(reader["RelationshipKey"], "The RelationshipKey record must not be null.");
-      Contract.Requires(reader["Target_TopicID"], "The Target_TopicID record must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader["Source_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var targetTopicId         = Int32.Parse(reader["Target_TopicID"].ToString(), CultureInfo.InvariantCulture);
-      var relationshipKey       = (string)reader["RelationshipKey"];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify affected topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[sourceTopicId];
-      var related               = (Topic?)null;
-
-      // Fetch the related topic
-      if (topics.Keys.Contains(targetTopicId)) {
-        related = topics[targetTopicId];
-      }
-
-      // Bypass if either of the objects are missing
-      if (related == null) return;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set relationship on object
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET DERIVED TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets references to <see cref="OnTopic.Topic.DerivedTopic"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via <see cref="OnTopic.Topic.DerivedTopic"/>. Once the topics are
-    ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
-    ///   needing to rely on lazy-loading, which would complicate dependency injection.
-    /// </remarks>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in topics.Values) {
-        var derivedTopicId = topic.Attributes.GetInteger("TopicId", -1, false, false);
-        if (derivedTopicId < 0) continue;
-        if (topics.Keys.Contains(derivedTopicId)) {
-          topic.DerivedTopic = topics[derivedTopicId];
-        }
-
-      }
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET VERSION HISTORY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Adds versions retrieved from an individual topic record to its associated topics.
-    /// </summary>
-    /// <remarks>
-    ///   Every time a value changes for an attribute, a new version is created, represented by the date of the change.This
-    ///   version history is aggregated per topic to allow topic information to be rolled back to a specific date.While version
-    ///   content is not exposed directly via the Load() method, the metadata is.
-    /// </remarks>
-    /// <param name="reader">The <see cref="System.Data.SqlClient.SqlDataReader"/> that representing the current record.</param>
-    /// <param name="topics">The index of topics currently being loaded.</param>
-    private static void SetVersionHistory(SqlDataReader reader, Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topics, "The topics Dictionary must not be null.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify attributes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceTopicId         = Int32.Parse(reader?["TopicID"]?.ToString(), CultureInfo.InvariantCulture);
-      var dateTime              = reader?.GetDateTime(reader?.GetOrdinal("Version")?? 0)?? DateTime.Now;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = topics[sourceTopicId];
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set history
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      current.VersionHistory.Add(dateTime);
+      _connectionString         = connectionString;
 
     }
 
@@ -369,7 +70,7 @@ namespace OnTopic.Data.Sql {
       | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is null || topicKey.Trim().Length == 0) {
+      if (String.IsNullOrEmpty(topicKey)) {
         return Load(-1, isRecursive);
       }
 
@@ -380,34 +81,23 @@ namespace OnTopic.Data.Sql {
       var command               = new SqlCommand("GetTopicID", connection);
       int topicId;
 
-      command.CommandType = CommandType.StoredProcedure;
+      command.CommandType       = CommandType.StoredProcedure;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("TopicKey", topicKey);
+      command.AddOutputParameter();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Open connection
-        \---------------------------------------------------------------------------------------------------------------------*/
         connection.Open();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish query parameters
-        \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command,        "TopicKey",             topicKey,                               SqlDbType.VarChar);
-        AddSqlParameter(command,        "ReturnCode",           ParameterDirection.ReturnValue,         SqlDbType.Int);
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate topics
-        \---------------------------------------------------------------------------------------------------------------------*/
         command.ExecuteNonQuery();
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Process return value
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume<InvalidOperationException>(
-          command.Parameters["@ReturnCode"] != null,
-          "The call to the GetTopicID stored procedure did not return the expected 'ReturnCode' parameter."
-        );
-        topicId = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
+        topicId                 = command.GetReturnCode();
 
       }
 
@@ -439,7 +129,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topic                 = (Topic?)null;
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopics", connection) {
         CommandType             = CommandType.StoredProcedure,
@@ -447,91 +137,19 @@ namespace OnTopic.Data.Sql {
       };
       var reader                = (SqlDataReader?)null;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("TopicID", topicId);
+      command.AddParameter("DeepLoad", isRecursive);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Open connection
-        \---------------------------------------------------------------------------------------------------------------------*/
         connection.Open();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish query parameters
-        \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
-        AddSqlParameter(command, "DeepLoad",     isRecursive.ToString(CultureInfo.InvariantCulture),   SqlDbType.Bit);
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Execute query/reader
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): ExecuteNonQuery [" + DateTime.Now + "]");
-        reader = command.ExecuteReader();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate topics
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
-        while (reader.Read()) {
-          AddTopic(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetIndexedAttributes() [" + DateTime.Now + "]");
-
-        // Move to TopicAttributes dataset
-        reader.NextResult();
-
-        while (reader.Read()) {
-          SetIndexedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read extended attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetExtendedAttributes() [" + DateTime.Now + "]");
-
-        // Move to extened attributes dataset
-        reader.NextResult();
-
-        // Loop through each extended attribute record associated with a specific topic
-        while (reader.Read()) {
-          SetExtendedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read related items
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetRelationships() [" + DateTime.Now + "]");
-
-        // Move to the relationships dataset
-        reader.NextResult();
-
-        // Loop through each relationship; multiple records may exist per topic
-        while (reader.Read()) {
-          SetRelationships(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read version history
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
-
-        // Move to the version history dataset
-        reader.NextResult();
-
-        // Loop through each version; multiple records may exist per topic
-        while (reader.Read()) {
-          SetVersionHistory(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate strongly typed references
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Debug.WriteLine("SqlTopicRepository.Load(): SetDerivedTopics() [" + DateTime.Now + "]");
-
-        SetDerivedTopics(topics);
-
+        reader                  = command.ExecuteReader();
+        topic                   = reader.LoadTopicGraph();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -553,14 +171,14 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topics.Count == 0) {
+      if (topic == null) {
         throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topics[topics.Keys.ElementAt(0)];
+      return topic;
 
     }
 
@@ -579,7 +197,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topic                 = (Topic?)null;
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopicVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
@@ -589,97 +207,19 @@ namespace OnTopic.Data.Sql {
 
       command.CommandType       = CommandType.StoredProcedure;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("TopicID", topicId);
+      command.AddParameter("Version", version);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Open connection
-        \---------------------------------------------------------------------------------------------------------------------*/
         connection.Open();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish query parameters
-        \---------------------------------------------------------------------------------------------------------------------*/
-        AddSqlParameter(command, "TopicID",      topicId.ToString(CultureInfo.InvariantCulture),       SqlDbType.Int);
-        AddSqlParameter(command,
-          "Version",
-          version.ToString("yyyy-MM-dd hh:mm:ss.fff tt", CultureInfo.InvariantCulture),
-          SqlDbType.DateTime
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Execute query/reader
-        \---------------------------------------------------------------------------------------------------------------------*/
-        reader = command.ExecuteReader();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate topic
-        \---------------------------------------------------------------------------------------------------------------------*/
-        while (reader.Read()) {
-          AddTopic(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Validate topic
-        \---------------------------------------------------------------------------------------------------------------------*/
-        Contract.Assume(
-          topics.Count == 1,
-          "The version requested does not exist in the SQL database."
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to TopicAttributes dataset
-        reader.NextResult();
-
-        while (reader.Read()) {
-          SetIndexedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read extended attributes
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to extended attributes dataset
-        reader.NextResult();
-
-        // Loop through each extended attribute set, each record associated with a specific record
-        while (reader.Read()) {
-          SetExtendedAttributes(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read related items
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While GetTopicVersion correctly returns relationships, they cannot be correctly set because this
-        | overload doesn't maintain a full set of topics to create relationships to. This shouldn't be an issue since
-        | relationships are not currently versioned.
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to the relationships dataset
-        reader.NextResult();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Read version history
-        \---------------------------------------------------------------------------------------------------------------------*/
-
-        // Move to the version history dataset
-        reader.NextResult();
-
-        // Loop through each version; multiple records may exist per topic
-        while (reader.Read()) {
-          SetVersionHistory(reader, topics);
-        }
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Populate strongly typed references
-        >-----------------------------------------------------------------------------------------------------------------------
-        | ### NOTE JJC072617: While getTopicVersion correctly returns the derived topic, it cannot be correctly set because this
-        | overload doesn't maintain a full set of topics to create relationships to.
-        \---------------------------------------------------------------------------------------------------------------------*/
-        //SetDerivedTopics(topics);
-
+        reader                  = command.ExecuteReader();
+        topic                   = reader.LoadTopicGraph(false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -701,7 +241,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topics[topics.Keys.ElementAt(0)]?? throw new NullReferenceException("The specified Topic version could not be loaded");
+      return topic?? throw new NullReferenceException("The specified Topic version could not be loaded");
 
     }
 
@@ -719,7 +259,14 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentTypes          = GetContentTypeDescriptors();
+      var contentType           = topic.Attributes.GetValue("ContentType", "Page")?? "Page";
+      var contentTypeDescriptor = contentTypes.GetTopic(contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(
+        contentTypeDescriptor,
+        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
@@ -738,167 +285,88 @@ namespace OnTopic.Data.Sql {
         }
       );
 
-      Contract.Assume(
-        contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
-      );
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add indexed attributes that are dirty
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attributeValue in GetAttributes(topic, false, true)) {
 
-      extendedAttributes.Append("<attributes>");
+        var record              = attributes.NewRow();
+        record["AttributeKey"]  = attributeValue.Key;
+        record["AttributeValue"]= attributeValue.Value;
+        attributeValue.IsDirty  = false;
+
+        attributes.Rows.Add(record);
+
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through the attributes, adding the names and values to the string builder
+      | Add extended attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // Process attributes not stored in the extended attributes
-      foreach (var attributeValue in topic.Attributes) {
+      extendedAttributes.Append("<attributes>");
 
-        var key = attributeValue.Key;
-        var attribute = (AttributeDescriptor?)null;
-
-        if (contentType.AttributeDescriptors.Contains(key)) {
-          attribute = contentType.AttributeDescriptors[key];
-        }
-
-        // For attributes not stored in the extended attributes, only add the AttributeValue item to store if it has changed
-        if (attribute != null && !attribute.IsExtendedAttribute && attributeValue.IsDirty) {
-          var record = attributes.NewRow();
-          record["AttributeKey"] = key;
-          record["AttributeValue"] = attributeValue.Value;
-          attributes.Rows.Add(record);
-        }
-        else if (attribute != null && attribute.IsExtendedAttribute) {
-          extendedAttributes.Append("<attribute key=\"" + key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>");
-        }
-
-        // Reset IsDirty (changed) state
-        attributeValue.IsDirty = false;
-
+      foreach (var attributeValue in GetAttributes(topic, true, null)) {
+        extendedAttributes.Append(
+          "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
+        );
+        attributeValue.IsDirty  = false;
       }
 
       extendedAttributes.Append("</attributes>");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
+      | Add unmatch attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in contentType.AttributeDescriptors) {
-
-        // Set preconditions
-        var topicHasAttribute   = (topic.Attributes.Contains(attribute.Key) && !String.IsNullOrEmpty(topic.Attributes.GetValue(attribute.Key, null, false, false)));
-        var isPrimaryAttribute  = (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID");
-        var isRelationships     = (attribute.EditorType == "Relationships.ascx");
-        var isNestedTopic       = (attribute.EditorType == "TopicList.ascx");
-        var conditionsMet       = (!topicHasAttribute && !isPrimaryAttribute && !attribute.IsExtendedAttribute && !isRelationships && !isNestedTopic && topic.Id != -1);
-
-        if (conditionsMet) {
-          var record = attributes.NewRow();
-          record["AttributeKey"] = attribute.Key;
-          record["AttributeValue"] = null;
-          attributes.Rows.Add(record);
-        }
-
+      //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
+      foreach (var attribute in GetUnmatchedAttributes(topic)) {
+        var record              = attributes.NewRow();
+        record["AttributeKey"]  = attribute.Key;
+        record["AttributeValue"]= null;
+        attributes.Rows.Add(record);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      var command = (SqlCommand?)null;
-      var returnVal = -1;
+      var connection            = new SqlConnection(_connectionString);
+      var procedureName         = topic.Id > 0? "CreateTopic" : "UpdateTopic";
+      var command               = new SqlCommand(procedureName, connection) {
+        CommandType             = CommandType.StoredProcedure
+      };
+      var version               = DateTime.Now;
+      var isNew                 = topic.Id == -1;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!isNew) {
+        command.AddParameter("TopicID", topic.Id);
+      }
+      else if (topic.Parent != null) {
+        command.AddParameter("ParentID", topic.Parent.Id);
+      }
+      command.AddParameter("Version", version);
+      command.Parameters.AddWithValue("@Attributes", attributes);
+      if (!isNew) {
+        command.AddParameter("DeleteRelationships", true);
+      }
+      command.AddParameter("ExtendedAttributes", extendedAttributes);
+      command.AddOutputParameter();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Update relations
-        \---------------------------------------------------------------------------------------------------------------------*/
         connection.Open();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish command type (insert or update)
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (topic.Id != -1) {
-          command = new SqlCommand("UpdateTopic", connection);
-        }
-        else {
-          command = new SqlCommand("CreateTopic", connection);
-        }
-
-        command.CommandType = CommandType.StoredProcedure;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | SET VERSION DATETIME
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var version = DateTime.Now;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Establish query parameters
-        \---------------------------------------------------------------------------------------------------------------------*/
-        if (topic.Id != -1) {
-          AddSqlParameter(
-            command,
-            "TopicID",
-            topic.Id.ToString(CultureInfo.InvariantCulture),
-            SqlDbType.Int
-          );
-        }
-        else if (topic.Parent != null) {
-          AddSqlParameter(
-            command,
-            "ParentID",
-            topic.Parent.Id.ToString(CultureInfo.InvariantCulture),
-            SqlDbType.Int
-          );
-        }
-        AddSqlParameter(
-          command,
-          "Version",
-          version.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-          SqlDbType.DateTime
-        );
-        command.Parameters.AddWithValue("@Attributes", attributes);
-        if (topic.Id != -1) {
-          AddSqlParameter(
-            command,
-            "DeleteRelationships",
-            "1",
-            SqlDbType.Bit
-          );
-        }
-        AddSqlParameter(
-          command,
-          "ExtendedAttributes",
-          extendedAttributes.ToString(),
-          SqlDbType.Xml
-        );
-        AddSqlParameter(
-          command,
-          "ReturnCode",
-          ParameterDirection.ReturnValue,
-          SqlDbType.Int
-        );
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Execute query
-        \---------------------------------------------------------------------------------------------------------------------*/
         command.ExecuteNonQuery();
 
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Process return value
-        \---------------------------------------------------------------------------------------------------------------------*/
+        topic.Id                = command.GetReturnCode();
+
         Contract.Assume<InvalidOperationException>(
-          command.Parameters["@ReturnCode"] != null,
-          "The call to the CreateTopic stored procedure did not return the expected 'ReturnCode' parameter."
+          topic.Id > 0,
+          "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
-        returnVal = Int32.Parse(command.Parameters["@ReturnCode"].Value.ToString(), CultureInfo.InvariantCulture);
 
-        topic.Id = returnVal;
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Add version to version history
-        \---------------------------------------------------------------------------------------------------------------------*/
-        topic.VersionHistory.Insert(0, version);
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Update relations
-        \---------------------------------------------------------------------------------------------------------------------*/
         PersistRelations(topic, connection, true);
 
       }
@@ -917,21 +385,22 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
-        if (attributes != null) attributes.Dispose();
+        command?.Dispose();
+        connection?.Dispose();
+        attributes.Dispose();
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add version to version history
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.VersionHistory.Insert(0, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Contract.Assume<InvalidOperationException>(
-            childTopic.Attributes.GetInteger("ParentID", -1) > 0,
-            "The call to the CreateTopic stored procedure did not return the expected 'ParentID' parameter."
-          );
-          childTopic.Attributes.SetValue("ParentID", returnVal.ToString(CultureInfo.InvariantCulture));
+          childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
           Save(childTopic, isRecursive, isDraft);
         }
       }
@@ -939,7 +408,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return returnVal;
+      return topic.Id;
 
     }
 
@@ -960,31 +429,30 @@ namespace OnTopic.Data.Sql {
       base.Move(topic, target, sibling);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Move in database
+      | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      var command = (SqlCommand?)null;
+      var connection            = new SqlConnection(_connectionString);
+      var command               = new SqlCommand("MoveTopic", connection) {
+        CommandType             = CommandType.StoredProcedure
+      };
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("TopicID", topic.Id);
+      command.AddParameter("ParentID", target.Id);
+
+      // Append sibling ID if set
+      if (sibling != null) {
+        command.AddParameter("SiblingID", sibling.Id);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
-
-        command = new SqlCommand("MoveTopic", connection) {
-          CommandType = CommandType.StoredProcedure
-        };
-
-        // Add Parameters
-        AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-        AddSqlParameter(command, "ParentID", target.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-
-        // Append sibling ID if set
-        if (sibling != null) {
-          AddSqlParameter(command, "SiblingID", sibling.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-        }
-
-        // Execute Query
         connection.Open();
-
         command.ExecuteNonQuery();
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1001,16 +469,14 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
+        command?.Dispose();
+        connection.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
-
-      //return true;
 
     }
 
@@ -1028,23 +494,22 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection = new SqlConnection(_connectionString);
-      SqlCommand? command = null;
+      var connection            = new SqlConnection(_connectionString);
+      var command               = new SqlCommand("DeleteTopic", connection) {
+        CommandType             = CommandType.StoredProcedure
+      };
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("TopicID", topic.Id);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
       try {
-
-        command = new SqlCommand("DeleteTopic", connection) {
-          CommandType = CommandType.StoredProcedure
-        };
-
-        // Add Parameters
-        AddSqlParameter(command, "TopicID", topic.Id.ToString(CultureInfo.InvariantCulture), SqlDbType.Int);
-
-        // Execute Query
         connection.Open();
-
         command.ExecuteNonQuery();
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1061,8 +526,8 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (connection != null) connection.Dispose();
+        command?.Dispose();
+        connection?.Dispose();
       }
 
     }
@@ -1083,13 +548,7 @@ namespace OnTopic.Data.Sql {
     ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> XML content, or a blank string if
     ///   <c>skipXml == true</c>.
     /// </returns>
-    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string PersistRelations(Topic topic, SqlConnection connection, bool skipXml) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -1120,8 +579,8 @@ namespace OnTopic.Data.Sql {
           };
 
           foreach (var targetTopicId in scope.Select<Topic, int>(m => m.Id)) {
-            var record = targetIds.NewRow();
-            record["TopicID"] = targetTopicId;
+            var record          = targetIds.NewRow();
+            record["TopicID"]   = targetTopicId;
             targetIds.Rows.Add(record);
           }
 
@@ -1150,10 +609,9 @@ namespace OnTopic.Data.Sql {
       | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
-        if (command != null) command.Dispose();
-        if (targetIds != null) targetIds.Dispose();
+        command?.Dispose();
+        targetIds.Dispose();
         //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
-        //if (connection != null) connection.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -1172,33 +630,29 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object for which to create the relationships.</param>
     /// <returns>The XML string.</returns>
-    /// <requires description="The topic must not be null." exception="T:System.ArgumentNullException">topic != null</requires>
     private static string CreateRelationshipsXml(Topic topic) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic must not be null.");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create XML string container
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributesXml = new StringBuilder("");
+      var attributesXml         = new StringBuilder("");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add a related XML node for each scope
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in topic.Relationships.Keys) {
-        var scope = topic.Relationships.GetTopics(key);
+
+        var scope               = topic.Relationships.GetTopics(key);
+
         attributesXml.Append("<related scope=\"");
         attributesXml.Append(key);
         attributesXml.Append("\">");
 
         // Build out string array of related items in this scope
-        var targetIds = new string[scope.Count];
-        var count = 0;
+        var targetIds           = new string[scope.Count];
+        var count               = 0;
         foreach (var relTopic in scope) {
-          targetIds[count] = relTopic.Id.ToString(CultureInfo.InvariantCulture);
+          targetIds[count]      = relTopic.Id.ToString(CultureInfo.InvariantCulture);
           count++;
         }
         attributesXml.Append(String.Join(",", targetIds));
@@ -1206,106 +660,6 @@ namespace OnTopic.Data.Sql {
       }
 
       return attributesXml.ToString();
-    }
-
-    /*==========================================================================================================================
-    | METHOD: ADD SQL PARAMETER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Wrapper function that adds a SQL parameter to a command object.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      string fieldValue,
-      SqlDbType sqlDbType
-    ) => AddSqlParameter(commandObject, sqlParameter, fieldValue, sqlDbType, ParameterDirection.Input, -1);
-
-    /// <summary>
-    ///   Adds a SQL parameter to a command object, additionally setting the specified parameter direction.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      ParameterDirection paramDirection,
-      SqlDbType sqlDbType
-    ) => AddSqlParameter(commandObject, sqlParameter, null, sqlDbType, paramDirection, -1);
-
-    /// <summary>
-    ///   Adds a SQL parameter to a command object, additionally setting the specified SQL data length for the field.
-    /// </summary>
-    /// <param name="commandObject">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlLength">Length limit for the SQL field.</param>
-    /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
-    ///   commandObject != null
-    /// </requires>
-    private static void AddSqlParameter(
-      SqlCommand commandObject,
-      string sqlParameter,
-      string? fieldValue,
-      SqlDbType sqlDbType,
-      ParameterDirection paramDirection,
-      int sqlLength
-    ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(commandObject, "The SQL command object must be specified.");
-      Contract.Requires(commandObject.Parameters, "The SQL command object's parameters collection must be available");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Define primary assumptions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sqlLength > 0) {
-        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType, sqlLength));
-      }
-      else {
-        commandObject.Parameters.Add(new SqlParameter("@" + sqlParameter, sqlDbType));
-      }
-
-      Contract.Assume<InvalidOperationException>(
-        commandObject.Parameters["@" + sqlParameter] != null,
-        $"The {commandObject.CommandText} stored procedure does not contain a parameter named {sqlParameter}."
-      );
-
-      commandObject.Parameters["@" + sqlParameter].Direction = paramDirection;
-
-      if (paramDirection != ParameterDirection.Output & paramDirection != ParameterDirection.ReturnValue) {
-        if (fieldValue is null ||fieldValue.Length.Equals(0)) {
-          commandObject.Parameters["@" + sqlParameter].Value = null;
-        }
-        else if (sqlDbType == SqlDbType.Int || sqlDbType == SqlDbType.BigInt || sqlDbType == SqlDbType.TinyInt || sqlDbType == SqlDbType.SmallInt) {
-          commandObject.Parameters["@" + sqlParameter].Value = Int64.Parse(fieldValue, CultureInfo.InvariantCulture);
-        }
-        else if (sqlDbType == SqlDbType.UniqueIdentifier) {
-          commandObject.Parameters["@" + sqlParameter].Value = new Guid(fieldValue);
-        }
-        else if (sqlDbType == SqlDbType.Bit) {
-          if (fieldValue == "1" || fieldValue.ToUpperInvariant() == "TRUE") {
-            commandObject.Parameters["@" + sqlParameter].Value = true;
-          }
-          else {
-            commandObject.Parameters["@" + sqlParameter].Value = false;
-          }
-        }
-        else {
-          commandObject.Parameters["@" + sqlParameter].Value = fieldValue;
-        }
-      }
-
     }
 
   } //Class
