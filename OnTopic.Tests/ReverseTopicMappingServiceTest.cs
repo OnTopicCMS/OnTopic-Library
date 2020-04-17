@@ -173,7 +173,7 @@ namespace OnTopic.Tests {
       bindingModel.PrimaryContact.Name                          = "Jeremy";
       bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
       bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
- 
+
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
