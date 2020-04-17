@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -333,7 +334,7 @@ namespace OnTopic.Data.Sql {
       var command               = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
-      var version               = DateTime.Now;
+      var version               = new SqlDateTime(DateTime.Now);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
@@ -344,11 +345,11 @@ namespace OnTopic.Data.Sql {
       else if (topic.Parent != null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
-      command.AddParameter("Version", version);
       command.Parameters.AddWithValue("@Attributes", attributes);
       if (!isNew) {
         command.AddParameter("DeleteRelationships", true);
       }
+      command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddOutputParameter();
 
@@ -368,6 +369,8 @@ namespace OnTopic.Data.Sql {
         );
 
         PersistRelations(topic, connection, true);
+
+        topic.VersionHistory.Insert(0, version.Value);
 
       }
 
@@ -389,11 +392,6 @@ namespace OnTopic.Data.Sql {
         connection?.Dispose();
         attributes.Dispose();
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add version to version history
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.VersionHistory.Insert(0, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse
