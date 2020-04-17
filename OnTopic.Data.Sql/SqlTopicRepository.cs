@@ -327,13 +327,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var isNew                 = topic.Id == -1;
       var connection            = new SqlConnection(_connectionString);
-      var procedureName         = topic.Id > 0? "CreateTopic" : "UpdateTopic";
+      var procedureName         = isNew? "CreateTopic" : "UpdateTopic";
       var command               = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
       var version               = DateTime.Now;
-      var isNew                 = topic.Id == -1;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
