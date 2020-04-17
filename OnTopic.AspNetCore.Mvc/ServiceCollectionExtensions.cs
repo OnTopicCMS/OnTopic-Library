@@ -83,7 +83,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   Adds an MVC route for handling OnTopic related requests, and maps it to the <see cref="TopicController"/> by default.
     /// </summary>
     /// <remarks>
-    ///   This is functionally identical to <see cref="MapTopicRoute(IRouteBuilder, string, string, string)"/>, except that it
+    ///   This is functionally identical to <see cref="MapTopicRoute(IRouteBuilder, String, String, String)"/>, except that it
     ///   targets the <see cref="IEndpointRouteBuilder"/>, which is preferred in ASP.NET Core 3.
     /// </remarks>
     public static ControllerActionEndpointConventionBuilder MapTopicRoute(
