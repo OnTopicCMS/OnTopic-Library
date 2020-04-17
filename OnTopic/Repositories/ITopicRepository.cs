@@ -75,21 +75,6 @@ namespace OnTopic.Repositories {
     Topic? Load(int topicId, DateTime version);
 
     /*==========================================================================================================================
-    | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
-    | Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE JJC080313: If the topic already exists, return the existing node, by calling its Merge() function. Otherwise,
-    | construct a new node using its XmlNode constructor.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /*==========================================================================================================================
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
