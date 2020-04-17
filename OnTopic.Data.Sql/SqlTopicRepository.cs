@@ -341,16 +341,14 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isNew) {
         command.AddParameter("TopicID", topic.Id);
+        command.AddParameter("DeleteRelationships", true);
       }
       else if (topic.Parent != null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
-      command.Parameters.AddWithValue("@Attributes", attributes);
-      if (!isNew) {
-        command.AddParameter("DeleteRelationships", true);
-      }
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
+      command.Parameters.AddWithValue("@Attributes", attributes);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
