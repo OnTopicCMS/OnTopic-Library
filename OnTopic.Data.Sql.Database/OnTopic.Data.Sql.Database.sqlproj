@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="Utilities\README.md" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="OnTopic.Data.Sql.Database.refactorlog" />
