@@ -17,6 +17,7 @@ namespace OnTopic.Repositories {
   /// <remarks>
   ///   Allows tracking of the source and destination topics.
   /// </remarks>
+  [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
   public class MoveEventArgs : EventArgs {
 
     /*==========================================================================================================================

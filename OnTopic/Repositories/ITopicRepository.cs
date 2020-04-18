@@ -22,16 +22,19 @@ namespace OnTopic.Repositories {
     /// <summary>
     ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<DeleteEventArgs> DeleteEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<MoveEventArgs> MoveEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<RenameEventArgs> RenameEvent;
 
     /*==========================================================================================================================
