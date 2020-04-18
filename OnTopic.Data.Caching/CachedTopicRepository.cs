@@ -183,9 +183,9 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var remainder = uniqueKey.Substring(sourceTopic.GetUniqueKey().Length + 1);
-      var marker = remainder.IndexOf(":", StringComparison.Ordinal);
-      var nextChild = (marker < 0) ? remainder : remainder.Substring(0, marker);
+      var remainder             = uniqueKey.Substring(sourceTopic.GetUniqueKey().Length + 1);
+      var marker                = remainder.IndexOf(":", StringComparison.Ordinal);
+      var nextChild             = (marker < 0) ? remainder : remainder.Substring(0, marker);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find topic

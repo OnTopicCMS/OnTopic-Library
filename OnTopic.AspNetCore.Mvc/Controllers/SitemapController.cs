@@ -6,14 +6,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Mvc;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
-using Microsoft.AspNetCore.Mvc;
+
+#pragma warning disable CS0618 // Type or member is obsolete; supresses known issue with helper methods being moved to private
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
@@ -126,6 +126,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   Given a root topic, generates an XML-formatted sitemap.
     /// </summary>
     /// <returns>The site's homepage view.</returns>
+    [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
     public virtual XDocument GenerateSitemap(Topic rootTopic) =>
       new XDocument(
         new XElement(_sitemapNamespace + "urlset",
@@ -140,6 +141,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Given a <see cref="Topic"/>, adds it to a given <see cref="XmlNode"/>.
     /// </summary>
+    [Obsolete("The AddTopic() method should not be public. It will be marked private in OnTopic Library 5.0.")]
     public IEnumerable<XElement> AddTopic(Topic topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -218,3 +220,5 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
 
   } //Class
 } //Namespace
+
+#pragma warning restore CS0618 // Type or member is obsolete
