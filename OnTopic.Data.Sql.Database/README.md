@@ -1,7 +1,7 @@
 # SQL Schema
 The `OnTopic.Data.Sql.Database` provides a default schema for supporting the [`SqlTopicRepository`](../OnTopic.Data.Sql).
 
-> *Note:* Not all SQL objects are documented here. Missing objects are primarily intended for infrastructure support and used exclusively by stored procedures or administrators.
+> *Note:* In addition to the objects below—which are all part of the default `[dbo]` schema—there is also a [`[Utilities]`](Utilities/README.md) schema which provides stored procedures for use by administrators in maintening the database.
 
 ### Contents
 - [Tables](#tables)
