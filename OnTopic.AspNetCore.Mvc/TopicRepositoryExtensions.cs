@@ -63,7 +63,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | case particular routes aren't present. That said, if they are defined, but should be excluded from a fallback, then
       | that path does need to be defined—thus e.g. {area}/{controller}/{path}.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var paths = new List<String?>() {
+      var paths = new List<string?>() {
        cleanPath($"{rootTopic}/{path}"),
        cleanPath($"{area}/{controller}/{action}/{path}"),
        cleanPath($"{area}/{controller}/{path}"),

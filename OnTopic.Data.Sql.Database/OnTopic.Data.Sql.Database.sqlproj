@@ -68,6 +68,19 @@
     <Folder Include="Functions\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Types" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Utilities\Stored Procedures" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Utilities\Schema.sql" />
+    <Build Include="Utilities\Stored Procedures\GenerateNestedSet.sql" />
+    <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
+    <Build Include="Utilities\Stored Procedures\DisableForeignKeys.sql" />
+    <Build Include="Utilities\Stored Procedures\ValidateHierarchy.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
@@ -89,13 +102,9 @@
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetAttributes.sql" />
-    <Build Include="Stored Procedures\GenerateNestedSet.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
-    <Build Include="Stored Procedures\CompressHierarchy.sql" />
-    <Build Include="Stored Procedures\pr_Disable_Foreign_Keys.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
-    <Build Include="Stored Procedures\ValidateHierarchy.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
     <Build Include="Views\AttributeIndex.sql" />
@@ -109,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="Utilities\README.md" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="OnTopic.Data.Sql.Database.refactorlog" />

@@ -22,16 +22,19 @@ namespace OnTopic.Repositories {
     /// <summary>
     ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<DeleteEventArgs> DeleteEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<MoveEventArgs> MoveEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
     /// </summary>
+    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     event EventHandler<RenameEventArgs> RenameEvent;
 
     /*==========================================================================================================================
@@ -73,21 +76,6 @@ namespace OnTopic.Repositories {
     /// <param name="version">The version.</param>
     /// <returns>A topic object.</returns>
     Topic? Load(int topicId, DateTime version);
-
-    /*==========================================================================================================================
-    | ###TODO JJC080314: An overload to Load() should be created to accept an XmlDocument or XmlNode based on the proposed
-    | Import/Export schema.
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ###NOTE JJC080313: If the topic already exists, return the existing node, by calling its Merge() function. Otherwise,
-    | construct a new node using its XmlNode constructor.
-    >---------------------------------------------------------------------------------------------------------------------------
-      public static Topic Load(XmlNode node, ImportStrategy importStrategy = ImportStrategy.Merge) {
-      //Process XML
-      //Construct children objects
-      //###NOTE JJC080314: May need to cross-reference with Load() and/or TopicRepository to validate against whatever objects
-      //are already created and available.
-      }
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK

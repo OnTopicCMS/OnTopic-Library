@@ -4,7 +4,7 @@
 -- Remove gaps within nested set model created when non-leaf nodes are deleted
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[CompressTopics]
+CREATE PROCEDURE [Utilities].[CompressTopics]
 AS
 
 SET NOCOUNT ON;

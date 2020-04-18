@@ -6,6 +6,15 @@ The `OnTopic.ViewModels` assembly includes default implementations of basic view
 
 > *Note:* It is not necessary to use or derive from these view models. They are provided exclusively for convenience so implementers don't need to recreate basic data models.
 
+### Contents
+- [Installation](#installation)
+- [Inventory](#inventory)
+- [Usage](#usage)
+  - [`DynamicTopicViewModelLookupService`](#DynamicTopicViewModelLookupService) 
+- [Design Considerations](#design-considerations)
+  - [Default Constructor](#default-constructor)
+  - [Inheritance](#inheritance)
+
 ## Installation
 Installation can be performed by providing a `<PackageReference /`> to the `OnTopic.ViewModels` **NuGet** package.
 ```xml

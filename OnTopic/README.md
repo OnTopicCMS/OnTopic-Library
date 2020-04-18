@@ -6,6 +6,16 @@
 
 The `OnTopic` assembly represents the core domain layer of the OnTopic library. It includes the primary entity ([`Topic`](Topic.cs)), abstractions (e.g., [`ITopicRepository`](Repositories/ITopicRepository.cs)), and associated classes (e.g., [`TopicCollection<>`](Collections/TopicCollection{T}.cs)).
 
+### Contents
+- [Entities](#entities)
+  - [Editor](#editor)
+- [Key Abstractions](#key-abstractions) 
+- [Implementation](#implementation)
+- [Extension Methods](#extension-methods)
+- [Collections](#collections)
+  - [Editor](#editor-1)
+- [View Models](#view-models) 
+
 ## Entities
 - **[`Topic`](Topic.cs)**: This is the core business object in OnTopic.
 

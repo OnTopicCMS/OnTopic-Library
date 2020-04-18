@@ -6,6 +6,10 @@ The `SqlTopicRepository` provides an implementation of the `ITopicRepository` in
 
 > *Note:* The schema for the Microsoft SQL Server implementation can be found at [`OnTopic.Data.Sql.Database`](../OnTopic.Data.Sql.Database/README.md). It is not currently distributed as part of the `SqlTopicRepository` and must be deployed separately.
 
+### Contents
+- [Installation](#installation)
+- [Usage](#usage)
+
 ## Installation
 Installation can be performed by providing a `<PackageReference /`> to the `OnTopic.Data.Sql` **NuGet** package.
 ```xml

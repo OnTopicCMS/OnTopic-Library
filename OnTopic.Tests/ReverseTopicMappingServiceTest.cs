@@ -140,7 +140,8 @@ namespace OnTopic.Tests {
       target.DefaultValue       = "Hello";
       target.IsRequired         = true;
       target.IsExtendedAttribute= false;
-      target.Description        = "Original Description";
+
+      target.Attributes.SetValue("Description", "Original Description");
 
       target                    = (TextAttribute?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
@@ -150,7 +151,7 @@ namespace OnTopic.Tests {
       Assert.AreEqual<string>("World", target.DefaultValue);
       Assert.AreEqual<bool>(false, target.IsRequired);
       Assert.AreEqual<bool>(false, target.IsExtendedAttribute);
-      Assert.AreEqual<string>("Original Description", target.Description);
+      Assert.AreEqual<string>("Original Description", target.Attributes.GetValue("Description"));
 
     }
 
@@ -173,7 +174,7 @@ namespace OnTopic.Tests {
       bindingModel.PrimaryContact.Name                          = "Jeremy";
       bindingModel.AlternateContact.Email                       = "AlternateContact@Ignia.com";
       bindingModel.BillingContact.Email                         = "BillingContact@Ignia.com";
- 
+
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);

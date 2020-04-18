@@ -13,6 +13,7 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   The RenameEventArgs object defines an event argument type specific to rename events.
   /// </summary>
+  [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
   public class RenameEventArgs : EventArgs {
 
     /*==========================================================================================================================
