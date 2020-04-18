@@ -3,6 +3,15 @@ The `OnTopic.Data.Sql.Database` provides a default schema for supporting the [`S
 
 > *Note:* Not all SQL objects are documented here. Missing objects are primarily intended for infrastructure support and used exclusively by stored procedures or administrators.
 
+### Contents
+- [Tables](#tables)
+- [Stored Procedures](#stored-procedures)
+  - [Querying](#querying)
+  - [Updating](#updating)
+- [Functions](#functions)
+- [Views](#views)
+- [Types](#types)
+
 ## Tables
 The following is a summary of the most relevant tables.
 - **[`Topics`](Tables/Topics.sql)**: Represents the core hierarchy of topics, encoded using a nested set model.
