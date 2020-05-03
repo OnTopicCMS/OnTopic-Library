@@ -240,5 +240,74 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MOVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then moves one of the <see
+    ///   cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    [TestMethod]
+    public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
+
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var pageContentType       = contentTypes.Contains("Page")? contentTypes["Page"] : null;
+      var contactContentType    = contentTypes.Contains("Contact")? contentTypes["Contact"] : null;
+      var contactAttributeCount = contactContentType?.AttributeDescriptors.Count;
+
+      _topicRepository.Move(contactContentType, pageContentType);
+
+      Assert.IsFalse(contactContentType?.AttributeDescriptors.Count > contactAttributeCount);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: ATTRIBUTE DESCRIPTOR: UPDATES CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="ContentTypeDescriptor"/> with a child <see cref="ContentTypeDescriptor"/> . Adds a new <see
+    ///   cref="AttributeDescriptor"/> to the parent. Ensures that the <see cref="ContentTypeDescriptor.AttributeDescriptors"/>
+    ///   of the child reflects the change.
+    /// </summary>
+    [TestMethod]
+    public void Save_AttributeDescriptor_UpdatesContentType() {
+
+      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
+      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
+      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var attributeCount        = childContentType.AttributeDescriptors.Count;
+
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+
+      _topicRepository.Save(newAttribute);
+
+      Assert.IsTrue(childContentType.AttributeDescriptors.Count > attributeCount);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: ATTRIBUTE DESCRIPTOR: UPDATES CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="ContentTypeDescriptor"/> with a child <see cref="ContentTypeDescriptor"/> . Adds a new <see
+    ///   cref="AttributeDescriptor"/> to the parent, then immediately deletes it. Ensures that the <see
+    ///   cref="ContentTypeDescriptor.AttributeDescriptors"/> of the child reflects the change.
+    /// </summary>
+    [TestMethod]
+    public void Delete_AttributeDescriptor_UpdatesContentTypeCache() {
+
+      var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
+      var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+      var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+      var attributeCount        = childContentType.AttributeDescriptors.Count;
+
+      _topicRepository.Delete(newAttribute);
+
+      Assert.IsTrue(childContentType.AttributeDescriptors.Count < attributeCount);
+
+    }
+
   } //Class
 } //Namespace

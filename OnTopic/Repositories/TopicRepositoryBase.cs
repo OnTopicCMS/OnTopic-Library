@@ -328,6 +328,13 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | If new attribute, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Id < 0 && IsAttributeDescriptor(topic)) {
+        ResetAttributeDescriptors(topic);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Reset original key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
@@ -389,6 +396,13 @@ namespace OnTopic.Repositories {
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.SetParent(target, sibling);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If a content type descriptor is being moved to a new parent, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Parent != target && topic is ContentTypeDescriptor) {
+        ResetAttributeDescriptors(topic);
+      }
+
     }
 
     /*==========================================================================================================================
@@ -424,6 +438,13 @@ namespace OnTopic.Repositories {
             _contentTypeDescriptors.Remove(contentTypeDescriptor);
           }
         }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If attribute type, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (IsAttributeDescriptor(topic)) {
+        ResetAttributeDescriptors(topic);
       }
 
     }
@@ -549,6 +570,47 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return attributes;
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: IS ATTRIBUTE DESCRIPTOR?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="Topic"/>, determines if it derives from <see cref="AttributeDescriptor"/> and is associated with
+    ///   a <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
+    private static bool IsAttributeDescriptor(Topic topic) =>
+      topic is AttributeDescriptor &&
+      topic.Parent?.Key == "Attributes" &&
+      topic.Parent.Parent is ContentTypeDescriptor;
+
+    /*==========================================================================================================================
+    | METHOD: RESET ATTRIBUTE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assuming a topic is either a <see cref="ContentTypeDescriptor"/> or an <see cref="AttributeDescriptor"/>, will
+    ///   reset the cached <see cref="AttributeDescriptor"/>s on the associated <see cref="ContentTypeDescriptor"/> and all
+    ///   children.
+    /// </summary>
+    /// <remarks>
+    ///   Each <see cref="ContentTypeDescriptor"/> has a <see cref="ContentTypeDescriptor.AttributeDescriptors"/> collection
+    ///   which includes not only the <see cref="AttributeDescriptor"/>s associated with that <see
+    ///   cref="ContentTypeDescriptor"/>, but <i>also</i> any <see cref="AttributeDescriptor"/>s from any parent <see
+    ///   cref="ContentTypeDescriptor"/>s in the topic graph. This reflects the fact that attributes are inherited from parent
+    ///   content types. As a result, however, when an <see cref="AttributeDescriptor"/> is added or removed, or a <see
+    ///   cref="ContentTypeDescriptor"/> is moved to a new parent, this cache should be reset on the associated <see
+    ///   cref="ContentTypeDescriptor"/> and all descendent <see cref="ContentTypeDescriptor"/>s to ensure the change is
+    ///   reflected.
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
+    private void ResetAttributeDescriptors(Topic topic) {
+      if (IsAttributeDescriptor(topic)) {
+        ((ContentTypeDescriptor)topic.Parent!.Parent!).ResetAttributeDescriptors();
+      }
+      else if (topic is ContentTypeDescriptor) {
+        ((ContentTypeDescriptor)topic).ResetAttributeDescriptors();
+      }
     }
 
   } //Class
