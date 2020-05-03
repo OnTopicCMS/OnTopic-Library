@@ -289,14 +289,22 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attributeValue in GetAttributes(topic, false, true)) {
+      //Exclude indexed attributes if the only dirty attributes are `LastModified` and/or `LastModifiedBy`, as these are
+      //automatically generated and don't represent genuine changes to the topic.
+      if (topic.Attributes.IsDirty(true)) {
 
-        var record              = attributes.NewRow();
-        record["AttributeKey"]  = attributeValue.Key;
-        record["AttributeValue"]= attributeValue.Value;
-        attributeValue.IsDirty  = false;
+        var indexedAttributes   = GetAttributes(topic, false, true);
 
-        attributes.Rows.Add(record);
+        foreach (var attributeValue in indexedAttributes) {
+
+          var record              = attributes.NewRow();
+          record["AttributeKey"]  = attributeValue.Key;
+          record["AttributeValue"]= attributeValue.Value;
+          attributeValue.IsDirty  = false;
+
+          attributes.Rows.Add(record);
+
+        }
 
       }
 
