@@ -492,6 +492,12 @@ namespace OnTopic.Repositories {
         var key                 = attributeValue.Key;
         var attribute           = (AttributeDescriptor?)null;
 
+        //Reset cached attribute descriptors just in case a new attribute has been added
+        if (!contentType.AttributeDescriptors.Contains(key)) {
+          contentType.ResetAttributeDescriptors();
+        }
+
+        //Attempt to retrieve the corresponding attribute descriptor
         if (contentType.AttributeDescriptors.Contains(key)) {
           attribute             = contentType.AttributeDescriptors[key];
         }
