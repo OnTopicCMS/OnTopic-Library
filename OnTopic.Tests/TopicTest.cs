@@ -7,7 +7,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using OnTopic.Metadata;
-using OnTopic.Querying;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
 
@@ -176,36 +175,6 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<string>("ParentTopic:ChildTopic:GrandChildTopic", grandChildTopic.GetUniqueKey());
       Assert.AreEqual<string>("/ParentTopic/ChildTopic/GrandChildTopic/", grandChildTopic.GetWebPath());
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: FIND ALL BY ATTRIBUTE: RETURNS CORRECT TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Looks for a deeply nested child topic using only the attribute value.
-    /// </summary>
-    [TestMethod]
-    public void FindAllByAttribute_ReturnsCorrectTopics() {
-
-      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5);
-      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20);
-      var grandNieceTopic       = TopicFactory.Create("GrandNieceTopic", "Page", 3);
-      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", 7);
-
-      childTopic.Parent         = parentTopic;
-      grandChildTopic.Parent    = childTopic;
-      grandNieceTopic.Parent    = childTopic;
-      greatGrandChildTopic.Parent = grandChildTopic;
-
-      grandChildTopic.Attributes.SetValue("Foo", "Baz");
-      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
-      grandNieceTopic.Attributes.SetValue("Foo", "Bar");
-
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
-      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
 
     }
 

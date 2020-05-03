@@ -142,5 +142,78 @@ namespace OnTopic.Querying {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: GET ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the root <see cref="Topic"/> in the current topic graph.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
+    public static Topic GetRootTopic(this Topic topic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, "The topic parameter must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find lowest common root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (topic.Parent != null) {
+        topic = topic.Parent;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return topic;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET BY UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if available.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey()"/> of the <see cref="Topic"/> to return.</param>
+    /// <returns>A <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if found.</returns>
+    public static Topic? GetByUniqueKey(this Topic topic, string uniqueKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, "The topic parameter must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), "The unique key must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find lowest common root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var currentTopic          = (Topic?)topic.GetRootTopic();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process keys
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
+        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+      }
+      var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Navigate to the specific path
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var key in keys) {
+        currentTopic = currentTopic?.Children?.GetTopic(key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return currentTopic;
+
+    }
+
   } //Class
 } //Namespace
