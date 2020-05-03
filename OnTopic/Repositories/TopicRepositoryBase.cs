@@ -541,9 +541,9 @@ namespace OnTopic.Repositories {
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Get unmatched attributes
+      | Get unmatched attribute descriptors
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = new List<AttributeDescriptor>();
+      var attributes            = new TopicCollection<AttributeDescriptor>();
 
       foreach (var attribute in contentType.AttributeDescriptors) {
 
@@ -572,6 +572,21 @@ namespace OnTopic.Repositories {
 
         attributes.Add(attribute);
 
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get arbitrary attributes
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###HACK JJC20200502: Arbitrary attributes are those that don't map back to the scheme. These aren't picked up by the
+      | AttributeDescriptors check above. This means there's no way to programmatically delete arbitrary (or orphaned)
+      | attributes. To mitigate this, any null or empty attribute values should be included. By definition, though, arbitrary
+      | attributes don't have corresponding AttributeDescriptors. To mitigate this, an ad hoc AttributeDescriptor object will be
+      | created for each empty AttributeDescriptor.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attribute in topic.Attributes.Where(a => String.IsNullOrEmpty(a.Value))) {
+        if (!attributes.Contains(attribute.Key)) {
+          attributes.Add((TextAttribute)TopicFactory.Create(attribute.Key, "TextAttribute"));
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -170,6 +170,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET UNMATCHED ATTRIBUTES: EMPTY ARBITRARY ATTRIBUTES: RETURNS ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   <see cref="Topic"/> but not the <see cref="ContentTypeDescriptor"/> <i>and</i> are either <c>null</c> or empty are
+    ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
+    ///   the database.
+    /// </summary>
+    [TestMethod]
+    public void GetUnmatchedAttributes_EmptyArbitraryAttributes_ReturnsAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+
+      topic.Attributes.SetValue("ArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("ArbitraryAttribute", "");
+      topic.Attributes.SetValue("AnotherArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("YetAnotherArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("YetAnotherArbitraryAttribute", null);
+
+      var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("YetAnotherArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsFalse(attributes.Any(a => a.Key.Equals("AnotherArbitraryAttribute", StringComparison.InvariantCulture)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTORS: RETURNS CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
