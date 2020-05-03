@@ -140,6 +140,54 @@ namespace OnTopic.Repositories {
     }
 
     /*==========================================================================================================================
+    | GET CONTENT TYPE DESCRIPTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to identify the <see cref="ContentTypeDescriptor"/> for the provided <paramref name="sourceTopic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="GetContentTypeDescriptor(Topic)"/> method will attempt to get the <see cref="ContentTypeDescriptor"/>
+    ///   from the <see cref="GetContentTypeDescriptors()"/> method using the <paramref name="sourceTopic"/>'s <see
+    ///   cref="Topic.ContentType"/>. If that can't be found, however, then it will instead look in the <paramref
+    ///   name="sourceTopic"/>'s topic graph to see if the <see cref="ContentTypeDescriptor"/> can be found there. This is
+    ///   useful for cases where new topic graphs are being imported and a new <see cref="Topic"/> references a new <see
+    ///   cref="ContentTypeDescriptor"/> prior to it having been saved. In this case, that new version will be added to the
+    ///   locally cached collection used by <see cref="GetContentTypeDescriptors()"/>.
+    /// </remarks>
+    /// <param name="sourceTopic"></param>
+    /// <returns></returns>
+    protected ContentTypeDescriptor? GetContentTypeDescriptor(Topic sourceTopic) {
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceTopic, nameof(sourceTopic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentType           = sourceTopic.ContentType;
+      var contentTypes          = GetContentTypeDescriptors();
+      var contentTypeDescriptor = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
+
+      if (contentTypeDescriptor != null) {
+        return contentTypeDescriptor;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        sourceTopic.GetByUniqueKey("Root:Configuration:ContentTypes") is ContentTypeDescriptor sourceContentTypes &&
+        !contentTypes.Contains(sourceContentTypes)
+      ) {
+        contentTypes            = GetContentTypeDescriptors(sourceContentTypes);
+      }
+
+      return contentTypes.Contains(contentType)? contentTypes[contentType] : null;
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
@@ -383,7 +431,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get associated content type descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentType           = GetContentTypeDescriptor(topic);
 
       Contract.Assume(
         contentType,
@@ -432,11 +480,11 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get associated content type descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentType           = GetContentTypeDescriptor(topic);
 
       Contract.Assume(
         contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {topic.ContentType} content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------

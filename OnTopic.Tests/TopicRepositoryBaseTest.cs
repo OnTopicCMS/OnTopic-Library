@@ -168,5 +168,37 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: GET VALID CONTENT TYPE: RETURNS CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a specific <see cref="ContentTypeDescriptor"/> by its <see cref="Topic.Key"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_GetValidContentType_ReturnsContentType() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNotNull(contentType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: GET INVALID CONTENT TYPE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve an invalid <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_GetInvalidContentType_ReturnsNull() {
+
+      var topic                 = TopicFactory.Create("Test", "InvalidContentType");
+      var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNull(contentType);
+
+    }
+
   } //Class
 } //Namespace

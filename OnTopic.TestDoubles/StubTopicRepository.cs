@@ -185,6 +185,13 @@ namespace OnTopic.TestDoubles {
       base.GetContentTypeDescriptors(topicGraph);
 
     /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTOR (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptor(Topic)" />
+    public ContentTypeDescriptor? GetContentTypeDescriptorProxy(Topic sourceTopic) =>
+      base.GetContentTypeDescriptor(sourceTopic);
+
+    /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
