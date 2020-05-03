@@ -69,6 +69,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EMPTY ATTRIBUTES: SKIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeValue"/>s with a null or empty value should
+    ///   be skipped.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_EmptyAttributes_Skips() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("EmptyAttribute", "");
+      topic.Attributes.SetValue("NullAttribute", null);
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, null);
+
+      Assert.IsFalse(attributes.Any(a => a.Key == "EmptyAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key == "NullAttribute"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: INDEXED ATTRIBUTES: RETURNS INDEXED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
