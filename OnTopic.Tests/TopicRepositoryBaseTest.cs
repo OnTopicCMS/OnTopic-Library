@@ -107,6 +107,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET UNMATCHED ATTRIBUTES: RETURNS ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   <see cref="ContentTypeDescriptor"/> but not the <see cref="Topic"/> are returned.
+    /// </summary>
+    [TestMethod]
+    public void GetUnmatchedAttributes_ReturnsAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+
+      topic.Attributes.SetValue("Title", "Title");
+
+      var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
+
+      Assert.IsTrue(attributes.Any());
+      Assert.IsFalse(attributes.Any(a => a.Key.Equals("Title", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTORS: RETURNS CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

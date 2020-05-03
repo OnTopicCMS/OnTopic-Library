@@ -172,6 +172,12 @@ namespace OnTopic.TestDoubles {
       base.GetAttributes(topic, isExtendedAttribute, isDirty);
 
     /*==========================================================================================================================
+    | METHOD: GET UNMATCHED ATTRIBUTES (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)" />
+    public IEnumerable<AttributeDescriptor> GetUnmatchedAttributesProxy(Topic topic) => base.GetUnmatchedAttributes(topic);
+
+    /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
