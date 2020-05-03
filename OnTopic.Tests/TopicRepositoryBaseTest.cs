@@ -49,6 +49,64 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_AnyAttributes_ReturnsAllAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("Title", "Title");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, null);
+
+      Assert.AreEqual<int>(3, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: INDEXED ATTRIBUTES: RETURNS INDEXED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_IndexedAttributes_ReturnsIndexedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("Title", "Title");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, false);
+
+      Assert.AreEqual<int>(2, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTES: RETURNS EXTENDED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ExtendedAttributes_ReturnsExtendedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("Title", "Title");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, true);
+
+      Assert.AreEqual<int>(1, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTORS: RETURNS CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
@@ -162,6 +163,13 @@ namespace OnTopic.TestDoubles {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
+
+    /*==========================================================================================================================
+    | METHOD: GET ATTRIBUTES (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)" />
+    public IEnumerable<AttributeValue> GetAttributesProxy(Topic topic, bool? isExtendedAttribute, bool? isDirty = null) =>
+      base.GetAttributes(topic, isExtendedAttribute, isDirty);
 
     /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
