@@ -14,6 +14,7 @@ using OnTopic.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using OnTopic.Collections;
+using OnTopic.Metadata.AttributeTypes;
 
 #pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
 
@@ -66,33 +67,74 @@ namespace OnTopic.Repositories {
         Contract.Assume(configuration, $"The 'Root:Configuration' section could not be loaded from the 'ITopicRepository'.");
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Add available Content Types to the collection
+        | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Ensure the parent ContentTypes topic is available to iterate over
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes");
+        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         Contract.Assume(allowedContentTypes, "Unable to load section 'Configuration:ContentTypes'.");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (var topic in allowedContentTypes.FindAllByAttribute("ContentType", "ContentType")) {
-          // Ensure the Topic is used as the strongly-typed ContentType
-          // Add ContentType Topic to collection if not already added
-          if (
-            topic is ContentTypeDescriptor contentTypeDescriptor &&
-            !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
-          ) {
-            _contentTypeDescriptors.Add(contentTypeDescriptor);
-          }
-        }
+        _contentTypeDescriptors = GetContentTypeDescriptors(allowedContentTypes);
 
       }
 
+      return _contentTypeDescriptors;
+
+    }
+
+    /// <summary>
+    ///   Optional overload of <see cref="GetContentTypeDescriptors()"/> allows for a new topic graph to be supplied for
+    ///   updating the list of cached <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the <see cref="GetContentTypeDescriptors()"/> method will load data from the concrete implementation of
+    ///   the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be preferrable to instead load
+    ///   these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic database, and when saving
+    ///   modifications to existing content types. As such, this <c>protected</c> overload is useful to call from <see
+    ///   cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> when the topic graph being saved includes any <see
+    ///   cref="ContentTypeDescriptor"/>s.
+    /// </remarks>
+    /// <param name="contentTypeDescriptors">
+    ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
+    ///   cref="GetContentTypeDescriptors()"/>. The code will process not only the root <see cref="ContentTypeDescriptor"/>, but
+    ///   also any descendents.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor contentTypeDescriptors) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_contentTypeDescriptors == null) {
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (contentTypeDescriptors == null) {
+        return _contentTypeDescriptors;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add available Content Types to the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var topic in contentTypeDescriptors.FindAllByAttribute("ContentType", "ContentType")) {
+        // Ensure the Topic is used as the strongly-typed ContentType
+        // Add ContentType Topic to collection if not already added
+        if (
+          topic is ContentTypeDescriptor contentTypeDescriptor &&
+          !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
+        ) {
+          _contentTypeDescriptors.Add(contentTypeDescriptor);
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add available Content Types to the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return _contentTypeDescriptors;
 
     }

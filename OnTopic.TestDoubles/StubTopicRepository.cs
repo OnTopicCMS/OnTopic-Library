@@ -178,6 +178,13 @@ namespace OnTopic.TestDoubles {
     public IEnumerable<AttributeDescriptor> GetUnmatchedAttributesProxy(Topic topic) => base.GetUnmatchedAttributes(topic);
 
     /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
+      base.GetContentTypeDescriptors(topicGraph);
+
+    /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

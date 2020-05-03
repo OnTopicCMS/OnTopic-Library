@@ -146,5 +146,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTORS: WITH TOPIC GRAPH: RETURNS MERGED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> alongside a separate
+    ///   topic graph and ensures the two are properly merged.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptors_WithTopicGraph_ReturnsMergedContentTypes() {
+
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var rootContentType       = contentTypes["ContentTypes"];
+      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var contentTypeCount      = contentTypes.Count;
+
+      _topicRepository.GetContentTypeDescriptorsProxy((ContentTypeDescriptor)newContentType);
+
+      Assert.AreNotEqual<int>(contentTypeCount, contentTypes.Count);
+      Assert.IsNotNull(contentTypes.Contains(newContentType));
+
+    }
+
   } //Class
 } //Namespace
