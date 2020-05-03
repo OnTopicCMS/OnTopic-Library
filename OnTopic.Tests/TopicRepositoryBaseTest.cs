@@ -107,6 +107,48 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH SHORT VALUE: RETURNS AS INDEXED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
+    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("ArbitraryAttribute", "Value");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, false);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH LONG VALUE: RETURNS AS EXTENDED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
+    ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, true);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET UNMATCHED ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
