@@ -64,5 +64,47 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET BY UNIQUE KEY: VALID KEY: RETURNS TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="Topic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetByUniqueKey_ValidKey_ReturnsTopic() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5, parentTopic);
+      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20, childTopic);
+      var greatGrandChildTopic1 = TopicFactory.Create("GreatGrandChildTopic1", "Page", 7, grandChildTopic);
+      var greatGrandChildTopic2 = TopicFactory.Create("GreatGrandChildTopic2", "Page", 7, grandChildTopic);
+
+      var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+
+      Assert.ReferenceEquals(greatGrandChildTopic2, foundTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET BY UNIQUE KEY: INVALID KEY: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given an invalid <c>UniqueKey</c>, the <see cref="TopicExtensions.GetByUniqueKey(Topic, String)"/> returns
+    ///   <c>null</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetByUniqueKey_InvalidKey_ReturnsNull() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5, parentTopic);
+      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20, childTopic);
+      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", 7, grandChildTopic);
+
+      var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
+
+      Assert.IsNull(foundTopic);
+
+    }
+
   } //Class
 } //Namespace

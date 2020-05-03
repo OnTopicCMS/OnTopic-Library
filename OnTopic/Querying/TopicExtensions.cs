@@ -171,5 +171,49 @@ namespace OnTopic.Querying {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: GET BY UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if available.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey()"/> of the <see cref="Topic"/> to return.</param>
+    /// <returns>A <see cref="Topic"/> with the specified <paramref name="uniqueKey"/>, if found.</returns>
+    public static Topic? GetByUniqueKey(this Topic topic, string uniqueKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, "The topic parameter must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), "The unique key must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find lowest common root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var currentTopic          = (Topic?)topic.GetRootTopic();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process keys
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
+        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+      }
+      var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Navigate to the specific path
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var key in keys) {
+        currentTopic = currentTopic?.Children?.GetTopic(key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return currentTopic;
+
+    }
+
   } //Class
 } //Namespace
