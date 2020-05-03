@@ -200,5 +200,45 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then saves a new <see
+    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
+    ///   it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    [TestMethod]
+    public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
+
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var topic                 = TopicFactory.Create("NewContentType", "ContentTypeDescriptor");
+
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(contentTypes.Contains(topic));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then deletes one of the <see
+    ///   cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    [TestMethod]
+    public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
+
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var contentType           = contentTypes.Contains("Page")? contentTypes["Page"] : null;
+
+      _topicRepository.Delete(contentType);
+
+      Assert.IsFalse(contentTypes.Contains(contentType));
+
+    }
+
   } //Class
 } //Namespace

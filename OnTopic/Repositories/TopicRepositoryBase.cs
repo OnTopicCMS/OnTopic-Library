@@ -316,6 +316,18 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | If new content type, remove from cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        topic.Id < 0 &&
+        topic is ContentTypeDescriptor &&
+        _contentTypeDescriptors != null &&
+        !_contentTypeDescriptors.Contains(topic)
+      ) {
+        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Reset original key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
@@ -401,6 +413,17 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null) {
         topic.Parent.Children.Remove(topic.Key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If content type, remove from cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic is ContentTypeDescriptor && _contentTypeDescriptors != null) {
+        foreach (var contentTypeDescriptor in topic.FindAll(t => t is ContentTypeDescriptor).Cast<ContentTypeDescriptor>()) {
+          if (_contentTypeDescriptors.Contains(contentTypeDescriptor)) {
+            _contentTypeDescriptors.Remove(contentTypeDescriptor);
+          }
+        }
       }
 
     }
