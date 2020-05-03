@@ -306,21 +306,35 @@ namespace OnTopic.Data.Sql {
       extendedAttributes.Append("<attributes>");
 
       foreach (var attributeValue in GetAttributes(topic, true, null)) {
+
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
         );
         attributeValue.IsDirty  = false;
+
+        //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
+        //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
+        //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
+        //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
+        //attributes if their length exceeds 255.
+        addUnmatchedAttribute(attributeValue.Key);
+
       }
 
       extendedAttributes.Append("</attributes>");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add unmatch attributes
+      | Add unmatched attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
+
       //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       foreach (var attribute in GetUnmatchedAttributes(topic)) {
+        addUnmatchedAttribute(attribute.Key);
+      }
+
+      void addUnmatchedAttribute(string key) {
         var record              = attributes.NewRow();
-        record["AttributeKey"]  = attribute.Key;
+        record["AttributeKey"]  = key;
         record["AttributeValue"]= null;
         attributes.Rows.Add(record);
       }

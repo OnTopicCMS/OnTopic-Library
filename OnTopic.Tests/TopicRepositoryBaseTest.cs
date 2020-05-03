@@ -69,6 +69,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EMPTY ATTRIBUTES: SKIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeValue"/>s with a null or empty value should
+    ///   be skipped.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_EmptyAttributes_Skips() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("EmptyAttribute", "");
+      topic.Attributes.SetValue("NullAttribute", null);
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, null);
+
+      Assert.IsFalse(attributes.Any(a => a.Key == "EmptyAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key == "NullAttribute"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: INDEXED ATTRIBUTES: RETURNS INDEXED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -107,6 +130,48 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH SHORT VALUE: RETURNS AS INDEXED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
+    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("ArbitraryAttribute", "Value");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, false);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH LONG VALUE: RETURNS AS EXTENDED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
+    ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("ArbitraryAttribute", new string('x', 256));
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, true);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET UNMATCHED ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -124,6 +189,34 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(attributes.Any());
       Assert.IsFalse(attributes.Any(a => a.Key.Equals("Title", StringComparison.InvariantCultureIgnoreCase)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET UNMATCHED ATTRIBUTES: EMPTY ARBITRARY ATTRIBUTES: RETURNS ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   <see cref="Topic"/> but not the <see cref="ContentTypeDescriptor"/> <i>and</i> are either <c>null</c> or empty are
+    ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
+    ///   the database.
+    /// </summary>
+    [TestMethod]
+    public void GetUnmatchedAttributes_EmptyArbitraryAttributes_ReturnsAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+
+      topic.Attributes.SetValue("ArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("ArbitraryAttribute", "");
+      topic.Attributes.SetValue("AnotherArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("YetAnotherArbitraryAttribute", "Value");
+      topic.Attributes.SetValue("YetAnotherArbitraryAttribute", null);
+
+      var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
+
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsTrue(attributes.Any(a => a.Key.Equals("YetAnotherArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsFalse(attributes.Any(a => a.Key.Equals("AnotherArbitraryAttribute", StringComparison.InvariantCulture)));
 
     }
 

@@ -502,7 +502,16 @@ namespace OnTopic.Repositories {
           attribute             = contentType.AttributeDescriptors[key];
         }
 
-        if (attribute != null && (isExtendedAttribute == null || attribute.IsExtendedAttribute == isExtendedAttribute)) {
+        //Skip if the value is null or empty; these values are not persisted to storage and should be treated as equivalent to
+        //non-existent values.
+        if (String.IsNullOrEmpty(attributeValue.Value)) {
+          continue;
+        }
+
+        //Add the attribute based on the isExtendedAttribute paramter. Add all parameters if isExtendedAttribute is null. Assume
+        //an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
+        //characters.
+        if (isExtendedAttribute?.Equals(attribute?.IsExtendedAttribute?? attributeValue.Value?.Length > 255)?? true) {
           attributes.Add(attributeValue);
         }
 
@@ -538,9 +547,9 @@ namespace OnTopic.Repositories {
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Get unmatched attributes
+      | Get unmatched attribute descriptors
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = new List<AttributeDescriptor>();
+      var attributes            = new TopicCollection<AttributeDescriptor>();
 
       foreach (var attribute in contentType.AttributeDescriptors) {
 
@@ -569,6 +578,21 @@ namespace OnTopic.Repositories {
 
         attributes.Add(attribute);
 
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get arbitrary attributes
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###HACK JJC20200502: Arbitrary attributes are those that don't map back to the scheme. These aren't picked up by the
+      | AttributeDescriptors check above. This means there's no way to programmatically delete arbitrary (or orphaned)
+      | attributes. To mitigate this, any null or empty attribute values should be included. By definition, though, arbitrary
+      | attributes don't have corresponding AttributeDescriptors. To mitigate this, an ad hoc AttributeDescriptor object will be
+      | created for each empty AttributeDescriptor.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attribute in topic.Attributes.Where(a => String.IsNullOrEmpty(a.Value))) {
+        if (!attributes.Contains(attribute.Key)) {
+          attributes.Add((TextAttribute)TopicFactory.Create(attribute.Key, "TextAttribute"));
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
