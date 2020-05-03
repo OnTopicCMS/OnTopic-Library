@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
@@ -164,6 +165,33 @@ namespace OnTopic.TestDoubles {
     public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
 
     /*==========================================================================================================================
+    | METHOD: GET ATTRIBUTES (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)" />
+    public IEnumerable<AttributeValue> GetAttributesProxy(Topic topic, bool? isExtendedAttribute, bool? isDirty = null) =>
+      base.GetAttributes(topic, isExtendedAttribute, isDirty);
+
+    /*==========================================================================================================================
+    | METHOD: GET UNMATCHED ATTRIBUTES (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)" />
+    public IEnumerable<AttributeDescriptor> GetUnmatchedAttributesProxy(Topic topic) => base.GetUnmatchedAttributes(topic);
+
+    /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
+      base.GetContentTypeDescriptors(topicGraph);
+
+    /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTOR (PROXY)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptor(Topic)" />
+    public ContentTypeDescriptor? GetContentTypeDescriptorProxy(Topic sourceTopic) =>
+      base.GetContentTypeDescriptor(sourceTopic);
+
+    /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -183,10 +211,10 @@ namespace OnTopic.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      addAttribute(contentTypes, "Key", "TextAttribute", true);
-      addAttribute(contentTypes, "ContentType", "TextAttribute", true);
-      addAttribute(contentTypes, "Title", "TextAttribute", true);
-      addAttribute(contentTypes, "TopicId", "TopicReferenceAttribute");
+      addAttribute(contentTypes, "Key", "TextAttribute", false, true);
+      addAttribute(contentTypes, "ContentType", "TextAttribute", false, true);
+      addAttribute(contentTypes, "Title", "TextAttribute", true, true);
+      addAttribute(contentTypes, "TopicId", "TopicReferenceAttribute", false);
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
@@ -200,8 +228,8 @@ namespace OnTopic.TestDoubles {
 
       var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(attributeDescriptor, "DefaultValue", "TextAttribute", true);
-      addAttribute(attributeDescriptor, "IsRequired", "BooleanAttribute", true);
+      addAttribute(attributeDescriptor, "DefaultValue", "TextAttribute", false, true);
+      addAttribute(attributeDescriptor, "IsRequired", "TextAttribute", false, true);
 
       TopicFactory.Create("BooleanAttribute", "ContentTypeDescriptor", attributeDescriptor);
       TopicFactory.Create("NestedTopicListAttribute", "ContentTypeDescriptor", attributeDescriptor);
@@ -214,22 +242,28 @@ namespace OnTopic.TestDoubles {
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
-      addAttribute(pageContentType, "IsHidden");
-      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttribute");
+      addAttribute(pageContentType, "IsHidden", "TextAttribute", false);
+      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttribute", false);
 
       pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
       pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
 
       var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(contactContentType, "Name");
-      addAttribute(contactContentType, "AlternateEmail");
-      addAttribute(contactContentType, "BillingContactEmail");
+      addAttribute(contactContentType, "Name", isExtended: false);
+      addAttribute(contactContentType, "AlternateEmail", isExtended: false);
+      addAttribute(contactContentType, "BillingContactEmail", isExtended: false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Local addAttribute() helper function
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeDescriptor addAttribute(Topic contentType, string attributeKey, string editorType = "TextAttribute", bool isRequired = false) {
+      AttributeDescriptor addAttribute(
+        Topic contentType,
+        string attributeKey,
+        string editorType       = "TextAttribute",
+        bool isExtended         = true,
+        bool isRequired         = false
+      ) {
         var container = contentType.Children.GetTopic("Attributes");
         if (container == null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
@@ -237,6 +271,7 @@ namespace OnTopic.TestDoubles {
         }
         var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, currentAttributeId++, container);
         attribute.IsRequired = isRequired;
+        attribute.IsExtendedAttribute = isExtended;
         return attribute;
       }
 

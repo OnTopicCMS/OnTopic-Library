@@ -14,6 +14,7 @@ using OnTopic.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using OnTopic.Collections;
+using OnTopic.Metadata.AttributeTypes;
 
 #pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
 
@@ -66,34 +67,123 @@ namespace OnTopic.Repositories {
         Contract.Assume(configuration, $"The 'Root:Configuration' section could not be loaded from the 'ITopicRepository'.");
 
         /*----------------------------------------------------------------------------------------------------------------------
-        | Add available Content Types to the collection
+        | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Ensure the parent ContentTypes topic is available to iterate over
-        \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes");
+        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         Contract.Assume(allowedContentTypes, "Unable to load section 'Configuration:ContentTypes'.");
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        foreach (var topic in allowedContentTypes.FindAllByAttribute("ContentType", "ContentType")) {
-          // Ensure the Topic is used as the strongly-typed ContentType
-          // Add ContentType Topic to collection if not already added
-          if (
-            topic is ContentTypeDescriptor contentTypeDescriptor &&
-            !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
-          ) {
-            _contentTypeDescriptors.Add(contentTypeDescriptor);
-          }
-        }
+        _contentTypeDescriptors = GetContentTypeDescriptors(allowedContentTypes);
 
       }
 
       return _contentTypeDescriptors;
+
+    }
+
+    /// <summary>
+    ///   Optional overload of <see cref="GetContentTypeDescriptors()"/> allows for a new topic graph to be supplied for
+    ///   updating the list of cached <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the <see cref="GetContentTypeDescriptors()"/> method will load data from the concrete implementation of
+    ///   the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be preferrable to instead load
+    ///   these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic database, and when saving
+    ///   modifications to existing content types. As such, this <c>protected</c> overload is useful to call from <see
+    ///   cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> when the topic graph being saved includes any <see
+    ///   cref="ContentTypeDescriptor"/>s.
+    /// </remarks>
+    /// <param name="contentTypeDescriptors">
+    ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
+    ///   cref="GetContentTypeDescriptors()"/>. The code will process not only the root <see cref="ContentTypeDescriptor"/>, but
+    ///   also any descendents.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor contentTypeDescriptors) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (_contentTypeDescriptors == null) {
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (contentTypeDescriptors == null) {
+        return _contentTypeDescriptors;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add available Content Types to the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var topic in contentTypeDescriptors.FindAllByAttribute("ContentType", "ContentType")) {
+        // Ensure the Topic is used as the strongly-typed ContentType
+        // Add ContentType Topic to collection if not already added
+        if (
+          topic is ContentTypeDescriptor contentTypeDescriptor &&
+          !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
+        ) {
+          _contentTypeDescriptors.Add(contentTypeDescriptor);
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add available Content Types to the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return _contentTypeDescriptors;
+
+    }
+
+    /*==========================================================================================================================
+    | GET CONTENT TYPE DESCRIPTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to identify the <see cref="ContentTypeDescriptor"/> for the provided <paramref name="sourceTopic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="GetContentTypeDescriptor(Topic)"/> method will attempt to get the <see cref="ContentTypeDescriptor"/>
+    ///   from the <see cref="GetContentTypeDescriptors()"/> method using the <paramref name="sourceTopic"/>'s <see
+    ///   cref="Topic.ContentType"/>. If that can't be found, however, then it will instead look in the <paramref
+    ///   name="sourceTopic"/>'s topic graph to see if the <see cref="ContentTypeDescriptor"/> can be found there. This is
+    ///   useful for cases where new topic graphs are being imported and a new <see cref="Topic"/> references a new <see
+    ///   cref="ContentTypeDescriptor"/> prior to it having been saved. In this case, that new version will be added to the
+    ///   locally cached collection used by <see cref="GetContentTypeDescriptors()"/>.
+    /// </remarks>
+    /// <param name="sourceTopic"></param>
+    /// <returns></returns>
+    protected ContentTypeDescriptor? GetContentTypeDescriptor(Topic sourceTopic) {
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(sourceTopic, nameof(sourceTopic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentType           = sourceTopic.ContentType;
+      var contentTypes          = GetContentTypeDescriptors();
+      var contentTypeDescriptor = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
+
+      if (contentTypeDescriptor != null) {
+        return contentTypeDescriptor;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        sourceTopic.GetByUniqueKey("Root:Configuration:ContentTypes") is ContentTypeDescriptor sourceContentTypes &&
+        !contentTypes.Contains(sourceContentTypes)
+      ) {
+        contentTypes            = GetContentTypeDescriptors(sourceContentTypes);
+      }
+
+      return contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
     }
 
@@ -226,6 +316,25 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | If new content type, remove from cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        topic.Id < 0 &&
+        topic is ContentTypeDescriptor &&
+        _contentTypeDescriptors != null &&
+        !_contentTypeDescriptors.Contains(topic)
+      ) {
+        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If new attribute, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Id < 0 && IsAttributeDescriptor(topic)) {
+        ResetAttributeDescriptors(topic);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Reset original key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
@@ -287,6 +396,13 @@ namespace OnTopic.Repositories {
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.SetParent(target, sibling);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If a content type descriptor is being moved to a new parent, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.Parent != target && topic is ContentTypeDescriptor) {
+        ResetAttributeDescriptors(topic);
+      }
+
     }
 
     /*==========================================================================================================================
@@ -311,6 +427,24 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null) {
         topic.Parent.Children.Remove(topic.Key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If content type, remove from cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic is ContentTypeDescriptor && _contentTypeDescriptors != null) {
+        foreach (var contentTypeDescriptor in topic.FindAll(t => t is ContentTypeDescriptor).Cast<ContentTypeDescriptor>()) {
+          if (_contentTypeDescriptors.Contains(contentTypeDescriptor)) {
+            _contentTypeDescriptors.Remove(contentTypeDescriptor);
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If attribute type, refresh cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (IsAttributeDescriptor(topic)) {
+        ResetAttributeDescriptors(topic);
       }
 
     }
@@ -341,7 +475,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get associated content type descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentType           = GetContentTypeDescriptor(topic);
 
       Contract.Assume(
         contentType,
@@ -358,6 +492,12 @@ namespace OnTopic.Repositories {
         var key                 = attributeValue.Key;
         var attribute           = (AttributeDescriptor?)null;
 
+        //Reset cached attribute descriptors just in case a new attribute has been added
+        if (!contentType.AttributeDescriptors.Contains(key)) {
+          contentType.ResetAttributeDescriptors();
+        }
+
+        //Attempt to retrieve the corresponding attribute descriptor
         if (contentType.AttributeDescriptors.Contains(key)) {
           attribute             = contentType.AttributeDescriptors[key];
         }
@@ -390,11 +530,11 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get associated content type descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentType           = GetContentTypeDescriptors()[topic.Attributes.GetValue("ContentType", "Page")?? "Page"];
+      var contentType           = GetContentTypeDescriptor(topic);
 
       Contract.Assume(
         contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {topic.ContentType} content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -436,6 +576,47 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return attributes;
 
+    }
+
+    /*==========================================================================================================================
+    | METHOD: IS ATTRIBUTE DESCRIPTOR?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="Topic"/>, determines if it derives from <see cref="AttributeDescriptor"/> and is associated with
+    ///   a <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
+    private static bool IsAttributeDescriptor(Topic topic) =>
+      topic is AttributeDescriptor &&
+      topic.Parent?.Key == "Attributes" &&
+      topic.Parent.Parent is ContentTypeDescriptor;
+
+    /*==========================================================================================================================
+    | METHOD: RESET ATTRIBUTE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assuming a topic is either a <see cref="ContentTypeDescriptor"/> or an <see cref="AttributeDescriptor"/>, will
+    ///   reset the cached <see cref="AttributeDescriptor"/>s on the associated <see cref="ContentTypeDescriptor"/> and all
+    ///   children.
+    /// </summary>
+    /// <remarks>
+    ///   Each <see cref="ContentTypeDescriptor"/> has a <see cref="ContentTypeDescriptor.AttributeDescriptors"/> collection
+    ///   which includes not only the <see cref="AttributeDescriptor"/>s associated with that <see
+    ///   cref="ContentTypeDescriptor"/>, but <i>also</i> any <see cref="AttributeDescriptor"/>s from any parent <see
+    ///   cref="ContentTypeDescriptor"/>s in the topic graph. This reflects the fact that attributes are inherited from parent
+    ///   content types. As a result, however, when an <see cref="AttributeDescriptor"/> is added or removed, or a <see
+    ///   cref="ContentTypeDescriptor"/> is moved to a new parent, this cache should be reset on the associated <see
+    ///   cref="ContentTypeDescriptor"/> and all descendent <see cref="ContentTypeDescriptor"/>s to ensure the change is
+    ///   reflected.
+    /// </remarks>
+    /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
+    private void ResetAttributeDescriptors(Topic topic) {
+      if (IsAttributeDescriptor(topic)) {
+        ((ContentTypeDescriptor)topic.Parent!.Parent!).ResetAttributeDescriptors();
+      }
+      else if (topic is ContentTypeDescriptor) {
+        ((ContentTypeDescriptor)topic).ResetAttributeDescriptors();
+      }
     }
 
   } //Class

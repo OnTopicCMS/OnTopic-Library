@@ -167,8 +167,8 @@ namespace OnTopic.Attributes {
     /// </requires>
     public static void SetBoolean(
       this                      AttributeValueCollection        attributes,
-      string                    key, 
-      bool                      value, 
+      string                    key,
+      bool                      value,
       bool?                     isDirty                         = null
     ) => attributes?.SetValue(key, value ? "1" : "0", isDirty, true);
 
@@ -205,8 +205,8 @@ namespace OnTopic.Attributes {
     /// </requires>
     public static void SetInteger(
       this                      AttributeValueCollection        attributes,
-      string                    key, 
-      int                       value, 
+      string                    key,
+      int                       value,
       bool?                     isDirty                         = null
     ) => attributes?.SetValue(
       key,
@@ -247,8 +247,8 @@ namespace OnTopic.Attributes {
     /// </requires>
     public static void SetDateTime(
       this                      AttributeValueCollection        attributes,
-      string                    key, 
-      DateTime                  value, 
+      string                    key,
+      DateTime                  value,
       bool?                     isDirty                         = null
     ) => attributes?.SetValue(
       key,
