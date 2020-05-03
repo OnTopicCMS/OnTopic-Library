@@ -308,6 +308,16 @@ namespace OnTopic.Collections {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Ignore if null
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###NOTE JJC20200501: Null or empty values are treated as deletions, and are not persisted to the data store. With
+      | existing values, these are written to ensure that the collection is marked as IsDirty, thus allowing previous values to
+      | be overwritten. Non-existent values, however, should simply be ignored.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      else if (String.IsNullOrEmpty(value)) {
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
