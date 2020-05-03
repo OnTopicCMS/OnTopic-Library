@@ -44,5 +44,25 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET ROOT TOPIC: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a deeply nested <see cref="Topic"/>, returns the root <see cref="Topic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetRootTopic_ReturnsRootTopic() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5, parentTopic);
+      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20, childTopic);
+      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", 7, grandChildTopic);
+
+      var rootTopic             = greatGrandChildTopic.GetRootTopic();
+
+      Assert.ReferenceEquals(parentTopic, rootTopic);
+
+    }
+
   } //Class
 } //Namespace
