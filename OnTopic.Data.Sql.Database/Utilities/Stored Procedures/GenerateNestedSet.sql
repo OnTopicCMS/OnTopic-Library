@@ -97,7 +97,7 @@ BEGIN
 
       -- remove this row from hierarchy
       DELETE
-      FROM	hierarchy
+      FROM	Hierarchy
       WHERE	TopicID		= (
         SELECT	TopicID
         FROM	Topics

@@ -8,7 +8,7 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [Utilities].[ConsolidateVersions]
-	@StartDate		datetime	= 20000101,
+	@StartDate		datetime	= '2000-01-01',
 	@EndDate		datetime	= null
 AS
 
