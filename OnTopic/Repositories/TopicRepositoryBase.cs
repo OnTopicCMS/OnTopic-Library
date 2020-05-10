@@ -634,7 +634,7 @@ namespace OnTopic.Repositories {
     ///   reflected.
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
-    private void ResetAttributeDescriptors(Topic topic) {
+    private static void ResetAttributeDescriptors(Topic topic) {
       if (IsAttributeDescriptor(topic)) {
         ((ContentTypeDescriptor)topic.Parent!.Parent!).ResetAttributeDescriptors();
       }
