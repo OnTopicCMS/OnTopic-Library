@@ -173,7 +173,12 @@ namespace OnTopic.Data.Sql {
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) {
-        throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
+        if (topicId == -1) {
+          topic = TopicFactory.Create("Root", "Container");
+        }
+        else {
+          throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
