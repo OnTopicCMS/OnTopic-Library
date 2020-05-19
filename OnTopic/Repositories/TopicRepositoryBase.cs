@@ -60,6 +60,11 @@ namespace OnTopic.Repositories {
       if (_contentTypeDescriptors == null) {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Initialize cache
+        \---------------------------------------------------------------------------------------------------------------------*/
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
         \---------------------------------------------------------------------------------------------------------------------*/
         var configuration = Load("Configuration");
@@ -105,10 +110,16 @@ namespace OnTopic.Repositories {
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor contentTypeDescriptors) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize the collection
+      | Initialize the collection from the repository
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC2020519: We want to centralize the shared logic from the public GetContentTypeDescriptors() while still
+      | ensuring the cache is first initialized from the underlying data store if this method is called directly. But we don't
+      | want to repeatedly call the underlying data store if it's empty, nor do we want to create a circular loop if this is
+      | being called from GetContentTypeDescriptors(). This is handled by initializing the _contentTypeDescriptors cache in the
+      | GetContentTypeDescriptors() method as a way of tracking the initialization state.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypeDescriptors == null) {
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+        _contentTypeDescriptors = GetContentTypeDescriptors();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -280,19 +291,21 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _contentTypeDescriptors = GetContentTypeDescriptors();
-      if (!_contentTypeDescriptors.Contains(topic.ContentType)) {
+      var contentTypeDescriptors= GetContentTypeDescriptors();
+      var contentTypeDescriptor = contentTypeDescriptors.GetTopic(topic.ContentType);
+
+      if (contentTypeDescriptor == null) {
         throw new ArgumentException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
-          $"\"Configuration:ContentTypes\". There are currently {_contentTypeDescriptors.Count} ContentTypes in the Repository."
+          $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && !_contentTypeDescriptors.Contains(topic.Key)) {
-        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+      if (topic is ContentTypeDescriptor && !contentTypeDescriptors.Contains(topic.Key)) {
+        contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
