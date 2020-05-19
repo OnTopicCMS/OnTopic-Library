@@ -157,6 +157,7 @@ namespace OnTopic.Repositories {
     /// <param name="sourceTopic"></param>
     /// <returns></returns>
     protected ContentTypeDescriptor? GetContentTypeDescriptor(Topic sourceTopic) {
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
