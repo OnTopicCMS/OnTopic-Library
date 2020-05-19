@@ -69,14 +69,10 @@ namespace OnTopic.Repositories {
         \---------------------------------------------------------------------------------------------------------------------*/
         var configuration = Load("Configuration");
 
-        Contract.Assume(configuration, $"The 'Root:Configuration' section could not be loaded from the 'ITopicRepository'.");
-
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
-
-        Contract.Assume(allowedContentTypes, "Unable to load section 'Configuration:ContentTypes'.");
+        var allowedContentTypes = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
@@ -107,7 +103,7 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor contentTypeDescriptors) {
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize the collection from the repository
