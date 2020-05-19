@@ -263,18 +263,6 @@ namespace OnTopic.Data.Sql {
       base.Save(topic, isRecursive, isDraft);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate content type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentTypes          = GetContentTypeDescriptors();
-      var contentType           = topic.Attributes.GetValue("ContentType", "Page")?? "Page";
-      var contentTypeDescriptor = contentTypes.GetTopic(contentType) as ContentTypeDescriptor;
-
-      Contract.Assume(
-        contentTypeDescriptor,
-        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
