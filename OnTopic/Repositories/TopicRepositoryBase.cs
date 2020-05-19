@@ -479,7 +479,7 @@ namespace OnTopic.Repositories {
 
       Contract.Assume(
         contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+        $"The topics repository does not contain a ContentTypeDescriptor for the '{topic.ContentType}' content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -543,7 +543,7 @@ namespace OnTopic.Repositories {
 
       Contract.Assume(
         contentType,
-        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {topic.ContentType} content type."
+        $"The topics repository does not contain a ContentTypeDescriptor for the '{topic.ContentType}' content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
