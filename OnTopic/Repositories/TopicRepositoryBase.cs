@@ -292,7 +292,7 @@ namespace OnTopic.Repositories {
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentTypeDescriptors= GetContentTypeDescriptors();
-      var contentTypeDescriptor = contentTypeDescriptors.GetTopic(topic.ContentType);
+      var contentTypeDescriptor = GetContentTypeDescriptor(topic);
 
       if (contentTypeDescriptor == null) {
         throw new ArgumentException(
