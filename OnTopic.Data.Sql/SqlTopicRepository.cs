@@ -585,6 +585,11 @@ namespace OnTopic.Data.Sql {
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
 
+          //Relationship hasn't been saved yet; cannot persist
+          if (topic.Id < 0) {
+            continue;
+          }
+
           command               = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
