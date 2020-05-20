@@ -194,6 +194,13 @@ namespace OnTopic.Querying {
       var currentTopic          = (Topic?)topic.GetRootTopic();
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle request for root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.InvariantCultureIgnoreCase)) {
+        return currentTopic;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
