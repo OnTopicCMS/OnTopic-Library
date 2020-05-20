@@ -332,7 +332,7 @@ namespace OnTopic.Repositories {
         topic.Id < 0 &&
         topic is ContentTypeDescriptor &&
         _contentTypeDescriptors != null &&
-        !_contentTypeDescriptors.Contains(topic)
+        !_contentTypeDescriptors.Contains(topic.Key)
       ) {
         _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
