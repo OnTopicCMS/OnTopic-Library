@@ -33,7 +33,10 @@ namespace OnTopic.Data.Sql {
         $"The call to the {command.CommandText} stored procedure did not return the expected 'ReturnCode' parameter."
       );
       var returnCode = command.Parameters[$"@{sqlParameter}"].Value.ToString();
-      return Int32.Parse(returnCode, CultureInfo.InvariantCulture);
+      if (Int32.TryParse(returnCode, NumberStyles.Integer, CultureInfo.InvariantCulture, out var returnValue)) {
+        return returnValue;
+      }
+      return -1;
     }
 
     /*==========================================================================================================================
