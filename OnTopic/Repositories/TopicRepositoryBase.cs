@@ -305,6 +305,17 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure derived topic is set
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### HACK JJC20200523: If a derived topic is linked but hasn't been saved yet, then it should not be persisted to the
+      | repository, as its topic.Id will be -1. If a derived topic is saved after the relationship has been established,
+      | however, there isn't currently a way to detect that event and subsequently update the TopicId attribute. To mitigate
+      | that, we simply set the derived topic to itself before Save(); if it has been saved in the interim, then the topic.Id
+      | will be set; if not, the topic.Id will remain -1.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.DerivedTopic = topic.DerivedTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
