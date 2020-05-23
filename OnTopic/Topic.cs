@@ -537,6 +537,16 @@ namespace OnTopic {
     ///     Be aware that while multiple levels of derived topics can be configured, the <see
     ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops".
     ///   </para>
+    ///   <para>
+    ///     The underlying value of the <see cref="DerivedTopic"/> is stored as the <c>TopicID</c> <see cref="AttributeValue"/>.
+    ///     If the <see cref="Topic"/> hasn't been saved, then the relationship will be established, but the <c>TopicID</c>
+    ///     won't be persisted to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said,
+    ///     when <see cref="Repositories.TopicRepositoryBase.Save"/> is called, the <see cref="DerivedTopic"/> will be
+    ///     reevaluated and, if it has subsequently been saved, then the <c>TopicID</c> will be updated accordingly. This allows
+    ///     in-memory topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to
+    ///     the underlying data storage. As a result, however, a <see cref="Topic"/> referencing a <see cref="DerivedTopic"/>
+    ///     that is unsaved will need to be saved again once the <see cref="DerivedTopic"/> has been saved.
+    ///   </para>
     /// </remarks>
     /// <value>The <see cref="Topic"/> that values should be derived from, if not otherwise available.</value>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
@@ -549,11 +559,8 @@ namespace OnTopic {
           value != this,
           "A topic may not derive from itself."
         );
-        if (!_derivedTopic?.Equals(value)?? false) {
-          return;
-        }
         _derivedTopic = value;
-        if (value != null) {
+        if (value != null && value.Id > 0) {
           SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
         }
         else {
