@@ -67,7 +67,14 @@ namespace OnTopic.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
         \---------------------------------------------------------------------------------------------------------------------*/
-        var configuration = Load("Configuration");
+        var configuration       = (Topic?)null;
+
+        try {
+          configuration = Load("Configuration");
+        }
+        catch (TopicNotFoundException) {
+          //Swallow missing configuration, as this is an expected condition when working with a new database
+        }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
