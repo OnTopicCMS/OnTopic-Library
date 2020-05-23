@@ -27,6 +27,7 @@ namespace OnTopic.Data.Sql {
     ///   Retrieves the return code from a stored procedure.
     /// </summary>
     /// <param name="command">The SQL command object.</param>
+    /// <param name="sqlParameter">The name of the SQL parameter to retrieve as the return code.</param>
     internal static int GetReturnCode(this SqlCommand command, string sqlParameter = "ReturnCode") {
       Contract.Assume<InvalidOperationException>(
         command.Parameters.Contains($"@{sqlParameter}"),
@@ -46,9 +47,7 @@ namespace OnTopic.Data.Sql {
     ///   Adds a SQL parameter to a command object, additionally setting the specified parameter direction.
     /// </summary>
     /// <param name="command">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
+    /// <param name="sqlParameter">The name of the SQL output parameter.</param>
     internal static void AddOutputParameter(this SqlCommand command, string sqlParameter = "ReturnCode") =>
       AddParameter(command, sqlParameter, null, SqlDbType.Int, ParameterDirection.ReturnValue);
 
