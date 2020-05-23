@@ -80,7 +80,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopicID", connection);
-      int topicId;
+      var topicId               = -1;
 
       command.CommandType       = CommandType.StoredProcedure;
 
@@ -115,6 +115,13 @@ namespace OnTopic.Data.Sql {
       finally {
         command?.Dispose();
         connection.Close();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicId < 0) {
+        throw new TopicNotFoundException(topicKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -177,7 +184,7 @@ namespace OnTopic.Data.Sql {
           topic = TopicFactory.Create("Root", "Container");
         }
         else {
-          throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
+          throw new TopicNotFoundException(topicId);
         }
       }
 
