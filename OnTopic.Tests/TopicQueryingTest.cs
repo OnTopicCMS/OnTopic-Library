@@ -65,6 +65,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET BY UNIQUE KEY: ROOT KEY: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a root <see cref="Topic"/>, returns the root <see cref="Topic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetByUniqueKey_RootKey_ReturnsRootTopic() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      _                         = TopicFactory.Create("ChildTopic", "Page", 2, parentTopic);
+
+      var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
+
+      Assert.IsNotNull(foundTopic);
+      Assert.ReferenceEquals(parentTopic, foundTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET BY UNIQUE KEY: VALID KEY: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

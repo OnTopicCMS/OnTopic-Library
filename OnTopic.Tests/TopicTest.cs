@@ -9,6 +9,7 @@ using System.Linq;
 using OnTopic.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
+using OnTopic.Attributes;
 
 namespace OnTopic.Tests {
 
@@ -278,14 +279,40 @@ namespace OnTopic.Tests {
       Assert.AreEqual<DateTime>(lastModified, topic.LastModified);
 
     }
+
     /*==========================================================================================================================
     | TEST: DERIVED TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic, and ensures it is referenced correctly.
+    ///   Sets a derived topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
+    ///   derived topic as well as the underlying <see cref="AttributeValue"/> correctly reference the new value.
     /// </summary>
     [TestMethod]
     public void DerivedTopic_UpdateValue_ReturnsExpectedValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var firstDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page");
+      var secondDerivedTopic    = TopicFactory.Create("DerivedTopic", "Page", 1);
+      var finalDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page", 2);
+
+      topic.DerivedTopic        = firstDerivedTopic;
+      topic.DerivedTopic        = secondDerivedTopic;
+      topic.DerivedTopic        = finalDerivedTopic;
+
+      Assert.ReferenceEquals(topic.DerivedTopic, finalDerivedTopic);
+      Assert.AreEqual<int>(2, topic.Attributes.GetInteger("TopicID", 0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DERIVED TOPIC: UNSAVED VALUE: RETURNS EXPECTED VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a derived topic to an unsaved topic entity. Ensures that the derived topic is correctly set, but that the <see
+    ///   cref="Topic.Id"/> is not persisted as an underlying <see cref="AttributeValue"/>.
+    /// </summary>
+    [TestMethod]
+    public void DerivedTopic_UnsavedValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
@@ -293,6 +320,30 @@ namespace OnTopic.Tests {
       topic.DerivedTopic        = derivedTopic;
 
       Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
+      Assert.AreEqual<int>(-2, topic.Attributes.GetInteger("TopicID", -2));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DERIVED TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a derived topic to an unsaved topic entity, then saves the entity and reestablishes the relationship. Ensures
+    ///   that the derived topic is correctly set, including the <see cref="Topic.Id"/> as an underlying <see
+    ///   cref="AttributeValue"/>.
+    /// </summary>
+    [TestMethod]
+    public void DerivedTopic_ResavedValue_ReturnsExpectedValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
+
+      topic.DerivedTopic        = derivedTopic;
+      derivedTopic.Id           = 5;
+      topic.DerivedTopic        = derivedTopic;
+
+      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
+      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("TopicID", -2));
 
     }
 

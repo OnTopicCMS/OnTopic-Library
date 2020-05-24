@@ -97,7 +97,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The specified Topic version could not be loaded");
+      return topic?? throw new TopicNotFoundException(topicId);
 
     }
 

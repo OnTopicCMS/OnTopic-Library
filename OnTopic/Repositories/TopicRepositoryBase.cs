@@ -60,18 +60,26 @@ namespace OnTopic.Repositories {
       if (_contentTypeDescriptors == null) {
 
         /*----------------------------------------------------------------------------------------------------------------------
+        | Initialize cache
+        \---------------------------------------------------------------------------------------------------------------------*/
+        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+
+        /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
         \---------------------------------------------------------------------------------------------------------------------*/
-        var configuration = Load("Configuration");
+        var configuration       = (Topic?)null;
 
-        Contract.Assume(configuration, $"The 'Root:Configuration' section could not be loaded from the 'ITopicRepository'.");
+        try {
+          configuration = Load("Configuration");
+        }
+        catch (TopicNotFoundException) {
+          //Swallow missing configuration, as this is an expected condition when working with a new database
+        }
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
-
-        Contract.Assume(allowedContentTypes, "Unable to load section 'Configuration:ContentTypes'.");
+        var allowedContentTypes = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
@@ -102,13 +110,19 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor contentTypeDescriptors) {
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize the collection
+      | Initialize the collection from the repository
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### NOTE JJC2020519: We want to centralize the shared logic from the public GetContentTypeDescriptors() while still
+      | ensuring the cache is first initialized from the underlying data store if this method is called directly. But we don't
+      | want to repeatedly call the underlying data store if it's empty, nor do we want to create a circular loop if this is
+      | being called from GetContentTypeDescriptors(). This is handled by initializing the _contentTypeDescriptors cache in the
+      | GetContentTypeDescriptors() method as a way of tracking the initialization state.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_contentTypeDescriptors == null) {
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+        _contentTypeDescriptors = GetContentTypeDescriptors();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -157,6 +171,7 @@ namespace OnTopic.Repositories {
     /// <param name="sourceTopic"></param>
     /// <returns></returns>
     protected ContentTypeDescriptor? GetContentTypeDescriptor(Topic sourceTopic) {
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -279,20 +294,33 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _contentTypeDescriptors = GetContentTypeDescriptors();
-      if (!_contentTypeDescriptors.Contains(topic.ContentType)) {
+      var contentTypeDescriptors= GetContentTypeDescriptors();
+      var contentTypeDescriptor = GetContentTypeDescriptor(topic);
+
+      if (contentTypeDescriptor == null) {
         throw new ArgumentException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
-          $"\"Configuration:ContentTypes\". There are currently {_contentTypeDescriptors.Count} ContentTypes in the Repository."
+          $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update content types collection, if appropriate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && !_contentTypeDescriptors.Contains(topic.Key)) {
-        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+      if (topic is ContentTypeDescriptor && !contentTypeDescriptors.Contains(topic.Key)) {
+        contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ensure derived topic is set
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ### HACK JJC20200523: If a derived topic is linked but hasn't been saved yet, then it should not be persisted to the
+      | repository, as its topic.Id will be -1. If a derived topic is saved after the relationship has been established,
+      | however, there isn't currently a way to detect that event and subsequently update the TopicId attribute. To mitigate
+      | that, we simply set the derived topic to itself before Save(); if it has been saved in the interim, then the topic.Id
+      | will be set; if not, the topic.Id will remain -1.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.DerivedTopic = topic.DerivedTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
@@ -322,7 +350,7 @@ namespace OnTopic.Repositories {
         topic.Id < 0 &&
         topic is ContentTypeDescriptor &&
         _contentTypeDescriptors != null &&
-        !_contentTypeDescriptors.Contains(topic)
+        !_contentTypeDescriptors.Contains(topic.Key)
       ) {
         _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
@@ -479,7 +507,7 @@ namespace OnTopic.Repositories {
 
       Contract.Assume(
         contentType,
-        "The Topics repository or database does not contain a ContentTypeDescriptor for the Page content type."
+        $"The topics repository does not contain a ContentTypeDescriptor for the '{topic.ContentType}' content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -543,7 +571,7 @@ namespace OnTopic.Repositories {
 
       Contract.Assume(
         contentType,
-        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {topic.ContentType} content type."
+        $"The topics repository does not contain a ContentTypeDescriptor for the '{topic.ContentType}' content type."
       );
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -80,7 +80,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var connection            = new SqlConnection(_connectionString);
       var command               = new SqlCommand("GetTopicID", connection);
-      int topicId;
+      var topicId               = -1;
 
       command.CommandType       = CommandType.StoredProcedure;
 
@@ -115,6 +115,13 @@ namespace OnTopic.Data.Sql {
       finally {
         command?.Dispose();
         connection.Close();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate results
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topicId < 0) {
+        throw new TopicNotFoundException(topicKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -173,7 +180,12 @@ namespace OnTopic.Data.Sql {
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic == null) {
-        throw new NullReferenceException($"Load() was unable to successfully load the topic with the TopicID '{topicId}'");
+        if (topicId == -1) {
+          topic = TopicFactory.Create("Root", "Container");
+        }
+        else {
+          throw new TopicNotFoundException(topicId);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -242,7 +254,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The specified Topic version could not be loaded");
+      return topic?? throw new TopicNotFoundException(topicId);
 
     }
 
@@ -256,18 +268,6 @@ namespace OnTopic.Data.Sql {
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.Save(topic, isRecursive, isDraft);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate content type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var contentTypes          = GetContentTypeDescriptors();
-      var contentType           = topic.Attributes.GetValue("ContentType", "Page")?? "Page";
-      var contentTypeDescriptor = contentTypes.GetTopic(contentType) as ContentTypeDescriptor;
-
-      Contract.Assume(
-        contentTypeDescriptor,
-        $"The Topics repository or database does not contain a ContentTypeDescriptor for the {contentType} content type."
-      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
@@ -596,7 +596,7 @@ namespace OnTopic.Data.Sql {
             CommandType         = CommandType.StoredProcedure
           };
 
-          foreach (var targetTopicId in scope.Select<Topic, int>(m => m.Id)) {
+          foreach (var targetTopicId in scope.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id)) {
             var record          = targetIds.NewRow();
             record["TopicID"]   = targetTopicId;
             targetIds.Rows.Add(record);
