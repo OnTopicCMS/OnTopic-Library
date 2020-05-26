@@ -203,7 +203,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(attributeKey, attributeValue, false, version);
+      current.Attributes.SetValue(attributeKey, attributeValue, false, version, false);
 
     }
 
@@ -274,7 +274,7 @@ namespace OnTopic.Data.Sql {
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (String.IsNullOrEmpty(attributeValue)) continue;
-        current.Attributes.SetValue(attributeKey, attributeValue, false, version);
+        current.Attributes.SetValue(attributeKey, attributeValue, false, version, true);
 
       } while (xmlReader.Name == "attribute");
 

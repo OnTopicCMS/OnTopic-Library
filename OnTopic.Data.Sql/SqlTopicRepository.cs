@@ -289,22 +289,26 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //Exclude indexed attributes if the only dirty attributes are `LastModified` and/or `LastModifiedBy`, as these are
+
+      //Only include `LastModified` and/or `LastModifiedBy` if other attributes in the collection are `IsDirty`, as these are
       //automatically generated and don't represent genuine changes to the topic.
-      if (topic.Attributes.IsDirty(true)) {
+      var excludeLastModified   = !topic.Attributes.IsDirty(excludeLastModified: true);
 
-        var indexedAttributes   = GetAttributes(topic, false, true);
+      var indexedAttributes     = GetAttributes(
+        topic                   : topic,
+        isExtendedAttribute     : false,
+        isDirty                 : true,
+        excludeLastModified     : excludeLastModified
+      );
 
-        foreach (var attributeValue in indexedAttributes) {
+      foreach (var attributeValue in indexedAttributes) {
 
-          var record              = attributes.NewRow();
-          record["AttributeKey"]  = attributeValue.Key;
-          record["AttributeValue"]= attributeValue.Value;
-          attributeValue.IsDirty  = false;
+        var record              = attributes.NewRow();
+        record["AttributeKey"]  = attributeValue.Key;
+        record["AttributeValue"]= attributeValue.Value;
+        attributeValue.IsDirty  = false;
 
-          attributes.Rows.Add(record);
-
-        }
+        attributes.Rows.Add(record);
 
       }
 
@@ -313,7 +317,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       extendedAttributes.Append("<attributes>");
 
-      foreach (var attributeValue in GetAttributes(topic, true, null)) {
+      foreach (var attributeValue in GetAttributes(topic, isExtendedAttribute:true)) {
 
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"

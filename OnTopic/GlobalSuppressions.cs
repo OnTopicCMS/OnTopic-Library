@@ -5,6 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Invalid overload; known bug in code analysis", Scope = "member", Target = "~P:OnTopic.Metadata.AttributeDescriptor.Configuration")]
 [assembly: SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Invalid overload; known bug in code analysis", Scope = "member", Target = "~M:OnTopic.Topic.GetWebPath~System.String")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "False positive; apparent bug in code analysis", Scope = "member", Target = "~M:OnTopic.Repositories.TopicRepositoryBase.GetContentTypeDescriptors~OnTopic.Metadata.ContentTypeDescriptorCollection")]

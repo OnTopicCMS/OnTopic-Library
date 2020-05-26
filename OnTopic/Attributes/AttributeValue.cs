@@ -33,7 +33,8 @@ namespace OnTopic.Attributes {
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
   ///     create a new instance of the <see cref="AttributeValue"/> class or, preferably, call the
-  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>
+  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?,
+  ///     Boolean?)"/>
   ///     method.
   ///   </para>
   /// </remarks>
@@ -98,6 +99,7 @@ namespace OnTopic.Attributes {
     ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
     ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
     /// </param>
+    /// <param name="isExtendedAttribute">Determines if the attribute originated from an extended attributes data store.</param>
     /// <requires
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
@@ -107,7 +109,8 @@ namespace OnTopic.Attributes {
       string? value,
       bool isDirty,
       bool enforceBusinessLogic,
-      DateTime? lastModified = null
+      DateTime? lastModified = null,
+      bool? isExtendedAttribute = null
     ): this(
       key,
       value,
@@ -115,6 +118,7 @@ namespace OnTopic.Attributes {
     ) {
       EnforceBusinessLogic      = enforceBusinessLogic;
       LastModified              = lastModified?? DateTime.Now;
+      IsExtendedAttribute       = isExtendedAttribute;
     }
 
     /*==========================================================================================================================
@@ -165,13 +169,14 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <remarks>
     ///   By default, when a user attempts to update an attribute's value by calling <see
-    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>, or when an <see cref="AttributeValue"
-    ///   /> is added to the <see cref="AttributeValueCollection"/>, the <see cref="AttributeValueCollection"/> will
-    ///   automatically attempt to call any corresponding setters on <see cref="Topic"/> (or a derived instance) to ensure that
-    ///   the business logic is enforced. To avoid an infinite loop, however, this is disabled when properties on <see
-    ///   cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>. When that happens, the
-    ///   <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see cref="AttributeValueCollection"/>
-    ///   that it should not call the local property. This value is only intended for internal use.
+    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?, Boolean?)"/>, or when an <see
+    ///   cref="AttributeValue"/> is added to the <see cref="AttributeValueCollection"/>, the <see
+    ///   cref="AttributeValueCollection"/> will automatically attempt to call any corresponding setters on <see cref="Topic"/>
+    ///   (or a derived instance) to ensure that the business logic is enforced. To avoid an infinite loop, however, this is
+    ///   disabled when properties on <see cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>.
+    ///   When that happens, the <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see
+    ///   cref="AttributeValueCollection"/> that it should not call the local property. This value is only intended for internal
+    ///   use.
     /// </remarks>
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
@@ -190,6 +195,37 @@ namespace OnTopic.Attributes {
     ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
     public DateTime LastModified { get; internal set; } = DateTime.Now;
+
+    /*==========================================================================================================================
+    | PROPERTY: IS EXTENDED ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if this attribute originated from a data store as an extended attribute.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     How an attribute is stored in the underlying repository doesn't impact how the attribute is treated as part of the
+    ///     object model. By tracking this, however, OnTopic is able to evaluate configuration mismatches during <see
+    ///     cref="ITopicRepository.Save"/>. This allows the <see cref="ITopicRepository"/> to effective handle scenarios where
+    ///     the configuration for an <see cref="AttributeDescriptor"/> has changed prior to the last time a <see cref="Topic"/>
+    ///     was saved, and thus change the location where it is stored.
+    ///   </para>
+    ///   <para>
+    ///     This is important because, otherwise, <see cref="ITopicRepository"/> implementations rely primarily on <see
+    ///     cref="IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but the location
+    ///     it should be stored has, that could potentially result in the attribute being deleted, as the attribute won't show
+    ///     up for when <see cref="TopicRepositoryBase.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c> and
+    ///     <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see
+    ///     cref="IsExtendedAttribute"/>, the <see cref="TopicRepositoryBase"/> is able to detect conflicts between the
+    ///     configuration and the underlying data store, and ensure data is stored appropriately.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="IsExtendedAttribute"/> property maps to the <see cref="AttributeDescriptor.IsExtendedAttribute"/>
+    ///     property. The former describes where the data was <i>actually</i> stored, whereas the latter describes where the
+    ///     data <i>should</i> be stored.
+    ///   </para>
+    /// </remarks>
+    public bool? IsExtendedAttribute { get; internal set; }
 
   } //Class
 } //Namespace
