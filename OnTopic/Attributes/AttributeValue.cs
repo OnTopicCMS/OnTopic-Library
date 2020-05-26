@@ -33,7 +33,8 @@ namespace OnTopic.Attributes {
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
   ///     create a new instance of the <see cref="AttributeValue"/> class or, preferably, call the
-  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>
+  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?,
+  ///     Boolean?)"/>
   ///     method.
   ///   </para>
   /// </remarks>
@@ -168,13 +169,14 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <remarks>
     ///   By default, when a user attempts to update an attribute's value by calling <see
-    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?)"/>, or when an <see cref="AttributeValue"
-    ///   /> is added to the <see cref="AttributeValueCollection"/>, the <see cref="AttributeValueCollection"/> will
-    ///   automatically attempt to call any corresponding setters on <see cref="Topic"/> (or a derived instance) to ensure that
-    ///   the business logic is enforced. To avoid an infinite loop, however, this is disabled when properties on <see
-    ///   cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>. When that happens, the
-    ///   <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see cref="AttributeValueCollection"/>
-    ///   that it should not call the local property. This value is only intended for internal use.
+    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?, Boolean?)"/>, or when an <see
+    ///   cref="AttributeValue"/> is added to the <see cref="AttributeValueCollection"/>, the <see
+    ///   cref="AttributeValueCollection"/> will automatically attempt to call any corresponding setters on <see cref="Topic"/>
+    ///   (or a derived instance) to ensure that the business logic is enforced. To avoid an infinite loop, however, this is
+    ///   disabled when properties on <see cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>.
+    ///   When that happens, the <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see
+    ///   cref="AttributeValueCollection"/> that it should not call the local property. This value is only intended for internal
+    ///   use.
     /// </remarks>
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
