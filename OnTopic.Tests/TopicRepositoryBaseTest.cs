@@ -130,6 +130,51 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS EXTENDED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects an <see
+    ///   cref="AttributeValue"/> to be returned even if it's <i>not</i> <see cref="AttributeValue.IsDirty"/> <i>but</i> its
+    ///   <see cref="AttributeValue.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("Title", "Title", isDirty:false, isExtendedAttribute:false);
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, true, true);
+
+      //Expect Title, even though it isn't IsDirty
+      Assert.AreEqual<int>(1, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS NOTHING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects the <see
+    ///   cref="AttributeValue"/> to <i>not</i> be returned even though its <see cref="AttributeValue.IsExtendedAttribute"/>
+    ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetValue("Title", "Title", isDirty: false, isExtendedAttribute: false);
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
+
+      //Expect Key and ContentType, but not Title
+      Assert.AreEqual<int>(2, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH SHORT VALUE: RETURNS AS INDEXED ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

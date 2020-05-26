@@ -515,7 +515,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attributes            = new List<AttributeValue>();
 
-      foreach (var attributeValue in topic.Attributes.Where(a => isDirty == null || a.IsDirty == isDirty)) {
+      foreach (var attributeValue in topic.Attributes) {
 
         var key                 = attributeValue.Key;
         var attribute           = (AttributeDescriptor?)null;
@@ -533,6 +533,19 @@ namespace OnTopic.Repositories {
         //Skip if the value is null or empty; these values are not persisted to storage and should be treated as equivalent to
         //non-existent values.
         if (String.IsNullOrEmpty(attributeValue.Value)) {
+          continue;
+        }
+
+        //Skip if attribute's isDirty flag doesn't match the callers preference. Alternatively, if the IsExtendedAttribute value
+        //doesn't match the source, as this implies the storage location has changed, and the attribute should be treated as
+        //isDirty.
+        if (
+          isDirty == null ||
+          attributeValue.IsDirty == isDirty ||
+          isDirty == IsExtendedAttributeMismatch(attribute, attributeValue)
+        ) {
+        }
+        else {
           continue;
         }
 
@@ -642,6 +655,38 @@ namespace OnTopic.Repositories {
       topic is AttributeDescriptor &&
       topic.Parent?.Key == "Attributes" &&
       topic.Parent.Parent is ContentTypeDescriptor;
+
+
+    /*==========================================================================================================================
+    | METHOD: IS EXTENDED ATTRIBUTE MISMATCH?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether or not there's a mismatch between the <see cref="AttributeDescriptor.IsExtendedAttribute"/> and the
+    ///   <see cref="AttributeValue.IsExtendedAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="AttributeDescriptor.IsExtendedAttribute"/> determines where an attribute <i>should</i> be stored; the
+    ///     <see cref="AttributeValue.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
+    ///     values are in conflict, that suggests the coniguration for <see cref="AttributeDescriptor.IsExtendedAttribute"/> has
+    ///     changed since the attribute value was last saved. In that case, it should be treated as <see
+    ///     cref="AttributeValue.IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is
+    ///     updated.
+    ///   </para>
+    ///   <para>
+    ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeValue"/> is arbitrary attribute
+    ///     not mapped to the schema. In that case, its storage location is dynamically determined based on its length, and thus
+    ///     it should only change locations when it <see cref="AttributeValue.IsDirty"/>. Otherwise, its length will remain the
+    ///     same, and thus the storage location should remain unchanged.
+    ///   </para>
+    /// </remarks>
+    /// <param name="attributeDescriptor">The source <see cref="AttributeDescriptor"/>, if available.</param>
+    /// <param name="attributeValue">The target <see cref="AttributeValue"/>.</param>
+    /// <returns></returns>
+    private static bool IsExtendedAttributeMismatch(AttributeDescriptor? attributeDescriptor, AttributeValue attributeValue) =>
+      attributeDescriptor != null &&
+      attributeValue.IsExtendedAttribute != null &&
+      attributeDescriptor.IsExtendedAttribute != attributeValue.IsExtendedAttribute;
 
     /*==========================================================================================================================
     | METHOD: RESET ATTRIBUTE DESCRIPTORS
