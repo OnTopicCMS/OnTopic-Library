@@ -168,8 +168,12 @@ namespace OnTopic.TestDoubles {
     | METHOD: GET ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)" />
-    public IEnumerable<AttributeValue> GetAttributesProxy(Topic topic, bool? isExtendedAttribute, bool? isDirty = null) =>
-      base.GetAttributes(topic, isExtendedAttribute, isDirty);
+    public IEnumerable<AttributeValue> GetAttributesProxy(
+      Topic topic,
+      bool? isExtendedAttribute,
+      bool? isDirty = null,
+      bool excludeLastModified = false
+    ) => base.GetAttributes(topic, isExtendedAttribute, isDirty, excludeLastModified);
 
     /*==========================================================================================================================
     | METHOD: GET UNMATCHED ATTRIBUTES (PROXY)

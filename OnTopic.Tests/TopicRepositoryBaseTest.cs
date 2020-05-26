@@ -175,12 +175,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ATTRIBUTES: EXCLUDE LAST MODIFIED: RETURNS OTHER ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a list of attributes from a topic, filtering by <c>excludeLastModified</c>. Confirms that <see
+    ///   cref="AttributeValue"/>s are not returned which start with <c>LastModified</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+
+      topic.Attributes.SetDateTime("LastModified", DateTime.Now);
+      topic.Attributes.SetValue("LastModifiedBy", "Unit Tests");
+
+      var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
+
+      //Expected to return Key and ContentType, butnot LastModified or LastModifiedBy
+      Assert.AreEqual<int>(2, attributes.Count());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ARBITRARY ATTRIBUTE WITH SHORT VALUE: RETURNS AS INDEXED ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
     ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
@@ -201,7 +223,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
     ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>.
+    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
@@ -342,7 +364,7 @@ namespace OnTopic.Tests {
     | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then saves a new <see
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
     ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
     ///   it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
@@ -362,9 +384,9 @@ namespace OnTopic.Tests {
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then deletes one of the <see
-    ///   cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/>, and ensures that it is
-    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then deletes one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/>, and ensures that it
+    ///   is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -382,8 +404,8 @@ namespace OnTopic.Tests {
     | TEST: MOVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)"/>, then moves one of the <see
-    ///   cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic)"/>, and ensures that it is
+    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic)"/>, and ensures that it is
     ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]

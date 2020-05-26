@@ -493,7 +493,13 @@ namespace OnTopic.Repositories {
     ///   Whether or not to filter by <see cref="AttributeValue.IsDirty"/>. If <c>null</c>, all <see cref="AttributeValue"/>s
     ///   are returned.
     /// </param>
-    protected IEnumerable<AttributeValue> GetAttributes(Topic topic, bool? isExtendedAttribute, bool? isDirty = null) {
+    /// <param name="excludeLastModified">Exclude any attributes that start with <c>LastModified</c>.</param>
+    protected IEnumerable<AttributeValue> GetAttributes(
+      Topic topic,
+      bool? isExtendedAttribute,
+      bool? isDirty = null,
+      bool excludeLastModified = false
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -519,6 +525,11 @@ namespace OnTopic.Repositories {
 
         var key                 = attributeValue.Key;
         var attribute           = (AttributeDescriptor?)null;
+
+        //Optionally exclude LastModified attributes
+        if (excludeLastModified && attributeValue.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase)) {
+          continue;
+        }
 
         //Reset cached attribute descriptors just in case a new attribute has been added
         if (!contentType.AttributeDescriptors.Contains(key)) {
