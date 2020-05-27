@@ -424,6 +424,7 @@ namespace OnTopic.Data.Sql {
       };
       var version               = new SqlDateTime(DateTime.Now);
       var areReferencesResolved = true;
+      var areRelationshipsDirty = topic.Relationships.IsDirty();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle unresolved references
@@ -442,7 +443,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteRelationships", areReferencesResolved);
+        command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
       else if (topic.Parent != null) {
         command.AddParameter("ParentID", topic.Parent.Id);
@@ -466,7 +467,7 @@ namespace OnTopic.Data.Sql {
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
 
-        if (areReferencesResolved) {
+        if (areReferencesResolved && areRelationshipsDirty) {
           PersistRelations(topic, connection, true);
         }
 
