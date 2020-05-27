@@ -6,6 +6,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Xml.Serialization;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections {
@@ -222,6 +223,15 @@ namespace OnTopic.Collections {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates each of the child <see cref="NamedTopicCollection"/>s to determine if any of them are set to <see
+    ///   cref="NamedTopicCollection.IsDirty"/>. If they are, returns <c>true</c>.
+    /// </summary>
+    public bool IsDirty() => Items.Any(r => r.IsDirty);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
