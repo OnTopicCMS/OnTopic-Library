@@ -689,6 +689,9 @@ namespace OnTopic.Data.Sql {
 
           command.ExecuteNonQuery();
 
+          // Clear rows
+          targetIds.Clear();
+
         }
 
       }
