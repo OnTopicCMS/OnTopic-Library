@@ -671,12 +671,13 @@ namespace OnTopic.Data.Sql {
 
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
+          var relatedTopics     = scope.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id);
 
           command               = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
-          foreach (var targetTopicId in scope.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id)) {
+          foreach (var targetTopicId in relatedTopics) {
             var record          = targetIds.NewRow();
             record["TopicID"]   = targetTopicId;
             targetIds.Rows.Add(record);
@@ -691,6 +692,7 @@ namespace OnTopic.Data.Sql {
 
           // Clear rows
           targetIds.Clear();
+          scope.IsDirty = relatedTopics.Count() < scope.Count;
 
         }
 
