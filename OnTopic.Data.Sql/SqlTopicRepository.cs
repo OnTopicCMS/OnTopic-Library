@@ -715,8 +715,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return the relationship attributes to append to the XML attributes (unless skipXml is set to true)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (skipXml) return "";
-      else return CreateRelationshipsXml(topic);
+      return skipXml? "" : CreateRelationshipsXml(topic);
 
     }
 
