@@ -269,22 +269,27 @@ namespace OnTopic.Data.Sql {
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
       var unresolvedTopics      = new List<Topic>();
+      var connection            = new SqlConnection(_connectionString);
+
+      connection.Open();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId = Save(topic, isRecursive, isDraft, unresolvedTopics);
+      var topicId = Save(topic, isRecursive, isDraft, connection, unresolvedTopics);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, isDraft, new List<Topic>());
+        Save(unresolvedTopic, false, isDraft, connection, new List<Topic>());
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
+      connection.Close();
+      connection.Dispose();
       return topicId;
 
     }
@@ -303,15 +308,22 @@ namespace OnTopic.Data.Sql {
     ///     that include such references. This adds some overhead due to the duplicate <see cref="Save"/>, but helps avoid
     ///     potential data loss when working with complex topic graphs.
     ///   </para>
+    ///   <para>
+    ///     The connection sharing probably doesn't provide that much of a gain in that .NET does a good job of connection
+    ///     pooling. Nevertheless, there is some overhead to opening a new connection, so sharing an open connection when we
+    ///     doing a recursive save could potentially provide some performance benefit.
+    ///   </para>
     /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to save.</param>
     /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
     /// <param name="isDraft">Determines if the <see cref="Topic"/> should be saved as a draft version.</param>
+    /// <param name="connection">The open <see cref="SqlConnection"/> to use for executing <see cref="SqlCommand"/>s.</param>
     /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
     private int Save(
       [NotNull]Topic topic,
       bool isRecursive,
       bool isDraft,
+      SqlConnection connection,
       List<Topic> unresolvedRelationships
     ) {
 
@@ -406,7 +418,6 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isNew                 = topic.Id == -1;
-      var connection            = new SqlConnection(_connectionString);
       var procedureName         = isNew? "CreateTopic" : "UpdateTopic";
       var command               = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
@@ -446,7 +457,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        connection.Open();
         command.ExecuteNonQuery();
 
         topic.Id                = command.GetReturnCode();
@@ -466,6 +476,7 @@ namespace OnTopic.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
+        connection?.Dispose();
         throw new TopicRepositoryException(
           $"Failed to save Topic '{topic.Key}' ({topic.Id}) via '{_connectionString}': '{exception.Message}'",
           exception
@@ -477,7 +488,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
         command?.Dispose();
-        connection?.Dispose();
         attributes.Dispose();
       }
 
@@ -487,7 +497,7 @@ namespace OnTopic.Data.Sql {
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
           childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-          Save(childTopic, isRecursive, isDraft, unresolvedRelationships);
+          Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships);
         }
       }
 
@@ -697,7 +707,7 @@ namespace OnTopic.Data.Sql {
       finally {
         command?.Dispose();
         targetIds.Dispose();
-        //Since the SQL connection is being passed in, do not close connection; this allows command pooling.
+        //Since the SQL connection is being passed in, do not close connection; this allows connection pooling.
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
