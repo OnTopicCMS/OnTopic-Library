@@ -189,7 +189,10 @@ namespace OnTopic.Collections {
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
-    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming) {
+    /// <param name="isDirty">
+    ///   Optionally forces the collection to a <see cref="NamedTopicCollection.IsDirty"/> state, assuming the topic was set.
+    /// </param>
+    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming, bool? isDirty = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -207,6 +210,7 @@ namespace OnTopic.Collections {
       var topics = this[relationshipKey];
       if (!topics.Contains(topic.Key)) {
         topics.Add(topic);
+        topics.IsDirty = isDirty?? topics.IsDirty;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
