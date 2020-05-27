@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics.CodeAnalysis;
@@ -265,6 +266,56 @@ namespace OnTopic.Data.Sql {
     public override int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var unresolvedTopics      = new List<Topic>();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle first pass
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topicId = Save(topic, isRecursive, isDraft, unresolvedTopics);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to resolve outstanding relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var unresolvedTopic in unresolvedTopics) {
+        Save(unresolvedTopic, false, isDraft, new List<Topic>());
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return topicId;
+
+    }
+
+    /// <summary>
+    ///   The private overload of the <see cref="Save"/> method provides support for sharing the <see cref="SqlConnection"/>
+    ///   between multiple requests, and maintaining a list of <paramref name="unresolvedRelationships"/>.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     When recursively saving a topic graph, it is conceivable that references to other topics—such as <see
+    ///     cref="Topic.Relationships"/> or <see cref="Topic.DerivedTopic"/>—can't yet be persisted because the target <see
+    ///     cref="Topic"/> hasn't yet been saved, and thus the <see cref="Topic.Id"/> is still set to <c>-1</c>. To mitigate
+    ///     this, the <paramref name="unresolvedRelationships"/> allows this private overload to keep track of unresolved
+    ///     relationships. The public <see cref="Save(Topic, Boolean, Boolean)"/> overload uses this list to resave any topics
+    ///     that include such references. This adds some overhead due to the duplicate <see cref="Save"/>, but helps avoid
+    ///     potential data loss when working with complex topic graphs.
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> to save.</param>
+    /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
+    /// <param name="isDraft">Determines if the <see cref="Topic"/> should be saved as a draft version.</param>
+    /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
+    private int Save(
+      [NotNull]Topic topic,
+      bool isRecursive,
+      bool isDraft,
+      List<Topic> unresolvedRelationships
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.Save(topic, isRecursive, isDraft);
@@ -361,13 +412,26 @@ namespace OnTopic.Data.Sql {
         CommandType             = CommandType.StoredProcedure
       };
       var version               = new SqlDateTime(DateTime.Now);
+      var areReferencesResolved = true;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle unresolved references
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
+      | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
+      | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (isRecursive && (topic.DerivedTopic?.Id < 0 || topic.Relationships.Any(r => r.Any(t => t.Id < 0)))) {
+        unresolvedRelationships.Add(topic);
+        areReferencesResolved = false;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteRelationships", true);
+        command.AddParameter("DeleteRelationships", areReferencesResolved);
       }
       else if (topic.Parent != null) {
         command.AddParameter("ParentID", topic.Parent.Id);
@@ -423,7 +487,7 @@ namespace OnTopic.Data.Sql {
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
           childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-          Save(childTopic, isRecursive, isDraft);
+          Save(childTopic, isRecursive, isDraft, unresolvedRelationships);
         }
       }
 
