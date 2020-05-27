@@ -466,7 +466,9 @@ namespace OnTopic.Data.Sql {
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
 
-        PersistRelations(topic, connection, true);
+        if (areReferencesResolved) {
+          PersistRelations(topic, connection, true);
+        }
 
         topic.VersionHistory.Insert(0, version.Value);
 
