@@ -656,15 +656,15 @@ namespace OnTopic.Data.Sql {
         foreach (var key in topic.Relationships.Keys) {
 
           var targetIds         = new TopicListDataTable();
-          var scope             = topic.Relationships.GetTopics(key);
+          var relatedTopics     = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var relatedTopics     = scope.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id);
+          var savedTopics       = relatedTopics.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id);
 
           command               = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
-          foreach (var targetTopicId in relatedTopics) {
+          foreach (var targetTopicId in savedTopics) {
             targetIds.AddRow(targetTopicId);
           }
 
@@ -678,7 +678,7 @@ namespace OnTopic.Data.Sql {
           targetIds.Dispose();
 
           //Reset isDirty, assuming there aren't any unresolved references
-          scope.IsDirty = relatedTopics.Count() < scope.Count;
+          relatedTopics.IsDirty = savedTopics.Count() < relatedTopics.Count;
 
         }
 
