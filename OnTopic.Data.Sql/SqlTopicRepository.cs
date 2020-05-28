@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -371,39 +372,20 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish attribute containers with schema
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var extendedAttributes    = new StringBuilder();
-      var attributes            = new DataTable();
-
-      attributes.Columns.Add(
-        new DataColumn("AttributeKey") {
-          MaxLength             = 128
-        }
-      );
-      attributes.Columns.Add(
-        new DataColumn("AttributeValue") {
-          MaxLength             = 255
-        }
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var attributeValues       = new AttributeValuesDataTable();
+
       foreach (var attributeValue in indexedAttributeList) {
-
-        var record              = attributes.NewRow();
-        record["AttributeKey"]  = attributeValue.Key;
-        record["AttributeValue"]= attributeValue.Value;
+        attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
         attributeValue.IsDirty  = false;
-
-        attributes.Rows.Add(record);
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add extended attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var extendedAttributes    = new StringBuilder();
+
       extendedAttributes.Append("<attributes>");
 
       foreach (var attributeValue in extendedAttributeList) {
@@ -418,7 +400,7 @@ namespace OnTopic.Data.Sql {
         //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
         //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
         //attributes if their length exceeds 255.
-        addUnmatchedAttribute(attributeValue.Key);
+        attributeValues.AddRow(attributeValue.Key);
 
       }
 
@@ -430,14 +412,7 @@ namespace OnTopic.Data.Sql {
 
       //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       foreach (var attribute in GetUnmatchedAttributes(topic)) {
-        addUnmatchedAttribute(attribute.Key);
-      }
-
-      void addUnmatchedAttribute(string key) {
-        var record              = attributes.NewRow();
-        record["AttributeKey"]  = key;
-        record["AttributeValue"]= null;
-        attributes.Rows.Add(record);
+        attributeValues.AddRow(attribute.Key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -472,7 +447,7 @@ namespace OnTopic.Data.Sql {
       }
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
-      command.Parameters.AddWithValue("@Attributes", attributes);
+      command.Parameters.AddWithValue("@Attributes", attributeValues);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -513,7 +488,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
         command?.Dispose();
-        attributes.Dispose();
+        attributeValues.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
