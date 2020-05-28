@@ -465,7 +465,7 @@ namespace OnTopic.Data.Sql {
         );
 
         if (areReferencesResolved && areRelationshipsDirty) {
-          PersistRelations(topic, connection, true);
+          PersistRelations(topic, connection);
         }
 
         topic.VersionHistory.Insert(0, version.Value);
@@ -640,21 +640,14 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    /// <param name="skipXml">
-    ///   Boolean indicator noting whether attributes saved in the XML should be skipped as part of the operation.
-    /// </param>
-    /// <returns>
-    ///   An XML-formatted string representing the <see cref="Topic.Relationships"/> XML content, or a blank string if
-    ///   <c>skipXml == true</c>.
-    /// </returns>
-    private static string PersistRelations(Topic topic, SqlConnection connection, bool skipXml) {
+    private static void PersistRelations(Topic topic, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      // return "" if the topic has no relations
+      // return if the topic has no relations
       if (!topic.Relationships.Keys.Any()) {
-        return "";
+        return;
       }
       var command               = (SqlCommand?)null;
 
@@ -713,50 +706,10 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return the relationship attributes to append to the XML attributes (unless skipXml is set to true)
+      | Return
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return skipXml? "" : CreateRelationshipsXml(topic);
+      return;
 
-    }
-
-    /*==========================================================================================================================
-    | METHOD: CREATE RELATIONSHIPS XML
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Internal helper function to build string of related XML nodes for each scope of related items in model.
-    /// </summary>
-    /// <param name="topic">The topic object for which to create the relationships.</param>
-    /// <returns>The XML string.</returns>
-    private static string CreateRelationshipsXml(Topic topic) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Create XML string container
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributesXml         = new StringBuilder("");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add a related XML node for each scope
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var key in topic.Relationships.Keys) {
-
-        var scope               = topic.Relationships.GetTopics(key);
-
-        attributesXml.Append("<related scope=\"");
-        attributesXml.Append(key);
-        attributesXml.Append("\">");
-
-        // Build out string array of related items in this scope
-        var targetIds           = new string[scope.Count];
-        var count               = 0;
-        foreach (var relTopic in scope) {
-          targetIds[count]      = relTopic.Id.ToString(CultureInfo.InvariantCulture);
-          count++;
-        }
-        attributesXml.Append(String.Join(",", targetIds));
-        attributesXml.Append("</related>");
-      }
-
-      return attributesXml.ToString();
     }
 
   } //Class
