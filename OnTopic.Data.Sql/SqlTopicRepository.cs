@@ -357,14 +357,14 @@ namespace OnTopic.Data.Sql {
       //automatically generated and don't represent genuine changes to the topic.
       var excludeLastModified   = !topic.Attributes.IsDirty(excludeLastModified: true);
 
-      var indexedAttributes     = GetAttributes(
+      var indexedAttributeList  = GetAttributes(
         topic                   : topic,
         isExtendedAttribute     : false,
         isDirty                 : true,
         excludeLastModified     : excludeLastModified
       );
 
-      foreach (var attributeValue in indexedAttributes) {
+      foreach (var attributeValue in indexedAttributeList) {
 
         var record              = attributes.NewRow();
         record["AttributeKey"]  = attributeValue.Key;
@@ -380,7 +380,9 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       extendedAttributes.Append("<attributes>");
 
-      foreach (var attributeValue in GetAttributes(topic, isExtendedAttribute:true)) {
+      var extendedAttributeList = GetAttributes(topic, isExtendedAttribute:true);
+
+      foreach (var attributeValue in extendedAttributeList) {
 
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
@@ -439,6 +441,20 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Detect whether anything has changed
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If no relationships have changed, and no attributes values have changed, and there aren't any mismatched attributes in
+      | their respective lists, then there isn't anything new to persist to the database, and thus no benefit to executing the
+      | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
+      | as a quick fix to reduce the overhead of recursive saves.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var isDirty               =
+        areRelationshipsDirty   ||
+        !excludeLastModified    ||
+        indexedAttributeList.Any() ||
+        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isNew) {
@@ -458,9 +474,10 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        command.ExecuteNonQuery();
-
-        topic.Id                = command.GetReturnCode();
+        if (isDirty) {
+          command.ExecuteNonQuery();
+          topic.Id              = command.GetReturnCode();
+        }
 
         Contract.Assume<InvalidOperationException>(
           topic.Id > 0,
