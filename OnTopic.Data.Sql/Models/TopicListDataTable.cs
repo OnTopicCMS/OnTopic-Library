@@ -39,6 +39,7 @@ namespace OnTopic.Data.Sql.Models {
     /// <summary>
     ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
     /// </summary>
+    /// <param name="topicId">The <see cref="Topic.Id"/> of the related <see cref="Topic"/></param>
     internal DataRow AddRow(int topicId) {
 
       /*------------------------------------------------------------------------------------------------------------------------
