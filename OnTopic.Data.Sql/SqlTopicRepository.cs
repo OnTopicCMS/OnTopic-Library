@@ -79,8 +79,9 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("GetTopicID", connection);
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("GetTopicID", connection);
+
       var topicId               = -1;
 
       command.CommandType       = CommandType.StoredProcedure;
@@ -111,14 +112,6 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        command?.Dispose();
-        connection.Close();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId < 0) {
@@ -139,12 +132,12 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topic                 = (Topic?)null;
-      var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("GetTopics", connection) {
+
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("GetTopics", connection) {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
-      var reader                = (SqlDataReader?)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
@@ -157,7 +150,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
         connection.Open();
-        reader                  = command.ExecuteReader();
+        using var reader        = command.ExecuteReader();
         topic                   = reader.LoadTopicGraph();
       }
 
@@ -166,15 +159,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
         throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        reader?.Dispose();
-        command?.Dispose();
-        connection.Close();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -212,12 +196,12 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topic                 = (Topic?)null;
-      var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("GetTopicVersion", connection) {
+
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("GetTopicVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
         CommandTimeout          = 120
       };
-      var reader                = (SqlDataReader?)null;
 
       command.CommandType       = CommandType.StoredProcedure;
 
@@ -232,7 +216,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
         connection.Open();
-        reader                  = command.ExecuteReader();
+        using var reader        = command.ExecuteReader();
         topic                   = reader.LoadTopicGraph(false);
       }
 
@@ -241,15 +225,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
         throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        reader?.Dispose();
-        command?.Dispose();
-        connection.Close();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -270,7 +245,8 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var version               = new SqlDateTime(DateTime.Now);
       var unresolvedTopics      = new List<Topic>();
-      var connection            = new SqlConnection(_connectionString);
+
+      using var connection      = new SqlConnection(_connectionString);
 
       connection.Open();
 
@@ -290,7 +266,6 @@ namespace OnTopic.Data.Sql {
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
       connection.Close();
-      connection.Dispose();
       return topicId;
 
     }
@@ -373,7 +348,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeValues       = new AttributeValuesDataTable();
+      using var attributeValues = new AttributeValuesDataTable();
 
       foreach (var attributeValue in indexedAttributeList) {
         attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
@@ -418,7 +393,8 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var procedureName         = !topic.IsSaved? "CreateTopic" : "UpdateTopic";
-      var command               = new SqlCommand(procedureName, connection) {
+
+      using var command         = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
@@ -477,19 +453,10 @@ namespace OnTopic.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
-        connection?.Dispose();
         throw new TopicRepositoryException(
           $"Failed to save Topic '{topic.Key}' ({topic.Id}) via '{_connectionString}': '{exception.Message}'",
           exception
         );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        command?.Dispose();
-        attributeValues.Dispose();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -526,8 +493,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("MoveTopic", connection) {
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("MoveTopic", connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
@@ -561,14 +528,6 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        command?.Dispose();
-        connection.Dispose();
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
@@ -589,8 +548,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var connection            = new SqlConnection(_connectionString);
-      var command               = new SqlCommand("DeleteTopic", connection) {
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("DeleteTopic", connection) {
         CommandType             = CommandType.StoredProcedure
       };
 
@@ -617,14 +576,6 @@ namespace OnTopic.Data.Sql {
         );
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        command?.Dispose();
-        connection?.Dispose();
-      }
-
     }
 
     /*==========================================================================================================================
@@ -644,7 +595,6 @@ namespace OnTopic.Data.Sql {
       if (!topic.Relationships.Keys.Any()) {
         return;
       }
-      var command               = (SqlCommand?)null;
 
       try {
 
@@ -653,12 +603,12 @@ namespace OnTopic.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (var key in topic.Relationships.Keys) {
 
-          var targetIds         = new TopicListDataTable();
           var relatedTopics     = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
           var savedTopics       = relatedTopics.Where(t => t.IsSaved).Select<Topic, int>(m => m.Id);
 
-          command               = new SqlCommand("UpdateRelationships", connection) {
+          using var targetIds   = new TopicListDataTable();
+          using var command     = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
@@ -672,8 +622,6 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("RelatedTopics", targetIds);
 
           command.ExecuteNonQuery();
-
-          targetIds.Dispose();
 
           //Reset isDirty, assuming there aren't any unresolved references
           relatedTopics.IsDirty = savedTopics.Count() < relatedTopics.Count;
@@ -690,14 +638,6 @@ namespace OnTopic.Data.Sql {
           $"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
           exception
         );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      finally {
-        command?.Dispose();
-        //Since the SQL connection is being passed in, do not close connection; this allows connection pooling.
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
