@@ -446,7 +446,7 @@ namespace OnTopic.Data.Sql {
       }
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
-      command.Parameters.AddWithValue("@Attributes", attributeValues);
+      command.AddParameter("Attributes", attributeValues);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -667,9 +667,9 @@ namespace OnTopic.Data.Sql {
           }
 
           // Add Parameters
-          command.Parameters.AddWithValue("TopicID", topicId);
-          command.Parameters.AddWithValue("RelationshipKey", key);
-          command.Parameters.AddWithValue("RelatedTopics", targetIds);
+          command.AddParameter("TopicID", topicId);
+          command.AddParameter("RelationshipKey", key);
+          command.AddParameter("RelatedTopics", targetIds);
 
           command.ExecuteNonQuery();
 
