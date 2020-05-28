@@ -340,7 +340,7 @@ namespace OnTopic.Data.Sql {
       var isNew                 = topic.Id == -1;
       var areReferencesResolved = true;
       var areRelationshipsDirty = topic.Relationships.IsDirty();
-      var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: true);
+      var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: !areRelationshipsDirty);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
       var indexedAttributeList  = GetAttributes(
         topic                   : topic,
