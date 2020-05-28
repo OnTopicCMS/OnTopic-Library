@@ -408,9 +408,9 @@ namespace OnTopic.Data.Sql {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add unmatched attributes
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
       foreach (var attribute in GetUnmatchedAttributes(topic)) {
         attributeValues.AddRow(attribute.Key);
       }
