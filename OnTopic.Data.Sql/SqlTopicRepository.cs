@@ -333,6 +333,36 @@ namespace OnTopic.Data.Sql {
       base.Save(topic, isRecursive, isDraft);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Define variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var isNew                 = topic.Id == -1;
+      var version               = new SqlDateTime(DateTime.Now);
+      var areReferencesResolved = true;
+      var areRelationshipsDirty = topic.Relationships.IsDirty();
+      var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: true);
+      var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
+      var indexedAttributeList  = GetAttributes(
+        topic                   : topic,
+        isExtendedAttribute     : false,
+        isDirty                 : true,
+        excludeLastModified     : !areAttributesDirty
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Detect whether anything has changed
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If no relationships have changed, and no attributes values have changed, and there aren't any mismatched attributes in
+      | their respective lists, then there isn't anything new to persist to the database, and thus no benefit to executing the
+      | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
+      | as a quick fix to reduce the overhead of recursive saves.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var isDirty               =
+        areRelationshipsDirty   ||
+        areAttributesDirty      ||
+        indexedAttributeList.Any() ||
+        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
@@ -352,18 +382,6 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Only include `LastModified` and/or `LastModifiedBy` if other attributes in the collection are `IsDirty`, as these are
-      //automatically generated and don't represent genuine changes to the topic.
-      var excludeLastModified   = !topic.Attributes.IsDirty(excludeLastModified: true);
-
-      var indexedAttributeList  = GetAttributes(
-        topic                   : topic,
-        isExtendedAttribute     : false,
-        isDirty                 : true,
-        excludeLastModified     : excludeLastModified
-      );
-
       foreach (var attributeValue in indexedAttributeList) {
 
         var record              = attributes.NewRow();
@@ -379,8 +397,6 @@ namespace OnTopic.Data.Sql {
       | Add extended attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       extendedAttributes.Append("<attributes>");
-
-      var extendedAttributeList = GetAttributes(topic, isExtendedAttribute:true);
 
       foreach (var attributeValue in extendedAttributeList) {
 
@@ -419,14 +435,10 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var isNew                 = topic.Id == -1;
       var procedureName         = isNew? "CreateTopic" : "UpdateTopic";
       var command               = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
-      var version               = new SqlDateTime(DateTime.Now);
-      var areReferencesResolved = true;
-      var areRelationshipsDirty = topic.Relationships.IsDirty();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle unresolved references
@@ -439,20 +451,6 @@ namespace OnTopic.Data.Sql {
         unresolvedRelationships.Add(topic);
         areReferencesResolved = false;
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Detect whether anything has changed
-      >-------------------------------------------------------------------------------------------------------------------------
-      | If no relationships have changed, and no attributes values have changed, and there aren't any mismatched attributes in
-      | their respective lists, then there isn't anything new to persist to the database, and thus no benefit to executing the
-      | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
-      | as a quick fix to reduce the overhead of recursive saves.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var isDirty               =
-        areRelationshipsDirty   ||
-        !excludeLastModified    ||
-        indexedAttributeList.Any() ||
-        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
