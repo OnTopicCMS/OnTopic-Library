@@ -632,8 +632,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: PERSIST RELATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Internal method that saves topic relationships to the n:n mapping table in SQL, returns a XML-formatted string for
-    ///   appending to the extended attributes unless <c>skipXml == true</c>.
+    ///   Internal method that saves topic relationships to the n:n mapping table in SQL.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
