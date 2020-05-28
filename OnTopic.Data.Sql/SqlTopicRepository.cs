@@ -14,7 +14,6 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql {
@@ -269,6 +268,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var version               = new SqlDateTime(DateTime.Now);
       var unresolvedTopics      = new List<Topic>();
       var connection            = new SqlConnection(_connectionString);
 
@@ -277,13 +277,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId = Save(topic, isRecursive, isDraft, connection, unresolvedTopics);
+      var topicId = Save(topic, isRecursive, isDraft, connection, unresolvedTopics, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, isDraft, connection, new List<Topic>());
+        Save(unresolvedTopic, false, isDraft, connection, new List<Topic>(), version);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -325,7 +325,8 @@ namespace OnTopic.Data.Sql {
       bool isRecursive,
       bool isDraft,
       SqlConnection connection,
-      List<Topic> unresolvedRelationships
+      List<Topic> unresolvedRelationships,
+      SqlDateTime version
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -337,7 +338,6 @@ namespace OnTopic.Data.Sql {
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isNew                 = topic.Id == -1;
-      var version               = new SqlDateTime(DateTime.Now);
       var areReferencesResolved = true;
       var areRelationshipsDirty = topic.Relationships.IsDirty();
       var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: true);
@@ -468,7 +468,9 @@ namespace OnTopic.Data.Sql {
           PersistRelations(topic, connection);
         }
 
-        topic.VersionHistory.Insert(0, version.Value);
+        if (!topic.VersionHistory.Contains(version.Value)) {
+          topic.VersionHistory.Insert(0, version.Value);
+        }
 
       }
 
@@ -504,7 +506,7 @@ namespace OnTopic.Data.Sql {
         if (isRecursive) {
           foreach (var childTopic in topic.Children) {
             childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-            Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships);
+            Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships, version);
           }
         }
       }
