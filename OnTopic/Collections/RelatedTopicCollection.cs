@@ -40,7 +40,7 @@ namespace OnTopic.Collections {
     ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may
     ///   be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
     ///   set, then it will not allow incoming relationships to be set via the internal
-    ///   <see cref="SetTopic(String, Topic, Boolean)"/> overload.
+    ///   <see cref="SetTopic(String, Topic, Boolean, Boolean?)"/> overload.
     /// </remarks>
     public RelatedTopicCollection(Topic parent, bool isIncoming = false) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;

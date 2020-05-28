@@ -643,7 +643,7 @@ namespace OnTopic {
     ///   called by the <see cref="AttributeValueCollection"/>. This is intended to enforce local business logic, and prevent
     ///   callers from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
     ///   <see cref="AttributeValueCollection"/> that the business logic has already been enforced. To do that, they must either
-    ///   call <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, Boolean, DateTime?)"/> with the
+    ///   call <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/> with the
     ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
