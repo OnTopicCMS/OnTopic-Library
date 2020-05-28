@@ -13,7 +13,7 @@ namespace OnTopic.Data.Sql.Models {
   /// <summary>
   ///   Extends <see cref="DataTable"/> to model the schema for the <c>AttributeValues</c> user-defined table type.
   /// </summary>
-  public class AttributeValuesDataTable: DataTable {
+  internal class AttributeValuesDataTable: DataTable {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -22,7 +22,7 @@ namespace OnTopic.Data.Sql.Models {
     ///   Establishes a new <see cref="DataTable"/> with the appropriate schema for the <c>AttributeValues</c> user-defined
     ///   table type.
     /// </summary>
-    public AttributeValuesDataTable() {
+    internal AttributeValuesDataTable() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | COLUMN: Attribute Key
@@ -50,7 +50,7 @@ namespace OnTopic.Data.Sql.Models {
     /// <summary>
     ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
     /// </summary>
-    public DataRow AddRow(string attributeKey, string? attributeValue = null) {
+    internal DataRow AddRow(string attributeKey, string? attributeValue = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define record
