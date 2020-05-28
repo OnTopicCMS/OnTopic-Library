@@ -657,11 +657,6 @@ namespace OnTopic.Data.Sql {
         return "";
       }
       var command               = (SqlCommand?)null;
-      var targetIds             = new DataTable();
-
-      targetIds.Columns.Add(
-        new DataColumn("TopicID", typeof(int))
-      );
 
       try {
 
@@ -670,6 +665,7 @@ namespace OnTopic.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (var key in topic.Relationships.Keys) {
 
+          var targetIds         = new TopicListDataTable();
           var scope             = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
           var relatedTopics     = scope.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id);
@@ -679,9 +675,7 @@ namespace OnTopic.Data.Sql {
           };
 
           foreach (var targetTopicId in relatedTopics) {
-            var record          = targetIds.NewRow();
-            record["TopicID"]   = targetTopicId;
-            targetIds.Rows.Add(record);
+            targetIds.AddRow(targetTopicId);
           }
 
           // Add Parameters
@@ -691,8 +685,9 @@ namespace OnTopic.Data.Sql {
 
           command.ExecuteNonQuery();
 
-          // Clear rows
-          targetIds.Clear();
+          targetIds.Dispose();
+
+          //Reset isDirty, assuming there aren't any unresolved references
           scope.IsDirty = relatedTopics.Count() < scope.Count;
 
         }
@@ -714,7 +709,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       finally {
         command?.Dispose();
-        targetIds.Dispose();
         //Since the SQL connection is being passed in, do not close connection; this allows connection pooling.
       }
 
