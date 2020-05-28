@@ -667,7 +667,6 @@ namespace OnTopic.Repositories {
       topic.Parent?.Key == "Attributes" &&
       topic.Parent.Parent is ContentTypeDescriptor;
 
-
     /*==========================================================================================================================
     | METHOD: IS EXTENDED ATTRIBUTE MISMATCH?
     \-------------------------------------------------------------------------------------------------------------------------*/
