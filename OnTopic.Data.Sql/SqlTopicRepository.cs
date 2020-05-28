@@ -363,6 +363,14 @@ namespace OnTopic.Data.Sql {
         extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Bypass is not dirty
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!isDirty) {
+        recurse();
+        return topic.Id;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish attribute containers with schema
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
@@ -472,10 +480,9 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        if (isDirty) {
-          command.ExecuteNonQuery();
-          topic.Id              = command.GetReturnCode();
-        }
+        command.ExecuteNonQuery();
+
+        topic.Id                = command.GetReturnCode();
 
         Contract.Assume<InvalidOperationException>(
           topic.Id > 0,
@@ -510,19 +517,22 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive) {
-        foreach (var childTopic in topic.Children) {
-          childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-          Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Return value
       \-----------------------------------------------------------------------------------------------------------------------*/
+      recurse();
       return topic.Id;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Recurse
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      void recurse() {
+        if (isRecursive) {
+          foreach (var childTopic in topic.Children) {
+            childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
+            Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships);
+          }
+        }
+      }
 
     }
 
