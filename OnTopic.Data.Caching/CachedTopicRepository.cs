@@ -142,11 +142,6 @@ namespace OnTopic.Data.Caching {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-      "Microsoft.Contracts",
-      "TestAlwaysEvaluatingToAConstant",
-      Justification = "Sibling may be null from overloaded caller."
-      )]
     public override void Move(Topic topic, Topic target, Topic? sibling) => _dataProvider.Move(topic, target, sibling);
 
     /*==========================================================================================================================
