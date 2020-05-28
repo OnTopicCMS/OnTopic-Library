@@ -29,8 +29,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AddTopic_IsDirty() {
 
-      var related               = TopicFactory.Create("Topic", "Page");
       var relationships         = new NamedTopicCollection("Test");
+      var related               = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related);
 
@@ -48,9 +48,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AddTopic_IsDuplicate_IsNotDirty() {
 
+      var relationships         = new NamedTopicCollection("Test");
       var related1              = TopicFactory.Create("Topic", "Page");
       var related2              = TopicFactory.Create("Topic", "Page");
-      var relationships         = new NamedTopicCollection("Test");
 
       relationships.Add(related1);
       relationships.IsDirty     = false;
@@ -76,9 +76,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AddTopic_IsDuplicate_StaysDirty() {
 
+      var relationships         = new NamedTopicCollection("Test");
       var related1              = TopicFactory.Create("Topic", "Page");
       var related2              = TopicFactory.Create("Topic", "Page");
-      var relationships         = new NamedTopicCollection("Test");
 
       relationships.Add(related1);
 
@@ -104,8 +104,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void RemoveTopic_IsDirty() {
 
-      var related               = TopicFactory.Create("Topic", "Page");
       var relationships         = new NamedTopicCollection("Test");
+      var related               = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related);
       relationships.IsDirty     = false;
@@ -144,9 +144,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void RemoveTopic_MissingTopic_StaysDirty() {
 
+      var relationships         = new NamedTopicCollection("Test");
       var related               = TopicFactory.Create("Topic1", "Page");
       var missing               = TopicFactory.Create("Topic2", "Page");
-      var relationships         = new NamedTopicCollection("Test");
 
       relationships.Add(related);
       relationships.Remove(missing);
@@ -165,8 +165,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Clear_ExistingTopics_IsDirty() {
 
-      var related               = TopicFactory.Create("Topic", "Page");
       var relationships         = new NamedTopicCollection("Test");
+      var related               = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related);
       relationships.IsDirty     = false;
