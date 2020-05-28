@@ -337,7 +337,6 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var isNew                 = topic.Id == -1;
       var areReferencesResolved = true;
       var areRelationshipsDirty = topic.Relationships.IsDirty();
       var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: !areRelationshipsDirty);
@@ -418,7 +417,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var procedureName         = isNew? "CreateTopic" : "UpdateTopic";
+      var procedureName         = !topic.IsSaved? "CreateTopic" : "UpdateTopic";
       var command               = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
@@ -438,7 +437,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!isNew) {
+      if (topic.IsSaved) {
         command.AddParameter("TopicID", topic.Id);
         command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
@@ -460,7 +459,7 @@ namespace OnTopic.Data.Sql {
         topic.Id                = command.GetReturnCode();
 
         Contract.Assume<InvalidOperationException>(
-          topic.Id > 0,
+          topic.IsSaved,
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
 
@@ -657,7 +656,7 @@ namespace OnTopic.Data.Sql {
           var targetIds         = new TopicListDataTable();
           var relatedTopics     = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var savedTopics       = relatedTopics.Where(t => t.Id > 0).Select<Topic, int>(m => m.Id);
+          var savedTopics       = relatedTopics.Where(t => t.IsSaved).Select<Topic, int>(m => m.Id);
 
           command               = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
