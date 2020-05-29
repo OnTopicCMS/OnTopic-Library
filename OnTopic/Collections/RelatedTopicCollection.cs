@@ -6,7 +6,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml.Serialization;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections {
