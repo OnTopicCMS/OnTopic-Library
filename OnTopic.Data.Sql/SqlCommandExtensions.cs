@@ -87,6 +87,15 @@ namespace OnTopic.Data.Sql {
     /// <param name="command">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
+    internal static void AddParameter(this SqlCommand command, string sqlParameter, DataTable fieldValue)
+      => AddParameter(command, sqlParameter, fieldValue, SqlDbType.Structured);
+
+    /// <summary>
+    ///   Wrapper function that adds a SQL parameter to a command object.
+    /// </summary>
+    /// <param name="command">The SQL command object.</param>
+    /// <param name="sqlParameter">The SQL parameter.</param>
+    /// <param name="fieldValue">The SQL field value.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, StringBuilder fieldValue)
       => AddParameter(command, sqlParameter, fieldValue.ToString(), SqlDbType.Xml);
 
@@ -145,6 +154,7 @@ namespace OnTopic.Data.Sql {
           SqlDbType.DateTime    => (DateTime)fieldValue,
           SqlDbType.Int         => (int)fieldValue,
           SqlDbType.Xml         => (string)fieldValue,
+          SqlDbType.Structured  => (DataTable)fieldValue,
           _                     => (string)fieldValue,
         };
       }

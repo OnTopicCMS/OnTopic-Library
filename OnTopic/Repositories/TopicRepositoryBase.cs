@@ -333,7 +333,7 @@ namespace OnTopic.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && topic.Id >= 0) {
+      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && topic.IsSaved) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
@@ -344,10 +344,10 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | If new content type, remove from cache
+      | If new content type, add to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        topic.Id < 0 &&
+        !topic.IsSaved &&
         topic is ContentTypeDescriptor &&
         _contentTypeDescriptors != null &&
         !_contentTypeDescriptors.Contains(topic.Key)
@@ -358,7 +358,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If new attribute, refresh cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Id < 0 && IsAttributeDescriptor(topic)) {
+      if (!topic.IsSaved && IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
       }
 
@@ -606,7 +606,7 @@ namespace OnTopic.Repositories {
       foreach (var attribute in contentType.AttributeDescriptors) {
 
         // Ignore unsaved topics
-        if (topic.Id == -1) {
+        if (!topic.IsSaved) {
           continue;
         }
 
@@ -666,7 +666,6 @@ namespace OnTopic.Repositories {
       topic is AttributeDescriptor &&
       topic.Parent?.Key == "Attributes" &&
       topic.Parent.Parent is ContentTypeDescriptor;
-
 
     /*==========================================================================================================================
     | METHOD: IS EXTENDED ATTRIBUTE MISMATCH?

@@ -115,7 +115,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse through children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Id < 0) {
+      if (!topic.IsSaved) {
         topic.Id = _identity++;
       }
 
@@ -139,11 +139,6 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-      "Microsoft.Contracts",
-      "TestAlwaysEvaluatingToAConstant",
-      Justification = "Sibling may be null from overloaded caller."
-      )]
     public override void Move(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -14,7 +14,7 @@ namespace OnTopic.Tests {
   | CLASS: RELATED TOPIC COLLECTION TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="AttributeValueCollection"/> class.
+  ///   Provides unit tests for the <see cref="RelatedTopicCollection"/> class.
   /// </summary>
   [TestClass]
   public class RelatedTopicCollectionTest {
@@ -34,6 +34,24 @@ namespace OnTopic.Tests {
       parent.Relationships.SetTopic("Friends", related);
 
       Assert.ReferenceEquals(parent.Relationships.GetTopics("Friends").First(), related);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a relationship and confirms that the <see cref="RelatedTopicCollection.IsDirty"/> returns true.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_IsDirty() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+
+      parent.Relationships.SetTopic("Friends", related);
+
+      Assert.IsTrue(parent.Relationships.IsDirty());
 
     }
 

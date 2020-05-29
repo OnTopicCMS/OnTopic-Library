@@ -318,7 +318,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related);
+      current.Relationships.SetTopic(relationshipKey, related, isIncoming: false, isDirty: false);
 
     }
 
