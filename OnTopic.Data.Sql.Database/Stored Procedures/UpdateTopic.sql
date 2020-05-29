@@ -32,9 +32,18 @@ SELECT	@TopicID,
 	AttributeKey,
 	AttributeValue,
 	@Version
-FROM	@Attributes
+FROM	@Attributes		New
+OUTER APPLY (
+    SELECT	TOP 1
+	AttributeValue		AS ExistingValue
+    FROM	Attributes
+    WHERE	TopicID		= @TopicID
+      AND	AttributeKey		= New.AttributeKey
+    ORDER BY	Version		DESC
+  )			Existing
 WHERE	AttributeKey		!= 'ParentId'
-  AND	IsNull(AttributeValue, '')	!= ''
+  AND	ISNULL(AttributeValue, '')	!= ''
+  AND 	ISNULL(ExistingValue, '')	!= AttributeValue
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- PULL PREVIOUS EXTENDED ATTRIBUTES
