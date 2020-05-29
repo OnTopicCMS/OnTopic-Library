@@ -78,16 +78,17 @@ SELECT	@TopicID,
 	AttributeKey,
 	'',
 	@Version
-FROM	@Attributes		NullAttributes
+FROM	@Attributes		New
+CROSS APPLY (
+  SELECT	TOP 1
+	AttributeValue		AS ExistingValue
+  FROM	Attributes
+  WHERE	TopicID		= @TopicID
+    AND	AttributeKey		= New.AttributeKey
+  ORDER BY	Version DESC
+)			Existing
 WHERE	IsNull(AttributeValue, '')	= ''
-  AND (
-    SELECT	TOP 1
-	AttributeValue
-    FROM	Attributes
-    WHERE	TopicID		= @TopicID
-      AND	AttributeKey		= NullAttributes.AttributeKey
-    ORDER BY	Version DESC
-  )			!= ''
+  AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- REMOVE EXISTING RELATIONS
