@@ -41,9 +41,11 @@ WHERE	AttributeKey		!= 'ParentId'
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@PreviousExtendedAttributes	XML
 
-SELECT	@PreviousExtendedAttributes	= AttributesXml
-FROM	ExtendedAttributeIndex
+SELECT	TOP 1
+	@PreviousExtendedAttributes	= AttributesXml
+FROM	ExtendedAttributes
 WHERE	TopicID		= @TopicID
+ORDER BY	Version		DESC
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES, IF CHANGED
