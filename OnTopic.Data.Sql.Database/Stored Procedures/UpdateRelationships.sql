@@ -11,23 +11,6 @@ CREATE PROCEDURE [dbo].[UpdateRelationships]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
--- DECLARE AND SET VARIABLES
-
-DECLARE	@Existing_TopicIDs	TopicList
-
---------------------------------------------------------------------------------------------------------------------------------
--- IDENTIFY EXISTING VALUES
---------------------------------------------------------------------------------------------------------------------------------
-INSERT
-INTO	@Existing_TopicIDs (
-	  TopicID
-	)
-SELECT	Target_TopicID
-FROM	Relationships
-WHERE	Source_TopicID		= @TopicID
-  AND	RelationshipKey		= @RelationshipKey
-
---------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NOVEL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
@@ -38,11 +21,12 @@ INTO	Relationships (
 	)
 SELECT	@TopicId,
 	@RelationshipKey,
-	Target.TopicID
+	TopicID
 FROM	@RelatedTopics		Target
-FULL JOIN	@Existing_TopicIDs	Existing
-  ON	Existing.TopicID	= Target.TopicID
-WHERE	Existing.TopicID	is null
+LEFT JOIN	Relationships		Existing
+  ON	Target_TopicID		= TopicId
+  AND	Source_TopicID		= @TopicID
+WHERE	Target_TopicID		IS NULL
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID
