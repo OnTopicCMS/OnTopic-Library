@@ -392,7 +392,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var procedureName         = !topic.IsSaved? "CreateTopic" : "UpdateTopic";
+      var procedureName         = topic.IsNew? "CreateTopic" : "UpdateTopic";
 
       using var command         = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
@@ -413,7 +413,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.IsSaved) {
+      if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
         command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
@@ -435,7 +435,7 @@ namespace OnTopic.Data.Sql {
         topic.Id                = command.GetReturnCode();
 
         Contract.Assume<InvalidOperationException>(
-          topic.IsSaved,
+          !topic.IsNew,
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
 
@@ -605,7 +605,7 @@ namespace OnTopic.Data.Sql {
 
           var relatedTopics     = topic.Relationships.GetTopics(key);
           var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var savedTopics       = relatedTopics.Where(t => t.IsSaved).Select<Topic, int>(m => m.Id);
+          var savedTopics       = relatedTopics.Where(t => !t.IsNew).Select<Topic, int>(m => m.Id);
 
           using var targetIds   = new TopicListDataTable();
           using var command     = new SqlCommand("UpdateRelationships", connection) {
