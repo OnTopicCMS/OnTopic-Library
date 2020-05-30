@@ -118,7 +118,7 @@ BEGIN
 END; -- while
 
 SELECT	Stack_Top,
-	TopicId,
+	TopicID,
 	RangeLeft,
 	RangeRight
 FROM	Topics
