@@ -285,16 +285,21 @@ namespace OnTopic {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: IS SAVED
+    | PROPERTY: IS NEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determines whether or not the current <see cref="Topic"/> has been saved to an underlying <see
-    ///   cref="Repositories.ITopicRepository"/>.
+    ///   cref="Repositories.ITopicRepository"/>. If not, returns <c>true</c>.
     /// </summary>
+    /// <remarks>
+    ///   This property does <i>not</i> reflect whether the current <i>state</i> of the topic has been saved. It <i>only</i>
+    ///   determines if the <see cref="Topic"/> maps to an existing entity in the underlying <see
+    ///   cref="Repositories.ITopicRepository"/>.
+    /// </remarks>
     /// <value>
     ///   <c>true</c> if it has been saved; otherwise, <c>false</c>.
     /// </value>
-    public bool IsSaved => Id >= 0;
+    public bool IsNew => Id < 0;
 
     /*==========================================================================================================================
     | PROPERTY: IS HIDDEN

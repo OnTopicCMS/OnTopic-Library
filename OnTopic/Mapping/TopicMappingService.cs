@@ -193,7 +193,7 @@ namespace OnTopic.Mapping {
       if (cache.TryGetValue(topic.Id, out var dto)) {
         return dto;
       }
-      else if (topic.IsSaved) {
+      else if (!topic.IsNew) {
         cache.GetOrAdd(topic.Id, target);
       }
 

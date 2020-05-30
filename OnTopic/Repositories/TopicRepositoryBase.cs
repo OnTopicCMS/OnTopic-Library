@@ -333,7 +333,7 @@ namespace OnTopic.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && topic.IsSaved) {
+      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && !topic.IsNew) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
@@ -347,7 +347,7 @@ namespace OnTopic.Repositories {
       | If new content type, add to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        !topic.IsSaved &&
+        topic.IsNew &&
         topic is ContentTypeDescriptor &&
         _contentTypeDescriptors != null &&
         !_contentTypeDescriptors.Contains(topic.Key)
@@ -358,7 +358,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If new attribute, refresh cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!topic.IsSaved && IsAttributeDescriptor(topic)) {
+      if (topic.IsNew && IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
       }
 
@@ -606,7 +606,7 @@ namespace OnTopic.Repositories {
       foreach (var attribute in contentType.AttributeDescriptors) {
 
         // Ignore unsaved topics
-        if (!topic.IsSaved) {
+        if (topic.IsNew) {
           continue;
         }
 
