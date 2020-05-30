@@ -32,18 +32,29 @@ SELECT	@TopicID,
 	AttributeKey,
 	AttributeValue,
 	@Version
-FROM	@Attributes
+FROM	@Attributes		New
+OUTER APPLY (
+    SELECT	TOP 1
+	AttributeValue		AS ExistingValue
+    FROM	Attributes
+    WHERE	TopicID		= @TopicID
+      AND	AttributeKey		= New.AttributeKey
+    ORDER BY	Version		DESC
+  )			Existing
 WHERE	AttributeKey		!= 'ParentId'
-  AND	IsNull(AttributeValue, '')	!= ''
+  AND	ISNULL(AttributeValue, '')	!= ''
+  AND 	ISNULL(ExistingValue, '')	!= AttributeValue
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- PULL PREVIOUS EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@PreviousExtendedAttributes	XML
 
-SELECT	@PreviousExtendedAttributes	= AttributesXml
-FROM	ExtendedAttributeIndex
+SELECT	TOP 1
+	@PreviousExtendedAttributes	= AttributesXml
+FROM	ExtendedAttributes
 WHERE	TopicID		= @TopicID
+ORDER BY	Version		DESC
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES, IF CHANGED
@@ -76,26 +87,17 @@ SELECT	@TopicID,
 	AttributeKey,
 	'',
 	@Version
-FROM	@Attributes		NullAttributes
+FROM	@Attributes		New
+CROSS APPLY (
+  SELECT	TOP 1
+	AttributeValue		AS ExistingValue
+  FROM	Attributes
+  WHERE	TopicID		= @TopicID
+    AND	AttributeKey		= New.AttributeKey
+  ORDER BY	Version DESC
+)			Existing
 WHERE	IsNull(AttributeValue, '')	= ''
-  AND (
-    SELECT	TOP 1
-	AttributeValue
-    FROM	Attributes
-    WHERE	TopicID		= @TopicID
-      AND	AttributeKey		= NullAttributes.AttributeKey
-    ORDER BY	Version DESC
-  )			!= ''
-
---------------------------------------------------------------------------------------------------------------------------------
--- REMOVE EXISTING RELATIONS
---------------------------------------------------------------------------------------------------------------------------------
--- Relationships will be re-added by the Data Access Layer using Topics_PersistRelationships.
---------------------------------------------------------------------------------------------------------------------------------
-DELETE
-FROM	[dbo].[Relationships]
-WHERE	Source_TopicID		= @TopicID
-  AND	@DeleteRelationships	= 1
+  AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

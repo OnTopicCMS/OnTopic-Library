@@ -8,6 +8,7 @@ using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Globalization;
 
 namespace OnTopic.Tests {
 
@@ -252,6 +253,65 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: DIRTY VALUES: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
+    ///   cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   <c>true</c>/
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_DirtyValues_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: NO DIRTY VALUES: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
+    ///   <see cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   <c>false</c>/
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_NoDirtyValues_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      Assert.IsFalse(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: EXCLUDE LAST MODIFIED: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
+    ///   <see cref="AttributeValue.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExcludeLastModified_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+      topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+      topic.Attributes.SetValue("LastModifiedBy", "System");
+
+      Assert.IsFalse(topic.Attributes.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INVALID VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -301,6 +361,45 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");
       topic.Attributes.Add(new AttributeValue("Key", "# ?"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE: EMPTY ATTRIBUTE VALUE: SKIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new attribute with an empty value, and confirms that it is <i>not</i> added as a new <see
+    ///   cref="AttributeValue"/>. Empty values are treated as the same as non-existent attributes. They are stored for the sake
+    ///   of tracking <i>deleted</i> attributes, but should not be stored for <i>new</i> attributes.
+    /// </summary>
+    [TestMethod]
+    public void SetValue_EmptyAttributeValue_Skips() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Attribute", "");
+
+      Assert.IsFalse(topic.Attributes.Contains("Attribute"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET VALUE: UPDATE EMPTY ATTRIBUTE VALUE: REPLACES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new attribute with an empty value, and confirms that it is <i>is</i> added as a new <see
+    ///   cref="AttributeValue"/> assuming the value previously existed. Empty values are treated as the same as non-existent
+    ///   attributes, but they should be stored for the sake of tracking <i>deleted</i> attributes.
+    /// </summary>
+    [TestMethod]
+    public void SetValue_EmptyAttributeValue_Replaces() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Attribute", "New Value");
+      topic.Attributes.SetValue("Attribute", "");
+
+      Assert.IsTrue(topic.Attributes.Contains("Attribute"));
+
     }
 
     /*==========================================================================================================================

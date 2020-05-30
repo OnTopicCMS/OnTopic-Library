@@ -65,5 +65,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: LOAD: BY ROUTE: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes route data and ensures that the root topic is correctly identified based on that route.
+    /// </summary>
+    [TestMethod]
+    public void Load_ByRoute_ReturnsRootTopic() {
+
+      var routes                = new RouteData();
+      var topic                 = _topicRepository.Load("Root");
+
+      routes.Values.Add("path", "Root/");
+
+      var currentTopic          = _topicRepository.Load(routes);
+
+      Assert.IsNotNull(currentTopic);
+      Assert.ReferenceEquals(topic, currentTopic);
+      Assert.AreEqual<string>("Root", currentTopic.Key);
+
+    }
+
   } //Class
 } //Namespace

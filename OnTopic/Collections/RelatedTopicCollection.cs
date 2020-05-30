@@ -39,7 +39,7 @@ namespace OnTopic.Collections {
     ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may
     ///   be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
     ///   set, then it will not allow incoming relationships to be set via the internal
-    ///   <see cref="SetTopic(String, Topic, Boolean)"/> overload.
+    ///   <see cref="SetTopic(String, Topic, Boolean, Boolean?)"/> overload.
     /// </remarks>
     public RelatedTopicCollection(Topic parent, bool isIncoming = false) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
@@ -188,7 +188,10 @@ namespace OnTopic.Collections {
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
-    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming) {
+    /// <param name="isDirty">
+    ///   Optionally forces the collection to a <see cref="NamedTopicCollection.IsDirty"/> state, assuming the topic was set.
+    /// </param>
+    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming, bool? isDirty = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -206,6 +209,7 @@ namespace OnTopic.Collections {
       var topics = this[relationshipKey];
       if (!topics.Contains(topic.Key)) {
         topics.Add(topic);
+        topics.IsDirty = isDirty?? topics.IsDirty;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -222,6 +226,15 @@ namespace OnTopic.Collections {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates each of the child <see cref="NamedTopicCollection"/>s to determine if any of them are set to <see
+    ///   cref="NamedTopicCollection.IsDirty"/>. If they are, returns <c>true</c>.
+    /// </summary>
+    public bool IsDirty() => Items.Any(r => r.IsDirty);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

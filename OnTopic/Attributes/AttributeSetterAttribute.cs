@@ -40,8 +40,8 @@ namespace OnTopic.Attributes {
   ///     <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>, which ensures that final parameter is set to false.
   ///   </para>
   /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class AttributeSetterAttribute : System.Attribute {
+  [AttributeUsage(AttributeTargets.Property)]
+  public sealed class AttributeSetterAttribute : Attribute {
 
   } //Class
 } //Namespace

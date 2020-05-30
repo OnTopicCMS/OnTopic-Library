@@ -97,7 +97,7 @@ BEGIN
 
       -- remove this row from hierarchy
       DELETE
-      FROM	hierarchy
+      FROM	Hierarchy
       WHERE	TopicID		= (
         SELECT	TopicID
         FROM	Topics
@@ -118,7 +118,7 @@ BEGIN
 END; -- while
 
 SELECT	Stack_Top,
-	TopicId,
+	TopicID,
 	RangeLeft,
 	RangeRight
 FROM	Topics

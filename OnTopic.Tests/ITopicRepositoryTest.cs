@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using OnTopic.Collections;
 using OnTopic.Data.Caching;
-using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,7 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION TEST
+  | CLASS: TOPIC REPOSITORY TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="AttributeValueCollection"/> class.
@@ -30,7 +29,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    readonly                    ITopicRepository            _topicRepository;
+    readonly                    ITopicRepository                _topicRepository;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -222,25 +221,6 @@ namespace OnTopic.Tests {
       _topicRepository.Delete(topic);
 
       Assert.AreEqual<int>(1, parent.Children.Count);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: GET CONTENT TYPE DESCRIPTORS: RETURNS TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a list of <see cref="ContentTypeDescriptor"/>s from the <see cref="ITopicRepository"/> and ensures that
-    ///   the expected number (2) are present.
-    /// </summary>
-    [TestMethod]
-    public void GetContentTypeDescriptors_ReturnsTopics() {
-
-      var contentTypes = _topicRepository.GetContentTypeDescriptors();
-
-      Assert.AreEqual<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetTopic("Page"));
-      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
 
     }
 

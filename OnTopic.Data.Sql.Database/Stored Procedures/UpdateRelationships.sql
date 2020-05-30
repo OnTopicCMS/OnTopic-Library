@@ -7,25 +7,9 @@
 CREATE PROCEDURE [dbo].[UpdateRelationships]
 	@TopicID		INT	= -1,
 	@RelationshipKey	VARCHAR(255)	= 'related',
-	@RelatedTopics		TopicList	READONLY
+	@RelatedTopics		TopicList	READONLY,
+	@DeleteUnmatched	BIT	= 1
 AS
-
---------------------------------------------------------------------------------------------------------------------------------
--- DECLARE AND SET VARIABLES
-
-DECLARE	@Existing_TopicIDs	TopicList
-
---------------------------------------------------------------------------------------------------------------------------------
--- IDENTIFY EXISTING VALUES
---------------------------------------------------------------------------------------------------------------------------------
-INSERT
-INTO	@Existing_TopicIDs (
-	  TopicID
-	)
-SELECT	Target_TopicID
-FROM	Relationships
-WHERE	Source_TopicID		= @TopicID
-  AND	RelationshipKey		= @RelationshipKey
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NOVEL VALUES
@@ -36,13 +20,27 @@ INTO	Relationships (
 	  RelationshipKey,
 	  Target_TopicID
 	)
-SELECT	@TopicId,
+SELECT	@TopicID,
 	@RelationshipKey,
-	Target.TopicID
+	TopicID
 FROM	@RelatedTopics		Target
-FULL JOIN	@Existing_TopicIDs	Existing
-  ON	Existing.TopicID	= Target.TopicID
-WHERE	Existing.TopicID	is null
+LEFT JOIN	Relationships		Existing
+  ON	Target_TopicID		= TopicID
+  AND	Source_TopicID		= @TopicID
+WHERE	Target_TopicID		IS NULL
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE UNMATCHED VALUES
+--------------------------------------------------------------------------------------------------------------------------------
+IF @DeleteUnmatched = 1
+  BEGIN
+    DELETE	EXISTING
+    FROM	@RelatedTopics		Relationships
+    RIGHT JOIN	Relationships		Existing
+      ON	Target_TopicID		= TopicID
+    WHERE	Source_TopicID		= @TopicID
+      AND	ISNULL(TopicID, '')	= ''
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

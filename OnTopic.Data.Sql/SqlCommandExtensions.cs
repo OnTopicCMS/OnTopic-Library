@@ -27,13 +27,17 @@ namespace OnTopic.Data.Sql {
     ///   Retrieves the return code from a stored procedure.
     /// </summary>
     /// <param name="command">The SQL command object.</param>
+    /// <param name="sqlParameter">The name of the SQL parameter to retrieve as the return code.</param>
     internal static int GetReturnCode(this SqlCommand command, string sqlParameter = "ReturnCode") {
       Contract.Assume<InvalidOperationException>(
         command.Parameters.Contains($"@{sqlParameter}"),
         $"The call to the {command.CommandText} stored procedure did not return the expected 'ReturnCode' parameter."
       );
       var returnCode = command.Parameters[$"@{sqlParameter}"].Value.ToString();
-      return Int32.Parse(returnCode, CultureInfo.InvariantCulture);
+      if (Int32.TryParse(returnCode, NumberStyles.Integer, CultureInfo.InvariantCulture, out var returnValue)) {
+        return returnValue;
+      }
+      return -1;
     }
 
     /*==========================================================================================================================
@@ -43,9 +47,7 @@ namespace OnTopic.Data.Sql {
     ///   Adds a SQL parameter to a command object, additionally setting the specified parameter direction.
     /// </summary>
     /// <param name="command">The SQL command object.</param>
-    /// <param name="sqlParameter">The SQL parameter.</param>
-    /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
+    /// <param name="sqlParameter">The name of the SQL output parameter.</param>
     internal static void AddOutputParameter(this SqlCommand command, string sqlParameter = "ReturnCode") =>
       AddParameter(command, sqlParameter, null, SqlDbType.Int, ParameterDirection.ReturnValue);
 
@@ -78,6 +80,15 @@ namespace OnTopic.Data.Sql {
     /// <param name="fieldValue">The SQL field value.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, DateTime fieldValue)
       => AddParameter(command, sqlParameter, fieldValue, SqlDbType.DateTime);
+
+    /// <summary>
+    ///   Wrapper function that adds a SQL parameter to a command object.
+    /// </summary>
+    /// <param name="command">The SQL command object.</param>
+    /// <param name="sqlParameter">The SQL parameter.</param>
+    /// <param name="fieldValue">The SQL field value.</param>
+    internal static void AddParameter(this SqlCommand command, string sqlParameter, DataTable fieldValue)
+      => AddParameter(command, sqlParameter, fieldValue, SqlDbType.Structured);
 
     /// <summary>
     ///   Wrapper function that adds a SQL parameter to a command object.
@@ -143,6 +154,7 @@ namespace OnTopic.Data.Sql {
           SqlDbType.DateTime    => (DateTime)fieldValue,
           SqlDbType.Int         => (int)fieldValue,
           SqlDbType.Xml         => (string)fieldValue,
+          SqlDbType.Structured  => (DataTable)fieldValue,
           _                     => (string)fieldValue,
         };
       }

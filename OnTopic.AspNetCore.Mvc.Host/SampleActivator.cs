@@ -97,15 +97,13 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate controller
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (type == typeof(TopicController)) {
-        return new TopicController(_topicRepository, _topicMappingService);
-      }
-      if (type == typeof(SitemapController)) {
-        return new SitemapController(_topicRepository);
-      }
-      else {
-        throw new Exception($"Unknown controller {type.Name}");
-      }
+      return type.Name switch {
+        nameof(TopicController) =>
+          new TopicController(_topicRepository, _topicMappingService),
+        nameof(SitemapController) =>
+          new SitemapController(_topicRepository),
+        _ => throw new Exception($"Unknown controller {type.Name}")
+      };
 
     }
 
@@ -123,15 +121,13 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate view component
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (type == typeof(MenuViewComponent)) {
-        return new MenuViewComponent(_topicRepository, _hierarchicalMappingService);
-      }
-      else if (type == typeof(PageLevelNavigationViewComponent)) {
-        return new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService);
-      }
-      else {
-        throw new Exception($"Unknown view component {type.Name}");
-      }
+      return type.Name switch {
+        nameof(MenuViewComponent) =>
+          new MenuViewComponent(_topicRepository, _hierarchicalMappingService),
+        nameof(PageLevelNavigationViewComponent) =>
+          new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
+        _ => throw new Exception($"Unknown view component {type.Name}")
+      };
 
     }
 

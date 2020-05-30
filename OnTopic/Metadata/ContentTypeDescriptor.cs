@@ -4,9 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Metadata {
 
@@ -209,6 +211,30 @@ namespace OnTopic.Metadata {
         \---------------------------------------------------------------------------------------------------------------------*/
         return _attributeDescriptors;
 
+      }
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: RESET ATTRIBUTE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the list of <see cref="AttributeDescriptor"/>s stored in the <see cref="AttributeDescriptors"/> collection on
+    ///   not only this <see cref="ContentTypeDescriptor"/>, but also any descendent <see cref="ContentTypeDescriptor"/>s.
+    /// </summary>
+    /// <remarks>
+    ///   Each <see cref="ContentTypeDescriptor"/> has an <see cref="AttributeDescriptors"/> collection which includes not only
+    ///   the <see cref="AttributeDescriptor"/>s associated with that <see cref="ContentTypeDescriptor"/>, but <i>also</i> any
+    ///   <see cref="AttributeDescriptor"/>s from any parent <see cref="ContentTypeDescriptor"/>s in the topic graph. This
+    ///   reflects the fact that attributes are inherited from parent content types. As a result, however, when an <see
+    ///   cref="AttributeDescriptor"/> is added or removed, or a <see cref="ContentTypeDescriptor"/> is moved to a new parent,
+    ///   this cache should be reset on the associated <see cref="ContentTypeDescriptor"/> and all descendent <see
+    ///   cref="ContentTypeDescriptor"/>s to ensure the change is reflected.
+    /// </remarks>
+    internal void ResetAttributeDescriptors() {
+      _attributeDescriptors = null!;
+      foreach (var topic in Children.Where(t => t is ContentTypeDescriptor).Cast<ContentTypeDescriptor>()) {
+        topic.ResetAttributeDescriptors();
       }
     }
 
