@@ -87,23 +87,23 @@ WHERE	RangeLeft
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE	Attributes
 FROM	Attributes		Attributes
-INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = Attributes.TopicID
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= Attributes.TopicID
 
 DELETE	ExtendedAttributes
 FROM	ExtendedAttributes	ExtendedAttributes
-INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = ExtendedAttributes.TopicID
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= ExtendedAttributes.TopicID
 
 DELETE	Relationships
 FROM	Relationships		Relationships
-INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = Relationships.Source_TopicID
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= Relationships.Source_TopicID
 
 DELETE	Relationships
 FROM	Relationships		Relationships
-INNER JOIN	@Topics                         Topics
-  ON	Topics.TopicId                  = Relationships.Target_TopicID
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= Relationships.Target_TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DELETE RANGE
