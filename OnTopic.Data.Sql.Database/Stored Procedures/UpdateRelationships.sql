@@ -20,12 +20,12 @@ INTO	Relationships (
 	  RelationshipKey,
 	  Target_TopicID
 	)
-SELECT	@TopicId,
+SELECT	@TopicID,
 	@RelationshipKey,
 	TopicID
 FROM	@RelatedTopics		Target
 LEFT JOIN	Relationships		Existing
-  ON	Target_TopicID		= TopicId
+  ON	Target_TopicID		= TopicID
   AND	Source_TopicID		= @TopicID
 WHERE	Target_TopicID		IS NULL
 
@@ -37,7 +37,7 @@ IF @DeleteUnmatched = 1
     DELETE	EXISTING
     FROM	@RelatedTopics		Relationships
     RIGHT JOIN	Relationships		Existing
-      ON	Target_TopicID		= TopicId
+      ON	Target_TopicID		= TopicID
     WHERE	Source_TopicID		= @TopicID
       AND	ISNULL(TopicID, '')	= ''
   END
