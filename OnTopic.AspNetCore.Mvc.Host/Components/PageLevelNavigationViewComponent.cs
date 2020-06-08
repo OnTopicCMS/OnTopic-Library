@@ -33,7 +33,7 @@ namespace OnTopic.AspNetCore.Mvc.Host.Components {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of a <see cref="MenuViewComponentBase{T}"/> with necessary dependencies.
+    ///   Initializes a new instance of a <see cref="PageLevelViewComponentBase{T}"/> with necessary dependencies.
     /// </summary>
     /// <returns>A topic controller for loading OnTopic views.</returns>
     public PageLevelNavigationViewComponent(
