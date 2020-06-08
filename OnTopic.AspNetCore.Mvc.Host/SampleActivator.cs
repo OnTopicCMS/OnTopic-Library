@@ -128,6 +128,8 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
         nameof(SiblingNavigationViewComponent) =>
           new SiblingNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
+        nameof(ChildNavigationViewComponent) =>
+          new ChildNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
         _ => throw new Exception($"Unknown view component {type.Name}")
       };
 
