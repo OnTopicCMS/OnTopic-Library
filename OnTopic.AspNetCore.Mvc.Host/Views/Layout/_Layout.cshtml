@@ -12,20 +12,18 @@
 
     <!-- Site Navigation Area -->
     <navigation id="SiteNavigation">
+
+      <h1>Navigation</h1>
       <vc:menu />
+      <vc:page-level-navigation />
       <vc:sibling-navigation />
       <vc:child-navigation />
+
     </navigation>
     <!-- /Site Navigation Area -->
 
     <!-- Main Site Content Area -->
     <main id="MainContentArea" class="page content" role="main">
-
-      <!-- Page Header Area -->
-      <section id="PageHeaderSection">
-        <vc:page-level-navigation />
-      </section>
-      <!-- /Page Header Area -->
 
       <article itemscope itemtype="http://schema.org/WebPageElement" itemprop="mainContentOfPage" class="grid-container">
         <h1>@(Model.ContentType.Equals("PageGroup")? "Overview" : Model.Title)</h1>
