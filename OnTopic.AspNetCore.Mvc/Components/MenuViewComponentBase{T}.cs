@@ -46,7 +46,6 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /// <summary>
     ///   Initializes a new instance of a <see cref="MenuViewComponentBase{T}"/> with necessary dependencies.
     /// </summary>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
     protected MenuViewComponentBase(
       ITopicRepository topicRepository,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
@@ -57,12 +56,15 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     }
 
     /*==========================================================================================================================
-    | METHOD: INVOKE (ASYNC)
+    | METHOD: GET NAVIGATION ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides the global menu for the site layout, which exposes the top two tiers of navigation.
+    ///   Retrieves the root <see cref="Topic"/> from which to map the <typeparamref name="T"/> objects.
     /// </summary>
-    public async Task<IViewComponentResult> InvokeAsync() {
+    /// <remarks>
+    ///   The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
+    /// </remarks>
+    protected Topic? GetNavigationRoot() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate dependencies
@@ -71,8 +73,6 @@ namespace OnTopic.AspNetCore.Mvc.Components {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify navigation root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | The navigation root in the case of the main menu is the namespace; i.e., the first topic underneath the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       navigationRootTopic             = (Topic?)null;
       var                       configuredRoot                  = CurrentTopic.Attributes.GetValue("NavigationRoot", true);
@@ -84,18 +84,46 @@ namespace OnTopic.AspNetCore.Mvc.Components {
         navigationRootTopic = HierarchicalTopicMappingService.GetHierarchicalRoot(CurrentTopic, 2, "Web");
       }
 
-      var navigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return navigationRootTopic;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MAP NAVIGATION TOPIC VIEW MODELS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a list of <typeparamref name="T"/> instances based on the <paramref name="navigationRootTopic"/>.
+    /// </summary>
+    protected async Task<T?> MapNavigationTopicViewModels(Topic? navigationRootTopic) =>
+      await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic!,
         3,
         t => t.ContentType != "PageGroup"
       ).ConfigureAwait(false);
 
+    /*==========================================================================================================================
+    | METHOD: INVOKE (ASYNC)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides the pagel-level navigation menu for the current page, which exposes one tier of navigation from the nearest
+    ///   page group.
+    /// </summary>
+    public async Task<IViewComponentResult> InvokeAsync() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve root topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var navigationRootTopic = GetNavigationRoot();
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var navigationViewModel   = new NavigationViewModel<T>() {
-        NavigationRoot          = navigationRoot,
-        CurrentKey              = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
+      var navigationViewModel = new NavigationViewModel<T>() {
+        NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
+        CurrentKey = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

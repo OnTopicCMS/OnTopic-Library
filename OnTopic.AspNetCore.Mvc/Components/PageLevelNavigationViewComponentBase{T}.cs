@@ -45,16 +45,60 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of a <see cref="MenuViewComponentBase{T}"/> with necessary dependencies.
+    ///   Initializes a new instance of a <see cref="PageLevelNavigationViewComponentBase{T}"/> with necessary dependencies.
     /// </summary>
-    /// <returns>A topic controller for loading OnTopic views.</returns>
     protected PageLevelNavigationViewComponentBase(
       ITopicRepository topicRepository,
       IHierarchicalTopicMappingService<T> hierarchicalTopicMappingService
     ) : base(
       topicRepository,
       hierarchicalTopicMappingService
-    ) {}
+    ) { }
+
+    /*==========================================================================================================================
+    | METHOD: GET NAVIGATION ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the root <see cref="Topic"/> from which to map the <typeparamref name="T"/> objects.
+    /// </summary>
+    /// <remarks>
+    ///   The navigation root in the case of the page-level navigation any parent of content type <c>PageGroup</c>.
+    /// </remarks>
+    protected Topic? GetNavigationRoot() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var currentTopic          = CurrentTopic;
+      var navigationRootTopic   = (Topic?)currentTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify navigation root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (navigationRootTopic != null) {
+        while (
+          navigationRootTopic.Parent != null &&
+          !navigationRootTopic.ContentType.Equals("PageGroup", StringComparison.InvariantCulture)
+        ) {
+          navigationRootTopic = navigationRootTopic.Parent;
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return navigationRootTopic?.Parent == null? null : navigationRootTopic;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MAP NAVIGATION TOPIC VIEW MODELS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a list of <typeparamref name="T"/> instances based on the <paramref name="navigationRootTopic"/>.
+    /// </summary>
+    protected async Task<T?> MapNavigationTopicViewModels(Topic? navigationRootTopic) =>
+      await HierarchicalTopicMappingService.GetRootViewModelAsync(navigationRootTopic).ConfigureAwait(true);
 
     /*==========================================================================================================================
     | METHOD: INVOKE (ASYNC)
@@ -66,38 +110,16 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     public async Task<IViewComponentResult> InvokeAsync() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
+      | Retrieve root topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var currentTopic          = CurrentTopic;
-      var navigationRootTopic   = (Topic?)currentTopic;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify navigation root
-      >-------------------------------------------------------------------------------------------------------------------------
-      | The navigation root in the case of the page-level navigation any parent of content type "PageGroup".
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic != null) {
-        while (
-          navigationRootTopic.Parent != null &&
-          !navigationRootTopic.ContentType.Equals("PageGroup", StringComparison.InvariantCulture)
-        ) {
-          navigationRootTopic = navigationRootTopic.Parent;
-        }
-      }
-
-      if (navigationRootTopic?.Parent == null) navigationRootTopic = null;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate conditions
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Assume(CurrentTopic, $"The current topic could not be identified for the page-level navigation.");
+      var navigationRootTopic = GetNavigationRoot();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Construct view model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel = new NavigationViewModel<T>() {
-        NavigationRoot = await HierarchicalTopicMappingService.GetRootViewModelAsync(navigationRootTopic).ConfigureAwait(true),
-        CurrentKey = CurrentTopic.GetUniqueKey()
+        NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
+        CurrentKey = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
