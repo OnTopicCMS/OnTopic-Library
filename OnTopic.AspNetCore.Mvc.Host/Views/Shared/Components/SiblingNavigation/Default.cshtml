@@ -1,0 +1,15 @@
+﻿@model NavigationViewModel<NavigationTopicViewModel>
+
+<h2>SiblingNavigation</h2>
+<ul>
+  @if (Model.NavigationRoot != null) {
+    foreach (var topic in Model.NavigationRoot.Children) {
+      <li><a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title)</a></li>
+    }
+  }
+</ul>
+
+<!--
+  Content Type: NavigationViewModel<NavigationTopicViewModel>
+  View Location: ~/Views/Shared/Components/ChildNavigation/Default.cshtml
+-->
