@@ -187,6 +187,28 @@ namespace OnTopic.AspNetCore.Mvc {
         defaults: new { controller = areaName }
       );
 
+    /// <summary>
+    ///   Adds the <c>{area:exists}/{action=Index}</c> endpoint route for all areas where the controller has the same name as
+    ///   the area.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     This extension method implicitly assigns the controller name based on the area name. This is advantageous when there
+    ///     are multiple areas which have a single controller which is named after the area—e.g., <c>[Area("Forms")]</c> and
+    ///     <c>FormsController: Controller</c>—as this allows those to be collectively registered under a single route, without
+    ///     needing the redundant <c>Controller</c> value to be defined in the route (e.g., <c>/Forms/Forms/{action}</c>.
+    ///   </para>
+    ///   <para>
+    ///     Be aware that this method uses the <see cref="ControllerEndpointRouteBuilderExtensions.MapDynamicControllerRoute{
+    ///     TTransformer}(IEndpointRouteBuilder, String)"/> method. In .NET 3.x, this is incompatible with both the <see cref=
+    ///     "AnchorTagHelper"/> and <see cref="LinkGenerator"/> classes. This means that e.g. <c>@Url.Action()</c> references
+    ///     in views won't be properly formed. If these are required, prefer registering each route individually using <see
+    ///     cref="MapImplicitAreaControllerRoute(IEndpointRouteBuilder, String)"/>.
+    ///   </para>
+    /// </remarks>
+    public static void MapImplicitAreaControllerRoute(this IEndpointRouteBuilder routes) =>
+      routes.MapDynamicControllerRoute<TopicRouteValueTransformer>("{area:exists}/{action=Index}");
+
     /*==========================================================================================================================
     | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
