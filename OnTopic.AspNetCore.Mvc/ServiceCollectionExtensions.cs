@@ -144,6 +144,32 @@ namespace OnTopic.AspNetCore.Mvc {
       );
 
     /*==========================================================================================================================
+    | EXTENSION: MAP IMPLICIT AREA CONTROLLER ROUTES (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds the <c>{areaName}/{action=Index}</c> endpoint route for a specific area where the controller has the same name as
+    ///   the area.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     This extension method implicitly assigns the controller name based on the area name. This is advantageous when an
+    ///     area has a single controller which is named after the area—e.g., <c>[Area("Forms")]</c> and <c>FormsController</c>—
+    ///     as this allows the redundant <c>Controller</c> to be ommited from the route (e.g., <c>/Forms/Forms/{action}</c>.
+    ///   </para>
+    ///   <para>
+    ///     If there are multiple routes that fit this description, you can instead opt to use the <see cref=
+    ///     "MapImplicitAreaControllerRoute(IEndpointRouteBuilder)"/> overload, which will register all areas.
+    ///   </para>
+    /// </remarks>
+    public static void MapImplicitAreaControllerRoute(this IEndpointRouteBuilder routes, string areaName) =>
+      routes.MapAreaControllerRoute(
+        name: $"{areaName}TopicArea",
+        areaName: areaName,
+        pattern: $"{areaName}/{{action}}",
+        defaults: new { controller = areaName }
+      );
+
+    /*==========================================================================================================================
     | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
