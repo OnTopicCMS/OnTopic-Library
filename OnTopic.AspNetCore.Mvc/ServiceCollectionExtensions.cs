@@ -86,12 +86,10 @@ namespace OnTopic.AspNetCore.Mvc {
     | EXTENSION: MAP TOPIC ROUTE (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds an MVC route for handling OnTopic related requests, and maps it to the <see cref="TopicController"/> by default.
+    ///   Adds the <c>{rootTopic}/{**path}</c> endpoint route for a specific root topic, which enables that root to be mapped to
+    ///   specific topics via the <see cref="TopicRepositoryExtensions.Load(Repositories.ITopicRepository, RouteData)"/>
+    ///   extension method used by <see cref="TopicController"/>.
     /// </summary>
-    /// <remarks>
-    ///   This is functionally identical to <see cref="MapTopicRoute(IRouteBuilder, String, String, String)"/>, except that it
-    ///   targets the <see cref="IEndpointRouteBuilder"/>, which is preferred in ASP.NET Core 3.
-    /// </remarks>
     public static ControllerActionEndpointConventionBuilder MapTopicRoute(
       this IEndpointRouteBuilder routes,
       string rootTopic,
