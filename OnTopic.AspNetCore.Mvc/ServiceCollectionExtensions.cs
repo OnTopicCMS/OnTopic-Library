@@ -3,13 +3,15 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.AspNetCore.Mvc.Controllers;
-using OnTopic.Internal.Diagnostics;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OnTopic.AspNetCore.Mvc.Controllers;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 
@@ -38,6 +40,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Register services
       \-----------------------------------------------------------------------------------------------------------------------*/
       services.Services.TryAddSingleton<IActionResultExecutor<TopicViewResult>, TopicViewResultExecutor>();
+      services.Services.TryAddSingleton<TopicRouteValueTransformer>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure services
@@ -126,6 +129,21 @@ namespace OnTopic.AspNetCore.Mvc {
         pattern: areaName + "/{**path}",
         defaults: new { controller = controller?? areaName, action, rootTopic = areaName }
       );
+
+    /// <summary>
+    ///   Adds the <c>{area:exists}/{**path}</c> endpoint route for all areas, which enables the areas to be mapped to specific
+    ///   topics via the <see cref="TopicRepositoryExtensions.Load(Repositories.ITopicRepository, RouteData)"/> extension method
+    ///   used by <see cref="TopicController"/>.
+    /// </summary>
+    /// <remarks>
+    ///   Be aware that this method uses the <see cref="ControllerEndpointRouteBuilderExtensions.MapDynamicControllerRoute{
+    ///   TTransformer}(IEndpointRouteBuilder, String)"/> method. In .NET 3.x, this is incompatible with both the <see cref=
+    ///   "AnchorTagHelper"/> and <see cref="LinkGenerator"/> classes. This means that e.g. <c>@Url.Action()</c> references
+    ///   in views won't be properly formed. If these are required, prefer registering each route individually using <see cref=
+    ///   "MapTopicAreaRoute(IEndpointRouteBuilder, String, String?, String)"/>.
+    /// </remarks>
+    public static void MapTopicAreaRoute(this IEndpointRouteBuilder routes) =>
+      routes.MapDynamicControllerRoute<TopicRouteValueTransformer>("{area:exists}/{**path}");
 
     /*==========================================================================================================================
     | EXTENSION: MAP DEFAULT AREA CONTROLLER ROUTES (IENDPOINTROUTEBUILDER)
