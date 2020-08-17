@@ -103,6 +103,31 @@ namespace OnTopic.AspNetCore.Mvc {
       );
 
     /*==========================================================================================================================
+    | EXTENSION: MAP TOPIC AREA ROUTE (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds the <c>{areaName}/{**path}</c> endpoint route for a specific area, which enables the areas to be mapped to
+    ///   specific topics via the <see cref="TopicRepositoryExtensions.Load(Repositories.ITopicRepository, RouteData)"/>
+    ///   extension method used by <see cref="TopicController"/>.
+    /// </summary>
+    /// <remarks>
+    ///   If there are multiple routes that fit this description, you can instead opt to use the <see cref=
+    ///   "MapTopicAreaRoute(IEndpointRouteBuilder)"/> extension, which will register all areas.
+    /// </remarks>
+    public static ControllerActionEndpointConventionBuilder MapTopicAreaRoute(
+      this IEndpointRouteBuilder routes,
+      string areaName,
+      string? controller = null,
+      string action = "Index"
+    ) =>
+      routes.MapAreaControllerRoute(
+        name: $"TopicAreas",
+        areaName: areaName,
+        pattern: areaName + "/{**path}",
+        defaults: new { controller = controller?? areaName, action, rootTopic = areaName }
+      );
+
+    /*==========================================================================================================================
     | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
