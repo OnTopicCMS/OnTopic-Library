@@ -128,6 +128,22 @@ namespace OnTopic.AspNetCore.Mvc {
       );
 
     /*==========================================================================================================================
+    | EXTENSION: MAP DEFAULT AREA CONTROLLER ROUTES (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds the fully-qualified <c>{area:exists}/{controller}/{action=Index}/{id?}</c> endpoint route for all areas.
+    /// </summary>
+    /// <remarks>
+    ///   This is analogous to the standard <see cref="ControllerEndpointRouteBuilderExtensions.MapDefaultControllerRoute(
+    ///   IEndpointRouteBuilder)"/> method that ships with ASP.NET, except that it works with areas.
+    /// </remarks>
+    public static void MapDefaultAreaControllerRoute(this IEndpointRouteBuilder routes) =>
+      routes.MapControllerRoute(
+        name: "TopicAreas",
+        pattern: "{area:exists}/{controller}/{action=Index}/{id?}"
+      );
+
+    /*==========================================================================================================================
     | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
