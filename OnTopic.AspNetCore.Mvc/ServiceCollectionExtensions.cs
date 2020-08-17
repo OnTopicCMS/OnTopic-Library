@@ -98,7 +98,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ) =>
       routes.MapControllerRoute(
         name: $"{rootTopic}Topic",
-        pattern: rootTopic + "/{*path}",
+        pattern: rootTopic + "/{**path}",
         defaults: new { controller, action, rootTopic }
       );
 
