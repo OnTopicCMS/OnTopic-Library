@@ -64,6 +64,12 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <summary>
     ///   Adds an MVC route for handling OnTopic related requests, and maps it to the <see cref="TopicController"/> by default.
     /// </summary>
+    /// <remarks>
+    ///   For ASP.NET Core 3, prefer instead <see cref="MapTopicRoute(IEndpointRouteBuilder, String, String, String)"/>, as
+    ///   endpoint routing is preferred in ASP.NET Core 3. OnTopic also offers far more extension methods for endpoint routing,
+    ///   while this method is provided exclusively for backward compatibility.
+    /// </remarks>
+    [Obsolete("This method is deprecated and will be removed in OnTopic 5. Callers should migrate to endpoint routing.", false)]
     public static IRouteBuilder MapTopicRoute(
       this IRouteBuilder routes,
       string rootTopic,
