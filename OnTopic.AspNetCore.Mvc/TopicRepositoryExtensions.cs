@@ -67,6 +67,8 @@ namespace OnTopic.AspNetCore.Mvc {
         cleanPath($"{rootTopic}/{path}"),
         cleanPath($"{area}/{controller}/{action}/{path}"),
         cleanPath($"{area}/{controller}/{path}"),
+        cleanPath($"{area}/{action}/{path}"),
+        cleanPath($"{area}/{path}")
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
