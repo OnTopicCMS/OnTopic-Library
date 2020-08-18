@@ -121,6 +121,21 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     }
 
     /*==========================================================================================================================
+    | GET: /SITEMAP/EXTENDED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides the Sitemap.org sitemap for the site, including extended metadata attributes.
+    /// </summary>
+    /// <remarks>
+    ///   Introducing the metadata makes the sitemap considerably larger. However, it also means that some agents will index the
+    ///   additional information and make it available for querying. For instance, the (now defunct) Google Custom Search Engine
+    ///   (CSE) would previously allow queries to be filtered based on metadata attributes exposed via the sitemap.
+    /// </remarks>
+    /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
+    /// <returns>A Sitemap.org sitemap.</returns>
+    public virtual ActionResult Extended(bool indent = false) => Index(indent, true);
+
+    /*==========================================================================================================================
     | METHOD: GENERATE SITEMAP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
