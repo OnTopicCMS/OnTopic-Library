@@ -114,6 +114,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       app.UseEndpoints(endpoints => {
         endpoints.MapTopicRoute("Web");
         endpoints.MapTopicSitemap();
+        endpoints.MapTopicRedirect();
         endpoints.MapControllers();
       });
 
