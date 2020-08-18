@@ -210,6 +210,25 @@ namespace OnTopic.AspNetCore.Mvc {
       routes.MapDynamicControllerRoute<TopicRouteValueTransformer>("{area:exists}/{action=Index}");
 
     /*==========================================================================================================================
+    | EXTENSION: MAP TOPIC SITEMAP (IENDPOINTROUTEBUILDER)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds the <c>Sitemap/{action=Index}</c> endpoint route for the OnTopic sitemap.
+    /// </summary>
+    /// <remarks>
+    ///   For most implementations, this will be covered by the default route, such as that implemented by the standard <see
+    ///   cref="ControllerEndpointRouteBuilderExtensions.MapDefaultControllerRoute(IEndpointRouteBuilder)"/> method that ships
+    ///   with ASP.NET. This extension method is provided as a convenience method for implementations that aren't using the
+    ///   standard route, for whatever reason, and want a specific route setup for the sitemap.
+    /// </remarks>
+    public static ControllerActionEndpointConventionBuilder MapTopicSitemap(this IEndpointRouteBuilder routes) =>
+      routes.MapControllerRoute(
+        name: "TopicSitemap",
+        pattern: "Sitemap/{action=Index}",
+        defaults: new { controller = "Sitemap" }
+      );
+
+    /*==========================================================================================================================
     | EXTENSION: MAP TOPIC REDIRECT (IENDPOINTROUTEBUILDER)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
