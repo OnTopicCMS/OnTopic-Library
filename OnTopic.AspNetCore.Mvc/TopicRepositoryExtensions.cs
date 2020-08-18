@@ -64,9 +64,11 @@ namespace OnTopic.AspNetCore.Mvc {
       | that path does need to be defined—thus e.g. {area}/{controller}/{path}.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var paths = new List<string?>() {
-       cleanPath($"{rootTopic}/{path}"),
-       cleanPath($"{area}/{controller}/{action}/{path}"),
-       cleanPath($"{area}/{controller}/{path}"),
+        cleanPath($"{rootTopic}/{path}"),
+        cleanPath($"{area}/{controller}/{action}/{path}"),
+        cleanPath($"{area}/{controller}/{path}"),
+        cleanPath($"{area}/{action}/{path}"),
+        cleanPath($"{area}/{path}")
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -75,9 +77,9 @@ namespace OnTopic.AspNetCore.Mvc {
       var topic = (Topic?)null;
 
       foreach (var searchPath in paths) {
-       if (topic != null) break;
-       if (String.IsNullOrEmpty(searchPath)) continue;
-       topic = topicRepository.Load(searchPath);
+        if (topic != null) break;
+        if (String.IsNullOrEmpty(searchPath)) continue;
+        topic = topicRepository.Load(searchPath);
       }
 
       return topic;
