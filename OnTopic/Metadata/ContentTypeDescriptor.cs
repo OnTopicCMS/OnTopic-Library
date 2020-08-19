@@ -127,7 +127,7 @@ namespace OnTopic.Metadata {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean)"/>.
+    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean, Boolean?)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
