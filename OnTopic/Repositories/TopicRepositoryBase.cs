@@ -234,7 +234,7 @@ namespace OnTopic.Repositories {
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Rollback([ValidatedNotNull, NotNull]Topic topic, DateTime version) {
+    public virtual void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -300,7 +300,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual int Save([ValidatedNotNull, NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -387,7 +387,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target) {
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -409,7 +409,7 @@ namespace OnTopic.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target, Topic? sibling) {
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -455,7 +455,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Delete([ValidatedNotNull, NotNull]Topic topic, bool isRecursive) {
+    public virtual void Delete([ValidatedNotNull]Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
