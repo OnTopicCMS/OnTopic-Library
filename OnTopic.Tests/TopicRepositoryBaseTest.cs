@@ -418,7 +418,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Move(contactContentType, pageContentType);
 
-      Assert.IsFalse(contactContentType?.AttributeDescriptors.Count > contactAttributeCount);
+      Assert.AreNotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
 
     }
 
