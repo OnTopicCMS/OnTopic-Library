@@ -733,8 +733,8 @@ namespace OnTopic.Repositories {
       if (IsAttributeDescriptor(topic)) {
         ((ContentTypeDescriptor)topic.Parent!.Parent!).ResetAttributeDescriptors();
       }
-      else if (topic is ContentTypeDescriptor) {
-        ((ContentTypeDescriptor)topic).ResetAttributeDescriptors();
+      else if (topic is ContentTypeDescriptor descriptor) {
+        descriptor.ResetAttributeDescriptors();
       }
     }
 
