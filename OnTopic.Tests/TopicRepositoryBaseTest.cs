@@ -381,6 +381,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES PERMITTED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads the <see cref="TopicRepositoryBase.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
+    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
+    ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
+    /// </summary>
+    [TestMethod]
+    public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
+
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var pageContentType       = contentTypes.GetTopic("Page");
+      var lookupContentType     = contentTypes.GetTopic("Lookup");
+      var initialCount          = pageContentType.PermittedContentTypes.Count;
+
+      pageContentType.Relationships.SetTopic("ContentTypes", lookupContentType);
+
+      _topicRepository.Save(pageContentType);
+
+      Assert.AreNotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

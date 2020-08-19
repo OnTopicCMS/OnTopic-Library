@@ -239,6 +239,21 @@ namespace OnTopic.Metadata {
     }
 
     /*==========================================================================================================================
+    | METHOD: RESET PERMITTED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the list of <see cref="ContentTypeDescriptor"/>s stored in the <see cref="PermittedContentTypes"/> collection
+    ///   on this <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <remarks>
+    ///   Each <see cref="ContentTypeDescriptor"/> has a <see cref="PermittedContentTypes"/> collection which includes the <see
+    ///   cref="ContentTypeDescriptor"/>s associated with that <see cref="ContentTypeDescriptor"/>. As this is cached, however,
+    ///   the value should be reset whenever a <see cref="ContentTypeDescriptor"/> has been modified, in case those values have
+    ///   changed.
+    /// </remarks>
+    internal void ResetPermittedContentTypes() => _permittedContentTypes = null;
+
+    /*==========================================================================================================================
     | METHOD: IS TYPE OF?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

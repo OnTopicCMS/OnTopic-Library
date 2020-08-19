@@ -355,13 +355,21 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If new content type, add to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var asContentType         = topic as ContentTypeDescriptor;
       if (
         topic.IsNew &&
-        topic is ContentTypeDescriptor descriptor &&
+        asContentType != null &&
         _contentTypeDescriptors != null &&
         !_contentTypeDescriptors.Contains(topic.Key)
       ) {
-        _contentTypeDescriptors.Add(descriptor);
+        _contentTypeDescriptors.Add(asContentType);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If content type, and relationships have been updated, refresh permitted content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (asContentType != null && asContentType.Relationships.IsDirty()) {
+        asContentType.ResetPermittedContentTypes();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
