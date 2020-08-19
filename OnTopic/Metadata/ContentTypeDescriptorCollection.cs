@@ -53,6 +53,12 @@ namespace OnTopic.Metadata {
         return;
       }
 
+      Contract.Requires(
+        rootContentType.Key.Equals("ContentTypes", StringComparison.OrdinalIgnoreCase),
+        $"The {nameof(rootContentType)} is expected to represent the root of the content type topic graph, with a " +
+        $"key of 'ContentTypes'. Instead, the supplied ContentTypeDescriptor has a key of '{rootContentType.Key}'."
+      );
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear any existing values
       \-----------------------------------------------------------------------------------------------------------------------*/
