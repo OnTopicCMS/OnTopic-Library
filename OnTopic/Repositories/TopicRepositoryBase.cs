@@ -31,7 +31,7 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private ContentTypeDescriptorCollection? _contentTypeDescriptors = null;
+    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new ContentTypeDescriptorCollection();
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -57,12 +57,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypeDescriptors == null) {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Initialize cache
-        \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+      if (_contentTypeDescriptors.Count == 0) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
@@ -70,7 +65,7 @@ namespace OnTopic.Repositories {
         var configuration       = (Topic?)null;
 
         try {
-          configuration = Load("Configuration");
+          configuration         = Load("Configuration");
         }
         catch (TopicNotFoundException) {
           //Swallow missing configuration, as this is an expected condition when working with a new database
@@ -79,12 +74,12 @@ namespace OnTopic.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
+        var contentTypes        = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = GetContentTypeDescriptors(allowedContentTypes);
+        _contentTypeDescriptors.Refresh(contentTypes);
 
       }
 
