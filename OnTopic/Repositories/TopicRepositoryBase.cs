@@ -423,7 +423,12 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.SetParent(target, sibling);
+      if (sibling == null) {
+        topic.SetParent(target);
+      }
+      else {
+        topic.SetParent(target, sibling);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If a content type descriptor is being moved to a new parent, refresh cache
