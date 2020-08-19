@@ -321,7 +321,7 @@ namespace OnTopic.Tests {
       var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
       var contentTypeCount      = contentTypes.Count;
 
-      _topicRepository.GetContentTypeDescriptorsProxy((ContentTypeDescriptor)newContentType);
+      _topicRepository.GetContentTypeDescriptorsProxy(rootContentType);
 
       Assert.AreNotEqual<int>(contentTypeCount, contentTypes.Count);
       Assert.IsNotNull(contentTypes.Contains(newContentType));
