@@ -105,8 +105,32 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors) {
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", false)]
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
+      => SetContentTypeDescriptors(contentTypeDescriptors);
 
+    /*==========================================================================================================================
+    | SET CONTENT TYPE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Allows for the content type descriptor cache to be (re)initialized based on an in-memory topic graph, starting with
+    ///   the root <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the <see cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method will load data from the
+    ///   concrete implementation of the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be
+    ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
+    ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
+    ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
+    ///   Topic, Boolean, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+    /// </remarks>
+    /// <param name="rootContentType">
+    ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
+    ///   cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
+    ///   "ContentTypeDescriptor"/>, but also any descendents.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(ContentTypeDescriptor? rootContentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish cache
@@ -116,7 +140,7 @@ namespace OnTopic.Repositories {
       | mixing objects from different topic graphs. Instead, we always assume that the source collection is the most accurate
       | and relevant.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _contentTypeDescriptors.Refresh(contentTypeDescriptors);
+      _contentTypeDescriptors.Refresh(rootContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate cache
