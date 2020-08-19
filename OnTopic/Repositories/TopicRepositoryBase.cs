@@ -321,13 +321,6 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Update content types collection, if appropriate
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && !contentTypeDescriptors.Contains(topic.Key)) {
-        contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure derived topic is set
       >-------------------------------------------------------------------------------------------------------------------------
       | ### HACK JJC20200523: If a derived topic is linked but hasn't been saved yet, then it should not be persisted to the
@@ -364,11 +357,11 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.IsNew &&
-        topic is ContentTypeDescriptor &&
+        topic is ContentTypeDescriptor descriptor &&
         _contentTypeDescriptors != null &&
         !_contentTypeDescriptors.Contains(topic.Key)
       ) {
-        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+        _contentTypeDescriptors.Add(descriptor);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
