@@ -113,6 +113,18 @@ namespace OnTopic.Repositories {
     | SET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Allows for the content type descriptor cache to be (re)initialized based on an in-memory topic graph, by first
+    ///   identifying the root <see cref="ContentTypeDescriptor"/> from within the current content graph.
+    /// </summary>
+    /// <param name="sourceTopic">
+    ///   A <see cref="Topic"/> within the source topic graph. This overload will use this topic to identify the root <see cref=
+    ///   "ContentTypeDescriptor"/> within the graph.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(Topic? sourceTopic) =>
+      SetContentTypeDescriptors(sourceTopic?.GetByUniqueKey("Root:Configuration:ContentTypes") as ContentTypeDescriptor);
+
+    /// <summary>
     ///   Allows for the content type descriptor cache to be (re)initialized based on an in-memory topic graph, starting with
     ///   the root <see cref="ContentTypeDescriptor"/>.
     /// </summary>
