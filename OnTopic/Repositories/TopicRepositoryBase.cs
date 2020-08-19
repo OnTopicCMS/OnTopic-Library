@@ -387,20 +387,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target != topic);
-      Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires(target, "The target parameter must be specified.");
-      if (topic.Parent != target) {
-        MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-        topic.SetParent(target);
-      }
-
-    }
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) => Move(topic, target, null);
 
     /// <summary>
     ///   Interface method that supports moving a topic from one position to another.
