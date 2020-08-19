@@ -478,13 +478,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If content type, remove from cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && _contentTypeDescriptors != null) {
-        foreach (var contentTypeDescriptor in topic.FindAll(t => t is ContentTypeDescriptor).Cast<ContentTypeDescriptor>()) {
-          if (_contentTypeDescriptors.Contains(contentTypeDescriptor)) {
-            _contentTypeDescriptors.Remove(contentTypeDescriptor);
-          }
-        }
-      }
+      SetContentTypeDescriptors(topic.Parent);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If attribute type, refresh cache
