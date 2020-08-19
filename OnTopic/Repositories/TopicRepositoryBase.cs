@@ -366,6 +366,10 @@ namespace OnTopic.Repositories {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If new attribute, refresh cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Every ContentTypeDescriptor has an AttributeDescriptors property which includes references to all local and inherited
+      | AttributeDescriptors. When a new AttributeDescriptor is added, these collections are reset for the current
+      | ContentTypeDescriptor and all descendents to ensure that they all reflect the new AttributeDescriptor.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsNew && IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
@@ -435,6 +439,10 @@ namespace OnTopic.Repositories {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If a content type descriptor is being moved to a new parent, refresh cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Attributes are inherited from parent content types, and stored in the ContentTypeDescriptor.AttributeDescriptors
+      | collection. As such, when a content type is moved to a new location, the attribute descriptors for itself and all
+      | descendants needs to be reset to ensure the inheritance structure is updated.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != target && topic is ContentTypeDescriptor) {
         ResetAttributeDescriptors(topic);
