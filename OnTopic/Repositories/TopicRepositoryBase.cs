@@ -446,6 +446,7 @@ namespace OnTopic.Repositories {
       | descendants needs to be reset to ensure the inheritance structure is updated.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (previousParent != target && topic is ContentTypeDescriptor) {
+        SetContentTypeDescriptors(topic);
         ResetAttributeDescriptors(topic);
       }
 
