@@ -434,6 +434,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var previousParent        = topic.Parent;
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       topic.SetParent(target, sibling);
 
@@ -444,7 +445,7 @@ namespace OnTopic.Repositories {
       | collection. As such, when a content type is moved to a new location, the attribute descriptors for itself and all
       | descendants needs to be reset to ensure the inheritance structure is updated.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != target && topic is ContentTypeDescriptor) {
+      if (previousParent != target && topic is ContentTypeDescriptor) {
         ResetAttributeDescriptors(topic);
       }
 
