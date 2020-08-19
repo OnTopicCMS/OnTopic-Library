@@ -107,38 +107,25 @@ namespace OnTopic.Repositories {
     /// <returns></returns>
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors) {
 
+
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize the collection from the repository
+      | Establish cache
       >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE JJC2020519: We want to centralize the shared logic from the public GetContentTypeDescriptors() while still
-      | ensuring the cache is first initialized from the underlying data store if this method is called directly. But we don't
-      | want to repeatedly call the underlying data store if it's empty, nor do we want to create a circular loop if this is
-      | being called from GetContentTypeDescriptors(). This is handled by initializing the _contentTypeDescriptors cache in the
-      | GetContentTypeDescriptors() method as a way of tracking the initialization state.
+      | Instead of attempting to merge the source collection with the cached collection, we'll just recreate the cached
+      | collection based on the source collection. This is faster, and helps avoid potential versioning conflicts caused by
+      | mixing objects from different topic graphs. Instead, we always assume that the source collection is the most accurate
+      | and relevant.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypeDescriptors == null) {
-        _contentTypeDescriptors = GetContentTypeDescriptors();
-      }
+      _contentTypeDescriptors.Refresh(contentTypeDescriptors);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
+      | Validate cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the source cache collection is empty then we'll want to defer to the existing version�or retrieve it from the
+      | persistence layer�via GetContentTypeDescriptors().
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (contentTypeDescriptors == null) {
-        return _contentTypeDescriptors;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add available Content Types to the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in contentTypeDescriptors.FindAllByAttribute("ContentType", "ContentType")) {
-        // Ensure the Topic is used as the strongly-typed ContentType
-        // Add ContentType Topic to collection if not already added
-        if (
-          topic is ContentTypeDescriptor contentTypeDescriptor &&
-          !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
-        ) {
-          _contentTypeDescriptors.Add(contentTypeDescriptor);
-        }
+      if (_contentTypeDescriptors.Count == 0) {
+        GetContentTypeDescriptors();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -184,15 +171,13 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to update content types from source graph
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      SetContentTypeDescriptors(sourceTopic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        sourceTopic.GetByUniqueKey("Root:Configuration:ContentTypes") is ContentTypeDescriptor sourceContentTypes &&
-        !contentTypes.Contains(sourceContentTypes)
-      ) {
-        contentTypes            = GetContentTypeDescriptors(sourceContentTypes);
-      }
-
       return contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
     }
