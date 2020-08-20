@@ -36,6 +36,15 @@ namespace OnTopic.Metadata {
     public ContentTypeDescriptorCollection() : base(null) {
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="ContentTypeDescriptorCollection"/> class based on a root <see cref=
+    ///   "ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <param name="rootContentType">The <see cref="ContentTypeDescriptor"/> from which to initialize the collection.</param>
+    public ContentTypeDescriptorCollection(ContentTypeDescriptor? rootContentType) : base(null) {
+      Refresh(rootContentType);
+    }
+
     /*==========================================================================================================================
     | REFRESH
     \-------------------------------------------------------------------------------------------------------------------------*/
