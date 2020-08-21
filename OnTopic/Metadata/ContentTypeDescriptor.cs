@@ -127,7 +127,7 @@ namespace OnTopic.Metadata {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean)"/>.
+    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean, Boolean?)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
@@ -237,6 +237,21 @@ namespace OnTopic.Metadata {
         topic.ResetAttributeDescriptors();
       }
     }
+
+    /*==========================================================================================================================
+    | METHOD: RESET PERMITTED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the list of <see cref="ContentTypeDescriptor"/>s stored in the <see cref="PermittedContentTypes"/> collection
+    ///   on this <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <remarks>
+    ///   Each <see cref="ContentTypeDescriptor"/> has a <see cref="PermittedContentTypes"/> collection which includes the <see
+    ///   cref="ContentTypeDescriptor"/>s associated with that <see cref="ContentTypeDescriptor"/>. As this is cached, however,
+    ///   the value should be reset whenever a <see cref="ContentTypeDescriptor"/> has been modified, in case those values have
+    ///   changed.
+    /// </remarks>
+    internal void ResetPermittedContentTypes() => _permittedContentTypes = null;
 
     /*==========================================================================================================================
     | METHOD: IS TYPE OF?
