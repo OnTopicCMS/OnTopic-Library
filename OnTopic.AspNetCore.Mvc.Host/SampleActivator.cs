@@ -102,6 +102,8 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new TopicController(_topicRepository, _topicMappingService),
         nameof(SitemapController) =>
           new SitemapController(_topicRepository),
+        nameof(RedirectController) =>
+          new RedirectController(_topicRepository),
         _ => throw new Exception($"Unknown controller {type.Name}")
       };
 
