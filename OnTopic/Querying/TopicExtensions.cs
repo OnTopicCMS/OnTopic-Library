@@ -7,6 +7,7 @@ using System;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
 
 namespace OnTopic.Querying {
 
@@ -219,6 +220,41 @@ namespace OnTopic.Querying {
       | Return topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       return currentTopic;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves the <see cref="ContentTypeDescriptor"/> for the current <see cref="Topic"/>.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <returns>The <see cref="ContentTypeDescriptor"/> associated with the <see cref="Topic.ContentType"/>.</returns>
+    public static ContentTypeDescriptor? GetContentTypeDescriptor(this Topic topic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, "The topic parameter must be specified.");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find the root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var rootContentType       = topic.GetByUniqueKey("Root:Configuration:ContentTypes");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var contentTypeDescriptor = rootContentType?.FindFirst(t =>
+        t.Key.Equals(topic.ContentType, StringComparison.OrdinalIgnoreCase) &&
+        t.GetType().IsAssignableFrom(typeof(ContentTypeDescriptor))
+      ) as ContentTypeDescriptor;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return content type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return contentTypeDescriptor;
 
     }
 
