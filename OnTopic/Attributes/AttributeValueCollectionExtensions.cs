@@ -181,7 +181,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The <see cref="DateTime"/> value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="value">The boolean value for the <see cref="AttributeValue"/>.</param>
     /// <param name="isDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
@@ -219,7 +219,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The boolean value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="value">The integer value for the <see cref="AttributeValue"/>.</param>
     /// <param name="isDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
@@ -303,7 +303,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The integer value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="value">The <see cref="DateTime"/> value for the <see cref="AttributeValue"/>.</param>
     /// <param name="isDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
