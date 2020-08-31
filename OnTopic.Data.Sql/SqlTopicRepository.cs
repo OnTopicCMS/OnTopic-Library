@@ -174,6 +174,16 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish content type cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If this load represents the entire topic graph, then relay the content type configuration to the TopicRepositoryBase in
+      | order to either update or establish the content type cache. Not only does this prevent the need for a separate redundant
+      | call later but, even more importantly, it helps ensure the same object references are maintained so that any updates to
+      | subsequently cached content types are available.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      base.SetContentTypeDescriptors(topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic;
@@ -243,7 +253,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var version               = new SqlDateTime(DateTime.Now);
+      var version               = new SqlDateTime(DateTime.UtcNow);
       var unresolvedTopics      = new List<Topic>();
 
       using var connection      = new SqlConnection(_connectionString);

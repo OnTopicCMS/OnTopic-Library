@@ -91,8 +91,9 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   Provides the Sitemap.org sitemap for the site.
     /// </summary>
     /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
-    /// <returns>The site's homepage view.</returns>
-    public virtual ActionResult Index(bool indent = false) {
+    /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
+    /// <returns>A Sitemap.org sitemap.</returns>
+    public virtual ActionResult Index(bool indent = false, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
@@ -109,7 +110,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Establish sitemap
       \-----------------------------------------------------------------------------------------------------------------------*/
       var declaration           = new XDeclaration("1.0", "utf-8", "no");
-      var sitemap               = GenerateSitemap(rootTopic);
+      var sitemap               = GenerateSitemap(rootTopic, includeMetadata);
       var settings              = indent? SaveOptions.None : SaveOptions.DisableFormatting;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -120,18 +121,35 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     }
 
     /*==========================================================================================================================
+    | GET: /SITEMAP/EXTENDED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides the Sitemap.org sitemap for the site, including extended metadata attributes.
+    /// </summary>
+    /// <remarks>
+    ///   Introducing the metadata makes the sitemap considerably larger. However, it also means that some agents will index the
+    ///   additional information and make it available for querying. For instance, the (now defunct) Google Custom Search Engine
+    ///   (CSE) would previously allow queries to be filtered based on metadata attributes exposed via the sitemap.
+    /// </remarks>
+    /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
+    /// <returns>A Sitemap.org sitemap.</returns>
+    public virtual ActionResult Extended(bool indent = false) => Index(indent, true);
+
+    /*==========================================================================================================================
     | METHOD: GENERATE SITEMAP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a root topic, generates an XML-formatted sitemap.
     /// </summary>
-    /// <returns>The site's homepage view.</returns>
+    /// <param name="topic">The topic to add to the sitemap.</param>
+    /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
+    /// <returns>A Sitemap.org sitemap.</returns>
     [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public virtual XDocument GenerateSitemap(Topic rootTopic) =>
+    public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new XDocument(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
-          select AddTopic(topic)
+          select AddTopic(topic, includeMetadata)
         )
       );
 
@@ -141,8 +159,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Given a <see cref="Topic"/>, adds it to a given <see cref="XmlNode"/>.
     /// </summary>
+    /// <param name="topic">The topic to add to the sitemap.</param>
+    /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     [Obsolete("The AddTopic() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public IEnumerable<XElement> AddTopic(Topic topic) {
+    public IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish return collection
@@ -171,21 +191,23 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
         new XElement(_sitemapNamespace + "changefreq", "monthly"),
         new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
         new XElement(_sitemapNamespace + "priority", 1),
-        new XElement(_pagemapNamespace + "PageMap",
+        includeMetadata? new XElement(_pagemapNamespace + "PageMap",
           new XElement(_pagemapNamespace + "DataObject",
             new XAttribute("type", topic.ContentType?? "Page"),
             getAttributes()
           ),
           getRelationships()
-        )
+        ) : null
       );
-      topics.Add(topicElement);
+      if (!topic.ContentType!.Equals("Container", StringComparison.InvariantCultureIgnoreCase)) {
+        topics.Add(topicElement);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Iterate over children
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var childTopic in topic.Children) {
-        topics.AddRange(AddTopic(childTopic));
+        topics.AddRange(AddTopic(childTopic, includeMetadata));
       }
 
       return topics;

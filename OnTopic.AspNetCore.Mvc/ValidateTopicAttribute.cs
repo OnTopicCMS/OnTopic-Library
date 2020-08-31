@@ -117,6 +117,17 @@ namespace OnTopic.AspNetCore.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle containers
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Like nested topics, containers are not expected to be viewed directly; if a user requests a container, return a 403 to
+      | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (currentTopic.ContentType == "Container") {
+        filterContext.Result = new StatusCodeResult(403);
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle page groups
       >-------------------------------------------------------------------------------------------------------------------------
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is

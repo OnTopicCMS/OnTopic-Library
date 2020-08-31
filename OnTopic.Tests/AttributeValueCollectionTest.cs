@@ -95,6 +95,55 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET DOUBLE: CORRECT VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_CorrectValue_IsReturned() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetDouble("Number1", 1);
+
+      Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INCORRECT VALUE: RETURNS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values return the default.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_IncorrectValue_ReturnsDefault() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Number3", "Invalid");
+
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INCORRECT KEY: RETURNS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double key names return the default.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_IncorrectKey_ReturnsDefault() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET DATETIME: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -31,7 +31,7 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private ContentTypeDescriptorCollection? _contentTypeDescriptors = null;
+    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new ContentTypeDescriptorCollection();
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -57,12 +57,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypeDescriptors == null) {
-
-        /*----------------------------------------------------------------------------------------------------------------------
-        | Initialize cache
-        \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+      if (_contentTypeDescriptors.Count == 0) {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Load configuration data
@@ -70,7 +65,7 @@ namespace OnTopic.Repositories {
         var configuration       = (Topic?)null;
 
         try {
-          configuration = Load("Configuration");
+          configuration         = Load("Configuration");
         }
         catch (TopicNotFoundException) {
           //Swallow missing configuration, as this is an expected condition when working with a new database
@@ -79,12 +74,12 @@ namespace OnTopic.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var allowedContentTypes = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
+        var contentTypes        = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
         \---------------------------------------------------------------------------------------------------------------------*/
-        _contentTypeDescriptors = GetContentTypeDescriptors(allowedContentTypes);
+        _contentTypeDescriptors.Refresh(contentTypes);
 
       }
 
@@ -110,40 +105,63 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors) {
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", false)]
+    protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
+      => SetContentTypeDescriptors(contentTypeDescriptors);
+
+    /*==========================================================================================================================
+    | SET CONTENT TYPE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Allows for the content type descriptor cache to be (re)initialized based on an in-memory topic graph, by first
+    ///   identifying the root <see cref="ContentTypeDescriptor"/> from within the current content graph.
+    /// </summary>
+    /// <param name="sourceTopic">
+    ///   A <see cref="Topic"/> within the source topic graph. This overload will use this topic to identify the root <see cref=
+    ///   "ContentTypeDescriptor"/> within the graph.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(Topic? sourceTopic) =>
+      SetContentTypeDescriptors(sourceTopic?.GetByUniqueKey("Root:Configuration:ContentTypes") as ContentTypeDescriptor);
+
+    /// <summary>
+    ///   Allows for the content type descriptor cache to be (re)initialized based on an in-memory topic graph, starting with
+    ///   the root <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the <see cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method will load data from the
+    ///   concrete implementation of the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be
+    ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
+    ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
+    ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
+    ///   Topic, Boolean, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+    /// </remarks>
+    /// <param name="rootContentType">
+    ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
+    ///   cref="SetContentTypeDescriptors(ContentTypeDescriptor?)"/>. The code will process not only the root <see cref=
+    ///   "ContentTypeDescriptor"/>, but also any descendents.
+    /// </param>
+    /// <returns></returns>
+    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(ContentTypeDescriptor? rootContentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize the collection from the repository
+      | Establish cache
       >-------------------------------------------------------------------------------------------------------------------------
-      | ### NOTE JJC2020519: We want to centralize the shared logic from the public GetContentTypeDescriptors() while still
-      | ensuring the cache is first initialized from the underlying data store if this method is called directly. But we don't
-      | want to repeatedly call the underlying data store if it's empty, nor do we want to create a circular loop if this is
-      | being called from GetContentTypeDescriptors(). This is handled by initializing the _contentTypeDescriptors cache in the
-      | GetContentTypeDescriptors() method as a way of tracking the initialization state.
+      | Instead of attempting to merge the source collection with the cached collection, we'll just recreate the cached
+      | collection based on the source collection. This is faster, and helps avoid potential versioning conflicts caused by
+      | mixing objects from different topic graphs. Instead, we always assume that the source collection is the most accurate
+      | and relevant.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_contentTypeDescriptors == null) {
-        _contentTypeDescriptors = GetContentTypeDescriptors();
-      }
+      _contentTypeDescriptors.Refresh(rootContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
+      | Validate cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the source cache collection is empty then we'll want to defer to the existing version�or retrieve it from the
+      | persistence layer�via GetContentTypeDescriptors().
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (contentTypeDescriptors == null) {
-        return _contentTypeDescriptors;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add available Content Types to the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in contentTypeDescriptors.FindAllByAttribute("ContentType", "ContentType")) {
-        // Ensure the Topic is used as the strongly-typed ContentType
-        // Add ContentType Topic to collection if not already added
-        if (
-          topic is ContentTypeDescriptor contentTypeDescriptor &&
-          !_contentTypeDescriptors.Contains(contentTypeDescriptor.Key)
-        ) {
-          _contentTypeDescriptors.Add(contentTypeDescriptor);
-        }
+      if (_contentTypeDescriptors.Count == 0) {
+        GetContentTypeDescriptors();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -189,15 +207,13 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to update content types from source graph
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      SetContentTypeDescriptors(sourceTopic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve content type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        sourceTopic.GetByUniqueKey("Root:Configuration:ContentTypes") is ContentTypeDescriptor sourceContentTypes &&
-        !contentTypes.Contains(sourceContentTypes)
-      ) {
-        contentTypes            = GetContentTypeDescriptors(sourceContentTypes);
-      }
-
       return contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
     }
@@ -218,7 +234,7 @@ namespace OnTopic.Repositories {
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Rollback([ValidatedNotNull, NotNull]Topic topic, DateTime version) {
+    public virtual void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -284,7 +300,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual int Save([ValidatedNotNull, NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -302,13 +318,6 @@ namespace OnTopic.Repositories {
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
           $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
         );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Update content types collection, if appropriate
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && !contentTypeDescriptors.Contains(topic.Key)) {
-        contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -346,17 +355,29 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If new content type, add to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var asContentType         = topic as ContentTypeDescriptor;
       if (
         topic.IsNew &&
-        topic is ContentTypeDescriptor &&
+        asContentType != null &&
         _contentTypeDescriptors != null &&
         !_contentTypeDescriptors.Contains(topic.Key)
       ) {
-        _contentTypeDescriptors.Add((ContentTypeDescriptor)topic);
+        _contentTypeDescriptors.Add(asContentType);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If content type, and relationships have been updated, refresh permitted content types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (asContentType != null && asContentType.Relationships.IsDirty()) {
+        asContentType.ResetPermittedContentTypes();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If new attribute, refresh cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Every ContentTypeDescriptor has an AttributeDescriptors property which includes references to all local and inherited
+      | AttributeDescriptors. When a new AttributeDescriptor is added, these collections are reset for the current
+      | ContentTypeDescriptor and all descendents to ensure that they all reflect the new AttributeDescriptor.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsNew && IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
@@ -374,20 +395,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target != topic);
-      Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires(target, "The target parameter must be specified.");
-      if (topic.Parent != target) {
-        MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-        topic.SetParent(target);
-      }
-
-    }
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) => Move(topic, target, null);
 
     /// <summary>
     ///   Interface method that supports moving a topic from one position to another.
@@ -396,7 +404,7 @@ namespace OnTopic.Repositories {
     /// <param name="target">A topic object under which to move the source topic.</param>
     /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move([ValidatedNotNull, NotNull]Topic topic, [ValidatedNotNull, NotNull]Topic target, Topic? sibling) {
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -421,13 +429,24 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var previousParent        = topic.Parent;
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      topic.SetParent(target, sibling);
+      if (sibling == null) {
+        topic.SetParent(target);
+      }
+      else {
+        topic.SetParent(target, sibling);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If a content type descriptor is being moved to a new parent, refresh cache
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Attributes are inherited from parent content types, and stored in the ContentTypeDescriptor.AttributeDescriptors
+      | collection. As such, when a content type is moved to a new location, the attribute descriptors for itself and all
+      | descendants needs to be reset to ensure the inheritance structure is updated.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != target && topic is ContentTypeDescriptor) {
+      if (previousParent != target && topic is ContentTypeDescriptor) {
+        SetContentTypeDescriptors(topic);
         ResetAttributeDescriptors(topic);
       }
 
@@ -437,7 +456,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Delete([ValidatedNotNull, NotNull]Topic topic, bool isRecursive) {
+    public virtual void Delete([ValidatedNotNull]Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -460,13 +479,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If content type, remove from cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is ContentTypeDescriptor && _contentTypeDescriptors != null) {
-        foreach (var contentTypeDescriptor in topic.FindAll(t => t is ContentTypeDescriptor).Cast<ContentTypeDescriptor>()) {
-          if (_contentTypeDescriptors.Contains(contentTypeDescriptor)) {
-            _contentTypeDescriptors.Remove(contentTypeDescriptor);
-          }
-        }
-      }
+      SetContentTypeDescriptors(topic.Parent);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If attribute type, refresh cache
@@ -721,8 +734,8 @@ namespace OnTopic.Repositories {
       if (IsAttributeDescriptor(topic)) {
         ((ContentTypeDescriptor)topic.Parent!.Parent!).ResetAttributeDescriptors();
       }
-      else if (topic is ContentTypeDescriptor) {
-        ((ContentTypeDescriptor)topic).ResetAttributeDescriptors();
+      else if (topic is ContentTypeDescriptor descriptor) {
+        descriptor.ResetAttributeDescriptors();
       }
     }
 

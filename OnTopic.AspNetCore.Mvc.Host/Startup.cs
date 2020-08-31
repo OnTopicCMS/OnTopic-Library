@@ -112,11 +112,9 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
-        endpoints.MapControllerRoute(
-          name: "default",
-          pattern: "{controller}/{action=Index}/"
-        );
         endpoints.MapTopicRoute("Web");
+        endpoints.MapTopicSitemap();
+        endpoints.MapTopicRedirect();
         endpoints.MapControllers();
       });
 
