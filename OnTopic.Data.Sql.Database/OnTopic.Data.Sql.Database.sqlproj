@@ -81,6 +81,7 @@
     <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
     <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
     <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
+    <Build Include="Views\UniqueKeyIndex.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
