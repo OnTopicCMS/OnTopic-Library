@@ -97,6 +97,44 @@ namespace OnTopic.Attributes {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET DOUBLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
+    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a double.
+    /// </summary>
+    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    /// </param>
+    /// <param name="inheritFromDerived">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    ///   order to get the value.
+    /// </param>
+    /// <returns>The value for the attribute as a double.</returns>
+    public static double GetDouble(
+      this                      AttributeValueCollection attributes,
+      string                    name,
+      double                    defaultValue,
+      bool                      inheritFromParent               = false,
+      bool                      inheritFromDerived              = true
+    ) {
+      Contract.Requires(attributes);
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      return Double.TryParse(
+        attributes.GetValue(
+          name,
+          defaultValue.ToString(CultureInfo.InvariantCulture),
+          inheritFromParent,
+          inheritFromDerived? 5 : 0
+        ),
+        out var result
+      ) ? result : defaultValue;
+    }
+
+    /*==========================================================================================================================
     | METHOD: GET DATETIME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
