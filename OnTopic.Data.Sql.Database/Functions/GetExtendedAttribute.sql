@@ -1,17 +1,16 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- SIMPLE INT LIST TO TABLE (FUNCTION)
+-- GET EXTENDED ATTRIBUTE
 --------------------------------------------------------------------------------------------------------------------------------
--- Given a comma delimited list of integers, such as TopicIDs, parses them into a table. Similar to the Split function, but more
--- specialized. That said, we should prefer using user-defined table valued types to relay lists of values, such as the
--- TopicList type.
+-- Given a TopicID and an AttributeKey, retrieves the value of the attribute from the index.
 --------------------------------------------------------------------------------------------------------------------------------
+
 CREATE
-FUNCTION	[dbo].[SimpleIntListToTbl] (
-	@list		NVARCHAR(MAX)
+FUNCTION	[dbo].[GetExtendedAttribute]
+(
+	@TopicID		INT,
+	@AttributeKey		NVARCHAR(255)
 )
-RETURNS	@tbl		TABLE (
-	number		INT	NOT NULL
-)
+RETURNS	VARCHAR(MAX)
 AS
 
 BEGIN
@@ -19,35 +18,20 @@ BEGIN
   ------------------------------------------------------------------------------------------------------------------------------
   -- DECLARE AND DEFINE VARIABLES
   ------------------------------------------------------------------------------------------------------------------------------
-  DECLARE	@pos		INT	= 0,
-	@nextpos		INT	= 1,
-	@valuelen		INT,
-	@value		VARCHAR(20)
+  DECLARE	@AttributeValue		NVARCHAR(MAX)	= NULL
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- CREATE TABLE
+  -- RETRIEVE VALUE
   ------------------------------------------------------------------------------------------------------------------------------
-  WHILE	@nextpos		> 0
-  BEGIN
-    SELECT	@nextpos		= charindex(',', @list, @pos + 1)
-    SELECT	@valuelen		= CASE
-      WHEN	@nextpos		> 0
-      THEN	@nextpos
-      ELSE	len(@list)		+ 1
-      END	- @pos		- 1
-    IF	@valuelen		= 0
-      CONTINUE
-    INSERT	@tbl (
-	  number
-	)
-    VALUES (	convert(int, substring(@list, @pos + 1, @valuelen))
-    )
-    SELECT	@pos		= @nextpos
-  END
+  SELECT	@AttributeValue		= AttributesXml
+	  .query('/attributes/attribute[@key=sql:variable("@AttributeKey")]')
+	  .value('.', 'NVARCHAR(MAX)')
+  FROM	ExtendedAttributeIndex
+  WHERE	TopicID		= @TopicID
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- RETURN VALUES
+  -- RETURN VALUE
   ------------------------------------------------------------------------------------------------------------------------------
-  RETURN
+  RETURN	@AttributeValue
 
 END

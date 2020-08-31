@@ -11,7 +11,12 @@ FUNCTION	[dbo].[Split] (
 )
 RETURNS	TABLE
 AS
-RETURN (
+
+RETURN(
+
+  ------------------------------------------------------------------------------------------------------------------------------
+  -- SPLIT INPUT
+  ------------------------------------------------------------------------------------------------------------------------------
   WITH	Pieces(
 	  pn,
 	  start,
@@ -31,4 +36,5 @@ RETURN (
   SELECT	pn,
 	SUBSTRING(@s, start, CASE WHEN stop > 0 THEN stop-start ELSE 8000 END) AS s
     FROM	Pieces
+
 )
