@@ -253,7 +253,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var version               = new SqlDateTime(DateTime.Now);
+      var version               = new SqlDateTime(DateTime.UtcNow);
       var unresolvedTopics      = new List<Topic>();
 
       using var connection      = new SqlConnection(_connectionString);
