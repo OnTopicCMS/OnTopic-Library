@@ -5,12 +5,12 @@
 \=============================================================================================================================*/
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;
 using OnTopic.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OnTopic.AspNetCore.Mvc.Components {
 
