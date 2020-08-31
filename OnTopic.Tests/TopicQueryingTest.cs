@@ -6,7 +6,11 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Caching;
+using OnTopic.Metadata;
 using OnTopic.Querying;
+using OnTopic.Repositories;
+using OnTopic.TestDoubles;
 
 namespace OnTopic.Tests {
 
@@ -18,6 +22,27 @@ namespace OnTopic.Tests {
   /// </summary>
   [TestClass]
   public class TopicQueryingTest {
+
+    /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITopicRepository                _topicRepository;
+
+    /*==========================================================================================================================
+    | CONSTRUCTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="TopicQueryingTest"/> with shared resources.
+    /// </summary>
+    /// <remarks>
+    ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
+    ///   manage the in-memory representation of the data. While this introduces some overhead to the tests, the latter is a
+    ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
+    ///   crawling the object graph.
+    /// </remarks>
+    public TopicQueryingTest() {
+      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
+    }
 
     /*==========================================================================================================================
     | TEST: FIND ALL BY ATTRIBUTE: RETURNS CORRECT TOPICS
@@ -122,6 +147,41 @@ namespace OnTopic.Tests {
       var foundTopic = greatGrandChildTopic.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
       Assert.IsNull(foundTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE: VALID CONTENT TYPE: RETURNS CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a deeply nested <see cref="Topic"/>, returns the expected <see cref="ContentTypeDescriptor"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetContentType_ValidContentType_ReturnsContentType() {
+
+      var topic                 = _topicRepository.Load(11111);
+      var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+
+      Assert.IsNotNull(contentTypeDescriptor);
+      Assert.AreEqual<string>("Page", contentTypeDescriptor.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE: INVALID CONTENT TYPE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given an invalid <see cref="ContentTypeDescriptor"/>, the <see cref="TopicExtensions.GetContentTypeDescriptor(Topic)"
+    ///   /> returns <c>null</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetContentType_InvalidContentType_ReturnsNull() {
+
+      var parentTopic           = _topicRepository.Load(11111);
+      var topic                 = TopicFactory.Create("Test", "NonExistent", parentTopic);
+      var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+
+      Assert.IsNull(contentTypeDescriptor);
 
     }
 
