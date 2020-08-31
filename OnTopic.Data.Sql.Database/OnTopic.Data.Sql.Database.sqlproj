@@ -83,6 +83,7 @@
     <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
     <Build Include="Views\UniqueKeyIndex.sql" />
     <Build Include="Functions\GetTopicIDByUniqueKey.sql" />
+    <Build Include="Functions\GetExtendedAttribute.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
