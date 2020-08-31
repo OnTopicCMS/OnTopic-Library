@@ -253,6 +253,48 @@ namespace OnTopic.Attributes {
     );
 
     /*==========================================================================================================================
+    | METHOD: SET DOUBLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   depending on whether that value already exists.
+    /// </summary>
+    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="value">The double value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="isDirty">
+    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(value)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public static void SetDouble(
+      this                      AttributeValueCollection        attributes,
+      string                    key,
+      double                    value,
+      bool?                     isDirty                         = null
+    ) => attributes?.SetValue(
+      key,
+      value.ToString(CultureInfo.InvariantCulture),
+      isDirty, true
+    );
+
+    /*==========================================================================================================================
     | METHOD: SET DATETIME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

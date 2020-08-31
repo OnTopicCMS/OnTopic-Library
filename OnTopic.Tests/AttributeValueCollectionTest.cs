@@ -95,6 +95,23 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET DOUBLE: CORRECT VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_CorrectValue_IsReturned() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetDouble("Number1", 1);
+
+      Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET DOUBLE: INCORRECT VALUE: RETURNS DEFAULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
