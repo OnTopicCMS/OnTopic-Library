@@ -5,13 +5,13 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
+using OnTopic.Metadata.AttributeTypes;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Metadata.AttributeTypes;
-using OnTopic.Attributes;
 
 namespace OnTopic.Tests {
 

@@ -3,12 +3,12 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Components;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
 using OnTopic.ViewModels;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OnTopic.AspNetCore.Mvc.Host.Components {
 

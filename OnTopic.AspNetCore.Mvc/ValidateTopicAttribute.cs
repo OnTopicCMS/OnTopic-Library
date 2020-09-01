@@ -5,10 +5,10 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
-using OnTopic.AspNetCore.Mvc.Controllers;
-using OnTopic.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using OnTopic.AspNetCore.Mvc.Controllers;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 

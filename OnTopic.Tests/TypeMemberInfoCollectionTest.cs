@@ -6,10 +6,10 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Tests.ViewModels;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace OnTopic.Tests {
 

@@ -5,10 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using OnTopic.AspNetCore.Mvc;
-using OnTopic.AspNetCore.Mvc.Controllers;
-using OnTopic.Attributes;
-using OnTopic.TestDoubles;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -16,6 +12,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.AspNetCore.Mvc;
+using OnTopic.AspNetCore.Mvc.Controllers;
+using OnTopic.Attributes;
+using OnTopic.TestDoubles;
 
 namespace OnTopic.Tests {
 

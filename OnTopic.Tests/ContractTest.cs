@@ -4,8 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Internal.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests {
 
