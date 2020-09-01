@@ -63,8 +63,10 @@ namespace OnTopic.Internal.Diagnostics {
     /// <exception cref="ArgumentNullException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
+    #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
       Requires<ArgumentNullException>(requiredObject != null, errorMessage);
+    #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
@@ -158,8 +160,10 @@ namespace OnTopic.Internal.Diagnostics {
     /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="requiredObject"/> is <see langword="null"/>.
     /// </exception>
+    #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Assume([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null)
       => Requires<InvalidOperationException>(requiredObject != null, errorMessage);
+    #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
   } //Class
 } //Namespace

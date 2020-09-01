@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using OnTopic.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 
@@ -118,7 +118,7 @@ namespace OnTopic.AspNetCore.Mvc {
         var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
         // Validate the content-type after the slash, then validate it against available views
         for (var i = 0; i < splitHeaders.Length; i++) {
-          if (splitHeaders[i].IndexOf("/", StringComparison.InvariantCultureIgnoreCase) >= 0) {
+          if (splitHeaders[i].Contains("/", StringComparison.InvariantCultureIgnoreCase)) {
             // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding
             // purposes
             var acceptHeader = splitHeaders[i]

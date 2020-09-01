@@ -26,7 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class DescendentSpecializedTopicViewModel: DescendentTopicViewModel {
 
-    public bool IsLeaf { get; set; } = false;
+    public bool IsLeaf { get; set; }
 
   } //Class
 } //Namespace

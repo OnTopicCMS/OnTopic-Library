@@ -5,11 +5,10 @@
 \=============================================================================================================================*/
 using System;
 using System.Globalization;
-using System.Linq;
-using OnTopic.Metadata;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
 using OnTopic.Attributes;
+using OnTopic.Collections;
+using OnTopic.Metadata;
 
 namespace OnTopic.Tests {
 

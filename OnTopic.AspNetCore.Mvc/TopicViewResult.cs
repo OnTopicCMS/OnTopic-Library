@@ -4,11 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Threading.Tasks;
-using OnTopic.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 

@@ -57,7 +57,7 @@ namespace OnTopic.Mapping {
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, (Type?)null, relationships);
-      if(_cache.TryGetValue(cacheKey, out object? viewModel)) {
+      if(_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
 
@@ -95,7 +95,7 @@ namespace OnTopic.Mapping {
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, typeof(T), relationships);
-      if (_cache.TryGetValue(cacheKey, out object? viewModel)) {
+      if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return (T)viewModel;
       }
 
@@ -138,7 +138,7 @@ namespace OnTopic.Mapping {
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
       var cacheKey = (topic.Id, target.GetType(), relationships);
-      if (_cache.TryGetValue(cacheKey, out object? viewModel)) {
+      if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
 

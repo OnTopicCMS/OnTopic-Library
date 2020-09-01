@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping.Annotations;
@@ -19,7 +20,6 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.Tests.BindingModels;
 using OnTopic.ViewModels;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace OnTopic.Tests {
 

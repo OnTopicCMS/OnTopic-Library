@@ -22,7 +22,7 @@ namespace OnTopic.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    Topic                           _parent;
-    readonly                    bool                            _isIncoming                     = false;
+    readonly                    bool                            _isIncoming;
 
     /*==========================================================================================================================
     | DATA STORE

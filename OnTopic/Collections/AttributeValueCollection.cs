@@ -35,7 +35,7 @@ namespace OnTopic.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
-    private                     int                             _setCounter                     = 0;
+    private                     int                             _setCounter;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

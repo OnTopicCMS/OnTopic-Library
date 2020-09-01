@@ -3,10 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using Microsoft.AspNetCore.Mvc;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;
 using OnTopic.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OnTopic.AspNetCore.Mvc.Components {
 
@@ -27,7 +27,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     Topic?                          _currentTopic                   = null;
+    private                     Topic?                          _currentTopic;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
