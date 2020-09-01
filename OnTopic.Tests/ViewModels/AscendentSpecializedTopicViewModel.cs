@@ -24,7 +24,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class AscendentSpecializedTopicViewModel: AscendentTopicViewModel {
 
-    public bool IsRoot { get; set; } = false;
+    public bool IsRoot { get; set; }
 
   } //Class
 } //Namespace

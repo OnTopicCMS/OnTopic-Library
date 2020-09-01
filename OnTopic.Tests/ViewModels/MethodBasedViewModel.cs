@@ -17,7 +17,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class MethodBasedViewModel {
 
-    private int _methodValue = 0;
+    private int _methodValue;
 
     public void SetMethod(int methodValue) => _methodValue = methodValue;
     public int GetMethod() => _methodValue;

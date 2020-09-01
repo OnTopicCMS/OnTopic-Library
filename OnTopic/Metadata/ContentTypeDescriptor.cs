@@ -39,8 +39,8 @@ namespace OnTopic.Metadata {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private   AttributeDescriptorCollection?                    _attributeDescriptors           = null;
-    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes          = null;
+    private   AttributeDescriptorCollection?                    _attributeDescriptors;
+    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
