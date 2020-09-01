@@ -96,6 +96,22 @@ namespace OnTopic {
     protected void Add(Type type) => _typeCollection.Add(type);
 
     /*==========================================================================================================================
+    | METHOD: TRY ADD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if a <see cref="Type"/> with the given <see cref="MemberInfo.Name"/> exists. If it does, returns <c>false
+    ///   </c>; otherwise, adds the <see cref="Type"/> and returns <c>true</c>.
+    /// </summary>
+    protected bool TryAdd(Type type) {
+      Contract.Requires(type, nameof(type));
+      if (Contains(type.Name)) {
+        return false;
+      }
+      Add(type);
+      return true;
+    }
+
+    /*==========================================================================================================================
     | METHOD: ADD OR REPLACE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
