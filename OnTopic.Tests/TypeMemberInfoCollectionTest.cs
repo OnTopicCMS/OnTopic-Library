@@ -135,7 +135,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, string)"/> does not return values if the
+    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> does not return values if the
     /// </summary>
     [TestMethod]
     public void GetMember_GenericTypeMismatch_ReturnsNull() {

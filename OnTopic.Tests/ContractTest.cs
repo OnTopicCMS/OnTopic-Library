@@ -48,7 +48,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     public void Requires_ObjectExists_ThrowNoException() =>
-      Contract.Requires(new Object(), "The argument cannot be null");
+      Contract.Requires(new object(), "The argument cannot be null");
 
     /*==========================================================================================================================
     | TEST: REQUIRES: OBJECT IS NULL: THROW ARGUMENT NULL EXCEPTION
