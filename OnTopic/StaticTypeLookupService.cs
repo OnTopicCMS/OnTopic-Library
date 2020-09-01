@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using OnTopic.Internal.Collections;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic {
 
@@ -93,6 +94,21 @@ namespace OnTopic {
     ///   Adds a <see cref="Type"/> to the underlying collection.
     /// </summary>
     protected void Add(Type type) => _typeCollection.Add(type);
+
+    /*==========================================================================================================================
+    | METHOD: ADD OR REPLACE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if a <see cref="Type"/> with the given <see cref="MemberInfo.Name"/> exists. If it does, it is replaced.
+    ///   Otherwise, it is added.
+    /// </summary>
+    protected void AddOrReplace(Type type) {
+      Contract.Requires(type, nameof(type));
+      if (_typeCollection.Contains(type.Name)) {
+        Remove(type.Name);
+      }
+      Add(type);
+    }
 
     /*==========================================================================================================================
     | METHOD: CONTAINS
