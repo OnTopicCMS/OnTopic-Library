@@ -38,7 +38,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   If <see cref="AllowNull"/> is set to <c>false</c> (the default) then a <see cref="NotFoundResult"/> is returned if
     ///   the <see cref="TopicController.CurrentTopic"/> cannot be resolved.
     /// </remarks>
-    public bool AllowNull { get; set; } = false;
+    public bool AllowNull { get; set; }
 
     /*==========================================================================================================================
     | EVENT: ON ACTION EXECUTING
