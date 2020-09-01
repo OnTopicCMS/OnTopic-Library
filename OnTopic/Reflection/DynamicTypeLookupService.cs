@@ -43,9 +43,7 @@ namespace OnTopic.Reflection {
       | Populate collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var type in matchedTypes) {
-        if (!Contains(type)) {
-          Add(type);
-        }
+        TryAdd(type);
       }
 
     }
