@@ -84,6 +84,7 @@
     <Build Include="Views\UniqueKeyIndex.sql" />
     <Build Include="Functions\GetTopicIDByUniqueKey.sql" />
     <Build Include="Functions\GetExtendedAttribute.sql" />
+    <Build Include="Functions\GetUniqueKey.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
