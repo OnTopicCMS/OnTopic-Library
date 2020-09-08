@@ -394,16 +394,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) => Move(topic, target, null);
-
-    /// <summary>
-    ///   Interface method that supports moving a topic from one position to another.
-    /// </summary>
-    /// <param name="topic">The topic object to be moved.</param>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
-    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling) {
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
