@@ -4,16 +4,14 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Globalization;
-using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
-using OnTopic.Querying;
+using System.Linq;
 using Microsoft;
 using OnTopic.Attributes;
-using System.Collections.Generic;
-using System.Linq;
 using OnTopic.Collections;
+using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
 using OnTopic.Metadata.AttributeTypes;
 using OnTopic.Querying;
 
