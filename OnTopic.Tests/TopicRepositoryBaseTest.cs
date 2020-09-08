@@ -109,6 +109,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DELETE: DESCENDANTS WITH RECURSIVE: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DescendantsWithRecursive_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: NESTED TOPICS: SUCCEEDS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -122,25 +141,6 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "List", topic);
 
       _topicRepository.Delete(topic, false);
-
-      Assert.AreEqual<int>(0, root.Children.Count);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: DELETE: DESCENDANTS WITH RECURSIVE: SUCCEEDS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Deletes a topic which descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
-    /// </summary>
-    [TestMethod]
-    public void Delete_DescendantsWithRecursive_Succeeds() {
-
-      var root                  = TopicFactory.Create("Root", "Page");
-      var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
-
-      _topicRepository.Delete(topic, true);
 
       Assert.AreEqual<int>(0, root.Children.Count);
 
