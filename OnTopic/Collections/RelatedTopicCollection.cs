@@ -138,11 +138,12 @@ namespace OnTopic.Collections {
     public bool RemoveTopic(string relationshipKey, string topicKey) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey));
-      if (Contains(relationshipKey)) {
-        var topics = this[relationshipKey];
-        return topics.Remove(topicKey);
+      var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
+      var topic                 = topics?.Contains(topicKey)?? false? topics[topicKey] : null;
+      if (topics == null || topic == null) {
+        return false;
       }
-      return false;
+      return RemoveTopic(relationshipKey, topic);
     }
 
     /// <summary>
@@ -157,11 +158,12 @@ namespace OnTopic.Collections {
     public bool RemoveTopic(string relationshipKey, Topic topic) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires(topic);
-      if (Contains(relationshipKey)) {
-        var topics = this[relationshipKey];
-        return topics.Remove(topic);
+      var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
+      if (topics == null || !topics.Contains(topic)) {
+        return false;
       }
-      return false;
+      topics.Remove(topic);
+      return true;
     }
 
     /*==========================================================================================================================
