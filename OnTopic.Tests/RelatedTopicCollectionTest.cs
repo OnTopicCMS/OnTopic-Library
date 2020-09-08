@@ -78,6 +78,27 @@ namespace OnTopic.Tests {
     | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Sets a relationship and then removes it by key, and confirms that it is removed from the incoming relationships
+    ///   property.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_RemovesIncomingRelationship() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+      var relationships         = new RelatedTopicCollection(parent);
+
+      relationships.SetTopic("Friends", related);
+      relationships.RemoveTopic("Friends", related.Key);
+
+      Assert.IsNull(related.IncomingRelationships.GetTopics("Friends").FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
     /// </summary>
     [TestMethod]
