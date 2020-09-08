@@ -48,7 +48,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) => throw new NotImplementedException();
+    public override void Move(Topic topic, Topic target, Topic? sibling = null) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: DELETE

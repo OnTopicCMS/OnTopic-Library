@@ -139,7 +139,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) {
+    public override void Move(Topic topic, Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

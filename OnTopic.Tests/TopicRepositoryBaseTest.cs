@@ -527,8 +527,9 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic)"/>, and ensures that it is
-    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic, Topic?)"/>, and ensures
+    ///   that it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see
+    ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {
