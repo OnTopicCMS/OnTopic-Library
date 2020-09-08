@@ -49,6 +49,49 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DELETE: DERIVED TOPIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ReferentialIntegrityException))]
+    public void Delete_DerivedTopic_ThrowsException() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var derived               = TopicFactory.Create("Derived", "Page", root);
+
+      derived.DerivedTopic      = child;
+
+      _topicRepository.Delete(topic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: INTERNAL DERIVED TOPIC: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic which another topic within the graph derives from. Expects success.
+    /// </summary>
+    [TestMethod]
+    public void Delete_InternallyDerivedTopic_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var derived               = TopicFactory.Create("Derived", "Page", topic);
+
+      derived.DerivedTopic      = child;
+
+      _topicRepository.Delete(topic);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

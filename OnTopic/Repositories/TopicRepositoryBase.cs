@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OnTopic.Collections;
 using OnTopic.Metadata.AttributeTypes;
+using OnTopic.Querying;
 
 #pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
 
@@ -464,9 +465,24 @@ namespace OnTopic.Repositories {
       Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate derived topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var childTopics           = topic.FindAll(t => true);
+      var allTopics             = topic.GetRootTopic().FindAll(t => true).Except(childTopics);
+      var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic != null && childTopics.Contains(t.DerivedTopic));
+
+      if (derivedTopic != null) {
+        throw new ReferentialIntegrityException(
+          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. The topic '{derivedTopic.GetUniqueKey()}' derives from the " +
+          $"topic '{derivedTopic.DerivedTopic!.GetUniqueKey()}'. Deleting this would cause violate the integrity of the " +
+          $"persistence store."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var         args    = new DeleteEventArgs(topic);
+      var args = new DeleteEventArgs(topic);
       DeleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------
