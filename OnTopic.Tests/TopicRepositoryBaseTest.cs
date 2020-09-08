@@ -65,7 +65,7 @@ namespace OnTopic.Tests {
 
       derived.DerivedTopic      = child;
 
-      _topicRepository.Delete(topic);
+      _topicRepository.Delete(topic, true);
 
     }
 
@@ -85,7 +85,7 @@ namespace OnTopic.Tests {
 
       derived.DerivedTopic      = child;
 
-      _topicRepository.Delete(topic);
+      _topicRepository.Delete(topic, true);
 
       Assert.AreEqual<int>(0, root.Children.Count);
 

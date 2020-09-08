@@ -138,16 +138,23 @@ namespace OnTopic.Repositories {
     /// <summary>
     ///   Interface method that deletes the provided topic from the tree
     /// </summary>
+    /// <remarks>
+    ///   Prior to OnTopic 4.5.0, the <paramref name="isRecursive"/> defaulted to <c>false</c>. Unfortunately, a bug in the
+    ///   implementation of <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/> resulted in this not being validated, and
+    ///   thus it operated <i>as though</i> it were <c>true</c>. This was fixed in OnTopic 4.5.0. As this bug fix potentially
+    ///   breaks prior implementations, however, the default for <paramref name="isRecursive"/> was changed to <c>true</c> in
+    ///   order to maintain backward compatibility. In OnTopic 5.0.0, this will be changed back to <c>false</c>.
+    /// </remarks>
     /// <param name="topic">The topic object to delete.</param>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
-    ///   (the default) and the topic has children, including any nested topics, an exception will be thrown.
+    ///   and the topic has children, including any nested topics, an exception will be thrown.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
     ///   topic != null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    void Delete(Topic topic, bool isRecursive = false);
+    void Delete(Topic topic, bool isRecursive = true);
 
   } //Interface
 } //Namespace

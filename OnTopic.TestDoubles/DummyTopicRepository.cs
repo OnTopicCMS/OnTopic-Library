@@ -54,7 +54,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+    public override void Delete(Topic topic, bool isRecursive = true) => throw new NotImplementedException();
 
   } //Class
 } //Namespace

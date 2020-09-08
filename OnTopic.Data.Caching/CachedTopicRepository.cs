@@ -148,7 +148,7 @@ namespace OnTopic.Data.Caching {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => _dataProvider.Delete(topic, isRecursive);
+    public override void Delete(Topic topic, bool isRecursive = true) => _dataProvider.Delete(topic, isRecursive);
 
   } //Class
 } //Namespace
