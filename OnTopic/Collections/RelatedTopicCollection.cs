@@ -136,14 +136,28 @@ namespace OnTopic.Collections {
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
     public bool RemoveTopic(string relationshipKey, string topicKey) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate topic key
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
       var topic                 = topics?.Contains(topicKey)?? false? topics[topicKey] : null;
+
       if (topics == null || topic == null) {
         return false;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Call overload
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return RemoveTopic(relationshipKey, topic);
+
     }
 
     /// <summary>
@@ -156,14 +170,32 @@ namespace OnTopic.Collections {
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
     public bool RemoveTopic(string relationshipKey, Topic topic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires(topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate relationshipKey
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
+
       if (topics == null || !topics.Contains(topic)) {
         return false;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
       topics.Remove(topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove true
+      \-----------------------------------------------------------------------------------------------------------------------*/
       return true;
+
     }
 
     /*==========================================================================================================================
