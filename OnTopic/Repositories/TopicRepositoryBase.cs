@@ -463,6 +463,16 @@ namespace OnTopic.Repositories {
       Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate descendants
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!isRecursive && topic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase))) {
+        throw new ReferentialIntegrityException(
+          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. It has child topics, but '{nameof(isRecursive)}' is set to " +
+          $"false. To delete '{topic.GetUniqueKey()}' and all of its descendants, set '{nameof(isRecursive)}' to true."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate derived topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var childTopics           = topic.FindAll(t => true);

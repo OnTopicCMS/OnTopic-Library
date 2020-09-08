@@ -92,6 +92,61 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DELETE: DESCENDANTS: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ReferentialIntegrityException))]
+    public void Delete_Descendants_ThrowsException() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Delete(topic, false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: NESTED TOPICS: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_NestedTopics_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "List", topic);
+
+      _topicRepository.Delete(topic, false);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: DESCENDANTS WITH RECURSIVE: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic which descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DescendantsWithRecursive_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
