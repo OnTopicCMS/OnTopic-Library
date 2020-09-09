@@ -64,6 +64,13 @@ namespace OnTopic.Querying {
     | METHOD: FIND ALL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
+    ///   Retrieves a collection of all topics descending from—and including—the current topic.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <returns>A collection of topics descending from the current topic.</returns>
+    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
+
+    /// <summary>
     ///   Retrieves a collection of topics based on a supplied function.
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
