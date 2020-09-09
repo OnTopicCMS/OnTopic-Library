@@ -70,6 +70,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: FIND FIRST PARENT: RETURNS CORRECT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a deeply nested <see cref="Topic"/>, returns the first parent <see cref="Topic"/> which satisfies a delegate.
+    /// </summary>
+    [TestMethod]
+    public void FindFirstParent_ReturnsCorrectTopic() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", 5, parentTopic);
+      var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20, childTopic);
+      var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", 7, grandChildTopic);
+
+      var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id.Equals(5));
+
+      Assert.ReferenceEquals(childTopic, foundTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ROOT TOPIC: RETURNS ROOT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

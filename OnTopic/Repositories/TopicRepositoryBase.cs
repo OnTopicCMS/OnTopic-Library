@@ -466,8 +466,8 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate derived topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var childTopics           = topic.FindAll(t => true);
-      var allTopics             = topic.GetRootTopic().FindAll(t => true).Except(childTopics);
+      var childTopics           = topic.FindAll();
+      var allTopics             = topic.GetRootTopic().FindAll().Except(childTopics);
       var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic != null && childTopics.Contains(t.DerivedTopic));
 
       if (derivedTopic != null) {
@@ -494,7 +494,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var descendantTopics      = topic.FindAll(t => true);
+      var descendantTopics      = topic.FindAll();
 
       foreach (var descendantTopic in descendantTopics) {
         foreach (var relationship in descendantTopic.Relationships) {
