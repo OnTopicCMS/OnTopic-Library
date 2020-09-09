@@ -199,26 +199,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
-    public static Topic GetRootTopic(this Topic topic) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Find lowest common root
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      while (topic.Parent != null) {
-        topic = topic.Parent;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return root
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic;
-
-    }
+    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent == null)?? topic;
 
     /*==========================================================================================================================
     | METHOD: GET BY UNIQUE KEY
