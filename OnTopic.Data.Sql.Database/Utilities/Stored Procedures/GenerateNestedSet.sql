@@ -15,11 +15,11 @@ SET IDENTITY_INSERT Topics ON
 --------------------------------------------------------------------------------------------------------------------------------
 -- Delete original content
 DELETE
-FROM	Hierarchy
+FROM	AdjacencyList
 
 -- Insert data from Attributes
 INSERT
-INTO	Hierarchy
+INTO	AdjacencyList
 SELECT	TopicID		AS TopicID,
 	CONVERT(Int, AttributeValue)	AS ParentID,
 	GETDATE()		AS DateAdded
@@ -27,7 +27,7 @@ FROM	Attributes
 WHERE	AttributeKey		= 'ParentID'
 
 -- Address root node
-UPDATE	Hierarchy
+UPDATE	AdjacencyList
 SET	Parent_TopicID		= null
 WHERE	ISNULL(Parent_TopicID, -1)	= -1
 
@@ -41,7 +41,7 @@ BEGIN
 
 SET	@max_RangeLeft_RangeRight	= 2 * (
   SELECT	COUNT(*)
-  FROM	Hierarchy
+  FROM	AdjacencyList
 );
 
 INSERT
@@ -55,14 +55,14 @@ SELECT	1,
 	TopicID,
 	1,
 	@max_RangeLeft_RangeRight
-FROM	Hierarchy
+FROM	AdjacencyList
 WHERE	Parent_TopicID		IS NULL;
 
 SET	@RangeLeft_RangeRight	= 2;
 SET	@pointer	= 1;
 
 DELETE
-FROM	Hierarchy
+FROM	AdjacencyList
 WHERE	Parent_TopicID		IS NULL;
 
 -- The topics is now loaded and ready to use
@@ -72,7 +72,7 @@ BEGIN
   IF EXISTS (
     SELECT	*
     FROM	Topics		AS S1
-    JOIN	Hierarchy		AS T1
+    JOIN	AdjacencyList	AS T1
       ON	S1.TopicID		= T1.Parent_TopicID
       AND	S1.Stack_Top		= @pointer
   )
@@ -91,13 +91,13 @@ BEGIN
 	@RangeLeft_RangeRight,
 	NULL
       FROM	Topics		AS S1
-      JOIN	Hierarchy		AS T1
+      JOIN	AdjacencyList	AS T1
         ON	S1.TopicID		= T1.Parent_TopicID
         AND	S1.Stack_Top		= @pointer;
 
       -- remove this row from hierarchy
       DELETE
-      FROM	Hierarchy
+      FROM	AdjacencyList
       WHERE	TopicID		= (
         SELECT	TopicID
         FROM	Topics

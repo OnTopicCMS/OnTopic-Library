@@ -4,7 +4,7 @@
 -- Generates a view mapping each TopicID to its UniqueKey.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[UniqueKeyIndex]
+VIEW	[Utilities].[UniqueKeyIndex]
 WITH	SCHEMABINDING
 AS
 
@@ -26,7 +26,7 @@ CROSS APPLY (
         AND     Attributes.AttributeKey = 'Key'
         ORDER BY Version DESC
       ) AttributeValue
-      WHERE     Tree.RangeLeft BETWEEN RangeLeft AND RangeRight
+      WHERE     Tree.RangeLeft BETWEEN RangeLeft AND ISNULL(RangeRight, -1)
     ) B1
     ORDER BY    RangeLeft
     FOR XML Path ('')

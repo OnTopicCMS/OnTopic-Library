@@ -10,7 +10,7 @@ FUNCTION	[dbo].[GetExtendedAttribute]
 	@TopicID		INT,
 	@AttributeKey		NVARCHAR(255)
 )
-RETURNS	VARCHAR(MAX)
+RETURNS	NVARCHAR(MAX)
 AS
 
 BEGIN
