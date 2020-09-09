@@ -6,7 +6,7 @@
 -- uninterrupted sequence between the first row's RangeLeft and RangeRight.)
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[LeftRightRange] (seq) AS
+VIEW	[Utilities].[LeftRightRange] (seq) AS
 
 SELECT	RangeLeft
 FROM	Topics

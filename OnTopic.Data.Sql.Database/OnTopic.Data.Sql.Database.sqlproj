@@ -86,6 +86,7 @@
     <Build Include="Functions\GetExtendedAttribute.sql" />
     <Build Include="Functions\GetUniqueKey.sql" />
     <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
+    <Build Include="Utilities\Views\LeftRightRange.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
@@ -93,7 +94,6 @@
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Tables\Attributes.sql" />
-    <Build Include="Views\LeftRightRange.sql" />
     <Build Include="Views\TopicIndex.sql" />
     <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\ExtendedAttributeIndex.sql" />
