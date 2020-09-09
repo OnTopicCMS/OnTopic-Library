@@ -4,7 +4,7 @@
 -- Generates a view mapping each TopicID to its UniqueKey.
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
-VIEW	[dbo].[UniqueKeyIndex]
+VIEW	[Utilities].[UniqueKeyIndex]
 WITH	SCHEMABINDING
 AS
 
