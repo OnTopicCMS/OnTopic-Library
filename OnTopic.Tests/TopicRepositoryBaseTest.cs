@@ -49,6 +49,150 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DELETE: DERIVED TOPIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ReferentialIntegrityException))]
+    public void Delete_DerivedTopic_ThrowsException() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var derived               = TopicFactory.Create("Derived", "Page", root);
+
+      derived.DerivedTopic      = child;
+
+      _topicRepository.Delete(topic, true);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: INTERNAL DERIVED TOPIC: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic which another topic within the graph derives from. Expects success.
+    /// </summary>
+    [TestMethod]
+    public void Delete_InternallyDerivedTopic_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var derived               = TopicFactory.Create("Derived", "Page", topic);
+
+      derived.DerivedTopic      = child;
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: DESCENDANTS: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with descendant topics. Expects exception if <c>isRecursive</c> is set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ReferentialIntegrityException))]
+    public void Delete_Descendants_ThrowsException() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Delete(topic, false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: DESCENDANTS WITH RECURSIVE: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with descendant topics. Expects no exception if <c>isRecursive</c> is set to <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DescendantsWithRecursive_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: NESTED TOPICS: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with nested topics. Expects no exception, even if <c>isRecursive</c> is set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_NestedTopics_Succeeds() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "List", topic);
+
+      _topicRepository.Delete(topic, false);
+
+      Assert.AreEqual<int>(0, root.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: RELATIONSHIPS: DELETE RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref=
+    ///   "Topic.IncomingRelationships"/> collection.
+    /// </summary>
+    [TestMethod]
+    public void Delete_Relationships_DeleteRelationships() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var related               = TopicFactory.Create("Related", "Page", root);
+
+      child.Relationships.SetTopic("Related", related);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, related.IncomingRelationships.GetTopics("Related").Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: INCOMING RELATIONSHIPS: DELETE RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with incoming relationships. Deletes those relationships from that topic's <see cref=
+    ///   "Topic.Relationships"/> collection.
+    /// </summary>
+    [TestMethod]
+    public void Delete_IncomingRelationships_DeleteRelationships() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var related               = TopicFactory.Create("Related", "Page", root);
+
+      related.Relationships.SetTopic("Related", child);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, related.Relationships.GetTopics("Related").Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -429,8 +573,9 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic)"/>, and ensures that it is
-    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic, Topic?)"/>, and ensures
+    ///   that it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see
+    ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Move_ContentTypeDescriptor_UpdatesContentTypeCache() {

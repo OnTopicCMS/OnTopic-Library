@@ -218,7 +218,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(2, parent.Children.Count);
 
-      _topicRepository.Delete(topic);
+      _topicRepository.Delete(topic, true);
 
       Assert.AreEqual<int>(1, parent.Children.Count);
 

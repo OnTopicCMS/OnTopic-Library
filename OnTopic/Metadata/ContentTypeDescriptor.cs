@@ -8,7 +8,6 @@ using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Querying;
 
 namespace OnTopic.Metadata {
 
