@@ -507,6 +507,19 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Remove incoming relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var descendantTopic in descendantTopics) {
+        foreach (var relationship in descendantTopic.IncomingRelationships) {
+          foreach (var relatedTopic in relationship.ToArray()) {
+            if (!descendantTopics.Contains(relatedTopic)) {
+              relatedTopic.Relationships.RemoveTopic(relationship.Name, descendantTopic.Key);
+            }
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | If content type, remove from cache
       \-----------------------------------------------------------------------------------------------------------------------*/
       SetContentTypeDescriptors(topic.Parent);
