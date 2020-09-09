@@ -147,6 +147,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DELETE: RELATIONSHIPS: DELETE RELATIONSHIPS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref=
+    ///   "Topic.IncomingRelationships"/> collection.
+    /// </summary>
+    [TestMethod]
+    public void Delete_Relationships_DeleteRelationships() {
+
+      var root                  = TopicFactory.Create("Root", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", root);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+      var related               = TopicFactory.Create("Related", "Page", root);
+
+      child.Relationships.SetTopic("Related", related);
+
+      _topicRepository.Delete(topic, true);
+
+      Assert.AreEqual<int>(0, related.IncomingRelationships.GetTopics("Related").Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ATTRIBUTES: ANY ATTRIBUTES: RETURNS ALL ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
