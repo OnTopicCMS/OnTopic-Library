@@ -4,7 +4,7 @@
 -- Remove gaps within nested set model created when non-leaf nodes are deleted
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [Utilities].[CompressTopics]
+CREATE PROCEDURE [Utilities].[CompressHierarchy]
 AS
 
 SET NOCOUNT ON;
