@@ -61,6 +61,47 @@ namespace OnTopic.Querying {
     }
 
     /*==========================================================================================================================
+    | METHOD: FIND FIRST PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Finds the first instance of <see cref="Topic"/> among the parents that satisfies the delegate.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
+    /// <returns>The first instance of a parent topic to be satisfied.</returns>
+    public static Topic? FindFirstParent(this Topic topic, Func<Topic, bool> predicate) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(predicate, nameof(predicate));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Search attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (predicate(topic)) {
+        return topic;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Find lowest common root
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (topic.Parent != null) {
+        if (predicate(topic.Parent)) {
+          return topic.Parent;
+        }
+        topic = topic.Parent;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Indicate no results found
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: FIND ALL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
