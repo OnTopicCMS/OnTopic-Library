@@ -71,6 +71,7 @@
     <Folder Include="Utilities\" />
     <Folder Include="Utilities\Stored Procedures" />
     <Folder Include="Utilities\Views" />
+    <Folder Include="Utilities\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Utilities\Schema.sql" />
@@ -87,10 +88,10 @@
     <Build Include="Functions\GetUniqueKey.sql" />
     <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
     <Build Include="Utilities\Views\LeftRightRange.sql" />
+    <Build Include="Utilities\Tables\AdjacencyList.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
-    <Build Include="Tables\Hierarchy.sql" />
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Tables\Attributes.sql" />
