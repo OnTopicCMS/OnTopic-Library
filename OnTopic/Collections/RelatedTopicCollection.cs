@@ -131,18 +131,36 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topicKey">The key of the topic to be removed.</param>
+    /// <param name="isIncoming">
+    ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
+    /// </param>
     /// <returns>
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, string topicKey) {
+    public bool RemoveTopic(string relationshipKey, string topicKey, bool isIncoming = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey));
-      if (Contains(relationshipKey)) {
-        var topics = this[relationshipKey];
-        return topics.Remove(topicKey);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate topic key
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
+      var topic                 = topics?.Contains(topicKey)?? false? topics[topicKey] : null;
+
+      if (topics == null || topic == null) {
+        return false;
       }
-      return false;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Call overload
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return RemoveTopic(relationshipKey, topic, isIncoming);
+
     }
 
     /// <summary>
@@ -150,18 +168,54 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be removed.</param>
+    /// <param name="isIncoming">
+    ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
+    /// </param>
     /// <returns>
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, Topic topic) {
+    public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate contracts
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
       Contract.Requires(topic);
-      if (Contains(relationshipKey)) {
-        var topics = this[relationshipKey];
-        return topics.Remove(topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove reciprocal relationship, if appropriate
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!isIncoming) {
+        if (_isIncoming) {
+          throw new ArgumentException(
+            "You are attempting to remove an incoming relationship on a RelatedTopicCollection that is not flagged as " +
+            "IsIncoming",
+            nameof(isIncoming)
+          );
+        }
+        topic.IncomingRelationships.RemoveTopic(relationshipKey, _parent, true);
       }
-      return false;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate relationshipKey
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
+
+      if (topics == null || !topics.Contains(topic)) {
+        return false;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove relationship
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topics.Remove(topic);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove true
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return true;
+
     }
 
     /*==========================================================================================================================
