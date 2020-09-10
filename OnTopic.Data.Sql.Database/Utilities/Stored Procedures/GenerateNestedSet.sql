@@ -62,16 +62,16 @@ SET	@max_RangeLeft_RangeRight	= 2 * (
 );
 
 INSERT
-	  Stack_Top,
 INTO	#Topics (
 	  TopicID,
 	  RangeLeft,
-	  RangeRight
+	  RangeRight,
+	  Stack_Top
 	)
-SELECT	1,
-	TopicID,
+SELECT	TopicID,
 	1,
-	@max_RangeLeft_RangeRight
+	@max_RangeLeft_RangeRight,
+	1
 FROM	AdjacencyList
 WHERE	Parent_TopicID		IS NULL;
 
@@ -98,16 +98,16 @@ BEGIN
       -- push when Stack_Top has subordinates and set RangeLeft value
       INSERT
       INTO	#Topics (
-	  Stack_Top,
 	  TopicID,
 	  RangeLeft,
-	  RangeRight
+	  RangeRight,
+	  Stack_Top
 	)
       SELECT	TOP 1
-	@pointer + 1,
 	T1.TopicID,
 	@RangeLeft_RangeRight,
-	NULL
+	NULL,
+	@pointer + 1
       FROM	#Topics		AS S1
       JOIN	AdjacencyList		AS T1
         ON	S1.TopicID		= T1.Parent_TopicID
