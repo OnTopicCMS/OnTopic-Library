@@ -97,20 +97,23 @@ BEGIN
 
       -- push when Stack_Top has subordinates and set RangeLeft value
       INSERT
-	  Stack_Top,
       INTO	#Topics (
+	  Stack_Top,
 	  TopicID,
 	  RangeLeft,
 	  RangeRight
 	)
-      SELECT	(@pointer + 1),
-	MIN(T1.TopicID),
+      SELECT	TOP 1
+	@pointer + 1,
+	T1.TopicID,
 	@RangeLeft_RangeRight,
 	NULL
-      JOIN	AdjacencyList	AS T1
       FROM	#Topics		AS S1
+      JOIN	AdjacencyList		AS T1
         ON	S1.TopicID		= T1.Parent_TopicID
-        AND	S1.Stack_Top		= @pointer;
+        AND	S1.Stack_Top		= @pointer
+      ORDER BY	T1.SortOrder,
+	T1.TopicID
 
       -- remove this row from hierarchy
       DELETE
