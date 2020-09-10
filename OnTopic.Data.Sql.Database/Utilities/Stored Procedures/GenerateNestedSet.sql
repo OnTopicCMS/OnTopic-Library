@@ -8,7 +8,6 @@
 CREATE PROCEDURE [Utilities].[GenerateNestedSet]
 AS
 
-SET IDENTITY_INSERT Topics ON
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RECREATE ADJACENCY LIST
@@ -186,3 +185,25 @@ ORDER BY	RangeLeft;
 FROM	#Topics
 
 SET IDENTITY_INSERT Topics OFF
+
+-- Reenable constraints
+ALTER
+TABLE	Attributes
+CHECK
+CONSTRAINT	FK_Attributes_TopicID;
+
+ALTER
+TABLE	ExtendedAttributes
+CHECK
+CONSTRAINT	FK_ExtendedAttributes_Topics;
+
+ALTER
+TABLE	Relationships
+CHECK
+CONSTRAINT	FK_Relationships_Source;
+
+ALTER
+TABLE	Relationships
+CHECK
+CONSTRAINT	FK_Relationships_Target;
+
