@@ -9,7 +9,7 @@ CREATE PROCEDURE [dbo].[DeleteTopic]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
--- DISABLE NOCOUND
+-- DISABLE NOCOUNT
 --------------------------------------------------------------------------------------------------------------------------------
 -- Prevent extra result sets from interfering with SELECT statements
 SET NOCOUNT ON;
