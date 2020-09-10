@@ -35,6 +35,16 @@ LEFT JOIN	Attributes
 	  'ParentID'
 	)		= 'ParentID'
 
+--------------------------------------------------------------------------------------------------------------------------------
+-- CREATE TEMPORARY STORAGE
+--------------------------------------------------------------------------------------------------------------------------------
+CREATE
+TABLE	#Topics (
+	  [TopicID]		INT	NOT NULL,
+	  [RangeLeft]		INT	NOT NULL,
+	  [RangeRight]		INT	NULL,
+  	  [Stack_Top]		INT	NULL
+);
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- Celko's conversion model (not properly formatted; copied from Celko)
@@ -50,8 +60,8 @@ SET	@max_RangeLeft_RangeRight	= 2 * (
 );
 
 INSERT
-INTO	Topics (
 	  Stack_Top,
+INTO	#Topics (
 	  TopicID,
 	  RangeLeft,
 	  RangeRight
@@ -76,8 +86,8 @@ WHILE	(@RangeLeft_RangeRight < @max_RangeLeft_RangeRight)
 BEGIN
   IF EXISTS (
     SELECT	*
-    FROM	Topics		AS S1
-    JOIN	AdjacencyList	AS T1
+    FROM	#Topics		AS S1
+    JOIN	AdjacencyList		AS T1
       ON	S1.TopicID		= T1.Parent_TopicID
       AND	S1.Stack_Top		= @pointer
   )
@@ -85,8 +95,8 @@ BEGIN
 
       -- push when Stack_Top has subordinates and set RangeLeft value
       INSERT
-      INTO	Topics (
 	  Stack_Top,
+      INTO	#Topics (
 	  TopicID,
 	  RangeLeft,
 	  RangeRight
@@ -95,8 +105,8 @@ BEGIN
 	MIN(T1.TopicID),
 	@RangeLeft_RangeRight,
 	NULL
-      FROM	Topics		AS S1
       JOIN	AdjacencyList	AS T1
+      FROM	#Topics		AS S1
         ON	S1.TopicID		= T1.Parent_TopicID
         AND	S1.Stack_Top		= @pointer;
 
@@ -105,14 +115,14 @@ BEGIN
       FROM	AdjacencyList
       WHERE	TopicID		= (
         SELECT	TopicID
-        FROM	Topics
+        FROM	#Topics
         WHERE	ISNULL(Stack_Top, 0)	= @pointer + 1);
       SET	@pointer = @pointer + 1;
     END -- push
   ELSE
     BEGIN
       -- pop the topics and set RangeRight value
-      UPDATE	Topics
+      UPDATE	#Topics
       SET	RangeRight		= @RangeLeft_RangeRight,
 	Stack_Top		= -Stack_Top
       WHERE	ISNULL(Stack_Top, 0)	= @pointer
@@ -126,7 +136,7 @@ SELECT	Stack_Top,
 	TopicID,
 	RangeLeft,
 	RangeRight
-FROM	Topics
 ORDER BY	RangeLeft;
+FROM	#Topics
 
 SET IDENTITY_INSERT Topics OFF
