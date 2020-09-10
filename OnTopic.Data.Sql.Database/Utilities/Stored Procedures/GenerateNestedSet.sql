@@ -2,7 +2,7 @@
 -- GENERATE NESTED SET
 --------------------------------------------------------------------------------------------------------------------------------
 -- Creates an adjacency list using the _ParentID fields in Attributes then takes the newly created adjacency list
--- and uses it to generate a nested set based table in Topics.  Useful for recovering from a corrupted nested set model.
+-- and uses it to generate a nested set based table in Topics. Useful for recovering from a corrupted nested set model.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [Utilities].[GenerateNestedSet]
@@ -77,7 +77,10 @@ TABLE	#Topics (
 );
 
 --------------------------------------------------------------------------------------------------------------------------------
--- Celko's conversion model (not properly formatted; copied from Celko)
+-- CONVERSION MODEL
+--------------------------------------------------------------------------------------------------------------------------------
+-- Outside of formatting and column named, this was taken almost entirely from Celko's template for converting an adjacency list
+-- to a nested set table.
 --------------------------------------------------------------------------------------------------------------------------------
 BEGIN
   DECLARE	@RangeLeft_RangeRight	INTEGER,
