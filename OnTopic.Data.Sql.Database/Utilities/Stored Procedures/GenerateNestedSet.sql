@@ -132,8 +132,49 @@ BEGIN
   END; -- if
 END; -- while
 
-SELECT	Stack_Top,
-	TopicID,
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE EXISTING TOPIC GRAPH
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- Disable constraints
+ALTER
+TABLE	Attributes
+NOCHECK
+CONSTRAINT	FK_Attributes_TopicID;
+
+ALTER
+TABLE	ExtendedAttributes
+NOCHECK
+CONSTRAINT	FK_ExtendedAttributes_Topics;
+
+ALTER
+TABLE	Relationships
+NOCHECK
+CONSTRAINT	FK_Relationships_Source;
+
+ALTER
+TABLE	Relationships
+NOCHECK
+CONSTRAINT	FK_Relationships_Target;
+
+-- Delete topics
+DELETE
+FROM	Topics
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- RECREATE TOPIC GRAPH
+--------------------------------------------------------------------------------------------------------------------------------
+
+SET IDENTITY_INSERT Topics ON
+
+-- Insert topics
+INSERT
+INTO	Topics (
+	  TopicID,
+	  RangeLeft,
+	  RangeRight
+	)
+SELECT	TopicID,
 	RangeLeft,
 	RangeRight
 ORDER BY	RangeLeft;
