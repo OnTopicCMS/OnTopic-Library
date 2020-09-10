@@ -11,25 +11,30 @@ AS
 SET IDENTITY_INSERT Topics ON
 
 --------------------------------------------------------------------------------------------------------------------------------
--- RECREATE TOPICS_HIERARCHY
+-- RECREATE ADJACENCY LIST
 --------------------------------------------------------------------------------------------------------------------------------
--- Delete original content
+
+-- Delete any prexisting content
 DELETE
 FROM	AdjacencyList
 
--- Insert data from Attributes
+-- Insert data from Topics, Attributes
 INSERT
 INTO	AdjacencyList
-SELECT	TopicID		AS TopicID,
-	CONVERT(Int, AttributeValue)	AS ParentID,
-	GETDATE()		AS DateAdded
-FROM	Attributes
-WHERE	AttributeKey		= 'ParentID'
+SELECT	Topics.TopicID,
+	CONVERT(
+	  INT,
+	  AttributeValue
+	) AS		ParentID,
+	GETDATE()
+FROM	Topics
+LEFT JOIN	Attributes
+  ON	Attributes.TopicID	= Topics.TopicID
+  AND	ISNULL(
+	  Attributes.AttributeKey,
+	  'ParentID'
+	)		= 'ParentID'
 
--- Address root node
-UPDATE	AdjacencyList
-SET	Parent_TopicID		= null
-WHERE	ISNULL(Parent_TopicID, -1)	= -1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- Celko's conversion model (not properly formatted; copied from Celko)
