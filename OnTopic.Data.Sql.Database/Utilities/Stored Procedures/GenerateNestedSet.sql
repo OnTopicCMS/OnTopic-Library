@@ -7,7 +7,36 @@
 
 CREATE PROCEDURE [Utilities].[GenerateNestedSet]
 AS
+--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE AND SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@IsNestedTransaction	BIT;
 
+BEGIN TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- BEGIN TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20200910: This procedure will creates a snapshot of the Topics table and then recreates the topics table
+-- entirely. Any changes made to the Topics table while this procedure executes will be lost. For this reason, we are opting to
+-- use an aggressive isolation level—SERIALIZABLE—to ensure that all callers outside of this transcation receive a stable (pre-
+-- transaction) state of the data until this transaction is committed.
+--------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20191208: The SERIALIZABLE isolation level also has the benefit (for our needs) of maintaining any holds for the
+-- duration of the transaction. This includes any rows within the scope of where clauses within this procedure. Critically, it
+-- also includes a TABLOCK established early on, which prevents the nested set hierarchy from being modified until completion.
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT = 0)
+  BEGIN
+    SET @IsNestedTransaction = 0;
+    BEGIN TRANSACTION;
+  END
+ELSE
+  BEGIN
+    SET @IsNestedTransaction = 1;
+  END
+
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RECREATE ADJACENCY LIST
@@ -212,3 +241,24 @@ CONSTRAINT	FK_Relationships_Target;
 --------------------------------------------------------------------------------------------------------------------------------
 DROP TABLE	#Topics
 
+--------------------------------------------------------------------------------------------------------------------------------
+-- COMMIT TRANSACTION
+--------------------------------------------------------------------------------------------------------------------------------
+IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+  BEGIN
+    COMMIT
+  END
+
+END TRY
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- HANDLE ERRORS
+--------------------------------------------------------------------------------------------------------------------------------
+BEGIN CATCH
+  IF (@@TRANCOUNT > 0 AND @IsNestedTransaction = 0)
+    BEGIN
+      ROLLBACK;
+    END;
+  THROW
+  RETURN;
+END CATCH
