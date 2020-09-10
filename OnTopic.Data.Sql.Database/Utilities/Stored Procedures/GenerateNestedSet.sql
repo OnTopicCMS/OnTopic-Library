@@ -26,7 +26,8 @@ SELECT	Topics.TopicID,
 	  INT,
 	  AttributeValue
 	) AS		ParentID,
-	GETDATE()
+	GETDATE(),
+	RangeLeft
 FROM	Topics
 LEFT JOIN	Attributes
   ON	Attributes.TopicID	= Topics.TopicID
@@ -34,6 +35,7 @@ LEFT JOIN	Attributes
 	  Attributes.AttributeKey,
 	  'ParentID'
 	)		= 'ParentID'
+ORDER BY	RangeLeft
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE TEMPORARY STORAGE
