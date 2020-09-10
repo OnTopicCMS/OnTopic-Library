@@ -75,7 +75,7 @@ FROM	AdjacencyList
 WHERE	Parent_TopicID		IS NULL;
 
 SET	@RangeLeft_RangeRight	= 2;
-SET	@pointer	= 1;
+SET	@pointer		= 1;
 
 DELETE
 FROM	AdjacencyList
@@ -206,4 +206,9 @@ ALTER
 TABLE	Relationships
 CHECK
 CONSTRAINT	FK_Relationships_Target;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- Drop temporary table
+--------------------------------------------------------------------------------------------------------------------------------
+DROP TABLE	#Topics
 
