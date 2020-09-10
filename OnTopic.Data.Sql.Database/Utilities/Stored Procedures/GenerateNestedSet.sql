@@ -181,8 +181,8 @@ INTO	Topics (
 SELECT	TopicID,
 	RangeLeft,
 	RangeRight
-ORDER BY	RangeLeft;
 FROM	#Topics
+ORDER BY	TopicID;
 
 SET IDENTITY_INSERT Topics OFF
 
