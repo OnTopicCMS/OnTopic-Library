@@ -43,7 +43,7 @@ BEGIN
     ORDER BY	Version DESC
   )	TopicKey
   WHERE	RangeLeft		<= @RangeLeft
-  AND	ISNULL(RangeRight, -1)	>= @RangeRight
+  AND	RangeRight		>= @RangeRight
   ORDER BY	RangeLeft
 
   ------------------------------------------------------------------------------------------------------------------------------

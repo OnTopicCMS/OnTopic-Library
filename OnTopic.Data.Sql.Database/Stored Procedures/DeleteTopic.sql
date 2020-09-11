@@ -118,7 +118,7 @@ INNER JOIN	@Topics                         Topics
 --------------------------------------------------------------------------------------------------------------------------------
 UPDATE	Topics
 SET	RangeRight		= RangeRight - @RangeWidth
-WHERE	ISNULL(RangeRight, 0)	> @RangeRight
+WHERE	RangeRight		> @RangeRight
 
 UPDATE	Topics
 SET	RangeLeft		= RangeLeft - @RangeWidth

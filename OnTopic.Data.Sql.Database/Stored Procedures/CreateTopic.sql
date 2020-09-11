@@ -45,7 +45,7 @@ IF (@ParentID > -1)
           THEN	RangeRight		+ 2
           ELSE	RangeRight
         END
-    WHERE	ISNULL(RangeRight, 0)	>= @RangeRight
+    WHERE	RangeRight		>= @RangeRight
   END
 
 --------------------------------------------------------------------------------------------------------------------------------

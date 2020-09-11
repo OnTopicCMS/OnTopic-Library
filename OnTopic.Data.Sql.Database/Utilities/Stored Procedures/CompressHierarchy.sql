@@ -21,5 +21,5 @@ SET	RangeLeft = (
 	RangeRight = (
   SELECT	COUNT(*)
   FROM	[Utilities].[LeftRightRange]
-  WHERE	seq <= ISNULL(RangeRight, 0)
+  WHERE	seq <= RangeRight
 );
