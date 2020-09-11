@@ -48,13 +48,16 @@ FROM	AdjacencyList
 
 -- Insert data from Topics, Attributes
 INSERT
-INTO	AdjacencyList
+INTO	AdjacencyList (
+	  TopicID,
+	  Parent_TopicID,
+	  SortOrder
+)
 SELECT	Topics.TopicID,
 	CONVERT(
 	  INT,
 	  AttributeValue
 	) AS		ParentID,
-	GETDATE(),
 	RangeLeft
 FROM	Topics
 LEFT JOIN	Attributes
