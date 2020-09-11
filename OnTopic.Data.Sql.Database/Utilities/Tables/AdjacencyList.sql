@@ -9,8 +9,8 @@ CREATE
 TABLE	[Utilities].[AdjacencyList] (
 	  [TopicID]		INT	NOT NULL,
 	  [Parent_TopicID]	INT	NULL,
-	  [DateAdded]		DATETIME	NOT NULL,
-  CONSTRAINT	  [PK_Hierarchy]	PRIMARY KEY
+  [SortOrder] INT NOT NULL, 
+    CONSTRAINT	  [PK_Hierarchy]	PRIMARY KEY
   CLUSTERED (	  [TopicID]		ASC
   )
 );

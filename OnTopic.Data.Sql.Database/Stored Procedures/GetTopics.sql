@@ -54,7 +54,7 @@ IF @DeepLoad = 1
     INNER JOIN	Topics		AS T2
     ON	T1.RangeLeft
       BETWEEN	T2.RangeLeft
-        AND	ISNULL(T2.RangeRight, 0)
+        AND	T2.RangeRight
       AND	T2.TopicID		= @TopicID
     ORDER BY	T1.RangeLeft
     OPTION (

@@ -25,8 +25,10 @@ CROSS APPLY (
         WHERE   Attributes.TopicID = Topics.TopicID
         AND     Attributes.AttributeKey = 'Key'
         ORDER BY Version DESC
-      ) AttributeValue
-      WHERE     Tree.RangeLeft BETWEEN RangeLeft AND ISNULL(RangeRight, -1)
+      )	AttributeValue
+      WHERE     Tree.RangeLeft
+      BETWEEN	RangeLeft
+        AND	RangeRight
     ) B1
     ORDER BY    RangeLeft
     FOR XML Path ('')
