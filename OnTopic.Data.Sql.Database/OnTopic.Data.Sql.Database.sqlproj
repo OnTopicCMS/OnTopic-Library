@@ -91,6 +91,7 @@
     <Build Include="Utilities\Tables\AdjacencyList.sql" />
     <Build Include="Functions\GetChildTopicIDs.sql" />
     <Build Include="Functions\GetAttributes.sql" />
+    <Build Include="Functions\FindTopicIDs.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
