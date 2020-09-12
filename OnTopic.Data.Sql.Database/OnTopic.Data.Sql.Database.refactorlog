@@ -36,6 +36,17 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Topics]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4a07f428-c9ce-4c3c-999b-69dc8e5cc64b" ChangeDateTime="09/12/2020 03:48:21">
+    <Property Name="ElementName" Value="[dbo].[Hierarchy]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AdjacencyList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a07f428-c9ce-4c3c-999b-69dc8e5cc64b" ChangeDateTime="09/12/2020 03:48:22">
+    <Property Name="ElementName" Value="[Utilities].[AdjacencyList]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="[Utilities]" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
   <!-- Columns -->
   <Operation Name="Rename Refactor" Key="49357393-f2e7-4b42-b870-e4020f5cfd94" ChangeDateTime="12/13/2019 05:08:11">
     <Property Name="ElementName" Value="[dbo].[Relationships].[RelationshipTypeID]" />
@@ -143,6 +154,13 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ValidateHierarchy]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d1d43a90-531e-44da-bdfc-c6fddf80bbad" ChangeDateTime="12/13/2019 04:46:42">
+    <Property Name="ElementName" Value="[Utilities].[CompressTopics]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CompressHierarchy]" />
+  </Operation>
   <!-- Views -->
   <Operation Name="Rename Refactor" Key="5485015b-6a38-4521-b304-1bd96ad04057" ChangeDateTime="12/13/2019 05:06:02">
     <Property Name="ElementName" Value="[dbo].[topics_TopicAttributeIndex]" />
@@ -178,6 +196,12 @@
     <Property Name="ParentElementName" Value="[dbo]" />
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[VersionHistoryIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="49b7048c-8bcf-43b9-b209-12a723e268dd" ChangeDateTime="09/12/2020 03:48:22">
+    <Property Name="ElementName" Value="[dbo].[LeftRightRange]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="[Utilities]" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
   <!-- Functions -->
   <Operation Name="Rename Refactor" Key="b4574959-be37-415e-88c9-70fce8f60650" ChangeDateTime="12/13/2019 05:28:36">
