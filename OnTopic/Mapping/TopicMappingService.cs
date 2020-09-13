@@ -104,23 +104,32 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
+      object? target;
+
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
-        return cacheEntry.MappedTopic;
+        target                  = cacheEntry.MappedTopic;
+        if (cacheEntry.GetMissingRelationships(relationships) == Relationships.None) {
+          return target;
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+      else {
 
-      if (viewModelType == null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
-        throw new InvalidOperationException(
-          $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
-          $"to map the topic '{topic.GetUniqueKey()}'."
-        );
+        var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+
+        if (viewModelType == null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
+          throw new InvalidOperationException(
+            $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
+            $"to map the topic '{topic.GetUniqueKey()}'."
+          );
+        }
+
+        target                  = Activator.CreateInstance(viewModelType);
+
       }
-
-      var target = Activator.CreateInstance(viewModelType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide mapping
@@ -189,9 +198,17 @@ namespace OnTopic.Mapping {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the cache contains an entry, check to make sure it includes all of the requested relationships. If it does, return
+      | it. If it doesn't, determine the missing relationships and request to have those  mapped.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+        relationships           = cacheEntry.GetMissingRelationships(relationships);
+        target                  = cacheEntry.MappedTopic;
+        if (relationships == Relationships.None) {
           return cacheEntry.MappedTopic;
+        }
+        cacheEntry.AddMissingRelationships(relationships);
       }
       else if (!topic.IsNew) {
         cache.GetOrAdd(
