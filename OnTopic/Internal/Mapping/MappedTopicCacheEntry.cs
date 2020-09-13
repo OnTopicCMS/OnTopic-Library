@@ -47,7 +47,7 @@ namespace OnTopic.Internal.Mapping {
     ///   Given a target <paramref name="relationships"/>, identifies any relationships not covered by <see cref="Relationships"
     ///   /> and returns them as a new <see cref="OnTopic.Mapping.Annotations.Relationships"/> instance.
     /// </summary>
-    public Relationships GetMissingRelationships(Relationships relationships) => relationships ^ (relationships | Relationships);
+    public Relationships GetMissingRelationships(Relationships relationships) => Relationships ^ (relationships | Relationships);
 
     /*==========================================================================================================================
     | METHOD: ADD MISSING RELATIONSHIPS
