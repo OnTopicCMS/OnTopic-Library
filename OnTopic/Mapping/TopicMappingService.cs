@@ -225,7 +225,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix));
+        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix, cacheEntry != null));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
@@ -249,12 +249,15 @@ namespace OnTopic.Mapping {
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    /// <param name="mapRelationshipsOnly">Determines if properties not associated with properties should be mapped.</param>
     protected async Task SetPropertyAsync(
       Topic                     source,
       object                    target,
       Relationships             relationships,
       PropertyInfo              property,
       MappedTopicCache          cache,
+      string?                   attributePrefix                 = null,
+      bool                      mapRelationshipsOnly            = false
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -279,7 +282,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.DefaultValue != null) {
+      if (!mapRelationshipsOnly && configuration.DefaultValue != null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
@@ -292,7 +295,7 @@ namespace OnTopic.Mapping {
       else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
-      else if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+      else if (!mapRelationshipsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
