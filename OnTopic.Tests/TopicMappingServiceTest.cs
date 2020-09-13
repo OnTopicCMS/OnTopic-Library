@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Mapping;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Metadata;
@@ -263,6 +264,30 @@ namespace OnTopic.Tests {
       var viewModel             = await _mappingService.MapAsync<PropertyAliasTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", viewModel.PropertyAlias);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING RELATIONSHIPS: RETURNS DIFFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="Relationships"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.GetMissingRelationships(Relationships)"/> correctly returns the missing
+    ///   relationships.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCacheEntry_GetMissingRelationships_ReturnsDifference() {
+
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        Relationships           = Relationships.Children | Relationships.Parents
+      };
+      var relationships         = Relationships.Children | Relationships.References;
+
+      var difference            = cacheEntry.GetMissingRelationships(relationships);
+
+      Assert.IsTrue(difference.HasFlag(Relationships.References));
+      Assert.IsFalse(difference.HasFlag(Relationships.Children));
+      Assert.IsFalse(difference.HasFlag(Relationships.Parents));
 
     }
 
