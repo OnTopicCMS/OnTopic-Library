@@ -27,7 +27,6 @@ The following is a summary of the most relevant stored procedures.
 ### Querying
 - **[`GetTopics`](Stored%20Procedures/GetTopics.sql)**: Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `Attributes`, `ExtendedAttributes`, `Relationships`, and version history. Only retrieves the latest version data for each topic.
 - **[`GetTopicVersion`](Stored%20Procedures/GetTopicVersion.sql)**: Retrieves a single instance of a topic based on a `@TopicId` and `@Version`. Not that the `@Version` must include miliseconds.
-- **[`GetAttributes`](Stored%20Procedures/GetAttributes.sql)**: Given a `@TopicID`, provides the latest version of each attribute value from both `Attributes` and `ExtendedAttributes`, excluding key attributes (i.e., `Key`, `ContentType`, and `ParentID`).
 
 ### Updating
 - **[`CreateTopic`](Stored%20Procedures/CreateTopic.sql)**: Creates a new topic based on a `@ParentId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Returns a new `@TopicId`.
@@ -40,8 +39,10 @@ The following is a summary of the most relevant stored procedures.
 - **[`GetTopicID`](Functions/GetTopicID.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@TopicKey`.
 - **[`GetTopicIDByUniqueKey`](Functions/GetTopicIDByUniqueKey.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@UniqueKey` (e.g., `Root:Configuration`).
 - **[`GetUniqueKey`](Functions/GetUniqueKey.sql)**: Retrieves a topic's `UniqueKey` based on a corresponding `@TopicID`.
-- **[`GetParentID`](Functions/GetParentID.sql)**: Retrieves a topic's parent's `TopicId` based the child's `@TopicId`.
+- **[`GetParentID`](Functions/GetParentID.sql)**: Retrieves a topic's parent's `TopicID` based the child's `@TopicID`.
+- **[`GetAttributes`](functions/GetAttributes.sql)**: Given a `@TopicID`, provides the latest version of each attribute value from both `Attributes` and `ExtendedAttributes`, excluding key attributes (i.e., `Key`, `ContentType`, and `ParentID`).
 - **[`GetExtendedAttribute`](Functions/GetExtendedAttribute.sql)**: Retrieves an individual attribute from a topic's latest `ExtendedAttributes` record.
+- **[`FindTopicIDs`](Functions/FindTopicIDs.sql)**: Retrieves all `TopicID`s under a given `@TopicID` that match the `@AttributeKey` and `@AttributeValue`. Accepts `@IsExtendedAttribute` and `@UsePartialMatch`.
 
 ## Views
 The majority of the views provide records corresponding to the latest version of records for each topic. These include:

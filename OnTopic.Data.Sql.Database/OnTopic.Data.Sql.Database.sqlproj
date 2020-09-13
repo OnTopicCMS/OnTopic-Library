@@ -89,6 +89,9 @@
     <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
     <Build Include="Utilities\Views\LeftRightRange.sql" />
     <Build Include="Utilities\Tables\AdjacencyList.sql" />
+    <Build Include="Functions\GetChildTopicIDs.sql" />
+    <Build Include="Functions\GetAttributes.sql" />
+    <Build Include="Functions\FindTopicIDs.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ExtendedAttributes.sql" />
@@ -105,7 +108,6 @@
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\GetTopics.sql" />
-    <Build Include="Stored Procedures\GetAttributes.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
