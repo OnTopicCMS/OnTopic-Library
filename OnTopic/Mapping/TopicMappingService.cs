@@ -5,13 +5,13 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OnTopic.Attributes;
+using OnTopic.Internal.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
@@ -60,7 +60,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+      await MapAsync(topic, relationships, new MappedTopicCache()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -90,7 +90,7 @@ namespace OnTopic.Mapping {
     private async Task<object?> MapAsync(
       Topic?                    topic,
       Relationships             relationships,
-      ConcurrentDictionary<int, object> cache,
+      MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
 
@@ -104,8 +104,8 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
+      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+        return cacheEntry.MappedTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
       Contract.Requires(target, nameof(target));
-      return await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+      return await MapAsync(topic, target, relationships, new MappedTopicCache()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -166,10 +166,10 @@ namespace OnTopic.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     private async Task<object> MapAsync(
-      Topic? topic,
-      object target,
-      Relationships relationships,
-      ConcurrentDictionary<int, object> cache,
+      Topic?                    topic,
+      object                    target,
+      Relationships             relationships,
+      MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
 
@@ -190,11 +190,17 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
+      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+          return cacheEntry.MappedTopic;
       }
       else if (!topic.IsNew) {
-        cache.GetOrAdd(topic.Id, target);
+        cache.GetOrAdd(
+          topic.Id,
+          new MappedTopicCacheEntry() {
+            MappedTopic         = target,
+            Relationships       = relationships
+          }
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -227,12 +233,11 @@ namespace OnTopic.Mapping {
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     protected async Task SetPropertyAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyInfo property,
-      ConcurrentDictionary<int, object> cache,
-      string?                   attributePrefix                 = null
+      Topic                     source,
+      object                    target,
+      Relationships             relationships,
+      PropertyInfo              property,
+      MappedTopicCache          cache,
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -394,11 +399,11 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetCollectionValueAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      Topic                     source,
+      object                    target,
+      Relationships             relationships,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -586,10 +591,10 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task PopulateTargetCollectionAsync(
-      IList<Topic> sourceList,
-      IList targetList,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      IList<Topic>              sourceList,
+      IList                     targetList,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -689,10 +694,10 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetTopicReferenceAsync(
-      Topic source,
-      object target,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      Topic                     source,
+      object                    target,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
