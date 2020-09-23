@@ -362,7 +362,6 @@ namespace OnTopic.Data.Sql {
 
       foreach (var attributeValue in indexedAttributeList) {
         attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
-        attributeValue.IsDirty  = false;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -377,7 +376,6 @@ namespace OnTopic.Data.Sql {
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
         );
-        attributeValue.IsDirty  = false;
 
         //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
         //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
@@ -456,6 +454,8 @@ namespace OnTopic.Data.Sql {
         if (!topic.VersionHistory.Contains(version.Value)) {
           topic.VersionHistory.Insert(0, version.Value);
         }
+
+        topic.Attributes.MarkClean(version.Value);
 
       }
 
