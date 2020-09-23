@@ -35,7 +35,7 @@ namespace OnTopic.Internal.Collections {
       \---------------------------------------------------------------------------------------------------------------------*/
       if (types != null) {
         foreach (var type in types) {
-          if (!Contains(type)) {
+          if (!Contains(type.Name)) {
             Add(type);
           }
         }
