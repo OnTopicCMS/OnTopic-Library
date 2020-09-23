@@ -540,7 +540,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
+      topic.Attributes.MarkClean("ParentId");
 
     }
 
