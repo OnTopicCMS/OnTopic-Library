@@ -287,7 +287,8 @@ namespace OnTopic.Tests {
     | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of a custom attribute to the existing value and ensures it is <i>not</i> marked as IsDirty.
+    ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
+    ///   <see cref="AttributeValue.IsDirty"/>.
     /// </summary>
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
@@ -307,7 +308,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
     ///   cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
-    ///   <c>true</c>/
+    ///   <c>true</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_DirtyValues_ReturnsTrue() {

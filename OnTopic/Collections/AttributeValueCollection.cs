@@ -82,11 +82,10 @@ namespace OnTopic.Collections {
     ///   Determine if a given attribute is marked as dirty. Will return false if the attribute key cannot be found.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="OnTopic.Repositories.ITopicRepository"/>, which may need to determine if a specific attribute key is
-    ///   dirty prior to saving it to the data storage medium. Because <c>IsDirty</c> is a state of the current <see
-    ///   cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromDerived</c> (which otherwise
-    ///   default to <c>true</c>).
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if a specific attribute key is dirty prior to saving it to the data storage medium. Because <c>IsDirty
+    ///   </c> is a state of the current <see cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>
+    ///   inheritFromDerived</c> (which otherwise default to <c>true</c>).
     /// </remarks>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
@@ -101,7 +100,7 @@ namespace OnTopic.Collections {
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Marks the collectionï¿½including all <see cref="AttributeValue"/> itemsï¿½as clean, meaning they have been persisted to
+    ///   Marks the collection—including all <see cref="AttributeValue"/> items—as clean, meaning they have been persisted to
     ///   the underlying <see cref="ITopicRepository"/>.
     /// </summary>
     /// <remarks>
@@ -438,7 +437,6 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     /// <exception cref="ArgumentException">
     ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
@@ -462,7 +460,7 @@ namespace OnTopic.Collections {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to update a <see cref="AttributeValue"/> in the collection, to ensure that local business
+    ///   Intercepts all attempts to update an <see cref="AttributeValue"/> in the collection, to ensure that local business
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
@@ -473,7 +471,6 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     protected override void SetItem(int index, AttributeValue item) {
       if (EnforceBusinessLogic(item, out item)) {
         base.SetItem(index, item);
@@ -488,7 +485,7 @@ namespace OnTopic.Collections {
     ///   appropriately marked as <see cref="IsDirty(Boolean)"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return trueï¿½even if no remaining
+    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
     ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
