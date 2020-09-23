@@ -380,6 +380,50 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.SetValue("Baz", "Foo");
+
+      topic.Attributes.Remove("Foo");
+
+      topic.Attributes.MarkClean();
+
+      Assert.IsFalse(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK ATTRIBUTE CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then confirms that <see
+    ///   cref="AttributeValueCollection.IsDirty(String)"/> returns <c>false</c> for that attribute after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(String, DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkAttributeClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.MarkClean("Foo");
+
+      Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INVALID VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

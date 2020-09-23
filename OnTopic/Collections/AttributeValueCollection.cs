@@ -98,6 +98,56 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks the collection�including all <see cref="AttributeValue"/> items�as clean, meaning they have been persisted to
+    ///   the underlying <see cref="ITopicRepository"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark the collection, and all <see cref="AttributeValue"/> items it contains, as clean. After this, <see cref="IsDirty(
+    ///   Boolean)"/> will return <c>false</c> until any <see cref="AttributeValue"/> items are modified or removed.
+    /// </remarks>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
+    ///   VersionHistory"/>.
+    /// </param>
+    public void MarkClean(DateTime? version = null) {
+      foreach (var attribute in Items.Where(a => a.IsDirty)) {
+        attribute.IsDirty       = false;
+        attribute.LastModified  = version?? DateTime.UtcNow;
+      }
+      _attributesDeleted        = false;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks an individual <see cref="AttributeValue"/> as clean.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark an <see cref="AttributeValue"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
+    ///   that item until it is modified.
+    /// </remarks>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This denotes the <see cref="Topic.
+    ///   VersionHistory"/> associated with the specific attribute.
+    /// </param>
+    public void MarkClean(string name, DateTime? version = null) {
+      if (Contains(name)) {
+        var attributeValue      = this[name];
+        if (attributeValue.IsDirty) {
+          attributeValue.IsDirty = false;
+          attributeValue.LastModified = version?? DateTime.UtcNow;
+        }
+      }
+    }
+
+    /*==========================================================================================================================
     | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
