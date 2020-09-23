@@ -260,7 +260,8 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <remarks>
     ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
-    ///   a settable type.
+    ///   a settable type. Be aware that this will return <c>false</c> if the method has additional parameters, even if those
+    ///   additional parameters are optional.
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
@@ -281,6 +282,10 @@ namespace OnTopic.Internal.Reflection {
     ///   Uses reflection to call a method, assuming that it is a) writable, and b) of type <see cref="String"/>,
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
+    /// <remarks>
+    ///   Be aware that this will only succeed if the method has a single parameter of a settable type. If additional parameters
+    ///   are present it will return <c>false</c>, even if those additional parameters are optional.
+    /// </remarks>
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
