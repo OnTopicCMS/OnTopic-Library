@@ -10,6 +10,7 @@ using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
+using OnTopic.Repositories;
 
 namespace OnTopic.Collections {
 
@@ -36,6 +37,7 @@ namespace OnTopic.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
     private                     int                             _setCounter;
+    private                     bool                            _attributesDeleted;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -59,11 +61,10 @@ namespace OnTopic.Collections {
     ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="Repositories.ITopicRepository"/>, which may need to determine if any attributes are dirty prior to saving
-    ///   them to the data storage medium. Be aware that this does <i>not</i> track any <see cref="AttributeValue"/>s that may
-    ///   have been <i>deleted</i>, nor whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still
-    ///   be necessary to persist changes to the storage medium.
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if any attributes are dirty prior to saving them to the data storage medium. Be aware that this does
+    ///   <i>not</i> track whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still be necessary
+    ///   to persist changes to the storage medium.
     /// </remarks>
     /// <param name="excludeLastModified">
     ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
@@ -72,7 +73,7 @@ namespace OnTopic.Collections {
     /// </param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(bool excludeLastModified = false)
-      => Items.Any(a =>
+      => _attributesDeleted || Items.Any(a =>
         a.IsDirty &&
         (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
       );
@@ -427,6 +428,22 @@ namespace OnTopic.Collections {
       if (EnforceBusinessLogic(item, out item)) {
         base.SetItem(index, item);
       }
+    }
+
+    /*==========================================================================================================================
+    | OVERRIDE: REMOVE ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to remove an <see cref="AttributeValue"/> from the collection, to ensure that it is
+    ///   appropriately marked as <see cref="IsDirty(Boolean)"/>.
+    /// </summary>
+    /// <remarks>
+    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true�even if no remaining
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    /// </remarks>
+    protected override void RemoveItem(int index) {
+      _attributesDeleted = true;
+      base.RemoveItem(index);
     }
 
     /*==========================================================================================================================
