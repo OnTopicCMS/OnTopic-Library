@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OnTopic.Internal.Diagnostics;
@@ -58,6 +59,7 @@ namespace OnTopic.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", false)]
     public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
       return new ReadOnlyTopicCollection<T>(innerCollection);
