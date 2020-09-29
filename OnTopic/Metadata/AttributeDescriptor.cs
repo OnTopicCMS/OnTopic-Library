@@ -56,8 +56,8 @@ namespace OnTopic.Metadata {
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <param name="parent">Optional topic to set as the new topic's parent.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <exception cref="ArgumentException">
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
