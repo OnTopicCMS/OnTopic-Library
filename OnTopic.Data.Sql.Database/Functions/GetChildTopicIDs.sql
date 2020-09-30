@@ -1,40 +1,35 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- GET PARENT ID (FUNCTION)
+-- GET CHILD TOPIC IDS
 --------------------------------------------------------------------------------------------------------------------------------
--- Given a @TopicID, returns the TopicID of the node above it in the Topics nested set hierarchy.
+-- Given a TopicID, returns the TopicID of each child topic, including nested topics.
 --------------------------------------------------------------------------------------------------------------------------------
+
 CREATE
-FUNCTION	[dbo].[GetParentID] (
+FUNCTION [dbo].[GetChildTopicIDs]
+(
 	@TopicID		INT
 )
-RETURNS	INT
+RETURNS	@Topics		TABLE
+(
+	TopicID		INT
+)
 AS
 
 BEGIN
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- DECLARE AND DEFINE VARIABLES
+  -- RETRIEVE VALUES
   ------------------------------------------------------------------------------------------------------------------------------
-  DECLARE	@CurrentParentID	INT
+  INSERT
+  INTO	@Topics
+  SELECT	TopicID
+  FROM	Attributes
+  WHERE	AttributeKey		= 'ParentID'
+  AND	AttributeValue		= @TopicID
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- GET PARENT ID FROM HIERARCHY
+  -- RETURN
   ------------------------------------------------------------------------------------------------------------------------------
-  SELECT       	@CurrentParentID = (
-    SELECT	TOP 1
-	TopicID
-    FROM	Topics		t2
-    WHERE	t2.RangeLeft		< t1.RangeLeft
-      AND	t2.RangeRight		> t1.RangeRight
-    ORDER BY	t2.RangeRight-t1.RangeRight	ASC
-  )
-  FROM	Topics		t1
-  WHERE	TopicID		= @TopicID
-  ORDER BY	RangeRight-RangeLeft	DESC
-
-  ------------------------------------------------------------------------------------------------------------------------------
-  -- RETURN VALUE
-  ------------------------------------------------------------------------------------------------------------------------------
-  RETURN	@CurrentParentID
+  RETURN
 
 END

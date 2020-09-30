@@ -8,7 +8,6 @@ using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Querying;
 
 namespace OnTopic.Metadata {
 
@@ -39,8 +38,8 @@ namespace OnTopic.Metadata {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private   AttributeDescriptorCollection?                    _attributeDescriptors           = null;
-    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes          = null;
+    private   AttributeDescriptorCollection?                    _attributeDescriptors;
+    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

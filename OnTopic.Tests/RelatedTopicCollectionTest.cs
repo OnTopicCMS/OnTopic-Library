@@ -5,8 +5,8 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
-using OnTopic.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Collections;
 
 namespace OnTopic.Tests {
 
@@ -56,7 +56,47 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: CREATES INCOMING RELATIONSHIP
+    | TEST: REMOVE TOPIC: REMOVES RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a relationship and then removes it by key, and confirms that it is removed.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_RemovesRelationship() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+
+      parent.Relationships.SetTopic("Friends", related);
+      parent.Relationships.RemoveTopic("Friends", related.Key);
+
+      Assert.IsNull(parent.Relationships.GetTopics("Friends").FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a relationship and then removes it by key, and confirms that it is removed from the incoming relationships
+    ///   property.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_RemovesIncomingRelationship() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+      var relationships         = new RelatedTopicCollection(parent);
+
+      relationships.SetTopic("Friends", related);
+      relationships.RemoveTopic("Friends", related.Key);
+
+      Assert.IsNull(related.IncomingRelationships.GetTopics("Friends").FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.

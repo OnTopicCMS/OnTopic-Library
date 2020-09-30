@@ -4,11 +4,11 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Globalization;
 
 namespace OnTopic.Tests {
 
@@ -91,6 +91,55 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: CORRECT VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values can be set and retrieved as expected.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_CorrectValue_IsReturned() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetDouble("Number1", 1);
+
+      Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INCORRECT VALUE: RETURNS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values return the default.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_IncorrectValue_ReturnsDefault() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Number3", "Invalid");
+
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INCORRECT KEY: RETURNS DEFAULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double key names return the default.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_IncorrectKey_ReturnsDefault() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
 
     }
 
@@ -238,7 +287,8 @@ namespace OnTopic.Tests {
     | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of a custom attribute to the existing value and ensures it is <i>not</i> marked as IsDirty.
+    ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
+    ///   <see cref="AttributeValue.IsDirty"/>.
     /// </summary>
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
@@ -258,7 +308,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
     ///   cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
-    ///   <c>true</c>/
+    ///   <c>true</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_DirtyValues_ReturnsTrue() {
@@ -266,6 +316,25 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: DELETED VALUES: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_DeletedValues_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.Remove("Foo");
 
       Assert.IsTrue(topic.Attributes.IsDirty());
 
@@ -308,6 +377,50 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("LastModifiedBy", "System");
 
       Assert.IsFalse(topic.Attributes.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.SetValue("Baz", "Foo");
+
+      topic.Attributes.Remove("Foo");
+
+      topic.Attributes.MarkClean();
+
+      Assert.IsFalse(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK ATTRIBUTE CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then confirms that <see
+    ///   cref="AttributeValueCollection.IsDirty(String)"/> returns <c>false</c> for that attribute after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(String, DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkAttributeClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.MarkClean("Foo");
+
+      Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
 
     }
 

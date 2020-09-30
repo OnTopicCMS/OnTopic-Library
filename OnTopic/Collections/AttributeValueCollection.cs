@@ -10,6 +10,7 @@ using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
+using OnTopic.Repositories;
 
 namespace OnTopic.Collections {
 
@@ -35,7 +36,8 @@ namespace OnTopic.Collections {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
-    private                     int                             _setCounter                     = 0;
+    private                     int                             _setCounter;
+    private                     bool                            _attributesDeleted;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -59,11 +61,10 @@ namespace OnTopic.Collections {
     ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="Repositories.ITopicRepository"/>, which may need to determine if any attributes are dirty prior to saving
-    ///   them to the data storage medium. Be aware that this does <i>not</i> track any <see cref="AttributeValue"/>s that may
-    ///   have been <i>deleted</i>, nor whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still
-    ///   be necessary to persist changes to the storage medium.
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if any attributes are dirty prior to saving them to the data storage medium. Be aware that this does
+    ///   <i>not</i> track whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still be necessary
+    ///   to persist changes to the storage medium.
     /// </remarks>
     /// <param name="excludeLastModified">
     ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
@@ -72,7 +73,7 @@ namespace OnTopic.Collections {
     /// </param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(bool excludeLastModified = false)
-      => Items.Any(a =>
+      => _attributesDeleted || Items.Any(a =>
         a.IsDirty &&
         (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
       );
@@ -81,11 +82,10 @@ namespace OnTopic.Collections {
     ///   Determine if a given attribute is marked as dirty. Will return false if the attribute key cannot be found.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="OnTopic.Repositories.ITopicRepository"/>, which may need to determine if a specific attribute key is
-    ///   dirty prior to saving it to the data storage medium. Because <c>IsDirty</c> is a state of the current <see
-    ///   cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromDerived</c> (which otherwise
-    ///   default to <c>true</c>).
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if a specific attribute key is dirty prior to saving it to the data storage medium. Because <c>IsDirty
+    ///   </c> is a state of the current <see cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>
+    ///   inheritFromDerived</c> (which otherwise default to <c>true</c>).
     /// </remarks>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
@@ -94,6 +94,56 @@ namespace OnTopic.Collections {
         return false;
       }
       return this[name].IsDirty;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks the collection—including all <see cref="AttributeValue"/> items—as clean, meaning they have been persisted to
+    ///   the underlying <see cref="ITopicRepository"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark the collection, and all <see cref="AttributeValue"/> items it contains, as clean. After this, <see cref="IsDirty(
+    ///   Boolean)"/> will return <c>false</c> until any <see cref="AttributeValue"/> items are modified or removed.
+    /// </remarks>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
+    ///   VersionHistory"/>.
+    /// </param>
+    public void MarkClean(DateTime? version = null) {
+      foreach (var attribute in Items.Where(a => a.IsDirty)) {
+        attribute.IsDirty       = false;
+        attribute.LastModified  = version?? DateTime.UtcNow;
+      }
+      _attributesDeleted        = false;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks an individual <see cref="AttributeValue"/> as clean.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark an <see cref="AttributeValue"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
+    ///   that item until it is modified.
+    /// </remarks>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This denotes the <see cref="Topic.
+    ///   VersionHistory"/> associated with the specific attribute.
+    /// </param>
+    public void MarkClean(string name, DateTime? version = null) {
+      if (Contains(name)) {
+        var attributeValue      = this[name];
+        if (attributeValue.IsDirty) {
+          attributeValue.IsDirty = false;
+          attributeValue.LastModified = version?? DateTime.UtcNow;
+        }
+      }
     }
 
     /*==========================================================================================================================
@@ -387,7 +437,6 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     /// <exception cref="ArgumentException">
     ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
@@ -411,7 +460,7 @@ namespace OnTopic.Collections {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to update a <see cref="AttributeValue"/> in the collection, to ensure that local business
+    ///   Intercepts all attempts to update an <see cref="AttributeValue"/> in the collection, to ensure that local business
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
@@ -422,11 +471,26 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     protected override void SetItem(int index, AttributeValue item) {
       if (EnforceBusinessLogic(item, out item)) {
         base.SetItem(index, item);
       }
+    }
+
+    /*==========================================================================================================================
+    | OVERRIDE: REMOVE ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to remove an <see cref="AttributeValue"/> from the collection, to ensure that it is
+    ///   appropriately marked as <see cref="IsDirty(Boolean)"/>.
+    /// </summary>
+    /// <remarks>
+    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    /// </remarks>
+    protected override void RemoveItem(int index) {
+      _attributesDeleted = true;
+      base.RemoveItem(index);
     }
 
     /*==========================================================================================================================

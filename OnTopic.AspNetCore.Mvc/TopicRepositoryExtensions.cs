@@ -5,9 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Routing;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
-using Microsoft.AspNetCore.Routing;
 
 namespace OnTopic.AspNetCore.Mvc {
 

@@ -9,7 +9,7 @@ CREATE PROCEDURE [dbo].[DeleteTopic]
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
--- DISABLE NOCOUND
+-- DISABLE NOCOUNT
 --------------------------------------------------------------------------------------------------------------------------------
 -- Prevent extra result sets from interfering with SELECT statements
 SET NOCOUNT ON;
@@ -118,7 +118,7 @@ INNER JOIN	@Topics                         Topics
 --------------------------------------------------------------------------------------------------------------------------------
 UPDATE	Topics
 SET	RangeRight		= RangeRight - @RangeWidth
-WHERE	ISNULL(RangeRight, 0)	> @RangeRight
+WHERE	RangeRight		> @RangeRight
 
 UPDATE	Topics
 SET	RangeLeft		= RangeLeft - @RangeWidth

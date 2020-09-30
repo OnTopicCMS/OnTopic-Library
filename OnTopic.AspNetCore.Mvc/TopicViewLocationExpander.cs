@@ -5,8 +5,8 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using OnTopic.Internal.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Razor;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.AspNetCore.Mvc {
 

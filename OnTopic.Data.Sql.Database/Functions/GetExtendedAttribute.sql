@@ -1,13 +1,16 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- GET PARENT ID (FUNCTION)
+-- GET EXTENDED ATTRIBUTE
 --------------------------------------------------------------------------------------------------------------------------------
--- Given a @TopicID, returns the TopicID of the node above it in the Topics nested set hierarchy.
+-- Given a TopicID and an AttributeKey, retrieves the value of the attribute from the index.
 --------------------------------------------------------------------------------------------------------------------------------
+
 CREATE
-FUNCTION	[dbo].[GetParentID] (
-	@TopicID		INT
+FUNCTION	[dbo].[GetExtendedAttribute]
+(
+	@TopicID		INT,
+	@AttributeKey		NVARCHAR(255)
 )
-RETURNS	INT
+RETURNS	NVARCHAR(MAX)
 AS
 
 BEGIN
@@ -15,26 +18,20 @@ BEGIN
   ------------------------------------------------------------------------------------------------------------------------------
   -- DECLARE AND DEFINE VARIABLES
   ------------------------------------------------------------------------------------------------------------------------------
-  DECLARE	@CurrentParentID	INT
+  DECLARE	@AttributeValue		NVARCHAR(MAX)	= NULL
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- GET PARENT ID FROM HIERARCHY
+  -- RETRIEVE VALUE
   ------------------------------------------------------------------------------------------------------------------------------
-  SELECT       	@CurrentParentID = (
-    SELECT	TOP 1
-	TopicID
-    FROM	Topics		t2
-    WHERE	t2.RangeLeft		< t1.RangeLeft
-      AND	t2.RangeRight		> t1.RangeRight
-    ORDER BY	t2.RangeRight-t1.RangeRight	ASC
-  )
-  FROM	Topics		t1
+  SELECT	@AttributeValue		= AttributesXml
+	  .query('/attributes/attribute[@key=sql:variable("@AttributeKey")]')
+	  .value('.', 'NVARCHAR(MAX)')
+  FROM	ExtendedAttributeIndex
   WHERE	TopicID		= @TopicID
-  ORDER BY	RangeRight-RangeLeft	DESC
 
   ------------------------------------------------------------------------------------------------------------------------------
   -- RETURN VALUE
   ------------------------------------------------------------------------------------------------------------------------------
-  RETURN	@CurrentParentID
+  RETURN	@AttributeValue
 
 END

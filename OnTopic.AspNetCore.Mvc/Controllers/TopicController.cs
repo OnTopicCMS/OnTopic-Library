@@ -4,10 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
 using OnTopic.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
@@ -25,7 +25,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ITopicMappingService            _topicMappingService;
-    private                     Topic?                          _currentTopic                   = null;
+    private                     Topic?                          _currentTopic;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

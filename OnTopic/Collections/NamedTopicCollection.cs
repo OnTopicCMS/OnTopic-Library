@@ -41,7 +41,7 @@ namespace OnTopic.Collections {
     ///   Determines if the collection has been modified. This value is set to <c>true</c> any time a new item is inserted or
     ///   removed from the collection.
     /// </summary>
-    public bool IsDirty { get; set; } = false;
+    public bool IsDirty { get; set; }
 
     /*==========================================================================================================================
     | INSERT ITEM

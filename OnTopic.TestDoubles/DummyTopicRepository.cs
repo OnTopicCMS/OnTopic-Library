@@ -48,13 +48,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) => throw new NotImplementedException();
+    public override void Move(Topic topic, Topic target, Topic? sibling = null) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+    public override void Delete(Topic topic, bool isRecursive = true) => throw new NotImplementedException();
 
   } //Class
 } //Namespace

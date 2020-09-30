@@ -4,6 +4,9 @@
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
 using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ViewComponents;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Host.Components;
 using OnTopic.Data.Caching;
@@ -13,9 +16,6 @@ using OnTopic.Mapping.Hierarchical;
 using OnTopic.Reflection;
 using OnTopic.Repositories;
 using OnTopic.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
 
 namespace OnTopic.AspNetCore.Mvc.Host {
 

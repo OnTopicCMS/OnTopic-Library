@@ -5,11 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
 using OnTopic.Data.Caching;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace OnTopic.Tests {
 
@@ -218,7 +218,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(2, parent.Children.Count);
 
-      _topicRepository.Delete(topic);
+      _topicRepository.Delete(topic, true);
 
       Assert.AreEqual<int>(1, parent.Children.Count);
 

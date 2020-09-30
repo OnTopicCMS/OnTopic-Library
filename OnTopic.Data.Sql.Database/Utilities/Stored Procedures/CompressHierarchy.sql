@@ -4,7 +4,7 @@
 -- Remove gaps within nested set model created when non-leaf nodes are deleted
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [Utilities].[CompressTopics]
+CREATE PROCEDURE [Utilities].[CompressHierarchy]
 AS
 
 SET NOCOUNT ON;
@@ -15,11 +15,11 @@ SET NOCOUNT ON;
 UPDATE	Topics
 SET	RangeLeft = (
   SELECT	COUNT(*)
-  FROM	LeftRightRange
+  FROM	[Utilities].[LeftRightRange]
   WHERE	seq <= RangeLeft
 ),
 	RangeRight = (
   SELECT	COUNT(*)
-  FROM	LeftRightRange
-  WHERE	seq <= ISNULL(RangeRight, 0)
+  FROM	[Utilities].[LeftRightRange]
+  WHERE	seq <= RangeRight
 );

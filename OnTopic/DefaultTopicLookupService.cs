@@ -38,24 +38,26 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure editor types are accounted for
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Contains(nameof(ContentTypeDescriptor)))             Add(typeof(ContentTypeDescriptor));
-      if (!Contains(nameof(AttributeDescriptor)))               Add(typeof(AttributeDescriptor));
-      if (!Contains(nameof(BooleanAttribute)))                  Add(typeof(BooleanAttribute));
-      if (!Contains(nameof(DateTimeAttribute)))                 Add(typeof(DateTimeAttribute));
-      if (!Contains(nameof(FileListAttribute)))                 Add(typeof(FileListAttribute));
-      if (!Contains(nameof(FilePathAttribute)))                 Add(typeof(FilePathAttribute));
-      if (!Contains(nameof(HtmlAttribute)))                     Add(typeof(HtmlAttribute));
-      if (!Contains(nameof(LastModifiedAttribute)))             Add(typeof(LastModifiedAttribute));
-      if (!Contains(nameof(LastModifiedByAttribute)))           Add(typeof(LastModifiedByAttribute));
-      if (!Contains(nameof(NestedTopicListAttribute)))          Add(typeof(NestedTopicListAttribute));
-      if (!Contains(nameof(NumberAttribute)))                   Add(typeof(NumberAttribute));
-      if (!Contains(nameof(QueryableTopicListAttribute)))       Add(typeof(QueryableTopicListAttribute));
-      if (!Contains(nameof(RelationshipAttribute)))             Add(typeof(RelationshipAttribute));
-      if (!Contains(nameof(TextAreaAttribute)))                 Add(typeof(TextAreaAttribute));
-      if (!Contains(nameof(TextAttribute)))                     Add(typeof(TextAttribute));
-      if (!Contains(nameof(TokenizedTopicListAttribute)))       Add(typeof(TokenizedTopicListAttribute));
-      if (!Contains(nameof(TopicListAttribute)))                Add(typeof(TopicListAttribute));
-      if (!Contains(nameof(TopicReferenceAttribute)))           Add(typeof(TopicReferenceAttribute));
+      TryAdd(typeof(ContentTypeDescriptor));
+      TryAdd(typeof(AttributeDescriptor));
+      TryAdd(typeof(BooleanAttribute));
+      TryAdd(typeof(DateTimeAttribute));
+      TryAdd(typeof(FileListAttribute));
+      TryAdd(typeof(FilePathAttribute));
+      TryAdd(typeof(HtmlAttribute));
+      TryAdd(typeof(IncomingRelationshipAttribute));
+      TryAdd(typeof(InstructionAttribute));
+      TryAdd(typeof(LastModifiedAttribute));
+      TryAdd(typeof(LastModifiedByAttribute));
+      TryAdd(typeof(NestedTopicListAttribute));
+      TryAdd(typeof(NumberAttribute));
+      TryAdd(typeof(QueryableTopicListAttribute));
+      TryAdd(typeof(RelationshipAttribute));
+      TryAdd(typeof(TextAreaAttribute));
+      TryAdd(typeof(TextAttribute));
+      TryAdd(typeof(TokenizedTopicListAttribute));
+      TryAdd(typeof(TopicListAttribute));
+      TryAdd(typeof(TopicReferenceAttribute));
 
     }
 

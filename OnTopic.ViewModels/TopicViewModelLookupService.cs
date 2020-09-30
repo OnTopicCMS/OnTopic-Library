@@ -35,29 +35,20 @@ namespace OnTopic.ViewModels {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure local view models are accounted for
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AddIfMissing(typeof(ContentItemTopicViewModel));
-      AddIfMissing(typeof(ContentListTopicViewModel));
-      AddIfMissing(typeof(IndexTopicViewModel));
-      AddIfMissing(typeof(ItemTopicViewModel));
-      AddIfMissing(typeof(ListTopicViewModel));
-      AddIfMissing(typeof(LookupListItemTopicViewModel));
-      AddIfMissing(typeof(NavigationTopicViewModel));
-      AddIfMissing(typeof(PageGroupTopicViewModel));
-      AddIfMissing(typeof(PageTopicViewModel));
-      AddIfMissing(typeof(SectionTopicViewModel));
-      AddIfMissing(typeof(SlideTopicViewModel));
-      AddIfMissing(typeof(SlideshowTopicViewModel));
-      AddIfMissing(typeof(TopicViewModel));
-      AddIfMissing(typeof(VideoTopicViewModel));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Function: Add If Missing
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      void AddIfMissing(Type type) {
-        if (!Contains(type.Name)) {
-          Add(type);
-        }
-      }
+      TryAdd(typeof(ContentItemTopicViewModel));
+      TryAdd(typeof(ContentListTopicViewModel));
+      TryAdd(typeof(IndexTopicViewModel));
+      TryAdd(typeof(ItemTopicViewModel));
+      TryAdd(typeof(ListTopicViewModel));
+      TryAdd(typeof(LookupListItemTopicViewModel));
+      TryAdd(typeof(NavigationTopicViewModel));
+      TryAdd(typeof(PageGroupTopicViewModel));
+      TryAdd(typeof(PageTopicViewModel));
+      TryAdd(typeof(SectionTopicViewModel));
+      TryAdd(typeof(SlideTopicViewModel));
+      TryAdd(typeof(SlideshowTopicViewModel));
+      TryAdd(typeof(TopicViewModel));
+      TryAdd(typeof(VideoTopicViewModel));
 
     }
 

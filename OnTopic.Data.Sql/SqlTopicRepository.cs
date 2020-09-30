@@ -253,7 +253,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var version               = new SqlDateTime(DateTime.Now);
+      var version               = new SqlDateTime(DateTime.UtcNow);
       var unresolvedTopics      = new List<Topic>();
 
       using var connection      = new SqlConnection(_connectionString);
@@ -362,7 +362,6 @@ namespace OnTopic.Data.Sql {
 
       foreach (var attributeValue in indexedAttributeList) {
         attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
-        attributeValue.IsDirty  = false;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -377,7 +376,6 @@ namespace OnTopic.Data.Sql {
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
         );
-        attributeValue.IsDirty  = false;
 
         //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
         //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
@@ -456,6 +454,8 @@ namespace OnTopic.Data.Sql {
         if (!topic.VersionHistory.Contains(version.Value)) {
           topic.VersionHistory.Insert(0, version.Value);
         }
+
+        topic.Attributes.MarkClean(version.Value);
 
       }
 
@@ -540,7 +540,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
+      topic.Attributes.MarkClean("ParentId");
 
     }
 
@@ -548,7 +548,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) {
+    public override void Delete(Topic topic, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

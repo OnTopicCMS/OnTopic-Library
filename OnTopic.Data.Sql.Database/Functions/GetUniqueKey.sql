@@ -1,13 +1,15 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- GET PARENT ID (FUNCTION)
+-- GET UNIQUE KEY
 --------------------------------------------------------------------------------------------------------------------------------
--- Given a @TopicID, returns the TopicID of the node above it in the Topics nested set hierarchy.
+-- Given a TopicID, will return the unique key for the topic.
 --------------------------------------------------------------------------------------------------------------------------------
+
 CREATE
-FUNCTION	[dbo].[GetParentID] (
+FUNCTION	[dbo].[GetUniqueKey]
+(
 	@TopicID		INT
 )
-RETURNS	INT
+RETURNS	VARCHAR(MAX)
 AS
 
 BEGIN
@@ -15,26 +17,38 @@ BEGIN
   ------------------------------------------------------------------------------------------------------------------------------
   -- DECLARE AND DEFINE VARIABLES
   ------------------------------------------------------------------------------------------------------------------------------
-  DECLARE	@CurrentParentID	INT
+  DECLARE	@RangeLeft		INT
+  DECLARE	@RangeRight		INT
+  DECLARE	@UniqueKey		VARCHAR(MAX)
 
   ------------------------------------------------------------------------------------------------------------------------------
-  -- GET PARENT ID FROM HIERARCHY
+  -- FIND RANGE
   ------------------------------------------------------------------------------------------------------------------------------
-  SELECT       	@CurrentParentID = (
-    SELECT	TOP 1
-	TopicID
-    FROM	Topics		t2
-    WHERE	t2.RangeLeft		< t1.RangeLeft
-      AND	t2.RangeRight		> t1.RangeRight
-    ORDER BY	t2.RangeRight-t1.RangeRight	ASC
-  )
-  FROM	Topics		t1
+  SELECT	@RangeLeft		= RangeLeft,
+	@RangeRight		= RangeRight
+  FROM	Topics
   WHERE	TopicID		= @TopicID
-  ORDER BY	RangeRight-RangeLeft	DESC
+
+  ------------------------------------------------------------------------------------------------------------------------------
+  -- CONSTRUCT UNIQUE KEY
+  ------------------------------------------------------------------------------------------------------------------------------
+  SELECT	@UniqueKey		= COALESCE(@UniqueKey + ':' + TopicKey, TopicKey)
+  FROM	Topics
+  CROSS APPLY (
+    SELECT	TOP 1
+	AttributeValue		AS TopicKey
+    FROM	[dbo].[Attributes]
+    WHERE	Attributes.TopicID	= Topics.TopicID
+      AND	Attributes.AttributeKey	= 'Key'
+    ORDER BY	Version DESC
+  )	TopicKey
+  WHERE	RangeLeft		<= @RangeLeft
+  AND	RangeRight		>= @RangeRight
+  ORDER BY	RangeLeft
 
   ------------------------------------------------------------------------------------------------------------------------------
   -- RETURN VALUE
   ------------------------------------------------------------------------------------------------------------------------------
-  RETURN	@CurrentParentID
+  RETURN	@UniqueKey
 
 END

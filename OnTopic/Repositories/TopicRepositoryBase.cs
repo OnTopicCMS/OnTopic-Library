@@ -4,17 +4,16 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Globalization;
-using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
-using OnTopic.Querying;
+using System.Linq;
 using Microsoft;
 using OnTopic.Attributes;
-using System.Collections.Generic;
-using System.Linq;
 using OnTopic.Collections;
+using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
 using OnTopic.Metadata.AttributeTypes;
+using OnTopic.Querying;
 
 #pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
 
@@ -395,16 +394,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target) => Move(topic, target, null);
-
-    /// <summary>
-    ///   Interface method that supports moving a topic from one position to another.
-    /// </summary>
-    /// <param name="topic">The topic object to be moved.</param>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
-    /// <returns>Boolean value representing whether the operation completed successfully.</returns>
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling) {
+    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -464,9 +454,34 @@ namespace OnTopic.Repositories {
       Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate descendants
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!isRecursive && topic.Children.Any(t => !t.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase))) {
+        throw new ReferentialIntegrityException(
+          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. It has child topics, but '{nameof(isRecursive)}' is set to " +
+          $"false. To delete '{topic.GetUniqueKey()}' and all of its descendants, set '{nameof(isRecursive)}' to true."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate derived topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var childTopics           = topic.FindAll();
+      var allTopics             = topic.GetRootTopic().FindAll().Except(childTopics);
+      var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic != null && childTopics.Contains(t.DerivedTopic));
+
+      if (derivedTopic != null) {
+        throw new ReferentialIntegrityException(
+          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. The topic '{derivedTopic.GetUniqueKey()}' derives from the " +
+          $"topic '{derivedTopic.DerivedTopic!.GetUniqueKey()}'. Deleting this would cause violate the integrity of the " +
+          $"persistence store."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var         args    = new DeleteEventArgs(topic);
+      var args = new DeleteEventArgs(topic);
       DeleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -474,6 +489,34 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent != null) {
         topic.Parent.Children.Remove(topic.Key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var descendantTopics      = topic.FindAll();
+
+      foreach (var descendantTopic in descendantTopics) {
+        foreach (var relationship in descendantTopic.Relationships) {
+          foreach (var relatedTopic in relationship.ToArray()) {
+            if (!descendantTopics.Contains(relatedTopic)) {
+              descendantTopic.Relationships.RemoveTopic(relationship.Name, relatedTopic);
+            }
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Remove incoming relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var descendantTopic in descendantTopics) {
+        foreach (var relationship in descendantTopic.IncomingRelationships) {
+          foreach (var relatedTopic in relationship.ToArray()) {
+            if (!descendantTopics.Contains(relatedTopic)) {
+              relatedTopic.Relationships.RemoveTopic(relationship.Name, descendantTopic.Key);
+            }
+          }
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

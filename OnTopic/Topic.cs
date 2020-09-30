@@ -29,9 +29,9 @@ namespace OnTopic {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     string                          _key;
     private                     int                             _id                             = -1;
-    private                     string?                         _originalKey                    = null;
-    private                     Topic?                          _parent                         = null;
-    private                     Topic?                          _derivedTopic                   = null;
+    private                     string?                         _originalKey;
+    private                     Topic?                          _parent;
+    private                     Topic?                          _derivedTopic;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

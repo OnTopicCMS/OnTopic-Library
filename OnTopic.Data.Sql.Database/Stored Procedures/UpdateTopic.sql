@@ -43,7 +43,7 @@ OUTER APPLY (
   )			Existing
 WHERE	AttributeKey		!= 'ParentId'
   AND	ISNULL(AttributeValue, '')	!= ''
-  AND 	ISNULL(ExistingValue, '')	!= AttributeValue
+  AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- PULL PREVIOUS EXTENDED ATTRIBUTES
