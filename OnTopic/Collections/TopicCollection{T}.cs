@@ -26,7 +26,7 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicCollection(IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      if (topics != null) {
+      if (topics is not null) {
         foreach (var topic in topics) {
           Add(topic);
         }

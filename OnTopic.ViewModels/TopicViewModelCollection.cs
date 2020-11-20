@@ -40,7 +40,7 @@ namespace OnTopic.ViewModels {
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicViewModelCollection(IEnumerable<TItem>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      if (topics != null) {
+      if (topics is not null) {
         foreach (var item in topics) {
           Add(item);
         }

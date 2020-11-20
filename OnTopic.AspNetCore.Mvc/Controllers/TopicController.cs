@@ -71,7 +71,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>The Topic associated with the current request.</returns>
     public Topic? CurrentTopic {
       get {
-        if (_currentTopic == null) {
+        if (_currentTopic is null) {
           _currentTopic = TopicRepository.Load(RouteData);
         }
         return _currentTopic;

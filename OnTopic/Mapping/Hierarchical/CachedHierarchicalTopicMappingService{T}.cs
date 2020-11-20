@@ -71,7 +71,7 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceTopic == null) {
+      if (sourceTopic is null) {
         return await Task<T?>.FromResult<T?>(null).ConfigureAwait(false);
       }
 

@@ -313,7 +313,7 @@ namespace OnTopic.Data.Sql {
       }
 
       // Bypass if either of the objects are missing
-      if (related == null) return;
+      if (related is null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object

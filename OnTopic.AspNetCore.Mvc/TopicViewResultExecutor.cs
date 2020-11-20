@@ -103,7 +103,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!(view?.Success ?? false) && requestContext.Query.ContainsKey("View")) {
         var queryStringValue = requestContext.Query["View"].First<string>();
-        if (queryStringValue != null) {
+        if (queryStringValue is not null) {
           view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
           searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
         }
@@ -125,11 +125,11 @@ namespace OnTopic.AspNetCore.Mvc {
               .Substring(splitHeaders[i].IndexOf("/", StringComparison.InvariantCulture) + 1)
               .Replace("+", "-", StringComparison.InvariantCulture);
             // Validate against available views; if content-type represents a valid view, stop validation
-            if (acceptHeader != null) {
+            if (acceptHeader is not null) {
               view = viewEngine.FindView(actionContext, acceptHeader, isMainPage: true);
               searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
             }
-            if (view != null) {
+            if (view is not null) {
               break;
             }
           }
@@ -174,7 +174,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return view, if found
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view != null && view.Success) {
+      if (view is not null && view.Success) {
         return view;
       }
       return ViewEngineResult.NotFound(contentType, searchedPaths);

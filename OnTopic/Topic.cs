@@ -87,7 +87,7 @@ namespace OnTopic {
         Id                      = id;
         Attributes.SetValue("Key", key, false, false);
         Attributes.SetValue("ContentType", contentType, false, false);
-        if (parent != null) {
+        if (parent is not null) {
           Attributes.SetValue("ParentId", parent.Id.ToString(CultureInfo.InvariantCulture), false, false);
         }
       }
@@ -137,7 +137,7 @@ namespace OnTopic {
     ///   have a null parent.
     /// </remarks>
     /// <requires description="The value for Parent must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   value != this
@@ -194,7 +194,7 @@ namespace OnTopic {
     ///   The current <see cref="Topic"/>'s key, which is guaranteed to be unique among its siblings.
     /// </value>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires
     ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
@@ -207,11 +207,11 @@ namespace OnTopic {
       get => _key;
       set {
         TopicFactory.ValidateKey(value);
-        if (_originalKey == null) {
+        if (_originalKey is null) {
           _originalKey = Attributes.GetValue("Key", _key, false, false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
-        if (_originalKey != null && !value.Equals(_key, StringComparison.InvariantCultureIgnoreCase) && Parent != null) {
+        if (_originalKey is not null && !value.Equals(_key, StringComparison.InvariantCultureIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
         }
         SetAttributeValue("Key", value);
@@ -465,10 +465,10 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move topic to new location
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_parent != null) {
+      if (_parent is not null) {
         _parent.Children.Remove(Key);
       }
-      var insertAt = (sibling != null)? parent.Children.IndexOf(sibling)+1 : 0;
+      var insertAt = (sibling is not null)? parent.Children.IndexOf(sibling)+1 : 0;
       parent.Children.Insert(insertAt, this);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -501,7 +501,7 @@ namespace OnTopic {
       var uniqueKey = "";
       var topic = (Topic?)this;
 
-      while (topic != null) {
+      while (topic is not null) {
         if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
         uniqueKey = topic.Key + uniqueKey;
         topic = topic.Parent;
@@ -577,7 +577,7 @@ namespace OnTopic {
           "A topic may not derive from itself."
         );
         _derivedTopic = value;
-        if (value != null && value.Id > 0) {
+        if (value is not null && value.Id > 0) {
           SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
         }
         else {

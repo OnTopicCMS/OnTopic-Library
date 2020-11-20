@@ -164,7 +164,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) {
+      if (topic is null) {
         if (topicId == -1) {
           topic = TopicFactory.Create("Root", "Container");
         }
@@ -425,7 +425,7 @@ namespace OnTopic.Data.Sql {
         command.AddParameter("TopicID", topic.Id);
         command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
-      else if (topic.Parent != null) {
+      else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
       command.AddParameter("Version", version.Value);
@@ -515,7 +515,7 @@ namespace OnTopic.Data.Sql {
       command.AddParameter("ParentID", target.Id);
 
       // Append sibling ID if set
-      if (sibling != null) {
+      if (sibling is not null) {
         command.AddParameter("SiblingID", sibling.Id);
       }
 

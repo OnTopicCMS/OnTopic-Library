@@ -28,7 +28,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires
     ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."

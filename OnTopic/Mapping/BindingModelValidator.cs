@@ -222,7 +222,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate attribute type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeDescriptor == null) {
+      if (attributeDescriptor is null) {
         throw new InvalidOperationException(
           $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
@@ -244,7 +244,7 @@ namespace OnTopic.Mapping {
       if (
         attributeDescriptor.ModelType == ModelType.NestedTopic &&
         !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
-        listType != null
+        listType is not null
       ) {
         throw new InvalidOperationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +

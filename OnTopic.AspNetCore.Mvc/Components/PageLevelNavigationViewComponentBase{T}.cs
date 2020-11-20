@@ -74,9 +74,9 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify navigation root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic != null) {
+      if (navigationRootTopic is not null) {
         while (
-          navigationRootTopic.Parent != null &&
+          navigationRootTopic.Parent is not null &&
           !navigationRootTopic.ContentType.Equals("PageGroup", StringComparison.InvariantCulture)
         ) {
           navigationRootTopic = navigationRootTopic.Parent;
@@ -86,7 +86,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return navigationRootTopic?.Parent == null? null : navigationRootTopic;
+      return navigationRootTopic?.Parent is null? null : navigationRootTopic;
 
     }
 

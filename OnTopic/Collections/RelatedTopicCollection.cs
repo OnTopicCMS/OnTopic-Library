@@ -152,7 +152,7 @@ namespace OnTopic.Collections {
       var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
       var topic                 = topics?.Contains(topicKey)?? false? topics[topicKey] : null;
 
-      if (topics == null || topic == null) {
+      if (topics is null || topic is null) {
         return false;
       }
 
@@ -202,7 +202,7 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = Contains(relationshipKey)? this[relationshipKey] : null;
 
-      if (topics == null || !topics.Contains(topic)) {
+      if (topics is null || !topics.Contains(topic)) {
         return false;
       }
 

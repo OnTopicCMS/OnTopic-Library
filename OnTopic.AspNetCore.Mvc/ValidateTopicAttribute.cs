@@ -71,7 +71,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate context
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (controller == null) {
+      if (controller is null) {
         throw new InvalidOperationException(
           $"The {nameof(ValidateTopicAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
         );
@@ -80,7 +80,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic == null) {
+      if (currentTopic is null) {
         if (!AllowNull) {
           filterContext.Result = controller.NotFound("There is no topic associated with this path.");
         }

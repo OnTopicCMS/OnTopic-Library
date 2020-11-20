@@ -77,7 +77,7 @@ namespace OnTopic.AspNetCore.Mvc {
       var topic = (Topic?)null;
 
       foreach (var searchPath in paths) {
-        if (topic != null) break;
+        if (topic is not null) break;
         if (String.IsNullOrEmpty(searchPath)) continue;
         topic = topicRepository.Load(searchPath);
       }

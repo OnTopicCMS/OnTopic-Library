@@ -58,7 +58,7 @@ namespace OnTopic.Metadata {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (rootContentType == null || rootContentType.Children.Count == 0) {
+      if (rootContentType is null || rootContentType.Children.Count == 0) {
         return;
       }
 
