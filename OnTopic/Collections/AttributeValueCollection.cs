@@ -232,7 +232,7 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        !name.Equals("TopicId", StringComparison.InvariantCulture) &&
+        !name.Equals("TopicId", StringComparison.OrdinalIgnoreCase) &&
         _associatedTopic.DerivedTopic is not null &&
         maxHops > 0
       ) {
