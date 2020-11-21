@@ -680,7 +680,7 @@ namespace OnTopic.Repositories {
         };
 
         // Ignore relationships and nested topics
-        if (attribute.ModelType.Equals(ModelType.Relationship) || attribute.ModelType.Equals(ModelType.NestedTopic)) {
+        if (attribute.ModelType is ModelType.Relationship or ModelType.NestedTopic) {
           continue;
         }
 
@@ -719,9 +719,7 @@ namespace OnTopic.Repositories {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
     private static bool IsAttributeDescriptor(Topic topic) =>
-      topic is AttributeDescriptor &&
-      topic.Parent?.Key == "Attributes" &&
-      topic.Parent.Parent is ContentTypeDescriptor;
+      topic is AttributeDescriptor and { Parent: { Key: "Attributes", Parent: ContentTypeDescriptor } };
 
     /*==========================================================================================================================
     | METHOD: IS EXTENDED ATTRIBUTE MISMATCH?

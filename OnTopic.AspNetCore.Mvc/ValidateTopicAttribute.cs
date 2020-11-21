@@ -111,7 +111,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "List" || currentTopic.Parent?.ContentType == "List") {
+      if (currentTopic is { ContentType: "List"} or { Parent: {ContentType: "List" } }) {
         filterContext.Result = new StatusCodeResult(403);
         return;
       }

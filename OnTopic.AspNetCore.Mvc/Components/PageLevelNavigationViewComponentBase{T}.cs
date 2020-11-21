@@ -76,8 +76,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is not null) {
         while (
-          navigationRootTopic.Parent is not null &&
-          !navigationRootTopic.ContentType.Equals("PageGroup", StringComparison.InvariantCulture)
+          navigationRootTopic is not null and not ({ Parent: null } or { ContentType: "PageGroup" })
         ) {
           navigationRootTopic = navigationRootTopic.Parent;
         }

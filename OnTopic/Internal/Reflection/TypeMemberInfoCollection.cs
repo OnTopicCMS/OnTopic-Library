@@ -153,8 +153,7 @@ namespace OnTopic.Internal.Reflection {
     public bool HasSettableProperty(Type type, string name) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
-        property is not null &&
-        property.CanWrite &&
+        property is not null and { CanWrite: true } &&
         IsSettableType(property.PropertyType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );
@@ -209,8 +208,7 @@ namespace OnTopic.Internal.Reflection {
     public bool HasGettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
-        property is not null &&
-        property.CanRead &&
+        property is not null and { CanRead: true } &&
         IsSettableType(property.PropertyType, targetType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );

@@ -95,9 +95,9 @@ namespace OnTopic.Internal.Diagnostics {
       }
       catch (Exception ex) when (
         ex is MissingMethodException
-        || ex is MethodAccessException
-        || ex is TargetInvocationException
-        || ex is NotSupportedException
+        or MethodAccessException
+        or TargetInvocationException
+        or NotSupportedException
       ) {
         throw new ArgumentException(
           "The exception provided as the generic type argument does not have a constructor that accepts an error message as" +

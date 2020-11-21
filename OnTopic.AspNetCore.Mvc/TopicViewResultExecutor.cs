@@ -174,7 +174,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return view, if found
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (view is not null && view.Success) {
+      if (view is not null and { Success: true }) {
         return view;
       }
       return ViewEngineResult.NotFound(contentType, searchedPaths);
