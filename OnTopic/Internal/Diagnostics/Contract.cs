@@ -88,7 +88,7 @@ namespace OnTopic.Internal.Diagnostics {
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
       if (errorMessage is null || String.IsNullOrEmpty(errorMessage)) {
-        throw new T();
+        throw new();
       }
       try {
         throw (T)Activator.CreateInstance(typeof(T), new object[] { errorMessage });
@@ -103,7 +103,7 @@ namespace OnTopic.Internal.Diagnostics {
           "The exception provided as the generic type argument does not have a constructor that accepts an error message as" +
           " its sole argument",
           nameof(errorMessage),
-          new T()
+          new()
         );
       }
 

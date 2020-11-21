@@ -24,7 +24,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidRelationshipBaseTypeTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
-    public List<TopicViewModel> ContentTypes { get; } = new List<TopicViewModel>();
+    public List<TopicViewModel> ContentTypes { get; } = new();
 
   } //Class
 } //Namespace

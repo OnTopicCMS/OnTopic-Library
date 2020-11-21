@@ -30,7 +30,7 @@ namespace OnTopic.Collections {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeMemberInfoCollection _typeCache = new TypeMemberInfoCollection(typeof(AttributeSetterAttribute));
+    static readonly TypeMemberInfoCollection _typeCache = new(typeof(AttributeSetterAttribute));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

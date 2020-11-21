@@ -30,7 +30,7 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new();
 
     /*==========================================================================================================================
     | EVENT HANDLERS

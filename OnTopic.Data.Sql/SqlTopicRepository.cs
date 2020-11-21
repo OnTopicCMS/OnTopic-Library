@@ -269,7 +269,7 @@ namespace OnTopic.Data.Sql {
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, isDraft, connection, new List<Topic>(), version);
+        Save(unresolvedTopic, false, isDraft, connection, new(), version);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

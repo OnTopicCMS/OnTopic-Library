@@ -34,7 +34,7 @@ namespace OnTopic.Mapping.Hierarchical {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<int, T?> _cache = new ConcurrentDictionary<int, T?>();
+    private readonly ConcurrentDictionary<int, T?> _cache = new();
     private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService;
 
     /*==========================================================================================================================

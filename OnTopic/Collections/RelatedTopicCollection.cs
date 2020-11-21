@@ -55,7 +55,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of relationship keys.
     /// </returns>
-    public ReadOnlyCollection<string> Keys => new ReadOnlyCollection<string>(Items.Select(t => t.Name).ToList());
+    public ReadOnlyCollection<string> Keys => new(Items.Select(t => t.Name).ToList());
 
     /*==========================================================================================================================
     | METHOD: GET ALL TOPICS
@@ -75,7 +75,7 @@ namespace OnTopic.Collections {
           }
         }
       }
-      return new ReadOnlyTopicCollection(topics);
+      return new(topics);
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ namespace OnTopic.Collections {
       if (Contains(relationshipKey)) {
         return this[relationshipKey];
       }
-      return new NamedTopicCollection();
+      return new();
     }
 
     /*==========================================================================================================================
@@ -258,7 +258,7 @@ namespace OnTopic.Collections {
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!Contains(relationshipKey)) {
-        Add(new NamedTopicCollection(relationshipKey));
+        Add(new(relationshipKey));
       }
       var topics = this[relationshipKey];
       if (!topics.Contains(topic.Key)) {

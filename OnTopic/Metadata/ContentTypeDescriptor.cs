@@ -141,7 +141,7 @@ namespace OnTopic.Metadata {
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
-          _permittedContentTypes = new ReadOnlyTopicCollection<ContentTypeDescriptor>(permittedContentTypes);
+          _permittedContentTypes = new(permittedContentTypes);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ namespace OnTopic.Metadata {
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _attributeDescriptors = new AttributeDescriptorCollection();
+          _attributeDescriptors = new();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self

@@ -21,7 +21,7 @@ namespace OnTopic.Tests.ViewModels {
   public class FlattenChildrenTopicViewModel {
 
     [Flatten]
-    public List<FlattenChildrenTopicViewModel> Children { get; } = new List<FlattenChildrenTopicViewModel>();
+    public List<FlattenChildrenTopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

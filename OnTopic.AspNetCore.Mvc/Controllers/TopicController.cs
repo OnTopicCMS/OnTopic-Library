@@ -122,7 +122,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
     [NonAction]
     public virtual TopicViewResult TopicView(object model, string? viewName = null) =>
-      new TopicViewResult(ViewData, TempData, model, CurrentTopic?.ContentType, viewName);
+      new(ViewData, TempData, model, CurrentTopic?.ContentType, viewName);
 
   } //Class
 } //Namespace

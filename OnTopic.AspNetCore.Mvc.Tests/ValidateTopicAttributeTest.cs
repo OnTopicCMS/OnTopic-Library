@@ -40,7 +40,7 @@ namespace OnTopic.Tests {
 
       var actionContext = new ActionContext(
         new DefaultHttpContext(),
-        new RouteData(),
+        new(),
         new ControllerActionDescriptor(),
         modelState
       );
@@ -63,10 +63,10 @@ namespace OnTopic.Tests {
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
     public static ControllerContext GetControllerContext() =>
-      new ControllerContext(
-        new ActionContext() {
+      new(
+        new() {
           HttpContext               = new DefaultHttpContext(),
-          RouteData                 = new RouteData(),
+          RouteData                 = new(),
           ActionDescriptor          = new ControllerActionDescriptor()
         }
       );
@@ -78,7 +78,7 @@ namespace OnTopic.Tests {
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
     public static TopicController GetTopicController(Topic topic) =>
-      new TopicController(
+      new(
           new DummyTopicRepository(),
           new DummyTopicMappingService()
       ) {

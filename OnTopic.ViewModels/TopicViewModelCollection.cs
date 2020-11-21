@@ -60,7 +60,7 @@ namespace OnTopic.ViewModels {
         !String.IsNullOrWhiteSpace(contentType),
         $"A {nameof(contentType)} argument is required."
       );
-      return new TopicViewModelCollection<TItem>(
+      return new(
         Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.InvariantCultureIgnoreCase)?? false)
       );
     }

@@ -72,7 +72,7 @@ namespace OnTopic.Internal.Mapping {
       CrawlRelationships        = Relationships.None;
       MetadataKey               = null;
       DisableMapping            = false;
-      AttributeFilters          = new Dictionary<string, string>();
+      AttributeFilters          = new();
       FlattenChildren           = false;
 
       /*------------------------------------------------------------------------------------------------------------------------

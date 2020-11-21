@@ -30,7 +30,7 @@ namespace OnTopic.Mapping.Reverse {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new TypeMemberInfoCollection();
+    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

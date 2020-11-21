@@ -28,7 +28,7 @@ namespace OnTopic.Tests.ViewModels {
   public class AmbiguousRelationTopicViewModel: KeyOnlyTopicViewModel {
 
     [Relationship("AmbiguousRelationship", Type=RelationshipType.IncomingRelationship)]
-    public List<KeyOnlyTopicViewModel> RelationshipAlias { get; } = new List<KeyOnlyTopicViewModel>();
+    public List<KeyOnlyTopicViewModel> RelationshipAlias { get; } = new();
 
   } //Class
 } //Namespace

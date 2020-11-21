@@ -60,11 +60,11 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Children                  = new TopicCollection();
-      Attributes                = new AttributeValueCollection(this);
-      IncomingRelationships     = new RelatedTopicCollection(this, true);
-      Relationships             = new RelatedTopicCollection(this, false);
-      VersionHistory            = new List<DateTime>();
+      Children                  = new();
+      Attributes                = new(this);
+      IncomingRelationships     = new(this, true);
+      Relationships             = new(this, false);
+      VersionHistory            = new();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set core properties

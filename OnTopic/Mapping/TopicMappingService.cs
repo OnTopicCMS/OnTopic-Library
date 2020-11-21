@@ -33,7 +33,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new TypeMemberInfoCollection();
+    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -60,7 +60,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+      await MapAsync(topic, relationships, new()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -146,7 +146,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
       Contract.Requires(target, nameof(target));
-      return await MapAsync(topic, target, relationships, new ConcurrentDictionary<int, object>()).ConfigureAwait(false);
+      return await MapAsync(topic, target, relationships, new()).ConfigureAwait(false);
     }
 
     /// <summary>

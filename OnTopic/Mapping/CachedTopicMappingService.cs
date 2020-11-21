@@ -28,8 +28,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache =
-      new ConcurrentDictionary<(int, Type?, Relationships), object>();
+    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR

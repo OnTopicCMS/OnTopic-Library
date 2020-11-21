@@ -49,7 +49,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | PRIVATE FIELDS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly ConcurrentBag<(Type, string)> _modelsValidated = new ConcurrentBag<(Type, string)>();
+    static readonly ConcurrentBag<(Type, string)> _modelsValidated = new();
 
     /*==========================================================================================================================
     | PROTECTED: VALIDATE MODEL

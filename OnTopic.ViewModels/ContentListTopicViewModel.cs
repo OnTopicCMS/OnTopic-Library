@@ -26,7 +26,7 @@ namespace OnTopic.ViewModels {
     ///   Provides a list of <see cref="ContentItemTopicViewModel"/>, representing the contents of the <see
     ///   cref="ContentListTopicViewModel"/>.
     /// </summary>
-    public TopicViewModelCollection<ContentItemTopicViewModel> ContentItems { get; } = new TopicViewModelCollection<ContentItemTopicViewModel>();
+    public TopicViewModelCollection<ContentItemTopicViewModel> ContentItems { get; } = new();
 
     /*==========================================================================================================================
     | CATEGORIES
@@ -34,7 +34,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a list of valid categories that each of the <see cref="ContentItems"/> may optionally be associated with.
     /// </summary>
-    public TopicViewModelCollection<TopicViewModel> Categories { get; } = new TopicViewModelCollection<TopicViewModel>();
+    public TopicViewModelCollection<TopicViewModel> Categories { get; } = new();
 
   } //Class
 } //Namespace

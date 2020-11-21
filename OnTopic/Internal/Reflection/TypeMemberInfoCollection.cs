@@ -32,7 +32,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Initializes static properties on <see cref="TypeMemberInfoCollection"/>.
     /// </summary>
     static TypeMemberInfoCollection() {
-      SettableTypes = new List<Type> {
+      SettableTypes = new() {
         typeof(bool),
         typeof(bool?),
         typeof(int),
@@ -73,7 +73,7 @@ namespace OnTopic.Internal.Reflection {
       if (!Contains(type)) {
         lock(Items) {
           if (!Contains(type)) {
-            Add(new MemberInfoCollection(type));
+            Add(new(type));
           }
         }
       }
@@ -91,7 +91,7 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
     public MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
-      new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
+      new(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
 
     /*==========================================================================================================================
     | METHOD: GET MEMBER

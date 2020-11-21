@@ -25,7 +25,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class RelatedEntityTopicViewModel: KeyOnlyTopicViewModel {
 
-    public Collection<Topic> RelatedTopics { get; } = new Collection<Topic>();
+    public Collection<Topic> RelatedTopics { get; } = new();
 
   } //Class
 } //Namespace

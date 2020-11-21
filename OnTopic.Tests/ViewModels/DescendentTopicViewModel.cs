@@ -26,8 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   public class DescendentTopicViewModel: TopicViewModel {
 
     [Follow(Relationships.Children)]
-    public TopicViewModelCollection<DescendentTopicViewModel> Children { get; }
-      = new TopicViewModelCollection<DescendentTopicViewModel>();
+    public TopicViewModelCollection<DescendentTopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

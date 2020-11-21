@@ -146,7 +146,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>A Sitemap.org sitemap.</returns>
     [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
     public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
-      new XDocument(
+      new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
           select AddTopic(topic, includeMetadata)
