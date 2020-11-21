@@ -102,7 +102,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       await HierarchicalTopicMappingService.GetRootViewModelAsync(
         navigationRootTopic!,
         3,
-        t => t.ContentType != "PageGroup"
+        t => t.ContentType is not "PageGroup"
       ).ConfigureAwait(false);
 
     /*==========================================================================================================================

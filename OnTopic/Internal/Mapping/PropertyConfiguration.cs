@@ -100,7 +100,7 @@ namespace OnTopic.Internal.Mapping {
       );
 
       if (
-        RelationshipType.Equals(RelationshipType.Any) &&
+        RelationshipType is RelationshipType.Any &&
         RelationshipKey.Equals("Children", StringComparison.InvariantCultureIgnoreCase)
       ) {
         RelationshipType = RelationshipType.Children;

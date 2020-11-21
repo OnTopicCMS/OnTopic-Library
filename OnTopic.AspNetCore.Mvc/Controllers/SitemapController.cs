@@ -173,8 +173,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is null) return topics;
-      if (topic.Attributes.GetValue("NoIndex") == "1") return topics;
-      if (topic.Attributes.GetValue("IsDisabled") == "1") return topics;
+      if (topic.Attributes.GetValue("NoIndex") is "1") return topics;
+      if (topic.Attributes.GetValue("IsDisabled") is "1") return topics;
       if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.InvariantCultureIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------

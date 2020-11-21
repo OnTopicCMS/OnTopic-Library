@@ -26,7 +26,7 @@
       <!-- /Page Header Area -->
 
       <article itemscope itemtype="http://schema.org/WebPageElement" itemprop="mainContentOfPage" class="grid-container">
-        <h1>@(Model.ContentType.Equals("PageGroup")? "Overview" : Model.Title)</h1>
+        <h1>@(Model.ContentType is "PageGroup"? "Overview" : Model.Title)</h1>
         <p class="subtitle">@Model.Subtitle</p>
         <section class="body">
           <partial name="_TopicAttributes" />

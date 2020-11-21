@@ -148,7 +148,7 @@ namespace OnTopic.Data.Sql {
       if (fieldValue is null) {
         parameter.Value         = (string?)null;
       }
-      else if (paramDirection.Equals(ParameterDirection.Input)) {
+      else if (paramDirection is ParameterDirection.Input) {
         parameter.Value         = sqlDbType switch {
           SqlDbType.Bit         => (bool)fieldValue,
           SqlDbType.DateTime    => (DateTime)fieldValue,

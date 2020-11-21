@@ -667,7 +667,7 @@ namespace OnTopic.Repositories {
         }
 
         // Ignore system attributes
-        if (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID") {
+        if (attribute.Key is "Key" or "ContentType" or "ParentID") {
           continue;
         }
 

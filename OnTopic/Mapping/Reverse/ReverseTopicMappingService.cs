@@ -376,7 +376,7 @@ namespace OnTopic.Mapping.Reverse {
       if (attributeValue is not null) {
         switch (configuration.Property.PropertyType.Name) {
           case nameof(Boolean):
-            attributeValue = attributeValue == "True" ? "1" : "0";
+            attributeValue = attributeValue is "True" ? "1" : "0";
             break;
         }
       }

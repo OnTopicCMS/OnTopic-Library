@@ -55,7 +55,7 @@ namespace OnTopic.Attributes {
           inheritFromDerived ? 5 : 0
         ),
         out var result
-      ) ? result.Equals(1) : defaultValue;
+      ) ? result is 1 : defaultValue;
     }
 
     /*==========================================================================================================================

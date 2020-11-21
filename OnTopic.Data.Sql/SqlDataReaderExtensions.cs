@@ -276,7 +276,7 @@ namespace OnTopic.Data.Sql {
         if (String.IsNullOrEmpty(attributeValue)) continue;
         current.Attributes.SetValue(attributeKey, attributeValue, false, version, true);
 
-      } while (xmlReader.Name == "attribute");
+      } while (xmlReader.Name is "attribute");
 
     }
 

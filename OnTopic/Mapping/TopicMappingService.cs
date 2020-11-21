@@ -276,7 +276,7 @@ namespace OnTopic.Mapping {
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
       }
-      else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
+      else if (configuration.AttributeKey is "Parent" && relationships.HasFlag(Relationships.Parents)) {
         if (source.Parent is not null) {
           await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
         }
@@ -564,9 +564,9 @@ namespace OnTopic.Mapping {
         var targetRelationships = RelationshipMap.Mappings[relationship];
         var preconditionsMet    =
           listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
-          (relationshipType.Equals(RelationshipType.Children) || !relationship.Equals(RelationshipType.Children)) &&
-          (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
+          (relationshipType is RelationshipType.Any || relationshipType.Equals(relationship)) &&
+          (relationshipType is RelationshipType.Children || relationship is not RelationshipType.Children) &&
+          (targetRelationships is Relationships.None || relationships.HasFlag(targetRelationships)) &&
           contains(configuration.RelationshipKey);
         return preconditionsMet? getTopics() : listSource;
       }
@@ -741,7 +741,7 @@ namespace OnTopic.Mapping {
       | Validate source properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (source.IsDisabled) return targetList;
-      if (source.ContentType == "List" && !includeNestedTopics) return targetList;
+      if (source.ContentType is "List" && !includeNestedTopics) return targetList;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Merge source list into target list

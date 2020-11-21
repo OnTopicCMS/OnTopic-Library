@@ -267,7 +267,7 @@ namespace OnTopic.Internal.Reflection {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method is not null &&
-        method.GetParameters().Length.Equals(1) &&
+        method.GetParameters().Length is 1 &&
         IsSettableType(method.GetParameters().First().ParameterType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
       );
@@ -416,10 +416,10 @@ namespace OnTopic.Internal.Reflection {
         valueObject = value;
       }
       else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
-        if (value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase)) {
+        if (value is "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase)) {
           valueObject = true;
         }
-        else if (value == "0" || value.Equals("false", StringComparison.InvariantCultureIgnoreCase)) {
+        else if (value is "0" || value.Equals("false", StringComparison.InvariantCultureIgnoreCase)) {
           valueObject = false;
         }
       }
