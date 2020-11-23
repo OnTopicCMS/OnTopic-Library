@@ -141,6 +141,18 @@ namespace OnTopic.AspNetCore.Mvc {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle canonical URL
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Most search engines are case sensitive, even though many web servers are configured case insensitive. To help avoid
+      | mismatches between the requested URL and the canonical URL, and to help ensure that references to topics maintain the
+      | same case as assigned in the topic graph, URLs that vary only by case will be redirected to the expected case.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!currentTopic.GetWebPath().Equals(filterContext.HttpContext.Request.Path, StringComparison.Ordinal)) {
+        filterContext.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Base processing
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.OnActionExecuting(filterContext);
