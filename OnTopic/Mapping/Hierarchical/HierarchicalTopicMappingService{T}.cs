@@ -189,8 +189,8 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (tiers >= 0 && validationDelegate(sourceTopic) && viewModel.Children.Count == 0) {
-        foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
+      if (tiers >= 0 && viewModel.Children.Count == 0) {
+        foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible() && validationDelegate(t))) {
           taskQueue.Add(GetViewModelAsync(topic, tiers, validationDelegate));
         }
       }
