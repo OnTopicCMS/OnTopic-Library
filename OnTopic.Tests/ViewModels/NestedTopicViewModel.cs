@@ -18,7 +18,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class NestedTopicViewModel {
 
-    public List<KeyOnlyTopicViewModel> Categories { get; } = new List<KeyOnlyTopicViewModel>();
+    public List<KeyOnlyTopicViewModel> Categories { get; } = new();
 
   } //Class
 } //Namespace

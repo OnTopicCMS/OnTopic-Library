@@ -72,7 +72,7 @@ namespace OnTopic.Internal.Mapping {
       CrawlRelationships        = Relationships.None;
       MetadataKey               = null;
       DisableMapping            = false;
-      AttributeFilters          = new Dictionary<string, string>();
+      AttributeFilters          = new();
       FlattenChildren           = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ namespace OnTopic.Internal.Mapping {
       );
 
       if (
-        RelationshipType.Equals(RelationshipType.Any) &&
+        RelationshipType is RelationshipType.Any &&
         RelationshipKey.Equals("Children", StringComparison.InvariantCultureIgnoreCase)
       ) {
         RelationshipType = RelationshipType.Children;
@@ -110,7 +110,7 @@ namespace OnTopic.Internal.Mapping {
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute != null && filterByAttribute.Any()) {
+      if (filterByAttribute is not null && filterByAttribute.Any()) {
         foreach (var filter in filterByAttribute) {
           AttributeFilters.Add(filter.Key, filter.Value);
         }
@@ -430,7 +430,7 @@ namespace OnTopic.Internal.Mapping {
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
     private static void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
       var attribute = (T)property.GetCustomAttribute(typeof(T), true);
-      if (attribute != null) {
+      if (attribute is not null) {
         action(attribute);
       }
     }

@@ -45,7 +45,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var controller            = (string)values["controller"];
       var area                  = (string)values["area"];
-      if (area != null && controller == null) {
+      if (area is not null && controller is null) {
         values["controller"]    = area;
       }
 
@@ -55,7 +55,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | If the action isn't defined in the route, assume Index—which is the default action for the TopicController.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var action                = (string)values["action"];
-      if (action == null) {
+      if (action is null) {
         action                  = "Index";
         values["action"]        = action;
       }
@@ -68,7 +68,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | based on the path. It is not needed when routing by controller/action pairs.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var path                  = (string)values["path"];
-      if (path != null || action.Equals("Index", StringComparison.OrdinalIgnoreCase)) {
+      if (path is not null || action.Equals("Index", StringComparison.OrdinalIgnoreCase)) {
         values["rootTopic"]     = area;
       }
 

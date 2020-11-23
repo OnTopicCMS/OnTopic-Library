@@ -73,7 +73,7 @@ namespace OnTopic.Tests {
         RouteData               = routes,
         ActionDescriptor        = new ControllerActionDescriptor()
       };
-      _context                  = new ControllerContext(actionContext);
+      _context                  = new(actionContext);
 
     }
 
@@ -131,11 +131,11 @@ namespace OnTopic.Tests {
 
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
-        RouteData               = new RouteData(),
+        RouteData               = new(),
         ActionDescriptor        = new ControllerActionDescriptor()
       };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new ControllerContext(actionContext)
+        ControllerContext       = new(actionContext)
       };
       var result                = controller.Index() as ContentResult;
       var model                 = result.Content as string;

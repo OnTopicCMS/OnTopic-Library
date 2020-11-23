@@ -26,7 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   public class RelationWithChildrenTopicViewModel: RelationTopicViewModel {
 
     [Follow(Relationships.Relationships)]
-    public List<RelationWithChildrenTopicViewModel> Children { get; } = new List<RelationWithChildrenTopicViewModel>();
+    public List<RelationWithChildrenTopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

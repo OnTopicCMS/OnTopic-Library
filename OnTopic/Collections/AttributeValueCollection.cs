@@ -30,7 +30,7 @@ namespace OnTopic.Collections {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeMemberInfoCollection _typeCache = new TypeMemberInfoCollection(typeof(AttributeSetterAttribute));
+    static readonly TypeMemberInfoCollection _typeCache = new(typeof(AttributeSetterAttribute));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -232,8 +232,8 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        !name.Equals("TopicId", StringComparison.InvariantCulture) &&
-        _associatedTopic.DerivedTopic != null &&
+        !name.Equals("TopicId", StringComparison.OrdinalIgnoreCase) &&
+        _associatedTopic.DerivedTopic is not null &&
         maxHops > 0
       ) {
         value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
@@ -242,7 +242,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent != null) {
+      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent is not null) {
         value = _associatedTopic.Parent.Attributes.GetValue(name, defaultValue, inheritFromParent);
       }
 

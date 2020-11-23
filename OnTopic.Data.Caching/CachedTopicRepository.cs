@@ -101,7 +101,7 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey != null && !topicKey.Length.Equals(0)) {
+      if (topicKey is not null && topicKey.Length is not 0) {
         return _cache.GetByUniqueKey(topicKey);
       }
 

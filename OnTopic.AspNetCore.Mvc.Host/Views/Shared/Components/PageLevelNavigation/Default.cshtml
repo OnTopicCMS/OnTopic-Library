@@ -2,7 +2,7 @@
 
 <h2>PageLevelNavigation</h2>
 <ul>
-  @if (Model.NavigationRoot != null) {
+  @if (Model.NavigationRoot is not null) {
     foreach (var topic in Model.NavigationRoot.Children) {
       <li><a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title)</a></li>
     }

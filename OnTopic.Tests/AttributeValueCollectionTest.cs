@@ -453,7 +453,7 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new AttributeValue("Key", "NewKey", false));
+      topic.Attributes.Add(new("Key", "NewKey", false));
 
       Assert.AreEqual<string>("NewKey", topic.Key);
 
@@ -473,7 +473,7 @@ namespace OnTopic.Tests {
     public void Add_InvalidAttributeValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new AttributeValue("Key", "# ?"));
+      topic.Attributes.Add(new("Key", "# ?"));
     }
 
     /*==========================================================================================================================

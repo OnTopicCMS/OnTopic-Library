@@ -30,12 +30,12 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The topic object associated with the move event.</param>
     /// <param name="target">The parent topic object targeted by the move event.</param>
     /// <requires description="The topic to move must be provided." exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     /// <requires
     ///   description="The target topic under which to move the topic must be provided."
     ///   exception="T:System.ArgumentNullException">
-    ///   target != null
+    ///   target is not null
     /// </requires>
     /// <requires description="The topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   topic != target

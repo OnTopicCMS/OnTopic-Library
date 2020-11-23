@@ -38,7 +38,7 @@ namespace OnTopic.Collections {
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{Topic}"/>.</param>
     public new static ReadOnlyTopicCollection FromList(IList<Topic> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
-      return new ReadOnlyTopicCollection(innerCollection);
+      return new(innerCollection);
     }
 
   } //Class

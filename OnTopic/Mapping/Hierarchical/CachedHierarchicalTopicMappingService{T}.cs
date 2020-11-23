@@ -34,7 +34,7 @@ namespace OnTopic.Mapping.Hierarchical {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<int, T?> _cache = new ConcurrentDictionary<int, T?>();
+    private readonly ConcurrentDictionary<int, T?> _cache = new();
     private readonly IHierarchicalTopicMappingService<T> _hierarchicalTopicMappingService;
 
     /*==========================================================================================================================
@@ -71,7 +71,7 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceTopic == null) {
+      if (sourceTopic is null) {
         return await Task<T?>.FromResult<T?>(null).ConfigureAwait(false);
       }
 

@@ -23,7 +23,7 @@ namespace OnTopic.Tests.ViewModels {
     public CircularTopicViewModel? Parent { get; set; }
 
     [Follow(Relationships.Children | Relationships.Parents)]
-    public List<CircularTopicViewModel> Children { get; } = new List<CircularTopicViewModel>();
+    public List<CircularTopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

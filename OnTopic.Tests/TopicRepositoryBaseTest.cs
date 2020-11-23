@@ -230,8 +230,8 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.IsFalse(attributes.Any(a => a.Key == "EmptyAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key == "NullAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "EmptyAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "NullAttribute"));
 
     }
 
@@ -357,7 +357,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -378,7 +378,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -399,7 +399,7 @@ namespace OnTopic.Tests {
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
       Assert.IsTrue(attributes.Any());
-      Assert.IsFalse(attributes.Any(a => a.Key.Equals("Title", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsFalse(attributes.Any(a => a.Key is "Title"));
 
     }
 
@@ -425,9 +425,9 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCulture)));
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("YetAnotherArbitraryAttribute", StringComparison.InvariantCulture)));
-      Assert.IsFalse(attributes.Any(a => a.Key.Equals("AnotherArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.IsTrue(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
 
     }
 

@@ -71,7 +71,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate context
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (controller == null) {
+      if (controller is null) {
         throw new InvalidOperationException(
           $"The {nameof(ValidateTopicAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
         );
@@ -80,7 +80,7 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic == null) {
+      if (currentTopic is null) {
         if (!AllowNull) {
           filterContext.Result = controller.NotFound("There is no topic associated with this path.");
         }
@@ -111,7 +111,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "List" || currentTopic.Parent?.ContentType == "List") {
+      if (currentTopic is { ContentType: "List"} or { Parent: {ContentType: "List" } }) {
         filterContext.Result = new StatusCodeResult(403);
         return;
       }
@@ -122,7 +122,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Like nested topics, containers are not expected to be viewed directly; if a user requests a container, return a 403 to
       | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "Container") {
+      if (currentTopic.ContentType is "Container") {
         filterContext.Result = new StatusCodeResult(403);
         return;
       }
@@ -133,7 +133,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "PageGroup") {
+      if (currentTopic.ContentType is "PageGroup") {
         filterContext.Result = controller.Redirect(
           currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );

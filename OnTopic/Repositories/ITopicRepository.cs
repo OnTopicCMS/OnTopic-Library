@@ -106,7 +106,7 @@ namespace OnTopic.Repositories {
     /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     int Save(Topic topic, bool isRecursive = false, bool isDraft = false);
@@ -128,7 +128,7 @@ namespace OnTopic.Repositories {
     /// <requires
     ///   description="The target under which to move the topic must be provided."
     ///   exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     void Move(Topic topic, Topic target, Topic? sibling = null);
 
@@ -151,7 +151,7 @@ namespace OnTopic.Repositories {
     ///   and the topic has children, including any nested topics, an exception will be thrown.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
     void Delete(Topic topic, bool isRecursive = true);

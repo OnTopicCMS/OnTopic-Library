@@ -58,7 +58,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey != null && topicKey.Length > 0) {
+      if (topicKey is not null && topicKey.Length > 0) {
         topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
         return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.InvariantCultureIgnoreCase));
       }
@@ -90,7 +90,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset version
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic != null) {
+      if (topic is not null) {
         topic.LastModified = version;
       }
 
@@ -272,7 +272,7 @@ namespace OnTopic.TestDoubles {
         bool isRequired         = false
       ) {
         var container = contentType.Children.GetTopic("Attributes");
-        if (container == null) {
+        if (container is null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }

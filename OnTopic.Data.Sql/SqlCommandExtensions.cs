@@ -119,7 +119,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
     /// <param name="sqlLength">Length limit for the SQL field.</param>
     /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
-    ///   command != null
+    ///   command is not null
     /// </requires>
     private static void AddParameter(
       SqlCommand command,
@@ -148,7 +148,7 @@ namespace OnTopic.Data.Sql {
       if (fieldValue is null) {
         parameter.Value         = (string?)null;
       }
-      else if (paramDirection.Equals(ParameterDirection.Input)) {
+      else if (paramDirection is ParameterDirection.Input) {
         parameter.Value         = sqlDbType switch {
           SqlDbType.Bit         => (bool)fieldValue,
           SqlDbType.DateTime    => (DateTime)fieldValue,

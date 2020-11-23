@@ -135,13 +135,13 @@ namespace OnTopic.Metadata {
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (_permittedContentTypes == null) {
+        if (_permittedContentTypes is null) {
           var permittedContentTypes = new TopicCollection<ContentTypeDescriptor>();
           var contentTypes = Relationships.GetTopics("ContentTypes");
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
-          _permittedContentTypes = new ReadOnlyTopicCollection<ContentTypeDescriptor>(permittedContentTypes);
+          _permittedContentTypes = new(permittedContentTypes);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -168,12 +168,12 @@ namespace OnTopic.Metadata {
     public AttributeDescriptorCollection AttributeDescriptors {
       get {
 
-        if (_attributeDescriptors == null) {
+        if (_attributeDescriptors is null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _attributeDescriptors = new AttributeDescriptorCollection();
+          _attributeDescriptors = new();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
@@ -195,7 +195,7 @@ namespace OnTopic.Metadata {
           | Get values from parent
           \-------------------------------------------------------------------------------------------------------------------*/
           var parent = Parent as ContentTypeDescriptor;
-          if (parent?.AttributeDescriptors != null) {
+          if (parent?.AttributeDescriptors is not null) {
             foreach (var attribute in parent.AttributeDescriptors) {
               if (!_attributeDescriptors.Contains(attribute.Key)) {
                 _attributeDescriptors.Add(attribute);
@@ -276,7 +276,7 @@ namespace OnTopic.Metadata {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentType = (ContentTypeDescriptor?)this;
 
-      while (contentType != null) {
+      while (contentType is not null) {
         if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
           return true;
         }

@@ -65,7 +65,7 @@ namespace OnTopic.Internal.Diagnostics {
     /// </exception>
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
-      Requires<ArgumentNullException>(requiredObject != null, errorMessage);
+      Requires<ArgumentNullException>(requiredObject is not null, errorMessage);
     #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
@@ -88,22 +88,22 @@ namespace OnTopic.Internal.Diagnostics {
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
       if (errorMessage is null || String.IsNullOrEmpty(errorMessage)) {
-        throw new T();
+        throw new();
       }
       try {
         throw (T)Activator.CreateInstance(typeof(T), new object[] { errorMessage });
       }
       catch (Exception ex) when (
         ex is MissingMethodException
-        || ex is MethodAccessException
-        || ex is TargetInvocationException
-        || ex is NotSupportedException
+        or MethodAccessException
+        or TargetInvocationException
+        or NotSupportedException
       ) {
         throw new ArgumentException(
           "The exception provided as the generic type argument does not have a constructor that accepts an error message as" +
           " its sole argument",
           nameof(errorMessage),
-          new T()
+          new()
         );
       }
 
@@ -162,7 +162,7 @@ namespace OnTopic.Internal.Diagnostics {
     /// </exception>
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Assume([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null)
-      => Requires<InvalidOperationException>(requiredObject != null, errorMessage);
+      => Requires<InvalidOperationException>(requiredObject is not null, errorMessage);
     #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
   } //Class

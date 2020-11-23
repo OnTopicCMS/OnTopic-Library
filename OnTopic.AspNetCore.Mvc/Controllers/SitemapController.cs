@@ -146,7 +146,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <returns>A Sitemap.org sitemap.</returns>
     [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
     public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
-      new XDocument(
+      new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
           select AddTopic(topic, includeMetadata)
@@ -172,9 +172,9 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return topics;
-      if (topic.Attributes.GetValue("NoIndex") == "1") return topics;
-      if (topic.Attributes.GetValue("IsDisabled") == "1") return topics;
+      if (topic is null) return topics;
+      if (topic.Attributes.GetValue("NoIndex") is "1") return topics;
+      if (topic.Attributes.GetValue("IsDisabled") is "1") return topics;
       if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.InvariantCultureIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------

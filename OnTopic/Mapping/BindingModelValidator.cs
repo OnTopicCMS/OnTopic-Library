@@ -49,7 +49,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | PRIVATE FIELDS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly ConcurrentBag<(Type, string)> _modelsValidated = new ConcurrentBag<(Type, string)>();
+    static readonly ConcurrentBag<(Type, string)> _modelsValidated = new();
 
     /*==========================================================================================================================
     | PROTECTED: VALIDATE MODEL
@@ -198,7 +198,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.RelationshipType == RelationshipType.Children) {
+      if (configuration.RelationshipType is RelationshipType.Children) {
         throw new InvalidOperationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
@@ -211,7 +211,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.AttributeKey == "Parent") {
+      if (configuration.AttributeKey is "Parent") {
         throw new InvalidOperationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
@@ -222,7 +222,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate attribute type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeDescriptor == null) {
+      if (attributeDescriptor is null) {
         throw new InvalidOperationException(
           $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
@@ -234,7 +234,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect non-mapped relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeDescriptor.ModelType == ModelType.Relationship) {
+      if (attributeDescriptor.ModelType is ModelType.Relationship) {
         ValidateRelationship(sourceType, configuration, attributeDescriptor, listType);
       }
 
@@ -242,9 +242,9 @@ namespace OnTopic.Mapping {
       | Validate the correct base class for nested topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        attributeDescriptor.ModelType == ModelType.NestedTopic &&
+        attributeDescriptor.ModelType is ModelType.NestedTopic &&
         !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
-        listType != null
+        listType is not null
       ) {
         throw new InvalidOperationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
@@ -260,7 +260,7 @@ namespace OnTopic.Mapping {
       | Validate the correct base class for reference
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        attributeDescriptor.ModelType == ModelType.Reference &&
+        attributeDescriptor.ModelType is ModelType.Reference &&
         !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
         throw new InvalidOperationException(
@@ -277,7 +277,7 @@ namespace OnTopic.Mapping {
       | Validate that references end in "Id"
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        attributeDescriptor.ModelType == ModelType.Reference &&
+        attributeDescriptor.ModelType is ModelType.Reference &&
         !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
       ) {
         throw new InvalidOperationException(
