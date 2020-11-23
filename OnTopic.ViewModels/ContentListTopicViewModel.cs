@@ -36,5 +36,22 @@ namespace OnTopic.ViewModels {
     /// </summary>
     public TopicViewModelCollection<TopicViewModel> Categories { get; } = new();
 
+    /*==========================================================================================================================
+    | IS INDEXED?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a flag determining whether or not the content list should be indexed.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="IsIndexed"/> property, if set, requests that the view provides a list of <see cref="ContentItems"/> or
+    ///   <see cref="Categories"/> at the top, with links to each one. This is entirely up to the discretion of the view as to
+    ///   how to implement—or even whether it's appropriate. For instance, it might not make sense on views rendering as an
+    ///   accordion or a searchable list. Nevertheless, it's a common enough feature that having it exposed as a first-party
+    ///   option helps implementors account for common scenarios. As with other properties, it won't be set if there isn't a
+    ///   corresponding attribute, and so this can easily be hidden or disabled globally via the editor.
+    /// </remarks>
+    /// <returns>True if the content list should be indexed; false otherwise.</returns>
+    public bool IsIndexed { get; set; }
+
   } //Class
 } //Namespace
