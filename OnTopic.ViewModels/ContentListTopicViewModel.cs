@@ -53,5 +53,19 @@ namespace OnTopic.ViewModels {
     /// <returns>True if the content list should be indexed; false otherwise.</returns>
     public bool IsIndexed { get; set; }
 
+    /*==========================================================================================================================
+    | INDEX LABEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assuming <see cref="IsIndexed"/>, determines the label to display. Defaults to <i>Contents</i>.
+    /// </summary>
+    /// <remarks>
+    ///   Often, if an indexed list of links is provided on a view, it will be preceded with a lable. The <see cref=
+    ///   "IndexLabel"/> allows that to be optionally set on a per topic basis. The default value is "Contents", though it is up
+    ///   to view implementors and editor configurations as to whether this option is exposed or honored.
+    /// </remarks>
+    /// <returns>Returns the value set; defaults to "Contents".</returns>
+    public string IndexLabel { get; set; } = "Contents";
+
   } //Class
 } //Namespace
