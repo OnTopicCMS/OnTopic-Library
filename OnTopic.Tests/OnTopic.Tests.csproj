@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <NoWarn>CS1591,1701,1702,CA1707,CA1062,CS8602,CS8604;CA1303;IDE0059</NoWarn>
     <LangVersion>9.0</LangVersion>
