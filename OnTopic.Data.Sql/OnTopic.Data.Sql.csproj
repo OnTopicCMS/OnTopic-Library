@@ -4,7 +4,7 @@
     <ProjectGuid>{1DE1F923-C7C2-435B-B49A-975ACBCB5FF0}</ProjectGuid>
     <RootNamespace>OnTopic.Data.Sql</RootNamespace>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -36,11 +36,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.7">
+    <PackageReference Include="GitVersionTask" Version="5.5.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

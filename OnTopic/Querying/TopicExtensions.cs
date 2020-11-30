@@ -48,7 +48,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var child in topic.Children) {
         var nestedResult = child.FindFirst(predicate);
-        if (nestedResult != null) {
+        if (nestedResult is not null) {
           return nestedResult;
         }
       }
@@ -87,7 +87,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      while (topic.Parent != null) {
+      while (topic.Parent is not null) {
         if (predicate(topic.Parent)) {
           return topic.Parent;
         }
@@ -199,7 +199,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
-    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent == null)?? topic;
+    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)?? topic;
 
     /*==========================================================================================================================
     | METHOD: GET BY UNIQUE KEY

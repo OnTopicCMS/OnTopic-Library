@@ -213,8 +213,8 @@ namespace OnTopic.Tests {
       );
 
       Assert.IsTrue(isDateSet);
-      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), topic.LastModified);
-      Assert.AreEqual<DateTime>(new DateTime(2008, 6, 3), lastModified);
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), topic.LastModified);
+      Assert.AreEqual<DateTime>(new(2008, 6, 3), lastModified);
 
     }
 

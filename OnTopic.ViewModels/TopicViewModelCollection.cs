@@ -40,7 +40,7 @@ namespace OnTopic.ViewModels {
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicViewModelCollection(IEnumerable<TItem>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      if (topics != null) {
+      if (topics is not null) {
         foreach (var item in topics) {
           Add(item);
         }
@@ -60,7 +60,7 @@ namespace OnTopic.ViewModels {
         !String.IsNullOrWhiteSpace(contentType),
         $"A {nameof(contentType)} argument is required."
       );
-      return new TopicViewModelCollection<TItem>(
+      return new(
         Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.InvariantCultureIgnoreCase)?? false)
       );
     }

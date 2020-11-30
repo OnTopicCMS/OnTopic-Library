@@ -44,7 +44,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a list of nested <see cref="NavigationTopicViewModel"/> objects, for handling hierarchical navigation.
     /// </summary>
-    public Collection<NavigationTopicViewModel> Children { get; } = new Collection<NavigationTopicViewModel>();
+    public Collection<NavigationTopicViewModel> Children { get; } = new();
 
     /*==========================================================================================================================
     | IS SELECTED?

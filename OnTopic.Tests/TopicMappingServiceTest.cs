@@ -236,8 +236,8 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int?>(43, target.NullableInteger);
       Assert.AreEqual<double?>(3.14159265359, target.NullableDouble);
       Assert.AreEqual<bool?>(true, target.NullableBoolean);
-      Assert.AreEqual<DateTime?>(new DateTime(1976, 10, 15), target.NullableDateTime);
-      Assert.AreEqual<Uri?>(new Uri("/Web/Path/File?Query=String", UriKind.RelativeOrAbsolute), target.NullableUrl);
+      Assert.AreEqual<DateTime?>(new(1976, 10, 15), target.NullableDateTime);
+      Assert.AreEqual<Uri?>(new("/Web/Path/File?Query=String", UriKind.RelativeOrAbsolute), target.NullableUrl);
 
       Assert.AreEqual<string?>(topic.Title, target.Title);
       Assert.AreEqual<bool?>(target.IsHidden, target.IsHidden);
@@ -676,7 +676,7 @@ namespace OnTopic.Tests {
 
       var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
 
-      topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
+      topic.VersionHistory.Add(new(1976, 10, 15, 9, 30, 00));
 
       var target                = await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 

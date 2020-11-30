@@ -20,7 +20,7 @@ namespace OnTopic.Tests.ViewModels {
   public class MetadataLookupTopicViewModel {
 
     [Metadata("Categories")]
-    public TopicViewModelCollection<TopicViewModel> Categories { get; } = new TopicViewModelCollection<TopicViewModel>();
+    public TopicViewModelCollection<TopicViewModel> Categories { get; } = new();
 
   } //Class
 } //Namespace

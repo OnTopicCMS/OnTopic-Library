@@ -22,7 +22,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidChildrenTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public List<BasicTopicBindingModel> Children { get; } = new List<BasicTopicBindingModel>();
+    public List<BasicTopicBindingModel> Children { get; } = new();
 
   } //Class
 } //Namespace

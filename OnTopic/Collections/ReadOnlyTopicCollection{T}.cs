@@ -32,7 +32,7 @@ namespace OnTopic.Collections {
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
     public ReadOnlyTopicCollection(IList<T> innerCollection) : base(innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
-      _innerCollection = innerCollection as TopicCollection<T>?? new TopicCollection<T>(innerCollection);
+      _innerCollection = innerCollection as TopicCollection<T>?? new(innerCollection);
     }
 
     /*==========================================================================================================================
@@ -62,7 +62,7 @@ namespace OnTopic.Collections {
     [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", false)]
     public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
-      return new ReadOnlyTopicCollection<T>(innerCollection);
+      return new(innerCollection);
     }
 
     /*==========================================================================================================================

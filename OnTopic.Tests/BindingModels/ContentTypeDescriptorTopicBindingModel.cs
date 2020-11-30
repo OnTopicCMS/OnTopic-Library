@@ -21,9 +21,9 @@ namespace OnTopic.Tests.BindingModels {
 
     public ContentTypeDescriptorTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
-    public List<RelatedTopicBindingModel> ContentTypes { get; } = new List<RelatedTopicBindingModel>();
+    public List<RelatedTopicBindingModel> ContentTypes { get; } = new();
 
-    public List<AttributeDescriptorTopicBindingModel> Attributes { get; } = new List<AttributeDescriptorTopicBindingModel>();
+    public List<AttributeDescriptorTopicBindingModel> Attributes { get; } = new();
 
   } //Class
 } //Namespace

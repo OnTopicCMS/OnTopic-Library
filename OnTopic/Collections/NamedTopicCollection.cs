@@ -29,7 +29,7 @@ namespace OnTopic.Collections {
     /// <param name="topics">Optionally seeds the collection with an optional list of topic references.</param>
     public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) : base() {
       Name = name;
-      if (topics != null) {
+      if (topics is not null) {
         CopyTo(topics.ToArray(), 0);
       }
     }

@@ -76,7 +76,7 @@ namespace OnTopic.Tests {
       var errorMessage = "The argument cannot be null";
 
       try {
-        Contract.Requires<ArgumentException>(argument != null, errorMessage);
+        Contract.Requires<ArgumentException>(argument is not null, errorMessage);
       }
       catch (ArgumentException ex) {
         Assert.AreEqual<String>(errorMessage, ex.Message);

@@ -20,13 +20,11 @@ namespace OnTopic.Tests.ViewModels.Metadata {
   /// </remarks>
   public class ContentTypeDescriptorTopicViewModel {
 
-    public List<AttributeDescriptorTopicViewModel> AttributeDescriptors
-      { get; } = new List<AttributeDescriptorTopicViewModel>();
+    public List<AttributeDescriptorTopicViewModel> AttributeDescriptors { get; } = new();
 
     [Relationship(RelationshipType.MappedCollection)]
     [Follow(Relationships.None)]
-    public List<ContentTypeDescriptorTopicViewModel> PermittedContentTypes
-      { get; } = new List<ContentTypeDescriptorTopicViewModel>();
+    public List<ContentTypeDescriptorTopicViewModel> PermittedContentTypes { get; } = new();
 
   } //Class
 } //Namespace
