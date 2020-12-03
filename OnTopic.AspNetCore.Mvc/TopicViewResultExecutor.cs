@@ -101,7 +101,7 @@ namespace OnTopic.AspNetCore.Mvc {
       >-------------------------------------------------------------------------------------------------------------------------
       | Determines if the view is defined in the querystring.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!(view?.Success ?? false) && requestContext.Query.ContainsKey("View")) {
+      if (requestContext.Query.ContainsKey("View")) {
         var queryStringValue = requestContext.Query["View"].First<string>();
         if (queryStringValue is not null) {
           view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);

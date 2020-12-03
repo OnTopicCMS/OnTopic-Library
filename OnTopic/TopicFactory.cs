@@ -80,13 +80,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
-
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
 
     }
 
@@ -127,12 +121,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return object
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
 
     }
 
@@ -152,7 +141,7 @@ namespace OnTopic {
     public static void ValidateKey(string? topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey ?? "", @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\.\-_]+$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }

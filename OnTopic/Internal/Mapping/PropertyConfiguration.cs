@@ -99,10 +99,7 @@ namespace OnTopic.Internal.Mapping {
         }
       );
 
-      if (
-        RelationshipType is RelationshipType.Any &&
-        RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)
-      ) {
+      if (RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
         RelationshipType = RelationshipType.Children;
       }
 
