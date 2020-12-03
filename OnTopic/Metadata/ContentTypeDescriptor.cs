@@ -277,7 +277,7 @@ namespace OnTopic.Metadata {
       var contentType = (ContentTypeDescriptor?)this;
 
       while (contentType is not null) {
-        if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
+        if (contentType.Key.Equals(contentTypeName, StringComparison.OrdinalIgnoreCase)) {
           return true;
         }
         contentType = contentType.Parent as ContentTypeDescriptor;

@@ -101,7 +101,7 @@ namespace OnTopic.Internal.Mapping {
 
       if (
         RelationshipType is RelationshipType.Any &&
-        RelationshipKey.Equals("Children", StringComparison.InvariantCultureIgnoreCase)
+        RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)
       ) {
         RelationshipType = RelationshipType.Children;
       }
@@ -401,7 +401,7 @@ namespace OnTopic.Internal.Mapping {
     /// <returns></returns>
     public bool SatisfiesAttributeFilters(Topic source) =>
       AttributeFilters.All(f =>
-        source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)?? false
+        source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.OrdinalIgnoreCase)?? false
       );
 
     /*==========================================================================================================================

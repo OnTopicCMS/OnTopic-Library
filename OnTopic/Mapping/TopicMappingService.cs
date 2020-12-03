@@ -622,7 +622,7 @@ namespace OnTopic.Mapping {
         }
 
         //Skip nested topics; those should be explicitly mapped to their own collection or topic reference
-        if (childTopic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
+        if (childTopic.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase)) {
           continue;
         }
 

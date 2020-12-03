@@ -226,14 +226,14 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.InvariantCultureIgnoreCase)) {
+      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
         return currentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
+      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
         uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);

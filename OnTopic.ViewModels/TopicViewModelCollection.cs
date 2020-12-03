@@ -61,7 +61,7 @@ namespace OnTopic.ViewModels {
         $"A {nameof(contentType)} argument is required."
       );
       return new(
-        Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.InvariantCultureIgnoreCase)?? false)
+        Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.OrdinalIgnoreCase)?? false)
       );
     }
 
