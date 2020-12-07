@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -26,7 +25,9 @@ namespace OnTopic.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
 
+    #pragma warning disable CA1002 // Do not expose generic lists
     public List<DateTime>? VersionHistory { get; set; }
+    #pragma warning restore CA1002 // Do not expose generic lists
 
   } //Class
 } //Namespace

@@ -30,10 +30,10 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Annotates a property with the <see cref="AttributeKeyAttribute"/> class by providing a (required) attribute key.
     /// </summary>
-    /// <param name="attributeKey">The key value of the attribute associated with the current property.</param>
-    public AttributeKeyAttribute(string attributeKey) {
-      TopicFactory.ValidateKey(attributeKey, false);
-      Value = attributeKey;
+    /// <param name="value">The key value of the attribute associated with the current property.</param>
+    public AttributeKeyAttribute(string value) {
+      TopicFactory.ValidateKey(value, false);
+      Value = value;
     }
 
     /*==========================================================================================================================

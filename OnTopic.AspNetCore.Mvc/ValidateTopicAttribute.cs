@@ -55,17 +55,17 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </remarks>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]
-    public override void OnActionExecuting(ActionExecutingContext filterContext) {
+    public override void OnActionExecuting(ActionExecutingContext context) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(filterContext, nameof(filterContext));
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = filterContext.Controller as TopicController;
+      var controller            = context.Controller as TopicController;
       var currentTopic          = controller?.CurrentTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic is null) {
         if (!AllowNull) {
-          filterContext.Result = controller.NotFound("There is no topic associated with this path.");
+          context.Result = controller.NotFound("There is no topic associated with this path.");
         }
         return;
       }
@@ -93,7 +93,7 @@ namespace OnTopic.AspNetCore.Mvc {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (currentTopic.IsDisabled) {
-        filterContext.Result = new UnauthorizedResult();
+        context.Result = new UnauthorizedResult();
         return;
       }
 
@@ -101,7 +101,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(currentTopic.Attributes.GetValue("URL"))) {
-        filterContext.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
+        context.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
         return;
       }
 
@@ -112,7 +112,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic is { ContentType: "List"} or { Parent: {ContentType: "List" } }) {
-        filterContext.Result = new StatusCodeResult(403);
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -123,7 +123,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "Container") {
-        filterContext.Result = new StatusCodeResult(403);
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -134,7 +134,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "PageGroup") {
-        filterContext.Result = controller.Redirect(
+        context.Result = controller.Redirect(
           currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );
         return;
@@ -147,15 +147,15 @@ namespace OnTopic.AspNetCore.Mvc {
       | mismatches between the requested URL and the canonical URL, and to help ensure that references to topics maintain the
       | same case as assigned in the topic graph, URLs that vary only by case will be redirected to the expected case.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!currentTopic.GetWebPath().Equals(filterContext.HttpContext.Request.Path, StringComparison.Ordinal)) {
-        filterContext.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
+      if (!currentTopic.GetWebPath().Equals(context.HttpContext.Request.Path, StringComparison.Ordinal)) {
+        context.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
         return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Base processing
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.OnActionExecuting(filterContext);
+      base.OnActionExecuting(context);
 
     }
 

@@ -520,7 +520,7 @@ namespace OnTopic.Collections {
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
         _setCounter++;
         if (_setCounter > 3) {
-          throw new Exception(
+          throw new InvalidOperationException(
             $"An infinite loop has occurred when setting '{originalAttribute.Key}'; be sure that you are referencing " +
             $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );

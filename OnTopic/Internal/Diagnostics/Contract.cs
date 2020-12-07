@@ -40,6 +40,11 @@ namespace OnTopic.Internal.Diagnostics {
   ///     <see href="https://stackoverflow.com/questions/40767941/does-vs2017-work-with-codecontracts/46412917#46412917"/>
   ///   </para>
   /// </remarks>
+  [SuppressMessage(
+    "Usage",
+    "CA2201:Do not raise reserved exception types",
+    Justification = "This is an unexpected usage scenario, but permitted due to limitations on generic constraints."
+  )]
   public static class Contract {
 
     /*==========================================================================================================================
@@ -66,7 +71,7 @@ namespace OnTopic.Internal.Diagnostics {
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
       Requires<ArgumentNullException>(requiredObject is not null, errorMessage);
-    #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
+#pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
@@ -87,7 +92,7 @@ namespace OnTopic.Internal.Diagnostics {
     /// </exception>
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
-      if (errorMessage is null || String.IsNullOrEmpty(errorMessage)) {
+      if (errorMessage is null || errorMessage.Length == 0) {
         throw new();
       }
       try {

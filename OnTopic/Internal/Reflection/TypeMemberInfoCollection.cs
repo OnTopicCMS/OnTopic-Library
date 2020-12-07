@@ -416,10 +416,10 @@ namespace OnTopic.Internal.Reflection {
         valueObject = value;
       }
       else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
-        if (value is "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase)) {
+        if (value is "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase)) {
           valueObject = true;
         }
-        else if (value is "0" || value.Equals("false", StringComparison.InvariantCultureIgnoreCase)) {
+        else if (value is "0" || value.Equals("false", StringComparison.OrdinalIgnoreCase)) {
           valueObject = false;
         }
       }

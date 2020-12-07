@@ -211,7 +211,7 @@ namespace OnTopic {
           _originalKey = Attributes.GetValue("Key", _key, false, false);
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
-        if (_originalKey is not null && !value.Equals(_key, StringComparison.InvariantCultureIgnoreCase) && Parent is not null) {
+        if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
         }
         SetAttributeValue("Key", value);
@@ -493,6 +493,7 @@ namespace OnTopic {
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
     /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
+    #pragma warning disable CA1024 // Use properties where appropriate
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -513,6 +514,7 @@ namespace OnTopic {
       return uniqueKey;
 
     }
+    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET WEB PATH

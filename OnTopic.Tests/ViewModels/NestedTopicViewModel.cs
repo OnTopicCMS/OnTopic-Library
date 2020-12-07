@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -18,7 +18,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class NestedTopicViewModel {
 
-    public List<KeyOnlyTopicViewModel> Categories { get; } = new();
+    public Collection<KeyOnlyTopicViewModel> Categories { get; } = new();
 
   } //Class
 } //Namespace

@@ -72,11 +72,10 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Requires_MessageExists_ThrowExceptionWithMessage() {
 
-      var argument = (object?)null;
       var errorMessage = "The argument cannot be null";
 
       try {
-        Contract.Requires<ArgumentException>(argument is not null, errorMessage);
+        Contract.Requires<ArgumentException>(false, errorMessage);
       }
       catch (ArgumentException ex) {
         Assert.AreEqual<String>(errorMessage, ex.Message);
