@@ -63,6 +63,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /// <remarks>
     ///   The navigation root in the case of the page-level navigation any parent of content type <c>PageGroup</c>.
     /// </remarks>
+    #pragma warning disable CA1024 // Use properties where appropriate
     protected Topic? GetNavigationRoot() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -88,6 +89,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       return navigationRootTopic?.Parent is null? null : navigationRootTopic;
 
     }
+    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: MAP NAVIGATION TOPIC VIEW MODELS
