@@ -97,9 +97,11 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
+      #pragma warning disable IDE0078 // Use pattern matching
       if (topic is null || topic is { IsDisabled: true }) {
         return null;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
@@ -176,9 +178,11 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
+      #pragma warning disable IDE0078 // Use pattern matching
       if (topic is null || topic is { IsDisabled: true }) {
         return target;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle topics
