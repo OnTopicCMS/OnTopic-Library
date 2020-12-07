@@ -64,7 +64,9 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the relationship type.
     /// </summary>
+    #pragma warning disable CA1019 // Define accessors for attribute arguments
     public RelationshipType Type { get; set; }
+    #pragma warning restore CA1019 // Define accessors for attribute arguments
 
   } //Class
 } //Namespace
