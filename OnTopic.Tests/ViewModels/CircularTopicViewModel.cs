@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels {
@@ -23,7 +23,7 @@ namespace OnTopic.Tests.ViewModels {
     public CircularTopicViewModel? Parent { get; set; }
 
     [Follow(Relationships.Children | Relationships.Parents)]
-    public List<CircularTopicViewModel> Children { get; } = new();
+    public Collection<CircularTopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace OnTopic.Tests.BindingModels {
 
@@ -22,7 +22,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidChildrenTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public List<BasicTopicBindingModel> Children { get; } = new();
+    public Collection<BasicTopicBindingModel> Children { get; } = new();
 
   } //Class
 } //Namespace
