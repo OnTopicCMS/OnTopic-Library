@@ -71,7 +71,7 @@ namespace OnTopic.Internal.Diagnostics {
     #pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
     public static void Requires([ValidatedNotNull, NotNull]object? requiredObject, string? errorMessage = null) =>
       Requires<ArgumentNullException>(requiredObject is not null, errorMessage);
-#pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
+    #pragma warning restore CS8777 // Parameter must have a non-null value when exiting.
 
     /// <summary>
     ///   Will throw the provided generic exception if the supplied expression evaluates to false.
