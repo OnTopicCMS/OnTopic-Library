@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -53,6 +54,47 @@ namespace OnTopic.Collections {
     internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.InvariantCultureIgnoreCase) {
       _associatedTopic = parentTopic;
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: BUSINESS LOGIC CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a local cache of <see cref="AttributeValue"/> objects, keyed by their <see cref="AttributeValue.Key"/>, prior
+    ///   to them having their business logic enforced.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, there is no business logic enforced for <see cref="AttributeValue"/> objects. This can be mitigate by
+    ///     implementing properties that correspond to the attribute names on <see cref="Topic"/> or a derivative class.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributeValueCollection"/> enforces this business logic by forcing updates to go through that
+    ///     property if it exists. To ensure this is enforced at all entry points, this is handled via the <see cref="
+    ///     SetItem(Int32, AttributeValue)"/> and <see cref="InsertItem(Int32, AttributeValue)"/> methods. This ensures that the
+    ///     business logic is enforced even if implementors bypass the <see cref="SetValue(String, String?, Boolean?, DateTime?,
+    ///     Boolean?)"/> method, and instead use e.g. <see cref="KeyedCollection{TKey, TItem}"/>'s indexer or underlying methods
+    ///     such as <see cref="Collection{T}.Add(T)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Since neither the <see cref="SetItem(Int32, AttributeValue)"/> or <see cref="InsertItem(Int32, AttributeValue)"/>
+    ///     methods, nor the properties that <see cref="EnforceBusinessLogic(AttributeValue)"/> calls, accept the optional
+    ///     parameters from <see cref="SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/>, however, that means that
+    ///     parameter values corresponding to e.g. <see cref="AttributeValue.IsExtendedAttribute"/> and <see cref=
+    ///     "AttributeValue.IsDirty"/> will get lost in the process. In addition, there needs to be a way to track whether
+    ///     the call to e.g., <see cref="SetItem(Int32, AttributeValue)"/> is being triggered by a direct call, or as a round-
+    ///     trip through one of these property setters.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="BusinessLogicCache"/> addresses this issue by providing a cache of the original <see
+    ///     cref="AttributeValue"/> instances, indexed by their <see cref="AttributeValue.Key"/>, for attributes currently being
+    ///     routed through their corresponding property setter. If a record exists for the current attribute, the <see cref="
+    ///     EnforceBusinessLogic(AttributeValue)"/> method knows it should not enforce business logic again—as that would result
+    ///     in an infinite loop—and should instead persist the record to the collection. Further, because the <see cref=
+    ///     "BusinessLogicCache"/> includes the original <see cref="AttributeValue"/>, the original parameters such as the <see
+    ///     cref="AttributeValue.IsDirty"/> are not lost, and can be applied to the final object.
+    ///   </para>
+    /// </remarks>
+    private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
 
     /*==========================================================================================================================
     | METHOD: IS DIRTY
@@ -366,34 +408,39 @@ namespace OnTopic.Collections {
       TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish secret handshake for later enforcement of properties
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
-      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
-      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
-      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
-      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
-      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
-      | correctly written to call the enforceBusinessLogic parameter.
+      | Retrieve original attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      enforceBusinessLogic = (enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key));
+      AttributeValue? originalAttributeValue = null;
+      AttributeValue? updatedAttributeValue = null;
+
+      if (Contains(key)) {
+        originalAttributeValue  = this[key];
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update from business logic
+      >-----------------------------------------------------------------------------------------------------------------------—
+      | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
+      | business logic, then use the original values, while applying any change in the value triggered by the business logic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (BusinessLogicCache.ContainsKey(key)) {
+        BusinessLogicCache.TryGetValue(key, out updatedAttributeValue);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       >-----------------------------------------------------------------------------------------------------------------------—
       | Because AttributeValue is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(key)) {
-        var originalAttribute = this[key];
-        var markAsDirty = originalAttribute.IsDirty;
+      else if (originalAttributeValue is not null) {
+        var markAsDirty = originalAttributeValue.IsDirty;
         if (isDirty.HasValue) {
           markAsDirty = isDirty.Value;
         }
-        else if (originalAttribute.Value != value) {
+        else if (originalAttributeValue.Value != value) {
           markAsDirty = true;
         }
-        var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic, version, isExtendedAttribute);
-        this[IndexOf(originalAttribute)] = newAttribute;
+        updatedAttributeValue   = new AttributeValue(key, value, markAsDirty, version, isExtendedAttribute);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -410,7 +457,36 @@ namespace OnTopic.Collections {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(key, value, isDirty ?? true, enforceBusinessLogic, version, isExtendedAttribute));
+        updatedAttributeValue   = new AttributeValue(key, value, isDirty ?? true, version, isExtendedAttribute);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish secret handshake for later enforcement of properties
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
+      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
+      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
+      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
+      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
+      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
+      | correctly written to call the enforceBusinessLogic parameter.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      enforceBusinessLogic = !enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key);
+      if (enforceBusinessLogic && !BusinessLogicCache.ContainsKey(key)) {
+        BusinessLogicCache.Add(key, updatedAttributeValue);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Persist attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (updatedAttributeValue is null) {
+        return;
+      }
+      else if (originalAttributeValue is not null) {
+        this[IndexOf(originalAttributeValue)] = updatedAttributeValue;
+      }
+      else {
+        Add(updatedAttributeValue);
       }
 
     }
@@ -442,7 +518,7 @@ namespace OnTopic.Collections {
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      if (EnforceBusinessLogic(item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
         }
@@ -472,7 +548,7 @@ namespace OnTopic.Collections {
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     protected override void SetItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      if (EnforceBusinessLogic(item)) {
         base.SetItem(index, item);
       }
     }
@@ -507,14 +583,10 @@ namespace OnTopic.Collections {
     ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
     /// </remarks>
     /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <param name="settableAttribute">
-    ///   Outputs the <see cref="AttributeValue"/> that should be set; will return null if it should not be set.
-    /// </param>
     /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
-    private bool EnforceBusinessLogic(AttributeValue originalAttribute, out AttributeValue settableAttribute) {
-      settableAttribute = originalAttribute;
-      if (!originalAttribute.EnforceBusinessLogic) {
-        originalAttribute.EnforceBusinessLogic = true;
+    private bool EnforceBusinessLogic(AttributeValue originalAttribute) {
+      if (BusinessLogicCache.ContainsKey(originalAttribute.Key)) {
+        BusinessLogicCache.Remove(originalAttribute.Key);
         return true;
       }
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
