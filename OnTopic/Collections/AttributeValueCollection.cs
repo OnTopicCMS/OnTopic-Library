@@ -38,7 +38,6 @@ namespace OnTopic.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
     private                     int                             _setCounter;
-    private                     bool                            _attributesDeleted;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -132,7 +131,7 @@ namespace OnTopic.Collections {
     /// </param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(bool excludeLastModified = false)
-      => _attributesDeleted || Items.Any(a =>
+      => DeletedAttributes.Count > 0 || Items.Any(a =>
         a.IsDirty &&
         (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
       );
@@ -176,7 +175,7 @@ namespace OnTopic.Collections {
         attribute.IsDirty       = false;
         attribute.LastModified  = version?? DateTime.UtcNow;
       }
-      _attributesDeleted        = false;
+      DeletedAttributes.Clear();
     }
 
     /*==========================================================================================================================
@@ -582,7 +581,8 @@ namespace OnTopic.Collections {
     ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
-      _attributesDeleted = true;
+      var attribute = this[index];
+      DeletedAttributes.Add(attribute.Key);
       base.RemoveItem(index);
     }
 
