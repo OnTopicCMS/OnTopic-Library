@@ -440,7 +440,7 @@ namespace OnTopic.Collections {
         else if (originalAttributeValue.Value != value) {
           markAsDirty = true;
         }
-        updatedAttributeValue   = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic, version, isExtendedAttribute);
+        updatedAttributeValue   = new AttributeValue(key, value, markAsDirty, version, isExtendedAttribute);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

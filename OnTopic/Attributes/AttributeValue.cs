@@ -73,7 +73,6 @@ namespace OnTopic.Attributes {
       Key                       = key;
       Value                     = value;
       IsDirty                   = isDirty;
-      EnforceBusinessLogic      = true;
 
     }
 
@@ -90,10 +89,6 @@ namespace OnTopic.Attributes {
     ///   An optional boolean indicator noting whether the <see cref="AttributeValue"/> collection item is a new value, and
     ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> is next called.
     /// </param>
-    /// <param name="enforceBusinessLogic">
-    ///   If disabled, <see cref="AttributeValueCollection"/> will not call local properties on <see cref="Topic"/> that
-    ///   correspond to the <paramref name="key"/> as a means of enforcing the business logic.
-    /// </param>
     /// <param name="lastModified">
     ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
     ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
@@ -108,15 +103,13 @@ namespace OnTopic.Attributes {
       string key,
       string? value,
       bool isDirty,
-      bool enforceBusinessLogic,
-      DateTime? lastModified = null,
+      DateTime? lastModified    = null,
       bool? isExtendedAttribute = null
     ): this(
       key,
       value,
       isDirty
     ) {
-      EnforceBusinessLogic      = enforceBusinessLogic;
       LastModified              = lastModified?? DateTime.Now;
       IsExtendedAttribute       = isExtendedAttribute;
     }
@@ -159,34 +152,6 @@ namespace OnTopic.Attributes {
     ///   changed.
     /// </remarks>
     public bool IsDirty { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: ENFORCE BUSINESS LOGIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets whether business logic should be enforced when adding an <see cref="AttributeValue"/> to an
-    ///   <see cref="AttributeValueCollection"/>.
-    /// </summary>
-    /// <remarks>
-    ///   By default, when a user attempts to update an attribute's value by calling <see
-    ///   cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?, Boolean?)"/>, or when an <see
-    ///   cref="AttributeValue"/> is added to the <see cref="AttributeValueCollection"/>, the <see
-    ///   cref="AttributeValueCollection"/> will automatically attempt to call any corresponding setters on <see cref="Topic"/>
-    ///   (or a derived instance) to ensure that the business logic is enforced. To avoid an infinite loop, however, this is
-    ///   disabled when properties on <see cref="Topic"/> call <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>.
-    ///   When that happens, the <see cref="EnforceBusinessLogic"/> value is set to false to communicate to the <see
-    ///   cref="AttributeValueCollection"/> that it should not call the local property. This value is only intended for internal
-    ///   use.
-    /// </remarks>
-    /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(value)
-    /// </requires>
-    /// <requires
-    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
-    internal bool EnforceBusinessLogic { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: LAST MODIFIED
