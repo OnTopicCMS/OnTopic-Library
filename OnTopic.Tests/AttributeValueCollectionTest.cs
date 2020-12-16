@@ -381,6 +381,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: UPDATES LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that the <see cref="AttributeValue.LastModified"/> returns the new <c>version</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_UpdatesLastModified() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+      var version = DateTime.Now.AddDays(5);
+
+      topic.Attributes.SetValue("Baz", "Foo");
+      topic.Attributes.MarkClean(version);
+      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
+
+      Assert.AreEqual<DateTime>(version, cleanedAttribute.LastModified);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
