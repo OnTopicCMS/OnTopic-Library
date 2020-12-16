@@ -97,6 +97,23 @@ namespace OnTopic.Collections {
     private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
 
     /*==========================================================================================================================
+    | PROPERTY: DELETED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   When an attribute is deleted, keep track of it so that it can be marked for deletion when the topic is saved.
+    /// </summary>
+    /// <remarks>
+    ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
+    ///   <see cref="IsDirty(Boolean)"/>. If a <see cref="AttributeValue"/> is deleted, then it won't be marked as dirty. If no
+    ///   other <see cref="AttributeValue"/> instances were modified, then the topic won't get saved, and that value won't be
+    ///   deleted. Further more, the <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/> method has no way of
+    ///   detecting the deletion of arbitrary attributes�i.e., attributes that were deleted which don't correspond to attributes
+    ///   configured on the <see cref="Metadata.ContentTypeDescriptor"/>. By tracking any deleted attributes, we ensure both
+    ///   scenarios can be accounted for.
+    /// </remarks>
+    internal List<string> DeletedAttributes { get; } = new();
+
+    /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
