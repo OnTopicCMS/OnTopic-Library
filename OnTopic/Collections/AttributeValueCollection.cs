@@ -534,9 +534,13 @@ namespace OnTopic.Collections {
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
+      Contract.Requires(item, nameof(item));
       if (EnforceBusinessLogic(item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
+          if (DeletedAttributes.Contains(item.Key)) {
+            DeletedAttributes.Remove(item.Key);
+          }
         }
         else {
           throw new ArgumentException(
@@ -564,8 +568,12 @@ namespace OnTopic.Collections {
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     protected override void SetItem(int index, AttributeValue item) {
+      Contract.Requires(item, nameof(item));
       if (EnforceBusinessLogic(item)) {
         base.SetItem(index, item);
+        if (DeletedAttributes.Contains(item.Key)) {
+          DeletedAttributes.Remove(item.Key);
+        }
       }
     }
 
