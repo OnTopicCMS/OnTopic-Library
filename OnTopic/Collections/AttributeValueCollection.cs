@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -54,6 +55,46 @@ namespace OnTopic.Collections {
       _associatedTopic = parentTopic;
     }
 
+    /*==========================================================================================================================
+    | PROPERTY: BUSINESS LOGIC CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a local cache of <see cref="AttributeValue"/> objects, keyed by their <see cref="AttributeValue.Key"/>, prior
+    ///   to them having their business logic enforced.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, there is no business logic enforced for <see cref="AttributeValue"/> objects. This can be mitigate by
+    ///     implementing properties that correspond to the attribute names on <see cref="Topic"/> or a derivative class.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributeValueCollection"/> enforces this business logic by forcing updates to go through that
+    ///     property if it exists. To ensure this is enforced at all entry points, this is handled via the <see cref="
+    ///     SetItem(Int32, AttributeValue)"/> and <see cref="InsertItem(Int32, AttributeValue)"/> methods. This ensures that the
+    ///     business logic is enforced even if implementors bypass the <see cref="SetValue(String, String?, Boolean?, DateTime?,
+    ///     Boolean?)"/> method, and instead use e.g. <see cref="KeyedCollection{TKey, TItem}"/>'s indexer or underlying methods
+    ///     such as <see cref="Collection{T}.Add(T)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Since neither the <see cref="SetItem(Int32, AttributeValue)"/> or <see cref="InsertItem(Int32, AttributeValue)"/>
+    ///     methods, nor the properties that <see cref="EnforceBusinessLogic(AttributeValue)"/> calls, accept the optional
+    ///     parameters from <see cref="SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/>, however, that means that
+    ///     parameter values corresponding to e.g. <see cref="AttributeValue.IsExtendedAttribute"/> and <see cref=
+    ///     "AttributeValue.IsDirty"/> will get lost in the process. In addition, there needs to be a way to track whether
+    ///     the call to e.g., <see cref="SetItem(Int32, AttributeValue)"/> is being triggered by a direct call, or as a round-
+    ///     trip through one of these property setters.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="BusinessLogicCache"/> addresses this issue by providing a cache of the original <see
+    ///     cref="AttributeValue"/> instances, indexed by their <see cref="AttributeValue.Key"/>, for attributes currently being
+    ///     routed through their corresponding property setter. If a record exists for the current attribute, the <see cref="
+    ///     EnforceBusinessLogic(AttributeValue)"/> method knows it should not enforce business logic again�as that would result
+    ///     in an infinite loop�and should instead persist the record to the collection. Further, because the <see cref=
+    ///     "BusinessLogicCache"/> includes the original <see cref="AttributeValue"/>, the original parameters such as the <see
+    ///     cref="AttributeValue.IsDirty"/> are not lost, and can be applied to the final object.
+    ///   </para>
+    /// </remarks>
+    private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
     /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
