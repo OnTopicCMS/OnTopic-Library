@@ -38,7 +38,7 @@ namespace OnTopic.Attributes {
   ///     method.
   ///   </para>
   /// </remarks>
-  public class AttributeValue {
+  public record AttributeValue {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -128,7 +128,7 @@ namespace OnTopic.Attributes {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public string Key { get; }
+    public string Key { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: VALUE
@@ -136,7 +136,7 @@ namespace OnTopic.Attributes {
     /// <summary>
     ///   Gets the current value of the attribute.
     /// </summary>
-    public string? Value { get; }
+    public string? Value { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: IS DIRTY
@@ -151,7 +151,7 @@ namespace OnTopic.Attributes {
     ///   ignored, thus preventing the need to update attributes (or create new versions of attributes) whose values haven't
     ///   changed.
     /// </remarks>
-    public bool IsDirty { get; set; }
+    public bool IsDirty { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: LAST MODIFIED
@@ -159,7 +159,7 @@ namespace OnTopic.Attributes {
     /// <summary>
     ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
     /// </summary>
-    public DateTime LastModified { get; internal set; } = DateTime.Now;
+    public DateTime LastModified { get; init; } = DateTime.Now;
 
     /*==========================================================================================================================
     | PROPERTY: IS EXTENDED ATTRIBUTE
@@ -190,7 +190,7 @@ namespace OnTopic.Attributes {
     ///     data <i>should</i> be stored.
     ///   </para>
     /// </remarks>
-    public bool? IsExtendedAttribute { get; internal set; }
+    public bool? IsExtendedAttribute { get; init; }
 
   } //Class
 } //Namespace
