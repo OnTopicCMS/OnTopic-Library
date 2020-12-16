@@ -171,9 +171,8 @@ namespace OnTopic.Collections {
     ///   VersionHistory"/>.
     /// </param>
     public void MarkClean(DateTime? version = null) {
-      foreach (var attribute in Items.Where(a => a.IsDirty)) {
-        attribute.IsDirty       = false;
-        attribute.LastModified  = version?? DateTime.UtcNow;
+      foreach (var attribute in Items.Where(a => a.IsDirty).ToArray()) {
+        SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
       }
       DeletedAttributes.Clear();
     }
@@ -196,10 +195,9 @@ namespace OnTopic.Collections {
     /// </param>
     public void MarkClean(string name, DateTime? version = null) {
       if (Contains(name)) {
-        var attributeValue      = this[name];
-        if (attributeValue.IsDirty) {
-          attributeValue.IsDirty = false;
-          attributeValue.LastModified = version?? DateTime.UtcNow;
+        var attribute           = this[name];
+        if (attribute.IsDirty) {
+          SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
         }
       }
     }
@@ -623,8 +621,6 @@ namespace OnTopic.Collections {
           );
         }
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
-        this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
-        this[originalAttribute.Key].LastModified = originalAttribute.LastModified;
         _setCounter = 0;
         return false;
       }
