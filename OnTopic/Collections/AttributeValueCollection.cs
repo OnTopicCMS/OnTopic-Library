@@ -454,7 +454,12 @@ namespace OnTopic.Collections {
         else if (originalAttributeValue.Value != value) {
           markAsDirty = true;
         }
-        updatedAttributeValue   = new AttributeValue(key, value, markAsDirty, version, isExtendedAttribute);
+        updatedAttributeValue   = originalAttributeValue with {
+          Value                 = value,
+          IsDirty               = markAsDirty,
+          LastModified          = version?? originalAttributeValue.LastModified,
+          IsExtendedAttribute   = isExtendedAttribute?? originalAttributeValue.IsExtendedAttribute
+        };
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
