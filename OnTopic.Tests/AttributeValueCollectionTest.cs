@@ -381,6 +381,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: UPDATES LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that the <see cref="AttributeValue.LastModified"/> returns the new <c>version</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_UpdatesLastModified() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+      var version = DateTime.Now.AddDays(5);
+
+      topic.Attributes.SetValue("Baz", "Foo");
+      topic.Attributes.MarkClean(version);
+      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
+
+      Assert.AreEqual<DateTime>(version, cleanedAttribute.LastModified);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -474,6 +496,34 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Remove("Key");
       topic.Attributes.Add(new("Key", "# ?"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: REPLACE VALUE: WITH BUSINESS LOGIC: MAINTAINS ISDIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
+    ///   "AttributeValueCollection"/> and confirms that the original <see cref="AttributeValue.IsDirty"/> is replaced if the
+    ///   <see cref="AttributeValue.Value"/> changes.
+    /// </summary>
+    [TestMethod]
+    public void Add_WithBusinessLogic_MaintainsIsDirty() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.Attributes.TryGetValue("Key", out var originalValue);
+
+      var index = topic.Attributes.IndexOf(originalValue);
+
+      topic.Attributes[index] = new AttributeValue("Key", "NewValue", false);
+      topic.Attributes.TryGetValue("Key", out var newAttribute);
+
+      topic.Attributes.SetValue("Key", "NewerValue", false);
+      topic.Attributes.TryGetValue("Key", out var newerAttribute);
+
+      Assert.IsFalse(newAttribute.IsDirty);
+      Assert.IsFalse(newerAttribute.IsDirty);
+
     }
 
     /*==========================================================================================================================

@@ -439,6 +439,11 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (BusinessLogicCache.ContainsKey(key)) {
         BusinessLogicCache.TryGetValue(key, out updatedAttributeValue);
+        if (updatedAttributeValue.Value != value) {
+          updatedAttributeValue = updatedAttributeValue with {
+            Value               = value
+          };
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -625,6 +630,7 @@ namespace OnTopic.Collections {
             $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
+        BusinessLogicCache.Add(originalAttribute.Key, originalAttribute);
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
         _setCounter = 0;
         return false;
