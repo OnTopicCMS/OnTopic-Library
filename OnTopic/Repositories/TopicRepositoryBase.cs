@@ -260,7 +260,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var attribute in originalVersion.Attributes) {
         if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
-          attribute.IsDirty = true;
+          originalVersion.Attributes.SetValue(attribute.Key, attribute.Value, false);
         }
       }
 
