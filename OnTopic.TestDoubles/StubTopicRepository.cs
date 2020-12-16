@@ -105,12 +105,12 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public override int Save(Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive, isDraft);
+      base.Save(topic, isRecursive);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse through children
@@ -124,7 +124,7 @@ namespace OnTopic.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Save(childTopic, isRecursive, isDraft);
+          Save(childTopic, isRecursive);
         }
       }
 

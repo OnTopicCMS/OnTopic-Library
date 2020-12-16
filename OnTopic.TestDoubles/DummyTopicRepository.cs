@@ -42,7 +42,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) => throw new NotImplementedException();
+    public override int Save(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MOVE

@@ -95,8 +95,8 @@ namespace OnTopic.Repositories {
     ///   the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be preferrable to instead load
     ///   these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic database, and when saving
     ///   modifications to existing content types. As such, this <c>protected</c> overload is useful to call from <see
-    ///   cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> when the topic graph being saved includes any <see
-    ///   cref="ContentTypeDescriptor"/>s.
+    ///   cref="ITopicRepository.Save(Topic, Boolean)"/> when the topic graph being saved includes any <see cref=
+    ///   "ContentTypeDescriptor"/>s.
     /// </remarks>
     /// <param name="contentTypeDescriptors">
     ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
@@ -299,7 +299,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

@@ -509,8 +509,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
-    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
-    ///   it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -529,7 +529,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
-    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
+    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
     [TestMethod]

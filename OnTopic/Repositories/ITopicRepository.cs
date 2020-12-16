@@ -103,13 +103,12 @@ namespace OnTopic.Repositories {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
-    /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
     ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    int Save(Topic topic, bool isRecursive = false, bool isDraft = false);
+    int Save(Topic topic, bool isRecursive = false);
 
     /*==========================================================================================================================
     | METHOD: MOVE

@@ -54,7 +54,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <param name="isDirty">
     ///   An optional boolean indicator noting whether the <see cref="AttributeValue"/> collection item is a new value, and
-    ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> is next called.
+    ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean)"/> is next called.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
@@ -87,7 +87,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <param name="isDirty">
     ///   An optional boolean indicator noting whether the <see cref="AttributeValue"/> collection item is a new value, and
-    ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> is next called.
+    ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean)"/> is next called.
     /// </param>
     /// <param name="lastModified">
     ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
@@ -147,9 +147,8 @@ namespace OnTopic.Attributes {
     /// <remarks>
     ///   The IsDirty property is used by the <see cref="Repositories.ITopicRepository"/> to determine whether or not
     ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database
-    ///   when <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/> is called. Otherwise, it is
-    ///   ignored, thus preventing the need to update attributes (or create new versions of attributes) whose values haven't
-    ///   changed.
+    ///   when <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called. Otherwise, it is ignored, thus
+    ///   preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
     /// </remarks>
     public bool IsDirty { get; init; }
 
