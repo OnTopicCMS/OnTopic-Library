@@ -104,7 +104,7 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", false)]
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", true)]
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
       => SetContentTypeDescriptors(contentTypeDescriptors);
 
