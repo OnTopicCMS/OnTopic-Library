@@ -407,6 +407,9 @@ namespace OnTopic.Collections {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
       TopicFactory.ValidateKey(key);
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve original attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
       AttributeValue? originalAttributeValue = null;
       AttributeValue? updatedAttributeValue = null;
 
@@ -415,11 +418,21 @@ namespace OnTopic.Collections {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Update from business logic
+      >-----------------------------------------------------------------------------------------------------------------------—
+      | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
+      | business logic, then use the original values, while applying any change in the value triggered by the business logic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (BusinessLogicCache.ContainsKey(key)) {
+        BusinessLogicCache.TryGetValue(key, out updatedAttributeValue);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       >-----------------------------------------------------------------------------------------------------------------------—
       | Because AttributeValue is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (originalAttributeValue is not null) {
+      else if (originalAttributeValue is not null) {
         var markAsDirty = originalAttributeValue.IsDirty;
         if (isDirty.HasValue) {
           markAsDirty = isDirty.Value;
@@ -505,7 +518,7 @@ namespace OnTopic.Collections {
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      if (EnforceBusinessLogic(item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
         }
@@ -535,7 +548,7 @@ namespace OnTopic.Collections {
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     protected override void SetItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      if (EnforceBusinessLogic(item)) {
         base.SetItem(index, item);
       }
     }
@@ -570,12 +583,8 @@ namespace OnTopic.Collections {
     ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
     /// </remarks>
     /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <param name="settableAttribute">
-    ///   Outputs the <see cref="AttributeValue"/> that should be set; will return null if it should not be set.
-    /// </param>
     /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
-    private bool EnforceBusinessLogic(AttributeValue originalAttribute, out AttributeValue settableAttribute) {
-      settableAttribute = originalAttribute;
+    private bool EnforceBusinessLogic(AttributeValue originalAttribute) {
       if (BusinessLogicCache.ContainsKey(originalAttribute.Key)) {
         BusinessLogicCache.Remove(originalAttribute.Key);
         return true;
