@@ -499,6 +499,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REPLACE VALUE: WITH BUSINESS LOGIC: MAINTAINS ISDIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
+    ///   "AttributeValueCollection"/> and confirms that the original <see cref="AttributeValue.IsDirty"/> is replaced if the
+    ///   <see cref="AttributeValue.Value"/> changes.
+    /// </summary>
+    [TestMethod]
+    public void Add_WithBusinessLogic_MaintainsIsDirty() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.Attributes.TryGetValue("Key", out var originalValue);
+
+      var index = topic.Attributes.IndexOf(originalValue);
+
+      topic.Attributes[index] = new AttributeValue("Key", "NewValue", false);
+      topic.Attributes.TryGetValue("Key", out var newAttribute);
+
+      topic.Attributes.SetValue("Key", "NewerValue", false);
+      topic.Attributes.TryGetValue("Key", out var newerAttribute);
+
+      Assert.IsFalse(newAttribute.IsDirty);
+      Assert.IsFalse(newerAttribute.IsDirty);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: EMPTY ATTRIBUTE VALUE: SKIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
