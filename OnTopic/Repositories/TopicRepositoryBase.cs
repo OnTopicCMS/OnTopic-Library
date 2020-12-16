@@ -697,9 +697,13 @@ namespace OnTopic.Repositories {
       | attributes don't have corresponding AttributeDescriptors. To mitigate this, an ad hoc AttributeDescriptor object will be
       | created for each empty AttributeDescriptor.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in topic.Attributes.Where(a => String.IsNullOrEmpty(a.Value))) {
-        if (!attributes.Contains(attribute.Key)) {
-          attributes.Add((TextAttribute)TopicFactory.Create(attribute.Key, "TextAttribute"));
+      var attributeKeys         = topic.Attributes
+        .Where(a => String.IsNullOrEmpty(a.Value))
+        .Select(a => a.Key)
+        .Union(topic.Attributes.DeletedAttributes);
+      foreach (var attributeKey in attributeKeys) {
+        if (!attributes.Contains(attributeKey)) {
+          attributes.Add((TextAttribute)TopicFactory.Create(attributeKey, "TextAttribute"));
         }
       }
 
