@@ -38,7 +38,6 @@ namespace OnTopic.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
     private                     int                             _setCounter;
-    private                     bool                            _attributesDeleted;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -97,6 +96,23 @@ namespace OnTopic.Collections {
     private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
 
     /*==========================================================================================================================
+    | PROPERTY: DELETED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   When an attribute is deleted, keep track of it so that it can be marked for deletion when the topic is saved.
+    /// </summary>
+    /// <remarks>
+    ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
+    ///   <see cref="IsDirty(Boolean)"/>. If a <see cref="AttributeValue"/> is deleted, then it won't be marked as dirty. If no
+    ///   other <see cref="AttributeValue"/> instances were modified, then the topic won't get saved, and that value won't be
+    ///   deleted. Further more, the <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/> method has no way of
+    ///   detecting the deletion of arbitrary attributes�i.e., attributes that were deleted which don't correspond to attributes
+    ///   configured on the <see cref="Metadata.ContentTypeDescriptor"/>. By tracking any deleted attributes, we ensure both
+    ///   scenarios can be accounted for.
+    /// </remarks>
+    internal List<string> DeletedAttributes { get; } = new();
+
+    /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -115,7 +131,7 @@ namespace OnTopic.Collections {
     /// </param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(bool excludeLastModified = false)
-      => _attributesDeleted || Items.Any(a =>
+      => DeletedAttributes.Count > 0 || Items.Any(a =>
         a.IsDirty &&
         (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
       );
@@ -159,7 +175,7 @@ namespace OnTopic.Collections {
         attribute.IsDirty       = false;
         attribute.LastModified  = version?? DateTime.UtcNow;
       }
-      _attributesDeleted        = false;
+      DeletedAttributes.Clear();
     }
 
     /*==========================================================================================================================
@@ -518,9 +534,13 @@ namespace OnTopic.Collections {
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
+      Contract.Requires(item, nameof(item));
       if (EnforceBusinessLogic(item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
+          if (DeletedAttributes.Contains(item.Key)) {
+            DeletedAttributes.Remove(item.Key);
+          }
         }
         else {
           throw new ArgumentException(
@@ -548,8 +568,12 @@ namespace OnTopic.Collections {
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     protected override void SetItem(int index, AttributeValue item) {
+      Contract.Requires(item, nameof(item));
       if (EnforceBusinessLogic(item)) {
         base.SetItem(index, item);
+        if (DeletedAttributes.Contains(item.Key)) {
+          DeletedAttributes.Remove(item.Key);
+        }
       }
     }
 
@@ -565,7 +589,8 @@ namespace OnTopic.Collections {
     ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
-      _attributesDeleted = true;
+      var attribute = this[index];
+      DeletedAttributes.Add(attribute.Key);
       base.RemoveItem(index);
     }
 
