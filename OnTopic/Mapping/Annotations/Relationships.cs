@@ -75,7 +75,7 @@ namespace OnTopic.Mapping.Annotations {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Map to any collection on the <see cref="Topic"/> with either the same property name, or which corresponds to the <see
-    ///   cref="AttributeKeyAttribute.Value"/>.
+    ///   cref="AttributeKeyAttribute.Key"/>.
     /// </summary>
     /// <remarks>
     ///   This allows mapping of custom collection, such as <see cref="ContentTypeDescriptor.AttributeDescriptors"/>.
@@ -90,7 +90,7 @@ namespace OnTopic.Mapping.Annotations {
     /// </summary>
     /// <remarks>
     ///   By convention, <see cref="References"/> types refer to a <see cref="AttributeDescriptor"/>, <see
-    ///   cref="AttributeKeyAttribute.Value"/>, or property identifier ending in <c>Id</c>.
+    ///   cref="AttributeKeyAttribute.Key"/>, or property identifier ending in <c>Id</c>.
     /// </remarks>
     References                  = 1 << 5,
 

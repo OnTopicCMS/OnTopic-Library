@@ -80,7 +80,7 @@ namespace OnTopic.Internal.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Value);
+      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
       GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
       GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
       GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
@@ -138,7 +138,7 @@ namespace OnTopic.Internal.Mapping {
     ///     the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="AttributeKey"/> property corresponds to the <see cref="AttributeKeyAttribute.Value"/> property. It
+    ///     The <see cref="AttributeKey"/> property corresponds to the <see cref="AttributeKeyAttribute.Key"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[AttributeKey("AlternateAttributeKey")]</c>.
     ///   </para>
     /// </remarks>
