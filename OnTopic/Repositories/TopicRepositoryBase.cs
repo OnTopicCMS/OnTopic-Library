@@ -224,7 +224,7 @@ namespace OnTopic.Repositories {
     public abstract Topic? Load(int topicId, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(string? topicKey = null, bool isRecursive = true);
+    public abstract Topic? Load(string? uniqueKey = null, bool isRecursive = true);
 
     /// <inheritdoc />
     public abstract Topic? Load(int topicId, DateTime version);

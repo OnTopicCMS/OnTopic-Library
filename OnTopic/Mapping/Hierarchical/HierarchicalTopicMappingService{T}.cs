@@ -74,7 +74,7 @@ namespace OnTopic.Mapping.Hierarchical {
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Root:Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables

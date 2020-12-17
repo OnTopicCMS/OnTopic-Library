@@ -64,7 +64,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty topic
@@ -72,7 +72,7 @@ namespace OnTopic.Data.Sql {
       | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(topicKey)) {
+      if (String.IsNullOrEmpty(uniqueKey)) {
         return Load(-1, isRecursive);
       }
 
@@ -80,7 +80,7 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var connection      = new SqlConnection(_connectionString);
-      using var command         = new SqlCommand("GetTopicID", connection);
+      using var command         = new SqlCommand("GetTopicIDByUniqueKey", connection);
 
       var topicId               = -1;
 
@@ -89,7 +89,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      command.AddParameter("TopicKey", topicKey);
+      command.AddParameter("UniqueKey", uniqueKey);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ namespace OnTopic.Data.Sql {
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId < 0) {
-        throw new TopicNotFoundException(topicKey);
+        throw new TopicNotFoundException(uniqueKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
