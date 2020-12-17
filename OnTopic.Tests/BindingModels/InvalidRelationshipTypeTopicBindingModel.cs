@@ -6,7 +6,7 @@
 using System;
 using System.Collections.ObjectModel;
 using OnTopic.Mapping.Annotations;
-using OnTopic.Models;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 

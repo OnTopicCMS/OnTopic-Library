@@ -5,8 +5,9 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using OnTopic.Mapping.Reverse;
+using OnTopic.Models;
 
-namespace OnTopic.Models {
+namespace OnTopic.ViewModels.BindingModels {
 
   /*============================================================================================================================
   | CLASS: RELATED TOPIC BINDING MODEL
