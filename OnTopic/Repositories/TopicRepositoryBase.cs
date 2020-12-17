@@ -315,7 +315,8 @@ namespace OnTopic.Repositories {
       if (contentTypeDescriptor is null) {
         throw new ArgumentException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
-          $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
+          $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository.",
+          nameof(topic)
         );
       }
 

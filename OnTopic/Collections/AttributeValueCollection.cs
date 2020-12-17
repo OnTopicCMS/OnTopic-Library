@@ -554,7 +554,8 @@ namespace OnTopic.Collections {
           throw new ArgumentException(
             $"An {nameof(AttributeValue)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
             $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(AttributeValue)}s are associated " +
-            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'."
+            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'.",
+            nameof(item)
           );
         }
       }
