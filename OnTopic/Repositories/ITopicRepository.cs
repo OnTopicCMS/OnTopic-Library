@@ -147,13 +147,13 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The topic object to delete.</param>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
-    ///   and the topic has children, including any nested topics, an exception will be thrown.
+    ///   and the topic has children, including any nested topics, an exception will be thrown. The default is false.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
     ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    void Delete(Topic topic, bool isRecursive = true);
+    void Delete(Topic topic, bool isRecursive = false);
 
   } //Interface
 } //Namespace
