@@ -46,7 +46,7 @@ namespace OnTopic.Attributes {
       bool                      inheritFromDerived              = true
     ) {
       Contract.Requires(attributes);
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return Int32.TryParse(
         attributes.GetValue(
           name,
@@ -84,7 +84,7 @@ namespace OnTopic.Attributes {
       bool                      inheritFromDerived              = true
     ) {
       Contract.Requires(attributes);
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return Int32.TryParse(
         attributes.GetValue(
           name,
@@ -122,7 +122,7 @@ namespace OnTopic.Attributes {
       bool                      inheritFromDerived              = true
     ) {
       Contract.Requires(attributes);
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return Double.TryParse(
         attributes.GetValue(
           name,
@@ -160,7 +160,7 @@ namespace OnTopic.Attributes {
       bool                      inheritFromDerived              = true
     ) {
       Contract.Requires(attributes);
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return DateTime.TryParse(
         attributes.GetValue(
           name,

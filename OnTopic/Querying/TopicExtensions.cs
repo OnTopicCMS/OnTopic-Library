@@ -177,9 +177,9 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
       TopicFactory.ValidateKey(name);
 
       /*------------------------------------------------------------------------------------------------------------------------

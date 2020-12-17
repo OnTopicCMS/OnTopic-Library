@@ -100,7 +100,7 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship to be returned.</param>
     public NamedTopicCollection GetTopics(string relationshipKey) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       if (Contains(relationshipKey)) {
         return this[relationshipKey];
       }
@@ -115,7 +115,7 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
     public void ClearTopics(string relationshipKey) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       if (Contains(relationshipKey)) {
         this[relationshipKey].Clear();
       }
@@ -152,8 +152,8 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(topicKey), nameof(topicKey));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic key
@@ -201,7 +201,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       Contract.Requires(topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       Contract.Requires(topic);
       TopicFactory.ValidateKey(relationshipKey);
 
@@ -347,7 +347,8 @@ namespace OnTopic.Collections {
         throw new ArgumentException(
           $"A {nameof(NamedTopicCollection)} with the Name '{item.Name}' already exists in this " +
           $"{nameof(RelatedTopicCollection)}. The existing key is '{this[item.Name].Name}'; the new item's is '{item.Name}'. " +
-          $"This collection is associated with the '{_parent.GetUniqueKey()}' Topic."
+          $"This collection is associated with the '{_parent.GetUniqueKey()}' Topic.",
+          nameof(item)
         );
       }
     }

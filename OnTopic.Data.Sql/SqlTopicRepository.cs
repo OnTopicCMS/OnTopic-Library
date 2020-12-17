@@ -48,10 +48,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(connectionString),
-        "The name of the connection string must be provided in order to be validated."
-      );
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(connectionString), nameof(connectionString));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set private fields

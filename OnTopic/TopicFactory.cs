@@ -67,8 +67,8 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
@@ -107,9 +107,9 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Requires<ArgumentNullException>(id > 0);
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
+      Contract.Requires<ArgumentNullException>(id > 0, nameof(id));
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 

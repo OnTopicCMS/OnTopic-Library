@@ -232,7 +232,7 @@ namespace OnTopic.Collections {
     /// <returns>The string value for the Attribute.</returns>
     [return: NotNullIfNotNull("defaultValue")]
     public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return GetValue(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
 
@@ -269,7 +269,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
       Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
       TopicFactory.ValidateKey(name);
@@ -418,7 +418,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
