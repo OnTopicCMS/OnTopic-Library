@@ -295,8 +295,8 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isIncoming) {
         if (_isIncoming) {
-          throw new ArgumentException(
-            "You are attempting to set an incoming relationship on a RelatedTopicCollection that is not flagged as IsIncoming",
+          throw new InvalidOperationException(
+            "You are attempting to set an incoming relationship on a RelatedTopicCollection that is not flagged as " +
             nameof(isIncoming)
           );
         }
