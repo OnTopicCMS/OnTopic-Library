@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 
@@ -25,9 +25,7 @@ namespace OnTopic.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
 
-    #pragma warning disable CA1002 // Do not expose generic lists
-    public List<DateTime>? VersionHistory { get; set; }
-    #pragma warning restore CA1002 // Do not expose generic lists
+    public Collection<DateTime>? VersionHistory { get; set; }
 
   } //Class
 } //Namespace
