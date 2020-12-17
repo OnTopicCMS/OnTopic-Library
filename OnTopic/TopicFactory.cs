@@ -109,7 +109,7 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
-      Contract.Requires<ArgumentNullException>(id > 0, nameof(id));
+      Contract.Requires<ArgumentOutOfRangeException>(id > 0, nameof(id));
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 

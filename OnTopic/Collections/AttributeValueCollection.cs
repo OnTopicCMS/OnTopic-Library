@@ -270,8 +270,8 @@ namespace OnTopic.Collections {
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
-      Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
+      Contract.Requires<ArgumentOutOfRangeException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
+      Contract.Requires<ArgumentOutOfRangeException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
       TopicFactory.ValidateKey(name);
 
       string? value = null;
