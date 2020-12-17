@@ -19,7 +19,7 @@ using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
 
-namespace OnTopic.Mapping {
+namespace OnTopic.Mapping.Reverse {
 
   /*============================================================================================================================
   | CLASS: BINDING MODEL VALIDATOR
