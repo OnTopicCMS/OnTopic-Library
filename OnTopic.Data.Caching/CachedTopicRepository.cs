@@ -96,13 +96,13 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is not null && topicKey.Length is not 0) {
-        return _cache.GetByUniqueKey(topicKey);
+      if (uniqueKey is not null && uniqueKey.Length is not 0) {
+        return _cache.GetByUniqueKey(uniqueKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

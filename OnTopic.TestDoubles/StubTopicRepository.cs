@@ -53,14 +53,14 @@ namespace OnTopic.TestDoubles {
       (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is not null && topicKey.Length > 0) {
-        topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.OrdinalIgnoreCase));
+      if (uniqueKey is not null && uniqueKey.Length > 0) {
+        uniqueKey = uniqueKey.Contains(":") ? uniqueKey : "Root:" + uniqueKey;
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) => base.Delete(topic, isRecursive);
+    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)

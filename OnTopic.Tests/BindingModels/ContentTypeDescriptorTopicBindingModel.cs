@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
-using OnTopic.Models;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 

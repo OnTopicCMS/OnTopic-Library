@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
@@ -38,8 +39,8 @@ namespace OnTopic.Collections {
     ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
     ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may
     ///   be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
-    ///   set, then it will not allow incoming relationships to be set via the internal
-    ///   <see cref="SetTopic(String, Topic, Boolean, Boolean?)"/> overload.
+    ///   set, then it will not allow incoming relationships to be set via the internal <see cref=
+    ///   "SetTopic(String, Topic, Boolean?, Boolean)"/> overload.
     /// </remarks>
     public RelatedTopicCollection(Topic parent, bool isIncoming = false) : base(StringComparer.OrdinalIgnoreCase) {
       _parent = parent;
@@ -66,16 +67,16 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics() {
-      var topics = new TopicCollection();
+    public IEnumerable<Topic> GetAllTopics() {
+      var topics = new List<Topic>();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
-          if (topicCollection.Contains(topic) && !topics.Contains(topic)) {
+          if (!topics.Contains(topic)) {
             topics.Add(topic);
           }
         }
       }
-      return new(topics);
+      return topics;
     }
 
     /// <summary>
@@ -85,10 +86,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics(string contentType) {
-      var topics = GetAllTopics().Where(t => t.ContentType == contentType);
-      return ReadOnlyTopicCollection.FromList(topics.ToList());
-    }
+    public IEnumerable<Topic> GetAllTopics(string contentType) => GetAllTopics().Where(t => t.ContentType == contentType);
 
     /*==========================================================================================================================
     | METHOD: GET TOPICS
@@ -131,6 +129,17 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topicKey">The key of the topic to be removed.</param>
+    /// <returns>
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
+    ///   <see cref="Topic"/> cannot be found.
+    /// </returns>
+    public bool RemoveTopic(string relationshipKey, string topicKey) => RemoveTopic(relationshipKey, topicKey);
+
+    /// <summary>
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
+    /// </summary>
+    /// <param name="relationshipKey">The key of the relationship.</param>
+    /// <param name="topicKey">The key of the topic to be removed.</param>
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
@@ -138,7 +147,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, string topicKey, bool isIncoming = false) {
+    internal bool RemoveTopic(string relationshipKey, string topicKey, bool isIncoming = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -168,6 +177,18 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be removed.</param>
+    /// <returns>
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
+    ///   <see cref="Topic"/> cannot be found.
+    /// </returns>
+    public bool RemoveTopic(string relationshipKey, Topic topic) => RemoveTopic(relationshipKey, topic);
+
+
+    /// <summary>
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
+    /// </summary>
+    /// <param name="relationshipKey">The key of the relationship.</param>
+    /// <param name="topic">The topic to be removed.</param>
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
@@ -175,7 +196,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
+    internal bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -188,10 +209,9 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isIncoming) {
         if (_isIncoming) {
-          throw new ArgumentException(
+          throw new InvalidOperationException(
             "You are attempting to remove an incoming relationship on a RelatedTopicCollection that is not flagged as " +
-            "IsIncoming",
-            nameof(isIncoming)
+            "IsIncoming"
           );
         }
         topic.IncomingRelationships.RemoveTopic(relationshipKey, _parent, true);
@@ -229,7 +249,11 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
-    public void SetTopic(string relationshipKey, Topic topic) => SetTopic(relationshipKey, topic, false);
+    /// <param name="isDirty">
+    ///   Optionally forces the collection to a <see cref="NamedTopicCollection.IsDirty"/> state, assuming the topic was set.
+    /// </param>
+    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null)
+      => SetTopic(relationshipKey, topic, isDirty, false);
 
     /// <summary>
     ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified relationship key.
@@ -245,7 +269,7 @@ namespace OnTopic.Collections {
     /// <param name="isDirty">
     ///   Optionally forces the collection to a <see cref="NamedTopicCollection.IsDirty"/> state, assuming the topic was set.
     /// </param>
-    public void SetTopic(string relationshipKey, Topic topic, bool isIncoming, bool? isDirty = null) {
+    internal void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts

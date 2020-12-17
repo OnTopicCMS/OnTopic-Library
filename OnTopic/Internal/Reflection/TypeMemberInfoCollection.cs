@@ -454,7 +454,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
-    public static List<Type> SettableTypes { get; }
+    public static Collection<Type> SettableTypes { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
