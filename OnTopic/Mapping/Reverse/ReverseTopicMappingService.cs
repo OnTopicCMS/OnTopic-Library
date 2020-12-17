@@ -436,8 +436,7 @@ namespace OnTopic.Mapping.Reverse {
       foreach (IRelatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey);
         if (targetTopic is null) {
-          throw new ArgumentOutOfRangeException(
-            configuration.Property.Name,
+          throw new InvalidOperationException(
             $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
             $"be located in the repository."
           );
