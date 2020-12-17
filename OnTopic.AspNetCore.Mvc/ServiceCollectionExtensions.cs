@@ -72,7 +72,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   endpoint routing is preferred in ASP.NET Core 3. OnTopic also offers far more extension methods for endpoint routing,
     ///   while this method is provided exclusively for backward compatibility.
     /// </remarks>
-    [Obsolete("This method is deprecated and will be removed in OnTopic 5. Callers should migrate to endpoint routing.", false)]
+    [Obsolete("This method is deprecated and will be removed in OnTopic 5. Callers should migrate to endpoint routing.", true)]
     public static IRouteBuilder MapTopicRoute(
       this IRouteBuilder routes,
       string rootTopic,
