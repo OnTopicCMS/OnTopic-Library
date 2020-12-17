@@ -437,7 +437,7 @@ namespace OnTopic.Data.Sql {
 
         topic.Id                = command.GetReturnCode();
 
-        Contract.Assume<InvalidOperationException>(
+        Contract.Assume(
           !topic.IsNew,
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
