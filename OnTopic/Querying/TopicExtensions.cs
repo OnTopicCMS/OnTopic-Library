@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
@@ -109,7 +110,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>A collection of topics descending from the current topic.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
+    public static IEnumerable<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
 
     /// <summary>
     ///   Retrieves a collection of topics based on a supplied function.
@@ -117,7 +118,7 @@ namespace OnTopic.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
+    public static IEnumerable<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -149,7 +150,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return results.AsReadOnly();
+      return results;
 
     }
 
@@ -171,7 +172,7 @@ namespace OnTopic.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static ReadOnlyTopicCollection<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
+    public static IEnumerable<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts

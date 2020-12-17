@@ -153,7 +153,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(5, relationships.Count);
       Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count);
+      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
 
     }
 
@@ -175,7 +175,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count);
+      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count());
 
     }
 

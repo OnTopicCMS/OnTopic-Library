@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
@@ -66,16 +67,16 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics() {
-      var topics = new TopicCollection();
+    public IEnumerable<Topic> GetAllTopics() {
+      var topics = new List<Topic>();
       foreach (var topicCollection in this) {
         foreach (var topic in topicCollection) {
-          if (topicCollection.Contains(topic) && !topics.Contains(topic)) {
+          if (!topics.Contains(topic)) {
             topics.Add(topic);
           }
         }
       }
-      return new(topics);
+      return topics;
     }
 
     /// <summary>
@@ -85,10 +86,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics(string contentType) {
-      var topics = GetAllTopics().Where(t => t.ContentType == contentType);
-      return ReadOnlyTopicCollection.FromList(topics.ToList());
-    }
+    public IEnumerable<Topic> GetAllTopics(string contentType) => GetAllTopics().Where(t => t.ContentType == contentType);
 
     /*==========================================================================================================================
     | METHOD: GET TOPICS
