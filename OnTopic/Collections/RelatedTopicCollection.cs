@@ -177,6 +177,18 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be removed.</param>
+    /// <returns>
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
+    ///   <see cref="Topic"/> cannot be found.
+    /// </returns>
+    public bool RemoveTopic(string relationshipKey, Topic topic) => RemoveTopic(relationshipKey, topic);
+
+
+    /// <summary>
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
+    /// </summary>
+    /// <param name="relationshipKey">The key of the relationship.</param>
+    /// <param name="topic">The topic to be removed.</param>
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
@@ -184,7 +196,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
+    internal bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -197,10 +209,9 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isIncoming) {
         if (_isIncoming) {
-          throw new ArgumentException(
+          throw new InvalidOperationException(
             "You are attempting to remove an incoming relationship on a RelatedTopicCollection that is not flagged as " +
-            "IsIncoming",
-            nameof(isIncoming)
+            "IsIncoming"
           );
         }
         topic.IncomingRelationships.RemoveTopic(relationshipKey, _parent, true);
