@@ -142,7 +142,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    private virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
+    private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
