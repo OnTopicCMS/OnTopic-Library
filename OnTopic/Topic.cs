@@ -385,7 +385,7 @@ namespace OnTopic {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
-    [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.")]
+    [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.", true)]
     public string? Description {
       get => Attributes.GetValue("Description");
       set => SetAttributeValue("Description", value);
