@@ -186,7 +186,7 @@ namespace OnTopic.Attributes {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -224,7 +224,7 @@ namespace OnTopic.Attributes {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -266,7 +266,7 @@ namespace OnTopic.Attributes {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
@@ -308,7 +308,7 @@ namespace OnTopic.Attributes {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."

@@ -248,7 +248,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public override int Save([NotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
@@ -263,13 +263,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId = Save(topic, isRecursive, isDraft, connection, unresolvedTopics, version);
+      var topicId = Save(topic, isRecursive, connection, unresolvedTopics, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, isDraft, connection, new(), version);
+        Save(unresolvedTopic, false, connection, new(), version);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -302,13 +302,11 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to save.</param>
     /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
-    /// <param name="isDraft">Determines if the <see cref="Topic"/> should be saved as a draft version.</param>
     /// <param name="connection">The open <see cref="SqlConnection"/> to use for executing <see cref="SqlCommand"/>s.</param>
     /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
     private int Save(
       [NotNull]Topic topic,
       bool isRecursive,
-      bool isDraft,
       SqlConnection connection,
       List<Topic> unresolvedRelationships,
       SqlDateTime version
@@ -317,7 +315,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive, isDraft);
+      base.Save(topic, isRecursive);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
@@ -482,7 +480,7 @@ namespace OnTopic.Data.Sql {
         if (isRecursive) {
           foreach (var childTopic in topic.Children) {
             childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-            Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships, version);
+            Save(childTopic, isRecursive, connection, unresolvedRelationships, version);
           }
         }
       }

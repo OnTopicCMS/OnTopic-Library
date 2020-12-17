@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
-#pragma warning disable CS0618 // Type or member is obsolete; supresses known issue with helper methods being moved to private
-
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
@@ -144,8 +142,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
+    private virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
@@ -161,8 +158,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
-    [Obsolete("The AddTopic() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
+    private IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish return collection
@@ -242,5 +238,3 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS0618 // Type or member is obsolete
