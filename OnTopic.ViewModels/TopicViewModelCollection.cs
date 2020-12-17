@@ -56,13 +56,8 @@ namespace OnTopic.ViewModels {
     /// <param name="contentType">The name of the content type to filter by.</param>
     /// <returns>The filtered list of view models associated with the content type.</returns>
     public TopicViewModelCollection<TItem> GetByContentType(string contentType) {
-      Contract.Requires<ArgumentException>(
-        !String.IsNullOrWhiteSpace(contentType),
-        $"A {nameof(contentType)} argument is required."
-      );
-      return new(
-        Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.OrdinalIgnoreCase)?? false)
-      );
+      Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
+      return new(Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.OrdinalIgnoreCase)?? false));
     }
 
     /*==========================================================================================================================

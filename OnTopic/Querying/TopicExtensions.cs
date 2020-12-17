@@ -217,7 +217,7 @@ namespace OnTopic.Querying {
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), "The unique key must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), nameof(uniqueKey));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
