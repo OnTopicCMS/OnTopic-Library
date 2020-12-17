@@ -59,7 +59,7 @@ namespace OnTopic.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", false)]
+    [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", true)]
     public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
       return new(innerCollection);
