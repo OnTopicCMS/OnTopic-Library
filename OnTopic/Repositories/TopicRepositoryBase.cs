@@ -133,7 +133,7 @@ namespace OnTopic.Repositories {
     ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
     ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
     ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
-    ///   Topic, Boolean, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+    ///   Topic, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
     /// </remarks>
     /// <param name="rootContentType">
     ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
