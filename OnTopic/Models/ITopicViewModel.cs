@@ -71,9 +71,7 @@ namespace OnTopic.Models {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten
-    ///   down the pipe).
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
     /// </remarks>
     string? ContentType { get; set; }
 
@@ -84,11 +82,11 @@ namespace OnTopic.Models {
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property), or via the
+    ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
+    ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the
     ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
-    ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
-    ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
+    ///   Content Type is "Page", then the view will be "Page". This will cause the <c>TopicViewResultExecutor</c> to look
+    ///   for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
     string? View { get; set; }
 
