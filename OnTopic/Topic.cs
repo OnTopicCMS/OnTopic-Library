@@ -528,7 +528,9 @@ namespace OnTopic {
     /// </remarks>
     /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
     public string GetWebPath() {
-      var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
+      var uniqueKey = GetUniqueKey()
+        .Replace("Root:", "/", StringComparison.Ordinal)
+        .Replace(":", "/", StringComparison.Ordinal) + "/";
       if (!uniqueKey.StartsWith("/", StringComparison.InvariantCulture)) {
         uniqueKey = $"/{uniqueKey}";
       }
