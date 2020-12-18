@@ -187,7 +187,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic.FindAll(t =>
         !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
-        t.Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        t.Attributes.GetValue(name).Contains(value, StringComparison.InvariantCultureIgnoreCase)
       );
 
     }
@@ -235,7 +235,7 @@ namespace OnTopic.Querying {
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
-        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 

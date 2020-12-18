@@ -59,7 +59,7 @@ namespace OnTopic.TestDoubles {
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (uniqueKey is not null && uniqueKey.Length > 0) {
-        uniqueKey = uniqueKey.Contains(":") ? uniqueKey : "Root:" + uniqueKey;
+        uniqueKey = uniqueKey.Contains(":", StringComparison.Ordinal) ? uniqueKey : "Root:" + uniqueKey;
         return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
       }
 

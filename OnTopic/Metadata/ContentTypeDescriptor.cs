@@ -20,8 +20,7 @@ namespace OnTopic.Metadata {
   /// <remarks>
   ///   <para>
   ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-  ///     Editor (via the <see cref="AttributeDescriptors"/> property). The content type also determines, by default, which view
-  ///     is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten down the pipe).
+  ///     Editor (via the <see cref="AttributeDescriptors"/> property).
   ///   </para>
   ///   <para>
   ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of

@@ -88,7 +88,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public abstract ModelType ModelType { get; }
+    public virtual ModelType ModelType => ModelType.ScalarValue;
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
@@ -109,7 +109,7 @@ namespace OnTopic.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public abstract string? EditorType { get; }
+    public virtual string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
