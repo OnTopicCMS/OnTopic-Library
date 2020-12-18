@@ -235,7 +235,7 @@ namespace OnTopic.Querying {
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
-        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 
