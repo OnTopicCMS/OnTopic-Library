@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{B8D5B290-4451-4C3B-AE9E-0FF075958A74}</ProjectGuid>
     <RootNamespace>OnTopic</RootNamespace>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <LangVersion>9.0</LangVersion>

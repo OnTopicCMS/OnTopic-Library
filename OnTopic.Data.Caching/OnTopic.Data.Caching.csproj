@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{206B7F91-CA25-4E9D-9576-60D2E54A2C0A}</ProjectGuid>
     <RootNamespace>OnTopic.Data.Caching</RootNamespace>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <LangVersion>9.0</LangVersion>
