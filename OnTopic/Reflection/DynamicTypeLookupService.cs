@@ -9,7 +9,7 @@ using System.Linq;
 namespace OnTopic.Reflection {
 
   /*============================================================================================================================
-  | CLASS: TYPE INDEX
+  | CLASS: DYNAMIC TYPE LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="DynamicTypeLookupService"/> will search all assemblies for <see cref="Type"/> instances that match a

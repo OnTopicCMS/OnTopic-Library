@@ -12,7 +12,7 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic {
 
   /*============================================================================================================================
-  | CLASS: TYPE INDEX
+  | CLASS: STATIC TYPE LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="StaticTypeLookupService"/> can be configured to provide a lookup of <see cref="Type"/> classes based on
