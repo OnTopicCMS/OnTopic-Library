@@ -36,7 +36,7 @@ namespace OnTopic.Tests {
     ///   cref="ArgumentNullException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void Requires_ConditionIsFalse_ThrowArgumentNullException()
       => Contract.Requires(false, "The argument cannot be null");
 
@@ -101,7 +101,7 @@ namespace OnTopic.Tests {
     ///   cref="ArgumentNullException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void Assume_ConditionIsFalse_ThrowArgumentNullException()
       => Contract.Assume(false, "The argument cannot be null");
 
