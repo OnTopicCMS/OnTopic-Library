@@ -211,7 +211,7 @@ namespace OnTopic.Collections {
         if (_isIncoming) {
           throw new InvalidOperationException(
             "You are attempting to remove an incoming relationship on a RelatedTopicCollection that is not flagged as " +
-            "IsIncoming"
+            nameof(isIncoming)
           );
         }
         topic.IncomingRelationships.RemoveTopic(relationshipKey, _parent, true);

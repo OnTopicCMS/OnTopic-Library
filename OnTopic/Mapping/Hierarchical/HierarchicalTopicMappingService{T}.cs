@@ -88,7 +88,7 @@ namespace OnTopic.Mapping.Hierarchical {
         if (String.IsNullOrEmpty(defaultRoot)) {
           throw new ArgumentOutOfRangeException(
             nameof(defaultRoot),
-            "The current route could not be resolved to a topic and the defaultRoot was not set."
+            $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
           );
         }
         navigationRootTopic = TopicRepository.Load(defaultRoot);
@@ -100,7 +100,7 @@ namespace OnTopic.Mapping.Hierarchical {
       if (navigationRootTopic is null) {
         throw new ArgumentOutOfRangeException(
           nameof(defaultRoot),
-          "Neither the current route nor the 'defaultRoot' parameter could be resolved to a topic."
+          $"Neither the current route nor the {nameof(defaultRoot)} parameter of {defaultRoot} could be resolved to a topic."
         );
       }
 
