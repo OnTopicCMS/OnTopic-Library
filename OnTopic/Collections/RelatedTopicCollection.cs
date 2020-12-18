@@ -133,7 +133,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, string topicKey) => RemoveTopic(relationshipKey, topicKey);
+    public bool RemoveTopic(string relationshipKey, string topicKey) => RemoveTopic(relationshipKey, topicKey, false);
 
     /// <summary>
     ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
@@ -147,7 +147,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    internal bool RemoveTopic(string relationshipKey, string topicKey, bool isIncoming = false) {
+    internal bool RemoveTopic(string relationshipKey, string topicKey, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -181,7 +181,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, Topic topic) => RemoveTopic(relationshipKey, topic);
+    public bool RemoveTopic(string relationshipKey, Topic topic) => RemoveTopic(relationshipKey, topic, false);
 
 
     /// <summary>
@@ -196,7 +196,7 @@ namespace OnTopic.Collections {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    internal bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming = false) {
+    internal bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -300,7 +300,7 @@ namespace OnTopic.Collections {
             nameof(isIncoming)
           );
         }
-        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, true);
+        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, isDirty, true);
       }
 
     }
