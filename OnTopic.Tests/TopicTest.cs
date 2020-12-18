@@ -56,7 +56,7 @@ namespace OnTopic.Tests {
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
+    [ExpectedException(typeof(InvalidOperationException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Id_ChangeValue_ThrowsArgumentException() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
