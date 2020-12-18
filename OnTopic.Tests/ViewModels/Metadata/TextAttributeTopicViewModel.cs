@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Metadata;
 using OnTopic.Metadata.AttributeTypes;
 
 namespace OnTopic.Tests.ViewModels.Metadata {
@@ -11,7 +12,7 @@ namespace OnTopic.Tests.ViewModels.Metadata {
   | VIEW MODEL: TEXT ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a dummy implementation of a view model for an <see cref="AttributeTypeDescriptor"/> view model, in order to
+  ///   Provides a dummy implementation of a view model for an <see cref="AttributeDescriptor"/> view model, in order to
   ///   allow the dynamic resolution of mapping <see cref="TextAttribute"/> topics to view models.
   /// </summary>
   /// <remarks>
