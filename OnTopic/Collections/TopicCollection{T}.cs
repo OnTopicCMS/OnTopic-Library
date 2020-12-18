@@ -86,7 +86,8 @@ namespace OnTopic.Collections {
       else {
         throw new ArgumentException(
           $"A {typeof(T).Name} with the Key '{item.Key}' already exists. The UniqueKey of the existing {typeof(T).Name} is " +
-          $"'{this[item.Key].GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'."
+          $"'{this[item.Key].GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'.",
+          nameof(item)
         );
       }
     }

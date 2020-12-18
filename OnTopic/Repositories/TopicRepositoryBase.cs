@@ -313,7 +313,7 @@ namespace OnTopic.Repositories {
       var contentTypeDescriptor = GetContentTypeDescriptor(topic);
 
       if (contentTypeDescriptor is null) {
-        throw new ArgumentException(
+        throw new ReferentialIntegrityException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
           $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
         );

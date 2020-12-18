@@ -145,17 +145,17 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the content type is valid
       if (!_contentTypeDescriptors.Contains(source.ContentType)) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
-          $"no matching content type in the ITopicRepository provided. This suggests that the binding model is invalid. If " +
-          $"this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
+          $"are no matching content types in the ITopicRepository provided. This suggests that the binding model is invalid. " +
+          $"If this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
           $"to the same ITopicRepository instance prior to creating any instances of it."
         );
       }
 
       //Ensure the content types match
       if (source.ContentType != target.ContentType) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
           $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
           $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. " +
@@ -165,7 +165,7 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the keys match
       if (source.Key != target.Key && !String.IsNullOrEmpty(source.Key)) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object has a key of '{source.Key}', while the {nameof(target)} object has a key of " +
           $"'{target.Key}'. It is not permitted to change the topic'key during a mapping operation, as this suggests in " +
           $"invalid target. If this is by design, change the key on the target topic prior to invoking MapAsync()."
@@ -436,8 +436,7 @@ namespace OnTopic.Mapping.Reverse {
       foreach (IRelatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey);
         if (targetTopic is null) {
-          throw new ArgumentOutOfRangeException(
-            configuration.Property.Name,
+          throw new InvalidOperationException(
             $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
             $"be located in the repository."
           );

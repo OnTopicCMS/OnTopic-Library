@@ -29,7 +29,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="command">The SQL command object.</param>
     /// <param name="sqlParameter">The name of the SQL parameter to retrieve as the return code.</param>
     internal static int GetReturnCode(this SqlCommand command, string sqlParameter = "ReturnCode") {
-      Contract.Assume<InvalidOperationException>(
+      Contract.Assume(
         command.Parameters.Contains($"@{sqlParameter}"),
         $"The call to the {command.CommandText} stored procedure did not return the expected 'ReturnCode' parameter."
       );

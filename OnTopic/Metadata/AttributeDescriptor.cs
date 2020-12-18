@@ -130,7 +130,7 @@ namespace OnTopic.Metadata {
     public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
         SetAttributeValue("DisplayGroup", value);
       }
     }

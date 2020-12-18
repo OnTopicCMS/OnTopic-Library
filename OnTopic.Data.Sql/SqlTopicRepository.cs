@@ -48,10 +48,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(connectionString),
-        "The name of the connection string must be provided in order to be validated."
-      );
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(connectionString), nameof(connectionString));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set private fields
@@ -440,7 +437,7 @@ namespace OnTopic.Data.Sql {
 
         topic.Id                = command.GetReturnCode();
 
-        Contract.Assume<InvalidOperationException>(
+        Contract.Assume(
           !topic.IsNew,
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );

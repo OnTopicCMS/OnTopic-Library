@@ -104,7 +104,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new SitemapController(_topicRepository),
         nameof(RedirectController) =>
           new RedirectController(_topicRepository),
-        _ => throw new Exception($"Unknown controller {type.Name}")
+        _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
       };
 
     }
@@ -128,7 +128,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new MenuViewComponent(_topicRepository, _hierarchicalMappingService),
         nameof(PageLevelNavigationViewComponent) =>
           new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
-        _ => throw new Exception($"Unknown view component {type.Name}")
+        _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
       };
 
     }
