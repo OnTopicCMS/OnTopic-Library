@@ -30,7 +30,7 @@ namespace OnTopic.Tests {
     ///   confirms that it returns the expected <see cref="Type"/> for a <see cref="ITypeLookupService.Lookup(String)"/> query.
     /// </summary>
     [TestMethod]
-    public void Assume_ObjectIsNull_ThrowInvalidOperationException() {
+    public void Composite_LookupValidType_ReturnsType() {
 
       var lookupServiceA        = new FakeViewModelLookupService();
       var lookupServiceB        = new TopicViewModelLookupService();
