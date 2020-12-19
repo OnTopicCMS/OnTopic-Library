@@ -36,6 +36,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITypeLookupService              _typeLookupService;
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _mappingService;
 
@@ -52,8 +53,21 @@ namespace OnTopic.Tests {
     ///   crawling the object graph.
     /// </remarks>
     public TopicMappingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
-      _mappingService = new TopicMappingService(new DummyTopicRepository(), new FakeViewModelLookupService());
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Create composite topic lookup service
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _typeLookupService        = new CompositeTypeLookupService(
+        new TopicViewModelLookupService(),
+        new FakeViewModelLookupService()
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Assemble dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
+      _mappingService           = new TopicMappingService(new DummyTopicRepository(), _typeLookupService);
+
     }
 
     /*==========================================================================================================================
@@ -451,7 +465,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_TopicReferences_ReturnsMappedModel() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
@@ -589,7 +603,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
       var target                = (MetadataLookupTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);

@@ -8,7 +8,7 @@ using System;
 namespace OnTopic.Reflection {
 
   /*============================================================================================================================
-  | CLASS: TOPIC VIEW MODEL LOOKUP SERVICE
+  | CLASS: DYNAMIC TOPIC VIEW MODEL LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="DynamicTopicViewModelLookupService"/> will search all assemblies for <see cref="Type"/>s that end with

@@ -9,7 +9,7 @@ using OnTopic.Models;
 namespace OnTopic.Reflection {
 
   /*============================================================================================================================
-  | CLASS: TOPIC BINDING MODEL LOOKUP SERVICE
+  | CLASS: DYNAMIC TOPIC BINDING MODEL LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="DynamicTopicBindingModelLookupService"/> will search all assemblies for <see cref="Type"/>s that

@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.TestDoubles {
 
@@ -18,7 +17,7 @@ namespace OnTopic.Tests.TestDoubles {
   /// <remarks>
   ///   Allows testing of services that depend on <see cref="ITypeLookupService"/> without using expensive reflection.
   /// </remarks>
-  public class FakeViewModelLookupService: TopicViewModelLookupService {
+  public class FakeViewModelLookupService: StaticTypeLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
