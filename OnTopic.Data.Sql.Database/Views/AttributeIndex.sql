@@ -20,11 +20,6 @@ WITH Attributes AS (
 	  ORDER BY		Version	DESC
 	)
   FROM	[dbo].[Attributes]
-  WHERE	AttributeKey
-  NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-  )
 )
 SELECT	Attributes.TopicID,
 	Attributes.AttributeKey,
