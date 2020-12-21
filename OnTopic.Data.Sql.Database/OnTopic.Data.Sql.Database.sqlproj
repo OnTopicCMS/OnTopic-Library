@@ -103,7 +103,6 @@
     <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Functions\GetParentID.sql" />
-    <Build Include="Functions\GetTopicID.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
