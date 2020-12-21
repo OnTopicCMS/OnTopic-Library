@@ -12,7 +12,7 @@ TABLE	[dbo].[Attributes] (
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
 	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
 	  [Version]		DATETIME
-  CONSTRAINT	  [DF_Attributes_Version]	DEFAULT	(GetDate())	NOT NULL,
+  CONSTRAINT	  [DF_Attributes_Version]	DEFAULT	(GETUTCDATE())	NOT NULL,
   CONSTRAINT	  [PK_Attributes]	PRIMARY KEY
   CLUSTERED (	    [TopicID]		ASC,
 	    [AttributeKey]	ASC,
