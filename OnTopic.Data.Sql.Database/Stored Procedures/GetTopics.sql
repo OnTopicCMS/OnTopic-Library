@@ -16,12 +16,12 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 IF @UniqueKey IS NOT NULL
   BEGIN
-    SET	@TopicID		= dbo.GetTopicIDByUniqueKey(@UniqueKey)
+    SET	@TopicID		= dbo.GetTopicID(@UniqueKey)
   END
 
 IF @TopicID < 0
   BEGIN
-    SET	@TopicID		= dbo.GetTopicIDByUniqueKey('Root')
+    SET	@TopicID		= dbo.GetTopicID('Root')
   END
 
 --------------------------------------------------------------------------------------------------------------------------------

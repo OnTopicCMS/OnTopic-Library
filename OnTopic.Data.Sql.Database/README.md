@@ -36,8 +36,7 @@ The following is a summary of the most relevant stored procedures.
 - **[`UpdateRelationships`](Stored%20Procedures/UpdateRelationships.sql)**: Associates a relationship with a topic based on a `@TopicId`, `TopicList` array of `@Target_TopicIds`, and a `@RelationshipKey` (which can be any string label).
 
 ## Functions
-- **[`GetTopicID`](Functions/GetTopicID.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@TopicKey`.
-- **[`GetTopicIDByUniqueKey`](Functions/GetTopicIDByUniqueKey.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@UniqueKey` (e.g., `Root:Configuration`).
+- **[`GetTopicID`](Functions/GetTopicID.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@UniqueKey` (e.g., `Root:Configuration`).
 - **[`GetUniqueKey`](Functions/GetUniqueKey.sql)**: Retrieves a topic's `UniqueKey` based on a corresponding `@TopicID`.
 - **[`GetParentID`](Functions/GetParentID.sql)**: Retrieves a topic's parent's `TopicID` based the child's `@TopicID`.
 - **[`GetAttributes`](functions/GetAttributes.sql)**: Given a `@TopicID`, provides the latest version of each attribute value from both `Attributes` and `ExtendedAttributes`, excluding key attributes (i.e., `Key`, `ContentType`, and `ParentID`).

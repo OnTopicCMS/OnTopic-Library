@@ -77,7 +77,7 @@ namespace OnTopic.Data.Sql {
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var connection      = new SqlConnection(_connectionString);
-      using var command         = new SqlCommand("GetTopicIDByUniqueKey", connection);
+      using var command         = new SqlCommand("GetTopicID", connection);
 
       var topicId               = -1;
 

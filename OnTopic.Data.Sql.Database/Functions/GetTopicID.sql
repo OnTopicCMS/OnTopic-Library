@@ -1,12 +1,12 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- GET TOPIC ID BY UNIQUE KEY
+-- GET TOPIC ID
 --------------------------------------------------------------------------------------------------------------------------------
 -- Given a fully-qualified unique key, finds the TopicID associated with that key. Unlike [GetTopicID], this is guaranteed to
 -- return an exclusive instance.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE
-FUNCTION	[dbo].[GetTopicIDByUniqueKey]
+FUNCTION	[dbo].[GetTopicID]
 (
 	@UniqueKey		NVARCHAR(2500)
 )
