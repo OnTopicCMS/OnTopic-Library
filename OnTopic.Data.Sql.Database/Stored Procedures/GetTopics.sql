@@ -8,20 +8,20 @@
 CREATE PROCEDURE [dbo].[GetTopics]
 	@TopicID		int	= -1,
 	@DeepLoad		bit	= 1,
-	@TopicKey		nvarchar(255)	= null
+	@UniqueKey		nvarchar(255)	= null
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID IF UNKNOWN.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicKey IS NOT NULL
+IF @UniqueKey IS NOT NULL
   BEGIN
-    SET	@TopicID		= dbo.GetTopicID(@TopicKey)
+    SET	@TopicID		= dbo.GetTopicIDByUniqueKey(@UniqueKey)
   END
 
 IF @TopicID < 0
   BEGIN
-    SET	@TopicID		= dbo.GetTopicID('Root')
+    SET	@TopicID		= dbo.GetTopicIDByUniqueKey('Root')
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
