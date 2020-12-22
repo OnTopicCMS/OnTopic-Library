@@ -83,9 +83,9 @@
     <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
     <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
     <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
-    <Build Include="Functions\GetTopicIDByUniqueKey.sql" />
     <Build Include="Functions\GetExtendedAttribute.sql" />
     <Build Include="Functions\GetUniqueKey.sql" />
+    <Build Include="Functions\GetTopicID.sql" />
     <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
     <Build Include="Utilities\Views\LeftRightRange.sql" />
     <Build Include="Utilities\Tables\AdjacencyList.sql" />
@@ -103,7 +103,6 @@
     <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Functions\GetParentID.sql" />
-    <Build Include="Functions\GetTopicID.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Stored Procedures\UpdateRelationships.sql" />

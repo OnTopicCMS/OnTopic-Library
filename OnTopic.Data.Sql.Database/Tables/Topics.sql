@@ -6,7 +6,6 @@
 --------------------------------------------------------------------------------------------------------------------------------
 CREATE
 TABLE	[dbo].[Topics] (
-  	  [Stack_Top]		INT	NULL,
 	  [TopicID]		INT	IDENTITY (1, 1) NOT NULL,
 	  [RangeLeft]		INT	NOT NULL,
 	  [RangeRight]		INT	NOT NULL,

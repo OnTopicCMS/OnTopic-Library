@@ -8,15 +8,15 @@
 CREATE PROCEDURE [dbo].[GetTopics]
 	@TopicID		int	= -1,
 	@DeepLoad		bit	= 1,
-	@TopicKey		nvarchar(255)	= null
+	@UniqueKey		nvarchar(255)	= null
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID IF UNKNOWN.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicKey IS NOT NULL
+IF @UniqueKey IS NOT NULL
   BEGIN
-    SET	@TopicID		= dbo.GetTopicID(@TopicKey)
+    SET	@TopicID		= dbo.GetTopicID(@UniqueKey)
   END
 
 IF @TopicID < 0
@@ -107,6 +107,11 @@ SELECT	Attributes.TopicID,
 FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
+WHERE	AttributeKey
+NOT IN (	'Key',
+	'ParentID',
+	'ContentType'
+)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT EXTENDED ATTRIBUTES

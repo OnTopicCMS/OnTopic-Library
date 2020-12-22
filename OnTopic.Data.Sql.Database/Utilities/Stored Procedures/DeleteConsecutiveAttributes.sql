@@ -31,7 +31,6 @@ WITH GroupedValues AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
-	DateModified,
 	Version,
 	ValueGroup = ROW_NUMBER() OVER(PARTITION BY TopicID, AttributeKey ORDER BY TopicID, AttributeKey, Version)
 	- ROW_NUMBER() OVER(PARTITION BY TopicID, AttributeKey, AttributeValue ORDER BY TopicID, AttributeKey, Version)
@@ -45,7 +44,6 @@ RankedValues AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
-	DateModified,
 	Version,
 	ValueGroup,
 	ValueRank = ROW_NUMBER() OVER(PARTITION BY ValueGroup, TopicID, AttributeKey, AttributeValue ORDER BY TopicID, AttributeKey, Version)
