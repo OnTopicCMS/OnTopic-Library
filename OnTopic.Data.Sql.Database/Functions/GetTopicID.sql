@@ -26,27 +26,20 @@ BEGIN
   ;WITH RCTE AS (
 
     SELECT	TopicID,
-	CAST(NULL AS NVARCHAR(255))	AS ParentID,
+	ParentID,
 	CAST('Root' AS NVARCHAR(255))	AS UniqueKey
     FROM	Topics		root
     WHERE	root.TopicID		= 1
 
     UNION	ALL
 
-    SELECT	p.TopicID,
-	p.AttributeValue	AS ParentID,
+    SELECT	Topics.TopicID,
+	Topics.ParentID,
 	CAST(recursive.UniqueKey + ':' + TopicKey AS NVARCHAR(255)) AS UniqueKey
-    FROM	Attributes		p
-    CROSS APPLY (
-      SELECT	AttributeValue		AS TopicKey
-      FROM	[dbo].[Attributes]	k
-      WHERE	k.TopicID		= p.TopicID
-        AND	k.AttributeKey		= 'Key'
-    )	TopicKey
+    FROM	Topics
     INNER JOIN	RCTE		recursive
-      ON	p.AttributeValue	= CAST(recursive.TopicID AS NVARCHAR(10))
-    WHERE	p.AttributeKey		= 'ParentID'
-      AND	@UniqueKey		LIKE CAST(recursive.UniqueKey + ':' + TopicKey AS NVARCHAR(255)) + '%'
+      ON	Topics.ParentID		= recursive.TopicID
+    WHERE	@UniqueKey		LIKE CAST(recursive.UniqueKey + ':' + TopicKey AS NVARCHAR(255)) + '%'
     )
   SELECT	@TopicID		= TopicID
   FROM	RCTE		AS hierarchy

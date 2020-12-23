@@ -40,7 +40,7 @@ BEGIN
       INSERT
       INTO	@Topics
       SELECT	TopicID
-      FROM	TopicIndex
+      FROM	Topics
       WHERE (	@AttributeKey		= 'Key'
         AND	TopicKey		= @AttributeValue
         OR	@AttributeKey		= 'ContentType'
