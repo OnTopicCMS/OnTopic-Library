@@ -32,7 +32,7 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "Page");
+      Assert.AreEqual<string>(topic.ContentType, "Page");
     }
 
     /*==========================================================================================================================
@@ -123,10 +123,7 @@ namespace OnTopic.Tests {
       childTopic.Parent         = parentTopic;
 
       Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
-      Assert.AreEqual<int>(
-        5,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(5, childTopic.Parent.Id);
 
     }
 
@@ -150,10 +147,7 @@ namespace OnTopic.Tests {
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
-      Assert.AreEqual<int>(
-        10,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(10, childTopic.Parent.Id);
 
     }
 
