@@ -64,6 +64,7 @@
   <ItemGroup>
     <None Include="README.md" />
     <None Include="Utilities\README.md" />
+    <None Include="Scripts\Upgrade from OnTopic 4 to OnTopic 5.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="OnTopic.Data.Sql.Database.refactorlog" />
@@ -71,6 +72,7 @@
   <ItemGroup>
     <Folder Include="Functions\" />
     <Folder Include="Properties" />
+    <Folder Include="Scripts\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Tables\" />
     <Folder Include="Types" />
