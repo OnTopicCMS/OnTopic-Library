@@ -346,5 +346,53 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | IS DIRTY: NEW TOPIC: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_NewTopic_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+
+      Assert.IsTrue(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExistingTopic_ReturnsFalse() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      Assert.IsFalse(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: CHANGE KEY: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
+    ///   Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ChangeKey_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      topic.Key                 = "NewTopic";
+
+      Assert.IsTrue(topic.IsDirty());
+
+    }
+
   } //Class
 } //Namespace

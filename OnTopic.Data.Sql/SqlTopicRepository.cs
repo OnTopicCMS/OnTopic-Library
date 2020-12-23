@@ -318,6 +318,7 @@ namespace OnTopic.Data.Sql {
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var areReferencesResolved = true;
+      var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
       var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: !areRelationshipsDirty);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
@@ -337,6 +338,7 @@ namespace OnTopic.Data.Sql {
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isDirty               =
+        isTopicDirty            ||
         areRelationshipsDirty   ||
         areAttributesDirty      ||
         indexedAttributeList.Any() ||
