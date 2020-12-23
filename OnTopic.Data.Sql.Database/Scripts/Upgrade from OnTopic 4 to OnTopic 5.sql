@@ -48,3 +48,11 @@ PIVOT (	MIN(AttributeValue)
 )	AS Pvt
 WHERE	RowNumber		= 1
 AND	Topics.TopicID		= Pvt.TopicID
+
+DELETE
+FROM	Attributes
+WHERE	AttributeKey
+IN (	'Key',
+	'ContentType',
+	'ParentID'
+)
