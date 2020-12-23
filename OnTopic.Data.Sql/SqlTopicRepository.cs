@@ -418,7 +418,6 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);

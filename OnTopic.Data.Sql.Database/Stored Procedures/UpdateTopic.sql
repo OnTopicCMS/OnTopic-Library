@@ -9,7 +9,6 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@Key		VARCHAR(128)		= NULL		,
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
-	@DeleteRelationships	BIT		= 0
 	@ExtendedAttributes	XML		= NULL		,
 	@Version		DATETIME		= NULL
 AS
