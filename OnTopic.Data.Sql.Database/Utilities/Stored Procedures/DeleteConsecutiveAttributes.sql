@@ -19,7 +19,7 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@Count	INT
 
-SELECT	@Count	= Count(TopicID)
+SELECT	@Count	= COUNT(TopicID)
 FROM	Attributes
 
 Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Attributes in the database.');
@@ -64,4 +64,3 @@ SELECT	@Count	= @Count - Count(TopicID)
 FROM	Attributes
 
 Print('Final Count: ' + CAST(@Count AS VARCHAR) + ' Attributes were identified and deleted.')
-

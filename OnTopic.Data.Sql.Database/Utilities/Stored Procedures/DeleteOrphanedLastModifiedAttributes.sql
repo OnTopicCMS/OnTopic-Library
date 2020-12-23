@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@Count	INT
 
-SELECT	@Count	= Count(TopicID)
+SELECT	@Count	= COUNT(TopicID)
 FROM	Attributes
 WHERE	AttributeKey	= 'LastModified'
 
@@ -41,14 +41,14 @@ LEFT JOIN	Attributes Unmatched
 LEFT JOIN	ExtendedAttributes UnmatchedExtended
   ON	Attributes.TopicID = UnmatchedExtended.TopicID
   AND	Attributes.Version = UnmatchedExtended.Version
-WHERE	Unmatched.AttributeKey is null
-  AND	UnmatchedExtended.TopicID is null
+WHERE	Unmatched.AttributeKey IS NULL
+  AND	UnmatchedExtended.TopicID IS NULL
   AND	Attributes.AttributeKey = 'LastModified'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CHECK FINAL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	@Count	= @Count - Count(TopicID)
+SELECT	@Count	= @Count - COUNT(TopicID)
 FROM	Attributes
 WHERE	AttributeKey	= 'LastModified'
 

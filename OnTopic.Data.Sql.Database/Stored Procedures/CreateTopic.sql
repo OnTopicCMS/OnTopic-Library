@@ -9,20 +9,20 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@ContentType		VARCHAR(128)		,
 	@ParentID		INT		= -1,
 	@Attributes		AttributeValues		READONLY,
-	@ExtendedAttributes 	Xml		= null,
-	@Version		datetime		= null
+	@ExtendedAttributes 	XML		= NULL,
+	@Version		DATETIME		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= getdate()
+SET	@Version		= GETUTCDATE()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@RangeRight		Integer	--Right Most Sibling
+DECLARE	@RangeRight		INT	--Right Most Sibling
 SET	@RangeRight		= 0
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ WHERE	AttributeKey		!= 'ParentID'
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES (XML)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @ExtendedAttributes is not null
+IF @ExtendedAttributes IS NOT NULL
   BEGIN
     INSERT
     INTO	ExtendedAttributes (

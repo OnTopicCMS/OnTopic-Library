@@ -9,9 +9,9 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@Key		VARCHAR(128)		= NULL		,
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
-	@ExtendedAttributes	XML		= null		,
-	@Version		DATETIME		= null		,
 	@DeleteRelationships	BIT		= 0
+	@ExtendedAttributes	XML		= NULL		,
+	@Version		DATETIME		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ CROSS APPLY (
     AND	AttributeKey		= New.AttributeKey
   ORDER BY	Version DESC
 )			Existing
-WHERE	IsNull(AttributeValue, '')	= ''
+WHERE	ISNULL(AttributeValue, '')	= ''
   AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
