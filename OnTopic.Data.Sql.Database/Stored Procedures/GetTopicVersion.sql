@@ -66,11 +66,6 @@ AS (
   FROM	Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND 	AttributeKey
-    NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-    )
 )
 SELECT	TopicID,
 	AttributeKey,

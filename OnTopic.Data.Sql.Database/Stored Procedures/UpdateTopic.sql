@@ -64,8 +64,7 @@ OUTER APPLY (
       AND	AttributeKey		= New.AttributeKey
     ORDER BY	Version		DESC
   )			Existing
-WHERE	AttributeKey		!= 'ParentId'
-  AND	ISNULL(AttributeValue, '')	!= ''
+WHERE	ISNULL(AttributeValue, '')	!= ''
   AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
 
 --------------------------------------------------------------------------------------------------------------------------------

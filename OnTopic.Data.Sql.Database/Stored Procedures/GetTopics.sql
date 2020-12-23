@@ -107,11 +107,6 @@ SELECT	Attributes.TopicID,
 FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
-WHERE	AttributeKey
-NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT EXTENDED ATTRIBUTES
