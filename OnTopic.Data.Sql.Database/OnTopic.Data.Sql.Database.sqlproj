@@ -89,7 +89,6 @@
     <Build Include="Functions\GetExtendedAttribute.sql" />
     <Build Include="Functions\GetParentID.sql" />
     <Build Include="Functions\GetTopicID.sql" />
-    <Build Include="Functions\GetTopicIDByUniqueKey.sql" />
     <Build Include="Functions\GetUniqueKey.sql" />
     <Build Include="Stored Procedures\CreateTopic.sql" />
     <Build Include="Stored Procedures\DeleteTopic.sql" />
@@ -119,7 +118,6 @@
     <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\ExtendedAttributeIndex.sql" />
-    <Build Include="Views\TopicIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
   </ItemGroup>
   <ItemGroup>
