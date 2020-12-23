@@ -6,6 +6,8 @@
 
 CREATE PROCEDURE [dbo].[UpdateTopic]
 	@TopicID		INT		= -1		,
+	@Key		VARCHAR(128)		= NULL		,
+	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
 	@ExtendedAttributes	XML		= null		,
 	@Version		DATETIME		= null		,
@@ -17,6 +19,28 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
 SET	@Version		= GetDate()
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE KEY ATTRIBUTES
+--------------------------------------------------------------------------------------------------------------------------------
+
+IF @Key IS NOT NULL OR @ContentType IS NOT NULL
+  BEGIN
+    UPDATE	Topics
+    SET	TopicKey		=
+      CASE
+        WHEN	@Key		IS NULL
+        THEN	TopicKey
+        ELSE	@Key
+      END,
+	ContentType		=
+      CASE
+        WHEN	@ContentType		IS NULL
+        THEN	TopicKey
+        ELSE	@ContentType
+      END
+    WHERE	TopicID		= @TopicID
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NEW ATTRIBUTES

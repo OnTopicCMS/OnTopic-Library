@@ -5,7 +5,9 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[CreateTopic]
-	@ParentID		int		= -1,
+	@Key		VARCHAR(128)		,
+	@ContentType		VARCHAR(128)		,
+	@ParentID		INT		= -1,
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	Xml		= null,
 	@Version		datetime		= null
@@ -53,11 +55,17 @@ IF (@ParentID > -1)
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO	Topics (
 	RangeLeft,
-	RangeRight
+	RangeRight,
+	TopicKey,
+	ContentType,
+	ParentID
 )
 Values (
 	@RangeRight,
-	@RangeRight		+ 1
+	@RangeRight		+ 1,
+	@Key,
+	@ContentType,
+	@ParentID
 )
 
 DECLARE	@TopicID		INT

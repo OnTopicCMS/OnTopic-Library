@@ -423,6 +423,8 @@ namespace OnTopic.Data.Sql {
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
+      command.AddParameter("Key", topic.Key);
+      command.AddParameter("ContentType", topic.ContentType);
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddParameter("Attributes", attributeValues);
