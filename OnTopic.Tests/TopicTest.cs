@@ -62,9 +62,6 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
 
-      Assert.AreEqual<int>(123, topic.Id);
-      Assert.AreNotEqual<int>(124, topic.Id);
-
     }
 
     /*==========================================================================================================================
