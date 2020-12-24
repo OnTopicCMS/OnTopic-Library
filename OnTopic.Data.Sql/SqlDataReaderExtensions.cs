@@ -276,7 +276,7 @@ namespace OnTopic.Data.Sql {
         if (String.IsNullOrEmpty(attributeValue)) continue;
         current.Attributes.SetValue(attributeKey, attributeValue, false, version, true);
 
-      } while (xmlReader.Name == "attribute");
+      } while (xmlReader.Name is "attribute");
 
     }
 
@@ -313,12 +313,12 @@ namespace OnTopic.Data.Sql {
       }
 
       // Bypass if either of the objects are missing
-      if (related == null) return;
+      if (related is null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related, isIncoming: false, isDirty: false);
+      current.Relationships.SetTopic(relationshipKey, related, isDirty: false);
 
     }
 

@@ -25,12 +25,13 @@ namespace OnTopic.Tests {
     | TEST: GET VALUE: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a new topic and ensures that the key can be returned as an attribute.
+    ///   Creates a new attribute via an <c>[AttributeSetter]</c> and ensures that the attribute can be returned.
     /// </summary>
     [TestMethod]
     public void GetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
-      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
+      topic.View = "Test";
+      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("View"));
     }
 
     /*==========================================================================================================================
@@ -287,7 +288,8 @@ namespace OnTopic.Tests {
     | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of a custom attribute to the existing value and ensures it is <i>not</i> marked as IsDirty.
+    ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
+    ///   <see cref="AttributeValue.IsDirty"/>.
     /// </summary>
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
@@ -307,7 +309,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
     ///   cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
-    ///   <c>true</c>/
+    ///   <c>true</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_DirtyValues_ReturnsTrue() {
@@ -315,6 +317,25 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       topic.Attributes.SetValue("Foo", "Bar");
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: DELETED VALUES: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_DeletedValues_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.Remove("Foo");
 
       Assert.IsTrue(topic.Attributes.IsDirty());
 
@@ -361,6 +382,72 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: UPDATES LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that the <see cref="AttributeValue.LastModified"/> returns the new <c>version</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_UpdatesLastModified() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+      var version = DateTime.Now.AddDays(5);
+
+      topic.Attributes.SetValue("Baz", "Foo");
+      topic.Attributes.MarkClean(version);
+      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
+
+      Assert.AreEqual<DateTime>(version, cleanedAttribute.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.SetValue("Baz", "Foo");
+
+      topic.Attributes.Remove("Foo");
+
+      topic.Attributes.MarkClean();
+
+      Assert.IsFalse(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK ATTRIBUTE CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then confirms that <see
+    ///   cref="AttributeValueCollection.IsDirty(String)"/> returns <c>false</c> for that attribute after calling <see cref="
+    ///   AttributeValueCollection.MarkClean(String, DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkAttributeClean_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.MarkClean("Foo");
+
+      Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INVALID VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -369,11 +456,11 @@ namespace OnTopic.Tests {
     [TestMethod]
     [ExpectedException(
       typeof(TargetInvocationException),
-      "The topic allowed a key to be set via a back door, without routing it through the Key property."
+      "The topic allowed a view to be set via a back door, without routing it through the View property."
     )]
     public void SetValue_InvalidValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.SetValue("Key", "# ?");
+      topic.Attributes.SetValue("View", "# ?");
     }
 
     /*==========================================================================================================================
@@ -388,10 +475,9 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new AttributeValue("Key", "NewKey", false));
+      topic.Attributes.Add(new("View", "NewKey", false));
 
-      Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<string>("NewKey", topic.View);
 
     }
 
@@ -408,8 +494,36 @@ namespace OnTopic.Tests {
     )]
     public void Add_InvalidAttributeValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new AttributeValue("Key", "# ?"));
+      topic.Attributes.Add(new("View", "# ?"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: REPLACE VALUE: WITH BUSINESS LOGIC: MAINTAINS ISDIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
+    ///   "AttributeValueCollection"/> and confirms that the original <see cref="AttributeValue.IsDirty"/> is replaced if the
+    ///   <see cref="AttributeValue.Value"/> changes.
+    /// </summary>
+    [TestMethod]
+    public void Add_WithBusinessLogic_MaintainsIsDirty() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.View = "Test";
+      topic.Attributes.TryGetValue("View", out var originalValue);
+
+      var index = topic.Attributes.IndexOf(originalValue);
+
+      topic.Attributes[index] = new AttributeValue("View", "NewValue", false);
+      topic.Attributes.TryGetValue("View", out var newAttribute);
+
+      topic.Attributes.SetValue("View", "NewerValue", false);
+      topic.Attributes.TryGetValue("View", out var newerAttribute);
+
+      Assert.IsFalse(newAttribute.IsDirty);
+      Assert.IsFalse(newerAttribute.IsDirty);
+
     }
 
     /*==========================================================================================================================

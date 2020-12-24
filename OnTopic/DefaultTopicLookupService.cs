@@ -45,6 +45,8 @@ namespace OnTopic {
       TryAdd(typeof(FileListAttribute));
       TryAdd(typeof(FilePathAttribute));
       TryAdd(typeof(HtmlAttribute));
+      TryAdd(typeof(IncomingRelationshipAttribute));
+      TryAdd(typeof(InstructionAttribute));
       TryAdd(typeof(LastModifiedAttribute));
       TryAdd(typeof(LastModifiedByAttribute));
       TryAdd(typeof(NestedTopicListAttribute));

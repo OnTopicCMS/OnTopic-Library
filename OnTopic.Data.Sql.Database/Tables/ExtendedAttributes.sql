@@ -8,7 +8,7 @@
 CREATE
 TABLE	[dbo].[ExtendedAttributes] (
 	  [TopicID]		INT	NOT NULL,
-	  [AttributesXml]		XML	NOT NULL,
+	  [AttributesXml]	XML	NOT NULL,
 	  [DateModified]	DATETIME
   CONSTRAINT	  [DF_ExtendedAttributes_DateModified]	DEFAULT (
 			  GetDate()

@@ -33,7 +33,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new TypeMemberInfoCollection();
+    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -60,7 +60,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
     public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new MappedTopicCache()).ConfigureAwait(false);
+      await MapAsync(topic, relationships, new()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -97,9 +97,11 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled) {
+      #pragma warning disable IDE0078 // Use pattern matching
+      if (topic is null || topic is { IsDisabled: true }) {
         return null;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
@@ -120,7 +122,7 @@ namespace OnTopic.Mapping {
 
         var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
 
-        if (viewModelType == null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
+        if (viewModelType is null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
           throw new InvalidOperationException(
             $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
             $"to map the topic '{topic.GetUniqueKey()}'."
@@ -155,7 +157,7 @@ namespace OnTopic.Mapping {
     /// <inheritdoc />
     public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
       Contract.Requires(target, nameof(target));
-      return await MapAsync(topic, target, relationships, new MappedTopicCache()).ConfigureAwait(false);
+      return await MapAsync(topic, target, relationships, new()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -185,9 +187,11 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null || topic.IsDisabled) {
+      #pragma warning disable IDE0078 // Use pattern matching
+      if (topic is null || topic is { IsDisabled: true }) {
         return target;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle topics
@@ -282,7 +286,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!mapRelationshipsOnly && configuration.DefaultValue != null) {
+      if (!mapRelationshipsOnly && configuration.DefaultValue is not null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
@@ -301,14 +305,14 @@ namespace OnTopic.Mapping {
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
         await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
       }
-      else if (configuration.AttributeKey == "Parent" && relationships.HasFlag(Relationships.Parents)) {
-        if (source.Parent != null) {
+      else if (configuration.AttributeKey is "Parent" && relationships.HasFlag(Relationships.Parents)) {
+        if (source.Parent is not null) {
           await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
         }
       }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
         var topicReference = _topicRepository.Load(topicReferenceId);
-        if (topicReference != null) {
+        if (topicReference is not null) {
           await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
         }
       }
@@ -390,7 +394,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assuming a value was retrieved, set it
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue != null) {
+      if (attributeValue is not null) {
         _typeCache.SetPropertyValue(target, configuration.Property.Name, attributeValue);
       }
 
@@ -443,7 +447,7 @@ namespace OnTopic.Mapping {
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
       var targetList = (IList)configuration.Property.GetValue(target, null);
-      if (targetList == null) {
+      if (targetList is null) {
         targetList = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
         configuration.Property.SetValue(target, targetList);
       }
@@ -456,7 +460,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceList == null) return;
+      if (sourceList is null) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map the topics from the source collection, and add them to the target collection
@@ -545,7 +549,7 @@ namespace OnTopic.Mapping {
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
         var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
-        if (sourceProperty != null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
+        if (sourceProperty is not null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
           if (
             sourceProperty.GetValue(source) is IList sourcePropertyValue &&
             sourcePropertyValue.Count > 0 &&
@@ -566,7 +570,7 @@ namespace OnTopic.Mapping {
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
         var metadataParent = _topicRepository.Load(metadataKey);
-        if (metadataParent != null) {
+        if (metadataParent is not null) {
           listSource = metadataParent.Children.ToList();
         }
       }
@@ -589,9 +593,9 @@ namespace OnTopic.Mapping {
         var targetRelationships = RelationshipMap.Mappings[relationship];
         var preconditionsMet    =
           listSource.Count == 0 &&
-          (relationshipType.Equals(RelationshipType.Any) || relationshipType.Equals(relationship)) &&
-          (relationshipType.Equals(RelationshipType.Children) || !relationship.Equals(RelationshipType.Children)) &&
-          (targetRelationships.Equals(Relationships.None) || relationships.HasFlag(targetRelationships)) &&
+          (relationshipType is RelationshipType.Any || relationshipType.Equals(relationship)) &&
+          (relationshipType is RelationshipType.Children || relationship is not RelationshipType.Children) &&
+          (targetRelationships is Relationships.None || relationships.HasFlag(targetRelationships)) &&
           contains(configuration.RelationshipKey);
         return preconditionsMet? getTopics() : listSource;
       }
@@ -646,8 +650,15 @@ namespace OnTopic.Mapping {
           continue;
         }
 
+        if (
+          configuration.ContentTypeFilter is not null &&
+          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
+        ) {
+          continue;
+        }
+
         //Skip nested topics; those should be explicitly mapped to their own collection or topic reference
-        if (childTopic.ContentType.Equals("List", StringComparison.InvariantCultureIgnoreCase)) {
+        if (childTopic.ContentType.Equals("List", StringComparison.OrdinalIgnoreCase)) {
           continue;
         }
 
@@ -677,7 +688,7 @@ namespace OnTopic.Mapping {
         var dtoTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        if (dto != null) {
+        if (dto is not null) {
           AddToList(dto);
         }
       }
@@ -686,16 +697,14 @@ namespace OnTopic.Mapping {
       | Function: Add to List
       \-----------------------------------------------------------------------------------------------------------------------*/
       void AddToList(object dto) {
-        if (dto != null && listType.IsAssignableFrom(dto.GetType())) {
+        if (dto is not null && listType.IsAssignableFrom(dto.GetType())) {
           try {
             targetList.Add(dto);
           }
-          #pragma warning disable CA1031 // Do not catch general exception types
           catch (ArgumentException) {
             //Ignore exceptions caused by duplicate keys, in case the IList represents a keyed collection
             //We would defensively check for this, except IList doesn't provide a suitable method to do so
           }
-          #pragma warning restore CA1031 // Do not catch general exception types
         }
       }
 
@@ -735,12 +744,10 @@ namespace OnTopic.Mapping {
       try {
         topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       }
-      #pragma warning disable CA1031 // Do not catch general exception types
       catch (InvalidOperationException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
       }
-      #pragma warning restore CA1031 // Do not catch general exception types
-      if (topicDto != null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
+      if (topicDto is not null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {
         configuration.Property.SetValue(target, topicDto);
       }
     }
@@ -766,7 +773,7 @@ namespace OnTopic.Mapping {
       | Validate source properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (source.IsDisabled) return targetList;
-      if (source.ContentType == "List" && !includeNestedTopics) return targetList;
+      if (source.ContentType is "List" && !includeNestedTopics) return targetList;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Merge source list into target list
@@ -809,7 +816,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Escape clause if preconditions are not met
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (sourceProperty == null || !configuration.Property.PropertyType.IsAssignableFrom(sourceProperty.PropertyType)) {
+      if (sourceProperty is null || !configuration.Property.PropertyType.IsAssignableFrom(sourceProperty.PropertyType)) {
         return false;
       }
 

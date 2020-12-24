@@ -64,7 +64,7 @@ namespace OnTopic.Tests {
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
 
       Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
-      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
+      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count());
       Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
 
     }
@@ -83,7 +83,7 @@ namespace OnTopic.Tests {
       var grandChildTopic       = TopicFactory.Create("GrandChildTopic", "Page", 20, childTopic);
       var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", 7, grandChildTopic);
 
-      var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id.Equals(5));
+      var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
       Assert.ReferenceEquals(childTopic, foundTopic);
 

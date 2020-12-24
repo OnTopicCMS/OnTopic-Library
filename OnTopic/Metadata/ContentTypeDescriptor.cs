@@ -20,8 +20,7 @@ namespace OnTopic.Metadata {
   /// <remarks>
   ///   <para>
   ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-  ///     Editor (via the <see cref="AttributeDescriptors"/> property). The content type also determines, by default, which view
-  ///     is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten down the pipe).
+  ///     Editor (via the <see cref="AttributeDescriptors"/> property).
   ///   </para>
   ///   <para>
   ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of
@@ -126,7 +125,7 @@ namespace OnTopic.Metadata {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean, Boolean?)"/>.
+    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean?)"/>.
     ///   </para>
     /// </remarks>
     public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
@@ -135,13 +134,13 @@ namespace OnTopic.Metadata {
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
-        if (_permittedContentTypes == null) {
+        if (_permittedContentTypes is null) {
           var permittedContentTypes = new TopicCollection<ContentTypeDescriptor>();
           var contentTypes = Relationships.GetTopics("ContentTypes");
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
-          _permittedContentTypes = new ReadOnlyTopicCollection<ContentTypeDescriptor>(permittedContentTypes);
+          _permittedContentTypes = new(permittedContentTypes);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -168,12 +167,12 @@ namespace OnTopic.Metadata {
     public AttributeDescriptorCollection AttributeDescriptors {
       get {
 
-        if (_attributeDescriptors == null) {
+        if (_attributeDescriptors is null) {
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Create new instance
           \-------------------------------------------------------------------------------------------------------------------*/
-          _attributeDescriptors = new AttributeDescriptorCollection();
+          _attributeDescriptors = new();
 
           /*--------------------------------------------------------------------------------------------------------------------
           | Get values from self
@@ -195,7 +194,7 @@ namespace OnTopic.Metadata {
           | Get values from parent
           \-------------------------------------------------------------------------------------------------------------------*/
           var parent = Parent as ContentTypeDescriptor;
-          if (parent?.AttributeDescriptors != null) {
+          if (parent?.AttributeDescriptors is not null) {
             foreach (var attribute in parent.AttributeDescriptors) {
               if (!_attributeDescriptors.Contains(attribute.Key)) {
                 _attributeDescriptors.Add(attribute);
@@ -276,8 +275,8 @@ namespace OnTopic.Metadata {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var contentType = (ContentTypeDescriptor?)this;
 
-      while (contentType != null) {
-        if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
+      while (contentType is not null) {
+        if (contentType.Key.Equals(contentTypeName, StringComparison.OrdinalIgnoreCase)) {
           return true;
         }
         contentType = contentType.Parent as ContentTypeDescriptor;

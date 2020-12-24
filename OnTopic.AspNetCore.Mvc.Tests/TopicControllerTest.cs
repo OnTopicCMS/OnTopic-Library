@@ -73,7 +73,7 @@ namespace OnTopic.Tests {
         RouteData               = routes,
         ActionDescriptor        = new ControllerActionDescriptor()
       };
-      _context                  = new ControllerContext(actionContext);
+      _context                  = new(actionContext);
 
     }
 
@@ -131,11 +131,11 @@ namespace OnTopic.Tests {
 
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
-        RouteData               = new RouteData(),
+        RouteData               = new(),
         ActionDescriptor        = new ControllerActionDescriptor()
       };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new ControllerContext(actionContext)
+        ControllerContext       = new(actionContext)
       };
       var result                = controller.Index() as ContentResult;
       var model                 = result.Content as string;
@@ -145,6 +145,90 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(model);
       Assert.IsTrue(model.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"));
       Assert.IsTrue(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action and verifies that it properly
+    ///   excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
+    /// </summary>
+    [TestMethod]
+    public void SitemapController_Index_ExcludesContentTypes() {
+
+      var hiddenTopic1          = _topicRepository.Load("Root:Web:Web_1:Web_1_0")!;
+      var hiddenTopic2          = _topicRepository.Load("Root:Web:Web_1:Web_1_1")!;
+      var hiddenTopic3          = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_1")!;
+      var hiddenTopic4          = _topicRepository.Load("Root:Web:Web_0:Web_0_0")!;
+
+      hiddenTopic1.ContentType  = "List";
+      hiddenTopic2.ContentType  = "Container";
+      hiddenTopic3.ContentType  = "PageGroup";
+      hiddenTopic4.Attributes.SetValue("Url", "https://www.microsoft.com/");
+
+      var actionContext         = new ActionContext {
+        HttpContext             = new DefaultHttpContext(),
+        RouteData               = new(),
+        ActionDescriptor        = new ControllerActionDescriptor()
+      };
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(actionContext)
+      };
+      var result                = controller.Index(false, true) as ContentResult;
+      var model                 = result.Content as string;
+
+      controller.Dispose();
+
+      Assert.IsNotNull(model);
+      Assert.IsTrue(model.Contains("<DataObject type=\"Page\">"));
+      Assert.IsFalse(model.Contains("<DataObject type=\"List\">"));
+      Assert.IsFalse(model.Contains("<DataObject type=\"Container\">"));
+      Assert.IsFalse(model.Contains("<DataObject type=\"PageGroup\">"));
+      Assert.IsTrue(model.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>"));
+      Assert.IsTrue(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>"));
+      Assert.IsFalse(model.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>"));
+      Assert.IsFalse(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
+      Assert.IsFalse(model.Contains("/Web/Web_0/Web_0_0/</loc>"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action and verifies that it properly
+    ///   excludes the <c>Body</c> and <c>IsHidden</c> attributes.
+    /// </summary>
+    [TestMethod]
+    public void SitemapController_Index_ExcludesAttributes() {
+
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
+
+      topic.Attributes.SetValue("Title", "Title");
+      topic.Attributes.SetValue("LastModified", "December 23, 1918");
+      topic.Attributes.SetValue("Body", "Body");
+      topic.Attributes.SetValue("IsHidden", "0");
+
+      var actionContext         = new ActionContext {
+        HttpContext             = new DefaultHttpContext(),
+        RouteData               = new(),
+        ActionDescriptor        = new ControllerActionDescriptor()
+      };
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(actionContext)
+      };
+      var result                = controller.Index(false, true) as ContentResult;
+      var model                 = result.Content as string;
+
+      controller.Dispose();
+
+      Assert.IsNotNull(model);
+      Assert.IsTrue(model.Contains("<Attribute name=\"Title\">"));
+      Assert.IsTrue(model.Contains("<Attribute name=\"LastModified\">"));
+      Assert.IsFalse(model.Contains("<Attribute name=\"Body\">"));
+      Assert.IsFalse(model.Contains("<Attribute name=\"IsHidden\">"));
 
     }
 

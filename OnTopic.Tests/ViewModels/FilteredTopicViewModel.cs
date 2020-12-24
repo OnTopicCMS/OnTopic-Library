@@ -20,9 +20,9 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class FilteredTopicViewModel {
 
-    [FilterByAttribute("ContentType", "Page")]
     [FilterByAttribute("SomeAttribute", "ValueA")]
-    public TopicViewModelCollection<TopicViewModel> Children { get; } = new TopicViewModelCollection<TopicViewModel>();
+    [FilterByAttribute("SomeOtherAttribute", "ValueB")]
+    public TopicViewModelCollection<TopicViewModel> Children { get; } = new();
 
   } //Class
 } //Namespace

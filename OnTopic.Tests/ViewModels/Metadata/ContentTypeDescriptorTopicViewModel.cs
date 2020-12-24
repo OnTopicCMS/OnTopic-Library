@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels.Metadata {
@@ -20,13 +20,11 @@ namespace OnTopic.Tests.ViewModels.Metadata {
   /// </remarks>
   public class ContentTypeDescriptorTopicViewModel {
 
-    public List<AttributeDescriptorTopicViewModel> AttributeDescriptors
-      { get; } = new List<AttributeDescriptorTopicViewModel>();
+    public Collection<AttributeDescriptorTopicViewModel> AttributeDescriptors { get; } = new();
 
     [Relationship(RelationshipType.MappedCollection)]
     [Follow(Relationships.None)]
-    public List<ContentTypeDescriptorTopicViewModel> PermittedContentTypes
-      { get; } = new List<ContentTypeDescriptorTopicViewModel>();
+    public Collection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes { get; } = new();
 
   } //Class
 } //Namespace

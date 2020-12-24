@@ -4,10 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
-using OnTopic.ViewModels;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -26,7 +25,7 @@ namespace OnTopic.Tests.ViewModels {
 
     public ModelType ModelType { get; set; }
 
-    public List<DateTime>? VersionHistory { get; set; }
+    public Collection<DateTime>? VersionHistory { get; set; }
 
   } //Class
 } //Namespace

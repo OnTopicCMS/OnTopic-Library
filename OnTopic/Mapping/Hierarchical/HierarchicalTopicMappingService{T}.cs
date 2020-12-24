@@ -74,7 +74,7 @@ namespace OnTopic.Mapping.Hierarchical {
     | GET HIERARCHICAL ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Web") {
+    public Topic? GetHierarchicalRoot(Topic? currentTopic, int fromRoot = 2, string defaultRoot = "Root:Web") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -84,11 +84,11 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle default, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic == null) {
+      if (navigationRootTopic is null) {
         if (String.IsNullOrEmpty(defaultRoot)) {
           throw new ArgumentOutOfRangeException(
             nameof(defaultRoot),
-            "The current route could not be resolved to a topic and the defaultRoot was not set."
+            $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
           );
         }
         navigationRootTopic = TopicRepository.Load(defaultRoot);
@@ -97,17 +97,17 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle error state
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (navigationRootTopic == null) {
+      if (navigationRootTopic is null) {
         throw new ArgumentOutOfRangeException(
           nameof(defaultRoot),
-          "Neither the current route nor the 'defaultRoot' parameter could be resolved to a topic."
+          $"Neither the current route nor the {nameof(defaultRoot)} parameter of {defaultRoot} could be resolved to a topic."
         );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find navigation root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      while (navigationRootTopic != null && DistanceFromRoot(navigationRootTopic) > fromRoot) {
+      while (navigationRootTopic is not null && DistanceFromRoot(navigationRootTopic) > fromRoot) {
         navigationRootTopic = navigationRootTopic.Parent;
       }
 
@@ -127,7 +127,7 @@ namespace OnTopic.Mapping.Hierarchical {
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
     private static int DistanceFromRoot(Topic? sourceTopic) {
       var distance = 1;
-      while (sourceTopic?.Parent != null) {
+      while (sourceTopic?.Parent is not null) {
         sourceTopic = sourceTopic.Parent;
         distance++;
       }
@@ -158,7 +158,7 @@ namespace OnTopic.Mapping.Hierarchical {
       | Validate preconditions
       \-----------------------------------------------------------------------------------------------------------------------*/
       tiers--;
-      if (sourceTopic == null) {
+      if (sourceTopic is null) {
         return null;
       }
 
@@ -172,7 +172,7 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default delegate
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (validationDelegate == null) {
+      if (validationDelegate is null) {
         validationDelegate = (Topic) => true;
       }
 
@@ -189,8 +189,8 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Request mapping of children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (tiers >= 0 && validationDelegate(sourceTopic) && viewModel.Children.Count == 0) {
-        foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible())) {
+      if (tiers >= 0 && viewModel.Children.Count == 0) {
+        foreach (var topic in sourceTopic.Children.Where(t => t.IsVisible() && validationDelegate(t))) {
           taskQueue.Add(GetViewModelAsync(topic, tiers, validationDelegate));
         }
       }
@@ -202,7 +202,7 @@ namespace OnTopic.Mapping.Hierarchical {
         var dtoTask             = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         var dto                 = await dtoTask.ConfigureAwait(false);
         taskQueue.Remove(dtoTask);
-        if (dto != null) {
+        if (dto is not null) {
           children.Add(dto);
         }
       }
@@ -212,9 +212,11 @@ namespace OnTopic.Mapping.Hierarchical {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (viewModel.Children.Count == 0) {
         lock (viewModel) {
+          #pragma warning disable CA1508 // Avoid dead conditional code
           if (viewModel.Children.Count == 0) {
             children.ForEach(c => viewModel.Children.Add(c));
           }
+          #pragma warning restore CA1508 // Avoid dead conditional code
         }
       }
 

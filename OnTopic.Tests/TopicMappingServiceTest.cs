@@ -37,6 +37,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITypeLookupService              _typeLookupService;
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _mappingService;
 
@@ -53,8 +54,21 @@ namespace OnTopic.Tests {
     ///   crawling the object graph.
     /// </remarks>
     public TopicMappingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
-      _mappingService = new TopicMappingService(new DummyTopicRepository(), new FakeViewModelLookupService());
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Create composite topic lookup service
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _typeLookupService        = new CompositeTypeLookupService(
+        new TopicViewModelLookupService(),
+        new FakeViewModelLookupService()
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Assemble dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
+      _mappingService           = new TopicMappingService(new DummyTopicRepository(), _typeLookupService);
+
     }
 
     /*==========================================================================================================================
@@ -237,8 +251,8 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int?>(43, target.NullableInteger);
       Assert.AreEqual<double?>(3.14159265359, target.NullableDouble);
       Assert.AreEqual<bool?>(true, target.NullableBoolean);
-      Assert.AreEqual<DateTime?>(new DateTime(1976, 10, 15), target.NullableDateTime);
-      Assert.AreEqual<Uri?>(new Uri("/Web/Path/File?Query=String", UriKind.RelativeOrAbsolute), target.NullableUrl);
+      Assert.AreEqual<DateTime?>(new(1976, 10, 15), target.NullableDateTime);
+      Assert.AreEqual<Uri?>(new("/Web/Path/File?Query=String", UriKind.RelativeOrAbsolute), target.NullableUrl);
 
       Assert.AreEqual<string?>(topic.Title, target.Title);
       Assert.AreEqual<bool?>(target.IsHidden, target.IsHidden);
@@ -476,7 +490,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_TopicReferences_ReturnsMappedModel() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
@@ -614,7 +628,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
       var target                = (MetadataLookupTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
@@ -643,14 +657,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    | TEST: MAP: FILTER BY COLLECTION TYPE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
     ///   cref="DescendentTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+    public async Task Map_FilterByCollectionType_ReturnsFilteredCollection() {
 
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
@@ -701,7 +715,7 @@ namespace OnTopic.Tests {
 
       var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
 
-      topic.VersionHistory.Add(new DateTime(1976, 10, 15, 9, 30, 00));
+      topic.VersionHistory.Add(new(1976, 10, 15, 9, 30, 00));
 
       var target                = await _mappingService.MapAsync<CompatiblePropertyTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -818,9 +832,38 @@ namespace OnTopic.Tests {
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
-      childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
+      childTopic4.Attributes.SetValue("SomeAttribute", "ValueA");
+
+      childTopic1.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic2.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic3.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+      childTopic4.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+
 
       var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="FilteredTopicViewModel.Children"/> property can be filtered using a <see cref="FilterByContentTypeAttribute"/>
+    ///   instances.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+
+      var topic                 = TopicFactory.Create("Test", "Filtered");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+
+      var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
 

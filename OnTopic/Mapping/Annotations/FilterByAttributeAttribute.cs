@@ -28,12 +28,12 @@ namespace OnTopic.Mapping.Annotations {
     ///   Annotates a property with the <see cref="FilterByAttributeAttribute"/> class by providing a (required) attribute key
     ///   and value.
     /// </summary>
-    /// <param name="attributeKey">The key of the attribute to filter by.</param>
-    /// <param name="attributeValue">The value of the attribute to filter by.</param>
-    public FilterByAttributeAttribute(string attributeKey, string attributeValue) {
-      TopicFactory.ValidateKey(attributeKey, false);
-      Key = attributeKey;
-      Value = attributeValue;
+    /// <param name="key">The key of the attribute to filter by.</param>
+    /// <param name="value">The value of the attribute to filter by.</param>
+    public FilterByAttributeAttribute(string key, string value) {
+      TopicFactory.ValidateKey(key, false);
+      Key = key;
+      Value = value;
     }
 
     /*==========================================================================================================================

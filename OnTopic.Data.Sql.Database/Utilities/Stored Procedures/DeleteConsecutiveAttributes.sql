@@ -19,7 +19,7 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@Count	INT
 
-SELECT	@Count	= Count(TopicID)
+SELECT	@Count	= COUNT(TopicID)
 FROM	Attributes
 
 Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Attributes in the database.');
@@ -31,7 +31,6 @@ WITH GroupedValues AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
-	DateModified,
 	Version,
 	ValueGroup = ROW_NUMBER() OVER(PARTITION BY TopicID, AttributeKey ORDER BY TopicID, AttributeKey, Version)
 	- ROW_NUMBER() OVER(PARTITION BY TopicID, AttributeKey, AttributeValue ORDER BY TopicID, AttributeKey, Version)
@@ -45,7 +44,6 @@ RankedValues AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
-	DateModified,
 	Version,
 	ValueGroup,
 	ValueRank = ROW_NUMBER() OVER(PARTITION BY ValueGroup, TopicID, AttributeKey, AttributeValue ORDER BY TopicID, AttributeKey, Version)
@@ -66,4 +64,3 @@ SELECT	@Count	= @Count - Count(TopicID)
 FROM	Attributes
 
 Print('Final Count: ' + CAST(@Count AS VARCHAR) + ' Attributes were identified and deleted.')
-

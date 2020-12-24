@@ -28,8 +28,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache =
-      new ConcurrentDictionary<(int, Type?, Relationships), object>();
+    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -51,7 +50,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return null;
+      if (topic is null) return null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -69,7 +68,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (viewModel == null) {
+      if (viewModel is null) {
         return null;
       }
       return CacheViewModel(
@@ -89,7 +88,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return null;
+      if (topic is null) return null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
@@ -107,7 +106,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (viewModel == null) {
+      if (viewModel is null) {
         return null;
       }
       return CacheViewModel(
@@ -127,7 +126,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return null;
+      if (topic is null) return null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -150,7 +149,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (viewModel == null) {
+      if (viewModel is null) {
         return null;
       }
       return CacheViewModel(
@@ -200,10 +199,10 @@ namespace OnTopic.Mapping {
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
     private object? CacheViewModel(string contentType, object viewModel, (int, Type?, Relationships) cacheKey) {
-      if (cacheKey.Item1 > 0 && cacheKey.Item2 != null && !viewModel.GetType().Equals(typeof(object))) {
+      if (cacheKey.Item1 > 0 && cacheKey.Item2 is not null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
       }
-      if (cacheKey.Item2 != null) {
+      if (cacheKey.Item2 is not null) {
         cacheKey = (cacheKey.Item1, null, cacheKey.Item3);
       }
       if (cacheKey.Item1 > 0 && viewModel.GetType().Name == $"{contentType}TopicViewModel") {

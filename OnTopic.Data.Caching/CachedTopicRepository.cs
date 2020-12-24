@@ -96,13 +96,13 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey != null && !topicKey.Length.Equals(0)) {
-        return _cache.GetByUniqueKey(topicKey);
+      if (uniqueKey is not null && uniqueKey.Length is not 0) {
+        return _cache.GetByUniqueKey(uniqueKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -135,8 +135,8 @@ namespace OnTopic.Data.Caching {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) =>
-      _dataProvider.Save(topic, isRecursive, isDraft);
+    public override int Save(Topic topic, bool isRecursive = false) =>
+      _dataProvider.Save(topic, isRecursive);
 
     /*==========================================================================================================================
     | METHOD: MOVE

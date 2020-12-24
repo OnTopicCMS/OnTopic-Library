@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
-#pragma warning disable CS0618 // Type or member is obsolete; supresses known issue with helper methods being moved to private
-
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
   /*============================================================================================================================
@@ -41,9 +39,17 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     | EXCLUDE CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Specifies what content types should not be listed in the sitemap.
+    ///   Specifies what content types should not be listed in the sitemap, including any descendents.
     /// </summary>
     private static string[] ExcludeContentTypes { get; } = { "List" };
+
+    /*==========================================================================================================================
+    | SKIPPED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Specifies what content types should not be listed in the sitemap—but whose descendents should still be evaluated.
+    /// </summary>
+    private static string[] SkippedContentTypes { get; } = { "PageGroup", "Container" };
 
     /*==========================================================================================================================
     | EXCLUDE ATTRIBUTES
@@ -53,13 +59,11 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     private static string[] ExcludeAttributes { get; } = {
       "Body",
-      "IsActive",
       "IsDisabled",
       "ParentID",
       "TopicID",
       "IsHidden",
       "NoIndex",
-      "URL",
       "SortOrder"
     };
 
@@ -144,9 +148,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
-      new XDocument(
+    private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
+      new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
           select AddTopic(topic, includeMetadata)
@@ -161,8 +164,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
-    [Obsolete("The AddTopic() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
+    private IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish return collection
@@ -172,10 +174,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) return topics;
-      if (topic.Attributes.GetValue("NoIndex") == "1") return topics;
-      if (topic.Attributes.GetValue("IsDisabled") == "1") return topics;
-      if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.InvariantCultureIgnoreCase))) return topics;
+      if (topic is null) return topics;
+      if (topic.Attributes.GetValue("NoIndex") is "1") return topics;
+      if (topic.Attributes.GetValue("IsDisabled") is "1") return topics;
+      if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -199,7 +201,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
           getRelationships()
         ) : null
       );
-      if (!topic.ContentType!.Equals("Container", StringComparison.InvariantCultureIgnoreCase)) {
+      if (
+        !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
+        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url"))
+      ) {
         topics.Add(topicElement);
       }
 
@@ -217,7 +222,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       \-----------------------------------------------------------------------------------------------------------------------*/
       IEnumerable<XElement> getAttributes() =>
         from attribute in topic.Attributes
-        where !ExcludeAttributes.Contains(attribute.Key, StringComparer.InvariantCultureIgnoreCase)
+        where !ExcludeAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
         where topic.Attributes.GetValue(attribute.Key)?.Length < 256
         select new XElement(_pagemapNamespace + "Attribute",
           new XAttribute("name", attribute.Key),
@@ -242,5 +247,3 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS0618 // Type or member is obsolete

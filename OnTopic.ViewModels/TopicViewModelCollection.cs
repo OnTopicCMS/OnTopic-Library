@@ -40,7 +40,7 @@ namespace OnTopic.ViewModels {
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicViewModelCollection(IEnumerable<TItem>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      if (topics != null) {
+      if (topics is not null) {
         foreach (var item in topics) {
           Add(item);
         }
@@ -56,13 +56,8 @@ namespace OnTopic.ViewModels {
     /// <param name="contentType">The name of the content type to filter by.</param>
     /// <returns>The filtered list of view models associated with the content type.</returns>
     public TopicViewModelCollection<TItem> GetByContentType(string contentType) {
-      Contract.Requires<ArgumentException>(
-        !String.IsNullOrWhiteSpace(contentType),
-        $"A {nameof(contentType)} argument is required."
-      );
-      return new TopicViewModelCollection<TItem>(
-        Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.InvariantCultureIgnoreCase)?? false)
-      );
+      Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
+      return new(Items.Where<TItem>(t => t.ContentType?.Equals(contentType, StringComparison.OrdinalIgnoreCase)?? false));
     }
 
     /*==========================================================================================================================

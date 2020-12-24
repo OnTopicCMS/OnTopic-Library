@@ -87,7 +87,7 @@ namespace OnTopic.Internal.Reflection {
         base.InsertItem(index, item);
       }
       else {
-        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'");
+        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'", nameof(item));
       }
     }
 

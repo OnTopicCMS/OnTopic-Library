@@ -19,13 +19,13 @@ namespace OnTopic.Tests.BindingModels {
   public class MapToParentTopicBindingModel : BasicTopicBindingModel {
 
     [MapToParent(AttributePrefix="")]
-    public ContactTopicBindingModel PrimaryContact { get; set; } = new ContactTopicBindingModel();
+    public ContactTopicBindingModel PrimaryContact { get; set; } = new();
 
     [MapToParent(AttributePrefix="Alternate")]
-    public EmailTopicBindingModel AlternateContact { get; set; } = new EmailTopicBindingModel();
+    public EmailTopicBindingModel AlternateContact { get; set; } = new();
 
     [MapToParent]
-    public EmailTopicBindingModel BillingContact { get; set; } = new EmailTopicBindingModel();
+    public EmailTopicBindingModel BillingContact { get; set; } = new();
 
   } //Class
 } //Namespace

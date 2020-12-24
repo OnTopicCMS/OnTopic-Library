@@ -72,7 +72,7 @@ namespace OnTopic.Internal.Mapping {
       CrawlRelationships        = Relationships.None;
       MetadataKey               = null;
       DisableMapping            = false;
-      AttributeFilters          = new Dictionary<string, string>();
+      AttributeFilters          = new();
       FlattenChildren           = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -80,13 +80,14 @@ namespace OnTopic.Internal.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
-      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Value);
+      GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
       GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
       GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
       GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
       GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
+      GetAttributeValue<FilterByContentTypeAttribute>(property, a => ContentTypeFilter = a.ContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
@@ -99,10 +100,7 @@ namespace OnTopic.Internal.Mapping {
         }
       );
 
-      if (
-        RelationshipType.Equals(RelationshipType.Any) &&
-        RelationshipKey.Equals("Children", StringComparison.InvariantCultureIgnoreCase)
-      ) {
+      if (RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
         RelationshipType = RelationshipType.Children;
       }
 
@@ -110,7 +108,7 @@ namespace OnTopic.Internal.Mapping {
       | Attributes: Set attribute filters
       \-----------------------------------------------------------------------------------------------------------------------*/
       var filterByAttribute = property.GetCustomAttributes<FilterByAttributeAttribute>(true);
-      if (filterByAttribute != null && filterByAttribute.Any()) {
+      if (filterByAttribute is not null && filterByAttribute.Any()) {
         foreach (var filter in filterByAttribute) {
           AttributeFilters.Add(filter.Key, filter.Value);
         }
@@ -141,7 +139,7 @@ namespace OnTopic.Internal.Mapping {
     ///     the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="AttributeKey"/> property corresponds to the <see cref="AttributeKeyAttribute.Value"/> property. It
+    ///     The <see cref="AttributeKey"/> property corresponds to the <see cref="AttributeKeyAttribute.Key"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[AttributeKey("AlternateAttributeKey")]</c>.
     ///   </para>
     /// </remarks>
@@ -368,6 +366,27 @@ namespace OnTopic.Internal.Mapping {
     public bool DisableMapping { get; set; }
 
     /*==========================================================================================================================
+    | PROPERTY: CONTENT TYPE FILTER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a <c>ContentType</c> which can optionally be used to filter a collection.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, all <see cref="Topic"/>s in a source collection (e.g., <see cref="Topic.Children"/>) will be included in
+    ///     a corresponding collection on the DTO (assuming the mapped DTO is compatible with the collection type). If the
+    ///     <see cref="ContentTypeFilter"/> is set, however, then each <see cref="Topic"/> will be evaluated to confirm that
+    ///     it is of that content type.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="ContentTypeFilter"/> property corresponds to the <see cref="FilterByContentTypeAttribute.
+    ///     ContentType"/> property. It can be assigned by decorating a DTO property with e.g. <c>[FilterByContentType("Page")]
+    ///     </c>.
+    ///   </para>
+    /// </remarks>
+    public string? ContentTypeFilter { get; set; }
+
+    /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE FILTERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -401,7 +420,7 @@ namespace OnTopic.Internal.Mapping {
     /// <returns></returns>
     public bool SatisfiesAttributeFilters(Topic source) =>
       AttributeFilters.All(f =>
-        source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)?? false
+        source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.OrdinalIgnoreCase)?? false
       );
 
     /*==========================================================================================================================
@@ -430,7 +449,7 @@ namespace OnTopic.Internal.Mapping {
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
     private static void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
       var attribute = (T)property.GetCustomAttribute(typeof(T), true);
-      if (attribute != null) {
+      if (attribute is not null) {
         action(attribute);
       }
     }

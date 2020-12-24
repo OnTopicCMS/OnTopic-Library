@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Models;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 
@@ -22,7 +22,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidReferenceNameTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public RelatedTopicBindingModel TopicReference { get; } = new RelatedTopicBindingModel();
+    public RelatedTopicBindingModel TopicReference { get; } = new();
 
   } //Class
 } //Namespace

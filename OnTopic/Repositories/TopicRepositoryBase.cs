@@ -30,7 +30,7 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new ContentTypeDescriptorCollection();
+    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new();
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -95,8 +95,8 @@ namespace OnTopic.Repositories {
     ///   the <see cref="ITopicRepository"/>'s data store. There are cases, however, where it may be preferrable to instead load
     ///   these topics from a local, in-memory source. Namely, when first instantiating a new OnTopic database, and when saving
     ///   modifications to existing content types. As such, this <c>protected</c> overload is useful to call from <see
-    ///   cref="ITopicRepository.Save(Topic, Boolean, Boolean)"/> when the topic graph being saved includes any <see
-    ///   cref="ContentTypeDescriptor"/>s.
+    ///   cref="ITopicRepository.Save(Topic, Boolean)"/> when the topic graph being saved includes any <see cref=
+    ///   "ContentTypeDescriptor"/>s.
     /// </remarks>
     /// <param name="contentTypeDescriptors">
     ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
@@ -104,7 +104,7 @@ namespace OnTopic.Repositories {
     ///   also any descendents.
     /// </param>
     /// <returns></returns>
-    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", false)]
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptors() method, which provides the same function.", true)]
     protected virtual ContentTypeDescriptorCollection GetContentTypeDescriptors(ContentTypeDescriptor? contentTypeDescriptors)
       => SetContentTypeDescriptors(contentTypeDescriptors);
 
@@ -133,7 +133,7 @@ namespace OnTopic.Repositories {
     ///   preferrable to instead load these topics from a local, in-memory source. Namely, when first instantiating a new
     ///   OnTopic database, and when saving modifications to existing content types. As such, the <c>protected</c> <see cref=
     ///   "SetContentTypeDescriptors(ContentTypeDescriptor?)"/> method is useful to call from <see cref="ITopicRepository.Save(
-    ///   Topic, Boolean, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
+    ///   Topic, Boolean)"/> when the topic graph being saved includes any new <see cref="ContentTypeDescriptor"/>s.
     /// </remarks>
     /// <param name="rootContentType">
     ///   The root of a <see cref="ContentTypeDescriptor"/> topic graph to merge into the collection for <see
@@ -201,7 +201,7 @@ namespace OnTopic.Repositories {
       var contentTypes          = GetContentTypeDescriptors();
       var contentTypeDescriptor = contentTypes.Contains(contentType)? contentTypes[contentType] : null;
 
-      if (contentTypeDescriptor != null) {
+      if (contentTypeDescriptor is not null) {
         return contentTypeDescriptor;
       }
 
@@ -224,7 +224,7 @@ namespace OnTopic.Repositories {
     public abstract Topic? Load(int topicId, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(string? topicKey = null, bool isRecursive = true);
+    public abstract Topic? Load(string? uniqueKey = null, bool isRecursive = true);
 
     /// <inheritdoc />
     public abstract Topic? Load(int topicId, DateTime version);
@@ -260,7 +260,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var attribute in originalVersion.Attributes) {
         if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
-          attribute.IsDirty = true;
+          originalVersion.Attributes.SetValue(attribute.Key, attribute.Value, false);
         }
       }
 
@@ -299,7 +299,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -312,8 +312,8 @@ namespace OnTopic.Repositories {
       var contentTypeDescriptors= GetContentTypeDescriptors();
       var contentTypeDescriptor = GetContentTypeDescriptor(topic);
 
-      if (contentTypeDescriptor == null) {
-        throw new ArgumentException(
+      if (contentTypeDescriptor is null) {
+        throw new ReferentialIntegrityException(
           $"The Content Type \"{topic.ContentType}\" referenced by \"{topic.Key}\" could not be found under " +
           $"\"Configuration:ContentTypes\". There are currently {contentTypeDescriptors.Count} ContentTypes in the Repository."
         );
@@ -333,7 +333,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.OriginalKey != null && topic.OriginalKey != topic.Key) {
+      if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
         var args = new RenameEventArgs(topic);
         RenameEvent?.Invoke(this, args);
       }
@@ -341,7 +341,7 @@ namespace OnTopic.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null && topic.Attributes.IsDirty("ParentId") && !topic.IsNew) {
+      if (topic.Parent is not null && topic.Attributes.IsDirty("ParentId") && !topic.IsNew) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
@@ -357,8 +357,8 @@ namespace OnTopic.Repositories {
       var asContentType         = topic as ContentTypeDescriptor;
       if (
         topic.IsNew &&
-        asContentType != null &&
-        _contentTypeDescriptors != null &&
+        asContentType is not null &&
+        _contentTypeDescriptors is not null &&
         !_contentTypeDescriptors.Contains(topic.Key)
       ) {
         _contentTypeDescriptors.Add(asContentType);
@@ -367,7 +367,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | If content type, and relationships have been updated, refresh permitted content types
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (asContentType != null && asContentType.Relationships.IsDirty()) {
+      if (asContentType is not null && asContentType.Relationships.IsDirty()) {
         asContentType.ResetPermittedContentTypes();
       }
 
@@ -410,8 +410,8 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       //If the target is already positioned after the sibling, then no actual change is registered
       if (
-        sibling != null &&
-        topic.Parent != null &&
+        sibling is not null &&
+        topic.Parent is not null &&
         topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
         return;
       }
@@ -421,7 +421,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
       MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
-      if (sibling == null) {
+      if (sibling is null) {
         topic.SetParent(target);
       }
       else {
@@ -468,9 +468,9 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var childTopics           = topic.FindAll();
       var allTopics             = topic.GetRootTopic().FindAll().Except(childTopics);
-      var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic != null && childTopics.Contains(t.DerivedTopic));
+      var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic is not null && childTopics.Contains(t.DerivedTopic));
 
-      if (derivedTopic != null) {
+      if (derivedTopic is not null) {
         throw new ReferentialIntegrityException(
           $"The topic '{topic.GetUniqueKey()}' cannot be deleted. The topic '{derivedTopic.GetUniqueKey()}' derives from the " +
           $"topic '{derivedTopic.DerivedTopic!.GetUniqueKey()}'. Deleting this would cause violate the integrity of the " +
@@ -487,7 +487,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent != null) {
+      if (topic.Parent is not null) {
         topic.Parent.Children.Remove(topic.Key);
       }
 
@@ -599,7 +599,7 @@ namespace OnTopic.Repositories {
 
         //Skip if the value is null or empty; these values are not persisted to storage and should be treated as equivalent to
         //non-existent values.
-        if (String.IsNullOrEmpty(attributeValue.Value)) {
+        if (attributeValue.Value is null || attributeValue.Value.Length == 0) {
           continue;
         }
 
@@ -607,7 +607,7 @@ namespace OnTopic.Repositories {
         //doesn't match the source, as this implies the storage location has changed, and the attribute should be treated as
         //isDirty.
         if (
-          isDirty == null ||
+          isDirty is null ||
           attributeValue.IsDirty == isDirty ||
           isDirty == IsExtendedAttributeMismatch(attribute, attributeValue)
         ) {
@@ -619,7 +619,7 @@ namespace OnTopic.Repositories {
         //Add the attribute based on the isExtendedAttribute paramter. Add all parameters if isExtendedAttribute is null. Assume
         //an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
         //characters.
-        if (isExtendedAttribute?.Equals(attribute?.IsExtendedAttribute?? attributeValue.Value?.Length > 255)?? true) {
+        if (isExtendedAttribute?.Equals(attribute?.IsExtendedAttribute?? attributeValue.Value.Length > 255)?? true) {
           attributes.Add(attributeValue);
         }
 
@@ -667,7 +667,7 @@ namespace OnTopic.Repositories {
         }
 
         // Ignore system attributes
-        if (attribute.Key == "Key" || attribute.Key == "ContentType" || attribute.Key == "ParentID") {
+        if (attribute.Key is "Key" or "ContentType" or "ParentID") {
           continue;
         }
 
@@ -680,7 +680,7 @@ namespace OnTopic.Repositories {
         };
 
         // Ignore relationships and nested topics
-        if (attribute.ModelType.Equals(ModelType.Relationship) || attribute.ModelType.Equals(ModelType.NestedTopic)) {
+        if (attribute.ModelType is ModelType.Relationship or ModelType.NestedTopic) {
           continue;
         }
 
@@ -697,9 +697,13 @@ namespace OnTopic.Repositories {
       | attributes don't have corresponding AttributeDescriptors. To mitigate this, an ad hoc AttributeDescriptor object will be
       | created for each empty AttributeDescriptor.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in topic.Attributes.Where(a => String.IsNullOrEmpty(a.Value))) {
-        if (!attributes.Contains(attribute.Key)) {
-          attributes.Add((TextAttribute)TopicFactory.Create(attribute.Key, "TextAttribute"));
+      var attributeKeys         = topic.Attributes
+        .Where(a => String.IsNullOrEmpty(a.Value))
+        .Select(a => a.Key)
+        .Union(topic.Attributes.DeletedAttributes);
+      foreach (var attributeKey in attributeKeys) {
+        if (!attributes.Contains(attributeKey)) {
+          attributes.Add((TextAttribute)TopicFactory.Create(attributeKey, "TextAttribute"));
         }
       }
 
@@ -719,9 +723,7 @@ namespace OnTopic.Repositories {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> to evaluate as an <see cref="AttributeDescriptor"/>.</param>
     private static bool IsAttributeDescriptor(Topic topic) =>
-      topic is AttributeDescriptor &&
-      topic.Parent?.Key == "Attributes" &&
-      topic.Parent.Parent is ContentTypeDescriptor;
+      topic is AttributeDescriptor and { Parent: { Key: "Attributes", Parent: ContentTypeDescriptor } };
 
     /*==========================================================================================================================
     | METHOD: IS EXTENDED ATTRIBUTE MISMATCH?
@@ -750,8 +752,8 @@ namespace OnTopic.Repositories {
     /// <param name="attributeValue">The target <see cref="AttributeValue"/>.</param>
     /// <returns></returns>
     private static bool IsExtendedAttributeMismatch(AttributeDescriptor? attributeDescriptor, AttributeValue attributeValue) =>
-      attributeDescriptor != null &&
-      attributeValue.IsExtendedAttribute != null &&
+      attributeDescriptor is not null &&
+      attributeValue.IsExtendedAttribute is not null &&
       attributeDescriptor.IsExtendedAttribute != attributeValue.IsExtendedAttribute;
 
     /*==========================================================================================================================

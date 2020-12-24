@@ -5,22 +5,24 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[CreateTopic]
-	@ParentID		int		= -1,
+	@Key		VARCHAR(128)		,
+	@ContentType		VARCHAR(128)		,
+	@ParentID		INT		= -1,
 	@Attributes		AttributeValues		READONLY,
-	@ExtendedAttributes 	Xml		= null,
-	@Version		datetime		= null
+	@ExtendedAttributes 	XML		= NULL,
+	@Version		DATETIME		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= getdate()
+SET	@Version		= GETUTCDATE()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@RangeRight		Integer	--Right Most Sibling
+DECLARE	@RangeRight		INT	--Right Most Sibling
 SET	@RangeRight		= 0
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -53,11 +55,17 @@ IF (@ParentID > -1)
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO	Topics (
 	RangeLeft,
-	RangeRight
+	RangeRight,
+	TopicKey,
+	ContentType,
+	ParentID
 )
 Values (
 	@RangeRight,
-	@RangeRight		+ 1
+	@RangeRight		+ 1,
+	@Key,
+	@ContentType,
+	@ParentID
 )
 
 DECLARE	@TopicID		INT
@@ -78,13 +86,12 @@ SELECT	@TopicID,
 	AttributeValue,
 	@Version
 FROM	@Attributes
-WHERE	AttributeKey		!= 'ParentID'
-  AND 	IsNull(AttributeValue, '')	!= ''
+WHERE	ISNULL(AttributeValue, '')	!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES (XML)
 --------------------------------------------------------------------------------------------------------------------------------
-IF @ExtendedAttributes is not null
+IF @ExtendedAttributes IS NOT NULL
   BEGIN
     INSERT
     INTO	ExtendedAttributes (
@@ -97,21 +104,6 @@ IF @ExtendedAttributes is not null
 	@Version
     )
   END
-
---------------------------------------------------------------------------------------------------------------------------------
--- CACHE PARENT ID FOR DATA INTEGRITY PURPOSES
---------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	Attributes (
-	TopicID		,
-	AttributeKey		,
-	AttributeValue		,
-	Version
-)
-VALUES (	@TopicID		,
-	'ParentID'		,
-	CONVERT(NVarChar(255), @ParentID),
-	@Version
-)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

@@ -8,15 +8,15 @@
 CREATE PROCEDURE [dbo].[GetTopics]
 	@TopicID		int	= -1,
 	@DeepLoad		bit	= 1,
-	@TopicKey		nvarchar(255)	= null
+	@UniqueKey		nvarchar(255)	= null
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID IF UNKNOWN.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicKey IS NOT NULL
+IF @UniqueKey IS NOT NULL
   BEGIN
-    SET	@TopicID		= dbo.GetTopicID(@TopicKey)
+    SET	@TopicID		= dbo.GetTopicID(@UniqueKey)
   END
 
 IF @TopicID < 0
@@ -87,14 +87,14 @@ ELSE
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	TopicIndex.TopicID,
-  	TopicIndex.ContentType,
-  	TopicIndex.ParentID,
-  	TopicIndex.TopicKey,
+SELECT	Topics.TopicID,
+  	Topics.ContentType,
+  	Topics.ParentID,
+  	Topics.TopicKey,
   	Storage.SortOrder
-FROM	TopicIndex		AS TopicIndex
+FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= TopicIndex.TopicID
+  ON	Storage.TopicID		= Topics.TopicID
 ORDER BY	SortOrder
 
 --------------------------------------------------------------------------------------------------------------------------------

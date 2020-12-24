@@ -6,7 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using OnTopic.Models;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 
@@ -25,7 +25,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidRelationshipListTypeTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
-    public Dictionary<string, RelatedTopicBindingModel> ContentTypes { get; } = new Dictionary<string, RelatedTopicBindingModel>();
+    public Dictionary<string, RelatedTopicBindingModel> ContentTypes { get; } = new();
 
   } //Class
 } //Namespace

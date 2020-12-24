@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -28,10 +28,12 @@ namespace OnTopic {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     string                          _key;
+    private                     string                          _contentType;
     private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
     private                     Topic?                          _derivedTopic;
+    private                     bool                            _isDirty;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -60,11 +62,18 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Children                  = new TopicCollection();
-      Attributes                = new AttributeValueCollection(this);
-      IncomingRelationships     = new RelatedTopicCollection(this, true);
-      Relationships             = new RelatedTopicCollection(this, false);
-      VersionHistory            = new List<DateTime>();
+      Children                  = new();
+      Attributes                = new(this);
+      IncomingRelationships     = new(this, true);
+      Relationships             = new(this, false);
+      VersionHistory            = new();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set entity identifier, if present
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (id >= 0) {
+        Id                      = id;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set core properties
@@ -74,23 +83,13 @@ namespace OnTopic {
       Parent                    = parent;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize key
+      | Initialize key fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //###HACK JJC20190924: The local backing field _key is always initialized at this point. But Roslyn's flow analysis
-      //isn't smart enough to detect this. As such, the following effectively sets _key to itself.
-      _key = Key;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | If ID is set, ensure attributes are not marked as IsDirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (id >= 0) {
-        Id                      = id;
-        Attributes.SetValue("Key", key, false, false);
-        Attributes.SetValue("ContentType", contentType, false, false);
-        if (parent != null) {
-          Attributes.SetValue("ParentId", parent.Id.ToString(CultureInfo.InvariantCulture), false, false);
-        }
-      }
+      //###HACK JJC20190924: The local backing fields _key and _contentType are always initialized at this point. But Roslyn's
+      //flow analysis isn't smart enough to detect this. As such, the following effectively sets _key and _contentType to
+      //themselves.
+      _key                      = Key;
+      _contentType              = ContentType;
 
     }
 
@@ -116,7 +115,7 @@ namespace OnTopic {
       set {
         Contract.Requires<ArgumentOutOfRangeException>(value > 0, "The id is expected to be a positive value.");
         if (_id > 0 && !_id.Equals(value)) {
-          throw new ArgumentException($"The value of this topic has already been set to {_id}; it cannot be changed.");
+          throw new InvalidOperationException($"The value of this topic has already been set to {_id}; it cannot be changed.");
         }
         _id = value;
       }
@@ -137,7 +136,7 @@ namespace OnTopic {
     ///   have a null parent.
     /// </remarks>
     /// <requires description="The value for Parent must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires description="A topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   value != this
@@ -172,16 +171,23 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors" /> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="ITopicRoutingService" /> (assuming the value isn't overwritten
-    ///   down the pipe).
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors" /> property).
     /// </remarks>
     /// <value>
     ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
     /// </value>
     public string ContentType {
-      get => Attributes.GetValue("ContentType")?? "";
-      set => SetAttributeValue("ContentType", value);
+      get => _contentType;
+      set {
+        TopicFactory.ValidateKey(value);
+        if (_contentType == value) {
+          return;
+        }
+        else if (_contentType is not null || IsNew) {
+          _isDirty              = true;
+        }
+        _contentType            = value;
+      }
     }
 
     /*==========================================================================================================================
@@ -194,7 +200,7 @@ namespace OnTopic {
     ///   The current <see cref="Topic"/>'s key, which is guaranteed to be unique among its siblings.
     /// </value>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires
     ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
@@ -202,20 +208,24 @@ namespace OnTopic {
     /// >
     ///   !value.Contains(" ")
     /// </requires>
-    [AttributeSetter]
     public string Key {
       get => _key;
       set {
         TopicFactory.ValidateKey(value);
-        if (_originalKey == null) {
-          _originalKey = Attributes.GetValue("Key", _key, false, false);
+        if (_key == value) {
+          return;
+        }
+        else if (_key is not null || IsNew) {
+          _isDirty              = true;
+        }
+        if (_originalKey is null) {
+          _originalKey = _key;
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
-        if (_originalKey != null && !value.Equals(_key, StringComparison.InvariantCultureIgnoreCase) && Parent != null) {
+        if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
         }
-        SetAttributeValue("Key", value);
-        _key = value;
+        _key                    = value;
       }
     }
 
@@ -259,11 +269,11 @@ namespace OnTopic {
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService" /> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService" /> class), on the topic itself (via this property). By default, it will
+    ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
+    ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property). By default, it will
     ///   be set to the name of the <see cref="ContentType" />; e.g., if the Content Type is "Page", then the view will be
-    ///   "Page". This will cause the <see cref="ITopicRoutingService" /> to look for a view at, for instance,
-    ///   /Common/Templates/Page/Page.aspx.
+    ///   "Page". This will cause the <c>TopicViewResultExecutor</c> to look for a view at, for instance,
+    ///   <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
     /// <value>
     ///   The view, as specified by the current <see cref="Topic"/>.
@@ -385,7 +395,7 @@ namespace OnTopic {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
-    [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.")]
+    [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.", true)]
     public string? Description {
       get => Attributes.GetValue("Description");
       set => SetAttributeValue("Description", value);
@@ -465,10 +475,10 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Move topic to new location
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_parent != null) {
+      if (_parent is not null) {
         _parent.Children.Remove(Key);
       }
-      var insertAt = (sibling != null)? parent.Children.IndexOf(sibling)+1 : 0;
+      var insertAt = (sibling is not null)? parent.Children.IndexOf(sibling)+1 : 0;
       parent.Children.Insert(insertAt, this);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -476,7 +486,6 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_parent != parent) {
         _parent = parent;
-        SetAttributeValue("ParentID", parent.Id.ToString(CultureInfo.InvariantCulture));
       }
 
 
@@ -493,6 +502,7 @@ namespace OnTopic {
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
     /// <returns>The unique key of the current <see cref="Topic"/>.</returns>
+    #pragma warning disable CA1024 // Use properties where appropriate
     public string GetUniqueKey() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -501,7 +511,7 @@ namespace OnTopic {
       var uniqueKey = "";
       var topic = (Topic?)this;
 
-      while (topic != null) {
+      while (topic is not null) {
         if (uniqueKey.Length > 0) uniqueKey = $":{uniqueKey}";
         uniqueKey = topic.Key + uniqueKey;
         topic = topic.Parent;
@@ -513,6 +523,7 @@ namespace OnTopic {
       return uniqueKey;
 
     }
+    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET WEB PATH
@@ -527,11 +538,38 @@ namespace OnTopic {
     /// </remarks>
     /// <returns>The HTTP-based path to the current <see cref="Topic"/>.</returns>
     public string GetWebPath() {
-      var uniqueKey = GetUniqueKey().Replace("Root:", "/").Replace(":", "/") + "/";
+      var uniqueKey = GetUniqueKey()
+        .Replace("Root:", "/", StringComparison.Ordinal)
+        .Replace(":", "/", StringComparison.Ordinal) + "/";
       if (!uniqueKey.StartsWith("/", StringComparison.InvariantCulture)) {
         uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if the topic is dirty, optionally checking <see cref="Relationships"/> and <see cref="Attributes"/>.
+    /// </summary>
+    /// <param name="checkCollections">
+    ///   Determines if <see cref="Relationships"/> and <see cref="Attributes"/> should be checked.
+    /// </param>
+    /// <param name="excludeLastModified">
+    ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
+    ///   excluding the byline (<c>LastModifiedBy</c>) and dateline (<c>LastModified</c>) since these values are automatically
+    ///   generated by e.g. the OnTopic Editor and, thus, may be irrelevant updates if no other attribute values have changed.
+    /// </param>
+    /// <returns></returns>
+    public bool IsDirty(bool checkCollections = false, bool excludeLastModified = false) {
+      if (!_isDirty && checkCollections) {
+        _isDirty = Relationships.IsDirty();
+      }
+      if (!_isDirty && checkCollections) {
+        _isDirty = Attributes.IsDirty(excludeLastModified);
+      }
+      return _isDirty;
     }
 
     #endregion
@@ -577,7 +615,7 @@ namespace OnTopic {
           "A topic may not derive from itself."
         );
         _derivedTopic = value;
-        if (value != null && value.Id > 0) {
+        if (value is not null && value.Id > 0) {
           SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
         }
         else {
@@ -642,7 +680,7 @@ namespace OnTopic {
     ///   its derived providers).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s version history.</value>
-    public List<DateTime> VersionHistory { get; }
+    public Collection<DateTime> VersionHistory { get; }
 
     #endregion
 
@@ -669,7 +707,7 @@ namespace OnTopic {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty" />. By default, it will be marked
     ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)" />.
+    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)" />.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."

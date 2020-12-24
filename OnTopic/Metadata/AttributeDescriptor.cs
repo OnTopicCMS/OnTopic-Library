@@ -56,8 +56,8 @@ namespace OnTopic.Metadata {
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <param name="parent">Optional topic to set as the new topic's parent.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <exception cref="ArgumentException">
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
@@ -88,7 +88,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public abstract ModelType ModelType { get; }
+    public virtual ModelType ModelType => ModelType.ScalarValue;
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
@@ -109,7 +109,7 @@ namespace OnTopic.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public abstract string? EditorType { get; }
+    public virtual string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
@@ -130,7 +130,7 @@ namespace OnTopic.Metadata {
     public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
         SetAttributeValue("DisplayGroup", value);
       }
     }

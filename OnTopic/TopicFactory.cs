@@ -67,8 +67,8 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
@@ -80,13 +80,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return the topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
-
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
 
     }
 
@@ -113,9 +107,9 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType));
-      Contract.Requires<ArgumentNullException>(id > 0);
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
+      Contract.Requires<ArgumentOutOfRangeException>(id > 0, nameof(id));
       TopicFactory.ValidateKey(key);
       TopicFactory.ValidateKey(contentType);
 
@@ -127,12 +121,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topic = (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return object
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic?? throw new NullReferenceException("The Create() method failed to successfully create a Topic instance");
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
 
     }
 
@@ -152,7 +141,7 @@ namespace OnTopic {
     public static void ValidateKey(string? topicKey, bool isOptional = false) {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
-        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey ?? "", @"^[a-zA-Z0-9\.\-_]+$"),
+        String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\.\-_]+$"),
         "Key names should only contain letters, numbers, hyphens, and/or underscores."
       );
     }

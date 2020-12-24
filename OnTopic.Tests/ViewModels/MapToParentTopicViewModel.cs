@@ -19,13 +19,13 @@ namespace OnTopic.Tests.ViewModels {
   public class MapToParentTopicViewModel {
 
     [MapToParent(AttributePrefix = "")]
-    public KeyOnlyTopicViewModel? Primary { get; set; } = new KeyOnlyTopicViewModel();
+    public KeyOnlyTopicViewModel? Primary { get; set; } = new();
 
     [MapToParent(AttributePrefix = "Aliased")]
-    public KeyOnlyTopicViewModel? Alternate { get; set; } = new KeyOnlyTopicViewModel();
+    public KeyOnlyTopicViewModel? Alternate { get; set; } = new();
 
     [MapToParent]
-    public KeyOnlyTopicViewModel? Ancillary { get; set; } = new KeyOnlyTopicViewModel();
+    public KeyOnlyTopicViewModel? Ancillary { get; set; } = new();
 
   } //Class
 } //Namespace

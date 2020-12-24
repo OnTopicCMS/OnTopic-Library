@@ -53,14 +53,14 @@ namespace OnTopic.TestDoubles {
       (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey != null && topicKey.Length > 0) {
-        topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.InvariantCultureIgnoreCase));
+      if (uniqueKey is not null && uniqueKey.Length > 0) {
+        uniqueKey = uniqueKey.Contains(":", StringComparison.Ordinal) ? uniqueKey : "Root:" + uniqueKey;
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset version
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic != null) {
+      if (topic is not null) {
         topic.LastModified = version;
       }
 
@@ -105,12 +105,12 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public override int Save(Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive, isDraft);
+      base.Save(topic, isRecursive);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse through children
@@ -124,7 +124,7 @@ namespace OnTopic.TestDoubles {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
         foreach (var childTopic in topic.Children) {
-          Save(childTopic, isRecursive, isDraft);
+          Save(childTopic, isRecursive);
         }
       }
 
@@ -157,7 +157,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) => base.Delete(topic, isRecursive);
+    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)
@@ -180,7 +180,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptors(ContentTypeDescriptor)" />
-    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", false)]
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", true)]
     public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
 
@@ -272,7 +272,7 @@ namespace OnTopic.TestDoubles {
         bool isRequired         = false
       ) {
         var container = contentType.Children.GetTopic("Attributes");
-        if (container == null) {
+        if (container is null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }

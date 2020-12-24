@@ -227,7 +227,7 @@ namespace OnTopic.Tests {
 
       for (var i = 0; i < 3; i++) {
         bindingModel.ContentTypes.Add(
-          new Models.RelatedTopicBindingModel() {
+          new() {
             UniqueKey = contentTypes[i].GetUniqueKey()
           }
         );
@@ -290,7 +290,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("Test") {
-        DerivedTopic            = new RelatedTopicBindingModel() {
+        DerivedTopic            = new() {
           UniqueKey             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
         }
       };
@@ -394,7 +394,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new InvalidParentTopicBindingModel("Test") {
-        Parent                  = new BasicTopicBindingModel("Test", "Page")
+        Parent                  = new("Test", "Page")
       };
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);

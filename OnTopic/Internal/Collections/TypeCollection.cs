@@ -33,9 +33,9 @@ namespace OnTopic.Internal.Collections {
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate collection
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (types != null) {
+      if (types is not null) {
         foreach (var type in types) {
-          if (!Contains(type)) {
+          if (!Contains(type.Name)) {
             Add(type);
           }
         }

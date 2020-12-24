@@ -48,10 +48,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(
-        !String.IsNullOrWhiteSpace(connectionString),
-        "The name of the connection string must be provided in order to be validated."
-      );
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(connectionString), nameof(connectionString));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set private fields
@@ -64,7 +61,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic Load(string? uniqueKey = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty topic
@@ -72,7 +69,7 @@ namespace OnTopic.Data.Sql {
       | If the topicKey is null, or does not contain a topic key, then assume the caller wants to return all data; in that case
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(topicKey)) {
+      if (String.IsNullOrEmpty(uniqueKey)) {
         return Load(-1, isRecursive);
       }
 
@@ -89,7 +86,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      command.AddParameter("TopicKey", topicKey);
+      command.AddParameter("UniqueKey", uniqueKey);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -115,7 +112,7 @@ namespace OnTopic.Data.Sql {
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicId < 0) {
-        throw new TopicNotFoundException(topicKey);
+        throw new TopicNotFoundException(uniqueKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -164,7 +161,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic == null) {
+      if (topic is null) {
         if (topicId == -1) {
           topic = TopicFactory.Create("Root", "Container");
         }
@@ -248,7 +245,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save([NotNull]Topic topic, bool isRecursive = false, bool isDraft = false) {
+    public override int Save([NotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
@@ -263,13 +260,13 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId = Save(topic, isRecursive, isDraft, connection, unresolvedTopics, version);
+      var topicId = Save(topic, isRecursive, connection, unresolvedTopics, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, isDraft, connection, new List<Topic>(), version);
+        Save(unresolvedTopic, false, connection, new(), version);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -302,13 +299,11 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to save.</param>
     /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
-    /// <param name="isDraft">Determines if the <see cref="Topic"/> should be saved as a draft version.</param>
     /// <param name="connection">The open <see cref="SqlConnection"/> to use for executing <see cref="SqlCommand"/>s.</param>
     /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
     private int Save(
       [NotNull]Topic topic,
       bool isRecursive,
-      bool isDraft,
       SqlConnection connection,
       List<Topic> unresolvedRelationships,
       SqlDateTime version
@@ -317,14 +312,15 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive, isDraft);
+      base.Save(topic, isRecursive);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var areReferencesResolved = true;
+      var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
-      var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: !areRelationshipsDirty);
+      var areAttributesDirty    = topic.Attributes.IsDirty(true);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
       var indexedAttributeList  = GetAttributes(
         topic                   : topic,
@@ -342,6 +338,7 @@ namespace OnTopic.Data.Sql {
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isDirty               =
+        isTopicDirty            ||
         areRelationshipsDirty   ||
         areAttributesDirty      ||
         indexedAttributeList.Any() ||
@@ -362,7 +359,6 @@ namespace OnTopic.Data.Sql {
 
       foreach (var attributeValue in indexedAttributeList) {
         attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
-        attributeValue.IsDirty  = false;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -377,7 +373,6 @@ namespace OnTopic.Data.Sql {
         extendedAttributes.Append(
           "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
         );
-        attributeValue.IsDirty  = false;
 
         //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
         //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
@@ -425,11 +420,12 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
-      else if (topic.Parent != null) {
+      else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
+      command.AddParameter("Key", topic.Key);
+      command.AddParameter("ContentType", topic.ContentType);
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddParameter("Attributes", attributeValues);
@@ -444,7 +440,7 @@ namespace OnTopic.Data.Sql {
 
         topic.Id                = command.GetReturnCode();
 
-        Contract.Assume<InvalidOperationException>(
+        Contract.Assume(
           !topic.IsNew,
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
@@ -456,6 +452,8 @@ namespace OnTopic.Data.Sql {
         if (!topic.VersionHistory.Contains(version.Value)) {
           topic.VersionHistory.Insert(0, version.Value);
         }
+
+        topic.Attributes.MarkClean(version.Value);
 
       }
 
@@ -482,7 +480,7 @@ namespace OnTopic.Data.Sql {
         if (isRecursive) {
           foreach (var childTopic in topic.Children) {
             childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-            Save(childTopic, isRecursive, isDraft, connection, unresolvedRelationships, version);
+            Save(childTopic, isRecursive, connection, unresolvedRelationships, version);
           }
         }
       }
@@ -515,7 +513,7 @@ namespace OnTopic.Data.Sql {
       command.AddParameter("ParentID", target.Id);
 
       // Append sibling ID if set
-      if (sibling != null) {
+      if (sibling is not null) {
         command.AddParameter("SiblingID", sibling.Id);
       }
 
@@ -540,7 +538,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
+      topic.Attributes.MarkClean("ParentId");
 
     }
 
@@ -548,7 +546,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) {
+    public override void Delete(Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from memory

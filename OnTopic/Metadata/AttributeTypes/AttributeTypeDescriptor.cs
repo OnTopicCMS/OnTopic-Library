@@ -48,11 +48,7 @@ namespace OnTopic.Metadata.AttributeTypes {
     | PROPERTY: EDITOR TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    #if NETSTANDARD2_0
-      public override string EditorType => GetType().Name.Replace("Attribute", "");
-    #else
-      public override string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.InvariantCultureIgnoreCase);
-    #endif
+    public override string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.OrdinalIgnoreCase);
 
   } //Class
 } //Namespace

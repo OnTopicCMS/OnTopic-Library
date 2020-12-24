@@ -60,10 +60,10 @@ namespace OnTopic.Repositories {
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
-    /// <param name="topicKey">The topic key.</param>
+    /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(string? topicKey = null, bool isRecursive = true);
+    Topic? Load(string? uniqueKey = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.
@@ -103,13 +103,12 @@ namespace OnTopic.Repositories {
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
-    /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
     /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    int Save(Topic topic, bool isRecursive = false, bool isDraft = false);
+    int Save(Topic topic, bool isRecursive = false);
 
     /*==========================================================================================================================
     | METHOD: MOVE
@@ -128,7 +127,7 @@ namespace OnTopic.Repositories {
     /// <requires
     ///   description="The target under which to move the topic must be provided."
     ///   exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     void Move(Topic topic, Topic target, Topic? sibling = null);
 
@@ -148,13 +147,13 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The topic object to delete.</param>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
-    ///   and the topic has children, including any nested topics, an exception will be thrown.
+    ///   and the topic has children, including any nested topics, an exception will be thrown. The default is false.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
-    ///   topic != null
+    ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    void Delete(Topic topic, bool isRecursive = true);
+    void Delete(Topic topic, bool isRecursive = false);
 
   } //Interface
 } //Namespace

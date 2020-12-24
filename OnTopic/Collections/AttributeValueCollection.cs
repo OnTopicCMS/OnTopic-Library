@@ -4,12 +4,14 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
+using OnTopic.Repositories;
 
 namespace OnTopic.Collections {
 
@@ -29,7 +31,7 @@ namespace OnTopic.Collections {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeMemberInfoCollection _typeCache = new TypeMemberInfoCollection(typeof(AttributeSetterAttribute));
+    static readonly TypeMemberInfoCollection _typeCache = new(typeof(AttributeSetterAttribute));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -53,17 +55,74 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: BUSINESS LOGIC CACHE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a local cache of <see cref="AttributeValue"/> objects, keyed by their <see cref="AttributeValue.Key"/>, prior
+    ///   to them having their business logic enforced.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, there is no business logic enforced for <see cref="AttributeValue"/> objects. This can be mitigate by
+    ///     implementing properties that correspond to the attribute names on <see cref="Topic"/> or a derivative class.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="AttributeValueCollection"/> enforces this business logic by forcing updates to go through that
+    ///     property if it exists. To ensure this is enforced at all entry points, this is handled via the <see cref="
+    ///     SetItem(Int32, AttributeValue)"/> and <see cref="InsertItem(Int32, AttributeValue)"/> methods. This ensures that the
+    ///     business logic is enforced even if implementors bypass the <see cref="SetValue(String, String?, Boolean?, DateTime?,
+    ///     Boolean?)"/> method, and instead use e.g. <see cref="KeyedCollection{TKey, TItem}"/>'s indexer or underlying methods
+    ///     such as <see cref="Collection{T}.Add(T)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Since neither the <see cref="SetItem(Int32, AttributeValue)"/> or <see cref="InsertItem(Int32, AttributeValue)"/>
+    ///     methods, nor the properties that <see cref="EnforceBusinessLogic(AttributeValue)"/> calls, accept the optional
+    ///     parameters from <see cref="SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/>, however, that means that
+    ///     parameter values corresponding to e.g. <see cref="AttributeValue.IsExtendedAttribute"/> and <see cref=
+    ///     "AttributeValue.IsDirty"/> will get lost in the process. In addition, there needs to be a way to track whether
+    ///     the call to e.g., <see cref="SetItem(Int32, AttributeValue)"/> is being triggered by a direct call, or as a round-
+    ///     trip through one of these property setters.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="BusinessLogicCache"/> addresses this issue by providing a cache of the original <see
+    ///     cref="AttributeValue"/> instances, indexed by their <see cref="AttributeValue.Key"/>, for attributes currently being
+    ///     routed through their corresponding property setter. If a record exists for the current attribute, the <see cref="
+    ///     EnforceBusinessLogic(AttributeValue)"/> method knows it should not enforce business logic again—as that would result
+    ///     in an infinite loop—and should instead persist the record to the collection. Further, because the <see cref=
+    ///     "BusinessLogicCache"/> includes the original <see cref="AttributeValue"/>, the original parameters such as the <see
+    ///     cref="AttributeValue.IsDirty"/> are not lost, and can be applied to the final object.
+    ///   </para>
+    /// </remarks>
+    private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
+
+    /*==========================================================================================================================
+    | PROPERTY: DELETED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   When an attribute is deleted, keep track of it so that it can be marked for deletion when the topic is saved.
+    /// </summary>
+    /// <remarks>
+    ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
+    ///   <see cref="IsDirty(Boolean)"/>. If a <see cref="AttributeValue"/> is deleted, then it won't be marked as dirty. If no
+    ///   other <see cref="AttributeValue"/> instances were modified, then the topic won't get saved, and that value won't be
+    ///   deleted. Further more, the <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/> method has no way of
+    ///   detecting the deletion of arbitrary attributesï¿½i.e., attributes that were deleted which don't correspond to attributes
+    ///   configured on the <see cref="Metadata.ContentTypeDescriptor"/>. By tracking any deleted attributes, we ensure both
+    ///   scenarios can be accounted for.
+    /// </remarks>
+    internal List<string> DeletedAttributes { get; } = new();
+
+    /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="Repositories.ITopicRepository"/>, which may need to determine if any attributes are dirty prior to saving
-    ///   them to the data storage medium. Be aware that this does <i>not</i> track any <see cref="AttributeValue"/>s that may
-    ///   have been <i>deleted</i>, nor whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still
-    ///   be necessary to persist changes to the storage medium.
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if any attributes are dirty prior to saving them to the data storage medium. Be aware that this does
+    ///   <i>not</i> track whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still be necessary
+    ///   to persist changes to the storage medium.
     /// </remarks>
     /// <param name="excludeLastModified">
     ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
@@ -72,7 +131,7 @@ namespace OnTopic.Collections {
     /// </param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
     public bool IsDirty(bool excludeLastModified = false)
-      => Items.Any(a =>
+      => DeletedAttributes.Count > 0 || Items.Any(a =>
         a.IsDirty &&
         (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
       );
@@ -81,11 +140,10 @@ namespace OnTopic.Collections {
     ///   Determine if a given attribute is marked as dirty. Will return false if the attribute key cannot be found.
     /// </summary>
     /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as
-    ///   <see cref="OnTopic.Repositories.ITopicRepository"/>, which may need to determine if a specific attribute key is
-    ///   dirty prior to saving it to the data storage medium. Because <c>IsDirty</c> is a state of the current <see
-    ///   cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromDerived</c> (which otherwise
-    ///   default to <c>true</c>).
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
+    ///   to determine if a specific attribute key is dirty prior to saving it to the data storage medium. Because <c>IsDirty
+    ///   </c> is a state of the current <see cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>
+    ///   inheritFromDerived</c> (which otherwise default to <c>true</c>).
     /// </remarks>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
@@ -94,6 +152,54 @@ namespace OnTopic.Collections {
         return false;
       }
       return this[name].IsDirty;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks the collection—including all <see cref="AttributeValue"/> items—as clean, meaning they have been persisted to
+    ///   the underlying <see cref="ITopicRepository"/>.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark the collection, and all <see cref="AttributeValue"/> items it contains, as clean. After this, <see cref="IsDirty(
+    ///   Boolean)"/> will return <c>false</c> until any <see cref="AttributeValue"/> items are modified or removed.
+    /// </remarks>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
+    ///   VersionHistory"/>.
+    /// </param>
+    public void MarkClean(DateTime? version = null) {
+      foreach (var attribute in Items.Where(a => a.IsDirty).ToArray()) {
+        SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
+      }
+      DeletedAttributes.Clear();
+    }
+
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Marks an individual <see cref="AttributeValue"/> as clean.
+    /// </summary>
+    /// <remarks>
+    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
+    ///   mark an <see cref="AttributeValue"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
+    ///   that item until it is modified.
+    /// </remarks>
+    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This denotes the <see cref="Topic.
+    ///   VersionHistory"/> associated with the specific attribute.
+    /// </param>
+    public void MarkClean(string name, DateTime? version = null) {
+      if (Contains(name)) {
+        var attribute           = this[name];
+        if (attribute.IsDirty) {
+          SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
+        }
+      }
     }
 
     /*==========================================================================================================================
@@ -126,7 +232,7 @@ namespace OnTopic.Collections {
     /// <returns>The string value for the Attribute.</returns>
     [return: NotNullIfNotNull("defaultValue")]
     public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
       return GetValue(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
     }
 
@@ -163,9 +269,9 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name));
-      Contract.Requires<ArgumentException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
-      Contract.Requires<ArgumentException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
+      Contract.Requires<ArgumentOutOfRangeException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
+      Contract.Requires<ArgumentOutOfRangeException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
       TopicFactory.ValidateKey(name);
 
       string? value = null;
@@ -182,8 +288,8 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        !name.Equals("TopicId", StringComparison.InvariantCulture) &&
-        _associatedTopic.DerivedTopic != null &&
+        !name.Equals("TopicId", StringComparison.OrdinalIgnoreCase) &&
+        _associatedTopic.DerivedTopic is not null &&
         maxHops > 0
       ) {
         value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
@@ -192,7 +298,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent != null) {
+      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent is not null) {
         value = _associatedTopic.Parent.Attributes.GetValue(name, defaultValue, inheritFromParent);
       }
 
@@ -226,7 +332,7 @@ namespace OnTopic.Collections {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <param name="version">
     ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
@@ -273,7 +379,7 @@ namespace OnTopic.Collections {
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean, Boolean)"/>.
+    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <param name="enforceBusinessLogic">
     ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
@@ -312,38 +418,53 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), "key");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       TopicFactory.ValidateKey(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish secret handshake for later enforcement of properties
-      >-------------------------------------------------------------------------------------------------------------------------
-      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
-      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
-      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
-      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
-      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
-      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
-      | correctly written to call the enforceBusinessLogic parameter.
+      | Retrieve original attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      enforceBusinessLogic = (enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key));
+      AttributeValue? originalAttributeValue = null;
+      AttributeValue? updatedAttributeValue = null;
+
+      if (Contains(key)) {
+        originalAttributeValue  = this[key];
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update from business logic
+      >-----------------------------------------------------------------------------------------------------------------------—
+      | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
+      | business logic, then use the original values, while applying any change in the value triggered by the business logic.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (BusinessLogicCache.ContainsKey(key)) {
+        BusinessLogicCache.TryGetValue(key, out updatedAttributeValue);
+        if (updatedAttributeValue.Value != value) {
+          updatedAttributeValue = updatedAttributeValue with {
+            Value               = value
+          };
+        }
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing attribute value
       >-----------------------------------------------------------------------------------------------------------------------—
       | Because AttributeValue is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(key)) {
-        var originalAttribute = this[key];
-        var markAsDirty = originalAttribute.IsDirty;
+      else if (originalAttributeValue is not null) {
+        var markAsDirty = originalAttributeValue.IsDirty;
         if (isDirty.HasValue) {
           markAsDirty = isDirty.Value;
         }
-        else if (originalAttribute.Value != value) {
+        else if (originalAttributeValue.Value != value) {
           markAsDirty = true;
         }
-        var newAttribute = new AttributeValue(key, value, markAsDirty, enforceBusinessLogic, version, isExtendedAttribute);
-        this[IndexOf(originalAttribute)] = newAttribute;
+        updatedAttributeValue   = originalAttributeValue with {
+          Value                 = value,
+          IsDirty               = markAsDirty,
+          LastModified          = version?? originalAttributeValue.LastModified,
+          IsExtendedAttribute   = isExtendedAttribute?? originalAttributeValue.IsExtendedAttribute
+        };
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -360,7 +481,36 @@ namespace OnTopic.Collections {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        Add(new AttributeValue(key, value, isDirty ?? true, enforceBusinessLogic, version, isExtendedAttribute));
+        updatedAttributeValue   = new AttributeValue(key, value, isDirty ?? true, version, isExtendedAttribute);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish secret handshake for later enforcement of properties
+      >-------------------------------------------------------------------------------------------------------------------------
+      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
+      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
+      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
+      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
+      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
+      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
+      | correctly written to call the enforceBusinessLogic parameter.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      enforceBusinessLogic = !enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key);
+      if (enforceBusinessLogic && !BusinessLogicCache.ContainsKey(key)) {
+        BusinessLogicCache.Add(key, updatedAttributeValue);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Persist attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (updatedAttributeValue is null) {
+        return;
+      }
+      else if (originalAttributeValue is not null) {
+        this[IndexOf(originalAttributeValue)] = updatedAttributeValue;
+      }
+      else {
+        Add(updatedAttributeValue);
       }
 
     }
@@ -387,21 +537,25 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     /// <exception cref="ArgumentException">
     ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      Contract.Requires(item, nameof(item));
+      if (EnforceBusinessLogic(item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
+          if (DeletedAttributes.Contains(item.Key)) {
+            DeletedAttributes.Remove(item.Key);
+          }
         }
         else {
           throw new ArgumentException(
             $"An {nameof(AttributeValue)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
             $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(AttributeValue)}s are associated " +
-            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'."
+            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'.",
+            nameof(item)
           );
         }
       }
@@ -411,7 +565,7 @@ namespace OnTopic.Collections {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to update a <see cref="AttributeValue"/> in the collection, to ensure that local business
+    ///   Intercepts all attempts to update an <see cref="AttributeValue"/> in the collection, to ensure that local business
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
@@ -422,11 +576,31 @@ namespace OnTopic.Collections {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The key for the specified collection item.</returns>
     protected override void SetItem(int index, AttributeValue item) {
-      if (EnforceBusinessLogic(item, out item)) {
+      Contract.Requires(item, nameof(item));
+      if (EnforceBusinessLogic(item)) {
         base.SetItem(index, item);
+        if (DeletedAttributes.Contains(item.Key)) {
+          DeletedAttributes.Remove(item.Key);
+        }
       }
+    }
+
+    /*==========================================================================================================================
+    | OVERRIDE: REMOVE ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to remove an <see cref="AttributeValue"/> from the collection, to ensure that it is
+    ///   appropriately marked as <see cref="IsDirty(Boolean)"/>.
+    /// </summary>
+    /// <remarks>
+    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    /// </remarks>
+    protected override void RemoveItem(int index) {
+      var attribute = this[index];
+      DeletedAttributes.Add(attribute.Key);
+      base.RemoveItem(index);
     }
 
     /*==========================================================================================================================
@@ -443,27 +617,22 @@ namespace OnTopic.Collections {
     ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
     /// </remarks>
     /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <param name="settableAttribute">
-    ///   Outputs the <see cref="AttributeValue"/> that should be set; will return null if it should not be set.
-    /// </param>
     /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
-    private bool EnforceBusinessLogic(AttributeValue originalAttribute, out AttributeValue settableAttribute) {
-      settableAttribute = originalAttribute;
-      if (!originalAttribute.EnforceBusinessLogic) {
-        originalAttribute.EnforceBusinessLogic = true;
+    private bool EnforceBusinessLogic(AttributeValue originalAttribute) {
+      if (BusinessLogicCache.ContainsKey(originalAttribute.Key)) {
+        BusinessLogicCache.Remove(originalAttribute.Key);
         return true;
       }
       else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
         _setCounter++;
         if (_setCounter > 3) {
-          throw new Exception(
+          throw new InvalidOperationException(
             $"An infinite loop has occurred when setting '{originalAttribute.Key}'; be sure that you are referencing " +
             $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
           );
         }
+        BusinessLogicCache.Add(originalAttribute.Key, originalAttribute);
         _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
-        this[originalAttribute.Key].IsDirty = originalAttribute.IsDirty;
-        this[originalAttribute.Key].LastModified = originalAttribute.LastModified;
         _setCounter = 0;
         return false;
       }

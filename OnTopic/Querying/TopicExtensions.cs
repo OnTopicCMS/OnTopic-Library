@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
@@ -48,7 +49,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var child in topic.Children) {
         var nestedResult = child.FindFirst(predicate);
-        if (nestedResult != null) {
+        if (nestedResult is not null) {
           return nestedResult;
         }
       }
@@ -87,7 +88,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      while (topic.Parent != null) {
+      while (topic.Parent is not null) {
         if (predicate(topic.Parent)) {
           return topic.Parent;
         }
@@ -109,7 +110,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>A collection of topics descending from the current topic.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
+    public static IEnumerable<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
 
     /// <summary>
     ///   Retrieves a collection of topics based on a supplied function.
@@ -117,7 +118,7 @@ namespace OnTopic.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
+    public static IEnumerable<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -149,7 +150,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return results.AsReadOnly();
+      return results;
 
     }
 
@@ -171,14 +172,14 @@ namespace OnTopic.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static ReadOnlyTopicCollection<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
+    public static IEnumerable<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
       TopicFactory.ValidateKey(name);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +187,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic.FindAll(t =>
         !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
-        t.Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        t.Attributes.GetValue(name).Contains(value, StringComparison.InvariantCultureIgnoreCase)
       );
 
     }
@@ -199,7 +200,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
-    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent == null)?? topic;
+    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)?? topic;
 
     /*==========================================================================================================================
     | METHOD: GET BY UNIQUE KEY
@@ -216,7 +217,7 @@ namespace OnTopic.Querying {
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), "The unique key must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), nameof(uniqueKey));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
@@ -226,15 +227,15 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.InvariantCultureIgnoreCase)) {
+      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
         return currentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
-        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
+        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 

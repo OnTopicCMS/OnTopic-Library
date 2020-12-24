@@ -5,8 +5,8 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[GetTopicVersion]
-	@TopicID		int	= -1,
-	@Version		datetime	= null
+	@TopicID		INT	= -1,
+	@Version		DATETIME	= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -66,11 +66,6 @@ AS (
   FROM	Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND 	AttributeKey
-    NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-    )
 )
 SELECT	TopicID,
 	AttributeKey,

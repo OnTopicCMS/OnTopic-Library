@@ -208,7 +208,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.AreEqual<int>(3, attributes.Count());
+      Assert.AreEqual<int>(1, attributes.Count());
 
     }
 
@@ -230,8 +230,8 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.IsFalse(attributes.Any(a => a.Key == "EmptyAttribute"));
-      Assert.IsFalse(attributes.Any(a => a.Key == "NullAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "EmptyAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "NullAttribute"));
 
     }
 
@@ -250,7 +250,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -313,8 +313,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      //Expect Key and ContentType, but not Title
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -335,8 +334,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      //Expected to return Key and ContentType, butnot LastModified or LastModifiedBy
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -357,7 +355,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -378,7 +376,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
 
     }
 
@@ -399,7 +397,7 @@ namespace OnTopic.Tests {
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
       Assert.IsTrue(attributes.Any());
-      Assert.IsFalse(attributes.Any(a => a.Key.Equals("Title", StringComparison.InvariantCultureIgnoreCase)));
+      Assert.IsFalse(attributes.Any(a => a.Key is "Title"));
 
     }
 
@@ -425,9 +423,9 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetUnmatchedAttributesProxy(topic);
 
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("ArbitraryAttribute", StringComparison.InvariantCulture)));
-      Assert.IsTrue(attributes.Any(a => a.Key.Equals("YetAnotherArbitraryAttribute", StringComparison.InvariantCulture)));
-      Assert.IsFalse(attributes.Any(a => a.Key.Equals("AnotherArbitraryAttribute", StringComparison.InvariantCulture)));
+      Assert.IsTrue(attributes.Any(a => a.Key is "ArbitraryAttribute"));
+      Assert.IsTrue(attributes.Any(a => a.Key is "YetAnotherArbitraryAttribute"));
+      Assert.IsFalse(attributes.Any(a => a.Key is "AnotherArbitraryAttribute"));
 
     }
 
@@ -509,8 +507,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
-    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
-    ///   it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -529,7 +527,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Loads the <see cref="TopicRepositoryBase.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
-    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
+    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
     [TestMethod]

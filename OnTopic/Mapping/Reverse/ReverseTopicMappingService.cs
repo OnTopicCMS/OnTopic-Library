@@ -30,7 +30,7 @@ namespace OnTopic.Mapping.Reverse {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new TypeMemberInfoCollection();
+    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -77,7 +77,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (source == null) return null;
+      if (source is null) return null;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -106,7 +106,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (source == null) {
+      if (source is null) {
         return null;
       }
 
@@ -135,7 +135,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (source == null) return target;
+      if (source is null) return target;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -145,17 +145,17 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the content type is valid
       if (!_contentTypeDescriptors.Contains(source.ContentType)) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
-          $"no matching content type in the ITopicRepository provided. This suggests that the binding model is invalid. If " +
-          $"this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
+          $"are no matching content types in the ITopicRepository provided. This suggests that the binding model is invalid. " +
+          $"If this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
           $"to the same ITopicRepository instance prior to creating any instances of it."
         );
       }
 
       //Ensure the content types match
       if (source.ContentType != target.ContentType) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
           $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
           $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. " +
@@ -165,7 +165,7 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the keys match
       if (source.Key != target.Key && !String.IsNullOrEmpty(source.Key)) {
-        throw new InvalidEnumArgumentException(
+        throw new InvalidOperationException(
           $"The {nameof(source)} object has a key of '{source.Key}', while the {nameof(target)} object has a key of " +
           $"'{target.Key}'. It is not permitted to change the topic'key during a mapping operation, as this suggests in " +
           $"invalid target. If this is by design, change the key on the target topic prior to invoking MapAsync()."
@@ -199,7 +199,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (source == null) return target;
+      if (source is null) return target;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
@@ -292,7 +292,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attributeType = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
 
-      if (attributeType == null) {
+      if (attributeType is null) {
         throw new InvalidOperationException(
           $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
           $"'{contentTypeDescriptor.Key}' content type.");
@@ -366,17 +366,17 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Fall back to default, if configured
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue) && configuration.DefaultValue != null) {
+      if (String.IsNullOrEmpty(attributeValue) && configuration.DefaultValue is not null) {
         attributeValue = configuration.DefaultValue.ToString();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle type conversion
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (attributeValue != null) {
+      if (attributeValue is not null) {
         switch (configuration.Property.PropertyType.Name) {
           case nameof(Boolean):
-            attributeValue = attributeValue == "True" ? "1" : "0";
+            attributeValue = attributeValue is "True" ? "1" : "0";
             break;
         }
       }
@@ -421,7 +421,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceList = (IList)configuration.Property.GetValue(source, null);
 
-      if (sourceList == null) {
+      if (sourceList is null) {
         sourceList = new List<IRelatedTopicBindingModel>();
       }
 
@@ -435,9 +435,8 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (IRelatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey);
-        if (targetTopic == null) {
-          throw new ArgumentOutOfRangeException(
-            configuration.Property.Name,
+        if (targetTopic is null) {
+          throw new InvalidOperationException(
             $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
             $"be located in the repository."
           );
@@ -483,7 +482,7 @@ namespace OnTopic.Mapping.Reverse {
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var container = target.Children.GetTopic(configuration.AttributeKey);
-      if (container == null) {
+      if (container is null) {
         container = TopicFactory.Create(configuration.AttributeKey, "List", target);
         container.IsHidden = true;
       }
@@ -530,7 +529,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (modelReference == null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
+      if (modelReference is null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
         return;
       }
 
@@ -542,7 +541,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicReference == null) {
+      if (topicReference is null) {
         throw new InvalidOperationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
           $"'{configuration.Property.Name}' property could not be found."
@@ -608,7 +607,7 @@ namespace OnTopic.Mapping.Reverse {
         var topicTask = await Task.WhenAny(taskQueue).ConfigureAwait(false);
         taskQueue.Remove(topicTask);
         var topic = await topicTask.ConfigureAwait(false);
-        if (topic != null && !targetList.Contains(topic.Key)) {
+        if (topic is not null && !targetList.Contains(topic.Key)) {
           targetList.Add(topic);
         }
       }

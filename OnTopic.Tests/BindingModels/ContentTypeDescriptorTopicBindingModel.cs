@@ -3,8 +3,8 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
-using OnTopic.Models;
+using System.Collections.ObjectModel;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 
@@ -21,9 +21,9 @@ namespace OnTopic.Tests.BindingModels {
 
     public ContentTypeDescriptorTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
-    public List<RelatedTopicBindingModel> ContentTypes { get; } = new List<RelatedTopicBindingModel>();
+    public Collection<RelatedTopicBindingModel> ContentTypes { get; } = new();
 
-    public List<AttributeDescriptorTopicBindingModel> Attributes { get; } = new List<AttributeDescriptorTopicBindingModel>();
+    public Collection<AttributeDescriptorTopicBindingModel> Attributes { get; } = new();
 
   } //Class
 } //Namespace

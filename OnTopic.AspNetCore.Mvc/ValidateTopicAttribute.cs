@@ -55,23 +55,23 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </remarks>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]
-    public override void OnActionExecuting(ActionExecutingContext filterContext) {
+    public override void OnActionExecuting(ActionExecutingContext context) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(filterContext, nameof(filterContext));
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = filterContext.Controller as TopicController;
+      var controller            = context.Controller as TopicController;
       var currentTopic          = controller?.CurrentTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate context
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (controller == null) {
+      if (controller is null) {
         throw new InvalidOperationException(
           $"The {nameof(ValidateTopicAttribute)} can only be applied to a controller deriving from {nameof(TopicController)}."
         );
@@ -80,9 +80,9 @@ namespace OnTopic.AspNetCore.Mvc {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle exceptions
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic == null) {
+      if (currentTopic is null) {
         if (!AllowNull) {
-          filterContext.Result = controller.NotFound("There is no topic associated with this path.");
+          context.Result = controller.NotFound("There is no topic associated with this path.");
         }
         return;
       }
@@ -93,7 +93,7 @@ namespace OnTopic.AspNetCore.Mvc {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (currentTopic.IsDisabled) {
-        filterContext.Result = new UnauthorizedResult();
+        context.Result = new UnauthorizedResult();
         return;
       }
 
@@ -101,7 +101,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(currentTopic.Attributes.GetValue("URL"))) {
-        filterContext.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
+        context.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
         return;
       }
 
@@ -111,8 +111,8 @@ namespace OnTopic.AspNetCore.Mvc {
       | Nested topics are not expected to be viewed directly; if a user requests a nested topic, return a 403 to indicate that
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "List" || currentTopic.Parent?.ContentType == "List") {
-        filterContext.Result = new StatusCodeResult(403);
+      if (currentTopic is { ContentType: "List"} or { Parent: {ContentType: "List" } }) {
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -122,8 +122,8 @@ namespace OnTopic.AspNetCore.Mvc {
       | Like nested topics, containers are not expected to be viewed directly; if a user requests a container, return a 403 to
       | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "Container") {
-        filterContext.Result = new StatusCodeResult(403);
+      if (currentTopic.ContentType is "Container") {
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -133,17 +133,29 @@ namespace OnTopic.AspNetCore.Mvc {
       | PageGroups are a special content type for packaging multiple pages together. When a PageGroup is identified, the user is
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic.ContentType == "PageGroup") {
-        filterContext.Result = controller.Redirect(
+      if (currentTopic.ContentType is "PageGroup") {
+        context.Result = controller.Redirect(
           currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
         );
         return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle canonical URL
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Most search engines are case sensitive, even though many web servers are configured case insensitive. To help avoid
+      | mismatches between the requested URL and the canonical URL, and to help ensure that references to topics maintain the
+      | same case as assigned in the topic graph, URLs that vary only by case will be redirected to the expected case.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!currentTopic.GetWebPath().Equals(context.HttpContext.Request.Path, StringComparison.Ordinal)) {
+        context.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Base processing
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.OnActionExecuting(filterContext);
+      base.OnActionExecuting(context);
 
     }
 

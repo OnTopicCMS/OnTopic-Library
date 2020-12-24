@@ -77,9 +77,16 @@ namespace OnTopic.AspNetCore.Mvc {
       var topic = (Topic?)null;
 
       foreach (var searchPath in paths) {
-        if (topic != null) break;
+        if (topic is not null) break;
         if (String.IsNullOrEmpty(searchPath)) continue;
-        topic = topicRepository.Load(searchPath);
+        try {
+          topic = topicRepository.Load(searchPath);
+        }
+        catch (InvalidKeyException) {
+          //As route data comes from user-submitted requests, it's expected that some may contain invalid keys. From this
+          //method's perspective, this is no different than having an invalid URL. As such, we should return a null result, not
+          //bubble up an exception.
+        }
       }
 
       return topic;

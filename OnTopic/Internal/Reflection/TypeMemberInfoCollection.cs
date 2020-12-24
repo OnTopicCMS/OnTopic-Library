@@ -32,7 +32,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Initializes static properties on <see cref="TypeMemberInfoCollection"/>.
     /// </summary>
     static TypeMemberInfoCollection() {
-      SettableTypes = new List<Type> {
+      SettableTypes = new() {
         typeof(bool),
         typeof(bool?),
         typeof(int),
@@ -73,7 +73,7 @@ namespace OnTopic.Internal.Reflection {
       if (!Contains(type)) {
         lock(Items) {
           if (!Contains(type)) {
-            Add(new MemberInfoCollection(type));
+            Add(new(type));
           }
         }
       }
@@ -91,7 +91,7 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
     public MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
-      new MemberInfoCollection<T>(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
+      new(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
 
     /*==========================================================================================================================
     | METHOD: GET MEMBER
@@ -129,7 +129,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member is available.
     /// </summary>
-    public bool HasMember(Type type, string name) => GetMember(type, name) != null;
+    public bool HasMember(Type type, string name) => GetMember(type, name) is not null;
 
     /*==========================================================================================================================
     | METHOD: HAS MEMBER {T}
@@ -137,7 +137,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
     /// </summary>
-    public bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) != null;
+    public bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) is not null;
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
@@ -153,10 +153,9 @@ namespace OnTopic.Internal.Reflection {
     public bool HasSettableProperty(Type type, string name) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
-        property != null &&
-        property.CanWrite &&
+        property is not null and { CanWrite: true } &&
         IsSettableType(property.PropertyType) &&
-        (_attributeFlag == null || System.Attribute.IsDefined(property, _attributeFlag))
+        (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
 
@@ -185,7 +184,7 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = GetValueObject(property.PropertyType, value);
 
-      if (valueObject == null) {
+      if (valueObject is null) {
         return false;
       }
 
@@ -209,10 +208,9 @@ namespace OnTopic.Internal.Reflection {
     public bool HasGettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
-        property != null &&
-        property.CanRead &&
+        property is not null and { CanRead: true } &&
         IsSettableType(property.PropertyType, targetType) &&
-        (_attributeFlag == null || System.Attribute.IsDefined(property, _attributeFlag))
+        (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
 
@@ -260,17 +258,18 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <remarks>
     ///   Will return false if the method is not available. Methods are only considered settable if they have one parameter of
-    ///   a settable type.
+    ///   a settable type. Be aware that this will return <c>false</c> if the method has additional parameters, even if those
+    ///   additional parameters are optional.
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     public bool HasSettableMethod(Type type, string name) {
       var method = GetMember<MethodInfo>(type, name);
       return (
-        method != null &&
-        method.GetParameters().Length.Equals(1) &&
+        method is not null &&
+        method.GetParameters().Length is 1 &&
         IsSettableType(method.GetParameters().First().ParameterType) &&
-        (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
+        (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
       );
     }
 
@@ -281,6 +280,10 @@ namespace OnTopic.Internal.Reflection {
     ///   Uses reflection to call a method, assuming that it is a) writable, and b) of type <see cref="String"/>,
     ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
     /// </summary>
+    /// <remarks>
+    ///   Be aware that this will only succeed if the method has a single parameter of a settable type. If additional parameters
+    ///   are present it will return <c>false</c>, even if those additional parameters are optional.
+    /// </remarks>
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
@@ -308,7 +311,7 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
 
-      if (valueObject == null) {
+      if (valueObject is null) {
         return false;
       }
 
@@ -334,10 +337,10 @@ namespace OnTopic.Internal.Reflection {
     public bool HasGettableMethod(Type type, string name, Type? targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
-        method != null &&
+        method is not null &&
         !method.GetParameters().Any() &&
         IsSettableType(method.ReturnType, targetType) &&
-        (_attributeFlag == null || System.Attribute.IsDefined(method, _attributeFlag))
+        (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
       );
     }
 
@@ -385,7 +388,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     private static bool IsSettableType(Type sourceType, Type? targetType = null) {
 
-      if (targetType != null) {
+      if (targetType is not null) {
         return sourceType.Equals(targetType);
       }
       return SettableTypes.Contains(sourceType);
@@ -407,16 +410,16 @@ namespace OnTopic.Internal.Reflection {
         return null;
       }
 
-      if (value == null) return null;
+      if (value is null) return null;
 
       if (type.Equals(typeof(string))) {
         valueObject = value;
       }
       else if (type.Equals(typeof(bool)) || type.Equals(typeof(bool?))) {
-        if (value == "1" || value.Equals("true", StringComparison.InvariantCultureIgnoreCase)) {
+        if (value is "1" || value.Equals("true", StringComparison.OrdinalIgnoreCase)) {
           valueObject = true;
         }
-        else if (value == "0" || value.Equals("false", StringComparison.InvariantCultureIgnoreCase)) {
+        else if (value is "0" || value.Equals("false", StringComparison.OrdinalIgnoreCase)) {
           valueObject = false;
         }
       }
@@ -451,7 +454,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
-    public static List<Type> SettableTypes { get; }
+    public static Collection<Type> SettableTypes { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
@@ -485,7 +488,9 @@ namespace OnTopic.Internal.Reflection {
       else {
         throw new ArgumentException(
           $"The '{nameof(TypeMemberInfoCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type " +
-          $"'{item.Type}'.");
+          $"'{item.Type}'.",
+          nameof(item)
+        );
       }
     }
 

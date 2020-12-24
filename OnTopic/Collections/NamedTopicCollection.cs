@@ -29,7 +29,7 @@ namespace OnTopic.Collections {
     /// <param name="topics">Optionally seeds the collection with an optional list of topic references.</param>
     public NamedTopicCollection(string name = "", IEnumerable<Topic>? topics = null) : base() {
       Name = name;
-      if (topics != null) {
+      if (topics is not null) {
         CopyTo(topics.ToArray(), 0);
       }
     }
@@ -50,11 +50,11 @@ namespace OnTopic.Collections {
     ///   When inserting an item, determine if it will change the collection; if it will, mark the collection as <see
     ///   cref="IsDirty"/>.
     /// </summary>
-    protected override void InsertItem(int index, Topic topic) {
+    protected override void InsertItem(int index, Topic item) {
       Contract.Requires(index, nameof(index));
-      Contract.Requires(topic, nameof(topic));
-      IsDirty = IsDirty || !Contains(topic.Key);
-      base.InsertItem(index, topic);
+      Contract.Requires(item, nameof(item));
+      IsDirty = IsDirty || !Contains(item.Key);
+      base.InsertItem(index, item);
     }
 
     /*==========================================================================================================================
@@ -64,11 +64,11 @@ namespace OnTopic.Collections {
     ///   When updating an existing item, determine if it will change the collection; if it will, mark the collection as <see
     ///   cref="IsDirty"/>.
     /// </summary>
-    protected override void SetItem(int index, Topic topic) {
+    protected override void SetItem(int index, Topic item) {
       Contract.Requires(index, nameof(index));
-      Contract.Requires(topic, nameof(topic));
-      IsDirty = IsDirty || !Contains(topic.Key);
-      base.SetItem(index, topic);
+      Contract.Requires(item, nameof(item));
+      IsDirty = IsDirty || !Contains(item.Key);
+      base.SetItem(index, item);
     }
 
     /*==========================================================================================================================

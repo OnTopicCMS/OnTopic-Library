@@ -6,10 +6,11 @@
 
 CREATE PROCEDURE [dbo].[UpdateTopic]
 	@TopicID		INT		= -1		,
+	@Key		VARCHAR(128)		= NULL		,
+	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
-	@ExtendedAttributes	XML		= null		,
-	@Version		DATETIME		= null		,
-	@DeleteRelationships	BIT		= 0
+	@ExtendedAttributes	XML		= NULL		,
+	@Version		DATETIME		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -17,6 +18,28 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
 SET	@Version		= GetDate()
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE KEY ATTRIBUTES
+--------------------------------------------------------------------------------------------------------------------------------
+
+IF @Key IS NOT NULL OR @ContentType IS NOT NULL
+  BEGIN
+    UPDATE	Topics
+    SET	TopicKey		=
+      CASE
+        WHEN	@Key		IS NULL
+        THEN	TopicKey
+        ELSE	@Key
+      END,
+	ContentType		=
+      CASE
+        WHEN	@ContentType		IS NULL
+        THEN	TopicKey
+        ELSE	@ContentType
+      END
+    WHERE	TopicID		= @TopicID
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NEW ATTRIBUTES
@@ -41,8 +64,7 @@ OUTER APPLY (
       AND	AttributeKey		= New.AttributeKey
     ORDER BY	Version		DESC
   )			Existing
-WHERE	AttributeKey		!= 'ParentId'
-  AND	ISNULL(AttributeValue, '')	!= ''
+WHERE	ISNULL(AttributeValue, '')	!= ''
   AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -96,7 +118,7 @@ CROSS APPLY (
     AND	AttributeKey		= New.AttributeKey
   ORDER BY	Version DESC
 )			Existing
-WHERE	IsNull(AttributeValue, '')	= ''
+WHERE	ISNULL(AttributeValue, '')	= ''
   AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------

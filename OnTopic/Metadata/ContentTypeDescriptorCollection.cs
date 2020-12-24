@@ -58,9 +58,11 @@ namespace OnTopic.Metadata {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (rootContentType == null || rootContentType.Children.Count == 0) {
+      #pragma warning disable IDE0078 // Use pattern matching
+      if (rootContentType is null || rootContentType is { Children: { Count: 0 } }) {
         return;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       Contract.Requires(
         rootContentType.Key.Equals("ContentTypes", StringComparison.OrdinalIgnoreCase),

@@ -26,7 +26,7 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
     public TopicCollection(IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
-      if (topics != null) {
+      if (topics is not null) {
         foreach (var topic in topics) {
           Add(topic);
         }
@@ -53,7 +53,7 @@ namespace OnTopic.Collections {
     /// <summary>
     ///   Retrieves a read-only version of this <see cref="TopicCollection{T}"/>.
     /// </summary>
-    public ReadOnlyTopicCollection<T> AsReadOnly() => new ReadOnlyTopicCollection<T>(this);
+    public ReadOnlyTopicCollection<T> AsReadOnly() => new(this);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
@@ -86,7 +86,8 @@ namespace OnTopic.Collections {
       else {
         throw new ArgumentException(
           $"A {typeof(T).Name} with the Key '{item.Key}' already exists. The UniqueKey of the existing {typeof(T).Name} is " +
-          $"'{this[item.Key].GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'."
+          $"'{this[item.Key].GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'.",
+          nameof(item)
         );
       }
     }

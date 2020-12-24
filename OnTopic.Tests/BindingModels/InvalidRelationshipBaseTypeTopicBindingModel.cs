@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnTopic.Models;
 using OnTopic.ViewModels;
 
@@ -24,7 +24,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidRelationshipBaseTypeTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
 
-    public List<TopicViewModel> ContentTypes { get; } = new List<TopicViewModel>();
+    public Collection<TopicViewModel> ContentTypes { get; } = new();
 
   } //Class
 } //Namespace

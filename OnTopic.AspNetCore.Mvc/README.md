@@ -145,7 +145,7 @@ return controllerType.Name switch {
   nameof(TopicController)       => new TopicController(_topicRepository, _topicMappingService),
   nameof(RedirectController)    => new RedirectController(_topicRepository),
   nameof(SitemapController)     => new SitemapController(_topicRepository),
-  _                             => throw new Exception($"Unknown controller {controllerType.Name}")
+  _                             => throw new InvalidOperationException($"Unknown controller {controllerType.Name}")
 };
 ```
 For a complete reference template, including the ancillary controllers, view components, and a more maintainable structure, see the [`OrganizationNameActivator.cs`](https://gist.github.com/JeremyCaney/00c04b1b9f40d9743793cd45dfaaa606) Gist. Optionally, you may use a dependency injection container.

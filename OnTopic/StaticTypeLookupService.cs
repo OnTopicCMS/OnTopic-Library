@@ -12,7 +12,7 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic {
 
   /*============================================================================================================================
-  | CLASS: TYPE INDEX
+  | CLASS: STATIC TYPE LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   The <see cref="StaticTypeLookupService"/> can be configured to provide a lookup of <see cref="Type"/> classes based on
@@ -23,7 +23,7 @@ namespace OnTopic {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            TypeCollection                  _typeCollection                 = new TypeCollection();
+    private readonly            TypeCollection                  _typeCollection                 = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -51,7 +51,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Populate collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (types != null) {
+      if (types is not null) {
         foreach (var type in types) {
           if (!Contains(type)) {
             Add(type);

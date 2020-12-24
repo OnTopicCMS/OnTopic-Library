@@ -34,14 +34,6 @@ BEGIN
   ------------------------------------------------------------------------------------------------------------------------------
   SELECT	@UniqueKey		= COALESCE(@UniqueKey + ':' + TopicKey, TopicKey)
   FROM	Topics
-  CROSS APPLY (
-    SELECT	TOP 1
-	AttributeValue		AS TopicKey
-    FROM	[dbo].[Attributes]
-    WHERE	Attributes.TopicID	= Topics.TopicID
-      AND	Attributes.AttributeKey	= 'Key'
-    ORDER BY	Version DESC
-  )	TopicKey
   WHERE	RangeLeft		<= @RangeLeft
   AND	RangeRight		>= @RangeRight
   ORDER BY	RangeLeft

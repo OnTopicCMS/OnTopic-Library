@@ -17,7 +17,7 @@ namespace OnTopic.Metadata.AttributeTypes {
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class NestedTopicListAttribute : AttributeTypeDescriptor {
+  public class NestedTopicListAttribute : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

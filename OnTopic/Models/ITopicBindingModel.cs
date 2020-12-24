@@ -28,7 +28,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value != null
+    ///   value is not null
     /// </requires>
     /// <requires
     ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
@@ -46,9 +46,7 @@ namespace OnTopic.Models {
     /// </summary>
     /// <remarks>
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten
-    ///   down the pipe).
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
     /// </remarks>
     [Required]
     string? ContentType { get; set; }
