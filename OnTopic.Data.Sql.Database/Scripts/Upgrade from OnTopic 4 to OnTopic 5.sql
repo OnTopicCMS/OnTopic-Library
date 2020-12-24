@@ -6,6 +6,29 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- DROP COLUMNS
+--------------------------------------------------------------------------------------------------------------------------------
+-- Migrations won't drop columns that have data in them. The following drop columns that are no longer needed. This also drops
+-- stored procedures that reference those columns—with the knowledge that their replacements will be recreated by the
+-- migrations.
+--------------------------------------------------------------------------------------------------------------------------------
+
+ALTER
+TABLE	Topics
+DROP
+COLUMN	Stack_Top;
+
+ALTER
+TABLE	Attributes
+DROP
+CONSTRAINT	DF_Attributes_DateModified;
+
+ALTER
+TABLE	Attributes
+DROP
+COLUMN	DateModified;
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE CORE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 -- In OnTopic 5, core attributes that don't utilize versioning have been moved from the Attributes table to the Topics table.
