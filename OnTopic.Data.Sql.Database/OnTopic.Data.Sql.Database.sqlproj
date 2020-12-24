@@ -64,6 +64,7 @@
   <ItemGroup>
     <None Include="README.md" />
     <None Include="Utilities\README.md" />
+    <None Include="Scripts\Upgrade from OnTopic 3 to OnTopic 4.sql" />
     <None Include="Scripts\Upgrade from OnTopic 4 to OnTopic 5.sql" />
   </ItemGroup>
   <ItemGroup>
