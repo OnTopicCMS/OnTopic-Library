@@ -39,9 +39,17 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     | EXCLUDE CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Specifies what content types should not be listed in the sitemap.
+    ///   Specifies what content types should not be listed in the sitemap, including any descendents.
     /// </summary>
     private static string[] ExcludeContentTypes { get; } = { "List" };
+
+    /*==========================================================================================================================
+    | SKIPPED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Specifies what content types should not be listed in the sitemap—but whose descendents should still be evaluated.
+    /// </summary>
+    private static string[] SkippedContentTypes { get; } = { "PageGroup", "Container" };
 
     /*==========================================================================================================================
     | EXCLUDE ATTRIBUTES
@@ -195,7 +203,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
           getRelationships()
         ) : null
       );
-      if (!topic.ContentType!.Equals("Container", StringComparison.OrdinalIgnoreCase)) {
+      if (
+        !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
+        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url"))
+      ) {
         topics.Add(topicElement);
       }
 

@@ -160,9 +160,13 @@ namespace OnTopic.Tests {
 
       var hiddenTopic1          = _topicRepository.Load("Root:Web:Web_1:Web_1_0")!;
       var hiddenTopic2          = _topicRepository.Load("Root:Web:Web_1:Web_1_1")!;
+      var hiddenTopic3          = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_1")!;
+      var hiddenTopic4          = _topicRepository.Load("Root:Web:Web_0:Web_0_0")!;
 
       hiddenTopic1.ContentType  = "List";
       hiddenTopic2.ContentType  = "Container";
+      hiddenTopic3.ContentType  = "PageGroup";
+      hiddenTopic4.Attributes.SetValue("Url", "https://www.microsoft.com/");
 
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
@@ -181,8 +185,12 @@ namespace OnTopic.Tests {
       Assert.IsTrue(model.Contains("<DataObject type=\"Page\">"));
       Assert.IsFalse(model.Contains("<DataObject type=\"List\">"));
       Assert.IsFalse(model.Contains("<DataObject type=\"Container\">"));
+      Assert.IsFalse(model.Contains("<DataObject type=\"PageGroup\">"));
+      Assert.IsTrue(model.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>"));
       Assert.IsTrue(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>"));
       Assert.IsFalse(model.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>"));
+      Assert.IsFalse(model.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
+      Assert.IsFalse(model.Contains("/Web/Web_0/Web_0_0/</loc>"));
 
     }
 
