@@ -148,5 +148,43 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action and verifies that it properly
+    ///   excludes the <c>Body</c> and <c>IsHidden</c> attributes.
+    /// </summary>
+    [TestMethod]
+    public void SitemapController_Index_ExcludesAttributes() {
+
+      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
+
+      topic.Attributes.SetValue("Title", "Title");
+      topic.Attributes.SetValue("LastModified", "December 23, 1918");
+      topic.Attributes.SetValue("Body", "Body");
+      topic.Attributes.SetValue("IsHidden", "0");
+
+      var actionContext         = new ActionContext {
+        HttpContext             = new DefaultHttpContext(),
+        RouteData               = new(),
+        ActionDescriptor        = new ControllerActionDescriptor()
+      };
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(actionContext)
+      };
+      var result                = controller.Index(false, true) as ContentResult;
+      var model                 = result.Content as string;
+
+      controller.Dispose();
+
+      Assert.IsNotNull(model);
+      Assert.IsTrue(model.Contains("<Attribute name=\"Title\">"));
+      Assert.IsTrue(model.Contains("<Attribute name=\"LastModified\">"));
+      Assert.IsFalse(model.Contains("<Attribute name=\"Body\">"));
+      Assert.IsFalse(model.Contains("<Attribute name=\"IsHidden\">"));
+
+    }
+
   } //Class
 } //Namespace
