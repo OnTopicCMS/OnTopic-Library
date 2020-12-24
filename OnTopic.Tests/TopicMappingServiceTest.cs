@@ -807,7 +807,13 @@ namespace OnTopic.Tests {
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
-      childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
+      childTopic4.Attributes.SetValue("SomeAttribute", "ValueA");
+
+      childTopic1.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic2.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic3.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+      childTopic4.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+
 
       var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
 
