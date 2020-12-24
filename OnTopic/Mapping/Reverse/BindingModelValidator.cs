@@ -14,7 +14,6 @@ using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
 using OnTopic.Mapping.Annotations;
-using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
@@ -199,7 +198,7 @@ namespace OnTopic.Mapping.Reverse {
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.RelationshipType is RelationshipType.Children) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
           $"it from being evaluated by the {nameof(ReverseTopicMappingService)}. If children must be mapped, then the " +
@@ -212,7 +211,7 @@ namespace OnTopic.Mapping.Reverse {
       | Handle parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.AttributeKey is "Parent") {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
           $"it from being evaluated by the {nameof(ReverseTopicMappingService)}."
@@ -223,7 +222,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate attribute type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor is null) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
           $"'{configuration.Property.Name}' property. If this property is not intended to be mapped by the " +
@@ -246,7 +245,7 @@ namespace OnTopic.Mapping.Reverse {
         !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
         listType is not null
       ) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.RelationshipType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(ITopicBindingModel)} interface. This is required for binding models. If this collection is not intended " +
@@ -263,7 +262,7 @@ namespace OnTopic.Mapping.Reverse {
         attributeDescriptor.ModelType is ModelType.Reference &&
         !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{ModelType.Reference}, but the generic type '{propertyType.Name}' does not implement the " +
           $"{nameof(IRelatedTopicBindingModel)} interface. This is required for references. If this property is not intended " +
@@ -280,7 +279,7 @@ namespace OnTopic.Mapping.Reverse {
         attributeDescriptor.ModelType is ModelType.Reference &&
         !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
       ) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a topic reference, but " +
           $"the generic type '{compositeAttributeKey}' does not end in <c>Id</c>. By convention, all topic reference are " +
           $"expected to end in <c>Id</c>. To keep the property name set to '{propertyType.Name}', use the " +
@@ -334,7 +333,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate list
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but does not implement {nameof(IList)}. Relationships must implement " +
           $"{nameof(IList)} or derive from a collection that does."
@@ -345,7 +344,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate relationship type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!new[] { RelationshipType.Any, RelationshipType.Relationship }.Contains(configuration.RelationshipType)) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but is configured as a {configuration.RelationshipType}. The property should be " +
           $"flagged as either {nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
@@ -356,7 +355,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate the correct base class for relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
-        throw new InvalidOperationException(
+        throw new TopicMappingException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.RelationshipType}, but the generic type '{listType?.Name}' does not implement the " +
           $"{nameof(IRelatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +

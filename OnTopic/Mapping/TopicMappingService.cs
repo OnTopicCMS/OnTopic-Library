@@ -123,7 +123,7 @@ namespace OnTopic.Mapping {
         var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
 
         if (viewModelType is null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
-          throw new InvalidOperationException(
+          throw new TopicMappingException(
             $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
             $"to map the topic '{topic.GetUniqueKey()}'."
           );
