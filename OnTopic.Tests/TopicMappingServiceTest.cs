@@ -632,14 +632,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    | TEST: MAP: FILTER BY COLLECTION TYPE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
     ///   cref="DescendentTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+    public async Task Map_FilterByCollectionType_ReturnsFilteredCollection() {
 
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
@@ -818,6 +818,29 @@ namespace OnTopic.Tests {
       var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="FilteredTopicViewModel.Children"/> property can be filtered using a <see cref="FilterByContentTypeAttribute"/>
+    ///   instances.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+
+      var topic                 = TopicFactory.Create("Test", "Filtered");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+
+      var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(3, target.Children.Count);
 
     }
 
