@@ -59,13 +59,11 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     private static string[] ExcludeAttributes { get; } = {
       "Body",
-      "IsActive",
       "IsDisabled",
       "ParentID",
       "TopicID",
       "IsHidden",
       "NoIndex",
-      "URL",
       "SortOrder"
     };
 
