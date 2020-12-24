@@ -5,13 +5,13 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OnTopic.Attributes;
+using OnTopic.Internal.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
@@ -90,7 +90,7 @@ namespace OnTopic.Mapping {
     private async Task<object?> MapAsync(
       Topic?                    topic,
       Relationships             relationships,
-      ConcurrentDictionary<int, object> cache,
+      MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
 
@@ -106,23 +106,32 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
+      object? target;
+
+      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+        target                  = cacheEntry.MappedTopic;
+        if (cacheEntry.GetMissingRelationships(relationships) == Relationships.None) {
+          return target;
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Instantiate object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var viewModelType = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+      else {
 
-      if (viewModelType is null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
-        throw new InvalidOperationException(
-          $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
-          $"to map the topic '{topic.GetUniqueKey()}'."
-        );
+        var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
+
+        if (viewModelType is null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
+          throw new InvalidOperationException(
+            $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
+            $"to map the topic '{topic.GetUniqueKey()}'."
+          );
+        }
+
+        target                  = Activator.CreateInstance(viewModelType);
+
       }
-
-      var target = Activator.CreateInstance(viewModelType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide mapping
@@ -168,10 +177,10 @@ namespace OnTopic.Mapping {
     ///   The target view model with the properties appropriately mapped.
     /// </returns>
     private async Task<object> MapAsync(
-      Topic? topic,
-      object target,
-      Relationships relationships,
-      ConcurrentDictionary<int, object> cache,
+      Topic?                    topic,
+      object                    target,
+      Relationships             relationships,
+      MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
 
@@ -193,12 +202,26 @@ namespace OnTopic.Mapping {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the cache contains an entry, check to make sure it includes all of the requested relationships. If it does, return
+      | it. If it doesn't, determine the missing relationships and request to have those  mapped.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (cache.TryGetValue(topic.Id, out var dto)) {
-        return dto;
+      if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
+        relationships           = cacheEntry.GetMissingRelationships(relationships);
+        target                  = cacheEntry.MappedTopic;
+        if (relationships == Relationships.None) {
+          return cacheEntry.MappedTopic;
+        }
+        cacheEntry.AddMissingRelationships(relationships);
       }
       else if (!topic.IsNew) {
-        cache.GetOrAdd(topic.Id, target);
+        cache.GetOrAdd(
+          topic.Id,
+          new MappedTopicCacheEntry() {
+            MappedTopic         = target,
+            Relationships       = relationships
+          }
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -206,7 +229,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix));
+        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix, cacheEntry != null));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
@@ -230,13 +253,15 @@ namespace OnTopic.Mapping {
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
+    /// <param name="mapRelationshipsOnly">Determines if properties not associated with properties should be mapped.</param>
     protected async Task SetPropertyAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyInfo property,
-      ConcurrentDictionary<int, object> cache,
-      string?                   attributePrefix                 = null
+      Topic                     source,
+      object                    target,
+      Relationships             relationships,
+      PropertyInfo              property,
+      MappedTopicCache          cache,
+      string?                   attributePrefix                 = null,
+      bool                      mapRelationshipsOnly            = false
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -261,7 +286,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.DefaultValue is not null) {
+      if (!mapRelationshipsOnly && configuration.DefaultValue is not null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
@@ -274,7 +299,7 @@ namespace OnTopic.Mapping {
       else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
-      else if (_typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+      else if (!mapRelationshipsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
@@ -398,11 +423,11 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetCollectionValueAsync(
-      Topic source,
-      object target,
-      Relationships relationships,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      Topic                     source,
+      object                    target,
+      Relationships             relationships,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -590,10 +615,10 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task PopulateTargetCollectionAsync(
-      IList<Topic> sourceList,
-      IList targetList,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      IList<Topic>              sourceList,
+      IList                     targetList,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -698,10 +723,10 @@ namespace OnTopic.Mapping {
     /// </param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     protected async Task SetTopicReferenceAsync(
-      Topic source,
-      object target,
-      PropertyConfiguration configuration,
-      ConcurrentDictionary<int, object> cache
+      Topic                     source,
+      object                    target,
+      PropertyConfiguration     configuration,
+      MappedTopicCache          cache
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
