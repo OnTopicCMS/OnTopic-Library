@@ -840,7 +840,7 @@ namespace OnTopic.Tests {
 
       var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int>(3, target.Children.Count);
+      Assert.AreEqual<int>(2, target.Children.Count);
 
     }
 

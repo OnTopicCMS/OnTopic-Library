@@ -627,7 +627,7 @@ namespace OnTopic.Mapping {
 
         if (
           configuration.ContentTypeFilter is not null &&
-          childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
+          !childTopic.ContentType.Equals(configuration.ContentTypeFilter, StringComparison.OrdinalIgnoreCase)
         ) {
           continue;
         }
