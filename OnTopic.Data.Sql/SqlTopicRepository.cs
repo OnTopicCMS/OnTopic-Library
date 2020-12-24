@@ -318,8 +318,9 @@ namespace OnTopic.Data.Sql {
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var areReferencesResolved = true;
+      var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
-      var areAttributesDirty    = topic.Attributes.IsDirty(excludeLastModified: !areRelationshipsDirty);
+      var areAttributesDirty    = topic.Attributes.IsDirty(true);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
       var indexedAttributeList  = GetAttributes(
         topic                   : topic,
@@ -337,6 +338,7 @@ namespace OnTopic.Data.Sql {
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var isDirty               =
+        isTopicDirty            ||
         areRelationshipsDirty   ||
         areAttributesDirty      ||
         indexedAttributeList.Any() ||
@@ -418,11 +420,12 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteRelationships", areReferencesResolved && areRelationshipsDirty);
       }
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
+      command.AddParameter("Key", topic.Key);
+      command.AddParameter("ContentType", topic.ContentType);
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddParameter("Attributes", attributeValues);

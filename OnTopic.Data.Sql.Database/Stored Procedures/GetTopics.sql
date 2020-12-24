@@ -87,14 +87,14 @@ ELSE
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	TopicIndex.TopicID,
-  	TopicIndex.ContentType,
-  	TopicIndex.ParentID,
-  	TopicIndex.TopicKey,
+SELECT	Topics.TopicID,
+  	Topics.ContentType,
+  	Topics.ParentID,
+  	Topics.TopicKey,
   	Storage.SortOrder
-FROM	TopicIndex		AS TopicIndex
+FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= TopicIndex.TopicID
+  ON	Storage.TopicID		= Topics.TopicID
 ORDER BY	SortOrder
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -107,11 +107,6 @@ SELECT	Attributes.TopicID,
 FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
-WHERE	AttributeKey
-NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-)
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT EXTENDED ATTRIBUTES

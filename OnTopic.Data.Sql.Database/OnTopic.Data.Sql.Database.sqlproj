@@ -62,57 +62,64 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
-    <Folder Include="Properties" />
-    <Folder Include="Tables\" />
-    <Folder Include="Views\" />
+    <None Include="README.md" />
+    <None Include="Utilities\README.md" />
+    <None Include="Scripts\Upgrade from OnTopic 3 to OnTopic 4.sql" />
+    <None Include="Scripts\Upgrade from OnTopic 4 to OnTopic 5.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="OnTopic.Data.Sql.Database.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Functions\" />
+    <Folder Include="Properties" />
+    <Folder Include="Scripts\" />
     <Folder Include="Stored Procedures\" />
+    <Folder Include="Tables\" />
     <Folder Include="Types" />
     <Folder Include="Utilities\" />
     <Folder Include="Utilities\Stored Procedures" />
-    <Folder Include="Utilities\Views" />
     <Folder Include="Utilities\Tables" />
+    <Folder Include="Utilities\Views" />
+    <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Utilities\Schema.sql" />
-    <Build Include="Utilities\Stored Procedures\GenerateNestedSet.sql" />
-    <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
-    <Build Include="Utilities\Stored Procedures\DisableForeignKeys.sql" />
-    <Build Include="Utilities\Stored Procedures\ValidateHierarchy.sql" />
-    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
-    <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
-    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
-    <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
-    <Build Include="Functions\GetExtendedAttribute.sql" />
-    <Build Include="Functions\GetUniqueKey.sql" />
-    <Build Include="Functions\GetTopicID.sql" />
-    <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
-    <Build Include="Utilities\Views\LeftRightRange.sql" />
-    <Build Include="Utilities\Tables\AdjacencyList.sql" />
-    <Build Include="Functions\GetChildTopicIDs.sql" />
-    <Build Include="Functions\GetAttributes.sql" />
     <Build Include="Functions\FindTopicIDs.sql" />
-  </ItemGroup>
-  <ItemGroup>
+    <Build Include="Functions\GetAttributes.sql" />
+    <Build Include="Functions\GetChildTopicIDs.sql" />
+    <Build Include="Functions\GetExtendedAttribute.sql" />
+    <Build Include="Functions\GetParentID.sql" />
+    <Build Include="Functions\GetTopicID.sql" />
+    <Build Include="Functions\GetUniqueKey.sql" />
+    <Build Include="Stored Procedures\CreateTopic.sql" />
+    <Build Include="Stored Procedures\DeleteTopic.sql" />
+    <Build Include="Stored Procedures\GetTopics.sql" />
+    <Build Include="Stored Procedures\GetTopicVersion.sql" />
+    <Build Include="Stored Procedures\MoveTopic.sql" />
+    <Build Include="Stored Procedures\UpdateRelationships.sql" />
+    <Build Include="Stored Procedures\UpdateTopic.sql" />
+    <Build Include="Tables\Attributes.sql" />
     <Build Include="Tables\ExtendedAttributes.sql" />
     <Build Include="Tables\Relationships.sql" />
     <Build Include="Tables\Topics.sql" />
-    <Build Include="Tables\Attributes.sql" />
-    <Build Include="Views\TopicIndex.sql" />
+    <Build Include="Types\AttributeValues.sql" />
+    <Build Include="Types\TopicList.sql" />
+    <Build Include="Utilities\Schema.sql" />
+    <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
+    <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteConsecutiveExtendedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DeleteOrphanedLastModifiedAttributes.sql" />
+    <Build Include="Utilities\Stored Procedures\DisableForeignKeys.sql" />
+    <Build Include="Utilities\Stored Procedures\GenerateNestedSet.sql" />
+    <Build Include="Utilities\Stored Procedures\ValidateHierarchy.sql" />
+    <Build Include="Utilities\Tables\AdjacencyList.sql" />
+    <Build Include="Utilities\Views\LeftRightRange.sql" />
+    <Build Include="Utilities\Views\UniqueKeyIndex.sql" />
+    <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\AttributeIndex.sql" />
     <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
-    <Build Include="Functions\GetParentID.sql" />
-    <Build Include="Stored Procedures\MoveTopic.sql" />
-    <Build Include="Stored Procedures\UpdateTopic.sql" />
-    <Build Include="Stored Procedures\UpdateRelationships.sql" />
-    <Build Include="Stored Procedures\GetTopics.sql" />
-    <Build Include="Stored Procedures\DeleteTopic.sql" />
-    <Build Include="Stored Procedures\CreateTopic.sql" />
-    <Build Include="Stored Procedures\GetTopicVersion.sql" />
-    <Build Include="Types\AttributeValues.sql" />
-    <Build Include="Types\TopicList.sql" />
-    <Build Include="Views\AttributeIndex.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
@@ -120,12 +127,5 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
-    <None Include="Utilities\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="OnTopic.Data.Sql.Database.refactorlog" />
   </ItemGroup>
 </Project>

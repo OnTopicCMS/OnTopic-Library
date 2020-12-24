@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@Count	INT
 
-SELECT	@Count	= Count(TopicID)
+SELECT	@Count	= COUNT(TopicID)
 FROM	ExtendedAttributes
 
 Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Extended Attributes in the database.');
@@ -65,7 +65,7 @@ PRINT('Concurrent duplicates have been deleted.')
 --------------------------------------------------------------------------------------------------------------------------------
 -- CHECK FINAL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	@Count	= @Count - Count(TopicID)
+SELECT	@Count	= @Count - COUNT(TopicID)
 FROM	ExtendedAttributes
 
 Print('Final Count: ' + CAST(@Count AS VARCHAR) + ' duplicate Extended Attributes were identified and deleted.')

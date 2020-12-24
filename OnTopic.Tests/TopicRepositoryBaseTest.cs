@@ -208,7 +208,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.AreEqual<int>(3, attributes.Count());
+      Assert.AreEqual<int>(1, attributes.Count());
 
     }
 
@@ -250,7 +250,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -313,8 +313,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      //Expect Key and ContentType, but not Title
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -335,8 +334,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      //Expected to return Key and ContentType, butnot LastModified or LastModifiedBy
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 

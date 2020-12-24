@@ -45,7 +45,6 @@ The following is a summary of the most relevant stored procedures.
 
 ## Views
 The majority of the views provide records corresponding to the latest version of records for each topic. These include:
-- **[`TopicIndex`](Views/TopicIndex.sql)**: Includes the core topic attributes, `topicId`, `Key`, `ParentId`, and `ContentType`.
 - **[`AttributeIndex`](Views/AttributeIndex.sql)**: Includes the `TopicId`, `AttributeKey` and `AttributeValue`.
 - **[`ExtendedAttributesIndex`](Views/ExtendedAttributeIndex.sql)**: Includes the `TopicId` and `AttributeXml`.
 - **[`VersionHistoryIndex`](Views/VersionHistoryIndex.sql)**: Includes up to the last five `Version` records for every `TopicId`.

@@ -32,7 +32,7 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "Page");
+      Assert.AreEqual<string>(topic.ContentType, "Page");
     }
 
     /*==========================================================================================================================
@@ -61,9 +61,6 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
-
-      Assert.AreEqual<int>(123, topic.Id);
-      Assert.AreNotEqual<int>(124, topic.Id);
 
     }
 
@@ -123,10 +120,7 @@ namespace OnTopic.Tests {
       childTopic.Parent         = parentTopic;
 
       Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
-      Assert.AreEqual<int>(
-        5,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(5, childTopic.Parent.Id);
 
     }
 
@@ -150,10 +144,7 @@ namespace OnTopic.Tests {
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
-      Assert.AreEqual<int>(
-        10,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(10, childTopic.Parent.Id);
 
     }
 
@@ -343,6 +334,54 @@ namespace OnTopic.Tests {
 
       Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
       Assert.AreEqual<int>(5, topic.Attributes.GetInteger("TopicID", -2));
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: NEW TOPIC: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_NewTopic_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+
+      Assert.IsTrue(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExistingTopic_ReturnsFalse() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      Assert.IsFalse(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: CHANGE KEY: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
+    ///   Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ChangeKey_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      topic.Key                 = "NewTopic";
+
+      Assert.IsTrue(topic.IsDirty());
 
     }
 

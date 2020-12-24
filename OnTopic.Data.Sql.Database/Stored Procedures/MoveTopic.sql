@@ -92,7 +92,7 @@ ELSE
 -- target location (@InsertionPoint) is not within the scope of the source tree (@TargetID); a tree cannot be moved to a child
 -- of itself.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicID is null or @OriginalLeft is null or @OriginalRight is null
+IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
   BEGIN
     RAISERROR (
       N'The topic ("%n") could not be found.',
@@ -103,7 +103,7 @@ IF @TopicID is null or @OriginalLeft is null or @OriginalRight is null
     RETURN
   END
 
-IF @ParentID is null or @InsertionPoint is null
+IF @ParentID IS NULL OR @InsertionPoint IS NULL
   BEGIN
     RAISERROR (
       N'The parent ("%n") could not be found.',
@@ -300,7 +300,7 @@ END
 -- UPDATE PARENT ID
 --------------------------------------------------------------------------------------------------------------------------------
 UPDATE	Attributes
-SET	AttributeValue		= CONVERT(NVarChar(255), @ParentID)
+SET	AttributeValue		= CONVERT(NVARCHAR(255), @ParentID)
 WHERE	TopicID		= @TopicID
   AND	AttributeKey		= 'ParentID'
 

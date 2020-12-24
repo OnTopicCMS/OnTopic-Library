@@ -25,12 +25,13 @@ namespace OnTopic.Tests {
     | TEST: GET VALUE: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a new topic and ensures that the key can be returned as an attribute.
+    ///   Creates a new attribute via an <c>[AttributeSetter]</c> and ensures that the attribute can be returned.
     /// </summary>
     [TestMethod]
     public void GetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
-      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("Key"));
+      topic.View = "Test";
+      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("View"));
     }
 
     /*==========================================================================================================================
@@ -455,11 +456,11 @@ namespace OnTopic.Tests {
     [TestMethod]
     [ExpectedException(
       typeof(TargetInvocationException),
-      "The topic allowed a key to be set via a back door, without routing it through the Key property."
+      "The topic allowed a view to be set via a back door, without routing it through the View property."
     )]
     public void SetValue_InvalidValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.SetValue("Key", "# ?");
+      topic.Attributes.SetValue("View", "# ?");
     }
 
     /*==========================================================================================================================
@@ -474,10 +475,9 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new("Key", "NewKey", false));
+      topic.Attributes.Add(new("View", "NewKey", false));
 
-      Assert.AreEqual<string>("NewKey", topic.Key);
+      Assert.AreEqual<string>("NewKey", topic.View);
 
     }
 
@@ -494,8 +494,7 @@ namespace OnTopic.Tests {
     )]
     public void Add_InvalidAttributeValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
-      topic.Attributes.Remove("Key");
-      topic.Attributes.Add(new("Key", "# ?"));
+      topic.Attributes.Add(new("View", "# ?"));
     }
 
     /*==========================================================================================================================
@@ -511,15 +510,16 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container", 1);
 
-      topic.Attributes.TryGetValue("Key", out var originalValue);
+      topic.View = "Test";
+      topic.Attributes.TryGetValue("View", out var originalValue);
 
       var index = topic.Attributes.IndexOf(originalValue);
 
-      topic.Attributes[index] = new AttributeValue("Key", "NewValue", false);
-      topic.Attributes.TryGetValue("Key", out var newAttribute);
+      topic.Attributes[index] = new AttributeValue("View", "NewValue", false);
+      topic.Attributes.TryGetValue("View", out var newAttribute);
 
-      topic.Attributes.SetValue("Key", "NewerValue", false);
-      topic.Attributes.TryGetValue("Key", out var newerAttribute);
+      topic.Attributes.SetValue("View", "NewerValue", false);
+      topic.Attributes.TryGetValue("View", out var newerAttribute);
 
       Assert.IsFalse(newAttribute.IsDirty);
       Assert.IsFalse(newerAttribute.IsDirty);

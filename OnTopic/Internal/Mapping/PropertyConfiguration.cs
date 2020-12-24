@@ -87,6 +87,7 @@ namespace OnTopic.Internal.Mapping {
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
       GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
+      GetAttributeValue<FilterByContentTypeAttribute>(property, a => ContentTypeFilter = a.ContentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
@@ -363,6 +364,27 @@ namespace OnTopic.Internal.Mapping {
     ///   </para>
     /// </remarks>
     public bool DisableMapping { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONTENT TYPE FILTER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a <c>ContentType</c> which can optionally be used to filter a collection.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     By default, all <see cref="Topic"/>s in a source collection (e.g., <see cref="Topic.Children"/>) will be included in
+    ///     a corresponding collection on the DTO (assuming the mapped DTO is compatible with the collection type). If the
+    ///     <see cref="ContentTypeFilter"/> is set, however, then each <see cref="Topic"/> will be evaluated to confirm that
+    ///     it is of that content type.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="ContentTypeFilter"/> property corresponds to the <see cref="FilterByContentTypeAttribute.
+    ///     ContentType"/> property. It can be assigned by decorating a DTO property with e.g. <c>[FilterByContentType("Page")]
+    ///     </c>.
+    ///   </para>
+    /// </remarks>
+    public string? ContentTypeFilter { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE FILTERS

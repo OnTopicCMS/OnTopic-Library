@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -29,10 +28,12 @@ namespace OnTopic {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     string                          _key;
+    private                     string                          _contentType;
     private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
     private                     Topic?                          _derivedTopic;
+    private                     bool                            _isDirty;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -68,6 +69,13 @@ namespace OnTopic {
       VersionHistory            = new();
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Set entity identifier, if present
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (id >= 0) {
+        Id                      = id;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set core properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       Key                       = key;
@@ -75,23 +83,13 @@ namespace OnTopic {
       Parent                    = parent;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize key
+      | Initialize key fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //###HACK JJC20190924: The local backing field _key is always initialized at this point. But Roslyn's flow analysis
-      //isn't smart enough to detect this. As such, the following effectively sets _key to itself.
-      _key = Key;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | If ID is set, ensure attributes are not marked as IsDirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (id >= 0) {
-        Id                      = id;
-        Attributes.SetValue("Key", key, false, false);
-        Attributes.SetValue("ContentType", contentType, false, false);
-        if (parent is not null) {
-          Attributes.SetValue("ParentId", parent.Id.ToString(CultureInfo.InvariantCulture), false, false);
-        }
-      }
+      //###HACK JJC20190924: The local backing fields _key and _contentType are always initialized at this point. But Roslyn's
+      //flow analysis isn't smart enough to detect this. As such, the following effectively sets _key and _contentType to
+      //themselves.
+      _key                      = Key;
+      _contentType              = ContentType;
 
     }
 
@@ -179,8 +177,17 @@ namespace OnTopic {
     ///   The key of the current <see cref="Topic"/>'s <see cref="ContentTypeDescriptor"/>.
     /// </value>
     public string ContentType {
-      get => Attributes.GetValue("ContentType")?? "";
-      set => SetAttributeValue("ContentType", value);
+      get => _contentType;
+      set {
+        TopicFactory.ValidateKey(value);
+        if (_contentType == value) {
+          return;
+        }
+        else if (_contentType is not null || IsNew) {
+          _isDirty              = true;
+        }
+        _contentType            = value;
+      }
     }
 
     /*==========================================================================================================================
@@ -201,20 +208,24 @@ namespace OnTopic {
     /// >
     ///   !value.Contains(" ")
     /// </requires>
-    [AttributeSetter]
     public string Key {
       get => _key;
       set {
         TopicFactory.ValidateKey(value);
+        if (_key == value) {
+          return;
+        }
+        else if (_key is not null || IsNew) {
+          _isDirty              = true;
+        }
         if (_originalKey is null) {
-          _originalKey = Attributes.GetValue("Key", _key, false, false);
+          _originalKey = _key;
         }
         //If an established key value is changed, the parent's index must be manually updated; this won't happen automatically.
         if (_originalKey is not null && !value.Equals(_key, StringComparison.OrdinalIgnoreCase) && Parent is not null) {
           Parent.Children.ChangeKey(this, value);
         }
-        SetAttributeValue("Key", value);
-        _key = value;
+        _key                    = value;
       }
     }
 
@@ -475,7 +486,6 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (_parent != parent) {
         _parent = parent;
-        SetAttributeValue("ParentID", parent.Id.ToString(CultureInfo.InvariantCulture));
       }
 
 
@@ -535,6 +545,31 @@ namespace OnTopic {
         uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if the topic is dirty, optionally checking <see cref="Relationships"/> and <see cref="Attributes"/>.
+    /// </summary>
+    /// <param name="checkCollections">
+    ///   Determines if <see cref="Relationships"/> and <see cref="Attributes"/> should be checked.
+    /// </param>
+    /// <param name="excludeLastModified">
+    ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
+    ///   excluding the byline (<c>LastModifiedBy</c>) and dateline (<c>LastModified</c>) since these values are automatically
+    ///   generated by e.g. the OnTopic Editor and, thus, may be irrelevant updates if no other attribute values have changed.
+    /// </param>
+    /// <returns></returns>
+    public bool IsDirty(bool checkCollections = false, bool excludeLastModified = false) {
+      if (!_isDirty && checkCollections) {
+        _isDirty = Relationships.IsDirty();
+      }
+      if (!_isDirty && checkCollections) {
+        _isDirty = Attributes.IsDirty(excludeLastModified);
+      }
+      return _isDirty;
     }
 
     #endregion
