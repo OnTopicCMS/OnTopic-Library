@@ -24,7 +24,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public record RecordTopicViewModel {
 
-    public string? Key { get; set; }
+    public string? Key { get; init; }
 
   } //Class
 } //Namespace
