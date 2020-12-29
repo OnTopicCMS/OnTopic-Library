@@ -95,6 +95,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: GENERIC: RETURNS NEW RECORD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and confirms that a basic <c>record</c> type can be mapped by
+    ///   explicitly setting defining the target type.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Generic_ReturnsNewRecord() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      var target                = await _mappingService.MapAsync<RecordTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<string>(topic.Key, target.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: DYNAMIC: RETURNS NEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

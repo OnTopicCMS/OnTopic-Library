@@ -48,6 +48,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(MinimumLengthPropertyTopicViewModel));
       Add(typeof(NestedTopicViewModel));
       Add(typeof(PropertyAliasTopicViewModel));
+      Add(typeof(RecordTopicViewModel));
       Add(typeof(RelatedEntityTopicViewModel));
       Add(typeof(RelationTopicViewModel));
       Add(typeof(RelationWithChildrenTopicViewModel));

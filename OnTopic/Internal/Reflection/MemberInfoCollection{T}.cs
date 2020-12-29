@@ -40,7 +40,9 @@ namespace OnTopic.Internal.Reflection {
           BindingFlags.Public
         ).Where(m => typeof(T).IsAssignableFrom(m.GetType()))
       ) {
-        Add((T)member);
+        if (!Contains(member.Name)) {
+          Add((T)member);
+        }
       }
     }
 
