@@ -86,7 +86,7 @@ namespace OnTopic.Mapping.Hierarchical {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is null) {
         if (String.IsNullOrEmpty(defaultRoot)) {
-          throw new TopicMappingException(
+          throw new ArgumentNullException(
             $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
           );
         }
@@ -97,7 +97,7 @@ namespace OnTopic.Mapping.Hierarchical {
       | Handle error state
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is null) {
-        throw new TopicMappingException(
+        throw new ArgumentOutOfRangeException(
           $"Neither the current route nor the {nameof(defaultRoot)} parameter of {defaultRoot} could be resolved to a topic."
         );
       }
