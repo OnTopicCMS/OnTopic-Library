@@ -157,7 +157,7 @@ namespace OnTopic.Mapping.Reverse {
       if (source.ContentType != target.ContentType) {
         throw new TopicMappingException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
-          $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
+          $"the {nameof(target)} object (with the key '{target.Key}') has a content type of '{target.ContentType}'. It is not" +
           $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. " +
           $"If this is by design, change the content type on the target topic prior to invoking MapAsync()."
         );
@@ -167,7 +167,7 @@ namespace OnTopic.Mapping.Reverse {
       if (source.Key != target.Key && !String.IsNullOrEmpty(source.Key)) {
         throw new TopicMappingException(
           $"The {nameof(source)} object has a key of '{source.Key}', while the {nameof(target)} object has a key of " +
-          $"'{target.Key}'. It is not permitted to change the topic'key during a mapping operation, as this suggests in " +
+          $"'{target.Key}'. It is not permitted to change the topic's key during a mapping operation, as this suggests an " +
           $"invalid target. If this is by design, change the key on the target topic prior to invoking MapAsync()."
         );
       }
