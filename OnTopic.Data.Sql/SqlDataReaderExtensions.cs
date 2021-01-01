@@ -353,7 +353,7 @@ namespace OnTopic.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = reader.GetTopicId("Source_TopicID");
-      var relationshipKey       = reader.GetString("RelationshipKey");
+      var relationshipKey       = reader.GetString("ReferenceKey");
       var targetTopicId         = reader.GetTopicId("Target_TopicID");
 
       /*------------------------------------------------------------------------------------------------------------------------
