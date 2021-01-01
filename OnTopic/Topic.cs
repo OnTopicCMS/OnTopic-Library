@@ -32,7 +32,6 @@ namespace OnTopic {
     private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
-    private                     Topic?                          _derivedTopic;
     private                     bool                            _isDirty;
 
     /*==========================================================================================================================
@@ -609,19 +608,13 @@ namespace OnTopic {
     ///   value != this
     /// </requires>
     public Topic? DerivedTopic {
-      get => _derivedTopic;
+      get => References.GetTopic("DerivedTopic");
       set {
         Contract.Requires<ArgumentException>(
           value != this,
           "A topic may not derive from itself."
         );
-        _derivedTopic = value;
-        if (value is not null && value.Id > 0) {
-          SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
-        }
-        else {
-          Attributes.Remove("TopicID");
-        }
+        References.SetTopic("DerivedTopic", value);
       }
     }
 
@@ -660,7 +653,7 @@ namespace OnTopic {
     | PROPERTY: REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A faï¿½ade for accessing references topics based on a reference key; can be used for derived topics, etc.
+    ///   A façade for accessing references topics based on a reference key; can be used for derived topics, etc.
     /// </summary>
     /// <remarks>
     ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
