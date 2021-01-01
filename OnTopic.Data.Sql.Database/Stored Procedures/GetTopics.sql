@@ -129,6 +129,16 @@ JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- SELECT REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	ReferenceKey,
+	Source_TopicID,
+	Target_TopicID
+FROM	TopicReferences		TopicReferences
+JOIN	#Topics		AS Storage
+  ON	Storage.TopicID		= TopicReferences.Source_TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	History.TopicID,
