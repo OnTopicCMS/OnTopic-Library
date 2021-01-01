@@ -397,15 +397,6 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add topic references
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      using var topicReferences = new TopicReferencesDataTable();
-
-      foreach (var topicReference in topic.References) {
-        topicReferences.AddRow(topicReference.Key, topicReference.Value.Id);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var procedureName         = topic.IsNew? "CreateTopic" : "UpdateTopic";
@@ -446,7 +437,6 @@ namespace OnTopic.Data.Sql {
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddParameter("Attributes", attributeValues);
-      command.AddParameter("References", topicReferences);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -465,6 +455,10 @@ namespace OnTopic.Data.Sql {
 
         if (areReferencesResolved && areRelationshipsDirty) {
           PersistRelations(topic, connection);
+        }
+
+        if (areReferencesResolved && areReferencesDirty) {
+          PersistReferences(topic, connection);
         }
 
         if (!topic.VersionHistory.Contains(version.Value)) {
@@ -663,6 +657,60 @@ namespace OnTopic.Data.Sql {
       catch (SqlException exception) {
         throw new TopicRepositoryException(
           $"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
+          exception
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: PERSIST REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Internal method that saves topic references to the 1:n mapping table in SQL.
+    /// </summary>
+    /// <param name="topic">The topic object whose references should be persisted.</param>
+    /// <param name="connection">The SQL connection.</param>
+    private static void PersistReferences(Topic topic, SqlConnection connection) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Persist relations to database
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      try {
+
+        var topicId             = topic.Id.ToString(CultureInfo.InvariantCulture);
+        using var references    = new TopicReferencesDataTable();
+        using var command       = new SqlCommand("UpdateReferences", connection) {
+          CommandType           = CommandType.StoredProcedure
+        };
+
+        foreach (var relatedTopic in topic.References.Where(t => !t.Value.IsNew)) {
+          references.AddRow(relatedTopic.Key, relatedTopic.Value.Id);
+        }
+
+        // Add Parameters
+        command.AddParameter("TopicID", topicId);
+        command.AddParameter("ReferencedTopics", references);
+        command.AddParameter("DeleteUnmatched", true);
+
+        command.ExecuteNonQuery();
+
+        //Reset isDirty, assuming there aren't any unresolved references
+        topic.References.IsDirty = references.Rows.Count < topic.References.Count;
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Catch exception
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      catch (SqlException exception) {
+        throw new TopicRepositoryException(
+          $"Failed to persist references for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
           exception
         );
       }
