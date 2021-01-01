@@ -131,8 +131,8 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	ReferenceKey,
-	Source_TopicID,
+SELECT	Source_TopicID,
+	ReferenceKey,
 	Target_TopicID
 FROM	TopicReferences		TopicReferences
 JOIN	#Topics		AS Storage
