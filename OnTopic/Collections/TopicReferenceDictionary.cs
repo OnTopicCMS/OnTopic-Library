@@ -64,6 +64,10 @@ namespace OnTopic.Collections {
     public Topic this[string referenceKey] {
       get => _storage[referenceKey];
       set {
+        Contract.Requires<ArgumentException>(
+          value != _parent,
+          "A topic reference may not point to itself."
+        );
         _storage[referenceKey] = value;
       }
     }
@@ -92,6 +96,11 @@ namespace OnTopic.Collections {
       Contract.Requires(item, nameof(item));
 
       TopicFactory.ValidateKey(item.Key);
+
+      Contract.Requires<ArgumentException>(
+        item.Value != _parent,
+        "A topic reference may not point to itself."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add item
