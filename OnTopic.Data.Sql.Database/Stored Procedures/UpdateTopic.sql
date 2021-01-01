@@ -126,9 +126,16 @@ WHERE	ISNULL(AttributeValue, '')	= ''
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
-EXEC	UpdateReferences	@TopicID,
+DECLARE	@ReferenceCount		INT
+SELECT	@ReferenceCount		= COUNT(ReferenceKey)
+FROM	@References
+
+IF @ReferenceCount > 0
+  BEGIN
+    EXEC	UpdateReferences	@TopicID,
 			@References,
 			@DeleteUnmatched
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

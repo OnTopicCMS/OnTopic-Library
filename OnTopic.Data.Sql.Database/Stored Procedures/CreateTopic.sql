@@ -109,9 +109,16 @@ IF @ExtendedAttributes IS NOT NULL
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
-EXEC	UpdateReferences	@TopicID,
+DECLARE	@ReferenceCount		INT
+SELECT	@ReferenceCount		= COUNT(ReferenceKey)
+FROM	@References
+
+IF @ReferenceCount > 0
+  BEGIN
+    EXEC	UpdateReferences	@TopicID,
 			@References,
 			1
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID
