@@ -654,6 +654,20 @@ namespace OnTopic {
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
     public RelatedTopicCollection Relationships { get; }
 
+
+    /*==========================================================================================================================
+    | PROPERTY: REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A fa�ade for accessing references topics based on a reference key; can be used for derived topics, etc.
+    /// </summary>
+    /// <remarks>
+    ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
+    ///   "DerivedTopic" for a derived topic).
+    /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s relationships.</value>
+    public TopicReferenceDictionary References { get; }
+
     /*===========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS
     \--------------------------------------------------------------------------------------------------------------------------*/
