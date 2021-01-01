@@ -105,6 +105,7 @@
     <Build Include="Tables\Topics.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
+    <Build Include="Types\TopicReferences.sql" />
     <Build Include="Utilities\Schema.sql" />
     <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />
