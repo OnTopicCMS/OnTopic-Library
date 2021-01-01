@@ -419,7 +419,12 @@ namespace OnTopic.Data.Sql {
       | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
       | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive && (topic.DerivedTopic?.Id < 0 || topic.Relationships.Any(r => r.Any(t => t.Id < 0)))) {
+      if (
+        isRecursive &&
+        (  topic.Relationships.Any(r => r.Any(t => t.Id < 0)) ||
+           topic.References.Values.Any(t => t.Id < 0)
+        )
+      ) {
         unresolvedRelationships.Add(topic);
         areReferencesResolved = false;
       }
