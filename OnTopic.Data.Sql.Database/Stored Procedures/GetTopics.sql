@@ -88,10 +88,10 @@ ELSE
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Topics.TopicID,
-  	Topics.ContentType,
-  	Topics.ParentID,
-  	Topics.TopicKey,
-  	Storage.SortOrder
+  	ContentType,
+  	ParentID,
+  	TopicKey,
+  	SortOrder
 FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Topics.TopicID
@@ -101,9 +101,9 @@ ORDER BY	SortOrder
 -- SELECT TOPIC ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
-	Attributes.AttributeKey,
-	Attributes.AttributeValue,
-	Attributes.Version
+	AttributeKey,
+	AttributeValue,
+	Version
 FROM	AttributeIndex		Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
@@ -112,8 +112,8 @@ JOIN	#Topics		AS Storage
 -- SELECT EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
-	Attributes.AttributesXml,
-	Attributes.Version
+	AttributesXml,
+	Version
 FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
@@ -121,9 +121,9 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	Relationships.Source_TopicID,
-	Relationships.RelationshipKey,
-	Relationships.Target_TopicID
+SELECT	Source_TopicID,
+	RelationshipKey,
+	Target_TopicID
 FROM	Relationships		Relationships
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
@@ -131,8 +131,8 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	VersionHistory.TopicID,
-	VersionHistory.Version
-FROM	VersionHistoryIndex	VersionHistory
+SELECT	History.TopicID,
+	Version
+FROM	VersionHistoryIndex	History
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= VersionHistory.TopicID;
+  ON	Storage.TopicID		= History.TopicID;
