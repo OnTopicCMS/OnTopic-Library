@@ -27,6 +27,7 @@ FROM	@RelatedTopics		Target
 LEFT JOIN	Relationships		Existing
   ON	Target_TopicID		= TopicID
   AND	Source_TopicID		= @TopicID
+  AND	RelationshipKey		= @RelationshipKey
 WHERE	Target_TopicID		IS NULL
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ IF @DeleteUnmatched = 1
       ON	Target_TopicID		= TopicID
     WHERE	Source_TopicID		= @TopicID
       AND	ISNULL(TopicID, '')	= ''
+      AND	RelationshipKey		= @RelationshipKey
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
