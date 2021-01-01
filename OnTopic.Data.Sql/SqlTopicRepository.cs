@@ -399,6 +399,10 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var topicReferences = new TopicReferencesDataTable();
 
+      foreach (var topicReference in topic.References) {
+        topicReferences.AddRow(topicReference.Key, topicReference.Value.Id);
+      }
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
