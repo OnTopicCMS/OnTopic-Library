@@ -141,6 +141,28 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
+    | SET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new topic reference—or updates one, if it already exists. If the value is <c>null</c>, and a value exits, it is
+    ///   removed.
+    /// </summary>
+    public void SetTopic(string key, Topic? value, bool? isDirty = null) {
+      var wasDirty = IsDirty;
+      if (value is null) {
+        if (ContainsKey("key")) {
+          Remove(key);
+        }
+      }
+      else {
+        this[key] = value;
+      }
+      if (wasDirty is false && isDirty is false) {
+        IsDirty = false;
+      }
+    }
+
+    /*==========================================================================================================================
     | CLEAR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
