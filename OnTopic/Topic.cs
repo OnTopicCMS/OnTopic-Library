@@ -66,6 +66,7 @@ namespace OnTopic {
       Attributes                = new(this);
       IncomingRelationships     = new(this, true);
       Relationships             = new(this, false);
+      References                = new(this);
       VersionHistory            = new();
 
       /*------------------------------------------------------------------------------------------------------------------------
