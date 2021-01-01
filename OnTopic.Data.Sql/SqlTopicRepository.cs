@@ -628,6 +628,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("TopicID", topicId);
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
+          command.AddParameter("DeleteUnmatched", true);
 
           command.ExecuteNonQuery();
 

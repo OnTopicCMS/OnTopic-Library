@@ -8,7 +8,7 @@ CREATE PROCEDURE [dbo].[UpdateRelationships]
 	@TopicID		INT	= -1,
 	@RelationshipKey	VARCHAR(255)	= 'related',
 	@RelatedTopics		TopicList	READONLY,
-	@DeleteUnmatched	BIT	= 1
+	@DeleteUnmatched	BIT	= 0
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
