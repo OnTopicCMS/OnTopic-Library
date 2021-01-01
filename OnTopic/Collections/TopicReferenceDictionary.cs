@@ -253,6 +253,14 @@ namespace OnTopic.Collections {
     public bool TryGetValue(string key, out Topic value) => _storage.TryGetValue(key, out value);
 
     /*==========================================================================================================================
+    | GET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a topic reference based on its <paramref name="key"/>; if it doesn't exist, returns null.
+    /// </summary>
+    public Topic? GetTopic(string key) => TryGetValue(key, out var existing)? existing : null;
+
+    /*==========================================================================================================================
     | IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
