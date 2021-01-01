@@ -34,7 +34,7 @@ WHERE	Target_TopicID		IS NULL
 --------------------------------------------------------------------------------------------------------------------------------
 IF @DeleteUnmatched = 1
   BEGIN
-    DELETE	EXISTING
+    DELETE	Existing
     FROM	@RelatedTopics		Relationships
     RIGHT JOIN	Relationships		Existing
       ON	Target_TopicID		= TopicID
