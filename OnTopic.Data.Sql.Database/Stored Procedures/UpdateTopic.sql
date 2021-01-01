@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[UpdateTopic]
-	@TopicID		INT		= -1		,
+	@TopicID		INT				,
 	@Key		VARCHAR(128)		= NULL		,
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
