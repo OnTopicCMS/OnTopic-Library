@@ -10,7 +10,9 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
 	@ExtendedAttributes	XML		= NULL		,
-	@Version		DATETIME		= NULL
+	@References		TopicReferences		READONLY		,
+	@Version		DATETIME		= NULL,
+	@DeleteUnmatched	BIT		= 0
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -120,6 +122,13 @@ CROSS APPLY (
 )			Existing
 WHERE	ISNULL(AttributeValue, '')	= ''
   AND	ExistingValue		!= ''
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+EXEC	UpdateReferences	@TopicID,
+			@References,
+			@DeleteUnmatched
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

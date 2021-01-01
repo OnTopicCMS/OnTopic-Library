@@ -395,6 +395,11 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Add topic references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      using var topicReferences = new TopicReferencesDataTable();
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       var procedureName         = topic.IsNew? "CreateTopic" : "UpdateTopic";
@@ -420,6 +425,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
+        command.AddParameter("DeleteUnmatched", true);
       }
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
@@ -429,6 +435,7 @@ namespace OnTopic.Data.Sql {
       command.AddParameter("Version", version.Value);
       command.AddParameter("ExtendedAttributes", extendedAttributes);
       command.AddParameter("Attributes", attributeValues);
+      command.AddParameter("References", topicReferences);
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------

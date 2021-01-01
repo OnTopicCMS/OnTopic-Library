@@ -10,6 +10,7 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@ParentID		INT		= -1,
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	XML		= NULL,
+	@References		TopicReferences		READONLY,
 	@Version		DATETIME		= NULL
 AS
 
@@ -104,6 +105,13 @@ IF @ExtendedAttributes IS NOT NULL
 	@Version
     )
   END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ADD REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+EXEC	UpdateReferences	@TopicID,
+			@References,
+			1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

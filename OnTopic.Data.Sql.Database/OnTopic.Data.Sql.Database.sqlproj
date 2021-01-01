@@ -96,6 +96,7 @@
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
+    <Build Include="Stored Procedures\UpdateReferences.sql" />
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Tables\Attributes.sql" />
