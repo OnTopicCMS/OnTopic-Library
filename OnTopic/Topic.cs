@@ -567,6 +567,9 @@ namespace OnTopic {
         _isDirty = Relationships.IsDirty();
       }
       if (!_isDirty && checkCollections) {
+        _isDirty = References.IsDirty;
+      }
+      if (!_isDirty && checkCollections) {
         _isDirty = Attributes.IsDirty(excludeLastModified);
       }
       return _isDirty;
