@@ -45,54 +45,60 @@ IF @Key IS NOT NULL OR @ContentType IS NOT NULL
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NEW ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT
-INTO	Attributes (
+IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
+  BEGIN
+    INSERT
+    INTO	Attributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
 	  Version
 	)
-SELECT	@TopicID,
+    SELECT	@TopicID,
 	AttributeKey,
 	AttributeValue,
 	@Version
-FROM	@Attributes		New
-OUTER APPLY (
-    SELECT	TOP 1
+    FROM	@Attributes		New
+    OUTER APPLY (
+      SELECT	TOP 1
 	AttributeValue		AS ExistingValue
-    FROM	Attributes
-    WHERE	TopicID		= @TopicID
-      AND	AttributeKey		= New.AttributeKey
-    ORDER BY	Version		DESC
-  )			Existing
-WHERE	ISNULL(AttributeValue, '')	!= ''
-  AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
-
+      FROM	Attributes
+      WHERE	TopicID		= @TopicID
+        AND	AttributeKey		= New.AttributeKey
+      ORDER BY	Version		DESC
+    )			Existing
+    WHERE	ISNULL(AttributeValue, '')	!= ''
+      AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NULL ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	Attributes (
+IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
+  BEGIN
+    INSERT
+    INTO	Attributes (
 	  TopicID		,
 	  AttributeKey		,
 	  AttributeValue	,
 	  Version
 	)
-SELECT	@TopicID,
+    SELECT	@TopicID,
 	AttributeKey,
 	'',
 	@Version
-FROM	@Attributes		New
-CROSS APPLY (
-  SELECT	TOP 1
+    FROM	@Attributes		New
+    CROSS APPLY (
+      SELECT	TOP 1
 	AttributeValue		AS ExistingValue
-  FROM	Attributes
-  WHERE	TopicID		= @TopicID
-    AND	AttributeKey		= New.AttributeKey
-  ORDER BY	Version DESC
-)			Existing
-WHERE	ISNULL(AttributeValue, '')	= ''
-  AND	ExistingValue		!= ''
+      FROM	Attributes
+      WHERE	TopicID		= @TopicID
+        AND	AttributeKey		= New.AttributeKey
+      ORDER BY	Version DESC
+    )			Existing
+    WHERE	ISNULL(AttributeValue, '')	= ''
+      AND	ExistingValue		!= ''
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DELETE UNMATCHED ATTRIBUTES
@@ -127,7 +133,7 @@ ORDER BY	Version		DESC
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES, IF CHANGED
 --------------------------------------------------------------------------------------------------------------------------------
-IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
+IF @ExtendedAttributes IS NOT NULL AND CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
   BEGIN
     INSERT
     INTO	ExtendedAttributes (
@@ -145,11 +151,7 @@ IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttribute
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@ReferenceCount		INT
-SELECT	@ReferenceCount		= COUNT(ReferenceKey)
-FROM	@References
-
-IF @ReferenceCount > 0
+IF EXISTS (SELECT TOP 1 NULL FROM @References)
   BEGIN
     EXEC	UpdateReferences	@TopicID,
 			@References,
