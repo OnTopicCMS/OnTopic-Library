@@ -11,7 +11,7 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@Attributes		AttributeValues		READONLY		,
 	@ExtendedAttributes	XML		= NULL		,
 	@References		TopicReferences		READONLY		,
-	@Version		DATETIME		= NULL,
+	@Version		DATETIME		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 
@@ -24,7 +24,6 @@ SET	@Version		= GetDate()
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-
 IF @Key IS NOT NULL OR @ContentType IS NOT NULL
   BEGIN
     UPDATE	Topics
@@ -69,34 +68,6 @@ OUTER APPLY (
 WHERE	ISNULL(AttributeValue, '')	!= ''
   AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
 
---------------------------------------------------------------------------------------------------------------------------------
--- PULL PREVIOUS EXTENDED ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@PreviousExtendedAttributes	XML
-
-SELECT	TOP 1
-	@PreviousExtendedAttributes	= AttributesXml
-FROM	ExtendedAttributes
-WHERE	TopicID		= @TopicID
-ORDER BY	Version		DESC
-
---------------------------------------------------------------------------------------------------------------------------------
--- ADD EXTENDED ATTRIBUTES, IF CHANGED
---------------------------------------------------------------------------------------------------------------------------------
-IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
-  BEGIN
-    INSERT
-    INTO	ExtendedAttributes (
-	  TopicID		,
-	  AttributesXml		,
-	  Version
-	)
-    VALUES (
-	@TopicID		,
-	@ExtendedAttributes	,
-	@Version
-    )
-  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NULL ATTRIBUTES
@@ -140,6 +111,35 @@ IF @DeleteUnmatched = 1
       AND	Existing.AttributeKey	= New.AttributeKey
     WHERE	ISNULL(New.AttributeKey, '')	= ''
       AND	Existing.TopicID	= @TopicID
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- PULL PREVIOUS EXTENDED ATTRIBUTES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@PreviousExtendedAttributes	XML
+
+SELECT	TOP 1
+	@PreviousExtendedAttributes	= AttributesXml
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID
+ORDER BY	Version		DESC
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ADD EXTENDED ATTRIBUTES, IF CHANGED
+--------------------------------------------------------------------------------------------------------------------------------
+IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
+  BEGIN
+    INSERT
+    INTO	ExtendedAttributes (
+	  TopicID		,
+	  AttributesXml		,
+	  Version
+	)
+    VALUES (
+	@TopicID		,
+	@ExtendedAttributes	,
+	@Version
+    )
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
