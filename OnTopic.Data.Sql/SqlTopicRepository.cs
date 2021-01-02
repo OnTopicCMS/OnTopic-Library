@@ -448,9 +448,10 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        command.ExecuteNonQuery();
-
-        topic.Id                = command.GetReturnCode();
+        if (topic.IsNew || isTopicDirty || areAttributesDirty) {
+          command.ExecuteNonQuery();
+          topic.Id = command.GetReturnCode();
+        }
 
         Contract.Assume(
           !topic.IsNew,
