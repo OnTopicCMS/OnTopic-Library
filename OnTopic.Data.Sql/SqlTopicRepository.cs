@@ -432,8 +432,10 @@ namespace OnTopic.Data.Sql {
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
-      command.AddParameter("Key", topic.Key);
-      command.AddParameter("ContentType", topic.ContentType);
+      if (isTopicDirty || topic.IsNew) {
+        command.AddParameter("Key", topic.Key);
+        command.AddParameter("ContentType", topic.ContentType);
+      }
       command.AddParameter("Version", version.Value);
       if (areAttributesDirty) {
         command.AddParameter("Attributes", attributeValues);
