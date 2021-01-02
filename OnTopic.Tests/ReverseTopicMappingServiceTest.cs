@@ -478,24 +478,6 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: INVALID TOPIC REFERENCE NAME: THROWS INVALID OPERATION EXCEPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Maps a content type that has a reference that does not end in <c>Id</c>. This is invalid, and expected to throw an
-    ///   <see cref="InvalidOperationException"/>.
-    /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
-    public async Task Map_InvalidTopicReferenceName_ThrowsInvalidOperationException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
-      var bindingModel          = new InvalidReferenceNameTopicBindingModel("Test");
-
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
-
-    }
-
-    /*==========================================================================================================================
     | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
