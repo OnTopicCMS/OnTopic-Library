@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Collections {
 
@@ -259,7 +260,15 @@ namespace OnTopic.Collections {
     /// <summary>
     ///   Attempts to retrieve a topic reference based on its <paramref name="key"/>; if it doesn't exist, returns null.
     /// </summary>
-    public Topic? GetTopic(string key) => TryGetValue(key, out var existing)? existing : null;
+    public Topic? GetTopic(string key, bool inheritFromDerived = true) {
+      if (TryGetValue(key, out var existing)) {
+        return existing;
+      }
+      else if (inheritFromDerived) {
+        return _parent.DerivedTopic?.References.GetTopic(key);
+      }
+      return null;
+    }
 
     /*==========================================================================================================================
     | IS DIRTY?

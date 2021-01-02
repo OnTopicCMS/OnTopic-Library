@@ -235,7 +235,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.GetTopic(String)"/> correctly returns <c>null</c> if an incorrect
+    ///   <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if an incorrect
     ///   <c>referencedKey</c> is entered.
     /// </summary>
     [TestMethod]
@@ -247,6 +247,74 @@ namespace OnTopic.Tests {
       topic.References.Add("Reference", reference);
 
       Assert.IsNull(topic.References.GetTopic("MissingReference"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET TOPIC: DERIVED REFERENCE: RETURNS TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.DerivedTopic"/>, adds a new <see
+    ///   cref="Topic"/> reference to the <see cref="Topic.DerivedTopic"/>, and confirms that <see cref=
+    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns the related topic reference.
+    /// </summary>
+    [TestMethod]
+    public void GetTopic_DerivedReference_ReturnsTopic() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var derived               = TopicFactory.Create("Derived", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.DerivedTopic        = derived;
+      derived.References.Add("Reference", reference);
+
+      Assert.AreEqual(reference, topic.References.GetTopic("Reference"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET TOPIC: DERIVED REFERENCE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.DerivedTopic"/>, adds a new <see
+    ///   cref="Topic"/> reference to the <see cref="Topic.DerivedTopic"/>, and confirms that <see cref=
+    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if an incorrect <c>referencedKey
+    ///   </c> is entered.
+    /// </summary>
+    [TestMethod]
+    public void GetTopic_DerivedReference_ReturnsNull() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var derived               = TopicFactory.Create("Derived", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.DerivedTopic        = derived;
+      derived.References.Add("Reference", reference);
+
+      Assert.IsNull(topic.References.GetTopic("MissingReference"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET TOPIC: DERIVED REFERENCE WITHOUT INHERIT: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.DerivedTopic"/>, adds a new <see
+    ///   cref="Topic"/> reference to the <see cref="Topic.DerivedTopic"/>, and confirms that <see cref=
+    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if <c>inheritFromDerived</c> is
+    ///   set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetTopic_DerivedReferenceWithoutInherit_ReturnsNull() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var derived               = TopicFactory.Create("Derived", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.DerivedTopic        = derived;
+      derived.References.Add("Reference", reference);
+
+      Assert.IsNull(topic.References.GetTopic("Reference", false));
 
     }
 

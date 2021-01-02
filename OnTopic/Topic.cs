@@ -611,7 +611,7 @@ namespace OnTopic {
     ///   value != this
     /// </requires>
     public Topic? DerivedTopic {
-      get => References.GetTopic("DerivedTopic");
+      get => References.GetTopic("DerivedTopic", false);
       set {
         Contract.Requires<ArgumentException>(
           value != this,
