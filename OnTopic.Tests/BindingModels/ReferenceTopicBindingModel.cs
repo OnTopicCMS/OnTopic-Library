@@ -22,7 +22,6 @@ namespace OnTopic.Tests.BindingModels {
 
     public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttribute") { }
 
-    [AttributeKey("TopicId")]
     public RelatedTopicBindingModel? DerivedTopic { get; set; }
 
   } //Class

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
@@ -298,9 +297,8 @@ namespace OnTopic.Tests {
 
       var target                = (TopicReferenceAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
-
       Assert.IsNotNull(target.DerivedTopic);
+      Assert.AreEqual<string>("Title", target.DerivedTopic.Key);
       Assert.AreEqual<string>("TopicReference", target.EditorType);
 
     }
