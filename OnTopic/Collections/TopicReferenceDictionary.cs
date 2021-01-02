@@ -115,7 +115,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      item.Value.IncomingRelationships.SetTopic(item.Key, item.Value, null, true);
+      item.Value.IncomingRelationships.SetTopic(item.Key, _parent, null, true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add item
