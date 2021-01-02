@@ -124,6 +124,25 @@ WHERE	ISNULL(AttributeValue, '')	= ''
   AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- DELETE UNMATCHED ATTRIBUTES
+--------------------------------------------------------------------------------------------------------------------------------
+IF @DeleteUnmatched = 1
+  BEGIN
+    INSERT
+    INTO	Attributes
+    SELECT	@TopicID,
+	Existing.AttributeKey,
+	'',
+	@Version
+    FROM	AttributeIndex		Existing
+    LEFT JOIN	@Attributes		New
+      ON	Existing.TopicID	= @TopicID
+      AND	Existing.AttributeKey	= New.AttributeKey
+    WHERE	ISNULL(New.AttributeKey, '')	= ''
+      AND	Existing.TopicID	= @TopicID
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@ReferenceCount		INT
