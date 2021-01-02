@@ -115,7 +115,7 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      item.Value.IncomingRelationships.SetTopic(item.Key, item.Value);
+      item.Value.IncomingRelationships.SetTopic(item.Key, item.Value, null, true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add item
@@ -180,7 +180,7 @@ namespace OnTopic.Collections {
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var item in _storage) {
-        item.Value.IncomingRelationships.RemoveTopic(item.Key, _parent);
+        item.Value.IncomingRelationships.RemoveTopic(item.Key, _parent, true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ namespace OnTopic.Collections {
       | Handle existing
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (TryGetValue(key, out var existing)) {
-        existing.IncomingRelationships.RemoveTopic(key, _parent);
+        existing.IncomingRelationships.RemoveTopic(key, _parent, true);
         IsDirty = true;
       }
 
