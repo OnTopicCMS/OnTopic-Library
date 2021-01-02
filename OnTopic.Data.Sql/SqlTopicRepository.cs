@@ -338,13 +338,13 @@ namespace OnTopic.Data.Sql {
       | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
+      areAttributesDirty        = areAttributesDirty || extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+
       var isDirty               =
         isTopicDirty            ||
         areRelationshipsDirty   ||
         areReferencesDirty      ||
-        areAttributesDirty      ||
-        indexedAttributeList.Any() ||
-        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+        areAttributesDirty;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass is not dirty
@@ -427,7 +427,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
-        command.AddParameter("DeleteUnmatched", true);
+        command.AddParameter("DeleteUnmatched", false);
       }
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
@@ -435,8 +435,10 @@ namespace OnTopic.Data.Sql {
       command.AddParameter("Key", topic.Key);
       command.AddParameter("ContentType", topic.ContentType);
       command.AddParameter("Version", version.Value);
-      command.AddParameter("ExtendedAttributes", extendedAttributes);
-      command.AddParameter("Attributes", attributeValues);
+      if (areAttributesDirty) {
+        command.AddParameter("Attributes", attributeValues);
+        command.AddParameter("ExtendedAttributes", extendedAttributes);
+      }
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
