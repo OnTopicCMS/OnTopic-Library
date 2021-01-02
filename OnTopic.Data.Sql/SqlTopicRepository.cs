@@ -356,11 +356,21 @@ namespace OnTopic.Data.Sql {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it.
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var attributeValues = new AttributeValuesDataTable();
 
-      foreach (var attributeValue in indexedAttributeList) {
-        attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
+      if (!areAttributesDirty) {
+
+        foreach (var attributeValue in indexedAttributeList) {
+          attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
+        }
+
+        foreach (var attribute in GetUnmatchedAttributes(topic)) {
+          attributeValues.AddRow(attribute.Key);
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -368,32 +378,27 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
 
-      extendedAttributes.Append("<attributes>");
+      if (!areAttributesDirty) {
 
-      foreach (var attributeValue in extendedAttributeList) {
+        extendedAttributes.Append("<attributes>");
 
-        extendedAttributes.Append(
-          "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
-        );
+        foreach (var attributeValue in extendedAttributeList) {
 
-        //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
-        //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
-        //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
-        //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
-        //attributes if their length exceeds 255.
-        attributeValues.AddRow(attributeValue.Key);
+          extendedAttributes.Append(
+            "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
+          );
 
-      }
+          //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
+          //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
+          //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
+          //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
+          //attributes if their length exceeds 255.
+          attributeValues.AddRow(attributeValue.Key);
 
-      extendedAttributes.Append("</attributes>");
+        }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add unmatched attributes
-      >-------------------------------------------------------------------------------------------------------------------------
-      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in GetUnmatchedAttributes(topic)) {
-        attributeValues.AddRow(attribute.Key);
+        extendedAttributes.Append("</attributes>");
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
