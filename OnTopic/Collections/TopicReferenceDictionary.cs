@@ -151,7 +151,7 @@ namespace OnTopic.Collections {
     public void SetTopic(string key, Topic? value, bool? isDirty = null) {
       var wasDirty = IsDirty;
       if (value is null) {
-        if (ContainsKey("key")) {
+        if (ContainsKey(key)) {
           Remove(key);
         }
       }
