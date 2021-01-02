@@ -31,7 +31,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
   [TestClass]
-  public class ReverseReverseTopicMappingServiceTest {
+  public class ReverseTopicMappingServiceTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -42,7 +42,7 @@ namespace OnTopic.Tests {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ReverseReverseTopicMappingServiceTest"/> with shared resources.
+    ///   Initializes a new instance of the <see cref="ReverseTopicMappingServiceTest"/> with shared resources.
     /// </summary>
     /// <remarks>
     ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
@@ -50,7 +50,7 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ReverseReverseTopicMappingServiceTest() {
+    public ReverseTopicMappingServiceTest() {
       _topicRepository = new CachedTopicRepository(new StubTopicRepository());
     }
 
