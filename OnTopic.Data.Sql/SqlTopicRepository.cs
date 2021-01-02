@@ -361,7 +361,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var attributeValues = new AttributeValuesDataTable();
 
-      if (!areAttributesDirty) {
+      if (areAttributesDirty) {
 
         foreach (var attributeValue in indexedAttributeList) {
           attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
@@ -378,7 +378,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
 
-      if (!areAttributesDirty) {
+      if (areAttributesDirty) {
 
         extendedAttributes.Append("<attributes>");
 
