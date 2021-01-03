@@ -95,6 +95,16 @@ FROM	ExtendedAttributes	ExtendedAttributes
 INNER JOIN	@Topics		Topics
   ON	Topics.TopicId		= ExtendedAttributes.TopicID
 
+DELETE	TopicReferences
+FROM	TopicReferences		TopicReferences
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= TopicReferences.Source_TopicID
+
+DELETE	TopicReferences
+FROM	TopicReferences		TopicReferences
+INNER JOIN	@Topics		Topics
+  ON	Topics.TopicId		= TopicReferences.Target_TopicID
+
 DELETE	Relationships
 FROM	Relationships		Relationships
 INNER JOIN	@Topics		Topics
