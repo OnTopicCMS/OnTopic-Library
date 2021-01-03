@@ -10,7 +10,6 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
 	@ExtendedAttributes	XML		= NULL		,
-	@References		TopicReferences		READONLY		,
 	@Version		DATETIME		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
@@ -146,16 +145,6 @@ IF @ExtendedAttributes IS NOT NULL AND CAST(@ExtendedAttributes AS NVARCHAR(MAX)
 	@ExtendedAttributes	,
 	@Version
     )
-  END
-
---------------------------------------------------------------------------------------------------------------------------------
--- UPDATE REFERENCES
---------------------------------------------------------------------------------------------------------------------------------
-IF EXISTS (SELECT TOP 1 NULL FROM @References)
-  BEGIN
-    EXEC	UpdateReferences	@TopicID,
-			@References,
-			@DeleteUnmatched
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
