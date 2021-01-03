@@ -1,7 +1,7 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE TOPIC
 --------------------------------------------------------------------------------------------------------------------------------
--- Used to update the attributes of a provided node
+-- Used to update the attributes of a provided topic, including core, indexed, and extended attributes.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[UpdateTopic]
@@ -42,80 +42,14 @@ IF @Key IS NOT NULL OR @ContentType IS NOT NULL
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- INSERT NEW ATTRIBUTES
+-- UPDATE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
   BEGIN
-    INSERT
-    INTO	Attributes (
-	  TopicID		,
-	  AttributeKey		,
-	  AttributeValue	,
-	  Version
-	)
-    SELECT	@TopicID,
-	AttributeKey,
-	AttributeValue,
-	@Version
-    FROM	@Attributes		New
-    OUTER APPLY (
-      SELECT	TOP 1
-	AttributeValue		AS ExistingValue
-      FROM	Attributes
-      WHERE	TopicID		= @TopicID
-        AND	AttributeKey		= New.AttributeKey
-      ORDER BY	Version		DESC
-    )			Existing
-    WHERE	ISNULL(AttributeValue, '')	!= ''
-      AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
-  END
-
---------------------------------------------------------------------------------------------------------------------------------
--- INSERT NULL ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
-  BEGIN
-    INSERT
-    INTO	Attributes (
-	  TopicID		,
-	  AttributeKey		,
-	  AttributeValue	,
-	  Version
-	)
-    SELECT	@TopicID,
-	AttributeKey,
-	'',
-	@Version
-    FROM	@Attributes		New
-    CROSS APPLY (
-      SELECT	TOP 1
-	AttributeValue		AS ExistingValue
-      FROM	Attributes
-      WHERE	TopicID		= @TopicID
-        AND	AttributeKey		= New.AttributeKey
-      ORDER BY	Version DESC
-    )			Existing
-    WHERE	ISNULL(AttributeValue, '')	= ''
-      AND	ExistingValue		!= ''
-  END
-
---------------------------------------------------------------------------------------------------------------------------------
--- DELETE UNMATCHED ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-IF @DeleteUnmatched = 1
-  BEGIN
-    INSERT
-    INTO	Attributes
-    SELECT	@TopicID,
-	Existing.AttributeKey,
-	'',
-	@Version
-    FROM	AttributeIndex		Existing
-    LEFT JOIN	@Attributes		New
-      ON	Existing.TopicID	= @TopicID
-      AND	Existing.AttributeKey	= New.AttributeKey
-    WHERE	ISNULL(New.AttributeKey, '')	= ''
-      AND	Existing.TopicID	= @TopicID
+    EXEC	UpdateAttributes	@TopicID,
+			@Attributes,
+			@Version,
+			@DeleteUnmatched
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
