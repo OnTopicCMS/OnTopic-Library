@@ -101,6 +101,19 @@ namespace OnTopic.Data.Sql {
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
+      | Read referenced items
+      \---------------------------------------------------------------------------------------------------------------------*/
+      Debug.WriteLine("SqlTopicRepository.Load(): SetReferences() [" + DateTime.Now + "]");
+
+      // Move to the version history dataset
+      reader.NextResult();
+
+      // Loop through each version; multiple records may exist per topic
+      while (reader.Read()) {
+        reader.SetReferences(topics);
+      }
+
+      /*----------------------------------------------------------------------------------------------------------------------
       | Read version history
       \---------------------------------------------------------------------------------------------------------------------*/
       Debug.WriteLine("SqlTopicRepository.Load(): SetVersionHistory() [" + DateTime.Now + "]");
@@ -319,6 +332,48 @@ namespace OnTopic.Data.Sql {
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
       current.Relationships.SetTopic(relationshipKey, related, isDirty: false);
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: SET REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds topic references to their associated topics.
+    /// </summary>
+    /// <remarks>
+    ///   Topics can be cross-referenced with each other topics via a one-to-one relationships. Once the topics are populated in
+    ///   memory, loop through the data to create these associations.
+    /// </remarks>
+    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
+    private static void SetReferences(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var sourceTopicId         = reader.GetTopicId("Source_TopicID");
+      var relationshipKey       = reader.GetString("ReferenceKey");
+      var targetTopicId         = reader.GetTopicId("Target_TopicID");
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify affected topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var current               = topics[sourceTopicId];
+      var referenced            = (Topic?)null;
+
+      // Fetch the related topic
+      if (topics.Keys.Contains(targetTopicId)) {
+        referenced              = topics[targetTopicId];
+      }
+
+      // Bypass if either of the objects are missing
+      if (referenced is null) return;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set relationship on object
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      current.References.SetTopic(relationshipKey, referenced, isDirty: false);
 
     }
 

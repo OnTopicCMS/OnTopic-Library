@@ -1,13 +1,12 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
--- UPDATE RELATIONSHIPS
+-- UPDATE REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
--- Saves the n:n mappings for related topics.
+-- Saves the 1:1 mappings for referenced topics.
 --------------------------------------------------------------------------------------------------------------------------------
 
-CREATE PROCEDURE [dbo].[UpdateRelationships]
+CREATE PROCEDURE [dbo].[UpdateReferences]
 	@TopicID		INT,
-	@RelationshipKey	VARCHAR(255),
-	@RelatedTopics		TopicList	READONLY,
+	@ReferencedTopics	TopicReferences	READONLY,
 	@DeleteUnmatched	BIT	= 0
 AS
 
@@ -15,20 +14,33 @@ AS
 -- INSERT NOVEL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT
-INTO	Relationships (
+INTO	TopicReferences (
 	  Source_TopicID,
-	  RelationshipKey,
+	  ReferenceKey,
 	  Target_TopicID
 	)
 SELECT	@TopicID,
-	@RelationshipKey,
-	TopicID
-FROM	@RelatedTopics		Target
-LEFT JOIN	Relationships		Existing
-  ON	Target_TopicID		= TopicID
-  AND	Source_TopicID		= @TopicID
-  AND	RelationshipKey		= @RelationshipKey
-WHERE	Target_TopicID		IS NULL
+	Target.ReferenceKey,
+	Target.TopicID
+FROM	@ReferencedTopics	Target
+LEFT JOIN	TopicReferences		Existing
+  ON	Source_TopicID		= @TopicID
+  AND	Existing.ReferenceKey	= Target.ReferenceKey
+WHERE	ISNULL(Source_TopicID, '')	= ''
+  AND	Target.TopicID		> 0
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE EXISTING VALUES
+--------------------------------------------------------------------------------------------------------------------------------
+UPDATE	Existing
+SET	Target_TopicID		= TopicID
+FROM	@ReferencedTopics	Target
+LEFT JOIN	TopicReferences		Existing
+  ON	Source_TopicID		= @TopicID
+  AND	Existing.ReferenceKey	= Target.ReferenceKey
+WHERE	Source_TopicID		IS NOT NULL
+  AND	Target.TopicID		!= Target_TopicID
+  AND	Target.TopicID		> 0
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DELETE UNMATCHED VALUES
@@ -36,12 +48,12 @@ WHERE	Target_TopicID		IS NULL
 IF @DeleteUnmatched = 1
   BEGIN
     DELETE	Existing
-    FROM	@RelatedTopics		Relationships
-    RIGHT JOIN	Relationships		Existing
-      ON	Target_TopicID		= TopicID
+    FROM	@ReferencedTopics	New
+    RIGHT JOIN	TopicReferences		Existing
+      ON	Source_TopicID		= @TopicID
+      AND	Existing.ReferenceKey	= New.ReferenceKey
     WHERE	Source_TopicID		= @TopicID
       AND	ISNULL(TopicID, '')	= ''
-      AND	RelationshipKey		= @RelationshipKey
   END
 
 --------------------------------------------------------------------------------------------------------------------------------

@@ -290,7 +290,7 @@ namespace OnTopic.Tests {
       topic.DerivedTopic        = finalDerivedTopic;
 
       Assert.ReferenceEquals(topic.DerivedTopic, finalDerivedTopic);
-      Assert.AreEqual<int>(2, topic.Attributes.GetInteger("TopicID", 0));
+      Assert.AreEqual<int>(2, topic.References.GetTopic("DerivedTopic").Id);
 
     }
 
@@ -333,7 +333,7 @@ namespace OnTopic.Tests {
       topic.DerivedTopic        = derivedTopic;
 
       Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("TopicID", -2));
+      Assert.AreEqual<int>(5, topic.References.GetTopic("DerivedTopic").Id);
 
     }
 

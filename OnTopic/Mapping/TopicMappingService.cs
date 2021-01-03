@@ -279,7 +279,7 @@ namespace OnTopic.Mapping {
       var configuration         = new PropertyConfiguration(property, attributePrefix);
       var topicReferenceId      = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
 
-      if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase)) {
+      if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
         topicReferenceId        = source.Attributes.GetInteger(configuration.AttributeKey, 0);
       }
 
@@ -310,8 +310,14 @@ namespace OnTopic.Mapping {
           await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
         }
       }
+      else if (
+        source.References.TryGetValue(configuration.AttributeKey, out var topicReference) &&
+        relationships.HasFlag(Relationships.References)
+      ) {
+        await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
+      }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
-        var topicReference = _topicRepository.Load(topicReferenceId);
+        topicReference = _topicRepository.Load(topicReferenceId);
         if (topicReference is not null) {
           await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
         }

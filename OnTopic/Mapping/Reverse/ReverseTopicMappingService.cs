@@ -551,7 +551,12 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+      if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
+        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+      }
+      else {
+        target.References.SetTopic(configuration.AttributeKey, topicReference);
+      }
 
     }
 

@@ -10,6 +10,7 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@ParentID		INT		= -1,
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	XML		= NULL,
+	@References		TopicReferences		READONLY,
 	@Version		DATETIME		= NULL
 AS
 
@@ -73,7 +74,7 @@ DECLARE	@TopicID		INT
 SELECT	@TopicID		= SCOPE_IDENTITY()
 
 --------------------------------------------------------------------------------------------------------------------------------
--- CREATE ATTRIBUTES FROM STRING
+-- ADD INDEXED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO	Attributes (
 	TopicID		,
@@ -103,6 +104,20 @@ IF @ExtendedAttributes IS NOT NULL
 	@ExtendedAttributes 	,
 	@Version
     )
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ADD REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@ReferenceCount		INT
+SELECT	@ReferenceCount		= COUNT(ReferenceKey)
+FROM	@References
+
+IF @ReferenceCount > 0
+  BEGIN
+    EXEC	UpdateReferences	@TopicID,
+			@References,
+			1
   END
 
 --------------------------------------------------------------------------------------------------------------------------------

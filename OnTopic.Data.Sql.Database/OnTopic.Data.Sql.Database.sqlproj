@@ -96,14 +96,17 @@
     <Build Include="Stored Procedures\GetTopics.sql" />
     <Build Include="Stored Procedures\GetTopicVersion.sql" />
     <Build Include="Stored Procedures\MoveTopic.sql" />
+    <Build Include="Stored Procedures\UpdateReferences.sql" />
     <Build Include="Stored Procedures\UpdateRelationships.sql" />
     <Build Include="Stored Procedures\UpdateTopic.sql" />
     <Build Include="Tables\Attributes.sql" />
     <Build Include="Tables\ExtendedAttributes.sql" />
     <Build Include="Tables\Relationships.sql" />
+    <Build Include="Tables\TopicReferences.sql" />
     <Build Include="Tables\Topics.sql" />
     <Build Include="Types\AttributeValues.sql" />
     <Build Include="Types\TopicList.sql" />
+    <Build Include="Types\TopicReferences.sql" />
     <Build Include="Utilities\Schema.sql" />
     <Build Include="Utilities\Stored Procedures\CompressHierarchy.sql" />
     <Build Include="Utilities\Stored Procedures\ConsolidateVersions.sql" />

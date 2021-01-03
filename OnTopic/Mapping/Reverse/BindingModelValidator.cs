@@ -272,24 +272,6 @@ namespace OnTopic.Mapping.Reverse {
         );
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate that references end in "Id"
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        attributeDescriptor.ModelType is ModelType.Reference &&
-        !configuration.AttributeKey.EndsWith("Id", StringComparison.InvariantCulture)
-      ) {
-        throw new TopicMappingException(
-          $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a topic reference, but " +
-          $"the generic type '{compositeAttributeKey}' does not end in <c>Id</c>. By convention, all topic reference are " +
-          $"expected to end in <c>Id</c>. To keep the property name set to '{propertyType.Name}', use the " +
-          $"{nameof(AttributeKeyAttribute)} to specify the name of the topic reference this should map to. If this property " +
-          $"is not intended to be mapped at all, include the {nameof(DisableMappingAttribute)}. If the " +
-          $"'{contentTypeDescriptor.Key}' defines a topic reference attribute that doesn't follow this convention, then it " +
-          $"should be updated."
-        );
-      }
-
     }
 
     /*==========================================================================================================================

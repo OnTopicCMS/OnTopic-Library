@@ -266,7 +266,7 @@ namespace OnTopic.Data.Sql {
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, connection, new(), version);
+        Save(unresolvedTopic, false, connection, unresolvedTopics, version);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -320,6 +320,7 @@ namespace OnTopic.Data.Sql {
       var areReferencesResolved = true;
       var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
+      var areReferencesDirty    = topic.References.IsDirty;
       var areAttributesDirty    = topic.Attributes.IsDirty(true);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
       var indexedAttributeList  = GetAttributes(
@@ -337,12 +338,13 @@ namespace OnTopic.Data.Sql {
       | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
       | as a quick fix to reduce the overhead of recursive saves.
       \-----------------------------------------------------------------------------------------------------------------------*/
+      areAttributesDirty        = areAttributesDirty || extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+
       var isDirty               =
         isTopicDirty            ||
         areRelationshipsDirty   ||
-        areAttributesDirty      ||
-        indexedAttributeList.Any() ||
-        extendedAttributeList.Any(a => a.IsExtendedAttribute == false);
+        areReferencesDirty      ||
+        areAttributesDirty;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass is not dirty
@@ -354,11 +356,21 @@ namespace OnTopic.Data.Sql {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add indexed attributes that are dirty
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it.
       \-----------------------------------------------------------------------------------------------------------------------*/
       using var attributeValues = new AttributeValuesDataTable();
 
-      foreach (var attributeValue in indexedAttributeList) {
-        attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
+      if (areAttributesDirty) {
+
+        foreach (var attributeValue in indexedAttributeList) {
+          attributeValues.AddRow(attributeValue.Key, attributeValue.Value);
+        }
+
+        foreach (var attribute in GetUnmatchedAttributes(topic)) {
+          attributeValues.AddRow(attribute.Key);
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -366,32 +378,27 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var extendedAttributes    = new StringBuilder();
 
-      extendedAttributes.Append("<attributes>");
+      if (areAttributesDirty) {
 
-      foreach (var attributeValue in extendedAttributeList) {
+        extendedAttributes.Append("<attributes>");
 
-        extendedAttributes.Append(
-          "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
-        );
+        foreach (var attributeValue in extendedAttributeList) {
 
-        //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
-        //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
-        //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
-        //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
-        //attributes if their length exceeds 255.
-        attributeValues.AddRow(attributeValue.Key);
+          extendedAttributes.Append(
+            "<attribute key=\"" + attributeValue.Key + "\"><![CDATA[" + attributeValue.Value + "]]></attribute>"
+          );
 
-      }
+          //###NOTE JJC20200502: By treating extended attributes as unmatched, we ensure that any indexed attributes with the same
+          //value are overwritten with an empty attribute. This is useful for cases where an indexed attribute is moved to an
+          //extended attribute, as it persists that version history, while removing ambiguity over which record is authoritative.
+          //This is also useful for supporting arbitrary attribute values, since they may be moved from indexed to extended
+          //attributes if their length exceeds 255.
+          attributeValues.AddRow(attributeValue.Key);
 
-      extendedAttributes.Append("</attributes>");
+        }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add unmatched attributes
-      >-------------------------------------------------------------------------------------------------------------------------
-      | Loop through the content type's supported attributes and add attribute to null attributes if topic does not contain it
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in GetUnmatchedAttributes(topic)) {
-        attributeValues.AddRow(attribute.Key);
+        extendedAttributes.Append("</attributes>");
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -410,7 +417,12 @@ namespace OnTopic.Data.Sql {
       | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
       | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive && (topic.DerivedTopic?.Id < 0 || topic.Relationships.Any(r => r.Any(t => t.Id < 0)))) {
+      if (
+        isRecursive &&
+        (  topic.Relationships.Any(r => r.Any(t => t.Id < 0)) ||
+           topic.References.Values.Any(t => t.Id < 0)
+        )
+      ) {
         unresolvedRelationships.Add(topic);
         areReferencesResolved = false;
       }
@@ -420,15 +432,20 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.IsNew) {
         command.AddParameter("TopicID", topic.Id);
+        command.AddParameter("DeleteUnmatched", false);
       }
       else if (topic.Parent is not null) {
         command.AddParameter("ParentID", topic.Parent.Id);
       }
-      command.AddParameter("Key", topic.Key);
-      command.AddParameter("ContentType", topic.ContentType);
+      if (isTopicDirty || topic.IsNew) {
+        command.AddParameter("Key", topic.Key);
+        command.AddParameter("ContentType", topic.ContentType);
+      }
       command.AddParameter("Version", version.Value);
-      command.AddParameter("ExtendedAttributes", extendedAttributes);
-      command.AddParameter("Attributes", attributeValues);
+      if (areAttributesDirty) {
+        command.AddParameter("Attributes", attributeValues);
+        command.AddParameter("ExtendedAttributes", extendedAttributes);
+      }
       command.AddOutputParameter();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -436,9 +453,10 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        command.ExecuteNonQuery();
-
-        topic.Id                = command.GetReturnCode();
+        if (topic.IsNew || isTopicDirty || areAttributesDirty) {
+          command.ExecuteNonQuery();
+          topic.Id = command.GetReturnCode();
+        }
 
         Contract.Assume(
           !topic.IsNew,
@@ -447,6 +465,10 @@ namespace OnTopic.Data.Sql {
 
         if (areReferencesResolved && areRelationshipsDirty) {
           PersistRelations(topic, connection);
+        }
+
+        if (areReferencesResolved && areReferencesDirty) {
+          PersistReferences(topic, connection);
         }
 
         if (!topic.VersionHistory.Contains(version.Value)) {
@@ -628,6 +650,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("TopicID", topicId);
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
+          command.AddParameter("DeleteUnmatched", true);
 
           command.ExecuteNonQuery();
 
@@ -644,6 +667,60 @@ namespace OnTopic.Data.Sql {
       catch (SqlException exception) {
         throw new TopicRepositoryException(
           $"Failed to persist relationships for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
+          exception
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return;
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: PERSIST REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Internal method that saves topic references to the 1:n mapping table in SQL.
+    /// </summary>
+    /// <param name="topic">The topic object whose references should be persisted.</param>
+    /// <param name="connection">The SQL connection.</param>
+    private static void PersistReferences(Topic topic, SqlConnection connection) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Persist relations to database
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      try {
+
+        var topicId             = topic.Id.ToString(CultureInfo.InvariantCulture);
+        using var references    = new TopicReferencesDataTable();
+        using var command       = new SqlCommand("UpdateReferences", connection) {
+          CommandType           = CommandType.StoredProcedure
+        };
+
+        foreach (var relatedTopic in topic.References.Where(t => !t.Value.IsNew)) {
+          references.AddRow(relatedTopic.Key, relatedTopic.Value.Id);
+        }
+
+        // Add Parameters
+        command.AddParameter("TopicID", topicId);
+        command.AddParameter("ReferencedTopics", references);
+        command.AddParameter("DeleteUnmatched", true);
+
+        command.ExecuteNonQuery();
+
+        //Reset isDirty, assuming there aren't any unresolved references
+        topic.References.IsDirty = references.Rows.Count < topic.References.Count;
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Catch exception
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      catch (SqlException exception) {
+        throw new TopicRepositoryException(
+          $"Failed to persist references for Topic '{topic.Key}' ({topic.Id}): '{exception.Message}'",
           exception
         );
       }

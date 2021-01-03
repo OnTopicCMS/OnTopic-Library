@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
@@ -31,7 +30,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ReverseTopicMappingService"/> using local DTOs.
   /// </summary>
   [TestClass]
-  public class ReverseReverseTopicMappingServiceTest {
+  public class ReverseTopicMappingServiceTest {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -42,7 +41,7 @@ namespace OnTopic.Tests {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ReverseReverseTopicMappingServiceTest"/> with shared resources.
+    ///   Initializes a new instance of the <see cref="ReverseTopicMappingServiceTest"/> with shared resources.
     /// </summary>
     /// <remarks>
     ///   This uses the <see cref="StubTopicRepository"/> to provide data, and then <see cref="CachedTopicRepository"/> to
@@ -50,7 +49,7 @@ namespace OnTopic.Tests {
     ///   relatively lightweight façade to any <see cref="ITopicRepository"/>, and prevents the need to duplicate logic for
     ///   crawling the object graph.
     /// </remarks>
-    public ReverseReverseTopicMappingServiceTest() {
+    public ReverseTopicMappingServiceTest() {
       _topicRepository = new CachedTopicRepository(new StubTopicRepository());
     }
 
@@ -298,9 +297,8 @@ namespace OnTopic.Tests {
 
       var target                = (TopicReferenceAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      target.DerivedTopic       = _topicRepository.Load(target.Attributes.GetInteger("TopicId", -5));
-
       Assert.IsNotNull(target.DerivedTopic);
+      Assert.AreEqual<string>("Title", target.DerivedTopic.Key);
       Assert.AreEqual<string>("TopicReference", target.EditorType);
 
     }
@@ -472,24 +470,6 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
-
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: MAP: INVALID TOPIC REFERENCE NAME: THROWS INVALID OPERATION EXCEPTION
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Maps a content type that has a reference that does not end in <c>Id</c>. This is invalid, and expected to throw an
-    ///   <see cref="InvalidOperationException"/>.
-    /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
-    public async Task Map_InvalidTopicReferenceName_ThrowsInvalidOperationException() {
-
-      var mappingService        = new ReverseTopicMappingService(_topicRepository);
-      var bindingModel          = new InvalidReferenceNameTopicBindingModel("Test");
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 

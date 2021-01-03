@@ -221,7 +221,7 @@ namespace OnTopic.TestDoubles {
       addAttribute(contentTypes, "Key", "TextAttribute", false, true);
       addAttribute(contentTypes, "ContentType", "TextAttribute", false, true);
       addAttribute(contentTypes, "Title", "TextAttribute", true, true);
-      addAttribute(contentTypes, "TopicId", "TopicReferenceAttribute", false);
+      addAttribute(contentTypes, "DerivedTopic", "TopicReferenceAttribute", false);
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 

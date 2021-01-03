@@ -500,6 +500,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES AS ATTRIBUTE: RETURNS MAPPED MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics stored in
+    ///   <see cref="Topic.Attributes"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferencesAsAttribute_ReturnsMappedModel() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var topicReference        = _topicRepository.Load(11111);
+
+      var topic                 = TopicFactory.Create("Test", "TopicReference");
+
+      topic.Attributes.SetInteger("TopicReferenceId", topicReference.Id);
+
+      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target.TopicReference);
+      Assert.AreEqual<string>(topicReference.Key, target.TopicReference.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -513,7 +537,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
 
-      topic.Attributes.SetInteger("TopicReferenceId", topicReference.Id);
+      topic.References.SetTopic("TopicReference", topicReference);
 
       var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 

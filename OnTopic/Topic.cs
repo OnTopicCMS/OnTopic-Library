@@ -32,7 +32,6 @@ namespace OnTopic {
     private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
-    private                     Topic?                          _derivedTopic;
     private                     bool                            _isDirty;
 
     /*==========================================================================================================================
@@ -66,6 +65,7 @@ namespace OnTopic {
       Attributes                = new(this);
       IncomingRelationships     = new(this, true);
       Relationships             = new(this, false);
+      References                = new(this);
       VersionHistory            = new();
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -567,6 +567,9 @@ namespace OnTopic {
         _isDirty = Relationships.IsDirty();
       }
       if (!_isDirty && checkCollections) {
+        _isDirty = References.IsDirty;
+      }
+      if (!_isDirty && checkCollections) {
         _isDirty = Attributes.IsDirty(excludeLastModified);
       }
       return _isDirty;
@@ -608,19 +611,13 @@ namespace OnTopic {
     ///   value != this
     /// </requires>
     public Topic? DerivedTopic {
-      get => _derivedTopic;
+      get => References.GetTopic("DerivedTopic", false);
       set {
         Contract.Requires<ArgumentException>(
           value != this,
           "A topic may not derive from itself."
         );
-        _derivedTopic = value;
-        if (value is not null && value.Id > 0) {
-          SetAttributeValue("TopicID", value.Id.ToString(CultureInfo.InvariantCulture));
-        }
-        else {
-          Attributes.Remove("TopicID");
-        }
+        References.SetTopic("DerivedTopic", value);
       }
     }
 
@@ -653,6 +650,20 @@ namespace OnTopic {
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
     public RelatedTopicCollection Relationships { get; }
+
+
+    /*==========================================================================================================================
+    | PROPERTY: REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   A façade for accessing references topics based on a reference key; can be used for derived topics, etc.
+    /// </summary>
+    /// <remarks>
+    ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
+    ///   "DerivedTopic" for a derived topic).
+    /// </remarks>
+    /// <value>The current <see cref="Topic"/>'s relationships.</value>
+    public TopicReferenceDictionary References { get; }
 
     /*===========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS
