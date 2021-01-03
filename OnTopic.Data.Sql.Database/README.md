@@ -17,7 +17,8 @@ The following is a summary of the most relevant tables.
 - **[`Topics`](Tables/Topics.sql)**: Represents the core hierarchy of topics, encoded using a nested set model.
 - **[`Attributes`](Tables/Attributes.sql)**: Represents key/value pairs of topic attributes, including historical versions.
 - **[`ExtendedAttributes`](Tables/ExtendedAttributes.sql)**: Represents an XML-based representation of non-indexed attributes, which are too long for `Attributes`.
-- **[`Relationships`](Tables/Relationships.sql)**: Represents relationships between topics, segmented by a `RelationshipKey`.
+- **[`TopicReferences`](Tables/TopicReferences.sql)**: Represents (1:1) references between topics, segmented by a `ReferenceKey`.
+- **[`Relationships`](Tables/Relationships.sql)**: Represents (1:n) relationships between topics, segmented by a `RelationshipKey`.
 
 > *Note:* Neither `Topics` nor `Relationships` are subject to tracking versions. Changes to these records are permanent.
 
@@ -35,6 +36,7 @@ The following is a summary of the most relevant stored procedures.
 - **[`UpdateTopic`](Stored%20Procedures/UpdateTopic.sql)**: Updates an existing topic based on a `@TopicId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Optionally deletes all relationships; these will need to be re-added using `UpdateRelationships`. Old attributes are persisted as previous versions.
   - **[`UpdateAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the indexed attributes, optionally removing any whose values aren't matched in the provided `@Attributes` parameter.
   - **[`UpdateExtendedAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the extended attributes, assuming the `@ExtendedAttributes` parameter doesn't match the previous value.
+- **[`UpdateReferences`](Stored%20Procedures/UpdateReferences.sql)**: Associates a reference with a topic based on a `@TopicId` and a `TopicReferences` array of `@ReferencKey`s and `@Target_TopicId`s.
 - **[`UpdateRelationships`](Stored%20Procedures/UpdateRelationships.sql)**: Associates a relationship with a topic based on a `@TopicId`, `TopicList` array of `@Target_TopicIds`, and a `@RelationshipKey` (which can be any string label).
 
 ## Functions
@@ -42,6 +44,7 @@ The following is a summary of the most relevant stored procedures.
 - **[`GetUniqueKey`](Functions/GetUniqueKey.sql)**: Retrieves a topic's `UniqueKey` based on a corresponding `@TopicID`.
 - **[`GetParentID`](Functions/GetParentID.sql)**: Retrieves a topic's parent's `TopicID` based the child's `@TopicID`.
 - **[`GetAttributes`](functions/GetAttributes.sql)**: Given a `@TopicID`, provides the latest version of each attribute value from both `Attributes` and `ExtendedAttributes`, excluding key attributes (i.e., `Key`, `ContentType`, and `ParentID`).
+- **[`GetChildTopicIDs`](functions/GetChildTopicIDs.sql)**: Given a `@TopicID`, returns a list of `TopicID`s that are immediate children.
 - **[`GetExtendedAttribute`](Functions/GetExtendedAttribute.sql)**: Retrieves an individual attribute from a topic's latest `ExtendedAttributes` record.
 - **[`FindTopicIDs`](Functions/FindTopicIDs.sql)**: Retrieves all `TopicID`s under a given `@TopicID` that match the `@AttributeKey` and `@AttributeValue`. Accepts `@IsExtendedAttribute` and `@UsePartialMatch`.
 
@@ -55,3 +58,4 @@ The majority of the views provide records corresponding to the latest version of
 User-defined table valued types are used to relay arrays of information to (and between) the stored procedures. These can be mimicked in C# using e.g. a `DataTable`. These include:
 - **[`AttributeValues`](Types/AttributeValues.sql)**: Defines a table with an `AttributeKey` `Varchar(128)` and `AttributeValue` `Varchar(255)` columns.
 - **[`TopicList`](Types/TopicList.sql)**: Defines a table with a single `TopicId` `Int` column for passing lists of topics.
+- **[`TopicReferences`](Types/TopicReferences.sql)**: Defines a table with a `ReferenceKey` `Varchar(128)` and a `Target_TopicId` `Int` column for passing lists of topic references.
