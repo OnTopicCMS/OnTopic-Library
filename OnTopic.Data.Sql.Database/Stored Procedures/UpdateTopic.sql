@@ -53,32 +53,13 @@ IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- PULL PREVIOUS EXTENDED ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@PreviousExtendedAttributes	XML
-
-SELECT	TOP 1
-	@PreviousExtendedAttributes	= AttributesXml
-FROM	ExtendedAttributes
-WHERE	TopicID		= @TopicID
-ORDER BY	Version		DESC
-
---------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES, IF CHANGED
 --------------------------------------------------------------------------------------------------------------------------------
-IF @ExtendedAttributes IS NOT NULL AND CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
+IF @ExtendedAttributes IS NOT NULL
   BEGIN
-    INSERT
-    INTO	ExtendedAttributes (
-	  TopicID		,
-	  AttributesXml		,
-	  Version
-	)
-    VALUES (
-	@TopicID		,
-	@ExtendedAttributes	,
-	@Version
-    )
+    EXEC	UpdateExtendedAttributes	@TopicID,
+			@ExtendedAttributes,
+			@Version
   END
 
 --------------------------------------------------------------------------------------------------------------------------------

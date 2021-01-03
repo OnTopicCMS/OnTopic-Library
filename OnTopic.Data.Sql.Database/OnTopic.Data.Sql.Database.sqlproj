@@ -124,6 +124,7 @@
     <Build Include="Views\ExtendedAttributeIndex.sql" />
     <Build Include="Views\VersionHistoryIndex.sql" />
     <Build Include="Stored Procedures\UpdateAttributes.sql" />
+    <Build Include="Stored Procedures\UpdateExtendedAttributes.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">

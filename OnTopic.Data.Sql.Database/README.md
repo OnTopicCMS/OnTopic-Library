@@ -34,6 +34,7 @@ The following is a summary of the most relevant stored procedures.
 - **[`MoveTopic`](Stored%20Procedures/MoveTopic.sql)**: Moves an existing topic based on a `@TopicId`, `@ParentId`, and `@SiblingId`.
 - **[`UpdateTopic`](Stored%20Procedures/UpdateTopic.sql)**: Updates an existing topic based on a `@TopicId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Optionally deletes all relationships; these will need to be re-added using `UpdateRelationships`. Old attributes are persisted as previous versions.
   - **[`UpdateAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the indexed attributes, optionally removing any whose values aren't matched in the provided `@Attributes` parameter.
+  - **[`UpdateExtendedAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the extended attributes, assuming the `@ExtendedAttributes` parameter doesn't match the previous value.
 - **[`UpdateRelationships`](Stored%20Procedures/UpdateRelationships.sql)**: Associates a relationship with a topic based on a `@TopicId`, `TopicList` array of `@Target_TopicIds`, and a `@RelationshipKey` (which can be any string label).
 
 ## Functions
