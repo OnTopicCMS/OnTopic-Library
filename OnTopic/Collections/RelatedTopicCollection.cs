@@ -315,6 +315,19 @@ namespace OnTopic.Collections {
     public bool IsDirty() => Items.Any(r => r.IsDirty);
 
     /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="NamedTopicCollection.IsDirty"/> property of every <see cref="NamedTopicCollection"/> in this <see
+    ///   cref="RelatedTopicCollection"/> to <c>false</c>.
+    /// </summary>
+    public void MarkClean() {
+      foreach (var relationship in Items) {
+        relationship.IsDirty = false;
+      }
+    }
+
+    /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>Fires any time a <see cref="NamedTopicCollection"/> is added to the collection.</summary>
