@@ -577,6 +577,29 @@ namespace OnTopic {
       return _isDirty;
     }
 
+    /*==========================================================================================================================
+    | METHOD: MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the <see cref="IsDirty"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using the
+    ///   <paramref name="includeCollections"/> parameter.
+    /// </summary>
+    /// <param name="includeCollections">
+    ///   Determines if <see cref="Attributes"/>, <see cref="Relationships"/>, and <see cref="References"/> should be included.
+    /// </param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
+    ///   VersionHistory"/>.
+    /// </param>
+    public void MarkClean(bool includeCollections = false, DateTime? version = null) {
+      _isDirty = false;
+      if (includeCollections) {
+        Attributes.MarkClean(version);
+        Relationships.MarkClean();
+        References.MarkClean();
+      }
+    }
+
     #endregion
 
     #region Relationship and Collection Properties
