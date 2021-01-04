@@ -407,5 +407,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | MARK CLEAN: CHANGE COLLECTION: RESETS IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
+    ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(Boolean, DateTime?)"/> resets the
+    ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_ChangeCollection_ResetIsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+
+      topic.Attributes.SetValue("Related", related.Key);
+      topic.References.SetTopic("Related", related);
+      topic.Relationships.SetTopic("Related", related);
+
+      topic.MarkClean(true);
+
+      Assert.IsFalse(topic.IsDirty(true));
+
+    }
+
   } //Class
 } //Namespace
