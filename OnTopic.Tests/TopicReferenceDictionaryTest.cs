@@ -14,9 +14,9 @@ namespace OnTopic.Tests {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicReferenceDictionary"/>, with a particular emphasis on the custom features
-  ///   such as <see cref="TopicReferenceDictionary.IsDirty"/>, <see cref="TopicReferenceDictionary.GetTopic(String)"/>, <see
-  ///   cref="TopicReferenceDictionary.SetTopic(string, Topic?, bool?)"/>, and the cross-referencing of reciprocal values in the
-  ///   <see cref="Topic.IncomingRelationships"/> property.
+  ///   such as <see cref="TopicReferenceDictionary.IsDirty"/>, <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"
+  ///   />, <see cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and the cross-referencing of reciprocal
+  ///   values in the <see cref="Topic.IncomingRelationships"/> property.
   /// </summary>
   [TestClass]
   public class TopicReferenceDictionaryTest {
@@ -37,7 +37,7 @@ namespace OnTopic.Tests {
       topic.References.Add("Reference", reference);
 
       Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 
@@ -58,7 +58,7 @@ namespace OnTopic.Tests {
       topic.References.SetTopic("Reference", reference, false);
 
       Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsFalse(topic.References.IsDirty);
+      Assert.IsFalse(topic.References.IsDirty());
 
     }
 
@@ -67,7 +67,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a topic reference, removes that reference using <see cref=
-    ///   "TopicReferenceDictionary.Remove(string)"/> , and confirms that <see cref="TopicReferenceDictionary.IsDirty"/> is set.
+    ///   "TopicReferenceDictionary.Remove(String)"/> , and confirms that <see cref="TopicReferenceDictionary.IsDirty"/> is set.
     /// </summary>
     [TestMethod]
     public void Remove_ExistingReference_IsDirty() {
@@ -79,7 +79,7 @@ namespace OnTopic.Tests {
       topic.References.Remove("Reference");
 
       Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 
@@ -101,7 +101,7 @@ namespace OnTopic.Tests {
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 
@@ -216,7 +216,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.GetTopic(String)"/> correctly returns the <see cref="Topic"/>.
+    ///   <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns the <see cref="Topic"/>.
     /// </summary>
     [TestMethod]
     public void GetTopic_ExistingReference_ReturnsTopic() {

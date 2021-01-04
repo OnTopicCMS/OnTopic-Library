@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Querying;
 
 namespace OnTopic.Collections {
 
@@ -24,6 +23,7 @@ namespace OnTopic.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    Topic                           _parent;
     readonly                    IDictionary<string, Topic>      _storage;
+    private                     bool                            _isDirty;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -70,7 +70,7 @@ namespace OnTopic.Collections {
           "A topic reference may not point to itself."
         );
         if (!_storage.TryGetValue(referenceKey, out var existing) || existing != value) {
-          IsDirty = true;
+          _isDirty = true;
         }
         _storage[referenceKey] = value;
       }
@@ -110,7 +110,7 @@ namespace OnTopic.Collections {
       | Mark dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!_storage.TryGetValue(item.Key, out var existing) || existing != item.Value) {
-        IsDirty = true;
+        _isDirty = true;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ namespace OnTopic.Collections {
     ///   removed.
     /// </summary>
     public void SetTopic(string key, Topic? value, bool? isDirty = null) {
-      var wasDirty = IsDirty;
+      var wasDirty = _isDirty;
       if (value is null) {
         if (ContainsKey(key)) {
           Remove(key);
@@ -160,7 +160,7 @@ namespace OnTopic.Collections {
         this[key] = value;
       }
       if (wasDirty is false && isDirty is false) {
-        IsDirty = false;
+        _isDirty = false;
       }
     }
 
@@ -174,7 +174,7 @@ namespace OnTopic.Collections {
       | Mark dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (Count > 0) {
-        IsDirty = true;
+        _isDirty = true;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ namespace OnTopic.Collections {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (TryGetValue(key, out var existing)) {
         existing.IncomingRelationships.RemoveTopic(key, _parent, true);
-        IsDirty = true;
+        _isDirty = true;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -277,7 +277,15 @@ namespace OnTopic.Collections {
     ///   Determines if the dictionary has been modified. This value is set to <c>true</c> any time a new item is inserted or
     ///   removed from the dictionary.
     /// </summary>
-    public bool IsDirty { get; set; }
+    public bool IsDirty() => _isDirty;
+
+    /*==========================================================================================================================
+    | MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the <see cref="IsDirty"/> status of the <see cref="TopicReferenceDictionary"/>.
+    /// </summary>
+    public void MarkClean() => _isDirty = false;
 
   } //Class
 } //Namespace

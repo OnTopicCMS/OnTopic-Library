@@ -20,6 +20,11 @@ namespace OnTopic.Collections {
   public class NamedTopicCollection: TopicCollection {
 
     /*==========================================================================================================================
+    | PRIVATE VARIABLES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     bool                            _isDirty;
+
+    /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -41,19 +46,27 @@ namespace OnTopic.Collections {
     ///   Determines if the collection has been modified. This value is set to <c>true</c> any time a new item is inserted or
     ///   removed from the collection.
     /// </summary>
-    public bool IsDirty { get; set; }
+    public bool IsDirty() => _isDirty;
+
+    /*==========================================================================================================================
+    | MARK CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Resets the <see cref="_isDirty"/> status of the <see cref="NamedTopicCollection"/>.
+    /// </summary>
+    public void MarkClean() => _isDirty = false;
 
     /*==========================================================================================================================
     | INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   When inserting an item, determine if it will change the collection; if it will, mark the collection as <see
-    ///   cref="IsDirty"/>.
+    ///   cref="_isDirty"/>.
     /// </summary>
     protected override void InsertItem(int index, Topic item) {
       Contract.Requires(index, nameof(index));
       Contract.Requires(item, nameof(item));
-      IsDirty = IsDirty || !Contains(item.Key);
+      _isDirty = _isDirty || !Contains(item.Key);
       base.InsertItem(index, item);
     }
 
@@ -62,12 +75,12 @@ namespace OnTopic.Collections {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   When updating an existing item, determine if it will change the collection; if it will, mark the collection as <see
-    ///   cref="IsDirty"/>.
+    ///   cref="_isDirty"/>.
     /// </summary>
     protected override void SetItem(int index, Topic item) {
       Contract.Requires(index, nameof(index));
       Contract.Requires(item, nameof(item));
-      IsDirty = IsDirty || !Contains(item.Key);
+      _isDirty = _isDirty || !Contains(item.Key);
       base.SetItem(index, item);
     }
 
@@ -75,11 +88,11 @@ namespace OnTopic.Collections {
     | REMOVE ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   When removing an item from the collection, mark the collection as <see cref="IsDirty"/>.
+    ///   When removing an item from the collection, mark the collection as <see cref="_isDirty"/>.
     /// </summary>
     protected override void RemoveItem(int index) {
       Contract.Requires(index, nameof(index));
-      IsDirty = IsDirty || index < Count;
+      _isDirty = _isDirty || index < Count;
       base.RemoveItem(index);
     }
 
@@ -87,10 +100,10 @@ namespace OnTopic.Collections {
     | CLEAR ITEMS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   When clearing the collection, mark the collection as <see cref="IsDirty"/> if it had items in it.
+    ///   When clearing the collection, mark the collection as <see cref="_isDirty"/> if it had items in it.
     /// </summary>
     protected override void ClearItems() {
-      IsDirty = IsDirty || Count > 0;
+      _isDirty = _isDirty || Count > 0;
       base.ClearItems();
     }
 

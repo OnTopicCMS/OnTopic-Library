@@ -33,7 +33,7 @@ namespace OnTopic.Tests {
 
       relationships.Add(related);
 
-      Assert.IsTrue(relationships.IsDirty);
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 
@@ -52,7 +52,7 @@ namespace OnTopic.Tests {
       var related2              = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related1);
-      relationships.IsDirty     = false;
+      relationships.MarkClean();
 
       try {
         relationships.Add(related2);
@@ -61,7 +61,7 @@ namespace OnTopic.Tests {
         //Expected due to duplicate key
       }
 
-      Assert.IsFalse(relationships.IsDirty);
+      Assert.IsFalse(relationships.IsDirty());
 
     }
 
@@ -88,7 +88,7 @@ namespace OnTopic.Tests {
         //Expected due to duplicate key
       }
 
-      Assert.IsTrue(relationships.IsDirty);
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 
@@ -107,10 +107,10 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related);
-      relationships.IsDirty     = false;
+      relationships.MarkClean();
       relationships.Remove(related);
 
-      Assert.IsTrue(relationships.IsDirty);
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 
@@ -129,7 +129,7 @@ namespace OnTopic.Tests {
 
       relationships.Remove(related);
 
-      Assert.IsFalse(relationships.IsDirty);
+      Assert.IsFalse(relationships.IsDirty());
 
     }
 
@@ -150,7 +150,7 @@ namespace OnTopic.Tests {
       relationships.Add(related);
       relationships.Remove(missing);
 
-      Assert.IsTrue(relationships.IsDirty);
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 
@@ -168,10 +168,10 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Topic", "Page");
 
       relationships.Add(related);
-      relationships.IsDirty     = false;
+      relationships.MarkClean();
       relationships.Clear();
 
-      Assert.IsTrue(relationships.IsDirty);
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 
@@ -189,7 +189,7 @@ namespace OnTopic.Tests {
 
       relationships.Clear();
 
-      Assert.IsFalse(relationships.IsDirty);
+      Assert.IsFalse(relationships.IsDirty());
 
     }
 
