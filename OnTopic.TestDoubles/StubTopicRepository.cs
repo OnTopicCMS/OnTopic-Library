@@ -105,7 +105,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false) {
+    public override void Save(Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Call base method - will trigger any events associated with the save
@@ -127,11 +127,6 @@ namespace OnTopic.TestDoubles {
           Save(childTopic, isRecursive);
         }
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return identity
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic.Id;
 
     }
 

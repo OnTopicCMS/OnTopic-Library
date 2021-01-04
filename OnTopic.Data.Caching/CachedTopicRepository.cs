@@ -135,7 +135,7 @@ namespace OnTopic.Data.Caching {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false) =>
+    public override void Save(Topic topic, bool isRecursive = false) =>
       _dataProvider.Save(topic, isRecursive);
 
     /*==========================================================================================================================

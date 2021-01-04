@@ -299,7 +299,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual int Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
+    public virtual void Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -386,7 +386,6 @@ namespace OnTopic.Repositories {
       | Reset original key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
-      return -1;
 
     }
 
