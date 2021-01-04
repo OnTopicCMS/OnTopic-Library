@@ -572,7 +572,7 @@ namespace OnTopic {
         _isDirty = Relationships.IsDirty();
       }
       if (!_isDirty && checkCollections) {
-        _isDirty = References.IsDirty;
+        _isDirty = References.IsDirty();
       }
       return _isDirty;
     }

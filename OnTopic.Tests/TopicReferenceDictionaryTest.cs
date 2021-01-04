@@ -37,7 +37,7 @@ namespace OnTopic.Tests {
       topic.References.Add("Reference", reference);
 
       Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 
@@ -58,7 +58,7 @@ namespace OnTopic.Tests {
       topic.References.SetTopic("Reference", reference, false);
 
       Assert.AreEqual<int>(1, topic.References.Count);
-      Assert.IsFalse(topic.References.IsDirty);
+      Assert.IsFalse(topic.References.IsDirty());
 
     }
 
@@ -79,7 +79,7 @@ namespace OnTopic.Tests {
       topic.References.Remove("Reference");
 
       Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 
@@ -101,7 +101,7 @@ namespace OnTopic.Tests {
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
-      Assert.IsTrue(topic.References.IsDirty);
+      Assert.IsTrue(topic.References.IsDirty());
 
     }
 

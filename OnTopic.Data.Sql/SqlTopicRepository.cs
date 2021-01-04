@@ -320,7 +320,7 @@ namespace OnTopic.Data.Sql {
       var areReferencesResolved = true;
       var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
-      var areReferencesDirty    = topic.References.IsDirty;
+      var areReferencesDirty    = topic.References.IsDirty();
       var areAttributesDirty    = topic.Attributes.IsDirty(true);
       var extendedAttributeList = GetAttributes(topic, isExtendedAttribute: true);
       var indexedAttributeList  = GetAttributes(
@@ -711,7 +711,9 @@ namespace OnTopic.Data.Sql {
         command.ExecuteNonQuery();
 
         //Reset isDirty, assuming there aren't any unresolved references
-        topic.References.IsDirty = references.Rows.Count < topic.References.Count;
+        if (references.Rows.Count == topic.References.Count) {
+          topic.References.MarkClean();
+        }
 
       }
 
