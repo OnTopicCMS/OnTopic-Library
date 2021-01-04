@@ -287,7 +287,9 @@ namespace OnTopic.Collections {
       var topics = this[relationshipKey];
       if (!topics.Contains(topic.Key)) {
         topics.Add(topic);
-        topics.IsDirty = isDirty?? topics.IsDirty;
+        if (!(isDirty?? topics.IsDirty())) {
+          topics.MarkClean();
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -312,7 +314,7 @@ namespace OnTopic.Collections {
     ///   Evaluates each of the child <see cref="NamedTopicCollection"/>s to determine if any of them are set to <see
     ///   cref="NamedTopicCollection.IsDirty"/>. If they are, returns <c>true</c>.
     /// </summary>
-    public bool IsDirty() => Items.Any(r => r.IsDirty);
+    public bool IsDirty() => Items.Any(r => r.IsDirty());
 
     /*==========================================================================================================================
     | METHOD: MARK CLEAN
@@ -323,7 +325,7 @@ namespace OnTopic.Collections {
     /// </summary>
     public void MarkClean() {
       foreach (var relationship in Items) {
-        relationship.IsDirty = false;
+        relationship.MarkClean();
       }
     }
 

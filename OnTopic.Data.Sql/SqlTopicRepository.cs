@@ -655,7 +655,9 @@ namespace OnTopic.Data.Sql {
           command.ExecuteNonQuery();
 
           //Reset isDirty, assuming there aren't any unresolved references
-          relatedTopics.IsDirty = savedTopics.Count() < relatedTopics.Count;
+          if (savedTopics.Count() == relatedTopics.Count) {
+            relatedTopics.MarkClean();
+          }
 
         }
 
