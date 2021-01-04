@@ -245,7 +245,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save([NotNull]Topic topic, bool isRecursive = false) {
+    public override void Save([NotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
@@ -260,7 +260,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicId = Save(topic, isRecursive, connection, unresolvedTopics, version);
+      Save(topic, isRecursive, connection, unresolvedTopics, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding relationships
@@ -270,10 +270,9 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return value
+      | Close shared connection
       \-----------------------------------------------------------------------------------------------------------------------*/
       connection.Close();
-      return topicId;
 
     }
 
@@ -301,7 +300,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
     /// <param name="connection">The open <see cref="SqlConnection"/> to use for executing <see cref="SqlCommand"/>s.</param>
     /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
-    private int Save(
+    private void Save(
       [NotNull]Topic topic,
       bool isRecursive,
       SqlConnection connection,
@@ -351,7 +350,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isDirty) {
         recurse();
-        return topic.Id;
+        return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -490,13 +489,12 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return value
+      | Recuse over any children
       \-----------------------------------------------------------------------------------------------------------------------*/
       recurse();
-      return topic.Id;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse
+      | Function: Recurse
       \-----------------------------------------------------------------------------------------------------------------------*/
       void recurse() {
         if (isRecursive) {
