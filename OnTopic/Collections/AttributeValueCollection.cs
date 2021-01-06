@@ -29,15 +29,14 @@ namespace OnTopic.Collections {
   public class AttributeValueCollection : KeyedCollection<string, AttributeValue> {
 
     /*==========================================================================================================================
-    | STATIC VARIABLES
+    | DISPATCHER
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly TypeMemberInfoCollection _typeCache = new(typeof(AttributeSetterAttribute));
+    private readonly TopicPropertyDispatcher<AttributeSetterAttribute, AttributeValue> _topicPropertyDispatcher;
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
-    private                     int                             _setCounter;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -52,48 +51,8 @@ namespace OnTopic.Collections {
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
     internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.InvariantCultureIgnoreCase) {
       _associatedTopic = parentTopic;
+      _topicPropertyDispatcher = new(parentTopic);
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: BUSINESS LOGIC CACHE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a local cache of <see cref="AttributeValue"/> objects, keyed by their <see cref="AttributeValue.Key"/>, prior
-    ///   to them having their business logic enforced.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     By default, there is no business logic enforced for <see cref="AttributeValue"/> objects. This can be mitigate by
-    ///     implementing properties that correspond to the attribute names on <see cref="Topic"/> or a derivative class.
-    ///   </para>
-    ///   <para>
-    ///     The <see cref="AttributeValueCollection"/> enforces this business logic by forcing updates to go through that
-    ///     property if it exists. To ensure this is enforced at all entry points, this is handled via the <see cref="
-    ///     SetItem(Int32, AttributeValue)"/> and <see cref="InsertItem(Int32, AttributeValue)"/> methods. This ensures that the
-    ///     business logic is enforced even if implementors bypass the <see cref="SetValue(String, String?, Boolean?, DateTime?,
-    ///     Boolean?)"/> method, and instead use e.g. <see cref="KeyedCollection{TKey, TItem}"/>'s indexer or underlying methods
-    ///     such as <see cref="Collection{T}.Add(T)"/>.
-    ///   </para>
-    ///   <para>
-    ///     Since neither the <see cref="SetItem(Int32, AttributeValue)"/> or <see cref="InsertItem(Int32, AttributeValue)"/>
-    ///     methods, nor the properties that <see cref="EnforceBusinessLogic(AttributeValue)"/> calls, accept the optional
-    ///     parameters from <see cref="SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/>, however, that means that
-    ///     parameter values corresponding to e.g. <see cref="AttributeValue.IsExtendedAttribute"/> and <see cref=
-    ///     "AttributeValue.IsDirty"/> will get lost in the process. In addition, there needs to be a way to track whether
-    ///     the call to e.g., <see cref="SetItem(Int32, AttributeValue)"/> is being triggered by a direct call, or as a round-
-    ///     trip through one of these property setters.
-    ///   </para>
-    ///   <para>
-    ///     The <see cref="BusinessLogicCache"/> addresses this issue by providing a cache of the original <see
-    ///     cref="AttributeValue"/> instances, indexed by their <see cref="AttributeValue.Key"/>, for attributes currently being
-    ///     routed through their corresponding property setter. If a record exists for the current attribute, the <see cref="
-    ///     EnforceBusinessLogic(AttributeValue)"/> method knows it should not enforce business logic again—as that would result
-    ///     in an infinite loop—and should instead persist the record to the collection. Further, because the <see cref=
-    ///     "BusinessLogicCache"/> includes the original <see cref="AttributeValue"/>, the original parameters such as the <see
-    ///     cref="AttributeValue.IsDirty"/> are not lost, and can be applied to the final object.
-    ///   </para>
-    /// </remarks>
-    private Dictionary<string, AttributeValue?> BusinessLogicCache { get; } = new();
 
     /*==========================================================================================================================
     | PROPERTY: DELETED ATTRIBUTES
@@ -425,7 +384,6 @@ namespace OnTopic.Collections {
       | Retrieve original attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       AttributeValue? originalAttributeValue = null;
-      AttributeValue? updatedAttributeValue = null;
 
       if (Contains(key)) {
         originalAttributeValue  = this[key];
@@ -437,8 +395,7 @@ namespace OnTopic.Collections {
       | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
       | business logic, then use the original values, while applying any change in the value triggered by the business logic.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (BusinessLogicCache.ContainsKey(key)) {
-        BusinessLogicCache.TryGetValue(key, out updatedAttributeValue);
+      if (_topicPropertyDispatcher.IsRegistered(key, out var updatedAttributeValue)) {
         if (updatedAttributeValue.Value != value) {
           updatedAttributeValue = updatedAttributeValue with {
             Value               = value
@@ -485,19 +442,17 @@ namespace OnTopic.Collections {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish secret handshake for later enforcement of properties
+      | Register that business logic has already been enforced
       >-------------------------------------------------------------------------------------------------------------------------
-      | ###HACK JJC100617: We want to ensure that any attempt to set attributes that have corresponding (writable) properties
-      | use those properties, thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by
-      | KeyedCollection, and not just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) will look for the
-      | EnforceBusinessLogic property. If it is set to false, they assume the property set the value (e.g., by calling the
-      | protected SetValue method with enforceBusinessLogic set to false). Otherwise, the corresponding property will be called.
-      | The EnforceBusinessLogic thus avoids a redirect loop in this scenario. This, of course, assumes that properties are
-      | correctly written to call the enforceBusinessLogic parameter.
+      | We want to ensure that any attempt to set references that have corresponding (writable) properties use those properties,
+      | thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by ICollection, and not
+      | just SetValue, the underlying interceptors (e.g., InsertItem, SetItem) call the Enforce() method. If it returns false,
+      | they assume the property set the value (e.g., by calling the internal SetValue method with enforceBusinessLogic set to
+      | false).  Otherwise, the corresponding property will be called. The Register() method thus avoids a redirect loop in this
+      | scenario. This, of course, assumes that properties are correctly written to call the enforceBusinessLogic parameter.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      enforceBusinessLogic = !enforceBusinessLogic && _typeCache.HasSettableProperty(_associatedTopic.GetType(), key);
-      if (enforceBusinessLogic && !BusinessLogicCache.ContainsKey(key)) {
-        BusinessLogicCache.Add(key, updatedAttributeValue);
+      if (!enforceBusinessLogic) {
+        _topicPropertyDispatcher.Register(key, updatedAttributeValue);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -543,7 +498,7 @@ namespace OnTopic.Collections {
     /// </exception>
     protected override void InsertItem(int index, AttributeValue item) {
       Contract.Requires(item, nameof(item));
-      if (EnforceBusinessLogic(item)) {
+      if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
           if (DeletedAttributes.Contains(item.Key)) {
@@ -578,7 +533,7 @@ namespace OnTopic.Collections {
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
     protected override void SetItem(int index, AttributeValue item) {
       Contract.Requires(item, nameof(item));
-      if (EnforceBusinessLogic(item)) {
+      if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
         if (DeletedAttributes.Contains(item.Key)) {
           DeletedAttributes.Remove(item.Key);
@@ -601,42 +556,6 @@ namespace OnTopic.Collections {
       var attribute = this[index];
       DeletedAttributes.Add(attribute.Key);
       base.RemoveItem(index);
-    }
-
-    /*==========================================================================================================================
-    | METHOD: ENFORCE BUSINESS LOGIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Inspects a provided <see cref="AttributeValue"/> to determine if the value should be routed through local business
-    ///   logic.
-    /// </summary>
-    /// <remarks>
-    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
-    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/>'s
-    ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
-    /// </remarks>
-    /// <param name="originalAttribute">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    /// <returns>The <see cref="AttributeValue"/> with the business logic applied.</returns>
-    private bool EnforceBusinessLogic(AttributeValue originalAttribute) {
-      if (BusinessLogicCache.ContainsKey(originalAttribute.Key)) {
-        BusinessLogicCache.Remove(originalAttribute.Key);
-        return true;
-      }
-      else if (_typeCache.HasSettableProperty(_associatedTopic.GetType(), originalAttribute.Key)) {
-        _setCounter++;
-        if (_setCounter > 3) {
-          throw new InvalidOperationException(
-            $"An infinite loop has occurred when setting '{originalAttribute.Key}'; be sure that you are referencing " +
-            $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
-          );
-        }
-        BusinessLogicCache.Add(originalAttribute.Key, originalAttribute);
-        _typeCache.SetPropertyValue(_associatedTopic, originalAttribute.Key, originalAttribute.Value);
-        _setCounter = 0;
-        return false;
-      }
-      return true;
     }
 
     /*==========================================================================================================================
