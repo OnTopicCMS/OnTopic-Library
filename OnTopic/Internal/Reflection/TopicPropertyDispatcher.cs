@@ -6,6 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 
@@ -261,11 +263,19 @@ namespace OnTopic.Internal.Reflection {
           );
         }
         var attribute = initialObject as AttributeValue;
-        if (attribute is not null) {
-          _typeCache.SetPropertyValue(_associatedTopic, itemKey, attribute.Value);
+        try {
+          if (attribute is not null) {
+            _typeCache.SetPropertyValue(_associatedTopic, itemKey, attribute.Value);
+          }
+          else {
+            _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject);
+          }
         }
-        else {
-          _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject);
+        catch (TargetInvocationException ex) {
+          if (PropertyCache.ContainsKey(itemKey)) {
+            PropertyCache.Remove(itemKey);
+          }
+          throw;
         }
         _setCounter = 0;
         return false;
