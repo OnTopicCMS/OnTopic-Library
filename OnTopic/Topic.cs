@@ -638,6 +638,7 @@ namespace OnTopic {
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
+    [ReferenceSetter]
     public Topic? DerivedTopic {
       get => References.GetTopic("DerivedTopic", false);
       set {
