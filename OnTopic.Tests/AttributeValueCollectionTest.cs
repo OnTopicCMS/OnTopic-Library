@@ -9,6 +9,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Tests.Entities;
 
 namespace OnTopic.Tests {
 
@@ -482,6 +483,99 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: ADD: NUMERIC VALUE WITH BUSINESS LOGIC: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a numeric attribute on a topic instance; ensures it is routed through the corresponding property and correctly
+    ///   retrieved.
+    /// </summary>
+    [TestMethod]
+    public void Add_NumericValueWithBusinessLogic_IsReturned() {
+
+      var topic = new CustomTopic("Test", "Page");
+
+      topic.Attributes.SetInteger("NumericAttribute", 1);
+
+      Assert.AreEqual<int>(1, topic.NumericAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: BOOLEAN VALUE WITH BUSINESS LOGIC: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a Boolean attribute on a topic instance; ensures it is routed through the corresponding property and correctly
+    ///   retrieved.
+    /// </summary>
+    [TestMethod]
+    public void Add_BooleanValueWithBusinessLogic_IsReturned() {
+
+      var topic = new CustomTopic("Test", "Page");
+
+      topic.Attributes.SetBoolean("BooleanAttribute", true);
+
+      Assert.IsTrue(topic.BooleanAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: NUMERIC VALUE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a numeric attribute on a topic instance with an invalid value; ensures an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(TargetInvocationException),
+      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
+    )]
+    public void Add_NumericValueWithBusinessLogic_ThrowsException() {
+
+      var topic = new CustomTopic("Test", "Page");
+
+      topic.Attributes.SetInteger("NumericAttribute", -1);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: DATE/TIME VALUE WITH BUSINESS LOGIC: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a Date/Time attribute on a topic instance; ensures it is routed through the corresponding property and correctly
+    ///   retrieved.
+    /// </summary>
+    [TestMethod]
+    public void Add_DateTimeValueWithBusinessLogic_IsReturned() {
+
+      var topic = new CustomTopic("Test", "Page");
+      var dateTime = new DateTime(2021, 1, 5);
+
+      topic.Attributes.SetDateTime("DateTimeAttribute", dateTime);
+
+      Assert.AreEqual<DateTime>(dateTime, topic.DateTimeAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: DATE/TIME VALUE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a Date/Time attribute on a topic instance with an invalid value; ensures an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(TargetInvocationException),
+      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
+    )]
+    public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
+
+      var topic = new CustomTopic("Test", "Page");
+
+      topic.Attributes.SetDateTime("DateTimeAttribute", DateTime.MinValue);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INSERT INVALID ATTRIBUTE VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -490,7 +584,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     [ExpectedException(
       typeof(TargetInvocationException),
-      "The topic allowed a key to be set via a back door, without routing it through the Key property."
+      "The topic allowed a key to be set via a back door, without routing it through the View property."
     )]
     public void Add_InvalidAttributeValue_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
