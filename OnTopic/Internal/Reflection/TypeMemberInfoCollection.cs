@@ -150,11 +150,12 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
-    public bool HasSettableProperty(Type type, string name) {
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    public bool HasSettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property is not null and { CanWrite: true } &&
-        IsSettableType(property.PropertyType) &&
+        IsSettableType(property.PropertyType, targetType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
@@ -263,12 +264,13 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
-    public bool HasSettableMethod(Type type, string name) {
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    public bool HasSettableMethod(Type type, string name, Type? targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method is not null &&
         method.GetParameters().Length is 1 &&
-        IsSettableType(method.GetParameters().First().ParameterType) &&
+        IsSettableType(method.GetParameters().First().ParameterType, targetType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
       );
     }
