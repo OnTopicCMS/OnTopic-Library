@@ -65,7 +65,7 @@ namespace OnTopic.Metadata {
     protected AttributeDescriptor(
       string key,
       string contentType,
-      Topic parent,
+      Topic? parent = null,
       int id = -1
     ) : base(
       key,

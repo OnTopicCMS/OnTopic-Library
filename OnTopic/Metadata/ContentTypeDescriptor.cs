@@ -66,7 +66,7 @@ namespace OnTopic.Metadata {
     public ContentTypeDescriptor(
       string key,
       string contentType,
-      Topic parent,
+      Topic? parent = null,
       int id = -1
     ) : base(
       key,

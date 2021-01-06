@@ -56,7 +56,7 @@ namespace OnTopic {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public Topic(string key, string contentType, Topic parent, int id = -1) {
+    public Topic(string key, string contentType, Topic? parent = null, int id = -1) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
@@ -80,7 +80,10 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Key                       = key;
       ContentType               = contentType;
-      Parent                    = parent;
+
+      if (parent is not null) {
+        Parent                  = parent;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize key fields
@@ -635,6 +638,7 @@ namespace OnTopic {
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
+    [ReferenceSetter]
     public Topic? DerivedTopic {
       get => References.GetTopic("DerivedTopic", false);
       set {

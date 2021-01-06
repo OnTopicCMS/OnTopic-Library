@@ -4,8 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
+using OnTopic.Tests.Entities;
 
 namespace OnTopic.Tests {
 
@@ -315,6 +317,65 @@ namespace OnTopic.Tests {
       derived.References.Add("Reference", reference);
 
       Assert.IsNull(topic.References.GetTopic("Reference", false));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: TOPIC REFERENCE WITH BUSINESS LOGIC: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a topic reference on a topic instance; ensures it is routed through the corresponding property and correctly
+    ///   retrieved.
+    /// </summary>
+    [TestMethod]
+    public void Add_TopicReferenceWithBusinessLogic_IsReturned() {
+
+      var topic                 = new CustomTopic("Test", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.References.Add("TopicReference", reference);
+
+      Assert.AreEqual<Topic>(reference, topic.TopicReference);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: TOPIC REFERENCE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ArgumentOutOfRangeException),
+      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
+    )]
+    public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
+
+      var topic                 = new CustomTopic("Test", "Page");
+      var reference             = TopicFactory.Create("Reference", "Container");
+
+      topic.References.Add("TopicReference", reference);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET: TOPIC REFERENCE WITH BUSINESS LOGIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a topic reference on a topic instance with an invalid value; ensures an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ArgumentOutOfRangeException),
+      "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
+    )]
+    public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
+
+      var topic                 = new CustomTopic("Test", "Page");
+      var reference             = TopicFactory.Create("Reference", "Container");
+
+      topic.References["TopicReference"] = reference;
 
     }
 

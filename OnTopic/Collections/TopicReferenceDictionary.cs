@@ -6,7 +6,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Internal.Reflection;
 
 namespace OnTopic.Collections {
 
@@ -17,6 +19,11 @@ namespace OnTopic.Collections {
   ///   Represents a collection of <see cref="Topic"/> objects associated with particular reference keys.
   /// </summary>
   public class TopicReferenceDictionary : IDictionary<string, Topic> {
+
+    /*==========================================================================================================================
+    | DISPATCHER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    private readonly TopicPropertyDispatcher<ReferenceSetterAttribute, Topic> _topicPropertyDispatcher;
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -41,8 +48,9 @@ namespace OnTopic.Collections {
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize backing fields
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _parent = parent;
-      _storage = new Dictionary<string, Topic>();
+      _parent                   = parent;
+      _storage                  = new Dictionary<string, Topic>();
+      _topicPropertyDispatcher  = new(parent);
 
     }
 
@@ -65,14 +73,37 @@ namespace OnTopic.Collections {
     public Topic this[string referenceKey] {
       get => _storage[referenceKey];
       set {
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Validate parameters
+        \---------------------------------------------------------------------------------------------------------------------*/
         Contract.Requires<ArgumentException>(
           value != _parent,
           "A topic reference may not point to itself."
         );
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Enforce business logic
+        >-----------------------------------------------------------------------------------------------------------------------
+        | If the reference is eligible for business logic enforcement, but the business logic hasn't yet been enforce, skip
+        | further processing and instead route the request through the associated property setter.
+        \---------------------------------------------------------------------------------------------------------------------*/
+        if (!_topicPropertyDispatcher.Enforce(referenceKey, value)) {
+          return;
+        }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Set dirty state
+        \---------------------------------------------------------------------------------------------------------------------*/
         if (!_storage.TryGetValue(referenceKey, out var existing) || existing != value) {
           _isDirty = true;
         }
+
+        /*----------------------------------------------------------------------------------------------------------------------
+        | Set topic reference
+        \---------------------------------------------------------------------------------------------------------------------*/
         _storage[referenceKey] = value;
+
       }
     }
 
@@ -105,6 +136,16 @@ namespace OnTopic.Collections {
         item.Value != _parent,
         "A topic reference may not point to itself."
       );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Enforce business logic
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If the reference is eligible for business logic enforcement, but the business logic hasn't yet been enforce, skip
+      | further processing and instead route the request through the associated property setter.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!_topicPropertyDispatcher.Enforce(item.Key, item.Value)) {
+        return;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Mark dirty
@@ -149,8 +190,36 @@ namespace OnTopic.Collections {
     ///   Adds a new topic reference—or updates one, if it already exists. If the value is <c>null</c>, and a value exits, it is
     ///   removed.
     /// </summary>
-    public void SetTopic(string key, Topic? value, bool? isDirty = null) {
+    public void SetTopic(string key, Topic? value, bool? isDirty = null) => SetTopic(key, value, isDirty, true);
+
+    /// <summary>
+    ///   Adds a new topic reference—or updates one, if it already exists. If the value is <c>null</c>, and a value exits, it is
+    ///   removed.
+    /// </summary>
+    internal void SetTopic(string key, Topic? value, bool? isDirty, bool enforceBusinessLogic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish state
+      \-----------------------------------------------------------------------------------------------------------------------*/
       var wasDirty = _isDirty;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Register that business logic has already been enforced
+      >-------------------------------------------------------------------------------------------------------------------------
+      | We want to ensure that any attempt to set references that have corresponding (writable) properties use those properties,
+      | thus enforcing business logic. In order to ensure this is enforced on all entry points exposed by IDictionary, and not
+      | just SetTopic, the underlying interceptors (e.g., Add, Item) call the Enforce() method. If it returns false, they assume
+      | the property set the value (e.g., by calling the internal SetTopic method with enforceBusinessLogic set to false).
+      | Otherwise, the corresponding property will be called. The Register() method thus avoids a redirect loop in this
+      | scenario. This, of course, assumes that properties are correctly written to call the enforceBusinessLogic parameter.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!enforceBusinessLogic) {
+        _topicPropertyDispatcher.Register(key, value);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (value is null) {
         if (ContainsKey(key)) {
           Remove(key);
@@ -159,9 +228,14 @@ namespace OnTopic.Collections {
       else {
         this[key] = value;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set dirty state
+      \-----------------------------------------------------------------------------------------------------------------------*/
       if (wasDirty is false && isDirty is false) {
         _isDirty = false;
       }
+
     }
 
     /*==========================================================================================================================

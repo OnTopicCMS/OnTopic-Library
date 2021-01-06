@@ -150,11 +150,12 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
-    public bool HasSettableProperty(Type type, string name) {
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    public bool HasSettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property is not null and { CanWrite: true } &&
-        IsSettableType(property.PropertyType) &&
+        IsSettableType(property.PropertyType, targetType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
       );
     }
@@ -189,6 +190,35 @@ namespace OnTopic.Internal.Reflection {
       }
 
       property.SetValue(target, valueObject);
+      return true;
+
+    }
+
+    /// <summary>
+    ///   Uses reflection to call a property, assuming that the property value is compatible with the <paramref name="value"/>
+    ///   type.
+    /// </summary>
+    /// <param name="target">The object on which the property is defined.</param>
+    /// <param name="name">The name of the property to assess.</param>
+    /// <param name="value">The value to set on the property.</param>
+    public bool SetPropertyValue(object target, string name, object? value) {
+
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      if (!HasSettableProperty(target.GetType(), name, value?.GetType())) {
+        return false;
+      }
+
+      var property = GetMember<PropertyInfo>(target.GetType(), name);
+
+      Contract.Assume(property, $"The {name} property could not be retrieved.");
+
+      if (value is null) {
+        return false;
+      }
+
+      property.SetValue(target, value);
       return true;
 
     }
@@ -263,12 +293,13 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
-    public bool HasSettableMethod(Type type, string name) {
+    /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
+    public bool HasSettableMethod(Type type, string name, Type? targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method is not null &&
         method.GetParameters().Length is 1 &&
-        IsSettableType(method.GetParameters().First().ParameterType) &&
+        IsSettableType(method.GetParameters().First().ParameterType, targetType) &&
         (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
       );
     }
@@ -316,6 +347,49 @@ namespace OnTopic.Internal.Reflection {
       }
 
       method.Invoke(target, new object[] { valueObject });
+
+      return true;
+
+    }
+
+    /// <summary>
+    ///   Uses reflection to call a method, assuming that the parameter value is compatible with the <paramref name="value"/>
+    ///   type.
+    /// </summary>
+    /// <remarks>
+    ///   Be aware that this will only succeed if the method has a single parameter of a settable type. If additional parameters
+    ///   are present it will return <c>false</c>, even if those additional parameters are optional.
+    /// </remarks>
+    /// <param name="target">The object instance on which the method is defined.</param>
+    /// <param name="name">The name of the method to assess.</param>
+    /// <param name="value">The value to set the method to.</param>
+    public bool SetMethodValue(object target, string name, object? value) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(target, nameof(target));
+      Contract.Requires(name, nameof(name));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate member type
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!HasSettableMethod(target.GetType(), name, value?.GetType())) {
+        return false;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var method = GetMember<MethodInfo>(target.GetType(), name);
+
+      Contract.Assume(method, $"The {name}() method could not be retrieved.");
+
+      if (value is null) {
+        return false;
+      }
+
+      method.Invoke(target, new object[] { value });
 
       return true;
 
