@@ -456,7 +456,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(InvalidKeyException),
       "The topic allowed a view to be set via a back door, without routing it through the View property."
     )]
     public void SetValue_InvalidValue_ThrowsException() {
@@ -526,7 +526,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
     )]
     public void Add_NumericValueWithBusinessLogic_ThrowsException() {
@@ -564,7 +564,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
     )]
     public void Add_DateTimeValueWithBusinessLogic_ThrowsException() {
@@ -583,7 +583,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(InvalidKeyException),
       "The topic allowed a key to be set via a back door, without routing it through the View property."
     )]
     public void Add_InvalidAttributeValue_ThrowsException() {

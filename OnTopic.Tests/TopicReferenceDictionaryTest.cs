@@ -347,7 +347,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
     )]
     public void Add_TopicReferenceWithBusinessLogic_ThrowsException() {
@@ -367,7 +367,7 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(
-      typeof(TargetInvocationException),
+      typeof(ArgumentOutOfRangeException),
       "The topic allowed a key to be set via a back door, without routing it through the NumericValue property."
     )]
     public void Set_TopicReferenceWithBusinessLogic_ThrowsException() {
