@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
+using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;

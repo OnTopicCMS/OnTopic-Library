@@ -5,9 +5,8 @@
 \=============================================================================================================================*/
 using System.Collections.Concurrent;
 using OnTopic.Mapping;
-using OnTopic.Internal.Mapping;
 
-namespace OnTopic.Internal.Collections {
+namespace OnTopic.Internal.Mapping {
 
   /*============================================================================================================================
   | CLASS: MAPPED TOPIC CACHE

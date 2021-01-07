@@ -4,9 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
+using OnTopic.References;
 using OnTopic.Tests.Entities;
 
 namespace OnTopic.Tests {

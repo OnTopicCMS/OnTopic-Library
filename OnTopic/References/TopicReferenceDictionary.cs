@@ -10,7 +10,7 @@ using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 
-namespace OnTopic.Collections {
+namespace OnTopic.References {
 
   /*============================================================================================================================
   | CLASS: TOPIC REFERENCE DICTIONARY

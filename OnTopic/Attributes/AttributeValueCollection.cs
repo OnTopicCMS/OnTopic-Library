@@ -8,12 +8,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Repositories;
 
-namespace OnTopic.Collections {
+namespace OnTopic.Attributes {
 
   /*============================================================================================================================
   | CLASS: ATTRIBUTE VALUE COLLECTION

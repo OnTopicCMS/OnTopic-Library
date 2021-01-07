@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Collections {
+namespace OnTopic.References {
 
   /*============================================================================================================================
   | CLASS: RELATED TOPIC COLLECTION

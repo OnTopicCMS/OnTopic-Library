@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OnTopic.Attributes;
-using OnTopic.Internal.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
@@ -351,7 +350,7 @@ namespace OnTopic.Mapping {
     ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
     ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
     ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
-    ///   cref="Collections.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
+    ///   cref="Attributes.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
     ///   or the source value cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>

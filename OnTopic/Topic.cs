@@ -12,6 +12,7 @@ using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
+using OnTopic.References;
 
 namespace OnTopic {
 
@@ -679,7 +680,6 @@ namespace OnTopic {
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
     public RelatedTopicCollection Relationships { get; }
-
 
     /*==========================================================================================================================
     | PROPERTY: REFERENCES

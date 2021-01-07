@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using OnTopic.Attributes;
-using OnTopic.Collections;
+using OnTopic.References;
 
 namespace OnTopic.Internal.Reflection {
 
@@ -72,15 +72,16 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     One caveat to this are cases where the caller attempts to set the value via the <see cref="Topic"/> property directly,
   ///     instead of adding the item directly to the corresponding collection—e.g., they call <see cref="Topic.View"/> instead
-  ///     of e.g. the <see cref="AttributeValueCollection.SetValue"/> method from <see cref="Topic.Attributes"/>. In that case,
-  ///     the business logic will already have been enforced, but the <see cref="Register(String, TValueType?)"/> method will
-  ///     not have been called. To mitigate the property setter getting called twice, collection implementors are advised to
-  ///     offer an internal overload that allows an item to be added to the collection while bypassing the business logic. For
-  ///     instance, this can be done using <see cref="AttributeValueCollection.SetValue(String, String?, Boolean?, Boolean,
-  ///     DateTime?, Boolean?)"/> or <see cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?, Boolean)"/>; in each
-  ///     case, the internally accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business
-  ///     logic. Internally, this is done by calling <see cref="Register(String, TValueType?)"/>, thus assuring <see cref="
-  ///     Enforce(string, TValueType?)"/> that the business logic has already occurred.
+  ///     of e.g. the <see cref="AttributeValueCollection.SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/> method
+  ///     from <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see
+  ///     cref="Register(String, TValueType?)"/> method will not have been called. To mitigate the property setter getting
+  ///     called twice, collection implementors are advised to offer an internal overload that allows an item to be added to the
+  ///     collection while bypassing the business logic. For instance, this can be done using <see cref="
+  ///     AttributeValueCollection.SetValue(String, String?, Boolean?, Boolean, DateTime?, Boolean?)"/> or <see cref="
+  ///     TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?, Boolean)"/>; in each case, the internally accessible
+  ///     <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this is done by
+  ///     calling <see cref="Register(String, TValueType?)"/>, thus assuring <see cref="Enforce(string, TValueType?)"/> that the
+  ///     business logic has already occurred.
   ///   </para>
   /// </remarks>
   internal class TopicPropertyDispatcher<TAttributeType, TValueType>
