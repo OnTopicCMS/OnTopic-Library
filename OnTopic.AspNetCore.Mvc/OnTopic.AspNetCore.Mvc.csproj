@@ -32,7 +32,7 @@
     <DebugType>full</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <LangVersion>latest</LangVersion>
-    <NoWarn>1701;1702;CA1303;CA3001;CA3003;CA3006;CA3008;CA3009;CA3011;CA3012</NoWarn>
+    <NoWarn>1701;1702;CA1303;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
