@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using OnTopic.Internal.Collections;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Lookup {

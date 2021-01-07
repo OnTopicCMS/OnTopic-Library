@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Internal.Collections {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | CLASS: TYPE COLLECTION
@@ -19,7 +19,7 @@ namespace OnTopic.Internal.Collections {
   ///   Provides a <see cref="KeyedCollection{TKey, TItem}"/> of <see cref="Type"/> instances indexed by <see
   ///   cref="String"/>.
   /// </summary>
-  public class TypeCollection : KeyedCollection<string, Type> {
+  internal class TypeCollection : KeyedCollection<string, Type> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -28,7 +28,7 @@ namespace OnTopic.Internal.Collections {
     ///   Instantiates a new <see cref="TypeCollection"/>. Optionally accepts an <see cref="IEnumerable"/> of <see
     ///   cref="Type" /> instances to prepopulate the collection.
     /// </summary>
-    public TypeCollection(IEnumerable<Type>? types = null) : base(StringComparer.InvariantCultureIgnoreCase) {
+    internal TypeCollection(IEnumerable<Type>? types = null) : base(StringComparer.InvariantCultureIgnoreCase) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate collection
