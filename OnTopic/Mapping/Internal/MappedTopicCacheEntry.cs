@@ -3,10 +3,9 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 
-namespace OnTopic.Internal.Mapping {
+namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
   | CLASS: MAPPED TOPIC CACHE ENTRY

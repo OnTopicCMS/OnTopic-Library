@@ -12,10 +12,9 @@ using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 
-namespace OnTopic.Internal.Mapping {
+namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
   | CLASS: PROPERTY ATTRIBUTES

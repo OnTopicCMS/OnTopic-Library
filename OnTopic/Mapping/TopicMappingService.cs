@@ -12,10 +12,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
 using OnTopic.Lookup;
 using OnTopic.Mapping.Annotations;
+using OnTopic.Mapping.Internal;
 using OnTopic.Models;
 using OnTopic.Repositories;
 

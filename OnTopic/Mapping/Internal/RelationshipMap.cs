@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using OnTopic.Mapping.Annotations;
 
-namespace OnTopic.Internal.Mapping {
+namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
   | CLASS: RELATIONSHIP MAP
