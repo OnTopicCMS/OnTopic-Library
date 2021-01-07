@@ -12,12 +12,12 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Internal.Reflection {
 
   /*============================================================================================================================
-  | CLASS: TYPE COLLECTION
+  | CLASS: MEMBER DISPATCHER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   A collection of <see cref="MemberInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
+  ///   A collection of <see cref="MemberDispatcher"/> instances, each associated with a specific <see cref="Type"/>.
   /// </summary>
-  internal class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
+  internal class MemberDispatcher : KeyedCollection<Type, MemberInfoCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -28,9 +28,9 @@ namespace OnTopic.Internal.Reflection {
     | CONSTRUCTOR (STATIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes static properties on <see cref="TypeMemberInfoCollection"/>.
+    ///   Initializes static properties on <see cref="MemberDispatcher"/>.
     /// </summary>
-    static TypeMemberInfoCollection() {
+    static MemberDispatcher() {
       SettableTypes = new() {
         typeof(bool),
         typeof(bool?),
@@ -49,12 +49,12 @@ namespace OnTopic.Internal.Reflection {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TypeMemberInfoCollection"/> class.
+    ///   Initializes a new instance of the <see cref="MemberDispatcher"/> class.
     /// </summary>
     /// <param name="attributeFlag">
     ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
     /// </param>
-    internal TypeMemberInfoCollection(Type? attributeFlag = null) : base() {
+    internal MemberDispatcher(Type? attributeFlag = null) : base() {
       _attributeFlag = attributeFlag;
     }
 
@@ -560,7 +560,7 @@ namespace OnTopic.Internal.Reflection {
       }
       else {
         throw new ArgumentException(
-          $"The '{nameof(TypeMemberInfoCollection)}' already contains the {nameof(MemberInfoCollection)} of the Type " +
+          $"The '{nameof(MemberDispatcher)}' already contains the {nameof(MemberInfoCollection)} of the Type " +
           $"'{item.Type}'.",
           nameof(item)
         );

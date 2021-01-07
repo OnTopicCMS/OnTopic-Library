@@ -33,7 +33,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
+    static readonly             MemberDispatcher                _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -797,7 +797,7 @@ namespace OnTopic.Mapping {
     ///   Sets a property on the target view model to a compatible value on the source object.
     /// </summary>
     /// <remarks>
-    ///   Even if the property values can't be set by the <see cref="TypeMemberInfoCollection"/>, properties should be settable
+    ///   Even if the property values can't be set by the <see cref="MemberDispatcher"/>, properties should be settable
     ///   assuming the source and target types are compatible. In this case, <see cref="TopicMappingService"/> needn't know
     ///   anything about the property type as it doesn't need to do a conversion; it can just do a one-to-one mapping.
     /// </remarks>
