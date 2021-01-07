@@ -80,7 +80,7 @@ namespace OnTopic.Internal.Reflection {
   ///     AttributeValueCollection.SetValue(String, String?, Boolean?, Boolean, DateTime?, Boolean?)"/> or <see cref="
   ///     TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?, Boolean)"/>; in each case, the internally accessible
   ///     <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this is done by
-  ///     calling <see cref="Register(String, TValueType?)"/>, thus assuring <see cref="Enforce(string, TValueType?)"/> that the
+  ///     calling <see cref="Register(String, TValueType?)"/>, thus assuring <see cref="Enforce(String, TValueType?)"/> that the
   ///     business logic has already occurred.
   ///   </para>
   /// </remarks>
@@ -165,12 +165,12 @@ namespace OnTopic.Internal.Reflection {
     ///     internal to prevent external actors from bypassing the business logic; the purpose is to confirm that the business
     ///     logic has already been enforced, not to make the business logic optional. Two examples of this are the internal
     ///     <c>enforceBusinessLogic</c> parameters on <see cref="AttributeValueCollection.SetValue(String, String?, Boolean?,
-    ///     Boolean, DateTime?, Boolean?)"/> and <see cref="TopicReferenceDictionary.SetTopic(string, Topic?, Boolean?, Boolean)
+    ///     Boolean, DateTime?, Boolean?)"/> and <see cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?, Boolean)
     ///     "/>.
     ///   </para>
     ///   <para>
     ///     It's worth noting that any calls to <see cref="Register(String, TValueType?)"/> are invalidated the next time <see
-    ///     cref="Enforce(string, TValueType?)"/> is called. As such, <see cref="Register(String, TValueType?)"/> is not a way
+    ///     cref="Enforce(String, TValueType?)"/> is called. As such, <see cref="Register(String, TValueType?)"/> is not a way
     ///     to permanently disable calling a property setter. (The correct way to do that is to remove the property setter, or
     ///     at least its corresponding <typeparamref name="TAttributeType"/>.) Instead, it only disables the next attempt to add
     ///     an item corresponding to that key—which, if correctly implemented, will be when the current <paramref name="
