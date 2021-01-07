@@ -5,16 +5,16 @@
 \=============================================================================================================================*/
 using System;
 
-namespace OnTopic.Reflection {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
-  | CLASS: DYNAMIC TOPIC VIEW MODEL LOOKUP SERVICE
+  | CLASS: DYNAMIC TOPIC LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="DynamicTopicViewModelLookupService"/> will search all assemblies for <see cref="Type"/>s that end with
-  ///   "TopicViewModel"
+  ///   The <see cref="DynamicTopicLookupService"/> will search all assemblies for <see cref="Type"/>s that derive from <see
+  ///   cref="Topic"/>.
   /// </summary>
-  public class DynamicTopicViewModelLookupService : DynamicTypeLookupService {
+  public class DynamicTopicLookupService : DynamicTypeLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -22,9 +22,9 @@ namespace OnTopic.Reflection {
     /// <summary>
     ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
-    public DynamicTopicViewModelLookupService() : base(
-      t => t.Name.EndsWith("TopicViewModel", StringComparison.InvariantCultureIgnoreCase),
-      typeof(object)
+    public DynamicTopicLookupService() : base(
+      t => typeof(Topic).IsAssignableFrom(t),
+      typeof(Topic)
     ) { }
 
   } //Class

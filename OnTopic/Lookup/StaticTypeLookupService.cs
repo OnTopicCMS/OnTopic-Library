@@ -9,7 +9,7 @@ using System.Reflection;
 using OnTopic.Internal.Collections;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | CLASS: STATIC TYPE LOOKUP SERVICE

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OnTopic {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | CLASS: COMPOSITE TYPE LOOKUP SERVICE

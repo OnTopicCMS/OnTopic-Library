@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Internal.Mapping;
+using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Metadata;

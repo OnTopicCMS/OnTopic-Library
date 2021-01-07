@@ -6,7 +6,7 @@
 using System;
 using OnTopic.Mapping;
 
-namespace OnTopic {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | INTERFACE: TYPE LOOKUP SERVICE
