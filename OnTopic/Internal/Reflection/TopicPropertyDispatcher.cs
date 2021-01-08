@@ -92,7 +92,7 @@ namespace OnTopic.Internal.Reflection {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new(typeof(TAttributeType));
+    static readonly             MemberDispatcher                _typeCache                      = new(typeof(TAttributeType));
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
