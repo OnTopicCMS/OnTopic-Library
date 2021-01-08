@@ -273,22 +273,6 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Rename topic, if necessary
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Key == originalVersion.Key) {
-        topic.Attributes.SetValue("Key", topic.Key, false);
-      }
-      else {
-        topic.Key = originalVersion.Key;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Ensure Parent, ContentType are maintained
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ContentType", topic.ContentType, topic.ContentType != originalVersion.ContentType);
-      topic.Attributes.SetValue("ParentId", topic.Parent?.Id.ToString(CultureInfo.InvariantCulture)?? "-1", false);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
       \-----------------------------------------------------------------------------------------------------------------------*/
       Save(topic, false);
