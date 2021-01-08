@@ -664,13 +664,11 @@ namespace OnTopic.Mapping {
           continue;
         }
 
-        //Ensure the source topic isn't disabled or hidden; disabled and hidden topics should never be returned to the
-        //presentation layer
-        /*
-        if (!childTopic.IsVisible()) {
+        //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
+        //explicitly requested by a top-level request.
+        if (childTopic.IsDisabled) {
           continue;
         }
-        */
 
         //Map child topic to target DTO
         var childDto = (object)childTopic;
@@ -738,6 +736,15 @@ namespace OnTopic.Mapping {
       Contract.Requires(target, nameof(target));
       Contract.Requires(configuration, nameof(configuration));
       Contract.Requires(cache, nameof(cache));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Bypass disabled topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      //Ensure the source topic isn't disabled; disabled topics should never be returned to the presentation layer unless
+      //explicitly requested by a top-level request.
+      if (source.IsDisabled) {
+        return;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Map referenced topic
