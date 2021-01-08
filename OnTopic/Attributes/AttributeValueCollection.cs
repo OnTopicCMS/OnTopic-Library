@@ -558,6 +558,22 @@ namespace OnTopic.Attributes {
     }
 
     /*==========================================================================================================================
+    | OVERRIDE: CLEAR ITEMS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Intercepts all attempts to clear the <see cref="AttributeValueCollection"/>, to ensure that it is appropriately marked
+    ///   as <see cref="IsDirty(Boolean)"/>.
+    /// </summary>
+    /// <remarks>
+    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    /// </remarks>
+    protected override void ClearItems() {
+      DeletedAttributes.AddRange(Items.Select(a => a.Key));
+      base.ClearItems();
+    }
+
+    /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

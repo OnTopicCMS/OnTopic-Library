@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -280,6 +281,26 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Foo", "Baz");
 
       Assert.IsTrue(topic.Attributes["Foo"].IsDirty);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CLEAR: EXISTING VALUES: IS DIRTY?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="IList.Clear()"/> and confirms that the collection is marked as dirty, due to deleted attrbutes.
+    /// </summary>
+    [TestMethod]
+    public void Clear_ExistingValues_IsDirty() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      topic.Attributes.Clear();
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.IsTrue(topic.Attributes.DeletedAttributes.Contains("Foo"));
 
     }
 
