@@ -88,6 +88,25 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET VIEW MODEL: WITH TWO LEVELS: RETURNS GRAPH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
+    ///   and ensures that the expected data is returned.
+    /// </summary>
+    [TestMethod]
+    public async Task GetViewModel_WithTwoLevels_ReturnsGraph() {
+
+      var rootTopic             = _topicRepository.Load("Root:Web");
+      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
+
+      Assert.IsNotNull(viewModel);
+      Assert.AreEqual<int>(3, viewModel.Children.Count);
+      Assert.AreEqual<int>(0, viewModel.Children[0].Children.Count);
+
+    }
+
 
   } //Class
 } //Namespace
