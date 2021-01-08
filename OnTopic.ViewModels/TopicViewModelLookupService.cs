@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using OnTopic.Lookup;
 
 namespace OnTopic.ViewModels {
 

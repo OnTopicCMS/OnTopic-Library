@@ -4,27 +4,28 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using OnTopic.Models;
 
-namespace OnTopic.Reflection {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
-  | CLASS: DYNAMIC TOPIC LOOKUP SERVICE
+  | CLASS: DYNAMIC TOPIC BINDING MODEL LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="DynamicTopicLookupService"/> will search all assemblies for <see cref="Type"/>s that derive from <see
-  ///   cref="Topic"/>.
+  ///   The <see cref="DynamicTopicBindingModelLookupService"/> will search all assemblies for <see cref="Type"/>s that
+  ///   implement <see cref="ITopicBindingModel"/>.
   /// </summary>
-  public class DynamicTopicLookupService : DynamicTypeLookupService {
+  public class DynamicTopicBindingModelLookupService : DynamicTypeLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
+    ///   Establishes a new instance of a <see cref="DynamicTopicBindingModelLookupService"/>.
     /// </summary>
-    public DynamicTopicLookupService() : base(
-      t => typeof(Topic).IsAssignableFrom(t),
-      typeof(Topic)
+    public DynamicTopicBindingModelLookupService() : base(
+      t => typeof(ITopicBindingModel).IsAssignableFrom(t),
+      typeof(object)
     ) { }
 
   } //Class

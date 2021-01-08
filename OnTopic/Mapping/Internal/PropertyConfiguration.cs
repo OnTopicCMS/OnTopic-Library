@@ -10,12 +10,11 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using OnTopic.Collections;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 
-namespace OnTopic.Internal.Mapping {
+namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
   | CLASS: PROPERTY ATTRIBUTES

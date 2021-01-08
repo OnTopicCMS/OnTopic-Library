@@ -18,7 +18,7 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
   /// </summary>
-  public class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
+  internal class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -28,7 +28,7 @@ namespace OnTopic.Internal.Reflection {
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
-    public MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
+    internal MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type);
       Type = type;
       foreach (
@@ -54,7 +54,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{T}"/> of <typeparamref name="T"/> instances to populate the collection.
     /// </param>
-    public MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
+    internal MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type);
       Contract.Requires(members);
       Type = type;
@@ -99,7 +99,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Returns the type associated with this collection.
     /// </summary>
-    public Type Type { get; }
+    internal Type Type { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM

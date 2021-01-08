@@ -6,9 +6,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Collections {
+namespace OnTopic.References {
 
   /*============================================================================================================================
   | CLASS: TOPIC

@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Collections;
+using OnTopic.Attributes;
 
 namespace OnTopic.Mapping.Annotations {
 

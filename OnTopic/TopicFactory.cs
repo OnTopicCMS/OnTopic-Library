@@ -7,6 +7,7 @@ using System;
 using System.Text.RegularExpressions;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Lookup;
 
 namespace OnTopic {
 

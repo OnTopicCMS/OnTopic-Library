@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Reflection;
+using OnTopic.Lookup;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;

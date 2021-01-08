@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +17,7 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   A collection of <see cref="MemberInfoCollection"/> instances, each associated with a specific <see cref="Type"/>.
   /// </summary>
-  public class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
+  internal class TypeMemberInfoCollection : KeyedCollection<Type, MemberInfoCollection> {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -55,7 +54,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="attributeFlag">
     ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
     /// </param>
-    public TypeMemberInfoCollection(Type? attributeFlag = null) : base() {
+    internal TypeMemberInfoCollection(Type? attributeFlag = null) : base() {
       _attributeFlag = attributeFlag;
     }
 
@@ -69,7 +68,7 @@ namespace OnTopic.Internal.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    public MemberInfoCollection GetMembers(Type type) {
+    internal MemberInfoCollection GetMembers(Type type) {
       if (!Contains(type)) {
         lock(Items) {
           if (!Contains(type)) {
@@ -90,7 +89,7 @@ namespace OnTopic.Internal.Reflection {
     ///   If the collection cannot be found locally, it will be created.
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
-    public MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
+    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T: MemberInfo =>
       new(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
 
     /*==========================================================================================================================
@@ -100,7 +99,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
     ///   instance.
     /// </summary>
-    public MemberInfo? GetMember(Type type, string name) {
+    internal MemberInfo? GetMember(Type type, string name) {
       var members = GetMembers(type);
       if (members.Contains(name)) {
         return members[name];
@@ -115,7 +114,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Used reflection to identify a local member by a given name, and returns the associated <typeparamref name="T"/>
     ///   instance.
     /// </summary>
-    public T? GetMember<T>(Type type, string name) where T : MemberInfo {
+    internal T? GetMember<T>(Type type, string name) where T : MemberInfo {
       var members = GetMembers(type);
       if (members.Contains(name) && typeof(T).IsAssignableFrom(members[name].GetType())) {
         return members[name] as T;
@@ -129,7 +128,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member is available.
     /// </summary>
-    public bool HasMember(Type type, string name) => GetMember(type, name) is not null;
+    internal bool HasMember(Type type, string name) => GetMember(type, name) is not null;
 
     /*==========================================================================================================================
     | METHOD: HAS MEMBER {T}
@@ -137,7 +136,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
     /// </summary>
-    public bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) is not null;
+    internal bool HasMember<T>(Type type, string name) where T: MemberInfo => GetMember<T>(type, name) is not null;
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
@@ -151,7 +150,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public bool HasSettableProperty(Type type, string name, Type? targetType = null) {
+    internal bool HasSettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property is not null and { CanWrite: true } &&
@@ -170,7 +169,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    public bool SetPropertyValue(object target, string name, string? value) {
+    internal bool SetPropertyValue(object target, string name, string? value) {
 
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
@@ -201,7 +200,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="value">The value to set on the property.</param>
-    public bool SetPropertyValue(object target, string name, object? value) {
+    internal bool SetPropertyValue(object target, string name, object? value) {
 
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
@@ -235,7 +234,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public bool HasGettableProperty(Type type, string name, Type? targetType = null) {
+    internal bool HasGettableProperty(Type type, string name, Type? targetType = null) {
       var property = GetMember<PropertyInfo>(type, name);
       return (
         property is not null and { CanRead: true } &&
@@ -254,7 +253,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public object? GetPropertyValue(object target, string name, Type? targetType = null) {
+    internal object? GetPropertyValue(object target, string name, Type? targetType = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -294,7 +293,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public bool HasSettableMethod(Type type, string name, Type? targetType = null) {
+    internal bool HasSettableMethod(Type type, string name, Type? targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method is not null &&
@@ -318,7 +317,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    public bool SetMethodValue(object target, string name, string? value) {
+    internal bool SetMethodValue(object target, string name, string? value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -363,7 +362,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="value">The value to set the method to.</param>
-    public bool SetMethodValue(object target, string name, object? value) {
+    internal bool SetMethodValue(object target, string name, object? value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -408,7 +407,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="type">The <see cref="Type"/> on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public bool HasGettableMethod(Type type, string name, Type? targetType = null) {
+    internal bool HasGettableMethod(Type type, string name, Type? targetType = null) {
       var method = GetMember<MethodInfo>(type, name);
       return (
         method is not null &&
@@ -427,7 +426,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="target">The object instance on which the method is defined.</param>
     /// <param name="name">The name of the method to assess.</param>
     /// <param name="targetType">Optional, the <see cref="Type"/> expected.</param>
-    public object? GetMethodValue(object target, string name, Type? targetType = null) {
+    internal object? GetMethodValue(object target, string name, Type? targetType = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -528,7 +527,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
-    public static Collection<Type> SettableTypes { get; }
+    internal static Collection<Type> SettableTypes { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

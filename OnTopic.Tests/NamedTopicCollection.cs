@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
+using OnTopic.References;
 
 namespace OnTopic.Tests {
 

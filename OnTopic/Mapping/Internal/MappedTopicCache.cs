@@ -4,10 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.Concurrent;
-using OnTopic.Mapping;
-using OnTopic.Internal.Mapping;
 
-namespace OnTopic.Internal.Collections {
+namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
   | CLASS: MAPPED TOPIC CACHE

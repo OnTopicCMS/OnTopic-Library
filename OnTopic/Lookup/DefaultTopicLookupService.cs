@@ -9,7 +9,7 @@ using System.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Metadata.AttributeTypes;
 
-namespace OnTopic {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | CLASS: TYPE INDEX

@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 
-namespace OnTopic.Reflection {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
   | CLASS: DYNAMIC TYPE LOOKUP SERVICE
