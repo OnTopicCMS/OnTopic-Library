@@ -5,6 +5,8 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Internal.Reflection {
@@ -25,6 +27,86 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     internal TypeMemberInfoCollection() : base() {
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET MEMBERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns a collection of <see cref="MemberInfo"/> objects associated with a specific type.
+    /// </summary>
+    /// <remarks>
+    ///   If the collection cannot be found locally, it will be created.
+    /// </remarks>
+    /// <param name="type">The type for which the members should be retrieved.</param>
+    internal MemberInfoCollection GetMembers(Type type) {
+      if (!Contains(type)) {
+        lock (Items) {
+          if (!Contains(type)) {
+            Add(new(type));
+          }
+        }
+      }
+      return this[type];
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET MEMBERS {T}
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns a collection of <typeparamref name="T"/> objects associated with a specific type.
+    /// </summary>
+    /// <remarks>
+    ///   If the collection cannot be found locally, it will be created.
+    /// </remarks>
+    /// <param name="type">The type for which the members should be retrieved.</param>
+    internal MemberInfoCollection<T> GetMembers<T>(Type type) where T : MemberInfo =>
+      new(type, GetMembers(type).Where(m => typeof(T).IsAssignableFrom(m.GetType())).Cast<T>());
+
+    /*==========================================================================================================================
+    | METHOD: GET MEMBER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
+    ///   instance.
+    /// </summary>
+    internal MemberInfo? GetMember(Type type, string name) {
+      var members = GetMembers(type);
+      if (members.Contains(name)) {
+        return members[name];
+      }
+      return null;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET MEMBER {T}
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify a local member by a given name, and returns the associated <typeparamref name="T"/>
+    ///   instance.
+    /// </summary>
+    internal T? GetMember<T>(Type type, string name) where T : MemberInfo {
+      var members = GetMembers(type);
+      if (members.Contains(name) && typeof(T).IsAssignableFrom(members[name].GetType())) {
+        return members[name] as T;
+      }
+      return null;
+    }
+
+    /*==========================================================================================================================
+    | METHOD: HAS MEMBER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local member is available.
+    /// </summary>
+    internal bool HasMember(Type type, string name) => GetMember(type, name) is not null;
+
+    /*==========================================================================================================================
+    | METHOD: HAS MEMBER {T}
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
+    /// </summary>
+    internal bool HasMember<T>(Type type, string name) where T : MemberInfo => GetMember<T>(type, name) is not null;
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM
