@@ -15,14 +15,15 @@ namespace OnTopic.Internal.Reflection {
   | CLASS: MEMBER DISPATCHER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   A collection of <see cref="MemberDispatcher"/> instances, each associated with a specific <see cref="Type"/>.
+  ///   The <see cref="MemberDispatcher"/> provides methods that simplify late-binding access to properties and methods.
   /// </summary>
-  internal class MemberDispatcher : KeyedCollection<Type, MemberInfoCollection> {
+  internal class MemberDispatcher {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Type?                           _attributeFlag;
+    private readonly            TypeMemberInfoCollection        _memberInfoCache                = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR (STATIC)
@@ -69,14 +70,14 @@ namespace OnTopic.Internal.Reflection {
     /// </remarks>
     /// <param name="type">The type for which the members should be retrieved.</param>
     internal MemberInfoCollection GetMembers(Type type) {
-      if (!Contains(type)) {
-        lock(Items) {
-          if (!Contains(type)) {
-            Add(new(type));
+      if (!_memberInfoCache.Contains(type)) {
+        lock(_memberInfoCache) {
+          if (!_memberInfoCache.Contains(type)) {
+            _memberInfoCache.Add(new(type));
           }
         }
       }
-      return this[type];
+      return _memberInfoCache[type];
     }
 
     /*==========================================================================================================================
@@ -528,57 +529,6 @@ namespace OnTopic.Internal.Reflection {
     ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
     /// </summary>
     internal static Collection<Type> SettableTypes { get; }
-
-    /*==========================================================================================================================
-    | OVERRIDE: INSERT ITEM
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Fires any time an item is added to the collection.
-    /// </summary>
-    /// <remarks>
-    ///   Compared to the base implementation, will throw a specific <see cref="ArgumentException" /> error if a duplicate key
-    ///   is inserted. This conveniently provides the <see cref="MemberInfoCollection{MemberInfo}.Type" />, so it's clear what
-    ///   is being duplicated.
-    /// </remarks>
-    /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-    /// <param name="item">The <see cref="MemberInfoCollection" /> instance to insert.</param>
-    /// <exception cref="ArgumentException">
-    ///   The TypeMemberInfoCollection already contains the MemberInfoCollection of the Type '{item.Type}'.
-    /// </exception>
-    protected override void InsertItem(int index, MemberInfoCollection item) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(item, nameof(item));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Insert item, if not already present
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!Contains(item.Type)) {
-        base.InsertItem(index, item);
-      }
-      else {
-        throw new ArgumentException(
-          $"The '{nameof(MemberDispatcher)}' already contains the {nameof(MemberInfoCollection)} of the Type " +
-          $"'{item.Type}'.",
-          nameof(item)
-        );
-      }
-    }
-
-    /*==========================================================================================================================
-    | OVERRIDE: GET KEY FOR ITEM
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Method must be overridden for the EntityCollection to extract the keys from the items.
-    /// </summary>
-    /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
-    /// <returns>The key for the specified collection item.</returns>
-    protected override Type GetKeyForItem(MemberInfoCollection item) {
-      Contract.Requires(item, "The item must be available in order to derive its key.");
-      return item.Type;
-    }
 
   } //Class
 } //Namespace
