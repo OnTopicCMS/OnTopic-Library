@@ -128,6 +128,28 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET VIEW MODEL: WITH DISABLED: EXCLUDES DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
+    ///   with a <see cref="Topic.IsDisabled"/> topic in the graph, and ensures it is not returned.
+    /// </summary>
+    [TestMethod]
+    public async Task GetViewModel_WithDisabled_ExcludesDisabled() {
+
+      var rootTopic             = _topicRepository.Load("Root:Web:Web_3")!;
+      var disabledTopic         = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+
+      rootTopic.IsDisabled      = true;
+      disabledTopic.IsDisabled  = true;
+
+      var viewModel             = await _hierarchicalMappingService.GetViewModelAsync(rootTopic, 1).ConfigureAwait(false);
+
+      Assert.IsNotNull(viewModel);
+      Assert.AreEqual<int>(1, viewModel.Children.Count);
+
+    }
 
   } //Class
 } //Namespace
