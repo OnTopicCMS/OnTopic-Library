@@ -17,6 +17,38 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   The <see cref="MemberDispatcher"/> provides methods that simplify late-binding access to properties and methods.
   /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     The <see cref="MemberDispatcher"/> allows properties and members to be looked up and called based on string
+  ///     representations of both the member names as well as, optionally, the values. String values can be deserialized into
+  ///     various value formats supported by <see cref="SettableTypes"/>.
+  ///   </para>
+  ///   <para>
+  ///     For retrieving values, the typical workflow is for a caller to check either <see cref="HasGettableMethod(Type, String,
+  ///     Type?)"/> or <see cref="HasGettableProperty(Type, String, Type?)"/>, followed by <see cref="GetPropertyValue(Object,
+  ///     String, Type?)"/> or <see cref="GetMethodValue(Object, String, Type?)"/> to retrieve the value.
+  ///   </para>
+  ///   <para>
+  ///     For setting values, the typical workflow is for a caller to check either <see cref="HasSettableMethod(Type, String,
+  ///     Type?)"/> or <see cref="HasSettableProperty(Type, String, Type?)"/>, followed by <see cref="SetMethodValue(Object,
+  ///     String, String?)"/> or <see cref="SetMethodValue(Object, String, String?)"/> to retrieve the value. In these
+  ///     scenarios, the <see cref="MemberDispatcher"/> will attempt to deserialize the <c>value</c> parameter from <see cref=
+  ///     "String"/> to the type expected by the corresponding property or method. Typically, this will be a <see cref="Int32"
+  ///     />, <see cref="Double"/>, <see cref="Boolean"/>, or <see cref="DateTime"/>.
+  ///   </para>
+  ///   <para>
+  ///     Alternatively, setters can call <see cref="SetMethodValue(Object, String, Object?)"/> or <see cref="SetPropertyValue(
+  ///     Object, String, Object?)"/>, in which case the final <c>value</c> parameter will be set the target property, or passed
+  ///     as the parameter of the method without any attempt to convert it. Obviously, this requires that the target type be
+  ///     assignable from the <c>value</c> object.
+  ///   </para>
+  ///   <para>
+  ///     The <see cref="MemberDispatcher"/> is an internal service intended to meet the specific needs of OnTopic, and comes
+  ///     with certain limitations. It only supports setting values of methods with a single parameter, which is assumed to
+  ///     correspond to the <c>value</c> parameter. It will only operate against the first overload of a method, and/or the most
+  ///     derived version of a member.
+  ///   </para>
+  /// </remarks>
   internal class MemberDispatcher {
 
     /*==========================================================================================================================
