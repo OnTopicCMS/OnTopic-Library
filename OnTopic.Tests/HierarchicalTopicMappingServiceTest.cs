@@ -71,6 +71,23 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH DEEP TOPIC: RETURNS ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with a deeply
+    ///   nested topic and ensures that it returns the expected root.
+    /// </summary>
+    [TestMethod]
+    public void GetHierarchicalRoot_WithDeepTopic_ReturnsRoot() {
+
+      var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(_topic, 2, "Configuration");
+
+      Assert.IsNotNull(rootTopic);
+      Assert.AreEqual<string>("Web", rootTopic.Key);
+
+    }
+
 
   } //Class
 } //Namespace
