@@ -92,18 +92,6 @@ namespace OnTopic.Internal.Reflection {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET MEMBERS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Returns a collection of <see cref="MemberInfo"/> objects associated with a specific type.
-    /// </summary>
-    /// <remarks>
-    ///   If the collection cannot be found locally, it will be created.
-    /// </remarks>
-    /// <param name="type">The type for which the members should be retrieved.</param>
-    internal MemberInfoCollection GetMembers(Type type) => _memberInfoCache.GetMembers(type);
-
-    /*==========================================================================================================================
     | METHOD: GET MEMBERS {T}
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -116,15 +104,6 @@ namespace OnTopic.Internal.Reflection {
     internal MemberInfoCollection<T> GetMembers<T>(Type type) where T : MemberInfo => _memberInfoCache.GetMembers<T>(type);
 
     /*==========================================================================================================================
-    | METHOD: GET MEMBER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify a local member by a given name, and returns the associated <see cref="MemberInfo"/>
-    ///   instance.
-    /// </summary>
-    internal MemberInfo? GetMember(Type type, string name) => _memberInfoCache.GetMember(type, name);
-
-    /*==========================================================================================================================
     | METHOD: GET MEMBER {T}
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -132,22 +111,6 @@ namespace OnTopic.Internal.Reflection {
     ///   instance.
     /// </summary>
     internal T? GetMember<T>(Type type, string name) where T : MemberInfo => _memberInfoCache.GetMember<T>(type, name);
-
-    /*==========================================================================================================================
-    | METHOD: HAS MEMBER
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify if a local member is available.
-    /// </summary>
-    internal bool HasMember(Type type, string name) => _memberInfoCache.HasMember(type, name);
-
-    /*==========================================================================================================================
-    | METHOD: HAS MEMBER {T}
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Used reflection to identify if a local member of type <typeparamref name="T"/> is available.
-    /// </summary>
-    internal bool HasMember<T>(Type type, string name) where T : MemberInfo => _memberInfoCache.HasMember<T>(type, name);
 
     /*==========================================================================================================================
     | METHOD: HAS SETTABLE PROPERTY
