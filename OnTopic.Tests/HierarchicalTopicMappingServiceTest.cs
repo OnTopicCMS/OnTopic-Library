@@ -107,6 +107,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET VIEW MODEL: WITH VALIDATION DELEGATE: EXCLUDES TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetViewModelAsync(Topic?, Int32, Func{Topic, Boolean}?)"/> method
+    ///   with a <c>validationDelegate</c> and ensures that it correctly trims the topic graph.
+    /// </summary>
+    [TestMethod]
+    public async Task GetViewModel_WithValidationDelegate_ExcludesTopics() {
+
+      var rootTopic             = _topicRepository.Load("Root:Web");
+      var viewModel             = await _hierarchicalMappingService
+        .GetViewModelAsync(rootTopic, 2, (t) => t.Key.EndsWith("1", StringComparison.Ordinal))
+        .ConfigureAwait(false);
+
+      Assert.IsNotNull(viewModel);
+      Assert.AreEqual<int>(1, viewModel.Children.Count);
+      Assert.AreEqual<int>(1, viewModel.Children[0].Children.Count);
+
+    }
+
 
   } //Class
 } //Namespace
