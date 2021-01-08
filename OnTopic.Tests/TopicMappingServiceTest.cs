@@ -352,6 +352,33 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: RELATIONSHIPS: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully skips disabled.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Relationships_SkipsDisabled() {
+
+      var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
+      var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
+      var topic                 = TopicFactory.Create("Test", "Relation");
+
+      topic.Relationships.SetTopic("Cousins", relatedTopic1);
+      topic.Relationships.SetTopic("Cousins", relatedTopic2);
+
+      topic.IsDisabled          = true;
+      relatedTopic2.IsDisabled  = true;
+
+      var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(1, target.Cousins.Count);
+      Assert.IsNotNull(GetChildTopic(target.Cousins, "Cousin1"));
+      Assert.IsNull(GetChildTopic(target.Cousins, "Cousin2"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: ALTERNATE RELATIONSHIP: RETURNS CORRECT RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -475,6 +502,33 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: WITH DISABLED: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> with children and tests whether it successfully skips disabled child
+    ///   topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Children_SkipsDisabled() {
+
+      var topic                 = TopicFactory.Create("Test", "Descendent");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Descendent", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Descendent", topic);
+
+      topic.IsDisabled          = true;
+      childTopic3.IsDisabled    = true;
+
+      var target                = await _mappingService.MapAsync<DescendentTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic1"));
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic2"));
+      Assert.IsNull(GetChildTopic(target.Children, "ChildTopic3"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: MAP TO PARENT: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -544,6 +598,30 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(target.TopicReference);
       Assert.AreEqual<string>(topicReference.Key, target.TopicReference.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully skips disabled topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferences_SkipsDisabled() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+
+      var topic                 = TopicFactory.Create("Test", "TopicReference");
+      var topicReference        = TopicFactory.Create("Reference", "Page");
+
+      topicReference.IsDisabled = true;
+
+      topic.References.SetTopic("TopicReference", topicReference);
+
+      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNull(target.TopicReference);
 
     }
 

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
@@ -175,8 +176,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is null) return topics;
-      if (topic.Attributes.GetValue("NoIndex") is "1") return topics;
-      if (topic.Attributes.GetValue("IsDisabled") is "1") return topics;
+      if (topic.Attributes.GetBoolean("NoIndex", false)) return topics;
+      if (topic.Attributes.GetBoolean("IsDisabled", false)) return topics;
       if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
