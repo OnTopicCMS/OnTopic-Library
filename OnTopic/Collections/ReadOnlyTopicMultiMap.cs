@@ -11,8 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
@@ -72,18 +70,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of keys.
     /// </returns>
-    public IEnumerable<string> Keys => Source.Select(m => m.Key).ToList();
-
-    /*==========================================================================================================================
-    | PROPERTY: VALUES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a list of values available for the available collections.
-    /// </summary>
-    /// <returns>
-    ///   Returns an enumerable list of <see cref="ReadOnlyCollection{Topic}"/> instances.
-    /// </returns>
-    public IEnumerable<ReadOnlyCollection<Topic>> Values => Source.Select(m => new ReadOnlyCollection<Topic>(m.Values));
+    public ReadOnlyCollection<string> Keys => new(Source.Select(m => m.Key).ToList());
 
     /*==========================================================================================================================
     | PROPERTY: COUNT
@@ -172,5 +159,3 @@ namespace OnTopic.Collections {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CA1710 // Identifiers should have correct suffix
