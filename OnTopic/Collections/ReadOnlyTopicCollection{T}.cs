@@ -30,7 +30,7 @@ namespace OnTopic.Collections {
     ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    public ReadOnlyTopicCollection(IList<T> innerCollection) : base(innerCollection) {
+    public ReadOnlyTopicCollection(IList<T>? innerCollection = null) : base(innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
       _innerCollection = innerCollection as TopicCollection<T>?? new(innerCollection);
     }

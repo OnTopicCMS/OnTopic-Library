@@ -418,7 +418,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         isRecursive &&
-        (  topic.Relationships.Any(r => r.Any(t => t.Id < 0)) ||
+        (  topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
            topic.References.Values.Any(t => t.Id < 0)
         )
       ) {
@@ -654,7 +654,7 @@ namespace OnTopic.Data.Sql {
 
           //Reset isDirty, assuming there aren't any unresolved references
           if (savedTopics.Count() == relatedTopics.Count) {
-            relatedTopics.MarkClean();
+            topic.Relationships.MarkClean(key);
           }
 
         }

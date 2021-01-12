@@ -679,7 +679,7 @@ namespace OnTopic {
     ///   topic, thus allowing the topic hierarchy to be represented as a network graph.
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
-    public RelatedTopicCollection Relationships { get; }
+    public TopicRelationshipMultiMap Relationships { get; }
 
     /*==========================================================================================================================
     | PROPERTY: REFERENCES
@@ -707,7 +707,7 @@ namespace OnTopic {
     ///   all topics associated with that tag.
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s incoming relationships.</value>
-    public RelatedTopicCollection IncomingRelationships { get; }
+    public TopicRelationshipMultiMap IncomingRelationships { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VERSION HISTORY

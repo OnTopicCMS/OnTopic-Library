@@ -236,8 +236,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       IEnumerable<XElement> getRelationships() =>
         from relationship in topic.Relationships
         select new XElement(_pagemapNamespace + "DataObject",
-          new XAttribute("type", relationship.Name),
-          from relatedTopic in topic.Relationships[relationship.Name]
+          new XAttribute("type", relationship.Key),
+          from relatedTopic in relationship.Values
           select new XElement(_pagemapNamespace + "Attribute",
             new XAttribute("name", "TopicKey"),
             new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.InvariantCultureIgnoreCase))
