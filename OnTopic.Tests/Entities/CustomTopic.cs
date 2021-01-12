@@ -46,7 +46,7 @@ namespace OnTopic.Tests.Entities {
     /// </summary>
     [AttributeSetter]
     public bool BooleanAttribute {
-      get => Attributes.GetBoolean("BooleanAttribute", false);
+      get => Attributes.GetBoolean("BooleanAttribute");
       set => SetAttributeValue("BooleanAttribute", value? "1" : "0");
     }
 
@@ -58,7 +58,7 @@ namespace OnTopic.Tests.Entities {
     /// </summary>
     [AttributeSetter]
     public int NumericAttribute {
-      get => Attributes.GetInteger("NumericAttribute", 0);
+      get => Attributes.GetInteger("NumericAttribute");
       set {
         Contract.Requires<ArgumentOutOfRangeException>(
           value >= 0,
@@ -76,7 +76,7 @@ namespace OnTopic.Tests.Entities {
     /// </summary>
     [AttributeSetter]
     public DateTime DateTimeAttribute {
-      get => Attributes.GetDateTime("DateTimeAttribute", DateTime.MinValue);
+      get => Attributes.GetDateTime("DateTimeAttribute");
       set {
         Contract.Requires<ArgumentOutOfRangeException>(
           value.Year > 2000,

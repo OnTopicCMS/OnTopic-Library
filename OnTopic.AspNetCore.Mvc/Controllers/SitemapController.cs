@@ -176,8 +176,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is null) return topics;
-      if (topic.Attributes.GetBoolean("NoIndex", false)) return topics;
-      if (topic.Attributes.GetBoolean("IsDisabled", false)) return topics;
+      if (topic.Attributes.GetBoolean("NoIndex")) return topics;
+      if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
       if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
