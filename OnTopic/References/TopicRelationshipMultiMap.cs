@@ -11,12 +11,18 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.References {
 
   /*============================================================================================================================
-  | CLASS: RELATED TOPIC COLLECTION
+  | CLASS: TOPIC RELATIONSHIP MULTIMAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a simple interface for accessing collections of topic collections.
   /// </summary>
-  public class RelatedTopicCollection : ReadOnlyTopicMultiMap {
+  /// <remarks>
+  ///   The <see cref="TopicRelationshipMultiMap"/> derives from <see cref="ReadOnlyTopicMultiMap"/> to provide read-only access
+  ///   to the underlying <see cref="TopicMultiMap"/> collection, then acts as a façade for the write operations, thus not only
+  ///   simplifying access to the <see cref="TopicMultiMap"/>, but also ensuring that business logic is enforced, such as local
+  ///   state tracking and handling of reciprocal relationships.
+  /// </remarks>
+  public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -30,16 +36,16 @@ namespace OnTopic.References {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="RelatedTopicCollection"/>.
+    ///   Initializes a new instance of the <see cref="TopicRelationshipMultiMap"/>.
     /// </summary>
     /// <remarks>
     ///   The constructor requires a reference to a <see cref="Topic"/> instance, which the related topics are to be associated
-    ///   with. This will be used when setting incoming relationships. In addition, a <see cref="RelatedTopicCollection"/> may
-    ///   be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is not
-    ///   set, then it will not allow incoming relationships to be set via the internal <see cref=
+    ///   with. This will be used when setting incoming relationships. In addition, a <see cref="TopicRelationshipMultiMap"/>
+    ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is
+    ///   not set, then it will not allow incoming relationships to be set via the internal <see cref=
     ///   "SetTopic(String, Topic, Boolean?, Boolean)"/> overload.
     /// </remarks>
-    public RelatedTopicCollection(Topic parent, bool isIncoming = false): base() {
+    public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base() {
       _parent                   = parent;
       _isIncoming               = isIncoming;
       base.Source               = _storage;
@@ -53,7 +59,7 @@ namespace OnTopic.References {
     /// </summary>
     /// <remarks>
     ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref="
-    ///   RelatedTopicCollection"/> will be marked as <see cref="RelatedTopicCollection.IsDirty()"/>.
+    ///   TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
     public void ClearTopics(string relationshipKey) {
@@ -107,7 +113,7 @@ namespace OnTopic.References {
       if (!isIncoming) {
         if (_isIncoming) {
           throw new InvalidOperationException(
-            "You are attempting to remove an incoming relationship on a RelatedTopicCollection that is not flagged as " +
+            "You are attempting to remove an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
             nameof(isIncoming)
           );
         }
@@ -195,7 +201,7 @@ namespace OnTopic.References {
       if (!isIncoming) {
         if (_isIncoming) {
           throw new InvalidOperationException(
-            "You are attempting to set an incoming relationship on a RelatedTopicCollection that is not flagged as " +
+            "You are attempting to set an incoming relationship on a TopicRelationshipMultiMap that is not flagged as " +
             nameof(isIncoming)
           );
         }

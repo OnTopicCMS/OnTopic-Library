@@ -57,7 +57,7 @@ In addition to the above key classes, the `OnTopic` assembly contains a number o
     - **[`NamedTopicCollection`](Collections/NamedTopicCollection.cs)**: Provides a unique name to a `TopicCollection` so it can be keyed as part of a collection-of-collections.
 - **[`ReadOnlyTopicCollection{T}`](Collections/ReadOnlyTopicCollection{T}.cs)**: A read-only `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
   - **[`ReadOnlyTopicCollection`](Collections/ReadOnlyTopicCollection.cs)**: A read-only `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
-- **[`RelatedTopicCollection`](Collections/RelatedTopicCollection.cs)**: A `KeyedCollection` of `NamedTopicCollection` objects, keyed by `Name`, thus providing a collection-of-collections.
+- **[`TopicRelationshipMultiMap`](Collections/TopicRelationshipMultiMap.cs)**: A `KeyedCollection` of `NamedTopicCollection` objects, keyed by `Name`, thus providing a collection-of-collections.
 - **[`AttributeValueCollection`](collections/AttributeValueCollection.cs)**: A `KeyedCollection` of `AttributeValue` instances keyed by `AttributeValue.Key`.
 
 ### Editor
