@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
@@ -129,7 +130,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var results = new KeyedTopicCollection();
+      var results = new Collection<Topic>();
 
       if (predicate(topic)) {
         results.Add(topic);
@@ -141,7 +142,7 @@ namespace OnTopic.Querying {
       foreach (var child in topic.Children) {
         var nestedResults = child.FindAll(predicate);
         foreach (var matchedTopic in nestedResults) {
-          if (!results.Contains(matchedTopic.Key)) {
+          if (!results.Contains(matchedTopic)) {
             results.Add(matchedTopic);
           }
         }
