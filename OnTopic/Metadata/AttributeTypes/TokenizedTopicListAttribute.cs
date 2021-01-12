@@ -42,7 +42,7 @@ namespace OnTopic.Metadata.AttributeTypes {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     public override ModelType ModelType =>
-      Attributes.GetBoolean("SaveAsRelationship", false)? ModelType.Relationship : ModelType.ScalarValue;
+      Attributes.GetBoolean("SaveAsRelationship")? ModelType.Relationship : ModelType.ScalarValue;
 
   } //Class
 } //Namespace

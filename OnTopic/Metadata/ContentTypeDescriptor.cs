@@ -99,7 +99,7 @@ namespace OnTopic.Metadata {
     /// </remarks>
     [AttributeSetter]
     public bool DisableChildTopics {
-      get => Attributes.GetBoolean("DisableChildTopics", false);
+      get => Attributes.GetBoolean("DisableChildTopics");
       set => SetAttributeValue("DisableChildTopics", value ? "1" : "0");
     }
 

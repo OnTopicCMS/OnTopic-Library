@@ -326,7 +326,7 @@ namespace OnTopic {
     /// </value>
     [AttributeSetter]
     public bool IsHidden {
-      get => Attributes.GetBoolean("IsHidden", false);
+      get => Attributes.GetBoolean("IsHidden");
       set => SetAttributeValue("IsHidden", value ? "1" : "0");
     }
 
@@ -341,7 +341,7 @@ namespace OnTopic {
     /// </value>
     [AttributeSetter]
     public bool IsDisabled {
-      get => Attributes.GetBoolean("IsDisabled", false);
+      get => Attributes.GetBoolean("IsDisabled");
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
     }
 

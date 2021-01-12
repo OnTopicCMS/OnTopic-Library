@@ -147,7 +147,7 @@ namespace OnTopic.Metadata {
     /// </remarks>
     [AttributeSetter]
     public bool IsRequired {
-      get => Attributes.GetBoolean("IsRequired", false);
+      get => Attributes.GetBoolean("IsRequired");
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
@@ -193,7 +193,7 @@ namespace OnTopic.Metadata {
     /// </remarks>
     [AttributeSetter]
     public virtual bool IsExtendedAttribute {
-      get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob", false));
+      get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob"));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
     }
 
