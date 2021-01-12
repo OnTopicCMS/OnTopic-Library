@@ -8,21 +8,21 @@ using System.Collections.Generic;
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
-  | CLASS: TOPIC COLLECTION
+  | CLASS: KEYED TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects.
   /// </summary>
-  public class TopicCollection : TopicCollection<Topic> {
+  public class KeyedTopicCollection : KeyedTopicCollection<Topic> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>.
+    ///   Initializes a new instance of the <see cref="KeyedTopicCollection{T}"/>.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics) {
+    public KeyedTopicCollection(IEnumerable<Topic>? topics = null) : base(topics) {
     }
 
   } //Class

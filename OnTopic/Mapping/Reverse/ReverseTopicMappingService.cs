@@ -570,7 +570,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
     protected async Task PopulateTargetCollectionAsync(
       IList                     sourceList,
-      TopicCollection           targetList
+      KeyedTopicCollection      targetList
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------

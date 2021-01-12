@@ -26,11 +26,10 @@ namespace OnTopic.Attributes {
   ///   </para>
   ///   <para>
   ///     As an example, the <see cref="Topic.Key"/> property is adorned with the <see cref="AttributeSetterAttribute"/>. As a
-  ///     result, if a client calls <code>topic.Attributes.SetValue("Key", "NewKey")</code> then that update will be routed
-  ///     through <see cref="Topic.Key"/>, thus enforcing key validation, and calling
-  ///     <see cref="TopicCollection{T}.ChangeKey(T, String)"/>. Similarly, if <code>topic.Attributes.SetValue("Key", ":/? ")
-  ///     </code> were called, a contract exception will be thrown since <code>:/? </code> violates
-  ///     <see cref="TopicFactory.ValidateKey(String, Boolean)"/>.
+  ///     result, if a client calls <c>topic.Attributes.SetValue("Key", "NewKey")</c> then that update will be routed through
+  ///     <see cref="Topic.Key"/>, thus enforcing key validation, and calling <see cref="KeyedTopicCollection{T}.ChangeKey(T,
+  ///     String)"/>. Similarly, if <c>topic.Attributes.SetValue("Key", ":/? ")</c> were called, a contract exception will be
+  ///     thrown since <c>:/? </c> violates <see cref="TopicFactory.ValidateKey(String, Boolean)"/>.
   ///   </para>
   ///   <para>
   ///     To ensure this logic, it is critical that implementers of <see cref="AttributeSetterAttribute"/> ensure that the

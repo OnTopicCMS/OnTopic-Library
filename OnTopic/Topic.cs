@@ -165,7 +165,7 @@ namespace OnTopic {
     /// <value>
     ///   The children of the current <see cref="Topic"/>.
     /// </value>
-    public TopicCollection Children { get; }
+    public KeyedTopicCollection Children { get; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE

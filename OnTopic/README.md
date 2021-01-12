@@ -4,7 +4,7 @@
 ![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
 [![OnTopic package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/fb67677f-2b83-4318-9007-0c46b4da55c1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=fb67677f-2b83-4318-9007-0c46b4da55c1&preferRelease=true)
 
-The `OnTopic` assembly represents the core domain layer of the OnTopic library. It includes the primary entity ([`Topic`](Topic.cs)), abstractions (e.g., [`ITopicRepository`](Repositories/ITopicRepository.cs)), and associated classes (e.g., [`TopicCollection<>`](Collections/TopicCollection{T}.cs)).
+The `OnTopic` assembly represents the core domain layer of the OnTopic library. It includes the primary entity ([`Topic`](Topic.cs)), abstractions (e.g., [`ITopicRepository`](Repositories/ITopicRepository.cs)), and associated classes (e.g., [`KeyedTopicCollection<>`](Collections/KeyedTopicCollection{T}.cs)).
 
 ### Contents
 - [Entities](#entities)
@@ -53,16 +53,14 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 
 ## Collections
 In addition to the above key classes, the `OnTopic` assembly contains a number of specialized collections. These include:
-- **[`TopicCollection{T}`](Collections/TopicCollection{T}.cs)**: A `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
-  - **[`TopicCollection`](Collections/TopicCollection.cs)**: A `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
-- **[`ReadOnlyTopicCollection{T}`](Collections/ReadOnlyTopicCollection{T}.cs)**: A read-only `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
-  - **[`ReadOnlyTopicCollection`](Collections/ReadOnlyTopicCollection.cs)**: A read-only `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
+- **[`KeyedTopicCollection{T}`](Collections/KeyedTopicCollection{T}.cs)**: A `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
+  - **[`KeyedTopicCollection`](Collections/KeyedTopicCollection.cs)**: A `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
+- **[`ReadOnlyKeyedTopicCollection{T}`](Collections/ReadOnlyKeyedTopicCollection{T}.cs)**: A read-only `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
+  - **[`ReadOnlyKeyedTopicCollection`](Collections/ReadOnlyKeyedTopicCollection.cs)**: A read-only `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
 - **[`TopicMultiMap`](Collections/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection name.
   - **[`ReadOnlyTopicMultiMap`](Collections/ReadOnlyTopicMultiMap.cs)**: A read-only interface to the `TopicMultiMap`, thus allowing simple enumeration of the collection withouthout exposing any write access.
 
 ### Specialty Collections
-- **[`TopicRelationshipMultiMap`](References/TopicRelationshipMultiMap.cs)**: A `KeyedCollection` of `NamedTopicCollection` objects, keyed by `Name`, thus providing a collection-of-collections.
-- **[`TopicRelationshipMultiMap`](References/TopicRelationshipMultiMap.cs)**: A `KeyedCollection` of `NamedTopicCollection` objects, keyed by `Name`, thus providing a collection-of-collections.
 - **[`AttributeValueCollection`](attributes/AttributeValueCollection.cs)**: A `KeyedCollection` of `AttributeValue` instances keyed by `AttributeValue.Key`.
 
 ### Editor

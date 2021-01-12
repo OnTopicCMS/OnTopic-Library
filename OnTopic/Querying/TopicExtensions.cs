@@ -129,7 +129,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var results = new TopicCollection();
+      var results = new KeyedTopicCollection();
 
       if (predicate(topic)) {
         results.Add(topic);
