@@ -77,6 +77,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Number3", "Invalid");
 
       Assert.AreEqual<int>(5, topic.Attributes.GetInteger("Number3", 5));
+      Assert.AreEqual<int>(0, topic.Attributes.GetInteger("Number3"));
 
     }
 
@@ -92,6 +93,7 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
+      Assert.AreEqual<int>(0, topic.Attributes.GetInteger("InvalidKey"));
 
     }
 
@@ -126,6 +128,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("Number3", "Invalid");
 
       Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
+      Assert.AreEqual<double>(0, topic.Attributes.GetDouble("Number3"));
 
     }
 
@@ -141,6 +144,7 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Container");
 
       Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
+      Assert.AreEqual<double>(0, topic.Attributes.GetDouble("InvalidKey"));
 
     }
 
@@ -178,6 +182,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
       Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
+      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
 
     }
 
@@ -197,6 +202,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
       Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
+      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
 
     }
 
@@ -234,6 +240,7 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(topic.Attributes.GetBoolean("IsValue", true));
       Assert.IsFalse(topic.Attributes.GetBoolean("IsValue", false));
+      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue"));
 
     }
 
@@ -250,6 +257,7 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(topic.Attributes.GetBoolean("InvalidKey", true));
       Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey", false));
+      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey"));
 
     }
 
