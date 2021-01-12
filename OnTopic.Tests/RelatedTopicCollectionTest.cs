@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Collections;
 using OnTopic.References;
 
 namespace OnTopic.Tests {
@@ -68,7 +69,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page");
 
       parent.Relationships.SetTopic("Friends", related);
-      parent.Relationships.RemoveTopic("Friends", related.Key);
+      parent.Relationships.RemoveTopic("Friends", related);
 
       Assert.IsNull(parent.Relationships.GetTopics("Friends").FirstOrDefault());
 
@@ -89,7 +90,7 @@ namespace OnTopic.Tests {
       var relationships         = new RelatedTopicCollection(parent);
 
       relationships.SetTopic("Friends", related);
-      relationships.RemoveTopic("Friends", related.Key);
+      relationships.RemoveTopic("Friends", related);
 
       Assert.IsNull(related.IncomingRelationships.GetTopics("Friends").FirstOrDefault());
 
@@ -153,19 +154,19 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(5, relationships.Count);
       Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count());
+      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count);
 
     }
 
     /*==========================================================================================================================
-    | TEST: GET ALL CONTENT TYPES: RETURNS ALL CONTENT TYPES
+    | TEST: GET ALL TOPICS: CONTENT TYPES: RETURNS ALL CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
-    ///   <see cref="RelatedTopicCollection.GetAllTopics(String)"/> by content type.
+    ///   <see cref="ReadOnlyTopicMultiMap.GetAllTopics(String)"/> by content type.
     /// </summary>
     [TestMethod]
-    public void GetAllContentTypes_ReturnsAllContentTypes() {
+    public void GetAllTopics_ContentTypes_ReturnsAllContentTypes() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new RelatedTopicCollection(parent);
@@ -174,8 +175,8 @@ namespace OnTopic.Tests {
         relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
       }
 
-      Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count());
+      Assert.AreEqual<int>(5, relationships.Keys.Count);
+      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count);
 
     }
 

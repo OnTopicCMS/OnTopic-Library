@@ -481,9 +481,9 @@ namespace OnTopic.Repositories {
 
       foreach (var descendantTopic in descendantTopics) {
         foreach (var relationship in descendantTopic.Relationships) {
-          foreach (var relatedTopic in relationship.ToArray()) {
+          foreach (var relatedTopic in relationship.Values.ToList()) {
             if (!descendantTopics.Contains(relatedTopic)) {
-              descendantTopic.Relationships.RemoveTopic(relationship.Name, relatedTopic);
+              descendantTopic.Relationships.RemoveTopic(relationship.Key, relatedTopic);
             }
           }
         }
@@ -494,9 +494,9 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var descendantTopic in descendantTopics) {
         foreach (var relationship in descendantTopic.IncomingRelationships) {
-          foreach (var relatedTopic in relationship.ToArray()) {
+          foreach (var relatedTopic in relationship.Values.ToList()) {
             if (!descendantTopics.Contains(relatedTopic)) {
-              relatedTopic.Relationships.RemoveTopic(relationship.Name, descendantTopic.Key);
+              relatedTopic.Relationships.RemoveTopic(relationship.Key, descendantTopic);
             }
           }
         }
