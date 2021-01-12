@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using System.Globalization;
-using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
@@ -41,7 +40,7 @@ namespace OnTopic.Attributes {
     public static bool GetBoolean(
       this                      AttributeValueCollection attributes,
       string                    name,
-      bool                      defaultValue,
+      bool                      defaultValue                    = default,
       bool                      inheritFromParent               = false,
       bool                      inheritFromDerived              = true
     ) {
@@ -79,7 +78,7 @@ namespace OnTopic.Attributes {
     public static int GetInteger(
       this                      AttributeValueCollection attributes,
       string                    name,
-      int                       defaultValue,
+      int                       defaultValue                    = default,
       bool                      inheritFromParent               = false,
       bool                      inheritFromDerived              = true
     ) {
@@ -117,7 +116,7 @@ namespace OnTopic.Attributes {
     public static double GetDouble(
       this                      AttributeValueCollection attributes,
       string                    name,
-      double                    defaultValue,
+      double                    defaultValue                    = default,
       bool                      inheritFromParent               = false,
       bool                      inheritFromDerived              = true
     ) {
@@ -155,7 +154,7 @@ namespace OnTopic.Attributes {
     public static DateTime GetDateTime(
       this                      AttributeValueCollection        attributes,
       string                    name,
-      DateTime                  defaultValue,
+      DateTime                  defaultValue                    = default,
       bool                      inheritFromParent               = false,
       bool                      inheritFromDerived              = true
     ) {
