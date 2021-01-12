@@ -39,24 +39,6 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: IS DIRTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a relationship and confirms that the <see cref="RelatedTopicCollection.IsDirty"/> returns true.
-    /// </summary>
-    [TestMethod]
-    public void SetTopic_IsDirty() {
-
-      var parent                = TopicFactory.Create("Parent", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
-
-      parent.Relationships.SetTopic("Friends", related);
-
-      Assert.IsTrue(parent.Relationships.IsDirty());
-
-    }
-
-    /*==========================================================================================================================
     | TEST: REMOVE TOPIC: REMOVES RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -177,6 +159,180 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(5, relationships.Keys.Count);
       Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a topic to a <see cref="RelatedTopicCollection"/> and confirms that <see cref="RelatedTopicCollection.IsDirty"/> is
+    ///   set.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related);
+
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: IS DUPLICATE: IS NOT DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a duplicate topic to a <see cref="RelatedTopicCollection"/> and confirms that value of <see
+    ///   cref="RelatedTopicCollection.IsDirty"/> is <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_IsDuplicate_IsNotDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related);
+      relationships.MarkClean();
+
+      relationships.SetTopic("Related", related);
+
+      Assert.IsFalse(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: IS DUPLICATE: STAYS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a duplicate topic to a <see cref="RelatedTopicCollection"/> and confirms that value of <see
+    ///   cref="RelatedTopicCollection.IsDirty"/> is <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_IsDuplicate_StaysDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related1              = TopicFactory.Create("Topic", "Page");
+      var related2              = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related1);
+      relationships.SetTopic("Related", related2);
+
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Removes an existing <see cref="Topic"/> from a <see cref="RelatedTopicCollection"/> and conirms that the value for <see
+    ///   cref="RelatedTopicCollection.IsDirty"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related);
+      relationships.MarkClean();
+      relationships.RemoveTopic("Related", related);
+
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: MISSING TOPIC: IS NOT DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="RelatedTopicCollection"/> and conirms that the value for
+    ///   <see cref="RelatedTopicCollection.IsDirty"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_MissingTopic_IsNotDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      var isSuccessful          = relationships.RemoveTopic("Related", related);
+
+      Assert.IsFalse(isSuccessful);
+      Assert.IsFalse(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: MISSING TOPIC: STAYS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="RelatedTopicCollection"/> and conirms that the value for
+    ///   <see cref="RelatedTopicCollection.IsDirty"/> stays <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_MissingTopic_StaysDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic1", "Page");
+      var missing               = TopicFactory.Create("Topic2", "Page");
+
+      relationships.SetTopic("Related", related);
+
+      var isSuccessful          = relationships.RemoveTopic("Related", missing);
+
+      Assert.IsFalse(isSuccessful);
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CLEAR TOPICS: EXISTING TOPICS: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Call <see cref="RelatedTopicCollection.ClearTopics(String)"/> and confirms that value of <see
+    ///   cref="RelatedTopicCollection.IsDirty"/> is <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void ClearTopics_ExistingTopics_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related);
+      relationships.MarkClean();
+      relationships.ClearTopics("Related");
+
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CLEAR TOPICS: NO TOPICS: IS NOT DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Call <see cref="RelatedTopicCollection.ClearTopics(String)"/> with no existing <see cref="Topic"/>s and confirms that
+    ///   the value of <see cref="RelatedTopicCollection.IsDirty"/> is set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void ClearTopics_NoTopics_IsNotDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new RelatedTopicCollection(topic);
+
+      relationships.ClearTopics("Related");
+
+      Assert.IsFalse(relationships.IsDirty());
 
     }
 
