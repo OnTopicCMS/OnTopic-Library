@@ -24,7 +24,7 @@ namespace OnTopic.Collections {
     ///   Initializes a new instance of the <see cref="TopicCollection"/>.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics.ToList()) {
+    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics?.ToList()?? new()) {
     }
 
     /*==========================================================================================================================
