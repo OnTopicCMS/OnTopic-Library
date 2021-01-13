@@ -434,7 +434,7 @@ namespace OnTopic.Mapping.Reverse {
       | Set relationships for each
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (IRelatedTopicBindingModel relationship in sourceList) {
-        var targetTopic = _topicRepository.Load(relationship.UniqueKey);
+        var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
         if (targetTopic is null) {
           throw new TopicMappingException(
             $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
@@ -536,7 +536,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify target value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicReference = _topicRepository.Load(modelReference.UniqueKey);
+      var topicReference = _topicRepository.Load(modelReference.UniqueKey, target);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling

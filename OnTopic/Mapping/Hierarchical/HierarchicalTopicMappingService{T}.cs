@@ -90,7 +90,7 @@ namespace OnTopic.Mapping.Hierarchical {
             $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
           );
         }
-        navigationRootTopic = TopicRepository.Load(defaultRoot);
+        navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
