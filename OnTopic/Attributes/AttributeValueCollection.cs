@@ -286,7 +286,7 @@ namespace OnTopic.Attributes {
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
-    /// <param name="isDirty">
+    /// <param name="markDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
@@ -316,11 +316,11 @@ namespace OnTopic.Attributes {
     public void SetValue(
       string key,
       string? value,
-      bool? isDirty = null,
+      bool? markDirty = null,
       DateTime? version = null,
       bool? isExtendedAttribute = null
     )
-      => SetValue(key, value, isDirty, true, version, isExtendedAttribute);
+      => SetValue(key, value, markDirty, true, version, isExtendedAttribute);
 
     /// <summary>
     ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
@@ -333,7 +333,7 @@ namespace OnTopic.Attributes {
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
-    /// <param name="isDirty">
+    /// <param name="markDirty">
     ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
@@ -367,7 +367,7 @@ namespace OnTopic.Attributes {
     internal void SetValue(
       string key,
       string? value,
-      bool? isDirty,
+      bool? markDirty,
       bool enforceBusinessLogic,
       DateTime? version = null,
       bool? isExtendedAttribute = null
@@ -409,8 +409,8 @@ namespace OnTopic.Attributes {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (originalAttributeValue is not null) {
         var markAsDirty = originalAttributeValue.IsDirty;
-        if (isDirty.HasValue) {
-          markAsDirty = isDirty.Value;
+        if (markDirty.HasValue) {
+          markAsDirty = markDirty.Value;
         }
         else if (originalAttributeValue.Value != value) {
           markAsDirty = true;
@@ -437,7 +437,7 @@ namespace OnTopic.Attributes {
       | Create new attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        updatedAttributeValue   = new AttributeValue(key, value, isDirty ?? true, version, isExtendedAttribute);
+        updatedAttributeValue   = new AttributeValue(key, value, markDirty ?? true, version, isExtendedAttribute);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

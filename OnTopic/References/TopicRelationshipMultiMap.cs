@@ -151,11 +151,11 @@ namespace OnTopic.References {
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
-    /// <param name="isDirty">
+    /// <param name="markDirty">
     ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
     /// </param>
-    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null)
-      => SetTopic(relationshipKey, topic, isDirty, false);
+    public void SetTopic(string relationshipKey, Topic topic, bool? markDirty = null)
+      => SetTopic(relationshipKey, topic, markDirty, false);
 
     /// <summary>
     ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified relationship key.
@@ -168,10 +168,10 @@ namespace OnTopic.References {
     /// <param name="isIncoming">
     ///   Notes that this is setting an internal relationship, and thus shouldn't set the reciprocal relationship.
     /// </param>
-    /// <param name="isDirty">
+    /// <param name="markDirty">
     ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
     /// </param>
-    internal void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) {
+    internal void SetTopic(string relationshipKey, Topic topic, bool? markDirty, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -187,7 +187,7 @@ namespace OnTopic.References {
       var wasDirty              = _isDirty.Contains(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);
-        if (isDirty.HasValue && !isDirty.Value && !wasDirty) {
+        if (markDirty.HasValue && !markDirty.Value && !wasDirty) {
           MarkClean(relationshipKey);
         }
         else {
@@ -205,7 +205,7 @@ namespace OnTopic.References {
             nameof(isIncoming)
           );
         }
-        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, isDirty, true);
+        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, markDirty, true);
       }
 
     }
