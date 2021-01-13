@@ -64,7 +64,7 @@ namespace OnTopic.Tests {
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
 
       Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
-      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count());
+      Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
       Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
 
     }
