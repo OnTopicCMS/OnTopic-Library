@@ -4,8 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
@@ -111,7 +109,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>A collection of topics descending from the current topic.</returns>
-    public static IEnumerable<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
+    public static TopicCollection FindAll(this Topic topic) => topic.FindAll(t => true);
 
     /// <summary>
     ///   Retrieves a collection of topics based on a supplied function.
@@ -119,7 +117,7 @@ namespace OnTopic.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
-    public static IEnumerable<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
+    public static TopicCollection FindAll(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -130,7 +128,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Search attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var results = new Collection<Topic>();
+      var results = new TopicCollection();
 
       if (predicate(topic)) {
         results.Add(topic);
@@ -173,7 +171,7 @@ namespace OnTopic.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static IEnumerable<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
+    public static TopicCollection FindAllByAttribute(this Topic topic, string name, string value) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts

@@ -16,7 +16,7 @@ namespace OnTopic.Collections {
   ///   The <see cref="TopicMultiMap"/> offers support for a keyed collection where each key is mapped to a collection of <see
   ///   cref="Topic"/> instances, thus supporting a 1:n relationship with zero or more topics, organized by key.
   /// </summary>
-  public class TopicMultiMap: KeyedCollection<string, KeyValuesPair<string, Collection<Topic>>> {
+  public class TopicMultiMap: KeyedCollection<string, KeyValuesPair<string, TopicCollection>> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,7 +50,7 @@ namespace OnTopic.Collections {
     ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
     /// </remarks>
     /// <param name="key">The key of the collection to be returned.</param>
-    public Collection<Topic> GetTopics(string key) {
+    public TopicCollection GetTopics(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       if (Contains(key)) {
         return this[key].Values;
@@ -147,7 +147,7 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="item">The <see cref="KeyValuesPair{TKey, TValue}"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(KeyValuesPair<string, Collection<Topic>> item) {
+    protected override string GetKeyForItem(KeyValuesPair<string, TopicCollection> item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
     }
