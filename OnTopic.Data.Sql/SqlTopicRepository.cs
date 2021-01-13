@@ -61,7 +61,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic Load(string? uniqueKey = null, bool isRecursive = true) {
+    public override Topic Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty topic
@@ -70,7 +70,7 @@ namespace OnTopic.Data.Sql {
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(uniqueKey)) {
-        return Load(-1, isRecursive);
+        return Load(-1, referenceTopic, isRecursive);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -118,12 +118,12 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return Load(topicId, isRecursive);
+      return Load(topicId, referenceTopic, isRecursive);
 
     }
 
     /// <inheritdoc />
-    public override Topic Load(int topicId, bool isRecursive = true) {
+    public override Topic Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -188,7 +188,7 @@ namespace OnTopic.Data.Sql {
     }
 
     /// <inheritdoc />
-    public override Topic Load(int topicId, DateTime version) {
+    public override Topic Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

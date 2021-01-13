@@ -79,7 +79,7 @@ namespace OnTopic.Data.Caching {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, bool isRecursive = true) {
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for entire tree
@@ -96,7 +96,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -113,7 +113,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -127,7 +127,7 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _dataProvider.Load(topicId, version);
+      return _dataProvider.Load(topicId, version, referenceTopic?? _cache);
 
     }
 

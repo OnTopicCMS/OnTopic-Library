@@ -30,13 +30,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, bool isRecursive = true) => null;
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) => null;
+    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version) => throw new NotImplementedException();
+    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: SAVE

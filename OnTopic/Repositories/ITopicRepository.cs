@@ -53,17 +53,25 @@ namespace OnTopic.Repositories {
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
+    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(int topicId, bool isRecursive = true);
+    Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
     /// </summary>
     /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
+    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(string? uniqueKey = null, bool isRecursive = true);
+    Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <summary>
     ///   Loads a specific version of a topic based on its version.
@@ -74,8 +82,15 @@ namespace OnTopic.Repositories {
     /// </remarks>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
+    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    /// </param>
     /// <returns>A topic object.</returns>
-    Topic? Load(int topicId, DateTime version);
+    Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
+
+    /// <inheritdoc cref="Load(Int32, DateTime, Topic)"/>
+    Topic? Load(Topic referenceTopic, DateTime version);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK

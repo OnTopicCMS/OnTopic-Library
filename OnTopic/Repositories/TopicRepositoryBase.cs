@@ -221,13 +221,19 @@ namespace OnTopic.Repositories {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public abstract Topic? Load(int topicId, bool isRecursive = true);
+    public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(string? uniqueKey = null, bool isRecursive = true);
+    public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(int topicId, DateTime version);
+    public Topic? Load(Topic referenceTopic, DateTime version) {
+      Contract.Requires(referenceTopic, nameof(referenceTopic));
+      return Load(referenceTopic.Id, version, referenceTopic);
+    }
+
+    /// <inheritdoc />
+    public abstract Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK

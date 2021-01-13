@@ -49,11 +49,11 @@ namespace OnTopic.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, bool isRecursive = true) =>
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
       (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
@@ -71,7 +71,7 @@ namespace OnTopic.TestDoubles {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -85,7 +85,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = Load(topicId);
+      var topic = Load(topicId, referenceTopic, false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset version
