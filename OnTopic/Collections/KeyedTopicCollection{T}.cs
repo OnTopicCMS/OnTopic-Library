@@ -11,21 +11,21 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
-  | CLASS: TOPIC COLLECTION
+  | CLASS: KEYED TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a strongly-typed collection of <see cref="Topic"/> instances, or a derived type.
   /// </summary>
-  public class TopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
+  public class KeyedTopicCollection<T>: KeyedCollection<string, T>, IEnumerable<T> where T : Topic {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/> class.
+    ///   Initializes a new instance of the <see cref="KeyedTopicCollection{T}"/> class.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
+    public KeyedTopicCollection(IEnumerable<T>? topics = null) : base(StringComparer.OrdinalIgnoreCase) {
       if (topics is not null) {
         foreach (var topic in topics) {
           Add(topic);
@@ -51,9 +51,9 @@ namespace OnTopic.Collections {
     | METHOD: AS READ ONLY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a read-only version of this <see cref="TopicCollection{T}"/>.
+    ///   Retrieves a read-only version of this <see cref="KeyedTopicCollection{T}"/>.
     /// </summary>
-    public ReadOnlyTopicCollection<T> AsReadOnly() => new(this);
+    public ReadOnlyKeyedTopicCollection<T> AsReadOnly() => new(this);
 
     /*==========================================================================================================================
     | OVERRIDE: INSERT ITEM

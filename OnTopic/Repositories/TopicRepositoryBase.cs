@@ -640,7 +640,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get unmatched attribute descriptors
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = new TopicCollection<AttributeDescriptor>();
+      var attributes            = new AttributeDescriptorCollection();
 
       foreach (var attribute in contentType.AttributeDescriptors) {
 

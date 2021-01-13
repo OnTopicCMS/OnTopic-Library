@@ -11,28 +11,28 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
-  | CLASS: READ ONLY TOPIC COLLECTION
+  | CLASS: READ-ONLY KEYED TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a read-only collection of topics.
   /// </summary>
-  public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
+  public class ReadOnlyKeyedTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            TopicCollection<T>              _innerCollection;
+    private readonly            KeyedTopicCollection<T>         _innerCollection;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
+    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref="IList{T}"/>.
     /// </summary>
-    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
-    public ReadOnlyTopicCollection(IList<T>? innerCollection = null) : base(innerCollection) {
+    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
+    public ReadOnlyKeyedTopicCollection(IList<T>? innerCollection = null) : base(innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
-      _innerCollection = innerCollection as TopicCollection<T>?? new(innerCollection);
+      _innerCollection = innerCollection as KeyedTopicCollection<T>?? new(innerCollection);
     }
 
     /*==========================================================================================================================
@@ -53,14 +53,14 @@ namespace OnTopic.Collections {
     | FACTORY METHOD: FROM LIST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="List{T}"/>.
+    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref="List{T}"/>.
     /// </summary>
     /// <remarks>
-    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="KeyedTopicCollection{T}"/>.
     /// </remarks>
-    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
     [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", true)]
-    public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) {
+    public ReadOnlyKeyedTopicCollection<T> FromList(IList<T> innerCollection) {
       Contract.Requires(innerCollection, "innerCollection should not be null");
       return new(innerCollection);
     }

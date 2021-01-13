@@ -12,13 +12,13 @@ using OnTopic.Collections;
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: TOPIC COLLECTION TESTS
+  | CLASS: KEYED TOPIC COLLECTION TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="AttributeValueCollection"/> class.
+  ///   Provides unit tests for the <see cref="KeyedTopicCollection"/> class.
   /// </summary>
   [TestClass]
-  public class TopicCollectionTest {
+  public class KeyedTopicCollectionTest {
 
     /*==========================================================================================================================
     | TEST: SET TOPIC: INDEXER: RETURNS TOPIC
@@ -29,7 +29,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetTopic_Indexer_ReturnsTopic() {
 
-      var topics = new TopicCollection();
+      var topics = new KeyedTopicCollection();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));
@@ -43,7 +43,7 @@ namespace OnTopic.Tests {
     | TEST: CONSTRUCTOR: IENUMERABLE: SEEDS TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a number of topics, then seeds a new <see cref="TopicCollection{T}"/> with them.
+    ///   Establishes a number of topics, then seeds a new <see cref="KeyedTopicCollection{T}"/> with them.
     /// </summary>
     [TestMethod]
     public void Constructor_IEnumerable_SeedsTopics() {
@@ -54,22 +54,22 @@ namespace OnTopic.Tests {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));
       }
 
-      var topicsCollection = new TopicCollection(topics);
+      var topicsCollection = new KeyedTopicCollection(topics);
 
       Assert.AreEqual<int>(10, topicsCollection.Count);
 
     }
 
     /*==========================================================================================================================
-    | TEST: AS READ ONLY: RETURNS READ ONLY TOPIC COLLECTION
+    | TEST: AS READ ONLY: RETURNS READ ONLY KEYED TOPIC COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
     /// </summary>
     [TestMethod]
-    public void AsReadOnly_ReturnsReadOnlyTopicCollection() {
+    public void AsReadOnly_ReturnsReadOnlyKeyedTopicCollection() {
 
-      var topics = new TopicCollection();
+      var topics = new KeyedTopicCollection();
 
       for (var i = 0; i < 10; i++) {
         topics.Add(TopicFactory.Create("Topic" + i, "Page"));

@@ -4,36 +4,42 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections {
 
   /*============================================================================================================================
-  | CLASS: TOPIC COLLECTION
+  | CLASS: READ-ONLY KEYED TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects.
   /// </summary>
-  public class TopicCollection : Collection<Topic> {
+  public class ReadOnlyKeyedTopicCollection : ReadOnlyKeyedTopicCollection<Topic> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection"/>.
+    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection"/> based on an existing <see cref="KeyedTopicCollection"/>.
     /// </summary>
-    /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics?.ToList()?? new()) {
+    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection"/>.</param>
+    public ReadOnlyKeyedTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection) {
     }
 
     /*==========================================================================================================================
-    | METHOD: AS READ ONLY
+    | FACTORY METHOD: FROM LIST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a read-only version of this <see cref="TopicCollection"/>.
+    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection"/> based on an existing <see cref="List{Topic}"/>.
     /// </summary>
-    public ReadOnlyTopicCollection AsReadOnly() => new(this);
+    /// <remarks>
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="KeyedTopicCollection{Topic}"/>.
+    /// </remarks>
+    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{Topic}"/>.</param>
+    public new static ReadOnlyKeyedTopicCollection FromList(IList<Topic> innerCollection) {
+      Contract.Requires(innerCollection, "innerCollection should not be null");
+      return new(innerCollection);
+    }
 
   } //Class
 } //Namespace

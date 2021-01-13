@@ -635,9 +635,11 @@ namespace OnTopic.Mapping {
       | Determine the type of item in the list
       \-----------------------------------------------------------------------------------------------------------------------*/
       var listType = typeof(ITopicViewModel);
-      if (configuration.Property.PropertyType.IsGenericType) {
-        //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
-        listType = configuration.Property.PropertyType.GetGenericArguments().Last();
+      foreach (var type in configuration.Property.PropertyType.GetInterfaces()) {
+        if (type.IsGenericType && typeof(IList<>) == type.GetGenericTypeDefinition()) {
+          //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+          listType = type.GetGenericArguments().Last();
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

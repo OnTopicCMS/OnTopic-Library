@@ -39,7 +39,7 @@ namespace OnTopic.Metadata {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private   AttributeDescriptorCollection?                    _attributeDescriptors;
-    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes;
+    private   ReadOnlyKeyedTopicCollection<ContentTypeDescriptor>? _permittedContentTypes;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -129,14 +129,14 @@ namespace OnTopic.Metadata {
     ///     cref="TopicRelationshipMultiMap.SetTopic(String, Topic, Boolean?)"/>.
     ///   </para>
     /// </remarks>
-    public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
+    public ReadOnlyKeyedTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes is null) {
-          var permittedContentTypes = new TopicCollection<ContentTypeDescriptor>();
+          var permittedContentTypes = new KeyedTopicCollection<ContentTypeDescriptor>();
           var contentTypes = Relationships.GetTopics("ContentTypes");
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);

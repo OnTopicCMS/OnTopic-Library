@@ -19,7 +19,7 @@ namespace OnTopic.Collections {
   /// <summary>
   ///   The <see cref="ReadOnlyTopicMultiMap"/> provides a read-only façade to a <see cref="TopicMultiMap"/>.
   /// </summary>
-  public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyCollection<Topic>>> {
+  public class ReadOnlyTopicMultiMap: IEnumerable<KeyValuesPair<string, ReadOnlyTopicCollection>> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -93,7 +93,7 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   A <see cref="ReadOnlyCollection{Topic}"/> collection.
     /// </returns>
-    public ReadOnlyCollection<Topic> this[string key] => new(Source[key].Values);
+    public ReadOnlyTopicCollection this[string key] => new(Source[key].Values);
 
     /*==========================================================================================================================
     | METHOD: CONTAINS?
@@ -114,7 +114,7 @@ namespace OnTopic.Collections {
     ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
     /// </remarks>
     /// <param name="key">The key of the collection to be returned.</param>
-    public ReadOnlyCollection<Topic> GetTopics(string key) {
+    public ReadOnlyTopicCollection GetTopics(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       if (Contains(key)) {
         return new(Source[key].Values);
@@ -131,8 +131,8 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyCollection<Topic> GetAllTopics() =>
-      Source.SelectMany(list => list.Values).Distinct().ToList().AsReadOnly();
+    public ReadOnlyTopicCollection GetAllTopics() =>
+      new(Source.SelectMany(list => list.Values).Distinct().ToList());
 
     /// <summary>
     ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of relationship key, filtered by content
@@ -141,14 +141,14 @@ namespace OnTopic.Collections {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyCollection<Topic> GetAllTopics(string contentType) =>
-      GetAllTopics().Where(t => t.ContentType == contentType).ToList().AsReadOnly();
+    public ReadOnlyTopicCollection GetAllTopics(string contentType) =>
+      new(GetAllTopics().Where(t => t.ContentType == contentType).ToList());
 
     /*==========================================================================================================================
     | GET ENUMERATOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public IEnumerator<KeyValuesPair<string, ReadOnlyCollection<Topic>>> GetEnumerator() {
+    public IEnumerator<KeyValuesPair<string, ReadOnlyTopicCollection>> GetEnumerator() {
       foreach (var collection in Source) {
         yield return new(collection.Key, new(collection.Values));
       }

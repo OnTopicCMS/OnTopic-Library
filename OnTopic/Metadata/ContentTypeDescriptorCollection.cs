@@ -25,7 +25,7 @@ namespace OnTopic.Metadata {
   ///   constructor for handling a flattened list of <see cref="ContentTypeDescriptor"/>s used for the <see cref=
   ///   "ITopicRepository.GetContentTypeDescriptors()"/> method.
   /// </remarks>
-  public class ContentTypeDescriptorCollection : TopicCollection<ContentTypeDescriptor> {
+  public class ContentTypeDescriptorCollection : KeyedTopicCollection<ContentTypeDescriptor> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

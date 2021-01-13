@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.ObjectModel;
+using OnTopic.Collections;
 
 namespace OnTopic.Tests.ViewModels {
 
@@ -25,7 +25,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class RelatedEntityTopicViewModel: KeyOnlyTopicViewModel {
 
-    public Collection<Topic> RelatedTopics { get; } = new();
+    public TopicCollection RelatedTopics { get; } = new();
 
   } //Class
 } //Namespace
