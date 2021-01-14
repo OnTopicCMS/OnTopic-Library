@@ -421,7 +421,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static int GetInteger(this SqlDataReader reader, string columnName) =>
+    private static int GetInteger(this SqlDataReader reader, string columnName) =>
       Int32.TryParse(reader.GetValue(reader.GetOrdinal(columnName)).ToString(), out var output)? output : -1;
 
     /*==========================================================================================================================
@@ -432,7 +432,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+    private static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
       reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -443,7 +443,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static string GetString(this SqlDataReader reader, string columnName) =>
+    private static string GetString(this SqlDataReader reader, string columnName) =>
       reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -453,7 +453,7 @@ namespace OnTopic.Data.Sql {
     ///   Retrieves the version column, with precisions appropriate for setting the <see cref="Topic.VersionHistory"/>.
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    internal static DateTime GetVersion(this SqlDataReader reader) =>
+    private static DateTime GetVersion(this SqlDataReader reader) =>
       reader.GetDateTime(reader.GetOrdinal("Version"));
 
   } //Class
