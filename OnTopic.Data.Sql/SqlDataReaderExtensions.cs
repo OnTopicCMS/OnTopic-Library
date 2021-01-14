@@ -11,7 +11,9 @@ using System.Linq;
 using System.Net;
 using Microsoft.Data.SqlClient;
 using OnTopic.Attributes;
+using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Data.Sql {
 
@@ -40,17 +42,25 @@ namespace OnTopic.Data.Sql {
     ///   topics and populate their attributes, relationships, and children.
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
+    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    /// </param>
     /// <param name="includeExternalReferences">
     ///   Optionally disables populating external references such as <see cref="Topic.Relationships"/> and <see
     ///   cref="Topic.DerivedTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
     ///   thus external references aren't likely to be available.
     /// </param>
-    internal static Topic LoadTopicGraph(this SqlDataReader reader, bool includeExternalReferences = true) {
+    internal static Topic LoadTopicGraph(
+      this SqlDataReader reader,
+      Topic? referenceTopic = null,
+      bool includeExternalReferences = true
+    ) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Establish topic index
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topics                = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate topics
@@ -151,7 +161,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void AddTopic(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void AddTopic(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -164,9 +174,10 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = TopicFactory.Create(key, contentType, topicId);
-
-      topics.Add(current.Id, current);
+      if (!topics.TryGetValue(topicId, out var current)) {
+        current = TopicFactory.Create(key, contentType, topicId);
+        topics.Add(current.Id, current);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
@@ -187,7 +198,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetIndexedAttributes(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetIndexedAttributes(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -233,7 +244,7 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetExtendedAttributes(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetExtendedAttributes(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -305,7 +316,7 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetRelationships(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetRelationships(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -347,7 +358,7 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetReferences(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetReferences(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -390,7 +401,7 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetVersionHistory(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetVersionHistory(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
