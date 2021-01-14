@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
@@ -190,6 +191,16 @@ namespace OnTopic.Querying {
       );
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC INDEX
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves all topics from the topic cache, and places them in an dictionary indexed by <see cref="Topic.Id"/>.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <returns>A dictionary of topics indexed by <see cref="Topic.Id"/>.</returns>
+    public static TopicIndex GetTopicIndex(this Topic topic) => new TopicIndex(topic.FindAll());
 
     /*==========================================================================================================================
     | METHOD: GET ROOT TOPIC
