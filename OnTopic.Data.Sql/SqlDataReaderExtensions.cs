@@ -226,13 +226,7 @@ namespace OnTopic.Data.Sql {
       var topicId               = reader.GetTopicId();
       var attributeKey          = reader.GetString("AttributeKey");
       var attributeValue        = reader.GetString("AttributeValue");
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 3) {
-        version                 = reader.GetVersion();
-      }
+      var version               = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -276,13 +270,7 @@ namespace OnTopic.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicId               = reader.GetTopicId();
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 2) {
-        version                 = reader.GetVersion();
-      }
+      var version               = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load SQL XML into XmlDocument
