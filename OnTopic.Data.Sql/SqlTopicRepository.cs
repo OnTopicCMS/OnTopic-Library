@@ -148,7 +148,7 @@ namespace OnTopic.Data.Sql {
       try {
         connection.Open();
         using var reader        = command.ExecuteReader();
-        topic                   = reader.LoadTopicGraph(referenceTopic);
+        topic                   = reader.LoadTopicGraph(referenceTopic, false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
