@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using Microsoft.Data.SqlClient;
-using OnTopic.Attributes;
+using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Data.Sql {
 
@@ -40,24 +40,43 @@ namespace OnTopic.Data.Sql {
     ///   topics and populate their attributes, relationships, and children.
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
+    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    /// </param>
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
     /// <param name="includeExternalReferences">
     ///   Optionally disables populating external references such as <see cref="Topic.Relationships"/> and <see
     ///   cref="Topic.DerivedTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
     ///   thus external references aren't likely to be available.
     /// </param>
-    internal static Topic LoadTopicGraph(this SqlDataReader reader, bool includeExternalReferences = true) {
+    internal static Topic LoadTopicGraph(
+      this SqlDataReader reader,
+      Topic? referenceTopic = null,
+      bool? markDirty = null,
+      bool includeExternalReferences = true
+    ) {
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Establish topic index
       \---------------------------------------------------------------------------------------------------------------------*/
-      var topics                = new Dictionary<int, Topic>();
+      var topics                = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
+      var rootTopicId           = -1;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate topics
       \---------------------------------------------------------------------------------------------------------------------*/
       Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
       while (reader.Read()) {
-        reader.AddTopic(topics);
+        if (rootTopicId < 0) {
+          rootTopicId           = reader.GetTopicId();
+        }
+        reader.AddTopic(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -69,7 +88,7 @@ namespace OnTopic.Data.Sql {
       reader.NextResult();
 
       while (reader.Read()) {
-        reader.SetIndexedAttributes(topics);
+        reader.SetIndexedAttributes(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -82,7 +101,7 @@ namespace OnTopic.Data.Sql {
 
       // Loop through each extended attribute record associated with a specific topic
       while (reader.Read()) {
-        reader.SetExtendedAttributes(topics);
+        reader.SetExtendedAttributes(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -96,7 +115,7 @@ namespace OnTopic.Data.Sql {
       // Loop through each relationship; multiple records may exist per topic
       if (includeExternalReferences) {
         while (reader.Read()) {
-          reader.SetRelationships(topics);
+          reader.SetRelationships(topics, markDirty);
         }
       }
 
@@ -110,7 +129,7 @@ namespace OnTopic.Data.Sql {
 
       // Loop through each version; multiple records may exist per topic
       while (reader.Read()) {
-        reader.SetReferences(topics);
+        reader.SetReferences(topics, markDirty);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -126,18 +145,12 @@ namespace OnTopic.Data.Sql {
         reader.SetVersionHistory(topics);
       }
 
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Populate strongly typed references
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Debug.WriteLine("SqlTopicRepository.Load(): SetDerivedTopics() [" + DateTime.Now + "]");
-
-      if (includeExternalReferences) {
-        SetDerivedTopics(topics);
-      }
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topics.ContainsKey(rootTopicId)) {
+        return topics[rootTopicId];
+      }
       return topics.Values.FirstOrDefault();
 
     }
@@ -151,7 +164,13 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void AddTopic(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    private static void AddTopic(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -160,20 +179,33 @@ namespace OnTopic.Data.Sql {
       var key                   = reader.GetString("TopicKey");
       var contentType           = reader.GetString("ContentType");
       var parentId              = reader.GetInteger("ParentID");
+      var wasDirty              = false;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var current               = TopicFactory.Create(key, contentType, topicId);
-
-      topics.Add(current.Id, current);
+      if (!topics.TryGetValue(topicId, out var current)) {
+        current = TopicFactory.Create(key, contentType, topicId);
+        topics.Add(current.Id, current);
+      }
+      else {
+        wasDirty                = current.IsDirty();
+        current.Key             = key;
+        current.ContentType     = contentType;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.SetValue("ParentID", parentId.ToString(CultureInfo.InvariantCulture), false);
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.Keys.Contains(parentId)) {
         current.Parent = topics[parentId];
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Mark clean
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (wasDirty is false && markDirty is not null and false) {
+        current.MarkClean();
       }
 
     }
@@ -187,7 +219,13 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetIndexedAttributes(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    private static void SetIndexedAttributes(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -195,13 +233,7 @@ namespace OnTopic.Data.Sql {
       var topicId               = reader.GetTopicId();
       var attributeKey          = reader.GetString("AttributeKey");
       var attributeValue        = reader.GetString("AttributeValue");
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 3) {
-        version                 = reader.GetVersion();
-      }
+      var version               = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty attributes (treat empty as null)
@@ -216,7 +248,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Attributes.SetValue(attributeKey, attributeValue, false, version, false);
+      current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, false);
 
     }
 
@@ -233,19 +265,19 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetExtendedAttributes(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    private static void SetExtendedAttributes(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicId               = reader.GetTopicId();
-      var version               = DateTime.Now;
-
-      //Check field count to avoid breaking changes with the 4.0.0 release, which didn't include a "Version" column
-      //### TODO JJC20200221: This condition can be removed and accepted as a breaking change in v5.0.
-      if (reader.FieldCount > 2) {
-        version                 = reader.GetVersion();
-      }
+      var version               = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Load SQL XML into XmlDocument
@@ -287,7 +319,7 @@ namespace OnTopic.Data.Sql {
         | Set attribute value
         \---------------------------------------------------------------------------------------------------------------------*/
         if (String.IsNullOrEmpty(attributeValue)) continue;
-        current.Attributes.SetValue(attributeKey, attributeValue, false, version, true);
+        current.Attributes.SetValue(attributeKey, attributeValue, markDirty, version, true);
 
       } while (xmlReader.Name is "attribute");
 
@@ -305,7 +337,13 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetRelationships(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    private static void SetRelationships(this SqlDataReader reader, TopicIndex topics, bool? isDirty = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -331,7 +369,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related, isDirty: false);
+      current.Relationships.SetTopic(relationshipKey, related, isDirty);
 
     }
 
@@ -347,7 +385,13 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetReferences(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    /// <param name="markDirty">
+    ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
+    ///   will be marked dirty if the value is new or has changed from a previous value. By setting this parameter, that
+    ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
+    ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    private static void SetReferences(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -373,7 +417,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.References.SetTopic(relationshipKey, referenced, isDirty: false);
+      current.References.SetTopic(relationshipKey, referenced, markDirty);
 
     }
 
@@ -390,7 +434,7 @@ namespace OnTopic.Data.Sql {
     /// </remarks>
     /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetVersionHistory(this SqlDataReader reader, Dictionary<int, Topic> topics) {
+    private static void SetVersionHistory(this SqlDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -406,34 +450,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set history
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.VersionHistory.Add(dateTime);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET DERIVED TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets references to <see cref="OnTopic.Topic.DerivedTopic"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via <see cref="OnTopic.Topic.DerivedTopic"/>. Once the topics are
-    ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
-    ///   needing to rely on lazy-loading, which would complicate dependency injection.
-    /// </remarks>
-    /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in topics.Values) {
-        var derivedTopicId      = topic.Attributes.GetInteger("TopicId", -1, false, false);
-        if (derivedTopicId < 0) continue;
-        if (topics.Keys.Contains(derivedTopicId)) {
-          topic.DerivedTopic    = topics[derivedTopicId];
-        }
-
+      if (!current.VersionHistory.Contains(dateTime)) {
+        current.VersionHistory.Add(dateTime);
       }
 
     }
@@ -446,7 +464,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static int GetInteger(this SqlDataReader reader, string columnName) =>
+    private static int GetInteger(this SqlDataReader reader, string columnName) =>
       Int32.TryParse(reader.GetValue(reader.GetOrdinal(columnName)).ToString(), out var output)? output : -1;
 
     /*==========================================================================================================================
@@ -457,7 +475,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+    private static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
       reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -468,7 +486,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    internal static string GetString(this SqlDataReader reader, string columnName) =>
+    private static string GetString(this SqlDataReader reader, string columnName) =>
       reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -478,7 +496,7 @@ namespace OnTopic.Data.Sql {
     ///   Retrieves the version column, with precisions appropriate for setting the <see cref="Topic.VersionHistory"/>.
     /// </summary>
     /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    internal static DateTime GetVersion(this SqlDataReader reader) =>
+    private static DateTime GetVersion(this SqlDataReader reader) =>
       reader.GetDateTime(reader.GetOrdinal("Version"));
 
   } //Class

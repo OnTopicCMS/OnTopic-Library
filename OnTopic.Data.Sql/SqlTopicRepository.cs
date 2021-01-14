@@ -61,7 +61,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic Load(string? uniqueKey = null, bool isRecursive = true) {
+    public override Topic Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle empty topic
@@ -70,7 +70,7 @@ namespace OnTopic.Data.Sql {
       | call Load() with the special integer value of -1, which will load all topics from the root.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (String.IsNullOrEmpty(uniqueKey)) {
-        return Load(-1, isRecursive);
+        return Load(-1, referenceTopic, isRecursive);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -118,12 +118,12 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return Load(topicId, isRecursive);
+      return Load(topicId, referenceTopic, isRecursive);
 
     }
 
     /// <inheritdoc />
-    public override Topic Load(int topicId, bool isRecursive = true) {
+    public override Topic Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -148,7 +148,7 @@ namespace OnTopic.Data.Sql {
       try {
         connection.Open();
         using var reader        = command.ExecuteReader();
-        topic                   = reader.LoadTopicGraph();
+        topic                   = reader.LoadTopicGraph(referenceTopic, false);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ namespace OnTopic.Data.Sql {
     }
 
     /// <inheritdoc />
-    public override Topic Load(int topicId, DateTime version) {
+    public override Topic Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -224,7 +224,7 @@ namespace OnTopic.Data.Sql {
       try {
         connection.Open();
         using var reader        = command.ExecuteReader();
-        topic                   = reader.LoadTopicGraph(false);
+        topic                   = reader.LoadTopicGraph(referenceTopic, includeExternalReferences: referenceTopic is not null);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -232,6 +232,19 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
         throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Delete orphaned attributes
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If a referenceTopic is passed, and it contains the `topicId`, then that instance will be updated with the previous
+      | version. In that case, however, any attributes which were first introduced after that version won't be overwritten.
+      | That's because there isn't a previous value associated with that key to overwrite the current value. In those cases,
+      | those attributes must be manually removed.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var orphanedAttributes = topic.Attributes.Where(a => a.LastModified > version).ToList();
+      foreach (var attribute in orphanedAttributes) {
+        topic.Attributes.Remove(attribute.Key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -16,39 +16,13 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	KeyAttributes
-AS (
-  SELECT	TopicID,
-                AttributeKey,
-                AttributeValue,
-                RowNumber		= ROW_NUMBER() OVER (
-                  PARTITION BY		TopicID,
-			AttributeKey
-                  ORDER BY		Version		DESC
-                )
-  FROM	Attributes
-  WHERE	TopicID		= @TopicID
-    AND	Version		<= @Version
-    AND	AttributeKey
-    IN (	'Key',
-	'ParentID',
-	'ContentType'
-    )
-)
 SELECT	TopicID,
-	ContentType,
-	ParentID,
-	[Key]		AS 'TopicKey',
-	1		AS 'SortOrder'
-FROM	KeyAttributes
-PIVOT (	MIN(AttributeValue)
-  FOR	AttributeKey
-  IN (	[ContentType],
-	[ParentID],
-	[Key]
-  )
-)	AS Pvt
-WHERE	RowNumber		= 1
+  	ContentType,
+  	ParentID,
+  	TopicKey,
+  	0 AS SortOrder
+FROM	Topics
+WHERE	TopicID		= @TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES
@@ -58,6 +32,7 @@ AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID,
 			AttributeKey
@@ -69,7 +44,8 @@ AS (
 )
 SELECT	TopicID,
 	AttributeKey,
-	AttributeValue
+	AttributeValue,
+	Version
 FROM	TopicAttributes
 WHERE	RowNumber		= 1
 
@@ -80,6 +56,7 @@ WHERE	RowNumber		= 1
 AS (
   SELECT	TopicID,
 	AttributesXml,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
@@ -89,7 +66,8 @@ AS (
     AND	Version		<= @Version
 )
 SELECT	TopicID,
-	AttributesXml
+	AttributesXml,
+	Version
 FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1
 

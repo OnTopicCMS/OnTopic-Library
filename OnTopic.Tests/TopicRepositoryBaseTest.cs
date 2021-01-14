@@ -286,7 +286,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
 
-      topic.Attributes.SetValue("Title", "Title", isDirty:false, isExtendedAttribute:false);
+      topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true, true);
 
@@ -309,7 +309,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
 
-      topic.Attributes.SetValue("Title", "Title", isDirty: false, isExtendedAttribute: false);
+      topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 

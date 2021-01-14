@@ -221,13 +221,19 @@ namespace OnTopic.Repositories {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public abstract Topic? Load(int topicId, bool isRecursive = true);
+    public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(string? uniqueKey = null, bool isRecursive = true);
+    public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(int topicId, DateTime version);
+    public Topic? Load(Topic referenceTopic, DateTime version) {
+      Contract.Requires(referenceTopic, nameof(referenceTopic));
+      return Load(referenceTopic.Id, version, referenceTopic);
+    }
+
+    /// <inheritdoc />
+    public abstract Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
@@ -248,29 +254,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var originalVersion = Load(topic.Id, version);
-
-      Contract.Assume(
-        originalVersion,
-        "The version requested for rollback does not exist in the Topic repository or database."
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Mark each attribute as dirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in originalVersion.Attributes) {
-        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
-          originalVersion.Attributes.SetValue(attribute.Key, attribute.Value, true);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Construct new AttributeCollection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Clear();
-      foreach (var attribute in originalVersion.Attributes) {
-        topic.Attributes.Add(attribute);
-      }
+      Load(topic, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version

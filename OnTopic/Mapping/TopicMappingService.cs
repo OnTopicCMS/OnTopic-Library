@@ -313,7 +313,7 @@ namespace OnTopic.Mapping {
         await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
       }
       else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
-        topicReference = _topicRepository.Load(topicReferenceId);
+        topicReference = _topicRepository.Load(topicReferenceId, source);
         if (topicReference is not null) {
           await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
         }
@@ -571,7 +571,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (listSource.Count == 0 && !String.IsNullOrWhiteSpace(configuration.MetadataKey)) {
         var metadataKey = $"Root:Configuration:Metadata:{configuration.MetadataKey}:LookupList";
-        var metadataParent = _topicRepository.Load(metadataKey);
+        var metadataParent = _topicRepository.Load(metadataKey, source);
         if (metadataParent is not null) {
           listSource = metadataParent.Children.ToList();
         }

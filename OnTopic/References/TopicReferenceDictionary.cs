@@ -190,13 +190,13 @@ namespace OnTopic.References {
     ///   Adds a new topic reference—or updates one, if it already exists. If the value is <c>null</c>, and a value exits, it is
     ///   removed.
     /// </summary>
-    public void SetTopic(string key, Topic? value, bool? isDirty = null) => SetTopic(key, value, isDirty, true);
+    public void SetTopic(string key, Topic? value, bool? markDirty = null) => SetTopic(key, value, markDirty, true);
 
     /// <summary>
     ///   Adds a new topic reference—or updates one, if it already exists. If the value is <c>null</c>, and a value exits, it is
     ///   removed.
     /// </summary>
-    internal void SetTopic(string key, Topic? value, bool? isDirty, bool enforceBusinessLogic) {
+    internal void SetTopic(string key, Topic? value, bool? markDirty, bool enforceBusinessLogic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish state
@@ -232,7 +232,7 @@ namespace OnTopic.References {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set dirty state
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (wasDirty is false && isDirty is false) {
+      if (wasDirty is false && markDirty is false) {
         _isDirty = false;
       }
 
