@@ -136,15 +136,6 @@ namespace OnTopic.Data.Sql {
         reader.SetVersionHistory(topics);
       }
 
-      /*----------------------------------------------------------------------------------------------------------------------
-      | Populate strongly typed references
-      \---------------------------------------------------------------------------------------------------------------------*/
-      Debug.WriteLine("SqlTopicRepository.Load(): SetDerivedTopics() [" + DateTime.Now + "]");
-
-      if (includeExternalReferences) {
-        SetDerivedTopics(topics);
-      }
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -418,33 +409,6 @@ namespace OnTopic.Data.Sql {
       | Set history
       \-----------------------------------------------------------------------------------------------------------------------*/
       current.VersionHistory.Add(dateTime);
-
-    }
-
-    /*==========================================================================================================================
-    | METHOD: SET DERIVED TOPICS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets references to <see cref="OnTopic.Topic.DerivedTopic"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Topics can be cross-referenced with each other via <see cref="OnTopic.Topic.DerivedTopic"/>. Once the topics are
-    ///   populated in memory, loop through the data to create these associations. By handling this in the repository, we avoid
-    ///   needing to rely on lazy-loading, which would complicate dependency injection.
-    /// </remarks>
-    /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetDerivedTopics(Dictionary<int, Topic> topics) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through topics
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var topic in topics.Values) {
-        var derivedTopicId      = topic.Attributes.GetInteger("TopicId", -1, false, false);
-        if (derivedTopicId < 0) continue;
-        if (topics.Keys.Contains(derivedTopicId)) {
-          topic.DerivedTopic    = topics[derivedTopicId];
-        }
-
       }
 
     }
