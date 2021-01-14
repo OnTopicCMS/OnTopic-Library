@@ -463,6 +463,17 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a string value by column name.
+    /// </summary>
+    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    private static string GetString(this SqlDataReader reader, string columnName) =>
+      reader.GetString(reader.GetOrdinal(columnName));
+
+    /*==========================================================================================================================
     | METHOD: GET BOOLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -494,17 +505,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     private static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
       reader.GetInt32(reader.GetOrdinal(columnName));
-
-    /*==========================================================================================================================
-    | METHOD: GET STRING
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a string value by column name.
-    /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static string GetString(this SqlDataReader reader, string columnName) =>
-      reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET VERSION
