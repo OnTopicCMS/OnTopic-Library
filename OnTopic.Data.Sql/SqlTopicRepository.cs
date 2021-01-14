@@ -476,11 +476,11 @@ namespace OnTopic.Data.Sql {
         );
 
         if (areReferencesResolved && areRelationshipsDirty) {
-          PersistRelations(topic, connection);
+          PersistRelations(topic, version, connection);
         }
 
         if (areReferencesResolved && areReferencesDirty) {
-          PersistReferences(topic, connection);
+          PersistReferences(topic, version, connection);
         }
 
         if (!topic.VersionHistory.Contains(version.Value)) {
@@ -627,7 +627,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistRelations(Topic topic, SqlConnection connection) {
+    private static void PersistRelations(Topic topic, SqlDateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -661,6 +661,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("TopicID", topicId);
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
+          command.AddParameter("Version", version.Value);
           command.AddParameter("DeleteUnmatched", true);
 
           command.ExecuteNonQuery();
@@ -699,7 +700,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose references should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistReferences(Topic topic, SqlConnection connection) {
+    private static void PersistReferences(Topic topic, SqlDateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Persist relations to database
@@ -719,6 +720,7 @@ namespace OnTopic.Data.Sql {
         // Add Parameters
         command.AddParameter("TopicID", topicId);
         command.AddParameter("ReferencedTopics", references);
+        command.AddParameter("Version", version.Value);
         command.AddParameter("DeleteUnmatched", true);
 
         command.ExecuteNonQuery();
