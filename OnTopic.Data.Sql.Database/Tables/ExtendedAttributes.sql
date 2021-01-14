@@ -9,7 +9,6 @@ CREATE
 TABLE	[dbo].[ExtendedAttributes] (
 	  [TopicID]		INT	NOT NULL,
 	  [AttributesXml]	XML	NOT NULL,
-	  [DateModified]	DATETIME	NOT NULL	DEFAULT GETUTCDATE(),
 	  [Version]		DATETIME	NOT NULL	DEFAULT GETUTCDATE(),
   CONSTRAINT	  [PK_ExtendedAttributes]		PRIMARY KEY	CLUSTERED (
 	    [TopicID]		ASC,

@@ -33,7 +33,6 @@ Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Extended Attributes in the
 WITH GroupedValues AS (
   SELECT	TopicID,
 	AttributesXml,
-	DateModified,
 	Version,
 	ValueGroup = ROW_NUMBER() OVER(PARTITION BY TopicID ORDER BY TopicID, Version)
 	- ROW_NUMBER() OVER(PARTITION BY TopicID, CAST(AttributesXml AS NVARCHAR(MAX)) ORDER BY TopicID, Version)
@@ -46,7 +45,6 @@ WITH GroupedValues AS (
 RankedValues AS (
   SELECT	TopicID,
 	AttributesXml,
-	DateModified,
 	Version,
 	ValueGroup,
 	ValueRank = ROW_NUMBER() OVER(PARTITION BY ValueGroup, TopicID, CAST(AttributesXml AS NVARCHAR(MAX)) ORDER BY TopicID, Version)
