@@ -6,9 +6,16 @@
 
 CREATE PROCEDURE [dbo].[UpdateReferences]
 	@TopicID		INT,
-	@ReferencedTopics	TopicReferences	READONLY,
-	@DeleteUnmatched	BIT	= 0
+	@ReferencedTopics	TopicReferences		READONLY		,
+	@Version		DATETIME		= NULL		,
+	@DeleteUnmatched	BIT		= 0
 AS
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET DEFAULT VERSION DATETIME
+--------------------------------------------------------------------------------------------------------------------------------
+IF	@Version		IS NULL
+SET	@Version		= GETUTCDATE()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NOVEL VALUES
@@ -17,37 +24,36 @@ INSERT
 INTO	TopicReferences (
 	  Source_TopicID,
 	  ReferenceKey,
-	  Target_TopicID
+	  Target_TopicID,
+	  Version
 	)
 SELECT	@TopicID,
-	Target.ReferenceKey,
-	Target.TopicID
-FROM	@ReferencedTopics	Target
-LEFT JOIN	TopicReferences		Existing
-  ON	Source_TopicID		= @TopicID
-  AND	Existing.ReferenceKey	= Target.ReferenceKey
-WHERE	ISNULL(Source_TopicID, '')	= ''
-  AND	Target.TopicID		> 0
-
---------------------------------------------------------------------------------------------------------------------------------
--- UPDATE EXISTING VALUES
---------------------------------------------------------------------------------------------------------------------------------
-UPDATE	Existing
-SET	Target_TopicID		= TopicID
-FROM	@ReferencedTopics	Target
-LEFT JOIN	TopicReferences		Existing
-  ON	Source_TopicID		= @TopicID
-  AND	Existing.ReferenceKey	= Target.ReferenceKey
-WHERE	Source_TopicID		IS NOT NULL
-  AND	Target.TopicID		!= Target_TopicID
-  AND	Target.TopicID		> 0
+	New.ReferenceKey,
+	New.TopicID,
+	@Version
+FROM	@ReferencedTopics	New
+OUTER APPLY (
+  SELECT	TOP 1
+	Target_TopicID		AS ExistingValue
+  FROM	TopicReferences
+  WHERE	Source_TopicID		= @TopicID
+    AND	ReferenceKey		= New.ReferenceKey
+  ORDER BY	Version		DESC
+)			Existing
+WHERE	ISNULL(ExistingValue, '')	!= New.TopicID
+  AND	New.TopicID		> 0
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DELETE UNMATCHED VALUES
 --------------------------------------------------------------------------------------------------------------------------------
 IF @DeleteUnmatched = 1
   BEGIN
-    DELETE	Existing
+    INSERT
+    INTO	TopicReferences
+    SELECT	@TopicID,
+	Existing.ReferenceKey,
+	Existing.Target_TopicID,
+	@Version
     FROM	@ReferencedTopics	New
     RIGHT JOIN	TopicReferences		Existing
       ON	Source_TopicID		= @TopicID
