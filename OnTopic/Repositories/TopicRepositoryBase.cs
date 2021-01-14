@@ -254,29 +254,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve topic from database
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var originalVersion = Load(topic.Id, version);
-
-      Contract.Assume(
-        originalVersion,
-        "The version requested for rollback does not exist in the Topic repository or database."
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Mark each attribute as dirty
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in originalVersion.Attributes) {
-        if (!topic.Attributes.Contains(attribute.Key) || topic.Attributes.GetValue(attribute.Key) != attribute.Value) {
-          originalVersion.Attributes.SetValue(attribute.Key, attribute.Value, true);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Construct new AttributeCollection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.Clear();
-      foreach (var attribute in originalVersion.Attributes) {
-        topic.Attributes.Add(attribute);
-      }
+      Load(topic, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Save as new version
