@@ -169,12 +169,15 @@ namespace OnTopic.Data.Sql {
         current = TopicFactory.Create(key, contentType, topicId);
         topics.Add(current.Id, current);
       }
+      else {
+        current.Key             = key;
+        current.ContentType     = contentType;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parentId >= 0 && topics.Keys.Contains(parentId)) {
-        current.Attributes.SetValue("ParentID", parentId.ToString(CultureInfo.InvariantCulture), false);
+      if (parentId >= 0 && current.Parent?.Id != parentId && topics.Keys.Contains(parentId)) {
         current.Parent = topics[parentId];
       }
 
@@ -408,7 +411,8 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set history
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.VersionHistory.Add(dateTime);
+      if (!current.VersionHistory.Contains(dateTime)) {
+        current.VersionHistory.Add(dateTime);
       }
 
     }
