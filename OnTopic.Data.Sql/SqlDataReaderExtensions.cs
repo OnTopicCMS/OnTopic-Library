@@ -66,12 +66,16 @@ namespace OnTopic.Data.Sql {
       | Establish topic index
       \---------------------------------------------------------------------------------------------------------------------*/
       var topics                = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
+      var rootTopicId           = -1;
 
       /*----------------------------------------------------------------------------------------------------------------------
       | Populate topics
       \---------------------------------------------------------------------------------------------------------------------*/
       Debug.WriteLine("SqlTopicRepository.Load(): AddTopic() [" + DateTime.Now + "]");
       while (reader.Read()) {
+        if (rootTopicId < 0) {
+          rootTopicId           = reader.GetTopicId();
+        }
         reader.AddTopic(topics, markDirty);
       }
 
@@ -144,6 +148,9 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topics.ContainsKey(rootTopicId)) {
+        return topics[rootTopicId];
+      }
       return topics.Values.FirstOrDefault();
 
     }
