@@ -235,6 +235,19 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Delete orphaned attributes
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If a referenceTopic is passed, and it contains the `topicId`, then that instance will be updated with the previous
+      | version. In that case, however, any attributes which were first introduced after that version won't be overwritten.
+      | That's because there isn't a previous value associated with that key to overwrite the current value. In those cases,
+      | those attributes must be manually removed.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var orphanedAttributes = topic.Attributes.Where(a => a.LastModified > version).ToList();
+      foreach (var attribute in orphanedAttributes) {
+        topic.Attributes.Remove(attribute.Key);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return objects
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic?? throw new TopicNotFoundException(topicId);
