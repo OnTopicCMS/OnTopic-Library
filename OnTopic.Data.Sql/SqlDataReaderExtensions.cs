@@ -351,6 +351,7 @@ namespace OnTopic.Data.Sql {
       var sourceTopicId         = reader.GetTopicId("Source_TopicID");
       var targetTopicId         = reader.GetTopicId("Target_TopicID");
       var relationshipKey       = reader.GetString("RelationshipKey");
+      var isDeleted             = reader.GetBoolean("IsDeleted");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
@@ -369,7 +370,12 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.Relationships.SetTopic(relationshipKey, related, isDirty);
+      if (!isDeleted) {
+        current.Relationships.SetTopic(relationshipKey, related, isDirty);
+      }
+      else if (current.Relationships.Contains(relationshipKey, related)) {
+        current.Relationships.RemoveTopic(relationshipKey, related);
+      }
 
     }
 
@@ -455,6 +461,17 @@ namespace OnTopic.Data.Sql {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET BOOLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a boolean value by column name.
+    /// </summary>
+    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    private static bool GetBoolean(this SqlDataReader reader, string columnName) =>
+      reader.GetBoolean(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET INTEGER
