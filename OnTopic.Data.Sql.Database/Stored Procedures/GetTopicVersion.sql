@@ -58,6 +58,7 @@ AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID,
 			AttributeKey
@@ -69,7 +70,8 @@ AS (
 )
 SELECT	TopicID,
 	AttributeKey,
-	AttributeValue
+	AttributeValue,
+	Version
 FROM	TopicAttributes
 WHERE	RowNumber		= 1
 
@@ -80,6 +82,7 @@ WHERE	RowNumber		= 1
 AS (
   SELECT	TopicID,
 	AttributesXml,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
@@ -89,7 +92,8 @@ AS (
     AND	Version		<= @Version
 )
 SELECT	TopicID,
-	AttributesXml
+	AttributesXml,
+	Version
 FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1
 
