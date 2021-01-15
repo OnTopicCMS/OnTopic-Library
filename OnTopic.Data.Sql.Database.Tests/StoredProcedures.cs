@@ -33,7 +33,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
     private void InitializeComponent() {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_CreateTopicTest_TestAction;
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StoredProcedures));
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition1;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition topicTotal;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_DeleteTopicTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition2;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_TestAction;
@@ -52,6 +52,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition9;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition10;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_CreateTopicTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteCount;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -63,7 +65,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateRelationshipsTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_UpdateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       dbo_CreateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition1 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      topicTotal = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_DeleteTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition2 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_GetTopicVersionTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -82,16 +84,20 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition9 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_UpdateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition10 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_CreateTopicTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      deleteCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
-      dbo_CreateTopicTest_TestAction.Conditions.Add(inconclusiveCondition1);
+      dbo_CreateTopicTest_TestAction.Conditions.Add(topicTotal);
       resources.ApplyResources(dbo_CreateTopicTest_TestAction, "dbo_CreateTopicTest_TestAction");
       // 
-      // inconclusiveCondition1
+      // topicTotal
       // 
-      inconclusiveCondition1.Enabled = true;
-      inconclusiveCondition1.Name = "inconclusiveCondition1";
+      topicTotal.Enabled = true;
+      topicTotal.Name = "topicTotal";
+      topicTotal.ResultSet = 1;
+      topicTotal.RowCount = 1;
       // 
       // dbo_DeleteTopicTest_TestAction
       // 
@@ -183,9 +189,21 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition10.Enabled = true;
       inconclusiveCondition10.Name = "inconclusiveCondition10";
       // 
+      // dbo_CreateTopicTest_PosttestAction
+      // 
+      dbo_CreateTopicTest_PosttestAction.Conditions.Add(deleteCount);
+      resources.ApplyResources(dbo_CreateTopicTest_PosttestAction, "dbo_CreateTopicTest_PosttestAction");
+      // 
+      // deleteCount
+      // 
+      deleteCount.Enabled = true;
+      deleteCount.Name = "deleteCount";
+      deleteCount.ResultSet = 1;
+      deleteCount.RowCount = 0;
+      // 
       // dbo_CreateTopicTestData
       // 
-      this.dbo_CreateTopicTestData.PosttestAction = null;
+      this.dbo_CreateTopicTestData.PosttestAction = dbo_CreateTopicTest_PosttestAction;
       this.dbo_CreateTopicTestData.PretestAction = null;
       this.dbo_CreateTopicTestData.TestAction = dbo_CreateTopicTest_TestAction;
       // 
