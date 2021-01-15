@@ -60,6 +60,7 @@
     <Compile Include="Functions.cs">
       <SubType>Designer</SubType>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="SqlDatabaseSetup.cs" />
     <Compile Include="StoredProcedures.cs">
       <SubType>Designer</SubType>
