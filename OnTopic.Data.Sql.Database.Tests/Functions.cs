@@ -68,12 +68,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_GetChildTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition7 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       // 
-      // dbo_GetExtendedAttributeTestData
-      // 
-      this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
-      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
-      this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
-      // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
       dbo_GetExtendedAttributeTest_TestAction.Conditions.Add(inconclusiveCondition1);
@@ -83,12 +77,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition1.Enabled = true;
       inconclusiveCondition1.Name = "inconclusiveCondition1";
-      // 
-      // dbo_GetParentIDTestData
-      // 
-      this.dbo_GetParentIDTestData.PosttestAction = null;
-      this.dbo_GetParentIDTestData.PretestAction = null;
-      this.dbo_GetParentIDTestData.TestAction = dbo_GetParentIDTest_TestAction;
       // 
       // dbo_GetParentIDTest_TestAction
       // 
@@ -100,12 +88,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition2.Enabled = true;
       inconclusiveCondition2.Name = "inconclusiveCondition2";
       // 
-      // dbo_GetTopicIDTestData
-      // 
-      this.dbo_GetTopicIDTestData.PosttestAction = null;
-      this.dbo_GetTopicIDTestData.PretestAction = null;
-      this.dbo_GetTopicIDTestData.TestAction = dbo_GetTopicIDTest_TestAction;
-      // 
       // dbo_GetTopicIDTest_TestAction
       // 
       dbo_GetTopicIDTest_TestAction.Conditions.Add(inconclusiveCondition3);
@@ -115,12 +97,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition3.Enabled = true;
       inconclusiveCondition3.Name = "inconclusiveCondition3";
-      // 
-      // dbo_GetUniqueKeyTestData
-      // 
-      this.dbo_GetUniqueKeyTestData.PosttestAction = null;
-      this.dbo_GetUniqueKeyTestData.PretestAction = null;
-      this.dbo_GetUniqueKeyTestData.TestAction = dbo_GetUniqueKeyTest_TestAction;
       // 
       // dbo_GetUniqueKeyTest_TestAction
       // 
@@ -132,12 +108,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition4.Enabled = true;
       inconclusiveCondition4.Name = "inconclusiveCondition4";
       // 
-      // dbo_FindTopicIDsTestData
-      // 
-      this.dbo_FindTopicIDsTestData.PosttestAction = null;
-      this.dbo_FindTopicIDsTestData.PretestAction = null;
-      this.dbo_FindTopicIDsTestData.TestAction = dbo_FindTopicIDsTest_TestAction;
-      // 
       // dbo_FindTopicIDsTest_TestAction
       // 
       dbo_FindTopicIDsTest_TestAction.Conditions.Add(inconclusiveCondition5);
@@ -147,12 +117,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition5.Enabled = true;
       inconclusiveCondition5.Name = "inconclusiveCondition5";
-      // 
-      // dbo_GetAttributesTestData
-      // 
-      this.dbo_GetAttributesTestData.PosttestAction = null;
-      this.dbo_GetAttributesTestData.PretestAction = null;
-      this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
       // 
       // dbo_GetAttributesTest_TestAction
       // 
@@ -164,12 +128,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition6.Enabled = true;
       inconclusiveCondition6.Name = "inconclusiveCondition6";
       // 
-      // dbo_GetChildTopicIDsTestData
-      // 
-      this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
-      this.dbo_GetChildTopicIDsTestData.PretestAction = null;
-      this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
-      // 
       // dbo_GetChildTopicIDsTest_TestAction
       // 
       dbo_GetChildTopicIDsTest_TestAction.Conditions.Add(inconclusiveCondition7);
@@ -179,6 +137,48 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition7.Enabled = true;
       inconclusiveCondition7.Name = "inconclusiveCondition7";
+      // 
+      // dbo_GetExtendedAttributeTestData
+      // 
+      this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
+      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
+      this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
+      // 
+      // dbo_GetParentIDTestData
+      // 
+      this.dbo_GetParentIDTestData.PosttestAction = null;
+      this.dbo_GetParentIDTestData.PretestAction = null;
+      this.dbo_GetParentIDTestData.TestAction = dbo_GetParentIDTest_TestAction;
+      // 
+      // dbo_GetTopicIDTestData
+      // 
+      this.dbo_GetTopicIDTestData.PosttestAction = null;
+      this.dbo_GetTopicIDTestData.PretestAction = null;
+      this.dbo_GetTopicIDTestData.TestAction = dbo_GetTopicIDTest_TestAction;
+      // 
+      // dbo_GetUniqueKeyTestData
+      // 
+      this.dbo_GetUniqueKeyTestData.PosttestAction = null;
+      this.dbo_GetUniqueKeyTestData.PretestAction = null;
+      this.dbo_GetUniqueKeyTestData.TestAction = dbo_GetUniqueKeyTest_TestAction;
+      // 
+      // dbo_FindTopicIDsTestData
+      // 
+      this.dbo_FindTopicIDsTestData.PosttestAction = null;
+      this.dbo_FindTopicIDsTestData.PretestAction = null;
+      this.dbo_FindTopicIDsTestData.TestAction = dbo_FindTopicIDsTest_TestAction;
+      // 
+      // dbo_GetAttributesTestData
+      // 
+      this.dbo_GetAttributesTestData.PosttestAction = null;
+      this.dbo_GetAttributesTestData.PretestAction = null;
+      this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
+      // 
+      // dbo_GetChildTopicIDsTestData
+      // 
+      this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
+      this.dbo_GetChildTopicIDsTestData.PretestAction = null;
+      this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
     }
 
     #endregion

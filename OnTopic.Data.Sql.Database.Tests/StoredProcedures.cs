@@ -83,12 +83,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_UpdateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition10 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       // 
-      // dbo_CreateTopicTestData
-      // 
-      this.dbo_CreateTopicTestData.PosttestAction = null;
-      this.dbo_CreateTopicTestData.PretestAction = null;
-      this.dbo_CreateTopicTestData.TestAction = dbo_CreateTopicTest_TestAction;
-      // 
       // dbo_CreateTopicTest_TestAction
       // 
       dbo_CreateTopicTest_TestAction.Conditions.Add(inconclusiveCondition1);
@@ -98,12 +92,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition1.Enabled = true;
       inconclusiveCondition1.Name = "inconclusiveCondition1";
-      // 
-      // dbo_DeleteTopicTestData
-      // 
-      this.dbo_DeleteTopicTestData.PosttestAction = null;
-      this.dbo_DeleteTopicTestData.PretestAction = null;
-      this.dbo_DeleteTopicTestData.TestAction = dbo_DeleteTopicTest_TestAction;
       // 
       // dbo_DeleteTopicTest_TestAction
       // 
@@ -115,12 +103,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition2.Enabled = true;
       inconclusiveCondition2.Name = "inconclusiveCondition2";
       // 
-      // dbo_GetTopicVersionTestData
-      // 
-      this.dbo_GetTopicVersionTestData.PosttestAction = null;
-      this.dbo_GetTopicVersionTestData.PretestAction = null;
-      this.dbo_GetTopicVersionTestData.TestAction = dbo_GetTopicVersionTest_TestAction;
-      // 
       // dbo_GetTopicVersionTest_TestAction
       // 
       dbo_GetTopicVersionTest_TestAction.Conditions.Add(inconclusiveCondition3);
@@ -130,12 +112,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition3.Enabled = true;
       inconclusiveCondition3.Name = "inconclusiveCondition3";
-      // 
-      // dbo_GetTopicsTestData
-      // 
-      this.dbo_GetTopicsTestData.PosttestAction = null;
-      this.dbo_GetTopicsTestData.PretestAction = null;
-      this.dbo_GetTopicsTestData.TestAction = dbo_GetTopicsTest_TestAction;
       // 
       // dbo_GetTopicsTest_TestAction
       // 
@@ -147,12 +123,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition4.Enabled = true;
       inconclusiveCondition4.Name = "inconclusiveCondition4";
       // 
-      // dbo_MoveTopicTestData
-      // 
-      this.dbo_MoveTopicTestData.PosttestAction = null;
-      this.dbo_MoveTopicTestData.PretestAction = null;
-      this.dbo_MoveTopicTestData.TestAction = dbo_MoveTopicTest_TestAction;
-      // 
       // dbo_MoveTopicTest_TestAction
       // 
       dbo_MoveTopicTest_TestAction.Conditions.Add(inconclusiveCondition5);
@@ -162,12 +132,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition5.Enabled = true;
       inconclusiveCondition5.Name = "inconclusiveCondition5";
-      // 
-      // dbo_UpdateAttributesTestData
-      // 
-      this.dbo_UpdateAttributesTestData.PosttestAction = null;
-      this.dbo_UpdateAttributesTestData.PretestAction = null;
-      this.dbo_UpdateAttributesTestData.TestAction = dbo_UpdateAttributesTest_TestAction;
       // 
       // dbo_UpdateAttributesTest_TestAction
       // 
@@ -179,12 +143,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition6.Enabled = true;
       inconclusiveCondition6.Name = "inconclusiveCondition6";
       // 
-      // dbo_UpdateExtendedAttributesTestData
-      // 
-      this.dbo_UpdateExtendedAttributesTestData.PosttestAction = null;
-      this.dbo_UpdateExtendedAttributesTestData.PretestAction = null;
-      this.dbo_UpdateExtendedAttributesTestData.TestAction = dbo_UpdateExtendedAttributesTest_TestAction;
-      // 
       // dbo_UpdateExtendedAttributesTest_TestAction
       // 
       dbo_UpdateExtendedAttributesTest_TestAction.Conditions.Add(inconclusiveCondition7);
@@ -194,12 +152,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition7.Enabled = true;
       inconclusiveCondition7.Name = "inconclusiveCondition7";
-      // 
-      // dbo_UpdateReferencesTestData
-      // 
-      this.dbo_UpdateReferencesTestData.PosttestAction = null;
-      this.dbo_UpdateReferencesTestData.PretestAction = null;
-      this.dbo_UpdateReferencesTestData.TestAction = dbo_UpdateReferencesTest_TestAction;
       // 
       // dbo_UpdateReferencesTest_TestAction
       // 
@@ -211,12 +163,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition8.Enabled = true;
       inconclusiveCondition8.Name = "inconclusiveCondition8";
       // 
-      // dbo_UpdateRelationshipsTestData
-      // 
-      this.dbo_UpdateRelationshipsTestData.PosttestAction = null;
-      this.dbo_UpdateRelationshipsTestData.PretestAction = null;
-      this.dbo_UpdateRelationshipsTestData.TestAction = dbo_UpdateRelationshipsTest_TestAction;
-      // 
       // dbo_UpdateRelationshipsTest_TestAction
       // 
       dbo_UpdateRelationshipsTest_TestAction.Conditions.Add(inconclusiveCondition9);
@@ -227,12 +173,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       inconclusiveCondition9.Enabled = true;
       inconclusiveCondition9.Name = "inconclusiveCondition9";
       // 
-      // dbo_UpdateTopicTestData
-      // 
-      this.dbo_UpdateTopicTestData.PosttestAction = null;
-      this.dbo_UpdateTopicTestData.PretestAction = null;
-      this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
-      // 
       // dbo_UpdateTopicTest_TestAction
       // 
       dbo_UpdateTopicTest_TestAction.Conditions.Add(inconclusiveCondition10);
@@ -242,6 +182,66 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition10.Enabled = true;
       inconclusiveCondition10.Name = "inconclusiveCondition10";
+      // 
+      // dbo_CreateTopicTestData
+      // 
+      this.dbo_CreateTopicTestData.PosttestAction = null;
+      this.dbo_CreateTopicTestData.PretestAction = null;
+      this.dbo_CreateTopicTestData.TestAction = dbo_CreateTopicTest_TestAction;
+      // 
+      // dbo_DeleteTopicTestData
+      // 
+      this.dbo_DeleteTopicTestData.PosttestAction = null;
+      this.dbo_DeleteTopicTestData.PretestAction = null;
+      this.dbo_DeleteTopicTestData.TestAction = dbo_DeleteTopicTest_TestAction;
+      // 
+      // dbo_GetTopicVersionTestData
+      // 
+      this.dbo_GetTopicVersionTestData.PosttestAction = null;
+      this.dbo_GetTopicVersionTestData.PretestAction = null;
+      this.dbo_GetTopicVersionTestData.TestAction = dbo_GetTopicVersionTest_TestAction;
+      // 
+      // dbo_GetTopicsTestData
+      // 
+      this.dbo_GetTopicsTestData.PosttestAction = null;
+      this.dbo_GetTopicsTestData.PretestAction = null;
+      this.dbo_GetTopicsTestData.TestAction = dbo_GetTopicsTest_TestAction;
+      // 
+      // dbo_MoveTopicTestData
+      // 
+      this.dbo_MoveTopicTestData.PosttestAction = null;
+      this.dbo_MoveTopicTestData.PretestAction = null;
+      this.dbo_MoveTopicTestData.TestAction = dbo_MoveTopicTest_TestAction;
+      // 
+      // dbo_UpdateAttributesTestData
+      // 
+      this.dbo_UpdateAttributesTestData.PosttestAction = null;
+      this.dbo_UpdateAttributesTestData.PretestAction = null;
+      this.dbo_UpdateAttributesTestData.TestAction = dbo_UpdateAttributesTest_TestAction;
+      // 
+      // dbo_UpdateExtendedAttributesTestData
+      // 
+      this.dbo_UpdateExtendedAttributesTestData.PosttestAction = null;
+      this.dbo_UpdateExtendedAttributesTestData.PretestAction = null;
+      this.dbo_UpdateExtendedAttributesTestData.TestAction = dbo_UpdateExtendedAttributesTest_TestAction;
+      // 
+      // dbo_UpdateReferencesTestData
+      // 
+      this.dbo_UpdateReferencesTestData.PosttestAction = null;
+      this.dbo_UpdateReferencesTestData.PretestAction = null;
+      this.dbo_UpdateReferencesTestData.TestAction = dbo_UpdateReferencesTest_TestAction;
+      // 
+      // dbo_UpdateRelationshipsTestData
+      // 
+      this.dbo_UpdateRelationshipsTestData.PosttestAction = null;
+      this.dbo_UpdateRelationshipsTestData.PretestAction = null;
+      this.dbo_UpdateRelationshipsTestData.TestAction = dbo_UpdateRelationshipsTest_TestAction;
+      // 
+      // dbo_UpdateTopicTestData
+      // 
+      this.dbo_UpdateTopicTestData.PosttestAction = null;
+      this.dbo_UpdateTopicTestData.PretestAction = null;
+      this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
     }
 
     #endregion
