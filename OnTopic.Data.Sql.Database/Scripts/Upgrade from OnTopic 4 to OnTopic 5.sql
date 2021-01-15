@@ -28,6 +28,16 @@ TABLE	Attributes
 DROP
 COLUMN	DateModified;
 
+ALTER
+TABLE	ExtendedAttributes
+DROP
+CONSTRAINT	[DF_ExtendedAttributes_DateModified]
+
+ALTER
+TABLE	ExtendedAttributes
+DROP
+COLUMN	DateModified;
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE CORE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
