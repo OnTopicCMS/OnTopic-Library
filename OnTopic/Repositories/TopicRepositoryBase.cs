@@ -226,8 +226,8 @@ namespace OnTopic.Repositories {
 
     /// <inheritdoc />
     public Topic? Load(Topic topic, DateTime version) {
-      Contract.Requires(referenceTopic, nameof(referenceTopic));
-      return Load(referenceTopic.Id, version, referenceTopic);
+      Contract.Requires(topic, nameof(topic));
+      return Load(topic.Id, version, topic);
     }
 
     /// <inheritdoc />
