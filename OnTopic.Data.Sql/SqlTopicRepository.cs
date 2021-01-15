@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 
 namespace OnTopic.Data.Sql {
@@ -200,10 +201,31 @@ namespace OnTopic.Data.Sql {
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish database connection
+      | Clear relationships, topic references
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Because we don't (currently) track version as part of the .NET data model for relationships or topic references, there's
+      | no easy way to determine if a relationship should be deleted when doing a rollback. As such, existing relationships
+      | should be deleted, assuming a `referenceTopic` is passed, and it contains the `topicId`.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topic                 = (Topic?)null;
 
+      if (referenceTopic?.Id == topicId) {
+        topic                   = referenceTopic;
+      }
+      else if (referenceTopic is not null) {
+        topic                   = referenceTopic.GetRootTopic().FindFirst(t => t.Id == topicId);
+      }
+
+      if (topic is not null) {
+        foreach (var relationship in topic.Relationships) {
+          topic.Relationships.ClearTopics(relationship.Key);
+        }
+        topic.References.Clear();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish database connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
       using var connection      = new SqlConnection(_connectionString);
       using var command         = new SqlCommand("GetTopicVersion", connection) {
         CommandType             = CommandType.StoredProcedure,
