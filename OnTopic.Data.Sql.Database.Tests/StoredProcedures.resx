@@ -119,155 +119,217 @@
   </resheader>
   <data name="dbo_CreateTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.CreateTopic
-DECLARE @RC AS INT, @Key AS VARCHAR (128), @ContentType AS VARCHAR (128), @ParentID AS INT, @Attributes AS [dbo].[AttributeValues], @ExtendedAttributes AS XML, @References AS [dbo].[TopicReferences], @Version AS DATETIME;
+DECLARE	@RC		AS INT, 
+	@Key		AS VARCHAR (128), 
+	@ContentType		AS VARCHAR (128), 
+	@ParentID		AS INT, 
+	@Attributes		AS [dbo].[AttributeValues], 
+	@ExtendedAttributes	AS XML, 
+	@References		AS [dbo].[TopicReferences], 
+	@Version		AS DATETIME;
 
-SELECT @RC = 0,
-       @Key = NULL,
-       @ContentType = NULL,
-       @ParentID = 0,
-       @ExtendedAttributes = NULL,
-       @Version = getdate();
+SELECT	@RC		= 0,
+	@Key		= 'CreateTopicTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL,
+	@ExtendedAttributes	= NULL,
+	@Version		= GETUTCDATE();
 
-EXECUTE @RC = [dbo].[CreateTopic] @Key, @ContentType, @ParentID, @Attributes, @ExtendedAttributes, @References, @Version;
+EXECUTE	@RC		= [dbo].[CreateTopic] 
+	@Key, 
+	@ContentType, 
+	@ParentID, 
+	@Attributes, 
+	@ExtendedAttributes, 
+	@References, 
+	@Version;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_DeleteTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.DeleteTopic
-DECLARE @RC AS INT, @TopicID AS INT;
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT;
 
-SELECT @RC = 0,
-       @TopicID = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0;
 
-EXECUTE @RC = [dbo].[DeleteTopic] @TopicID;
+EXECUTE	@RC		= [dbo].[DeleteTopic] 
+	@TopicID;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetTopicVersionTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetTopicVersion
-DECLARE @RC AS INT, @TopicID AS INT, @Version AS DATETIME;
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT, 
+	@Version		AS DATETIME;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @Version = getdate();
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@Version		= GETUTCDATE();
 
-EXECUTE @RC = [dbo].[GetTopicVersion] @TopicID, @Version;
+EXECUTE	@RC		= [dbo].[GetTopicVersion] 
+	@TopicID, 
+	@Version;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetTopicsTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetTopics
-DECLARE @RC AS INT, @TopicID AS INT, @DeepLoad AS BIT, @UniqueKey AS NVARCHAR (255);
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT, 
+	@DeepLoad		AS BIT, 
+	@UniqueKey		AS NVARCHAR (255);
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @DeepLoad = 0,
-       @UniqueKey = NULL;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@DeepLoad		= 0,
+	@UniqueKey		= NULL;
 
-EXECUTE @RC = [dbo].[GetTopics] @TopicID, @DeepLoad, @UniqueKey;
+EXECUTE	@RC		= [dbo].[GetTopics] 
+	@TopicID, 
+	@DeepLoad, 
+	@UniqueKey;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_MoveTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.MoveTopic
-DECLARE @RC AS INT, @TopicID AS INT, @ParentID AS INT, @SiblingID AS INT;
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT, 
+	@ParentID		AS INT, 
+	@SiblingID		AS INT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @ParentID = 0,
-       @SiblingID = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@ParentID		= 0,
+	@SiblingID		= 0;
 
-EXECUTE @RC = [dbo].[MoveTopic] @TopicID, @ParentID, @SiblingID;
+EXECUTE	@RC		= [dbo].[MoveTopic] 
+	@TopicID, 
+	@ParentID, 
+	@SiblingID;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateAttributesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateAttributes
-DECLARE @RC AS INT, @TopicID AS INT, @Attributes AS [dbo].[AttributeValues], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT, 
+	@Attributes		AS [dbo].[AttributeValues], 
+	@Version		AS DATETIME, 
+	@DeleteUnmatched	AS BIT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @Version = getdate(),
-       @DeleteUnmatched = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@Version		= getdate(),
+	@DeleteUnmatched	= 0;
 
-EXECUTE @RC = [dbo].[UpdateAttributes] @TopicID, @Attributes, @Version, @DeleteUnmatched;
+EXECUTE	@RC		= [dbo].[UpdateAttributes]
+	@TopicID,
+	@Attributes,
+	@Version,
+	@DeleteUnmatched;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateExtendedAttributesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateExtendedAttributes
-DECLARE @RC AS INT, @TopicID AS INT, @ExtendedAttributes AS XML, @Version AS DATETIME, @DeleteUnmatched AS BIT;
+DECLARE	@RC		AS INT,
+	@TopicID		AS INT,
+	@ExtendedAttributes	AS XML,
+	@Version		AS DATETIME,
+	@DeleteUnmatched	AS BIT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @ExtendedAttributes = NULL,
-       @Version = getdate(),
-       @DeleteUnmatched = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@ExtendedAttributes	= NULL,
+	@Version		= GETUTCDATE(),
+	@DeleteUnmatched	= 0;
 
-EXECUTE @RC = [dbo].[UpdateExtendedAttributes] @TopicID, @ExtendedAttributes, @Version, @DeleteUnmatched;
+EXECUTE	@RC		= [dbo].[UpdateExtendedAttributes] 
+	@TopicID,
+	@ExtendedAttributes,
+	@Version,
+	@DeleteUnmatched;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateReferencesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateReferences
-DECLARE @RC AS INT, @TopicID AS INT, @ReferencedTopics AS [dbo].[TopicReferences], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+DECLARE	@RC		AS INT,
+	@TopicID		AS INT,
+	@ReferencedTopics	AS [dbo].[TopicReferences],
+	@Version		AS DATETIME,
+	@DeleteUnmatched	AS BIT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @Version = getdate(),
-       @DeleteUnmatched = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@Version		= GETUTCDATE(),
+	@DeleteUnmatched	= 0;
 
-EXECUTE @RC = [dbo].[UpdateReferences] @TopicID, @ReferencedTopics, @Version, @DeleteUnmatched;
+EXECUTE	@RC		= [dbo].[UpdateReferences]
+	@TopicID,
+	@ReferencedTopics,
+	@Version,
+	@DeleteUnmatched;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateRelationshipsTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateRelationships
-DECLARE @RC AS INT, @TopicID AS INT, @RelationshipKey AS VARCHAR (255), @RelatedTopics AS [dbo].[TopicList], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+DECLARE	@RC		AS INT,
+	@TopicID		AS INT,
+	@RelationshipKey	AS VARCHAR (255),
+	@RelatedTopics		AS [dbo].[TopicList],
+	@Version		AS DATETIME,
+	@DeleteUnmatched	AS BIT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @RelationshipKey = NULL,
-       @Version = getdate(),
-       @DeleteUnmatched = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@RelationshipKey	= NULL,
+	@Version		= GETUTCDATE(),
+	@DeleteUnmatched	= 0;
 
-EXECUTE @RC = [dbo].[UpdateRelationships] @TopicID, @RelationshipKey, @RelatedTopics, @Version, @DeleteUnmatched;
+EXECUTE	@RC		= [dbo].[UpdateRelationships]
+	@TopicID,
+	@RelationshipKey,
+	@RelatedTopics,
+	@Version,
+	@DeleteUnmatched;
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateTopic
-DECLARE @RC AS INT, @TopicID AS INT, @Key AS VARCHAR (128), @ContentType AS VARCHAR (128), @Attributes AS [dbo].[AttributeValues], @ExtendedAttributes AS XML, @Version AS DATETIME, @DeleteUnmatched AS BIT;
+DECLARE	@RC		AS INT,
+	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@Attributes		AS [dbo].[AttributeValues],
+	@ExtendedAttributes	AS XML,
+	@Version		AS DATETIME,
+	@DeleteUnmatched	AS BIT;
 
-SELECT @RC = 0,
-       @TopicID = 0,
-       @Key = NULL,
-       @ContentType = NULL,
-       @ExtendedAttributes = NULL,
-       @Version = getdate(),
-       @DeleteUnmatched = 0;
+SELECT	@RC		= 0,
+	@TopicID		= 0,
+	@Key		= NULL,
+	@ContentType		= NULL,
+	@ExtendedAttributes	= NULL,
+	@Version		= GETUTCDATE(),
+	@DeleteUnmatched	= 0;
 
-EXECUTE @RC = [dbo].[UpdateTopic] @TopicID, @Key, @ContentType, @Attributes, @ExtendedAttributes, @Version, @DeleteUnmatched;
+EXECUTE	@RC		= [dbo].[UpdateTopic]
+	@TopicID,
+	@Key,
+	@ContentType,
+	@Attributes,
+	@ExtendedAttributes,
+	@Version,
+	@DeleteUnmatched;
 
-SELECT @RC AS RC;</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

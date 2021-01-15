@@ -119,93 +119,107 @@
   </resheader>
   <data name="dbo_GetExtendedAttributeTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetExtendedAttribute
-DECLARE @RC AS NVARCHAR (MAX), @TopicID AS INT, @AttributeKey AS NVARCHAR (255);
+DECLARE	@RC		AS NVARCHAR (MAX),
+	@TopicID		AS INT,
+	@AttributeKey		AS NVARCHAR (255);
 
-SELECT @RC = NULL,
-       @TopicID = 0,
-       @AttributeKey = NULL;
+SELECT	@RC		= NULL,
+	@TopicID		= 0,
+	@AttributeKey		= NULL;
 
-SELECT @RC = [dbo].[GetExtendedAttribute](@TopicID, @AttributeKey);
+SELECT	@RC		= [dbo].[GetExtendedAttribute](
+	  @TopicID, 
+	  @AttributeKey
+	);
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetParentIDTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetParentID
-DECLARE @RC AS INT, @TopicID AS INT;
+DECLARE	@RC		AS INT, 
+	@TopicID		AS INT;
 
-SELECT @RC = NULL,
-       @TopicID = 0;
+SELECT	@RC		= NULL,
+	@TopicID		= 0;
 
-SELECT @RC = [dbo].[GetParentID](@TopicID);
+SELECT	@RC		= [dbo].[GetParentID](
+	  @TopicID
+	);
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetTopicIDTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetTopicID
-DECLARE @RC AS INT, @UniqueKey AS NVARCHAR (2500);
+DECLARE	@RC		AS INT,
+	@UniqueKey		AS NVARCHAR (2500);
 
-SELECT @RC = NULL,
-       @UniqueKey = NULL;
+SELECT	@RC		= NULL,
+	@UniqueKey		= NULL;
 
-SELECT @RC = [dbo].[GetTopicID](@UniqueKey);
+SELECT	@RC		= [dbo].[GetTopicID](
+	  @UniqueKey
+	);
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetUniqueKeyTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetUniqueKey
-DECLARE @RC AS VARCHAR (MAX), @TopicID AS INT;
+DECLARE	@RC		AS VARCHAR (MAX),
+	@TopicID		AS INT;
 
-SELECT @RC = NULL,
-       @TopicID = 0;
+SELECT	@RC		= NULL,
+	@TopicID		= 0;
 
-SELECT @RC = [dbo].[GetUniqueKey](@TopicID);
+SELECT	@RC		= [dbo].[GetUniqueKey](
+	  @TopicID
+	);
 
-SELECT @RC AS RC;
-
-</value>
+SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_FindTopicIDsTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.FindTopicIDs
-DECLARE @TopicID AS INT, @AttributeKey AS VARCHAR (255), @AttributeValue AS NVARCHAR (255), @IsExtendedAttribute AS BIT, @UsePartialMatch AS BIT;
+DECLARE	@TopicID		AS INT,
+	@AttributeKey		AS VARCHAR (255),
+	@AttributeValue		AS NVARCHAR (255),
+	@IsExtendedAttribute	AS BIT,
+	@UsePartialMatch	AS BIT;
 
-SELECT @TopicID = 0,
-       @AttributeKey = NULL,
-       @AttributeValue = NULL,
-       @IsExtendedAttribute = 0,
-       @UsePartialMatch = 0;
+SELECT	@TopicID		= 0,
+	@AttributeKey		= NULL,
+	@AttributeValue		= NULL,
+	@IsExtendedAttribute	= 0,
+	@UsePartialMatch	= 0;
 
-SELECT *
-FROM   [dbo].[FindTopicIDs](@TopicID, @AttributeKey, @AttributeValue, @IsExtendedAttribute, @UsePartialMatch);
-
-</value>
+SELECT	*
+FROM	[dbo].[FindTopicIDs](
+	  @TopicID,
+	  @AttributeKey,
+	  @AttributeValue,
+	  @IsExtendedAttribute,
+	  @UsePartialMatch
+	);</value>
   </data>
   <data name="dbo_GetAttributesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetAttributes
-DECLARE @TopicID AS INT;
+DECLARE	@TopicID		AS INT;
 
-SELECT @TopicID = 0;
+SELECT	@TopicID		= 0;
 
-SELECT *
-FROM   [dbo].[GetAttributes](@TopicID);
-
-</value>
+SELECT	*
+FROM	[dbo].[GetAttributes](
+	  @TopicID
+	);</value>
   </data>
   <data name="dbo_GetChildTopicIDsTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetChildTopicIDs
-DECLARE @TopicID AS INT;
+DECLARE	@TopicID		AS INT;
 
-SELECT @TopicID = 0;
+SELECT	@TopicID		= 0;
 
-SELECT *
-FROM   [dbo].[GetChildTopicIDs](@TopicID);
-
-</value>
+SELECT	*
+FROM	[dbo].[GetChildTopicIDs](
+	  @TopicID
+	);</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
