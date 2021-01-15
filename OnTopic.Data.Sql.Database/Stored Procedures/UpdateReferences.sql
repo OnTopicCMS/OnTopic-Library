@@ -55,7 +55,7 @@ IF @DeleteUnmatched = 1
 	NULL,
 	@Version
     FROM	@ReferencedTopics	New
-    RIGHT JOIN	TopicReferences		Existing
+    RIGHT JOIN	ReferenceIndex		Existing
       ON	Source_TopicID		= @TopicID
       AND	Existing.ReferenceKey	= New.ReferenceKey
     WHERE	Source_TopicID		= @TopicID

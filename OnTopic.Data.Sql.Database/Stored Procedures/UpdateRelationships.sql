@@ -65,7 +65,7 @@ IF @DeleteUnmatched = 1
 	1,
 	@Version
     FROM	@RelatedTopics		Relationships
-    RIGHT JOIN	Relationships		Existing
+    RIGHT JOIN	RelationshipIndex	Existing
       ON	Target_TopicID		= TopicID
     WHERE	Source_TopicID		= @TopicID
       AND	ISNULL(TopicID, '')	= ''
