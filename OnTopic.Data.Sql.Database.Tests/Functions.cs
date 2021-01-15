@@ -1,0 +1,355 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Text;
+using Microsoft.Data.Tools.Schema.Sql.UnitTesting;
+using Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace OnTopic.Data.Sql.Database.Tests {
+  [TestClass()]
+  public class Functions: SqlDatabaseTestClass {
+
+    public Functions() {
+      InitializeComponent();
+    }
+
+    [TestInitialize()]
+    public void TestInitialize() {
+      base.InitializeTest();
+    }
+    [TestCleanup()]
+    public void TestCleanup() {
+      base.CleanupTest();
+    }
+
+    #region Designer support code
+
+    /// <summary> 
+    /// Required method for Designer support - do not modify 
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent() {
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetExtendedAttributeTest_TestAction;
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Functions));
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition1;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetParentIDTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition2;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicIDTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition3;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetUniqueKeyTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition4;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_FindTopicIDsTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition5;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition6;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetChildTopicIDsTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition7;
+      this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_GetUniqueKeyTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_FindTopicIDsTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_GetAttributesTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      this.dbo_GetChildTopicIDsTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
+      dbo_GetExtendedAttributeTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition1 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetParentIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition2 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetTopicIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition3 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetUniqueKeyTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition4 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_FindTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition5 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition6 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetChildTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      inconclusiveCondition7 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      // 
+      // dbo_GetExtendedAttributeTestData
+      // 
+      this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
+      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
+      this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
+      // 
+      // dbo_GetExtendedAttributeTest_TestAction
+      // 
+      dbo_GetExtendedAttributeTest_TestAction.Conditions.Add(inconclusiveCondition1);
+      resources.ApplyResources(dbo_GetExtendedAttributeTest_TestAction, "dbo_GetExtendedAttributeTest_TestAction");
+      // 
+      // inconclusiveCondition1
+      // 
+      inconclusiveCondition1.Enabled = true;
+      inconclusiveCondition1.Name = "inconclusiveCondition1";
+      // 
+      // dbo_GetParentIDTestData
+      // 
+      this.dbo_GetParentIDTestData.PosttestAction = null;
+      this.dbo_GetParentIDTestData.PretestAction = null;
+      this.dbo_GetParentIDTestData.TestAction = dbo_GetParentIDTest_TestAction;
+      // 
+      // dbo_GetParentIDTest_TestAction
+      // 
+      dbo_GetParentIDTest_TestAction.Conditions.Add(inconclusiveCondition2);
+      resources.ApplyResources(dbo_GetParentIDTest_TestAction, "dbo_GetParentIDTest_TestAction");
+      // 
+      // inconclusiveCondition2
+      // 
+      inconclusiveCondition2.Enabled = true;
+      inconclusiveCondition2.Name = "inconclusiveCondition2";
+      // 
+      // dbo_GetTopicIDTestData
+      // 
+      this.dbo_GetTopicIDTestData.PosttestAction = null;
+      this.dbo_GetTopicIDTestData.PretestAction = null;
+      this.dbo_GetTopicIDTestData.TestAction = dbo_GetTopicIDTest_TestAction;
+      // 
+      // dbo_GetTopicIDTest_TestAction
+      // 
+      dbo_GetTopicIDTest_TestAction.Conditions.Add(inconclusiveCondition3);
+      resources.ApplyResources(dbo_GetTopicIDTest_TestAction, "dbo_GetTopicIDTest_TestAction");
+      // 
+      // inconclusiveCondition3
+      // 
+      inconclusiveCondition3.Enabled = true;
+      inconclusiveCondition3.Name = "inconclusiveCondition3";
+      // 
+      // dbo_GetUniqueKeyTestData
+      // 
+      this.dbo_GetUniqueKeyTestData.PosttestAction = null;
+      this.dbo_GetUniqueKeyTestData.PretestAction = null;
+      this.dbo_GetUniqueKeyTestData.TestAction = dbo_GetUniqueKeyTest_TestAction;
+      // 
+      // dbo_GetUniqueKeyTest_TestAction
+      // 
+      dbo_GetUniqueKeyTest_TestAction.Conditions.Add(inconclusiveCondition4);
+      resources.ApplyResources(dbo_GetUniqueKeyTest_TestAction, "dbo_GetUniqueKeyTest_TestAction");
+      // 
+      // inconclusiveCondition4
+      // 
+      inconclusiveCondition4.Enabled = true;
+      inconclusiveCondition4.Name = "inconclusiveCondition4";
+      // 
+      // dbo_FindTopicIDsTestData
+      // 
+      this.dbo_FindTopicIDsTestData.PosttestAction = null;
+      this.dbo_FindTopicIDsTestData.PretestAction = null;
+      this.dbo_FindTopicIDsTestData.TestAction = dbo_FindTopicIDsTest_TestAction;
+      // 
+      // dbo_FindTopicIDsTest_TestAction
+      // 
+      dbo_FindTopicIDsTest_TestAction.Conditions.Add(inconclusiveCondition5);
+      resources.ApplyResources(dbo_FindTopicIDsTest_TestAction, "dbo_FindTopicIDsTest_TestAction");
+      // 
+      // inconclusiveCondition5
+      // 
+      inconclusiveCondition5.Enabled = true;
+      inconclusiveCondition5.Name = "inconclusiveCondition5";
+      // 
+      // dbo_GetAttributesTestData
+      // 
+      this.dbo_GetAttributesTestData.PosttestAction = null;
+      this.dbo_GetAttributesTestData.PretestAction = null;
+      this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
+      // 
+      // dbo_GetAttributesTest_TestAction
+      // 
+      dbo_GetAttributesTest_TestAction.Conditions.Add(inconclusiveCondition6);
+      resources.ApplyResources(dbo_GetAttributesTest_TestAction, "dbo_GetAttributesTest_TestAction");
+      // 
+      // inconclusiveCondition6
+      // 
+      inconclusiveCondition6.Enabled = true;
+      inconclusiveCondition6.Name = "inconclusiveCondition6";
+      // 
+      // dbo_GetChildTopicIDsTestData
+      // 
+      this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
+      this.dbo_GetChildTopicIDsTestData.PretestAction = null;
+      this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
+      // 
+      // dbo_GetChildTopicIDsTest_TestAction
+      // 
+      dbo_GetChildTopicIDsTest_TestAction.Conditions.Add(inconclusiveCondition7);
+      resources.ApplyResources(dbo_GetChildTopicIDsTest_TestAction, "dbo_GetChildTopicIDsTest_TestAction");
+      // 
+      // inconclusiveCondition7
+      // 
+      inconclusiveCondition7.Enabled = true;
+      inconclusiveCondition7.Name = "inconclusiveCondition7";
+    }
+
+    #endregion
+
+
+    #region Additional test attributes
+    //
+    // You can use the following additional attributes as you write your tests:
+    //
+    // Use ClassInitialize to run code before running the first test in the class
+    // [ClassInitialize()]
+    // public static void MyClassInitialize(TestContext testContext) { }
+    //
+    // Use ClassCleanup to run code after all tests in a class have run
+    // [ClassCleanup()]
+    // public static void MyClassCleanup() { }
+    //
+    #endregion
+
+    [TestMethod()]
+    public void dbo_GetExtendedAttributeTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetExtendedAttributeTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_GetParentIDTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetParentIDTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_GetTopicIDTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetTopicIDTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_GetUniqueKeyTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetUniqueKeyTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_FindTopicIDsTest() {
+      SqlDatabaseTestActions testActions = this.dbo_FindTopicIDsTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_GetAttributesTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetAttributesTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+
+    [TestMethod()]
+    public void dbo_GetChildTopicIDsTest() {
+      SqlDatabaseTestActions testActions = this.dbo_GetChildTopicIDsTestData;
+      // Execute the pre-test script
+      // 
+      System.Diagnostics.Trace.WriteLineIf((testActions.PretestAction != null), "Executing pre-test script...");
+      SqlExecutionResult[] pretestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PretestAction);
+      try {
+        // Execute the test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.TestAction != null), "Executing test script...");
+        SqlExecutionResult[] testResults = TestService.Execute(this.ExecutionContext, this.PrivilegedContext, testActions.TestAction);
+      }
+      finally {
+        // Execute the post-test script
+        // 
+        System.Diagnostics.Trace.WriteLineIf((testActions.PosttestAction != null), "Executing post-test script...");
+        SqlExecutionResult[] posttestResults = TestService.Execute(this.PrivilegedContext, this.PrivilegedContext, testActions.PosttestAction);
+      }
+    }
+    private SqlDatabaseTestActions dbo_GetExtendedAttributeTestData;
+    private SqlDatabaseTestActions dbo_GetParentIDTestData;
+    private SqlDatabaseTestActions dbo_GetTopicIDTestData;
+    private SqlDatabaseTestActions dbo_GetUniqueKeyTestData;
+    private SqlDatabaseTestActions dbo_FindTopicIDsTestData;
+    private SqlDatabaseTestActions dbo_GetAttributesTestData;
+    private SqlDatabaseTestActions dbo_GetChildTopicIDsTestData;
+  }
+}

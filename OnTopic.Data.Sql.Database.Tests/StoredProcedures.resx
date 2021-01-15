@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="dbo_CreateTopicTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.CreateTopic
+DECLARE @RC AS INT, @Key AS VARCHAR (128), @ContentType AS VARCHAR (128), @ParentID AS INT, @Attributes AS [dbo].[AttributeValues], @ExtendedAttributes AS XML, @References AS [dbo].[TopicReferences], @Version AS DATETIME;
+
+SELECT @RC = 0,
+       @Key = NULL,
+       @ContentType = NULL,
+       @ParentID = 0,
+       @ExtendedAttributes = NULL,
+       @Version = getdate();
+
+EXECUTE @RC = [dbo].[CreateTopic] @Key, @ContentType, @ParentID, @Attributes, @ExtendedAttributes, @References, @Version;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_DeleteTopicTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.DeleteTopic
+DECLARE @RC AS INT, @TopicID AS INT;
+
+SELECT @RC = 0,
+       @TopicID = 0;
+
+EXECUTE @RC = [dbo].[DeleteTopic] @TopicID;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_GetTopicVersionTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.GetTopicVersion
+DECLARE @RC AS INT, @TopicID AS INT, @Version AS DATETIME;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @Version = getdate();
+
+EXECUTE @RC = [dbo].[GetTopicVersion] @TopicID, @Version;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_GetTopicsTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.GetTopics
+DECLARE @RC AS INT, @TopicID AS INT, @DeepLoad AS BIT, @UniqueKey AS NVARCHAR (255);
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @DeepLoad = 0,
+       @UniqueKey = NULL;
+
+EXECUTE @RC = [dbo].[GetTopics] @TopicID, @DeepLoad, @UniqueKey;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_MoveTopicTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.MoveTopic
+DECLARE @RC AS INT, @TopicID AS INT, @ParentID AS INT, @SiblingID AS INT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @ParentID = 0,
+       @SiblingID = 0;
+
+EXECUTE @RC = [dbo].[MoveTopic] @TopicID, @ParentID, @SiblingID;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_UpdateAttributesTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.UpdateAttributes
+DECLARE @RC AS INT, @TopicID AS INT, @Attributes AS [dbo].[AttributeValues], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @Version = getdate(),
+       @DeleteUnmatched = 0;
+
+EXECUTE @RC = [dbo].[UpdateAttributes] @TopicID, @Attributes, @Version, @DeleteUnmatched;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_UpdateExtendedAttributesTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.UpdateExtendedAttributes
+DECLARE @RC AS INT, @TopicID AS INT, @ExtendedAttributes AS XML, @Version AS DATETIME, @DeleteUnmatched AS BIT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @ExtendedAttributes = NULL,
+       @Version = getdate(),
+       @DeleteUnmatched = 0;
+
+EXECUTE @RC = [dbo].[UpdateExtendedAttributes] @TopicID, @ExtendedAttributes, @Version, @DeleteUnmatched;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_UpdateReferencesTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.UpdateReferences
+DECLARE @RC AS INT, @TopicID AS INT, @ReferencedTopics AS [dbo].[TopicReferences], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @Version = getdate(),
+       @DeleteUnmatched = 0;
+
+EXECUTE @RC = [dbo].[UpdateReferences] @TopicID, @ReferencedTopics, @Version, @DeleteUnmatched;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_UpdateRelationshipsTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.UpdateRelationships
+DECLARE @RC AS INT, @TopicID AS INT, @RelationshipKey AS VARCHAR (255), @RelatedTopics AS [dbo].[TopicList], @Version AS DATETIME, @DeleteUnmatched AS BIT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @RelationshipKey = NULL,
+       @Version = getdate(),
+       @DeleteUnmatched = 0;
+
+EXECUTE @RC = [dbo].[UpdateRelationships] @TopicID, @RelationshipKey, @RelatedTopics, @Version, @DeleteUnmatched;
+
+SELECT @RC AS RC;
+
+</value>
+  </data>
+  <data name="dbo_UpdateTopicTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- database unit test for dbo.UpdateTopic
+DECLARE @RC AS INT, @TopicID AS INT, @Key AS VARCHAR (128), @ContentType AS VARCHAR (128), @Attributes AS [dbo].[AttributeValues], @ExtendedAttributes AS XML, @Version AS DATETIME, @DeleteUnmatched AS BIT;
+
+SELECT @RC = 0,
+       @TopicID = 0,
+       @Key = NULL,
+       @ContentType = NULL,
+       @ExtendedAttributes = NULL,
+       @Version = getdate(),
+       @DeleteUnmatched = 0;
+
+EXECUTE @RC = [dbo].[UpdateTopic] @TopicID, @Key, @ContentType, @Attributes, @ExtendedAttributes, @Version, @DeleteUnmatched;
+
+SELECT @RC AS RC;</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+</root>
