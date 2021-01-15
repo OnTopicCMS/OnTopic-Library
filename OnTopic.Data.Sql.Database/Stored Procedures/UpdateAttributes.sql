@@ -35,34 +35,7 @@ OUTER APPLY (
     AND	AttributeKey		= New.AttributeKey
   ORDER BY	Version		DESC
 )			Existing
-WHERE	ISNULL(AttributeValue, '')	!= ''
-  AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
-
---------------------------------------------------------------------------------------------------------------------------------
--- INSERT NULL ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-INSERT
-INTO	Attributes (
-	  TopicID		,
-	  AttributeKey		,
-	  AttributeValue	,
-	  Version
-	)
-SELECT	@TopicID,
-	AttributeKey,
-	'',
-	@Version
-FROM	@Attributes		New
-CROSS APPLY (
-  SELECT	TOP 1
-	AttributeValue		AS ExistingValue
-  FROM	Attributes
-  WHERE	TopicID		= @TopicID
-    AND	AttributeKey		= New.AttributeKey
-  ORDER BY	Version DESC
-)			Existing
-WHERE	ISNULL(AttributeValue, '')	= ''
-  AND	ExistingValue		!= ''
+WHERE	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DELETE UNMATCHED ATTRIBUTES

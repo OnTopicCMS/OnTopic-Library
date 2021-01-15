@@ -5,11 +5,9 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft;
 using OnTopic.Attributes;
-using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Metadata.AttributeTypes;
@@ -227,7 +225,7 @@ namespace OnTopic.Repositories {
     public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public Topic? Load(Topic referenceTopic, DateTime version) {
+    public Topic? Load(Topic topic, DateTime version) {
       Contract.Requires(referenceTopic, nameof(referenceTopic));
       return Load(referenceTopic.Id, version, referenceTopic);
     }

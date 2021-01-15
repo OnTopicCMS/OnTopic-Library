@@ -104,7 +104,7 @@ SELECT	Attributes.TopicID,
 	AttributeKey,
 	AttributeValue,
 	Version
-FROM	AttributeIndex		Attributes
+FROM	AttributeIndex		AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
 
@@ -123,8 +123,9 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Source_TopicID,
 	RelationshipKey,
-	Target_TopicID
-FROM	Relationships		Relationships
+	Target_TopicID,
+	IsDeleted
+FROM	RelationshipIndex	AS Relationships
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
 
@@ -134,7 +135,7 @@ JOIN	#Topics		AS Storage
 SELECT	Source_TopicID,
 	ReferenceKey,
 	Target_TopicID
-FROM	TopicReferences		TopicReferences
+FROM	ReferenceIndex		AS TopicReferences
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= TopicReferences.Source_TopicID
 
@@ -143,6 +144,6 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	History.TopicID,
 	Version
-FROM	VersionHistoryIndex	History
+FROM	VersionHistoryIndex	AS History
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= History.TopicID;

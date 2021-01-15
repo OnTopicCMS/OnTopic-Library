@@ -74,20 +74,52 @@ WHERE	RowNumber		= 1
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-;SELECT	Source_TopicID,
+;WITH Relationships AS (
+  SELECT	Source_TopicID,
 	RelationshipKey,
-	Target_TopicID
+	Target_TopicID,
+	IsDeleted,
+	Version,
+	RowNumber = ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID,
+			RelationshipKey
+	  ORDER BY		Version	DESC
+	)
+  FROM	[dbo].[Relationships]
+  WHERE	Source_TopicID		= @TopicID
+    AND	Version		<= @Version
+)
+SELECT	Relationships.Source_TopicID,
+	Relationships.RelationshipKey,
+	Relationships.Target_TopicID,
+	Relationships.IsDeleted,
+	Relationships.Version
 FROM	Relationships
-WHERE	Source_TopicID		= @TopicID
+WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	ReferenceKey,
-	Source_TopicID,
-	Target_TopicID
-FROM	TopicReferences		TopicReferences
-WHERE	Source_TopicID		= @TopicID
+;WITH TopicReferences AS (
+  SELECT	Source_TopicID,
+	ReferenceKey,
+	Target_TopicID,
+	Version,
+	RowNumber = ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID,
+			ReferenceKey
+	  ORDER BY		Version	DESC
+	)
+  FROM	[dbo].[TopicReferences]
+  WHERE	Source_TopicID		= @TopicID
+    AND	Version		<= @Version
+)
+SELECT	TopicReferences.Source_TopicID,
+	TopicReferences.ReferenceKey,
+	TopicReferences.Target_TopicID,
+	TopicReferences.Version
+FROM	TopicReferences
+WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY

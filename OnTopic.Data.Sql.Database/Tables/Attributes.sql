@@ -11,8 +11,7 @@ TABLE	[dbo].[Attributes] (
 	  [TopicID]		INT	NOT NULL,
 	  [AttributeKey]	VARCHAR (128)	NOT NULL,
 	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
-	  [Version]		DATETIME
-  CONSTRAINT	  [DF_Attributes_Version]	DEFAULT	(GETUTCDATE())	NOT NULL,
+	  [Version]		DATETIME	NOT NULL	DEFAULT GETUTCDATE()
   CONSTRAINT	  [PK_Attributes]	PRIMARY KEY
   CLUSTERED (	    [TopicID]		ASC,
 	    [AttributeKey]	ASC,

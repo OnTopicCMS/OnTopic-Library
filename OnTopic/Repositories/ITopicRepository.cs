@@ -90,7 +90,7 @@ namespace OnTopic.Repositories {
     Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
 
     /// <inheritdoc cref="Load(Int32, DateTime, Topic)"/>
-    Topic? Load(Topic referenceTopic, DateTime version);
+    Topic? Load(Topic topic, DateTime version);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
