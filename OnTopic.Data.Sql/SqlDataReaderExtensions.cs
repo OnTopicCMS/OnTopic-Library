@@ -404,7 +404,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = reader.GetTopicId("Source_TopicID");
       var relationshipKey       = reader.GetString("ReferenceKey");
-      var targetTopicId         = reader.GetTopicId("Target_TopicID");
+      var targetTopicId         = reader.GetNullableTopicId("Target_TopicID");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify affected topics
@@ -413,8 +413,8 @@ namespace OnTopic.Data.Sql {
       var referenced            = (Topic?)null;
 
       // Fetch the related topic
-      if (topics.Keys.Contains(targetTopicId)) {
-        referenced              = topics[targetTopicId];
+      if (targetTopicId is not null && topics.Keys.Contains(targetTopicId.Value)) {
+        referenced              = topics[targetTopicId.Value];
       }
 
       // Bypass if either of the objects are missing
@@ -505,6 +505,17 @@ namespace OnTopic.Data.Sql {
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     private static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
       reader.GetInt32(reader.GetOrdinal(columnName));
+
+    /*==========================================================================================================================
+    | METHOD: GET NULLABLE TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a <see cref="Topic.Id"/> value by column name, while accepting null values.
+    /// </summary>
+    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    private static int? GetNullableTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+      reader.IsDBNull(reader.GetOrdinal(columnName))? null : reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET VERSION

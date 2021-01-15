@@ -52,7 +52,7 @@ IF @DeleteUnmatched = 1
     INTO	TopicReferences
     SELECT	@TopicID,
 	Existing.ReferenceKey,
-	Existing.Target_TopicID,
+	NULL,
 	@Version
     FROM	@ReferencedTopics	New
     RIGHT JOIN	TopicReferences		Existing
