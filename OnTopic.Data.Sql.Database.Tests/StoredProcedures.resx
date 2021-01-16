@@ -150,16 +150,35 @@ WHERE	TopicKey		= @Key</value>
   </data>
   <data name="dbo_DeleteTopicTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.DeleteTopic
-DECLARE	@RC		AS INT, 
-	@TopicID		AS INT;
+DECLARE	@RC		AS INT,
+	@TopicID		AS INT,
+	@TopicKey		AS VARCHAR(128);
 
 SELECT	@RC		= 0,
-	@TopicID		= 0;
+	@TopicKey		= 'DeleteTopicTest';
 
-EXECUTE	@RC		= [dbo].[DeleteTopic] 
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @TopicKey
+
+EXECUTE	@RC		= [dbo].[DeleteTopic]
 	@TopicID;
 
-SELECT	@RC		AS RC;</value>
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'DeleteTopic%'</value>
   </data>
   <data name="dbo_GetTopicVersionTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetTopicVersion
@@ -345,6 +364,103 @@ FROM	Topics
 WHERE	TopicKey		= 'CreateTopicTest'
   AND	ContentType		= 'Test'
   AND	ParentID		is NULL</value>
+  </data>
+  <data name="dbo_DeleteTopicTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT,
+	@Attributes		AS [dbo].[AttributeValues],
+	@ExtendedAttributes	AS XML,
+	@References		AS [dbo].[TopicReferences],
+	@Version		AS DATETIME;
+
+DELETE	
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'DeleteTopicTest%'
+
+DELETE
+FROM	Relationships
+WHERE	RelationshipKey		= 'DeleteTopicTest'
+
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		= 'DeleteTopicTest'
+
+DELETE	
+FROM	Topics
+WHERE	TopicKey		LIKE 'DeleteTopic%'
+
+
+SELECT	@Key		= 'DeleteTopicTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL,
+	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;',
+	@Version		= GETUTCDATE();
+
+INSERT
+INTO	@Attributes
+VALUES	( 'DeleteTopicTest1', 'Value' ),
+	( 'DeleteTopicTest2', 'Value' )
+
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+SELECT	@Key		= 'DeleteTopicChildTest',
+	@ParentID		= @TopicID;
+
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID
+	)
+VALUES	( @TopicID,
+	  'DeleteTopicTest',
+	  @ParentID
+	)
+
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID
+	)
+VALUES	( @TopicID,
+	  'DeleteTopicTest',
+	  @ParentID
+	)
+
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		LIKE 'DeleteTopic%'
+
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'DeleteTopic%'</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
