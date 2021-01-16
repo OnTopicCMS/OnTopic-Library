@@ -256,23 +256,43 @@ EXECUTE	[dbo].[GetTopics]
 	NULL;</value>
   </data>
   <data name="dbo_MoveTopicTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.MoveTopic
-DECLARE	@RC		AS INT, 
-	@TopicID		AS INT, 
-	@ParentID		AS INT, 
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@ParentID		AS INT,
 	@SiblingID		AS INT;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@ParentID		= 0,
-	@SiblingID		= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopicChildTest3'
 
-EXECUTE	@RC		= [dbo].[MoveTopic] 
-	@TopicID, 
-	@ParentID, 
+SELECT	@ParentID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopicTest1'
+
+SELECT	@SiblingID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopicChildTest1'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[MoveTopic]
+	@TopicID,
+	@ParentID,
 	@SiblingID;
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	TopicKey
+FROM	Topics
+WHERE	TopicKey		LIKE 'MoveTopic%'
+ORDER BY	RangeLeft		ASC</value>
   </data>
   <data name="dbo_UpdateAttributesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateAttributes
@@ -838,6 +858,87 @@ WHERE	TopicKey		= @UniqueKey
 --------------------------------------------------------------------------------------------------------------------------------
 EXECUTE	[dbo].[DeleteTopic]
 	@TopicID;</value>
+  </data>
+  <data name="dbo_MoveTopicTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopic%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopic%'</value>
+  </data>
+  <data name="dbo_MoveTopicTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@ContentType		AS VARCHAR (128),
+	@RootTopicID		AS INT,
+	@ParentID1		AS INT,
+	@ParentID2		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'MoveTopic%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ContentType		= 'Test';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@RootTopicID		= [dbo].[CreateTopic]
+	'MoveTopicTest',
+	@ContentType,
+	NULL;
+
+EXECUTE	@ParentID1		= [dbo].[CreateTopic]
+	'MoveTopicTest1',
+	@ContentType,
+	@RootTopicID;
+
+EXECUTE	[dbo].[CreateTopic]
+	'MoveTopicChildTest1',
+	@ContentType,
+	@ParentID1;
+
+EXECUTE	[dbo].[CreateTopic]
+	'MoveTopicChildTest2',
+	@ContentType,
+	@ParentID1;
+
+EXECUTE	@ParentID2		= [dbo].[CreateTopic]
+	'MoveTopicTest2',
+	@ContentType,
+	@RootTopicID;
+
+EXECUTE	[dbo].[CreateTopic]
+	'MoveTopicChildTest3',
+	@ContentType,
+	@ParentID2;
+
+EXECUTE	[dbo].[CreateTopic]
+	'MoveTopicChildTest4',
+	@ContentType,
+	@ParentID2;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'MoveTopic%'</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
