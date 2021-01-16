@@ -33,8 +33,12 @@ namespace OnTopic.Data.Sql.Database.Tests {
     private void InitializeComponent() {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_CreateTopicTest_TestAction;
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StoredProcedures));
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition topicTotal;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition createTopicTotal;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_DeleteTopicTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteRelationshipCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition3;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicsTest_TestAction;
@@ -52,16 +56,12 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition10;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_CreateTopicTest_PosttestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postCreateTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_DeleteTopicTest_PretestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition initializeTopicCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postDeleteTopicCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition initializeAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition initializeRelationshipCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition initializeReferenceCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postDeleteAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postDeleteRelationshipCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postDeleteReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preDeleteTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preDeleteAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preDeleteRelationshipCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preDeleteReferenceCount;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -73,8 +73,12 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateRelationshipsTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_UpdateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       dbo_CreateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      topicTotal = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      createTopicTotal = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_DeleteTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      deleteTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      deleteAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      deleteRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      deleteReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetTopicVersionTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition3 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_GetTopicsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -92,36 +96,60 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_UpdateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition10 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_CreateTopicTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      deleteCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      postCreateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_DeleteTopicTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      initializeTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      postDeleteTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      initializeAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      initializeRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      initializeReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      postDeleteAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      postDeleteRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      postDeleteReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preDeleteTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preDeleteAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preDeleteRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preDeleteReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
-      dbo_CreateTopicTest_TestAction.Conditions.Add(topicTotal);
+      dbo_CreateTopicTest_TestAction.Conditions.Add(createTopicTotal);
       resources.ApplyResources(dbo_CreateTopicTest_TestAction, "dbo_CreateTopicTest_TestAction");
       // 
-      // topicTotal
+      // createTopicTotal
       // 
-      topicTotal.Enabled = true;
-      topicTotal.Name = "topicTotal";
-      topicTotal.ResultSet = 1;
-      topicTotal.RowCount = 1;
+      createTopicTotal.Enabled = true;
+      createTopicTotal.Name = "createTopicTotal";
+      createTopicTotal.ResultSet = 1;
+      createTopicTotal.RowCount = 1;
       // 
       // dbo_DeleteTopicTest_TestAction
       // 
-      dbo_DeleteTopicTest_TestAction.Conditions.Add(postDeleteTopicCount);
-      dbo_DeleteTopicTest_TestAction.Conditions.Add(postDeleteAttributeCount);
-      dbo_DeleteTopicTest_TestAction.Conditions.Add(postDeleteRelationshipCount);
-      dbo_DeleteTopicTest_TestAction.Conditions.Add(postDeleteReferenceCount);
+      dbo_DeleteTopicTest_TestAction.Conditions.Add(deleteTopicCount);
+      dbo_DeleteTopicTest_TestAction.Conditions.Add(deleteAttributeCount);
+      dbo_DeleteTopicTest_TestAction.Conditions.Add(deleteRelationshipCount);
+      dbo_DeleteTopicTest_TestAction.Conditions.Add(deleteReferenceCount);
       resources.ApplyResources(dbo_DeleteTopicTest_TestAction, "dbo_DeleteTopicTest_TestAction");
+      // 
+      // deleteTopicCount
+      // 
+      deleteTopicCount.Enabled = true;
+      deleteTopicCount.Name = "deleteTopicCount";
+      deleteTopicCount.ResultSet = 1;
+      deleteTopicCount.RowCount = 0;
+      // 
+      // deleteAttributeCount
+      // 
+      deleteAttributeCount.Enabled = true;
+      deleteAttributeCount.Name = "deleteAttributeCount";
+      deleteAttributeCount.ResultSet = 2;
+      deleteAttributeCount.RowCount = 0;
+      // 
+      // deleteRelationshipCount
+      // 
+      deleteRelationshipCount.Enabled = true;
+      deleteRelationshipCount.Name = "deleteRelationshipCount";
+      deleteRelationshipCount.ResultSet = 3;
+      deleteRelationshipCount.RowCount = 0;
+      // 
+      // deleteReferenceCount
+      // 
+      deleteReferenceCount.Enabled = true;
+      deleteReferenceCount.Name = "deleteReferenceCount";
+      deleteReferenceCount.ResultSet = 4;
+      deleteReferenceCount.RowCount = 0;
       // 
       // dbo_GetTopicVersionTest_TestAction
       // 
@@ -205,15 +233,51 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_CreateTopicTest_PosttestAction
       // 
-      dbo_CreateTopicTest_PosttestAction.Conditions.Add(deleteCount);
+      dbo_CreateTopicTest_PosttestAction.Conditions.Add(postCreateTopicCount);
       resources.ApplyResources(dbo_CreateTopicTest_PosttestAction, "dbo_CreateTopicTest_PosttestAction");
       // 
-      // deleteCount
+      // postCreateTopicCount
       // 
-      deleteCount.Enabled = true;
-      deleteCount.Name = "deleteCount";
-      deleteCount.ResultSet = 1;
-      deleteCount.RowCount = 0;
+      postCreateTopicCount.Enabled = true;
+      postCreateTopicCount.Name = "postCreateTopicCount";
+      postCreateTopicCount.ResultSet = 1;
+      postCreateTopicCount.RowCount = 0;
+      // 
+      // dbo_DeleteTopicTest_PretestAction
+      // 
+      dbo_DeleteTopicTest_PretestAction.Conditions.Add(preDeleteTopicCount);
+      dbo_DeleteTopicTest_PretestAction.Conditions.Add(preDeleteAttributeCount);
+      dbo_DeleteTopicTest_PretestAction.Conditions.Add(preDeleteRelationshipCount);
+      dbo_DeleteTopicTest_PretestAction.Conditions.Add(preDeleteReferenceCount);
+      resources.ApplyResources(dbo_DeleteTopicTest_PretestAction, "dbo_DeleteTopicTest_PretestAction");
+      // 
+      // preDeleteTopicCount
+      // 
+      preDeleteTopicCount.Enabled = true;
+      preDeleteTopicCount.Name = "preDeleteTopicCount";
+      preDeleteTopicCount.ResultSet = 1;
+      preDeleteTopicCount.RowCount = 2;
+      // 
+      // preDeleteAttributeCount
+      // 
+      preDeleteAttributeCount.Enabled = true;
+      preDeleteAttributeCount.Name = "preDeleteAttributeCount";
+      preDeleteAttributeCount.ResultSet = 2;
+      preDeleteAttributeCount.RowCount = 4;
+      // 
+      // preDeleteRelationshipCount
+      // 
+      preDeleteRelationshipCount.Enabled = true;
+      preDeleteRelationshipCount.Name = "preDeleteRelationshipCount";
+      preDeleteRelationshipCount.ResultSet = 3;
+      preDeleteRelationshipCount.RowCount = 1;
+      // 
+      // preDeleteReferenceCount
+      // 
+      preDeleteReferenceCount.Enabled = true;
+      preDeleteReferenceCount.Name = "preDeleteReferenceCount";
+      preDeleteReferenceCount.ResultSet = 4;
+      preDeleteReferenceCount.RowCount = 1;
       // 
       // dbo_CreateTopicTestData
       // 
@@ -274,70 +338,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateTopicTestData.PosttestAction = null;
       this.dbo_UpdateTopicTestData.PretestAction = null;
       this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
-      // 
-      // dbo_DeleteTopicTest_PretestAction
-      // 
-      dbo_DeleteTopicTest_PretestAction.Conditions.Add(initializeTopicCount);
-      dbo_DeleteTopicTest_PretestAction.Conditions.Add(initializeAttributeCount);
-      dbo_DeleteTopicTest_PretestAction.Conditions.Add(initializeRelationshipCount);
-      dbo_DeleteTopicTest_PretestAction.Conditions.Add(initializeReferenceCount);
-      resources.ApplyResources(dbo_DeleteTopicTest_PretestAction, "dbo_DeleteTopicTest_PretestAction");
-      // 
-      // initializeTopicCount
-      // 
-      initializeTopicCount.Enabled = true;
-      initializeTopicCount.Name = "initializeTopicCount";
-      initializeTopicCount.ResultSet = 1;
-      initializeTopicCount.RowCount = 2;
-      // 
-      // postDeleteTopicCount
-      // 
-      postDeleteTopicCount.Enabled = true;
-      postDeleteTopicCount.Name = "postDeleteTopicCount";
-      postDeleteTopicCount.ResultSet = 1;
-      postDeleteTopicCount.RowCount = 0;
-      // 
-      // initializeAttributeCount
-      // 
-      initializeAttributeCount.Enabled = true;
-      initializeAttributeCount.Name = "initializeAttributeCount";
-      initializeAttributeCount.ResultSet = 2;
-      initializeAttributeCount.RowCount = 4;
-      // 
-      // initializeRelationshipCount
-      // 
-      initializeRelationshipCount.Enabled = true;
-      initializeRelationshipCount.Name = "initializeRelationshipCount";
-      initializeRelationshipCount.ResultSet = 3;
-      initializeRelationshipCount.RowCount = 1;
-      // 
-      // initializeReferenceCount
-      // 
-      initializeReferenceCount.Enabled = true;
-      initializeReferenceCount.Name = "initializeReferenceCount";
-      initializeReferenceCount.ResultSet = 4;
-      initializeReferenceCount.RowCount = 1;
-      // 
-      // postDeleteAttributeCount
-      // 
-      postDeleteAttributeCount.Enabled = true;
-      postDeleteAttributeCount.Name = "postDeleteAttributeCount";
-      postDeleteAttributeCount.ResultSet = 2;
-      postDeleteAttributeCount.RowCount = 0;
-      // 
-      // postDeleteRelationshipCount
-      // 
-      postDeleteRelationshipCount.Enabled = true;
-      postDeleteRelationshipCount.Name = "postDeleteRelationshipCount";
-      postDeleteRelationshipCount.ResultSet = 3;
-      postDeleteRelationshipCount.RowCount = 0;
-      // 
-      // postDeleteReferenceCount
-      // 
-      postDeleteReferenceCount.Enabled = true;
-      postDeleteReferenceCount.Name = "postDeleteReferenceCount";
-      postDeleteReferenceCount.ResultSet = 4;
-      postDeleteReferenceCount.RowCount = 0;
     }
 
     #endregion
