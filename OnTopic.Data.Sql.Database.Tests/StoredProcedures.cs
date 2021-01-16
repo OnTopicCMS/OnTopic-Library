@@ -40,7 +40,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition deleteReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition3;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_MoveTopicTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition5;
@@ -73,6 +72,18 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionHistoryCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionRelationshipCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionExtendedAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionRelationshipCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionVersionHistoryCount;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -91,7 +102,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       deleteRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       deleteReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetTopicVersionTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition3 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_GetTopicsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_MoveTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition5 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
@@ -124,6 +134,18 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_GetTopicVersionTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preGetVersionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preGetVersionAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preGetVersionRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      preGetVersionReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_GetTopicVersionTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      getVersionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
@@ -175,13 +197,13 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_GetTopicVersionTest_TestAction
       // 
-      dbo_GetTopicVersionTest_TestAction.Conditions.Add(inconclusiveCondition3);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionTopicCount);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionAttributeCount);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionExtendedAttributeCount);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionRelationshipCount);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionReferenceCount);
+      dbo_GetTopicVersionTest_TestAction.Conditions.Add(getVersionVersionHistoryCount);
       resources.ApplyResources(dbo_GetTopicVersionTest_TestAction, "dbo_GetTopicVersionTest_TestAction");
-      // 
-      // inconclusiveCondition3
-      // 
-      inconclusiveCondition3.Enabled = true;
-      inconclusiveCondition3.Name = "inconclusiveCondition3";
       // 
       // dbo_GetTopicsTest_TestAction
       // 
@@ -315,8 +337,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_GetTopicVersionTestData
       // 
-      this.dbo_GetTopicVersionTestData.PosttestAction = null;
-      this.dbo_GetTopicVersionTestData.PretestAction = null;
+      this.dbo_GetTopicVersionTestData.PosttestAction = dbo_GetTopicVersionTest_PosttestAction;
+      this.dbo_GetTopicVersionTestData.PretestAction = dbo_GetTopicVersionTest_PretestAction;
       this.dbo_GetTopicVersionTestData.TestAction = dbo_GetTopicVersionTest_TestAction;
       // 
       // dbo_GetTopicsTestData
@@ -442,6 +464,88 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getVersionHistoryCount.Name = "getVersionHistoryCount";
       getVersionHistoryCount.ResultSet = 6;
       getVersionHistoryCount.RowCount = 2;
+      // 
+      // dbo_GetTopicVersionTest_PretestAction
+      // 
+      dbo_GetTopicVersionTest_PretestAction.Conditions.Add(preGetVersionTopicCount);
+      dbo_GetTopicVersionTest_PretestAction.Conditions.Add(preGetVersionAttributeCount);
+      dbo_GetTopicVersionTest_PretestAction.Conditions.Add(preGetVersionRelationshipCount);
+      dbo_GetTopicVersionTest_PretestAction.Conditions.Add(preGetVersionReferenceCount);
+      resources.ApplyResources(dbo_GetTopicVersionTest_PretestAction, "dbo_GetTopicVersionTest_PretestAction");
+      // 
+      // preGetVersionTopicCount
+      // 
+      preGetVersionTopicCount.Enabled = true;
+      preGetVersionTopicCount.Name = "preGetVersionTopicCount";
+      preGetVersionTopicCount.ResultSet = 1;
+      preGetVersionTopicCount.RowCount = 2;
+      // 
+      // preGetVersionAttributeCount
+      // 
+      preGetVersionAttributeCount.Enabled = true;
+      preGetVersionAttributeCount.Name = "preGetVersionAttributeCount";
+      preGetVersionAttributeCount.ResultSet = 2;
+      preGetVersionAttributeCount.RowCount = 6;
+      // 
+      // preGetVersionRelationshipCount
+      // 
+      preGetVersionRelationshipCount.Enabled = true;
+      preGetVersionRelationshipCount.Name = "preGetVersionRelationshipCount";
+      preGetVersionRelationshipCount.ResultSet = 3;
+      preGetVersionRelationshipCount.RowCount = 2;
+      // 
+      // preGetVersionReferenceCount
+      // 
+      preGetVersionReferenceCount.Enabled = true;
+      preGetVersionReferenceCount.Name = "preGetVersionReferenceCount";
+      preGetVersionReferenceCount.ResultSet = 4;
+      preGetVersionReferenceCount.RowCount = 2;
+      // 
+      // dbo_GetTopicVersionTest_PosttestAction
+      // 
+      resources.ApplyResources(dbo_GetTopicVersionTest_PosttestAction, "dbo_GetTopicVersionTest_PosttestAction");
+      // 
+      // getVersionTopicCount
+      // 
+      getVersionTopicCount.Enabled = true;
+      getVersionTopicCount.Name = "getVersionTopicCount";
+      getVersionTopicCount.ResultSet = 1;
+      getVersionTopicCount.RowCount = 1;
+      // 
+      // getVersionAttributeCount
+      // 
+      getVersionAttributeCount.Enabled = true;
+      getVersionAttributeCount.Name = "getVersionAttributeCount";
+      getVersionAttributeCount.ResultSet = 2;
+      getVersionAttributeCount.RowCount = 2;
+      // 
+      // getVersionExtendedAttributeCount
+      // 
+      getVersionExtendedAttributeCount.Enabled = true;
+      getVersionExtendedAttributeCount.Name = "getVersionExtendedAttributeCount";
+      getVersionExtendedAttributeCount.ResultSet = 3;
+      getVersionExtendedAttributeCount.RowCount = 1;
+      // 
+      // getVersionRelationshipCount
+      // 
+      getVersionRelationshipCount.Enabled = true;
+      getVersionRelationshipCount.Name = "getVersionRelationshipCount";
+      getVersionRelationshipCount.ResultSet = 4;
+      getVersionRelationshipCount.RowCount = 1;
+      // 
+      // getVersionReferenceCount
+      // 
+      getVersionReferenceCount.Enabled = true;
+      getVersionReferenceCount.Name = "getVersionReferenceCount";
+      getVersionReferenceCount.ResultSet = 5;
+      getVersionReferenceCount.RowCount = 1;
+      // 
+      // getVersionVersionHistoryCount
+      // 
+      getVersionVersionHistoryCount.Enabled = true;
+      getVersionVersionHistoryCount.Name = "getVersionVersionHistoryCount";
+      getVersionVersionHistoryCount.ResultSet = 6;
+      getVersionVersionHistoryCount.RowCount = 1;
     }
 
     #endregion

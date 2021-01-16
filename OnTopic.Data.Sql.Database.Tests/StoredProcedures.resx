@@ -203,20 +203,31 @@ FROM	TopicReferences
 WHERE	ReferenceKey		LIKE 'DeleteTopic%'</value>
   </data>
   <data name="dbo_GetTopicVersionTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.GetTopicVersion
-DECLARE	@RC		AS INT, 
-	@TopicID		AS INT, 
-	@Version		AS DATETIME;
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@UniqueKey		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@Version		AS DATETIME,
+	@NewVersion		AS DATETIME;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@Version		= GETUTCDATE();
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= 'GetTopicVersionTest',
+	@Version		= '2020-01-01 12:00:00:000',
+	@NewVersion		= '2021-01-01 12:00:00:000';
 
-EXECUTE	@RC		= [dbo].[GetTopicVersion] 
-	@TopicID, 
-	@Version;
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @UniqueKey
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[GetTopicVersion]
+	@TopicID,
+	@Version;</value>
   </data>
   <data name="dbo_GetTopicsTest_TestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -510,6 +521,190 @@ WHERE	RelationshipKey		LIKE 'DeleteTopic%'
 SELECT	*
 FROM	TopicReferences
 WHERE	ReferenceKey		LIKE 'DeleteTopic%'</value>
+  </data>
+  <data name="dbo_GetTopicVersionTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@UniqueKey		AS NVARCHAR (255);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= 'GetTopicVersionTest';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @UniqueKey
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[DeleteTopic]
+	@TopicID;</value>
+  </data>
+  <data name="dbo_GetTopicVersionTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT,
+	@Attributes		AS [dbo].[AttributeValues],
+	@ExtendedAttributes	AS XML,
+	@References		AS [dbo].[TopicReferences],
+	@Version		AS DATETIME,
+	@NewVersion		AS DATETIME;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetTopicVersionTest%'
+
+DELETE
+FROM	Relationships
+WHERE	RelationshipKey		= 'GetTopicVersionTest'
+
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		= 'GetTopicVersionTest'
+
+DELETE	
+FROM	Topics
+WHERE	TopicKey		LIKE 'GetTopicVersion%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetTopicVersionTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL,
+	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;',
+	@Version		= '2020-01-01 12:00:00:000',
+	@NewVersion		= '2021-01-01 12:00:00:000';
+
+INSERT
+INTO	@Attributes
+VALUES	( 'GetTopicVersionTest1', 'Value' ),
+	( 'GetTopicVersionTest2', 'Value' )
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+SELECT	@Key		= 'GetTopicVersionChildTest',
+	@ParentID		= @TopicID;
+
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicVersionTest',
+	  @TopicID,
+	  @Version
+	)
+
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicVersionTest',
+	  @TopicID,
+	  @Version
+	)
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;New Test&lt;/Attribute&gt;&lt;/Attributes&gt;';
+
+UPDATE	@Attributes
+SET	AttributeValue		= 'NewValue'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH NEW VERSION
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[UpdateTopic]
+	@TopicID		= @TopicID,
+	@Attributes		= @Attributes,
+	@ExtendedAttributes	= @ExtendedAttributes,
+	@Version		= @NewVersion;
+
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID,
+	  IsDeleted,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicVersionTest',
+	  @TopicID,
+	  1,
+	  @NewVersion
+	)
+
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicVersionTest',
+	  NULL,
+	  @NewVersion
+	)
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'GetTopicVersion%'
+
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetTopicVersionTest%'
+
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		= 'GetTopicVersionTest'
+
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		= 'GetTopicVersionTest'</value>
   </data>
   <data name="dbo_GetTopicsTest_PosttestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
