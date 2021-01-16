@@ -295,25 +295,46 @@ WHERE	TopicKey		LIKE 'MoveTopic%'
 ORDER BY	RangeLeft		ASC</value>
   </data>
   <data name="dbo_UpdateAttributesTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.UpdateAttributes
-DECLARE	@RC		AS INT, 
-	@TopicID		AS INT, 
-	@Attributes		AS [dbo].[AttributeValues], 
-	@Version		AS DATETIME, 
-	@DeleteUnmatched	AS BIT;
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Attributes		AS AttributeValues,
+	@Version		AS DATETIME;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@Version		= getdate(),
-	@DeleteUnmatched	= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateAttributesTest';
 
-EXECUTE	@RC		= [dbo].[UpdateAttributes]
+SELECT	@Version		= GETUTCDATE();
+
+INSERT
+INTO	@Attributes
+VALUES	( 'UpdateAttributesTest1', 'New' ),
+	( 'UpdateAttributesTest2', 'New' ),
+	( 'UpdateAttributesTest4', 'New' );
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[UpdateAttributes]
 	@TopicID,
 	@Attributes,
 	@Version,
-	@DeleteUnmatched;
+	1;
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	AttributeKey
+FROM	AttributeIndex
+WHERE	TopicID		= @TopicID
+  AND	AttributeKey		LIKE 'UpdateAttributesTest%'
+  AND	AttributeValue		!= ''
+ORDER BY	AttributeKey		ASC;</value>
   </data>
   <data name="dbo_UpdateExtendedAttributesTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateExtendedAttributes
@@ -859,21 +880,6 @@ WHERE	TopicKey		= @UniqueKey
 EXECUTE	[dbo].[DeleteTopic]
 	@TopicID;</value>
   </data>
-  <data name="dbo_MoveTopicTest_PosttestAction.SqlScript" xml:space="preserve">
-    <value>--------------------------------------------------------------------------------------------------------------------------------
--- DELETE TEST DATA
---------------------------------------------------------------------------------------------------------------------------------
-DELETE
-FROM	Topics
-WHERE	TopicKey		= 'MoveTopic%'
-
---------------------------------------------------------------------------------------------------------------------------------
--- VERIFY RESULTS
---------------------------------------------------------------------------------------------------------------------------------
-SELECT	*
-FROM	Topics
-WHERE	TopicKey		= 'MoveTopic%'</value>
-  </data>
   <data name="dbo_MoveTopicTest_PretestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
@@ -939,6 +945,94 @@ EXECUTE	[dbo].[CreateTopic]
 SELECT	*
 FROM	Topics
 WHERE	TopicKey		LIKE 'MoveTopic%'</value>
+  </data>
+  <data name="dbo_MoveTopicTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopic%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		= 'MoveTopic%'</value>
+  </data>
+  <data name="dbo_UpdateAttributesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		= 'UpdateAttributesTest';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	'UpdateAttributesTest',
+	'Test',
+	NULL;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID,
+	  'UpdateAttributesTest1',
+	  'Value'
+	),
+	( @TopicID,
+	  'UpdateAttributesTest2',
+	  'Value'
+	),
+	( @TopicID,
+	  'UpdateAttributesTest3',
+	  'Value'
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';</value>
+  </data>
+  <data name="dbo_UpdateAttributesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		= 'UpdateAttributesTest';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

@@ -46,6 +46,9 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionVersionHistoryCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionAttributeValue;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionRelationshipValue;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionReferenceValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getAttributeCount;
@@ -54,8 +57,10 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getVersionHistoryCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_MoveTopicTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition moveTopicValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateAttributesTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition6;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateAttributeValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateExtendedAttributesTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition7;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateReferencesTest_TestAction;
@@ -83,14 +88,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetVersionReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicVersionTest_PosttestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionAttributeValue;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionRelationshipValue;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getVersionReferenceValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_MoveTopicTest_PretestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preMoveTopicCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition moveTopicValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_MoveTopicTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postMoveTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateAttributesTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateAttributesTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateAttributeCount;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -115,6 +120,9 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getVersionRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getVersionReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getVersionVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getVersionAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
+      getVersionRelationshipValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
+      getVersionReferenceValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_GetTopicsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       getTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
@@ -123,8 +131,10 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_MoveTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      moveTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition6 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      updateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      updateAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateExtendedAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition7 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_UpdateReferencesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -152,14 +162,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preGetVersionRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       preGetVersionReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetTopicVersionTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      getVersionAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
-      getVersionRelationshipValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
-      getVersionReferenceValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_MoveTopicTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       preMoveTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      moveTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_MoveTopicTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postMoveTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_UpdateAttributesTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preUpdateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_UpdateAttributesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      postUpdateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
@@ -264,6 +274,36 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getVersionVersionHistoryCount.ResultSet = 6;
       getVersionVersionHistoryCount.RowCount = 1;
       // 
+      // getVersionAttributeValue
+      // 
+      getVersionAttributeValue.ColumnNumber = 3;
+      getVersionAttributeValue.Enabled = true;
+      getVersionAttributeValue.ExpectedValue = "Value";
+      getVersionAttributeValue.Name = "getVersionAttributeValue";
+      getVersionAttributeValue.NullExpected = false;
+      getVersionAttributeValue.ResultSet = 2;
+      getVersionAttributeValue.RowNumber = 1;
+      // 
+      // getVersionRelationshipValue
+      // 
+      getVersionRelationshipValue.ColumnNumber = 5;
+      getVersionRelationshipValue.Enabled = true;
+      getVersionRelationshipValue.ExpectedValue = "2020-01-01 12:00:00";
+      getVersionRelationshipValue.Name = "getVersionRelationshipValue";
+      getVersionRelationshipValue.NullExpected = false;
+      getVersionRelationshipValue.ResultSet = 4;
+      getVersionRelationshipValue.RowNumber = 1;
+      // 
+      // getVersionReferenceValue
+      // 
+      getVersionReferenceValue.ColumnNumber = 4;
+      getVersionReferenceValue.Enabled = true;
+      getVersionReferenceValue.ExpectedValue = "2020-01-01 12:00:00";
+      getVersionReferenceValue.Name = "getVersionReferenceValue";
+      getVersionReferenceValue.NullExpected = false;
+      getVersionReferenceValue.ResultSet = 5;
+      getVersionReferenceValue.RowNumber = 1;
+      // 
       // dbo_GetTopicsTest_TestAction
       // 
       dbo_GetTopicsTest_TestAction.Conditions.Add(getTopicCount);
@@ -321,15 +361,38 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_MoveTopicTest_TestAction.Conditions.Add(moveTopicValue);
       resources.ApplyResources(dbo_MoveTopicTest_TestAction, "dbo_MoveTopicTest_TestAction");
       // 
+      // moveTopicValue
+      // 
+      moveTopicValue.ColumnNumber = 1;
+      moveTopicValue.Enabled = true;
+      moveTopicValue.ExpectedValue = "MoveTopicChildTest3";
+      moveTopicValue.Name = "moveTopicValue";
+      moveTopicValue.NullExpected = false;
+      moveTopicValue.ResultSet = 2;
+      moveTopicValue.RowNumber = 4;
+      // 
       // dbo_UpdateAttributesTest_TestAction
       // 
-      dbo_UpdateAttributesTest_TestAction.Conditions.Add(inconclusiveCondition6);
+      dbo_UpdateAttributesTest_TestAction.Conditions.Add(updateAttributeCount);
+      dbo_UpdateAttributesTest_TestAction.Conditions.Add(updateAttributeValue);
       resources.ApplyResources(dbo_UpdateAttributesTest_TestAction, "dbo_UpdateAttributesTest_TestAction");
       // 
-      // inconclusiveCondition6
+      // updateAttributeCount
       // 
-      inconclusiveCondition6.Enabled = true;
-      inconclusiveCondition6.Name = "inconclusiveCondition6";
+      updateAttributeCount.Enabled = true;
+      updateAttributeCount.Name = "updateAttributeCount";
+      updateAttributeCount.ResultSet = 1;
+      updateAttributeCount.RowCount = 3;
+      // 
+      // updateAttributeValue
+      // 
+      updateAttributeValue.ColumnNumber = 1;
+      updateAttributeValue.Enabled = true;
+      updateAttributeValue.ExpectedValue = "UpdateAttributesTest4";
+      updateAttributeValue.Name = "updateAttributeValue";
+      updateAttributeValue.NullExpected = false;
+      updateAttributeValue.ResultSet = 1;
+      updateAttributeValue.RowNumber = 3;
       // 
       // dbo_UpdateExtendedAttributesTest_TestAction
       // 
@@ -499,6 +562,54 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       resources.ApplyResources(dbo_GetTopicVersionTest_PosttestAction, "dbo_GetTopicVersionTest_PosttestAction");
       // 
+      // dbo_MoveTopicTest_PretestAction
+      // 
+      dbo_MoveTopicTest_PretestAction.Conditions.Add(preMoveTopicCount);
+      resources.ApplyResources(dbo_MoveTopicTest_PretestAction, "dbo_MoveTopicTest_PretestAction");
+      // 
+      // preMoveTopicCount
+      // 
+      preMoveTopicCount.Enabled = true;
+      preMoveTopicCount.Name = "preMoveTopicCount";
+      preMoveTopicCount.ResultSet = 1;
+      preMoveTopicCount.RowCount = 7;
+      // 
+      // dbo_MoveTopicTest_PosttestAction
+      // 
+      dbo_MoveTopicTest_PosttestAction.Conditions.Add(postMoveTopicCount);
+      resources.ApplyResources(dbo_MoveTopicTest_PosttestAction, "dbo_MoveTopicTest_PosttestAction");
+      // 
+      // postMoveTopicCount
+      // 
+      postMoveTopicCount.Enabled = true;
+      postMoveTopicCount.Name = "postMoveTopicCount";
+      postMoveTopicCount.ResultSet = 1;
+      postMoveTopicCount.RowCount = 0;
+      // 
+      // dbo_UpdateAttributesTest_PretestAction
+      // 
+      dbo_UpdateAttributesTest_PretestAction.Conditions.Add(preUpdateAttributeCount);
+      resources.ApplyResources(dbo_UpdateAttributesTest_PretestAction, "dbo_UpdateAttributesTest_PretestAction");
+      // 
+      // preUpdateAttributeCount
+      // 
+      preUpdateAttributeCount.Enabled = true;
+      preUpdateAttributeCount.Name = "preUpdateAttributeCount";
+      preUpdateAttributeCount.ResultSet = 1;
+      preUpdateAttributeCount.RowCount = 3;
+      // 
+      // dbo_UpdateAttributesTest_PosttestAction
+      // 
+      dbo_UpdateAttributesTest_PosttestAction.Conditions.Add(postUpdateAttributeCount);
+      resources.ApplyResources(dbo_UpdateAttributesTest_PosttestAction, "dbo_UpdateAttributesTest_PosttestAction");
+      // 
+      // postUpdateAttributeCount
+      // 
+      postUpdateAttributeCount.Enabled = true;
+      postUpdateAttributeCount.Name = "postUpdateAttributeCount";
+      postUpdateAttributeCount.ResultSet = 1;
+      postUpdateAttributeCount.RowCount = 0;
+      // 
       // dbo_CreateTopicTestData
       // 
       this.dbo_CreateTopicTestData.PosttestAction = dbo_CreateTopicTest_PosttestAction;
@@ -531,8 +642,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_UpdateAttributesTestData
       // 
-      this.dbo_UpdateAttributesTestData.PosttestAction = null;
-      this.dbo_UpdateAttributesTestData.PretestAction = null;
+      this.dbo_UpdateAttributesTestData.PosttestAction = dbo_UpdateAttributesTest_PosttestAction;
+      this.dbo_UpdateAttributesTestData.PretestAction = dbo_UpdateAttributesTest_PretestAction;
       this.dbo_UpdateAttributesTestData.TestAction = dbo_UpdateAttributesTest_TestAction;
       // 
       // dbo_UpdateExtendedAttributesTestData
@@ -558,70 +669,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateTopicTestData.PosttestAction = null;
       this.dbo_UpdateTopicTestData.PretestAction = null;
       this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
-      // 
-      // getVersionAttributeValue
-      // 
-      getVersionAttributeValue.ColumnNumber = 3;
-      getVersionAttributeValue.Enabled = true;
-      getVersionAttributeValue.ExpectedValue = "Value";
-      getVersionAttributeValue.Name = "getVersionAttributeValue";
-      getVersionAttributeValue.NullExpected = false;
-      getVersionAttributeValue.ResultSet = 2;
-      getVersionAttributeValue.RowNumber = 1;
-      // 
-      // getVersionRelationshipValue
-      // 
-      getVersionRelationshipValue.ColumnNumber = 5;
-      getVersionRelationshipValue.Enabled = true;
-      getVersionRelationshipValue.ExpectedValue = "2020-01-01 12:00:00";
-      getVersionRelationshipValue.Name = "getVersionRelationshipValue";
-      getVersionRelationshipValue.NullExpected = false;
-      getVersionRelationshipValue.ResultSet = 4;
-      getVersionRelationshipValue.RowNumber = 1;
-      // 
-      // getVersionReferenceValue
-      // 
-      getVersionReferenceValue.ColumnNumber = 4;
-      getVersionReferenceValue.Enabled = true;
-      getVersionReferenceValue.ExpectedValue = "2020-01-01 12:00:00";
-      getVersionReferenceValue.Name = "getVersionReferenceValue";
-      getVersionReferenceValue.NullExpected = false;
-      getVersionReferenceValue.ResultSet = 5;
-      getVersionReferenceValue.RowNumber = 1;
-      // 
-      // dbo_MoveTopicTest_PretestAction
-      // 
-      dbo_MoveTopicTest_PretestAction.Conditions.Add(preMoveTopicCount);
-      resources.ApplyResources(dbo_MoveTopicTest_PretestAction, "dbo_MoveTopicTest_PretestAction");
-      // 
-      // preMoveTopicCount
-      // 
-      preMoveTopicCount.Enabled = true;
-      preMoveTopicCount.Name = "preMoveTopicCount";
-      preMoveTopicCount.ResultSet = 1;
-      preMoveTopicCount.RowCount = 7;
-      // 
-      // moveTopicValue
-      // 
-      moveTopicValue.ColumnNumber = 1;
-      moveTopicValue.Enabled = true;
-      moveTopicValue.ExpectedValue = "MoveTopicChildTest3";
-      moveTopicValue.Name = "moveTopicValue";
-      moveTopicValue.NullExpected = false;
-      moveTopicValue.ResultSet = 2;
-      moveTopicValue.RowNumber = 4;
-      // 
-      // dbo_MoveTopicTest_PosttestAction
-      // 
-      dbo_MoveTopicTest_PosttestAction.Conditions.Add(postMoveTopicCount);
-      resources.ApplyResources(dbo_MoveTopicTest_PosttestAction, "dbo_MoveTopicTest_PosttestAction");
-      // 
-      // postMoveTopicCount
-      // 
-      postMoveTopicCount.Enabled = true;
-      postMoveTopicCount.Name = "postMoveTopicCount";
-      postMoveTopicCount.ResultSet = 1;
-      postMoveTopicCount.RowCount = 0;
     }
 
     #endregion
