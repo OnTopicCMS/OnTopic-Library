@@ -200,11 +200,24 @@ FROM	[dbo].[FindTopicIDs](
 	);</value>
   </data>
   <data name="dbo_GetAttributesTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.GetAttributes
-DECLARE	@TopicID		AS INT;
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT;
 
-SELECT	@TopicID		= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest'
 
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	[dbo].[GetAttributes](
 	  @TopicID
@@ -220,6 +233,107 @@ SELECT	*
 FROM	[dbo].[GetChildTopicIDs](
 	  @TopicID
 	);</value>
+  </data>
+  <data name="dbo_GetAttributesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@AttributesXml		AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest',
+	@AttributesXml		= '&lt;attributes&gt;&lt;attribute key=''GetAttributesTest4''&gt;New&lt;/attribute&gt;&lt;/attributes&gt;';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Attributes
+WHERE	TopicID		= @TopicID;
+
+DELETE
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;
+
+DELETE
+FROM	Topics
+WHERE	TopicID		= @TopicID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	'Test',
+	NULL;
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID,
+	  'GetAttributesTest1',
+	  'Value'
+	),
+	( @TopicID,
+	  'GetAttributesTest2',
+	  'Value'
+	),
+	( @TopicID,
+	  'GetAttributesTest3',
+	  'Value'
+	);
+
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID,
+	  @AttributesXml
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetAttributesTest%';</value>
+  </data>
+  <data name="dbo_GetAttributesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest'
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+EXEC	[dbo].[DeleteTopic]	@TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetAttributesTest%'</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

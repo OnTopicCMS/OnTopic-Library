@@ -43,9 +43,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_FindTopicIDsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition5;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition6;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getAttributeValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetChildTopicIDsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition7;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postGetAttributeCount;
       this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -64,9 +69,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_FindTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition5 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_GetAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition6 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      getAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_GetChildTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition7 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      dbo_GetAttributesTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preGetAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_GetAttributesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      postGetAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
@@ -120,13 +130,26 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_GetAttributesTest_TestAction
       // 
-      dbo_GetAttributesTest_TestAction.Conditions.Add(inconclusiveCondition6);
+      dbo_GetAttributesTest_TestAction.Conditions.Add(getAttributeCount);
+      dbo_GetAttributesTest_TestAction.Conditions.Add(getAttributeValue);
       resources.ApplyResources(dbo_GetAttributesTest_TestAction, "dbo_GetAttributesTest_TestAction");
       // 
-      // inconclusiveCondition6
+      // getAttributeCount
       // 
-      inconclusiveCondition6.Enabled = true;
-      inconclusiveCondition6.Name = "inconclusiveCondition6";
+      getAttributeCount.Enabled = true;
+      getAttributeCount.Name = "getAttributeCount";
+      getAttributeCount.ResultSet = 1;
+      getAttributeCount.RowCount = 4;
+      // 
+      // getAttributeValue
+      // 
+      getAttributeValue.ColumnNumber = 1;
+      getAttributeValue.Enabled = true;
+      getAttributeValue.ExpectedValue = "GetAttributesTest4";
+      getAttributeValue.Name = "getAttributeValue";
+      getAttributeValue.NullExpected = false;
+      getAttributeValue.ResultSet = 1;
+      getAttributeValue.RowNumber = 4;
       // 
       // dbo_GetChildTopicIDsTest_TestAction
       // 
@@ -137,6 +160,18 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       inconclusiveCondition7.Enabled = true;
       inconclusiveCondition7.Name = "inconclusiveCondition7";
+      // 
+      // dbo_GetAttributesTest_PretestAction
+      // 
+      dbo_GetAttributesTest_PretestAction.Conditions.Add(preGetAttributeCount);
+      resources.ApplyResources(dbo_GetAttributesTest_PretestAction, "dbo_GetAttributesTest_PretestAction");
+      // 
+      // preGetAttributeCount
+      // 
+      preGetAttributeCount.Enabled = true;
+      preGetAttributeCount.Name = "preGetAttributeCount";
+      preGetAttributeCount.ResultSet = 1;
+      preGetAttributeCount.RowCount = 3;
       // 
       // dbo_GetExtendedAttributeTestData
       // 
@@ -170,8 +205,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_GetAttributesTestData
       // 
-      this.dbo_GetAttributesTestData.PosttestAction = null;
-      this.dbo_GetAttributesTestData.PretestAction = null;
+      this.dbo_GetAttributesTestData.PosttestAction = dbo_GetAttributesTest_PosttestAction;
+      this.dbo_GetAttributesTestData.PretestAction = dbo_GetAttributesTest_PretestAction;
       this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
       // 
       // dbo_GetChildTopicIDsTestData
@@ -179,6 +214,18 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
       this.dbo_GetChildTopicIDsTestData.PretestAction = null;
       this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
+      // 
+      // dbo_GetAttributesTest_PosttestAction
+      // 
+      dbo_GetAttributesTest_PosttestAction.Conditions.Add(postGetAttributeCount);
+      resources.ApplyResources(dbo_GetAttributesTest_PosttestAction, "dbo_GetAttributesTest_PosttestAction");
+      // 
+      // postGetAttributeCount
+      // 
+      postGetAttributeCount.Enabled = true;
+      postGetAttributeCount.Name = "postGetAttributeCount";
+      postGetAttributeCount.ResultSet = 1;
+      postGetAttributeCount.RowCount = 0;
     }
 
     #endregion
