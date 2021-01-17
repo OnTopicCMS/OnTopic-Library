@@ -23,9 +23,8 @@ BEGIN
   INSERT
   INTO	@Topics
   SELECT	TopicID
-  FROM	Attributes
-  WHERE	AttributeKey		= 'ParentID'
-  AND	AttributeValue		= @TopicID
+  FROM	Topics
+  WHERE	ParentID		= @TopicID
 
   ------------------------------------------------------------------------------------------------------------------------------
   -- RETURN
