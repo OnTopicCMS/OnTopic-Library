@@ -62,6 +62,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateAttributeValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateExtendedAttributesTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateExtendedAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateExtendedAttributeValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateReferencesTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateReferenceCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateReferenceValue;
@@ -70,6 +72,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateRelationshipValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateTopicValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_CreateTopicTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postCreateTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_DeleteTopicTest_PretestAction;
@@ -104,14 +107,11 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateRelationshipsTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_PretestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateTopicCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateTopicValue;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateExtendedAttributesTest_PretestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateExtendedAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateExtendedAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateExtendedAttributeValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateExtendedAttributesTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateExtendedAttributeTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateExtendedAttributeCount;
@@ -155,6 +155,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       updateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       updateAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateExtendedAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      updateExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      updateExtendedAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateReferencesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       updateReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       updateReferenceValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
@@ -163,6 +165,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       updateRelationshipValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       updateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      updateTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_CreateTopicTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postCreateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_DeleteTopicTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -197,14 +200,11 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preUpdateRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_UpdateRelationshipsTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_UpdateTopicTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      postUpdateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_UpdateTopicTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       preUpdateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      updateTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
-      postUpdateTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_UpdateExtendedAttributesTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       preUpdateExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      updateExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      updateExtendedAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       dbo_UpdateExtendedAttributesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postUpdateExtendedAttributeTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       postUpdateExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
@@ -438,6 +438,23 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_UpdateExtendedAttributesTest_TestAction.Conditions.Add(updateExtendedAttributeValue);
       resources.ApplyResources(dbo_UpdateExtendedAttributesTest_TestAction, "dbo_UpdateExtendedAttributesTest_TestAction");
       // 
+      // updateExtendedAttributeCount
+      // 
+      updateExtendedAttributeCount.Enabled = true;
+      updateExtendedAttributeCount.Name = "updateExtendedAttributeCount";
+      updateExtendedAttributeCount.ResultSet = 1;
+      updateExtendedAttributeCount.RowCount = 2;
+      // 
+      // updateExtendedAttributeValue
+      // 
+      updateExtendedAttributeValue.ColumnNumber = 1;
+      updateExtendedAttributeValue.Enabled = true;
+      updateExtendedAttributeValue.ExpectedValue = "<Attributes><Attribute key=\"Body\">New</Attribute></Attributes>";
+      updateExtendedAttributeValue.Name = "updateExtendedAttributeValue";
+      updateExtendedAttributeValue.NullExpected = false;
+      updateExtendedAttributeValue.ResultSet = 1;
+      updateExtendedAttributeValue.RowNumber = 2;
+      // 
       // dbo_UpdateReferencesTest_TestAction
       // 
       dbo_UpdateReferencesTest_TestAction.Conditions.Add(updateReferenceCount);
@@ -496,6 +513,16 @@ namespace OnTopic.Data.Sql.Database.Tests {
       updateTopicCount.Name = "updateTopicCount";
       updateTopicCount.ResultSet = 1;
       updateTopicCount.RowCount = 1;
+      // 
+      // updateTopicValue
+      // 
+      updateTopicValue.ColumnNumber = 1;
+      updateTopicValue.Enabled = true;
+      updateTopicValue.ExpectedValue = "TestNew";
+      updateTopicValue.Name = "updateTopicValue";
+      updateTopicValue.NullExpected = false;
+      updateTopicValue.ResultSet = 1;
+      updateTopicValue.RowNumber = 1;
       // 
       // dbo_CreateTopicTest_PosttestAction
       // 
@@ -710,6 +737,13 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_UpdateTopicTest_PosttestAction.Conditions.Add(postUpdateTopicCount);
       resources.ApplyResources(dbo_UpdateTopicTest_PosttestAction, "dbo_UpdateTopicTest_PosttestAction");
       // 
+      // postUpdateTopicCount
+      // 
+      postUpdateTopicCount.Enabled = true;
+      postUpdateTopicCount.Name = "postUpdateTopicCount";
+      postUpdateTopicCount.ResultSet = 1;
+      postUpdateTopicCount.RowCount = 0;
+      // 
       // dbo_UpdateTopicTest_PretestAction
       // 
       dbo_UpdateTopicTest_PretestAction.Conditions.Add(preUpdateTopicCount);
@@ -721,6 +755,38 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preUpdateTopicCount.Name = "preUpdateTopicCount";
       preUpdateTopicCount.ResultSet = 1;
       preUpdateTopicCount.RowCount = 1;
+      // 
+      // dbo_UpdateExtendedAttributesTest_PretestAction
+      // 
+      dbo_UpdateExtendedAttributesTest_PretestAction.Conditions.Add(preUpdateExtendedAttributeCount);
+      resources.ApplyResources(dbo_UpdateExtendedAttributesTest_PretestAction, "dbo_UpdateExtendedAttributesTest_PretestAction");
+      // 
+      // preUpdateExtendedAttributeCount
+      // 
+      preUpdateExtendedAttributeCount.Enabled = true;
+      preUpdateExtendedAttributeCount.Name = "preUpdateExtendedAttributeCount";
+      preUpdateExtendedAttributeCount.ResultSet = 1;
+      preUpdateExtendedAttributeCount.RowCount = 1;
+      // 
+      // dbo_UpdateExtendedAttributesTest_PosttestAction
+      // 
+      dbo_UpdateExtendedAttributesTest_PosttestAction.Conditions.Add(postUpdateExtendedAttributeTopicCount);
+      dbo_UpdateExtendedAttributesTest_PosttestAction.Conditions.Add(postUpdateExtendedAttributeCount);
+      resources.ApplyResources(dbo_UpdateExtendedAttributesTest_PosttestAction, "dbo_UpdateExtendedAttributesTest_PosttestAction");
+      // 
+      // postUpdateExtendedAttributeTopicCount
+      // 
+      postUpdateExtendedAttributeTopicCount.Enabled = true;
+      postUpdateExtendedAttributeTopicCount.Name = "postUpdateExtendedAttributeTopicCount";
+      postUpdateExtendedAttributeTopicCount.ResultSet = 1;
+      postUpdateExtendedAttributeTopicCount.RowCount = 0;
+      // 
+      // postUpdateExtendedAttributeCount
+      // 
+      postUpdateExtendedAttributeCount.Enabled = true;
+      postUpdateExtendedAttributeCount.Name = "postUpdateExtendedAttributeCount";
+      postUpdateExtendedAttributeCount.ResultSet = 1;
+      postUpdateExtendedAttributeCount.RowCount = 0;
       // 
       // dbo_CreateTopicTestData
       // 
@@ -781,72 +847,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateTopicTestData.PosttestAction = dbo_UpdateTopicTest_PosttestAction;
       this.dbo_UpdateTopicTestData.PretestAction = dbo_UpdateTopicTest_PretestAction;
       this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
-      // 
-      // updateTopicValue
-      // 
-      updateTopicValue.ColumnNumber = 1;
-      updateTopicValue.Enabled = true;
-      updateTopicValue.ExpectedValue = "TestNew";
-      updateTopicValue.Name = "updateTopicValue";
-      updateTopicValue.NullExpected = false;
-      updateTopicValue.ResultSet = 1;
-      updateTopicValue.RowNumber = 1;
-      // 
-      // postUpdateTopicCount
-      // 
-      postUpdateTopicCount.Enabled = true;
-      postUpdateTopicCount.Name = "postUpdateTopicCount";
-      postUpdateTopicCount.ResultSet = 1;
-      postUpdateTopicCount.RowCount = 0;
-      // 
-      // dbo_UpdateExtendedAttributesTest_PretestAction
-      // 
-      dbo_UpdateExtendedAttributesTest_PretestAction.Conditions.Add(preUpdateExtendedAttributeCount);
-      resources.ApplyResources(dbo_UpdateExtendedAttributesTest_PretestAction, "dbo_UpdateExtendedAttributesTest_PretestAction");
-      // 
-      // preUpdateExtendedAttributeCount
-      // 
-      preUpdateExtendedAttributeCount.Enabled = true;
-      preUpdateExtendedAttributeCount.Name = "preUpdateExtendedAttributeCount";
-      preUpdateExtendedAttributeCount.ResultSet = 1;
-      preUpdateExtendedAttributeCount.RowCount = 1;
-      // 
-      // updateExtendedAttributeCount
-      // 
-      updateExtendedAttributeCount.Enabled = true;
-      updateExtendedAttributeCount.Name = "updateExtendedAttributeCount";
-      updateExtendedAttributeCount.ResultSet = 1;
-      updateExtendedAttributeCount.RowCount = 2;
-      // 
-      // updateExtendedAttributeValue
-      // 
-      updateExtendedAttributeValue.ColumnNumber = 1;
-      updateExtendedAttributeValue.Enabled = true;
-      updateExtendedAttributeValue.ExpectedValue = "<Attributes><Attribute key=\"Body\">New</Attribute></Attributes>";
-      updateExtendedAttributeValue.Name = "updateExtendedAttributeValue";
-      updateExtendedAttributeValue.NullExpected = false;
-      updateExtendedAttributeValue.ResultSet = 1;
-      updateExtendedAttributeValue.RowNumber = 2;
-      // 
-      // dbo_UpdateExtendedAttributesTest_PosttestAction
-      // 
-      dbo_UpdateExtendedAttributesTest_PosttestAction.Conditions.Add(postUpdateExtendedAttributeTopicCount);
-      dbo_UpdateExtendedAttributesTest_PosttestAction.Conditions.Add(postUpdateExtendedAttributeCount);
-      resources.ApplyResources(dbo_UpdateExtendedAttributesTest_PosttestAction, "dbo_UpdateExtendedAttributesTest_PosttestAction");
-      // 
-      // postUpdateExtendedAttributeTopicCount
-      // 
-      postUpdateExtendedAttributeTopicCount.Enabled = true;
-      postUpdateExtendedAttributeTopicCount.Name = "postUpdateExtendedAttributeTopicCount";
-      postUpdateExtendedAttributeTopicCount.ResultSet = 1;
-      postUpdateExtendedAttributeTopicCount.RowCount = 0;
-      // 
-      // postUpdateExtendedAttributeCount
-      // 
-      postUpdateExtendedAttributeCount.Enabled = true;
-      postUpdateExtendedAttributeCount.Name = "postUpdateExtendedAttributeCount";
-      postUpdateExtendedAttributeCount.ResultSet = 1;
-      postUpdateExtendedAttributeCount.RowCount = 0;
     }
 
     #endregion

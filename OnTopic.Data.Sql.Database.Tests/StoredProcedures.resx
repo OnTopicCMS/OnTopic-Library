@@ -350,7 +350,7 @@ DECLARE	@Key		AS VARCHAR(128),
 -- SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'UpdateExtendedAttributesTest',
-	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;New&lt;/Attribute&gt;&lt;/Attributes&gt;',
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;New&lt;/attribute&gt;&lt;/attributes&gt;',
 	@Version		= DATEADD(day, 1, GETUTCDATE()),
 	@DeleteUnmatched	= 0;
 
@@ -697,7 +697,7 @@ WHERE	TopicKey		LIKE 'GetTopics%'
 SELECT	@Key		= 'GetTopicsTest',
 	@ContentType		= 'Test',
 	@ParentID		= NULL,
-	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;',
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;',
 	@Version		= GETUTCDATE();
 
 INSERT
@@ -831,7 +831,7 @@ WHERE	TopicKey		LIKE 'GetTopicVersion%'
 SELECT	@Key		= 'GetTopicVersionTest',
 	@ContentType		= 'Test',
 	@ParentID		= NULL,
-	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;',
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;',
 	@Version		= '2020-01-01 12:00:00:000',
 	@NewVersion		= '2021-01-01 12:00:00:000';
 
@@ -893,7 +893,7 @@ VALUES	( @ParentID,
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;New Test&lt;/Attribute&gt;&lt;/Attributes&gt;';
+SELECT	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;New Test&lt;/attribute&gt;&lt;/attributes&gt;';
 
 UPDATE	@Attributes
 SET	AttributeValue		= 'NewValue'
@@ -1373,6 +1373,45 @@ SELECT	*
 FROM	Topics
 WHERE	TopicKey		= @Key;</value>
   </data>
+  <data name="dbo_UpdateExtendedAttributesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT,
+	@ExtendedAttributes	AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	
+FROM	ExtendedAttributes
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateExtendedAttributesTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL,
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key		= @Key,
+	@ContentType		= @ContentType,
+	@ParentID		= @ParentID,
+	@ExtendedAttributes	= @ExtendedAttributes;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	ExtendedAttributes</value>
+  </data>
   <data name="dbo_UpdateExtendedAttributesTest_PosttestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
@@ -1402,45 +1441,6 @@ SELECT	*
 FROM	Topics
 WHERE	TopicKey		= @Key
 
-SELECT	*
-FROM	ExtendedAttributes</value>
-  </data>
-  <data name="dbo_UpdateExtendedAttributesTest_PretestAction.SqlScript" xml:space="preserve">
-    <value>--------------------------------------------------------------------------------------------------------------------------------
--- DECLARE VARIABLES
---------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@TopicID		AS INT,
-	@Key		AS VARCHAR (128),
-	@ContentType		AS VARCHAR (128),
-	@ParentID		AS INT,
-	@ExtendedAttributes	AS XML;
-
---------------------------------------------------------------------------------------------------------------------------------
--- DELETE TEST DATA
---------------------------------------------------------------------------------------------------------------------------------
-DELETE	
-FROM	ExtendedAttributes
-
---------------------------------------------------------------------------------------------------------------------------------
--- SET VARIABLES
---------------------------------------------------------------------------------------------------------------------------------
-SELECT	@Key		= 'UpdateExtendedAttributesTest',
-	@ContentType		= 'Test',
-	@ParentID		= NULL,
-	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;';
-
---------------------------------------------------------------------------------------------------------------------------------
--- ESTABLISH TEST DATA
---------------------------------------------------------------------------------------------------------------------------------
-EXECUTE	@TopicID		= [dbo].[CreateTopic]
-	@Key		= @Key,
-	@ContentType		= @ContentType,
-	@ParentID		= @ParentID,
-	@ExtendedAttributes	= @ExtendedAttributes;
-
---------------------------------------------------------------------------------------------------------------------------------
--- VERIFY RESULTS
---------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	ExtendedAttributes</value>
   </data>
