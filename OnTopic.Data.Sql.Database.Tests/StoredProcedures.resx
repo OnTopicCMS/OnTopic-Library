@@ -309,7 +309,7 @@ SELECT	@TopicID		= TopicID
 FROM	Topics
 WHERE	TopicKey		= 'UpdateAttributesTest';
 
-SELECT	@Version		= GETUTCDATE();
+SELECT	@Version		= DATEADD(day, 1, GETUTCDATE());
 
 INSERT
 INTO	@Attributes
@@ -351,7 +351,7 @@ DECLARE	@Key		AS VARCHAR(128),
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'UpdateExtendedAttributesTest',
 	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;New&lt;/Attribute&gt;&lt;/Attributes&gt;',
-	@Version		= GETUTCDATE(),
+	@Version		= DATEADD(day, 1, GETUTCDATE()),
 	@DeleteUnmatched	= 0;
 
 SELECT	@TopicID		= TopicID
@@ -401,7 +401,7 @@ SELECT	@TargetID		= TopicID
 FROM	Topics
 WHERE	TopicKey		= 'UpdateReferencesTestTarget2';
 
-SELECT	@Version		= GETUTCDATE(),
+SELECT	@Version		= DATEADD(day, 1, GETUTCDATE()),
 	@DeleteUnmatched	= 1;
 
 INSERT
@@ -445,7 +445,7 @@ DECLARE	@TopicID		AS INT,
 -- SET VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@RelationshipKey	= 'UpdateRelationshipsTest',
-	@Version		= GETUTCDATE(),
+	@Version		= DATEADD(day, 1, GETUTCDATE()),
 	@DeleteUnmatched	= 1;
 
 SELECT	@TopicID		= TopicID
