@@ -51,6 +51,10 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postGetAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction testInitializeAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preFunctionTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction testCleanupAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postFunctionTopicCount;
       this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -77,6 +81,10 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preGetAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetAttributesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postGetAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      testInitializeAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preFunctionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      testCleanupAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      postFunctionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
@@ -226,6 +234,35 @@ namespace OnTopic.Data.Sql.Database.Tests {
       postGetAttributeCount.Name = "postGetAttributeCount";
       postGetAttributeCount.ResultSet = 1;
       postGetAttributeCount.RowCount = 0;
+      // 
+      // testInitializeAction
+      // 
+      testInitializeAction.Conditions.Add(preFunctionTopicCount);
+      resources.ApplyResources(testInitializeAction, "testInitializeAction");
+      // 
+      // preFunctionTopicCount
+      // 
+      preFunctionTopicCount.Enabled = true;
+      preFunctionTopicCount.Name = "preFunctionTopicCount";
+      preFunctionTopicCount.ResultSet = 1;
+      preFunctionTopicCount.RowCount = 7;
+      // 
+      // testCleanupAction
+      // 
+      testCleanupAction.Conditions.Add(postFunctionTopicCount);
+      resources.ApplyResources(testCleanupAction, "testCleanupAction");
+      // 
+      // postFunctionTopicCount
+      // 
+      postFunctionTopicCount.Enabled = true;
+      postFunctionTopicCount.Name = "postFunctionTopicCount";
+      postFunctionTopicCount.ResultSet = 1;
+      postFunctionTopicCount.RowCount = 0;
+      // 
+      // Functions
+      // 
+      this.TestCleanupAction = testCleanupAction;
+      this.TestInitializeAction = testInitializeAction;
     }
 
     #endregion

@@ -238,7 +238,8 @@ FROM	[dbo].[GetChildTopicIDs](
     <value>--------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@Key		AS VARCHAR(128),
+DECLARE	@RootTopicID		AS INT,
+	@Key		AS VARCHAR(128),
 	@TopicID		AS INT,
 	@AttributesXml		AS XML;
 
@@ -247,6 +248,10 @@ DECLARE	@Key		AS VARCHAR(128),
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'GetAttributesTest',
 	@AttributesXml		= '&lt;attributes&gt;&lt;attribute key=''GetAttributesTest4''&gt;New&lt;/attribute&gt;&lt;/attributes&gt;';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'FunctionTests';
 
 SELECT	@TopicID		= TopicID
 FROM	Topics
@@ -273,7 +278,7 @@ WHERE	TopicID		= @TopicID;
 EXECUTE	@TopicID		= [dbo].[CreateTopic]
 	@Key,
 	'Test',
-	NULL;
+	@RootTopicID;
 
 INSERT
 INTO	Attributes (
@@ -334,6 +339,109 @@ EXEC	[dbo].[DeleteTopic]	@TopicID
 SELECT	*
 FROM	Attributes
 WHERE	AttributeKey		LIKE 'GetAttributesTest%'</value>
+  </data>
+  <data name="testInitializeAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@RootTopicID		AS INT,
+	@RootTopicKey		AS VARCHAR(128),
+	@ContentType		AS VARCHAR(128),
+	@TopicID1		AS INT,
+	@TopicID2		AS INT,
+	@TopicID3		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RootTopicKey		= 'FunctionTests',
+	@ContentType		= 'Test';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @RootTopicKey;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+IF @RootTopicID IS NOT NULL
+  BEGIN
+    EXECUTE	[dbo].[DeleteTopic]	@RootTopicID;
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@RootTopicID		= [dbo].[CreateTopic]
+	@RootTopicKey, 
+	@ContentType,
+	NULL;
+
+EXECUTE	@TopicID1		= [dbo].[CreateTopic]
+	'Topic_1', 
+	@ContentType,
+	@RootTopicID;
+
+EXECUTE	@TopicID2		= [dbo].[CreateTopic]
+	'Topic_1_1', 
+	@ContentType,
+	@TopicID1;
+
+EXECUTE	@TopicID3		= [dbo].[CreateTopic]
+	'Topic_1_1_1', 
+	@ContentType,
+	@TopicID2;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_1', 
+	@ContentType,
+	@TopicID3;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_2', 
+	@ContentType,
+	@TopicID3;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_3', 
+	@ContentType,
+	@TopicID3;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics</value>
+  </data>
+  <data name="testCleanupAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@RootTopicID		AS INT,
+	@RootTopicKey		AS VARCHAR(128);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RootTopicKey		= 'FunctionTests';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @RootTopicKey;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+IF @RootTopicID IS NOT NULL
+  BEGIN
+    EXECUTE	[dbo].[DeleteTopic]	@RootTopicID;
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
