@@ -337,26 +337,48 @@ WHERE	TopicID		= @TopicID
 ORDER BY	AttributeKey		ASC;</value>
   </data>
   <data name="dbo_UpdateExtendedAttributesTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.UpdateExtendedAttributes
-DECLARE	@RC		AS INT,
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
 	@TopicID		AS INT,
 	@ExtendedAttributes	AS XML,
 	@Version		AS DATETIME,
 	@DeleteUnmatched	AS BIT;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@ExtendedAttributes	= NULL,
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateExtendedAttributesTest',
+	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;New&lt;/Attribute&gt;&lt;/Attributes&gt;',
 	@Version		= GETUTCDATE(),
 	@DeleteUnmatched	= 0;
 
-EXECUTE	@RC		= [dbo].[UpdateExtendedAttributes] 
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[UpdateExtendedAttributes] 
 	@TopicID,
 	@ExtendedAttributes,
 	@Version,
 	@DeleteUnmatched;
 
-SELECT	@RC		AS RC;</value>
+EXECUTE	[dbo].[UpdateExtendedAttributes] 
+	@TopicID,
+	@ExtendedAttributes,
+	@Version,
+	@DeleteUnmatched;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	AttributesXml
+FROM	ExtendedAttributes
+ORDER BY	Version		ASC</value>
   </data>
   <data name="dbo_UpdateReferencesTest_TestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -1294,6 +1316,12 @@ WHERE	RelationshipKey		= 'UpdateRelationshipsTest%';</value>
   </data>
   <data name="dbo_UpdateTopicTest_PosttestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT;
+
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- DELETE TEST DATA
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE
@@ -1344,6 +1372,77 @@ EXECUTE	@TopicID		= [dbo].[CreateTopic]
 SELECT	*
 FROM	Topics
 WHERE	TopicKey		= @Key;</value>
+  </data>
+  <data name="dbo_UpdateExtendedAttributesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateExtendedAttributesTest';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXEC	[dbo].[DeleteTopic]
+	@TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		= @Key
+
+SELECT	*
+FROM	ExtendedAttributes</value>
+  </data>
+  <data name="dbo_UpdateExtendedAttributesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT,
+	@ExtendedAttributes	AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	
+FROM	ExtendedAttributes
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateExtendedAttributesTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL,
+	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key		= @Key,
+	@ContentType		= @ContentType,
+	@ParentID		= @ParentID,
+	@ExtendedAttributes	= @ExtendedAttributes;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	ExtendedAttributes</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
