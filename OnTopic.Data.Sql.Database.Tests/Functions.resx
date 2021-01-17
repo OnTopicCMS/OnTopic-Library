@@ -118,21 +118,36 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="dbo_GetExtendedAttributeTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.GetExtendedAttribute
-DECLARE	@RC		AS NVARCHAR (MAX),
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
 	@TopicID		AS INT,
-	@AttributeKey		AS NVARCHAR (255);
+	@AttributeKey		AS VARCHAR(128),
+	@AttributeValue		AS NVARCHAR(2000);
 
-SELECT	@RC		= NULL,
-	@TopicID		= 0,
-	@AttributeKey		= NULL;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'Topic_1_1',
+	@AttributeKey		= 'GetExtendedAttributeTest2';
 
-SELECT	@RC		= [dbo].[GetExtendedAttribute](
-	  @TopicID, 
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeValue		= [dbo].[GetExtendedAttribute](
+	  @TopicID,
 	  @AttributeKey
 	);
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- VALIDATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeValue		AS RC;</value>
   </data>
   <data name="dbo_GetParentIDTest_TestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -627,6 +642,53 @@ VALUES	( @TopicID4,
 SELECT	*
 FROM	Attributes
 WHERE	AttributeKey		= @Key</value>
+  </data>
+  <data name="dbo_GetExtendedAttributeTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@AttributesXml		AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'Topic_1_1',
+	@AttributesXml		= '&lt;attributes&gt;' +
+			  '  &lt;attribute key=''GetExtendedAttributeTest1''&gt;Value1&lt;/attribute&gt;' +
+			  '  &lt;attribute key=''GetExtendedAttributeTest2''&gt;Value2&lt;/attribute&gt;' +
+			  '&lt;/attributes&gt;';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID,
+	  @AttributesXml
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

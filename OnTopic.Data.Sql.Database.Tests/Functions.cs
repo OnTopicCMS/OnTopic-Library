@@ -33,7 +33,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
     private void InitializeComponent() {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetExtendedAttributeTest_TestAction;
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Functions));
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition1;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetParentIDTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicIDTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetUniqueKeyTest_TestAction;
@@ -57,6 +56,9 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getParentIDValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getIDTopicValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getUniqueKeyValue;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetExtendedAttributeTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetExtendedAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getExtendedAttributeValue;
       this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -65,7 +67,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_GetAttributesTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetChildTopicIDsTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       dbo_GetExtendedAttributeTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition1 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_GetParentIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_GetTopicIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_GetUniqueKeyTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -89,16 +90,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getParentIDValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       getIDTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       getUniqueKeyValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
+      dbo_GetExtendedAttributeTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preGetExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getExtendedAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
-      dbo_GetExtendedAttributeTest_TestAction.Conditions.Add(inconclusiveCondition1);
+      dbo_GetExtendedAttributeTest_TestAction.Conditions.Add(getExtendedAttributeValue);
       resources.ApplyResources(dbo_GetExtendedAttributeTest_TestAction, "dbo_GetExtendedAttributeTest_TestAction");
-      // 
-      // inconclusiveCondition1
-      // 
-      inconclusiveCondition1.Enabled = true;
-      inconclusiveCondition1.Name = "inconclusiveCondition1";
       // 
       // dbo_GetParentIDTest_TestAction
       // 
@@ -218,7 +217,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // dbo_GetExtendedAttributeTestData
       // 
       this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
-      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
+      this.dbo_GetExtendedAttributeTestData.PretestAction = dbo_GetExtendedAttributeTest_PretestAction;
       this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
       // 
       // dbo_GetParentIDTestData
@@ -293,6 +292,28 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getUniqueKeyValue.NullExpected = false;
       getUniqueKeyValue.ResultSet = 1;
       getUniqueKeyValue.RowNumber = 1;
+      // 
+      // dbo_GetExtendedAttributeTest_PretestAction
+      // 
+      dbo_GetExtendedAttributeTest_PretestAction.Conditions.Add(preGetExtendedAttributeCount);
+      resources.ApplyResources(dbo_GetExtendedAttributeTest_PretestAction, "dbo_GetExtendedAttributeTest_PretestAction");
+      // 
+      // preGetExtendedAttributeCount
+      // 
+      preGetExtendedAttributeCount.Enabled = true;
+      preGetExtendedAttributeCount.Name = "preGetExtendedAttributeCount";
+      preGetExtendedAttributeCount.ResultSet = 1;
+      preGetExtendedAttributeCount.RowCount = 1;
+      // 
+      // getExtendedAttributeValue
+      // 
+      getExtendedAttributeValue.ColumnNumber = 1;
+      getExtendedAttributeValue.Enabled = true;
+      getExtendedAttributeValue.ExpectedValue = "Value2";
+      getExtendedAttributeValue.Name = "getExtendedAttributeValue";
+      getExtendedAttributeValue.NullExpected = false;
+      getExtendedAttributeValue.ResultSet = 1;
+      getExtendedAttributeValue.RowNumber = 1;
       // 
       // Functions
       // 
