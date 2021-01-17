@@ -135,18 +135,36 @@ SELECT	@RC		= [dbo].[GetExtendedAttribute](
 SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_GetParentIDTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.GetParentID
-DECLARE	@RC		AS INT, 
-	@TopicID		AS INT;
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@ExpectedParentID	AS INT,
+	@ParentID		AS INT;
 
-SELECT	@RC		= NULL,
-	@TopicID		= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedParentID	= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1';
 
-SELECT	@RC		= [dbo].[GetParentID](
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_1';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ParentID		= [dbo].[GetParentID](
 	  @TopicID
 	);
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- EVALUATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedParentID - @ParentID	AS RC;
+</value>
   </data>
   <data name="dbo_GetTopicIDTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetTopicID
