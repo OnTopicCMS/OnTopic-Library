@@ -407,58 +407,105 @@ WHERE	Source_TopicID		= @TopicID
 ORDER BY	ReferenceKey		ASC;</value>
   </data>
   <data name="dbo_UpdateRelationshipsTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.UpdateRelationships
-DECLARE	@RC		AS INT,
-	@TopicID		AS INT,
-	@RelationshipKey	AS VARCHAR (255),
-	@RelatedTopics		AS [dbo].[TopicList],
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@TargetID1		AS INT,
+	@TargetID2		AS INT,
+	@TargetID4		AS INT,
+	@RelationshipKey	AS VARCHAR(128),
+	@RelatedTopics		AS TopicList,
 	@Version		AS DATETIME,
 	@DeleteUnmatched	AS BIT;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@RelationshipKey	= NULL,
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RelationshipKey	= 'UpdateRelationshipsTest',
 	@Version		= GETUTCDATE(),
-	@DeleteUnmatched	= 0;
+	@DeleteUnmatched	= 1;
 
-EXECUTE	@RC		= [dbo].[UpdateRelationships]
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @RelationshipKey;
+
+SELECT	@TargetID1		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateRelationshipsTestTarget1';
+
+SELECT	@TargetID2		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateRelationshipsTestTarget2';
+
+SELECT	@TargetID4		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateRelationshipsTestTarget4';
+
+
+INSERT
+INTO	@RelatedTopics
+VALUES	( @TargetID1 ),
+	( @TargetID2 ),
+	( @TargetID4 );
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[UpdateRelationships]
 	@TopicID,
 	@RelationshipKey,
 	@RelatedTopics,
 	@Version,
 	@DeleteUnmatched;
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	IsDeleted
+FROM	RelationshipIndex
+WHERE	Source_TopicID		= @TopicID
+  AND	RelationshipKey		= @RelationshipKey
+ORDER BY	Target_TopicID		ASC;</value>
   </data>
   <data name="dbo_UpdateTopicTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.UpdateTopic
-DECLARE	@RC		AS INT,
-	@TopicID		AS INT,
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
 	@Key		AS VARCHAR (128),
 	@ContentType		AS VARCHAR (128),
-	@Attributes		AS [dbo].[AttributeValues],
-	@ExtendedAttributes	AS XML,
-	@Version		AS DATETIME,
-	@DeleteUnmatched	AS BIT;
+	@NewKey		AS VARCHAR (128),
+	@NewContentType		AS VARCHAR (128),
+	@ParentID		AS INT;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@Key		= NULL,
-	@ContentType		= NULL,
-	@ExtendedAttributes	= NULL,
-	@Version		= GETUTCDATE(),
-	@DeleteUnmatched	= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateTopicTest',
+	@ContentType		= 'Test',
+	@Key		= 'UpdateTopicTestNew',
+	@ContentType		= 'TestNew',
+	@ParentID		= NULL;
 
-EXECUTE	@RC		= [dbo].[UpdateTopic]
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[UpdateTopic]
 	@TopicID,
-	@Key,
-	@ContentType,
-	@Attributes,
-	@ExtendedAttributes,
-	@Version,
-	@DeleteUnmatched;
+	@NewKey,
+	@NewContentType;
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	ContentType
+FROM	Topics
+WHERE	TopicKey		= @NewKey</value>
   </data>
   <data name="dbo_CreateTopicTest_PosttestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -1061,25 +1108,6 @@ SELECT	*
 FROM	Attributes
 WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';</value>
   </data>
-  <data name="dbo_UpdateReferencesTest_PosttestAction.SqlScript" xml:space="preserve">
-    <value>--------------------------------------------------------------------------------------------------------------------------------
--- DELETE TEST DATA
---------------------------------------------------------------------------------------------------------------------------------
-DELETE
-FROM	TopicReferences
-WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';
-
-DELETE
-FROM	Topics
-WHERE	TopicKey		LIKE 'UpdateReferencesTest%';
-
---------------------------------------------------------------------------------------------------------------------------------
--- VERIFY RESULTS
---------------------------------------------------------------------------------------------------------------------------------
-SELECT	*
-FROM	TopicReferences
-WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';</value>
-  </data>
   <data name="dbo_UpdateReferencesTest_PretestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE VARIABLES
@@ -1144,6 +1172,182 @@ VALUES	( @TopicID,
 SELECT	*
 FROM	TopicReferences
 WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';</value>
+  </data>
+  <data name="dbo_UpdateReferencesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateReferencesTest%';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';</value>
+  </data>
+  <data name="dbo_UpdateRelationshipsTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@RelationshipKey	AS VARCHAR(128),
+	@TargetID1		AS INT,
+	@TargetID2		AS INT,
+	@TargetID3		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Relationships
+WHERE	RelationshipKey		= 'UpdateRelationshipsTest';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateRelationshipsTest%';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RelationshipKey	= 'UpdateRelationshipsTest'
+
+
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@RelationshipKey,
+	'Test',
+	NULL;
+
+EXECUTE	@TargetID1		= [dbo].[CreateTopic]
+	'UpdateRelationshipsTestTarget1',
+	'Test',
+	NULL;
+
+EXECUTE	@TargetID2		= [dbo].[CreateTopic]
+	'UpdateRelationshipsTestTarget2',
+	'Test',
+	NULL;
+
+EXECUTE	@TargetID3		= [dbo].[CreateTopic]
+	'UpdateRelationshipsTestTarget3',
+	'Test',
+	NULL;
+
+EXECUTE	[dbo].[CreateTopic]
+	'UpdateRelationshipsTestTarget4',
+	'Test',
+	NULL;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID
+	)
+VALUES	( @TopicID,
+	  @RelationshipKey,
+	  @TargetID1
+	),
+	( @TopicID,
+	  @RelationshipKey,
+	  @TargetID2
+	),
+	( @TopicID,
+	  @RelationshipKey,
+	  @TargetID3
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		= @RelationshipKey;</value>
+  </data>
+  <data name="dbo_UpdateRelationshipsTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Relationships
+WHERE	RelationshipKey		= 'UpdateRelationshipsTest';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateRelationshipsTest%';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		= 'UpdateRelationshipsTest%';</value>
+  </data>
+  <data name="dbo_UpdateTopicTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'CreateTopicTest%'
+  AND	ContentType		= 'Test'
+  AND	ParentID		is NULL
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'CreateTopicTest%'
+  AND	ContentType		= 'Test'
+  AND	ParentID		is NULL</value>
+  </data>
+  <data name="dbo_UpdateTopicTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateTopicTest%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'UpdateTopicTest',
+	@ContentType		= 'Test',
+	@ParentID		= NULL;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		'UpdateTopicTest'</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
