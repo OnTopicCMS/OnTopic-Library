@@ -177,19 +177,31 @@ SELECT	@RC		= [dbo].[GetUniqueKey](
 SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_FindTopicIDsTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.FindTopicIDs
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@TopicID		AS INT,
 	@AttributeKey		AS VARCHAR (255),
 	@AttributeValue		AS NVARCHAR (255),
 	@IsExtendedAttribute	AS BIT,
 	@UsePartialMatch	AS BIT;
 
-SELECT	@TopicID		= 0,
-	@AttributeKey		= NULL,
-	@AttributeValue		= NULL,
-	@IsExtendedAttribute	= 0,
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeKey		= 'FindTopicIDsTest',
+	@AttributeValue		= 'Test',
+	@IsExtendedAttribute	= NULL,
 	@UsePartialMatch	= 0;
 
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1'
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	[dbo].[FindTopicIDs](
 	  @TopicID,
@@ -442,6 +454,94 @@ IF @RootTopicID IS NOT NULL
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	Topics</value>
+  </data>
+  <data name="dbo_FindTopicIDsTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@Value		AS VARCHAR(128),
+	@TopicID1		AS INT,
+	@TopicID2		AS INT,
+	@TopicID3		AS INT,
+	@TopicID4		AS INT,
+	@Attributes		AS AttributeValues,
+	@ExtendedAttributes	AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'FindTopicIDsTest',
+	@Value		= 'Test',
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''' + @Key + '''&gt;' + @Value + '&lt;/attribute&gt;&lt;/attributes&gt;';
+
+SELECT	@TopicID1		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_1';
+
+SELECT	@TopicID2		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_2';
+
+SELECT	@TopicID3		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_3';
+
+SELECT	@TopicID4		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID1,
+	  @ExtendedAttributes
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID2,
+	  @Key,
+	  @Value
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID3,
+	  @Key,
+	  'Invalid'
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID4,
+	  @Key,
+	  @Value
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		= @Key</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

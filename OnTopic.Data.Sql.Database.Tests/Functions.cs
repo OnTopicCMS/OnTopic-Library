@@ -41,7 +41,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetUniqueKeyTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition4;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_FindTopicIDsTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition5;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition findTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getAttributeValue;
@@ -55,6 +55,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preFunctionTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction testCleanupAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postFunctionTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_FindTopicIDsTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preFindAttributeCount;
       this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -71,7 +73,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_GetUniqueKeyTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition4 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_FindTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition5 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
+      findTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       getAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getAttributeValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
@@ -85,6 +87,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preFunctionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       testCleanupAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postFunctionTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_FindTopicIDsTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preFindAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
@@ -128,13 +132,15 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_FindTopicIDsTest_TestAction
       // 
-      dbo_FindTopicIDsTest_TestAction.Conditions.Add(inconclusiveCondition5);
+      dbo_FindTopicIDsTest_TestAction.Conditions.Add(findTopicCount);
       resources.ApplyResources(dbo_FindTopicIDsTest_TestAction, "dbo_FindTopicIDsTest_TestAction");
       // 
-      // inconclusiveCondition5
+      // findTopicCount
       // 
-      inconclusiveCondition5.Enabled = true;
-      inconclusiveCondition5.Name = "inconclusiveCondition5";
+      findTopicCount.Enabled = true;
+      findTopicCount.Name = "findTopicCount";
+      findTopicCount.ResultSet = 1;
+      findTopicCount.RowCount = 2;
       // 
       // dbo_GetAttributesTest_TestAction
       // 
@@ -181,48 +187,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preGetAttributeCount.ResultSet = 1;
       preGetAttributeCount.RowCount = 3;
       // 
-      // dbo_GetExtendedAttributeTestData
-      // 
-      this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
-      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
-      this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
-      // 
-      // dbo_GetParentIDTestData
-      // 
-      this.dbo_GetParentIDTestData.PosttestAction = null;
-      this.dbo_GetParentIDTestData.PretestAction = null;
-      this.dbo_GetParentIDTestData.TestAction = dbo_GetParentIDTest_TestAction;
-      // 
-      // dbo_GetTopicIDTestData
-      // 
-      this.dbo_GetTopicIDTestData.PosttestAction = null;
-      this.dbo_GetTopicIDTestData.PretestAction = null;
-      this.dbo_GetTopicIDTestData.TestAction = dbo_GetTopicIDTest_TestAction;
-      // 
-      // dbo_GetUniqueKeyTestData
-      // 
-      this.dbo_GetUniqueKeyTestData.PosttestAction = null;
-      this.dbo_GetUniqueKeyTestData.PretestAction = null;
-      this.dbo_GetUniqueKeyTestData.TestAction = dbo_GetUniqueKeyTest_TestAction;
-      // 
-      // dbo_FindTopicIDsTestData
-      // 
-      this.dbo_FindTopicIDsTestData.PosttestAction = null;
-      this.dbo_FindTopicIDsTestData.PretestAction = null;
-      this.dbo_FindTopicIDsTestData.TestAction = dbo_FindTopicIDsTest_TestAction;
-      // 
-      // dbo_GetAttributesTestData
-      // 
-      this.dbo_GetAttributesTestData.PosttestAction = dbo_GetAttributesTest_PosttestAction;
-      this.dbo_GetAttributesTestData.PretestAction = dbo_GetAttributesTest_PretestAction;
-      this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
-      // 
-      // dbo_GetChildTopicIDsTestData
-      // 
-      this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
-      this.dbo_GetChildTopicIDsTestData.PretestAction = null;
-      this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
-      // 
       // dbo_GetAttributesTest_PosttestAction
       // 
       dbo_GetAttributesTest_PosttestAction.Conditions.Add(postGetAttributeCount);
@@ -258,6 +222,60 @@ namespace OnTopic.Data.Sql.Database.Tests {
       postFunctionTopicCount.Name = "postFunctionTopicCount";
       postFunctionTopicCount.ResultSet = 1;
       postFunctionTopicCount.RowCount = 0;
+      // 
+      // dbo_FindTopicIDsTest_PretestAction
+      // 
+      dbo_FindTopicIDsTest_PretestAction.Conditions.Add(preFindAttributeCount);
+      resources.ApplyResources(dbo_FindTopicIDsTest_PretestAction, "dbo_FindTopicIDsTest_PretestAction");
+      // 
+      // preFindAttributeCount
+      // 
+      preFindAttributeCount.Enabled = true;
+      preFindAttributeCount.Name = "preFindAttributeCount";
+      preFindAttributeCount.ResultSet = 1;
+      preFindAttributeCount.RowCount = 3;
+      // 
+      // dbo_GetExtendedAttributeTestData
+      // 
+      this.dbo_GetExtendedAttributeTestData.PosttestAction = null;
+      this.dbo_GetExtendedAttributeTestData.PretestAction = null;
+      this.dbo_GetExtendedAttributeTestData.TestAction = dbo_GetExtendedAttributeTest_TestAction;
+      // 
+      // dbo_GetParentIDTestData
+      // 
+      this.dbo_GetParentIDTestData.PosttestAction = null;
+      this.dbo_GetParentIDTestData.PretestAction = null;
+      this.dbo_GetParentIDTestData.TestAction = dbo_GetParentIDTest_TestAction;
+      // 
+      // dbo_GetTopicIDTestData
+      // 
+      this.dbo_GetTopicIDTestData.PosttestAction = null;
+      this.dbo_GetTopicIDTestData.PretestAction = null;
+      this.dbo_GetTopicIDTestData.TestAction = dbo_GetTopicIDTest_TestAction;
+      // 
+      // dbo_GetUniqueKeyTestData
+      // 
+      this.dbo_GetUniqueKeyTestData.PosttestAction = null;
+      this.dbo_GetUniqueKeyTestData.PretestAction = null;
+      this.dbo_GetUniqueKeyTestData.TestAction = dbo_GetUniqueKeyTest_TestAction;
+      // 
+      // dbo_FindTopicIDsTestData
+      // 
+      this.dbo_FindTopicIDsTestData.PosttestAction = null;
+      this.dbo_FindTopicIDsTestData.PretestAction = dbo_FindTopicIDsTest_PretestAction;
+      this.dbo_FindTopicIDsTestData.TestAction = dbo_FindTopicIDsTest_TestAction;
+      // 
+      // dbo_GetAttributesTestData
+      // 
+      this.dbo_GetAttributesTestData.PosttestAction = dbo_GetAttributesTest_PosttestAction;
+      this.dbo_GetAttributesTestData.PretestAction = dbo_GetAttributesTest_PretestAction;
+      this.dbo_GetAttributesTestData.TestAction = dbo_GetAttributesTest_TestAction;
+      // 
+      // dbo_GetChildTopicIDsTestData
+      // 
+      this.dbo_GetChildTopicIDsTestData.PosttestAction = null;
+      this.dbo_GetChildTopicIDsTestData.PretestAction = null;
+      this.dbo_GetChildTopicIDsTestData.TestAction = dbo_GetChildTopicIDsTest_TestAction;
       // 
       // Functions
       // 
