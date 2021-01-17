@@ -136,7 +136,7 @@ DECLARE	@RC		AS INT,
 SELECT	@RC		= 0,
 	@Key		= 'CreateTopicTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL,
+	@ParentID		= 1,
 	@ExtendedAttributes	= NULL,
 	@Version		= GETUTCDATE();
 
@@ -498,8 +498,7 @@ DECLARE	@TopicID		AS INT,
 	@Key		AS VARCHAR (128),
 	@ContentType		AS VARCHAR (128),
 	@NewKey		AS VARCHAR (128),
-	@NewContentType		AS VARCHAR (128),
-	@ParentID		AS INT;
+	@NewContentType		AS VARCHAR (128);
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET VARIABLES
@@ -507,8 +506,7 @@ DECLARE	@TopicID		AS INT,
 SELECT	@Key		= 'UpdateTopicTest',
 	@ContentType		= 'Test',
 	@NewKey		= 'UpdateTopicTestNew',
-	@NewContentType		= 'TestNew',
-	@ParentID		= NULL;
+	@NewContentType		= 'TestNew';
 
 SELECT	@TopicID		= TopicID
 FROM	Topics
@@ -536,17 +534,13 @@ WHERE	TopicKey		= @NewKey</value>
 DELETE
 FROM	Topics
 WHERE	TopicKey		= 'CreateTopicTest'
-  AND	ContentType		= 'Test'
-  AND	ParentID		is NULL
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- VERIFY RESULTS
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	Topics
-WHERE	TopicKey		= 'CreateTopicTest'
-  AND	ContentType		= 'Test'
-  AND	ParentID		is NULL</value>
+WHERE	TopicKey		= 'CreateTopicTest'</value>
   </data>
   <data name="dbo_DeleteTopicTest_PretestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -585,7 +579,7 @@ WHERE	TopicKey		LIKE 'DeleteTopic%'
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'DeleteTopicTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL,
+	@ParentID		= 1,
 	@ExtendedAttributes	= '&lt;Attributes&gt;&lt;Attribute key=''Body''&gt;Test&lt;/Attribute&gt;&lt;/Attributes&gt;',
 	@Version		= GETUTCDATE();
 
@@ -696,7 +690,7 @@ WHERE	TopicKey		LIKE 'GetTopics%'
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'GetTopicsTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL,
+	@ParentID		= 1,
 	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;',
 	@Version		= GETUTCDATE();
 
@@ -830,7 +824,7 @@ WHERE	TopicKey		LIKE 'GetTopicVersion%'
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'GetTopicVersionTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL,
+	@ParentID		= 1,
 	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;',
 	@Version		= '2020-01-01 12:00:00:000',
 	@NewVersion		= '2021-01-01 12:00:00:000';
@@ -1003,7 +997,7 @@ SELECT	@ContentType		= 'Test';
 EXECUTE	@RootTopicID		= [dbo].[CreateTopic]
 	'MoveTopicTest',
 	@ContentType,
-	NULL;
+	1;
 
 EXECUTE	@ParentID1		= [dbo].[CreateTopic]
 	'MoveTopicTest1',
@@ -1080,7 +1074,7 @@ WHERE	TopicKey		= 'UpdateAttributesTest';
 EXECUTE	@TopicID		= [dbo].[CreateTopic]
 	'UpdateAttributesTest',
 	'Test',
-	NULL;
+	1;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ESTABLISH TEST DATA
@@ -1154,17 +1148,17 @@ WHERE	TopicKey		LIKE 'UpdateReferencesTest%';
 EXECUTE	@TopicID		= [dbo].[CreateTopic]
 	'UpdateReferencesTest',
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	@TargetID		= [dbo].[CreateTopic]
 	'UpdateReferencesTestTarget1',
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	[dbo].[CreateTopic]
 	'UpdateReferencesTestTarget2',
 	'Test',
-	NULL;
+	1;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ESTABLISH TEST DATA
@@ -1244,27 +1238,27 @@ SELECT	@RelationshipKey	= 'UpdateRelationshipsTest'
 EXECUTE	@TopicID		= [dbo].[CreateTopic]
 	@RelationshipKey,
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	@TargetID1		= [dbo].[CreateTopic]
 	'UpdateRelationshipsTestTarget1',
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	@TargetID2		= [dbo].[CreateTopic]
 	'UpdateRelationshipsTestTarget2',
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	@TargetID3		= [dbo].[CreateTopic]
 	'UpdateRelationshipsTestTarget3',
 	'Test',
-	NULL;
+	1;
 
 EXECUTE	[dbo].[CreateTopic]
 	'UpdateRelationshipsTestTarget4',
 	'Test',
-	NULL;
+	1;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ESTABLISH TEST DATA
@@ -1356,7 +1350,7 @@ WHERE	TopicKey		LIKE 'UpdateTopicTest%';
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'UpdateTopicTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL;
+	@ParentID		= 1;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ESTABLISH TEST DATA
@@ -1394,7 +1388,7 @@ FROM	ExtendedAttributes
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'UpdateExtendedAttributesTest',
 	@ContentType		= 'Test',
-	@ParentID		= NULL,
+	@ParentID		= 1,
 	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;';
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -1443,6 +1437,37 @@ WHERE	TopicKey		= @Key
 
 SELECT	*
 FROM	ExtendedAttributes</value>
+  </data>
+  <data name="testInitializeAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ENSURE GLOBAL ROOT
+--------------------------------------------------------------------------------------------------------------------------------
+IF NOT EXISTS (SELECT * FROM Topics WHERE TopicID = 1)
+  BEGIN
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		ON;
+
+    INSERT
+    INTO	Topics (
+	  TopicID,
+	  TopicKey,
+	  ContentType,
+	  ParentID,
+	  RangeLeft,
+	  RangeRight
+	)
+    VALUES	(
+	  1,
+	  'Root',
+	  'Test',
+	  NULL,
+	  1,
+	  2
+	)
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		OFF;
+
+  END</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
