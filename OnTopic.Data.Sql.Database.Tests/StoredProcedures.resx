@@ -1026,14 +1026,14 @@ WHERE	TopicKey		LIKE 'MoveTopic%'</value>
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE
 FROM	Topics
-WHERE	TopicKey		= 'MoveTopic%'
+WHERE	TopicKey		LIKE 'MoveTopic%'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- VERIFY RESULTS
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	Topics
-WHERE	TopicKey		= 'MoveTopic%'</value>
+WHERE	TopicKey		LIKE 'MoveTopic%'</value>
   </data>
   <data name="dbo_UpdateAttributesTest_PretestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
