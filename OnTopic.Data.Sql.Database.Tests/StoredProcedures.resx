@@ -359,25 +359,52 @@ EXECUTE	@RC		= [dbo].[UpdateExtendedAttributes]
 SELECT	@RC		AS RC;</value>
   </data>
   <data name="dbo_UpdateReferencesTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.UpdateReferences
-DECLARE	@RC		AS INT,
-	@TopicID		AS INT,
-	@ReferencedTopics	AS [dbo].[TopicReferences],
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@TargetID		AS INT,
+	@ReferencedTopics	AS TopicReferences,
 	@Version		AS DATETIME,
 	@DeleteUnmatched	AS BIT;
 
-SELECT	@RC		= 0,
-	@TopicID		= 0,
-	@Version		= GETUTCDATE(),
-	@DeleteUnmatched	= 0;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateReferencesTest';
 
-EXECUTE	@RC		= [dbo].[UpdateReferences]
+SELECT	@TargetID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'UpdateReferencesTestTarget2';
+
+SELECT	@Version		= GETUTCDATE(),
+	@DeleteUnmatched	= 1;
+
+INSERT
+INTO	@ReferencedTopics
+VALUES	( 'UpdateReferencesTest1', @TargetID ),
+	( 'UpdateReferencesTest2', @TargetID ),
+	( 'UpdateReferencesTest4', @TargetID );
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[UpdateReferences]
 	@TopicID,
 	@ReferencedTopics,
 	@Version,
 	@DeleteUnmatched;
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	ISNULL(Target_TopicID, -1)
+FROM	ReferenceIndex
+WHERE	Source_TopicID		= @TopicID
+  AND	ReferenceKey		LIKE 'UpdateReferencesTest%'
+ORDER BY	ReferenceKey		ASC;</value>
   </data>
   <data name="dbo_UpdateRelationshipsTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.UpdateRelationships
@@ -1033,6 +1060,90 @@ WHERE	TopicKey		= 'UpdateAttributesTest';
 SELECT	*
 FROM	Attributes
 WHERE	AttributeKey		LIKE 'UpdateAttributesTest%';</value>
+  </data>
+  <data name="dbo_UpdateReferencesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateReferencesTest%';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';</value>
+  </data>
+  <data name="dbo_UpdateReferencesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@TargetID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';
+
+DELETE
+FROM	Topics
+WHERE	TopicKey		LIKE 'UpdateReferencesTest%';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	'UpdateReferencesTest',
+	'Test',
+	NULL;
+
+EXECUTE	@TargetID		= [dbo].[CreateTopic]
+	'UpdateReferencesTestTarget1',
+	'Test',
+	NULL;
+
+EXECUTE	[dbo].[CreateTopic]
+	'UpdateReferencesTestTarget2',
+	'Test',
+	NULL;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID
+	)
+VALUES	( @TopicID,
+	  'UpdateReferencesTest1',
+	  @TargetID
+	),
+	( @TopicID,
+	  'UpdateReferencesTest2',
+	  @TargetID
+	),
+	( @TopicID,
+	  'UpdateReferencesTest3',
+	  @TargetID
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		LIKE 'UpdateReferencesTest%';</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

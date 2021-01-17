@@ -64,7 +64,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateExtendedAttributesTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition7;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateReferencesTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition8;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateRelationshipsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition9;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateTopicTest_TestAction;
@@ -96,6 +95,11 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateAttributesTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateReferencesTest_PretestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_UpdateReferencesTest_PosttestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preUpdateReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition updateReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition updateReferenceValue;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -138,7 +142,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_UpdateExtendedAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition7 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_UpdateReferencesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition8 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_UpdateRelationshipsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       inconclusiveCondition9 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_UpdateTopicTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -170,6 +173,11 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preUpdateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_UpdateAttributesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postUpdateAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      dbo_UpdateReferencesTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      dbo_UpdateReferencesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      preUpdateReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      updateReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      updateReferenceValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
@@ -406,13 +414,9 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_UpdateReferencesTest_TestAction
       // 
-      dbo_UpdateReferencesTest_TestAction.Conditions.Add(inconclusiveCondition8);
+      dbo_UpdateReferencesTest_TestAction.Conditions.Add(updateReferenceCount);
+      dbo_UpdateReferencesTest_TestAction.Conditions.Add(updateReferenceValue);
       resources.ApplyResources(dbo_UpdateReferencesTest_TestAction, "dbo_UpdateReferencesTest_TestAction");
-      // 
-      // inconclusiveCondition8
-      // 
-      inconclusiveCondition8.Enabled = true;
-      inconclusiveCondition8.Name = "inconclusiveCondition8";
       // 
       // dbo_UpdateRelationshipsTest_TestAction
       // 
@@ -654,8 +658,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_UpdateReferencesTestData
       // 
-      this.dbo_UpdateReferencesTestData.PosttestAction = null;
-      this.dbo_UpdateReferencesTestData.PretestAction = null;
+      this.dbo_UpdateReferencesTestData.PosttestAction = dbo_UpdateReferencesTest_PosttestAction;
+      this.dbo_UpdateReferencesTestData.PretestAction = dbo_UpdateReferencesTest_PretestAction;
       this.dbo_UpdateReferencesTestData.TestAction = dbo_UpdateReferencesTest_TestAction;
       // 
       // dbo_UpdateRelationshipsTestData
@@ -669,6 +673,39 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_UpdateTopicTestData.PosttestAction = null;
       this.dbo_UpdateTopicTestData.PretestAction = null;
       this.dbo_UpdateTopicTestData.TestAction = dbo_UpdateTopicTest_TestAction;
+      // 
+      // dbo_UpdateReferencesTest_PretestAction
+      // 
+      dbo_UpdateReferencesTest_PretestAction.Conditions.Add(preUpdateReferenceCount);
+      resources.ApplyResources(dbo_UpdateReferencesTest_PretestAction, "dbo_UpdateReferencesTest_PretestAction");
+      // 
+      // dbo_UpdateReferencesTest_PosttestAction
+      // 
+      resources.ApplyResources(dbo_UpdateReferencesTest_PosttestAction, "dbo_UpdateReferencesTest_PosttestAction");
+      // 
+      // preUpdateReferenceCount
+      // 
+      preUpdateReferenceCount.Enabled = true;
+      preUpdateReferenceCount.Name = "preUpdateReferenceCount";
+      preUpdateReferenceCount.ResultSet = 1;
+      preUpdateReferenceCount.RowCount = 3;
+      // 
+      // updateReferenceCount
+      // 
+      updateReferenceCount.Enabled = true;
+      updateReferenceCount.Name = "updateReferenceCount";
+      updateReferenceCount.ResultSet = 1;
+      updateReferenceCount.RowCount = 4;
+      // 
+      // updateReferenceValue
+      // 
+      updateReferenceValue.ColumnNumber = 1;
+      updateReferenceValue.Enabled = true;
+      updateReferenceValue.ExpectedValue = "-1";
+      updateReferenceValue.Name = "updateReferenceValue";
+      updateReferenceValue.NullExpected = false;
+      updateReferenceValue.ResultSet = 1;
+      updateReferenceValue.RowNumber = 3;
     }
 
     #endregion
