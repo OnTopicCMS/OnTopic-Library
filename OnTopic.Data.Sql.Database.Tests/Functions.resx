@@ -167,18 +167,33 @@ SELECT	@ExpectedParentID - @ParentID	AS RC;
 </value>
   </data>
   <data name="dbo_GetTopicIDTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- database unit test for dbo.GetTopicID
-DECLARE	@RC		AS INT,
-	@UniqueKey		AS NVARCHAR (2500);
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@ExpectedTopicID	AS INT,
+	@UniqueKey		AS NVARCHAR(2500);
 
-SELECT	@RC		= NULL,
-	@UniqueKey		= NULL;
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= 'Root:FunctionTests:Topic_1:Topic_1_1:Topic_1_1_1:Topic_1_1_1_2';
 
-SELECT	@RC		= [dbo].[GetTopicID](
+SELECT	@ExpectedTopicID	= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_2';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= [dbo].[GetTopicID](
 	  @UniqueKey
 	);
 
-SELECT	@RC		AS RC;</value>
+--------------------------------------------------------------------------------------------------------------------------------
+-- EVALUATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedTopicID - @TopicID	AS RC;</value>
   </data>
   <data name="dbo_GetUniqueKeyTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- database unit test for dbo.GetUniqueKey
@@ -410,12 +425,42 @@ IF @RootTopicID IS NOT NULL
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- ENSURE GLOBAL ROOT
+--------------------------------------------------------------------------------------------------------------------------------
+IF NOT EXISTS (SELECT * FROM Topics WHERE TopicID = 1)
+  BEGIN
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		ON;
+
+    INSERT
+    INTO	Topics (
+	  TopicID,
+	  TopicKey,
+	  ContentType,
+	  ParentID,
+	  RangeLeft,
+	  RangeRight
+	)
+    VALUES	(
+	  1,
+	  'Root',
+	  'Test',
+	  NULL,
+	  1,
+	  2
+	)
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		OFF;
+
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- ESTABLISH TEST DATA
 --------------------------------------------------------------------------------------------------------------------------------
 EXECUTE	@RootTopicID		= [dbo].[CreateTopic]
 	@RootTopicKey, 
 	@ContentType,
-	NULL;
+	1;
 
 EXECUTE	@TopicID1		= [dbo].[CreateTopic]
 	'Topic_1', 
