@@ -449,7 +449,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       updateExtendedAttributeValue.ColumnNumber = 1;
       updateExtendedAttributeValue.Enabled = true;
-      updateExtendedAttributeValue.ExpectedValue = "<Attributes><Attribute key=\"Body\">New</Attribute></Attributes>";
+      updateExtendedAttributeValue.ExpectedValue = "<attributes><attribute key=\"Body\">New</attribute></attributes>";
       updateExtendedAttributeValue.Name = "updateExtendedAttributeValue";
       updateExtendedAttributeValue.NullExpected = false;
       updateExtendedAttributeValue.ResultSet = 1;
