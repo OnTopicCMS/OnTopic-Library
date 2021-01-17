@@ -484,13 +484,13 @@ DECLARE	@TopicID		AS INT,
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	@Key		= 'UpdateTopicTest',
 	@ContentType		= 'Test',
-	@Key		= 'UpdateTopicTestNew',
-	@ContentType		= 'TestNew',
+	@NewKey		= 'UpdateTopicTestNew',
+	@NewContentType		= 'TestNew',
 	@ParentID		= NULL;
 
 SELECT	@TopicID		= TopicID
 FROM	Topics
-WHERE	TopicKey		= @Key
+WHERE	TopicKey		= @Key;
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- EXECUTE PROCEDURE
@@ -1298,18 +1298,14 @@ WHERE	RelationshipKey		= 'UpdateRelationshipsTest%';</value>
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE
 FROM	Topics
-WHERE	TopicKey		LIKE 'CreateTopicTest%'
-  AND	ContentType		= 'Test'
-  AND	ParentID		is NULL
+WHERE	TopicKey		LIKE 'UpdateTopicTest%'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- VERIFY RESULTS
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	Topics
-WHERE	TopicKey		LIKE 'CreateTopicTest%'
-  AND	ContentType		= 'Test'
-  AND	ParentID		is NULL</value>
+WHERE	TopicKey		LIKE 'UpdateTopicTest%'</value>
   </data>
   <data name="dbo_UpdateTopicTest_PretestAction.SqlScript" xml:space="preserve">
     <value>--------------------------------------------------------------------------------------------------------------------------------
@@ -1325,7 +1321,7 @@ DECLARE	@TopicID		AS INT,
 --------------------------------------------------------------------------------------------------------------------------------
 DELETE	
 FROM	Topics
-WHERE	TopicKey		LIKE 'UpdateTopicTest%'
+WHERE	TopicKey		LIKE 'UpdateTopicTest%';
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET VARIABLES
@@ -1347,7 +1343,7 @@ EXECUTE	@TopicID		= [dbo].[CreateTopic]
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	*
 FROM	Topics
-WHERE	TopicKey		'UpdateTopicTest'</value>
+WHERE	TopicKey		= @Key;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
