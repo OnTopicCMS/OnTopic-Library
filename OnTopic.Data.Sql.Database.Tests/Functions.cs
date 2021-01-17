@@ -37,7 +37,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetParentIDTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicIDTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetUniqueKeyTest_TestAction;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition inconclusiveCondition4;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_FindTopicIDsTest_TestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition findTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetAttributesTest_TestAction;
@@ -57,6 +56,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getChildTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getParentIDValue;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getIDTopicValue;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition getUniqueKeyValue;
       this.dbo_GetExtendedAttributeTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetParentIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicIDTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -69,7 +69,6 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_GetParentIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_GetTopicIDTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_GetUniqueKeyTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
-      inconclusiveCondition4 = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.InconclusiveCondition();
       dbo_FindTopicIDsTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       findTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetAttributesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
@@ -89,6 +88,7 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getChildTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       getParentIDValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       getIDTopicValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
+      getUniqueKeyValue = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.ScalarValueCondition();
       // 
       // dbo_GetExtendedAttributeTest_TestAction
       // 
@@ -112,13 +112,8 @@ namespace OnTopic.Data.Sql.Database.Tests {
       // 
       // dbo_GetUniqueKeyTest_TestAction
       // 
-      dbo_GetUniqueKeyTest_TestAction.Conditions.Add(inconclusiveCondition4);
+      dbo_GetUniqueKeyTest_TestAction.Conditions.Add(getUniqueKeyValue);
       resources.ApplyResources(dbo_GetUniqueKeyTest_TestAction, "dbo_GetUniqueKeyTest_TestAction");
-      // 
-      // inconclusiveCondition4
-      // 
-      inconclusiveCondition4.Enabled = true;
-      inconclusiveCondition4.Name = "inconclusiveCondition4";
       // 
       // dbo_FindTopicIDsTest_TestAction
       // 
@@ -288,6 +283,16 @@ namespace OnTopic.Data.Sql.Database.Tests {
       getIDTopicValue.NullExpected = false;
       getIDTopicValue.ResultSet = 1;
       getIDTopicValue.RowNumber = 1;
+      // 
+      // getUniqueKeyValue
+      // 
+      getUniqueKeyValue.ColumnNumber = 1;
+      getUniqueKeyValue.Enabled = true;
+      getUniqueKeyValue.ExpectedValue = "Root:FunctionTests:Topic_1:Topic_1_1:Topic_1_1_1:Topic_1_1_1_2";
+      getUniqueKeyValue.Name = "getUniqueKeyValue";
+      getUniqueKeyValue.NullExpected = false;
+      getUniqueKeyValue.ResultSet = 1;
+      getUniqueKeyValue.RowNumber = 1;
       // 
       // Functions
       // 
