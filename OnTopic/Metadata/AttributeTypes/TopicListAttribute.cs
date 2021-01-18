@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 
 namespace OnTopic.Metadata.AttributeTypes {
 
@@ -35,6 +36,14 @@ namespace OnTopic.Metadata.AttributeTypes {
       id
     ) {
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc />
+    public override ModelType ModelType
+      => Attributes.GetValue("ValueProperty", "").Equals("TopicID", StringComparison.OrdinalIgnoreCase)?
+        ModelType.Reference : ModelType.ScalarValue;
 
   } //Class
 } //Namespace
