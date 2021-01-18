@@ -14,10 +14,10 @@ using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
 using OnTopic.Models;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.ViewModels;
 

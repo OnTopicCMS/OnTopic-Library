@@ -3,8 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
+using OnTopic.TestDoubles.Metadata;
 
 namespace OnTopic.Tests.BindingModels {
 
