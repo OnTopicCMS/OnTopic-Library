@@ -26,7 +26,7 @@ namespace OnTopic {
     /// <summary>
     ///   Establishes static variables for the <see cref="TopicFactory"/>.
     /// </summary>
-    public static ITypeLookupService TypeLookupService { get; set; } = new DefaultTopicLookupService();
+    public static ITypeLookupService TypeLookupService { get; set; } = new DynamicTopicLookupService();
 
     /*==========================================================================================================================
     | METHOD: CREATE
