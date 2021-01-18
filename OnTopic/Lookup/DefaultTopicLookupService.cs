@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
 
 namespace OnTopic.Lookup {
 
@@ -40,24 +39,6 @@ namespace OnTopic.Lookup {
       \-----------------------------------------------------------------------------------------------------------------------*/
       TryAdd(typeof(ContentTypeDescriptor));
       TryAdd(typeof(AttributeDescriptor));
-      TryAdd(typeof(BooleanAttribute));
-      TryAdd(typeof(DateTimeAttribute));
-      TryAdd(typeof(FileListAttribute));
-      TryAdd(typeof(FilePathAttribute));
-      TryAdd(typeof(HtmlAttribute));
-      TryAdd(typeof(IncomingRelationshipAttribute));
-      TryAdd(typeof(InstructionAttribute));
-      TryAdd(typeof(LastModifiedAttribute));
-      TryAdd(typeof(LastModifiedByAttribute));
-      TryAdd(typeof(NestedTopicListAttribute));
-      TryAdd(typeof(NumberAttribute));
-      TryAdd(typeof(QueryableTopicListAttribute));
-      TryAdd(typeof(RelationshipAttribute));
-      TryAdd(typeof(TextAreaAttribute));
-      TryAdd(typeof(TextAttribute));
-      TryAdd(typeof(TokenizedTopicListAttribute));
-      TryAdd(typeof(TopicListAttribute));
-      TryAdd(typeof(TopicReferenceAttribute));
 
     }
 

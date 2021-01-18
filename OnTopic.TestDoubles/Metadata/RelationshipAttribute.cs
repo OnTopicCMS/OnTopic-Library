@@ -3,27 +3,28 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Metadata;
 
-namespace OnTopic.Metadata.AttributeTypes {
+namespace OnTopic.TestDoubles.Metadata {
 
   /*============================================================================================================================
-  | CLASS: TOPIC REFERENCE ATTRIBUTE (DESCRIPTOR)
+  | CLASS: RELATIONSHIP ATTRIBUTE (DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a topic reference attribute type, including information on how it will be presented
-  ///   and validated in the editor.
+  ///   Represents metadata for describing a relationship attribute type, including information on how it will be presented and
+  ///   validated in the editor.
   /// </summary>
   /// <remarks>
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class TopicReferenceAttribute : AttributeDescriptor {
+  public class RelationshipAttribute : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public TopicReferenceAttribute(
+    public RelationshipAttribute(
       string key,
       string contentType,
       Topic parent,
@@ -40,7 +41,7 @@ namespace OnTopic.Metadata.AttributeTypes {
     | PROPERTY: MODEL TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override ModelType ModelType => ModelType.Reference;
+    public override ModelType ModelType => ModelType.Relationship;
 
   } //Class
 } //Namespace

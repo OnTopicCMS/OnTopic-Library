@@ -10,7 +10,6 @@ using Microsoft;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
 using OnTopic.Querying;
 
 #pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
@@ -668,7 +667,7 @@ namespace OnTopic.Repositories {
         .Union(topic.Attributes.DeletedAttributes);
       foreach (var attributeKey in attributeKeys) {
         if (!attributes.Contains(attributeKey)) {
-          attributes.Add((TextAttribute)TopicFactory.Create(attributeKey, "TextAttribute"));
+          attributes.Add((AttributeDescriptor)TopicFactory.Create(attributeKey, "TextAttribute"));
         }
       }
 
