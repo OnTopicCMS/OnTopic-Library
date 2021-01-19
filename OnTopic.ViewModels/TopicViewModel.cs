@@ -20,55 +20,55 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class TopicViewModel: ITopicViewModel {
+  public record TopicViewModel: ITopicViewModel {
 
     /*==========================================================================================================================
     | ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     /*==========================================================================================================================
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? Key { get; set; }
+    public string? Key { get; init; }
 
     /*==========================================================================================================================
     | CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? ContentType { get; set; }
+    public string? ContentType { get; init; }
 
     /*==========================================================================================================================
     | UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? UniqueKey { get; set; }
+    public string? UniqueKey { get; init; }
 
     /*==========================================================================================================================
     | WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? WebPath { get; set; }
+    public string? WebPath { get; init; }
 
     /*==========================================================================================================================
     | VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? View { get; set; }
+    public string? View { get; init; }
 
     /*==========================================================================================================================
     | TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? Title { get; set; }
+    public string? Title { get; init; }
 
     /*==========================================================================================================================
     | IS HIDDEN?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public bool IsHidden { get; set; }
+    public bool IsHidden { get; init; }
 
     /*==========================================================================================================================
     | LAST MODIFIED
@@ -76,7 +76,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   The date that the topic was last modified on.
     /// </summary>
-    public DateTime LastModified { get; set; }
+    public DateTime LastModified { get; init; }
 
     /*==========================================================================================================================
     | PARENT
@@ -92,7 +92,7 @@ namespace OnTopic.ViewModels {
     ///   they are annotated with a <see cref="FollowAttribute"/>.
     /// </remarks>
     [Follow(Relationships.Parents)]
-    public TopicViewModel? Parent { get; set; }
+    public TopicViewModel? Parent { get; init; }
 
   } //Class
 } //Namespace

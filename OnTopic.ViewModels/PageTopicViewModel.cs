@@ -18,7 +18,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
+  public record PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
 
     /*==========================================================================================================================
     | SUBTITLE
@@ -26,7 +26,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides an optional subtitle which will typically be displayed under the title.
     /// </summary>
-    public string? Subtitle { get; set; }
+    public string? Subtitle { get; init; }
 
     /*==========================================================================================================================
     | META TITLE
@@ -34,19 +34,19 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides an optional title to be used in page's metadata, if it differs from the <see cref="TopicViewModel.Title"/>.
     /// </summary>
-    public string? MetaTitle { get; set; }
+    public string? MetaTitle { get; init; }
 
     /*==========================================================================================================================
     | META DESCRIPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? MetaDescription { get; set; }
+    public string? MetaDescription { get; init; }
 
     /*==========================================================================================================================
     | META KEYWORDS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public string? MetaKeywords { get; set; }
+    public string? MetaKeywords { get; init; }
 
     /*==========================================================================================================================
     | META KEYWORDS
@@ -54,7 +54,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Determines whether or not search engines are expected to index the page.
     /// </summary>
-    public bool? NoIndex { get; set; }
+    public bool? NoIndex { get; init; }
 
     /*==========================================================================================================================
     | SHORT TITLE
@@ -62,7 +62,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
     /// </summary>
-    public string? ShortTitle { get; set; }
+    public string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | BODY
@@ -70,7 +70,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides the primary content for the page, which is typically in HTML format.
     /// </summary>
-    public string? Body { get; set; }
+    public string? Body { get; init; }
 
   } //Class
 } //Namespace

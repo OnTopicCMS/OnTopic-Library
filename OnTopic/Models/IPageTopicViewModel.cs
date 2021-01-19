@@ -30,7 +30,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Meta Keywords attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string? MetaKeywords { get; set; }
+    string? MetaKeywords { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: META DESCRIPTION
@@ -39,7 +39,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Meta Description attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string? MetaDescription { get; set; }
+    string? MetaDescription { get; init; }
 
   } //Class
 } //Namespace

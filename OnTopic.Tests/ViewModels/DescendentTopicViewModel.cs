@@ -23,7 +23,7 @@ namespace OnTopic.Tests.ViewModels {
   ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   ///   </para>
   /// </remarks>
-  public class DescendentTopicViewModel: TopicViewModel {
+  public record DescendentTopicViewModel: TopicViewModel {
 
     [Follow(Relationships.Children)]
     public TopicViewModelCollection<DescendentTopicViewModel> Children { get; } = new();

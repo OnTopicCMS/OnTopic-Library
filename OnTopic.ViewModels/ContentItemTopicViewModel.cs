@@ -18,7 +18,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class ContentItemTopicViewModel: ItemTopicViewModel {
+  public record ContentItemTopicViewModel: ItemTopicViewModel {
 
     /*==========================================================================================================================
     | DESCRIPTION
@@ -26,7 +26,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets the description; for Content Items, this is effectively the body.
     /// </summary>
-    public string Description { get; set; } = default!;
+    public string Description { get; init; } = default!;
 
     /*==========================================================================================================================
     | LEARN MORE URL
@@ -34,7 +34,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets an optional URL for additional information that should be linked to.
     /// </summary>
-    public Uri? LearnMoreUrl { get; set; }
+    public Uri? LearnMoreUrl { get; init; }
 
     /*==========================================================================================================================
     | THUMBNAIL IMAGE
@@ -42,7 +42,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets an optional path to a thumbnail image that should accompany the content item.
     /// </summary>
-    public Uri? ThumbnailImage { get; set; }
+    public Uri? ThumbnailImage { get; init; }
 
     /*==========================================================================================================================
     | CATEGORY
@@ -50,7 +50,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Gets the category that the content item should be grouped under.
     /// </summary>
-    public string? Category { get; set; }
+    public string? Category { get; init; }
 
   } //Class
 } //Namespace

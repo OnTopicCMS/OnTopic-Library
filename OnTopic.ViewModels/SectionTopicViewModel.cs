@@ -19,7 +19,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class SectionTopicViewModel : TopicViewModel {
+  public record SectionTopicViewModel : TopicViewModel {
 
     /*==========================================================================================================================
     | HEADER IMAGE
@@ -27,7 +27,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a header image which may be displayed at the top of a section.
     /// </summary>
-    public Uri? HeaderImageUrl { get; set; }
+    public Uri? HeaderImageUrl { get; init; }
 
   } //Class
 } //Namespace

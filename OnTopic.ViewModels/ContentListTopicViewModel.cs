@@ -17,7 +17,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class ContentListTopicViewModel: PageTopicViewModel {
+  public record ContentListTopicViewModel: PageTopicViewModel {
 
     /*==========================================================================================================================
     | CONTENT ITEMS
@@ -51,7 +51,7 @@ namespace OnTopic.ViewModels {
     ///   corresponding attribute, and so this can easily be hidden or disabled globally via the editor.
     /// </remarks>
     /// <returns>True if the content list should be indexed; false otherwise.</returns>
-    public bool IsIndexed { get; set; }
+    public bool IsIndexed { get; init; }
 
     /*==========================================================================================================================
     | INDEX LABEL
@@ -64,8 +64,8 @@ namespace OnTopic.ViewModels {
     ///   "IndexLabel"/> allows that to be optionally set on a per topic basis. The default value is "Contents", though it is up
     ///   to view implementors and editor configurations as to whether this option is exposed or honored.
     /// </remarks>
-    /// <returns>Returns the value set; defaults to "Contents".</returns>
-    public string IndexLabel { get; set; } = "Contents";
+    /// <returns>Returns the value init; defaults to "Contents".</returns>
+    public string IndexLabel { get; init; } = "Contents";
 
   } //Class
 } //Namespace

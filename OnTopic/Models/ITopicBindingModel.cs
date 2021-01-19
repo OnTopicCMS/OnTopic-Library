@@ -36,7 +36,7 @@ namespace OnTopic.Models {
     ///   !value.Contains(" ")
     /// </requires>
     [Required]
-    string? Key { get; set; }
+    string? Key { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -49,7 +49,7 @@ namespace OnTopic.Models {
     ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
     /// </remarks>
     [Required]
-    string? ContentType { get; set; }
+    string? ContentType { get; init; }
 
   } //Class
 } //Namespace

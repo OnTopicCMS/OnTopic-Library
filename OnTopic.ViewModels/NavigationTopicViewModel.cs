@@ -28,7 +28,7 @@ namespace OnTopic.ViewModels {
   ///     cref="NavigationTopicViewModel"/> class is marked as <c>sealed</c>.
   ///   </para>
   /// </remarks>
-  public sealed class NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
+  public sealed record NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
 
     /*==========================================================================================================================
     | SHORT TITLE
@@ -36,7 +36,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
     /// </summary>
-    public string? ShortTitle { get; set; }
+    public string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | CHILDREN
