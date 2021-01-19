@@ -121,7 +121,7 @@ namespace OnTopic.Mapping {
         var viewModelType       = _typeLookupService.Lookup($"{topic.ContentType}TopicViewModel");
 
         if (viewModelType is null || !viewModelType.Name.EndsWith("TopicViewModel", StringComparison.CurrentCultureIgnoreCase)) {
-          throw new TypeLoadException(
+          throw new InvalidTypeException(
             $"No class named '{topic.ContentType}TopicViewModel' could be located in any loaded assemblies. This is required " +
             $"to map the topic '{topic.GetUniqueKey()}'."
           );
@@ -755,7 +755,7 @@ namespace OnTopic.Mapping {
       try {
         topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
       }
-      catch (TypeLoadException) {
+      catch (InvalidTypeException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
       }
       if (topicDto is not null && configuration.Property.PropertyType.IsAssignableFrom(topicDto.GetType())) {

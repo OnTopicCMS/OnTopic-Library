@@ -20,6 +20,7 @@ The [`ITopicMappingService`](ITopicMappingService.cs) provides the abstract inte
   - [Internal Caching](#internal-caching)
   - [`CachedTopicMappingService`](#cachedtopicmappingservice)
     - [Limitations](#limitations)
+- [Exceptions](#exceptions)
 
 ## `TopicMappingService`
 The [`TopicMappingService`](TopicMappingService.cs) provides a concrete implementation that is expected to satisfy the requirements of most consumers. This supports the following conventions.
@@ -187,3 +188,8 @@ While the `CachedTopicMappingService` can be useful for particular scenarios, it
 1. It may take up considerable memory, depending on how many permutations of mapped objects the application has. This is especially true since it caches each unique object graph; no effort is made to centralize object instances referenced by e.g. relationships in multiple graphs.
 2. It makes no effort to validate or evict cache entries. Topics whose values change during the lifetime of the `CachedTopicMappingService` will not be reflected in the mapped responses.
 3. If a graph is manually constructed (by e.g. programmatically mapping `Children`) then each instance will be separated cached, thus potentially allowing an instance to be shared between multiple graphs. This can introduce concerns if edge maintenance is important.
+
+## Exceptions
+The topic mapping services will throw a [`TopicMappingException`](TopicMappingException.cs) if a foreseeable exception occurs. Specifically, the exceptions expected will be:
+- **[`InvalidTypeException`](InvalidTypeException.cs):** The [`TopicMappingService`](TopicMappingService.cs) throws this exception if the source `Topic`'s `ContentType` maps to a `TopicViewModel` which cannot be located in the supplied `ITypeLookupService`.
+- **[`MappingModelValidationException`](MappingModelValidationException.cs):** The [`ReverseTopicMappingService`](Reverse/ReverseTopicMappingService.cs) throws this exception if the source model has any discrepancies with the target `Topic` which may introduce unexpected data integrity or data loss once that `Topic` is saved.
