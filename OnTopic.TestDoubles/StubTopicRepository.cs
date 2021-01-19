@@ -105,7 +105,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: REFRESH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public void Refresh(Topic referenceTopic, DateTime since) { }
+    public override void Refresh(Topic referenceTopic, DateTime since) { }
 
     /*==========================================================================================================================
     | METHOD: SAVE

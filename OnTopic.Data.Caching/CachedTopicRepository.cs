@@ -135,7 +135,7 @@ namespace OnTopic.Data.Caching {
     | METHOD: REFRESH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public void Refresh(Topic referenceTopic, DateTime since) => _dataProvider.Refresh(referenceTopic, since);
+    public override void Refresh(Topic referenceTopic, DateTime since) => _dataProvider.Refresh(referenceTopic, since);
 
     /*==========================================================================================================================
     | METHOD: SAVE

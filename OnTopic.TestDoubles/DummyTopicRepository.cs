@@ -42,7 +42,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: REFRESH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public void Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
+    public override void Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: SAVE
