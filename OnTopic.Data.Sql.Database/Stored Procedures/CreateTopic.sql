@@ -59,14 +59,16 @@ INSERT INTO	Topics (
 	RangeRight,
 	TopicKey,
 	ContentType,
-	ParentID
+	ParentID,
+	LastModified
 )
 Values (
 	@RangeRight,
 	@RangeRight		+ 1,
 	@Key,
 	@ContentType,
-	@ParentID
+	@ParentID,
+	@Version
 )
 
 DECLARE	@TopicID		INT
