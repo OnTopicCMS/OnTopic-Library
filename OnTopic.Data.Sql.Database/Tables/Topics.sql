@@ -11,7 +11,8 @@ TABLE	[dbo].[Topics] (
 	  [RangeRight]		INT	NOT NULL,
 	  [TopicKey]		VARCHAR(128)	NOT NULL,
 	  [ContentType]		VARCHAR(128)	NOT NULL,
-	  [ParentID]		INT	NULL
+	  [ParentID]		INT	NULL,
+	  [LastModified]	DATETIME	NOT NULL	DEFAULT GETUTCDATE()
   CONSTRAINT	  [PK_Topics]		PRIMARY KEY
   CLUSTERED (     [TopicID]		ASC
   ),
