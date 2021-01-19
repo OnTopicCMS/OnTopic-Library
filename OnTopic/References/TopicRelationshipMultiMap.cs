@@ -212,7 +212,7 @@ namespace OnTopic.References {
     }
 
     /*==========================================================================================================================
-    | IS LOADED?
+    | IS FULLY LOADED?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determines whether or not the collection was fully loaded from the persistence store.
@@ -221,17 +221,17 @@ namespace OnTopic.References {
     ///   <para>
     ///     When loading an individual <see cref="Topic"/> or branch from the persistence store, it is possible that the
     ///     relationships may not be fully available. In this scenario, updating relationships while e.g. deleting unmatched
-    ///     relationships can result in unintended data loss. To account for this, the <see cref="IsLoaded"/> property tracks
-    ///     whether a collection was fully loaded from the persistence store; if it wasn't, the <see cref="ITopicRepository"/>
-    ///     should not deleted unmatched relationships.
+    ///     relationships can result in unintended data loss. To account for this, the <see cref="IsFullyLoaded"/> property
+    ///     tracks whether a collection was fully loaded from the persistence store; if it wasn't, the <see cref="
+    ///     ITopicRepository"/> should not deleted unmatched relationships.
     ///   </para>
     ///   <para>
-    ///     The <see cref="IsLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see cref="
+    ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see cref="
     ///     ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped back to
     ///     a valid <see cref="Topic"/> reference in memory.
     ///   </para>
     /// </remarks>
-    public bool IsLoaded { get; set; } = true;
+    public bool IsFullyLoaded { get; set; } = true;
 
     /*==========================================================================================================================
     | METHOD: IS DIRTY?

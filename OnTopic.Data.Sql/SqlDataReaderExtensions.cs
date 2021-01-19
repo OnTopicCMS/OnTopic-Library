@@ -366,7 +366,7 @@ namespace OnTopic.Data.Sql {
 
       // Bypass if the target object is missing
       if (related is null) {
-        current.Relationships.IsLoaded = false;
+        current.Relationships.IsFullyLoaded = false;
         return;
       }
 
@@ -422,7 +422,7 @@ namespace OnTopic.Data.Sql {
 
       // Bypass if the target object is missing
       if (referenced is null) {
-        current.References.IsLoaded = false;
+        current.References.IsFullyLoaded = false;
         return;
       }
 

@@ -684,7 +684,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
           command.AddParameter("Version", version.Value);
-          command.AddParameter("DeleteUnmatched", topic.Relationships.IsLoaded);
+          command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
 
           command.ExecuteNonQuery();
 
@@ -743,7 +743,7 @@ namespace OnTopic.Data.Sql {
         command.AddParameter("TopicID", topicId);
         command.AddParameter("ReferencedTopics", references);
         command.AddParameter("Version", version.Value);
-        command.AddParameter("DeleteUnmatched", topic.References.IsLoaded);
+        command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
 
         command.ExecuteNonQuery();
 
