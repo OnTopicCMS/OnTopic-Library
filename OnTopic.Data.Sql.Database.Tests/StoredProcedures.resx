@@ -1469,6 +1469,231 @@ IF NOT EXISTS (SELECT * FROM Topics WHERE TopicID = 1)
 
   END</value>
   </data>
+  <data name="dbo_GetTopicUpdatesTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Since		AS DATETIME;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Since		= '2022-01-01 00:00:00:000';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[GetTopicUpdates]
+	@Since;</value>
+  </data>
+  <data name="dbo_GetTopicUpdatesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@Key		AS VARCHAR (128),
+	@ContentType		AS VARCHAR (128),
+	@ParentID		AS INT,
+	@Attributes		AS [dbo].[AttributeValues],
+	@ExtendedAttributes	AS XML,
+	@References		AS [dbo].[TopicReferences],
+	@Version		AS DATETIME,
+	@NewVersion		AS DATETIME;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetTopicUpdatesTest',
+	@ContentType		= 'Test',
+	@ParentID		= 1,
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;Test&lt;/attribute&gt;&lt;/attributes&gt;',
+	@Version		= '2020-01-01 12:00:00:000',
+	@NewVersion		= '2022-01-01 12:00:00:000';
+
+INSERT
+INTO	@Attributes
+VALUES	( 'GetTopicUpdatesTest1', 'Value' ),
+	( 'GetTopicUpdatesTest2', 'Value' )
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE	
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetTopicUpdatesTest%'
+
+DELETE	
+FROM	ExtendedAttributes
+WHERE	Version		= @Version
+OR	Version		= @NewVersion
+
+DELETE
+FROM	Relationships
+WHERE	RelationshipKey		= 'GetTopicUpdatesTest'
+
+DELETE
+FROM	TopicReferences
+WHERE	ReferenceKey		= 'GetTopicUpdatesTest'
+
+DELETE	
+FROM	Topics
+WHERE	TopicKey		LIKE 'GetTopicUpdates%'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+SELECT	@Key		= 'GetTopicUpdatesChildTest',
+	@ParentID		= @TopicID;
+
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@Version;
+
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicUpdatesTest',
+	  @TopicID,
+	  @Version
+	)
+
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicUpdatesTest',
+	  @TopicID,
+	  @Version
+	)
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- UPDATE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''Body''&gt;New Test&lt;/attribute&gt;&lt;/attributes&gt;';
+
+UPDATE	@Attributes
+SET	AttributeValue		= 'NewValue'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH NEW VERSION
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[UpdateTopic]
+	@TopicID		= @TopicID,
+	@Key		= 'GetTopicUpdatesModifiedTest',
+	@ContentType		= @ContentType,
+	@Attributes		= @Attributes,
+	@ExtendedAttributes	= @ExtendedAttributes,
+	@Version		= @NewVersion;
+
+INSERT
+INTO	Relationships (
+	  Source_TopicID,
+	  RelationshipKey,
+	  Target_TopicID,
+	  IsDeleted,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicUpdatesTest',
+	  @TopicID,
+	  1,
+	  @NewVersion
+	)
+
+INSERT
+INTO	TopicReferences (
+	  Source_TopicID,
+	  ReferenceKey,
+	  Target_TopicID,
+	  Version
+	)
+VALUES	( @ParentID,
+	  'GetTopicUpdatesTest',
+	  NULL,
+	  @NewVersion
+	)
+
+EXECUTE	[dbo].[CreateTopic]
+	'GetTopicUpdatesTestNew',
+	@ContentType,
+	@ParentID,
+	@Attributes,
+	@ExtendedAttributes,
+	@References,
+	@NewVersion;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics
+WHERE	TopicKey		LIKE 'GetTopicUpdates%'
+
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetTopicUpdatesTest%'
+
+SELECT	*
+FROM	Relationships
+WHERE	RelationshipKey		= 'GetTopicUpdatesTest'
+
+SELECT	*
+FROM	TopicReferences
+WHERE	ReferenceKey		= 'GetTopicUpdatesTest'</value>
+  </data>
+  <data name="dbo_GetTopicUpdatesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@UniqueKey		AS NVARCHAR (255);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= 'GetTopicUpdatesTest';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @UniqueKey
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE PROCEDURE
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[dbo].[DeleteTopic]
+	@TopicID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetTopicUpdatesTest%'</value>
+  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
