@@ -21,4 +21,4 @@ using System.Runtime.InteropServices;
 >===============================================================================================================================
 | Suppress warnings from code analysis that are either false positives or not relevant for this assembly.
 \-----------------------------------------------------------------------------------------------------------------------------*/
-[assembly: SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Expected by convention for OnTopic Editor", Scope = "namespaceanddescendants", Target = "~N:OnTopic.Tests")]
+[assembly: SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Expected by convention for OnTopic Editor", Scope = "namespaceanddescendants", Target = "~N:OnTopic.TestDoubles")]
