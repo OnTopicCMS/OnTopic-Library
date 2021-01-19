@@ -364,8 +364,11 @@ namespace OnTopic.Data.Sql {
         related                 = topics[targetTopicId];
       }
 
-      // Bypass if either of the objects are missing
-      if (related is null) return;
+      // Bypass if the target object is missing
+      if (related is null) {
+        current.Relationships.IsFullyLoaded = false;
+        return;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
@@ -417,8 +420,11 @@ namespace OnTopic.Data.Sql {
         referenced              = topics[targetTopicId.Value];
       }
 
-      // Bypass if either of the objects are missing
-      if (referenced is null) return;
+      // Bypass if the target object is missing
+      if (referenced is null) {
+        current.References.IsFullyLoaded = false;
+        return;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
