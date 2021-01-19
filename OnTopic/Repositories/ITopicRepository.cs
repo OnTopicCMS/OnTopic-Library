@@ -50,7 +50,8 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
+    ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
+    ///   />.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="referenceTopic">
@@ -62,7 +63,8 @@ namespace OnTopic.Repositories {
     Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
+    ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="uniqueKey
+    ///   "/>.
     /// </summary>
     /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
     /// <param name="referenceTopic">
@@ -74,7 +76,8 @@ namespace OnTopic.Repositories {
     Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads a specific version of a topic based on its version.
+    ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version
+    ///   "/>.
     /// </summary>
     /// <remarks>
     ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
@@ -96,10 +99,10 @@ namespace OnTopic.Repositories {
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
-    ///   saving the new version.
+    ///   Rolls back the supplied <paramref name="topic"/> to a particular point in its version history by reloading legacy
+    ///   attributes and then saving the new version.
     /// </summary>
-    /// <param name="topic">The current version of the topic to rollback.</param>
+    /// <param name="topic">The current version of the <see cref="Topic"/> to rollback.</param>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
     /// <requires
     ///   description="The version requested for rollback does not exist in the version history."
@@ -109,12 +112,26 @@ namespace OnTopic.Repositories {
     void Rollback(Topic topic, DateTime version);
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Updates the topic graph represented by the <paramref name="referenceTopic"/> by loading any changes <paramref name="
+    ///   since"/> the specified <see cref="DateTime"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="Refresh(Topic, DateTime)"/> method is intended to provide basic synchronization of core attributes,
+    ///   indexed attributes, extended attributes, relationships, and topic references. It is not expected to handle deletes
+    ///   or reordering of topics.
+    /// </remarks>
+    void Refresh(Topic referenceTopic, DateTime since);
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that saves topic attributes; also used for renaming a topic since name is stored as an attribute.
+    ///   Saves the <paramref name="topic"/> (and, optionally, its descendants) to the persistence store.
     /// </summary>
-    /// <param name="topic">The topic object.</param>
+    /// <param name="topic">The <see cref="Topic"/> object.</param>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
@@ -128,15 +145,19 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that supports moving a topic from one position to another.
+    ///   Moves the <paramref name="topic"/> from its existing parent to a <paramref name="target"/> parent, optionally placing
+    ///   it after a supplied <paramref name="sibling"/> topic.
     /// </summary>
     /// <remarks>
-    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the
-    ///   topic.
+    ///   May optionally specify a <paramref name="sibling"/> topic. If specified, it is expected that the <see cref="Topic"/>
+    ///   will be placed immediately after the <paramref name="sibling"/>.
     /// </remarks>
-    /// <param name="topic">The topic object to be moved.</param>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <param name="topic">The <see cref="Topic"/> object to be moved.</param>
+    /// <param name="target">The target <see cref="Topic"/> object under which to move the source <see cref="Topic"/>.</param>
+    /// <param name="sibling">
+    ///   An optional <see cref="Topic"/> object representing a sibling adjacent to which the source <see cref="Topic"/> should
+    ///   be moved.
+    /// </param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     /// <requires
     ///   description="The target under which to move the topic must be provided."
@@ -149,18 +170,11 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that deletes the provided topic from the tree
+    ///   Deletes the provided <paramref name="topic"/> from the topic tree.
     /// </summary>
-    /// <remarks>
-    ///   Prior to OnTopic 4.5.0, the <paramref name="isRecursive"/> defaulted to <c>false</c>. Unfortunately, a bug in the
-    ///   implementation of <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/> resulted in this not being validated, and
-    ///   thus it operated <i>as though</i> it were <c>true</c>. This was fixed in OnTopic 4.5.0. As this bug fix potentially
-    ///   breaks prior implementations, however, the default for <paramref name="isRecursive"/> was changed to <c>true</c> in
-    ///   order to maintain backward compatibility. In OnTopic 5.0.0, this will be changed back to <c>false</c>.
-    /// </remarks>
-    /// <param name="topic">The topic object to delete.</param>
+    /// <param name="topic">The <see cref="Topic"/> object to delete.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
+    ///   Boolean indicator nothing whether to recurse through the <see cref="Topic"/>'s descendants and delete them as well. If set to false
     ///   and the topic has children, including any nested topics, an exception will be thrown. The default is false.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">

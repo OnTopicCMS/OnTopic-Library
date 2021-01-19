@@ -34,6 +34,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     private readonly            ITypeLookupService              _typeLookupService              = null;
     private readonly            ITopicMappingService            _topicMappingService            = null;
     private readonly            ITopicRepository                _topicRepository                = null;
+    private                     DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
@@ -93,6 +94,15 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       | Determine controller type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Periodically update cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
+        var currentUpdate = DateTime.UtcNow;
+        _topicRepository.Refresh(_topicRepository.Load(), _cacheLastUpdated);
+        _cacheLastUpdated = currentUpdate;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate controller

@@ -37,7 +37,8 @@ IF @Key IS NOT NULL OR @ContentType IS NOT NULL
         WHEN	@ContentType		IS NULL
         THEN	TopicKey
         ELSE	@ContentType
-      END
+      END,
+      LastModified		= @Version
     WHERE	TopicID		= @TopicID
   END
 

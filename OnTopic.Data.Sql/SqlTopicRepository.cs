@@ -277,6 +277,55 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override void Refresh(Topic referenceTopic, DateTime since) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(referenceTopic, "A referenceTopic from the topic graph must be provided.");
+      Contract.Requires(
+        since.Date >= DateTime.Now.AddHours(-24),
+        "The since date is expected to be within the last twenty four hours."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish database connection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      using var connection      = new SqlConnection(_connectionString);
+      using var command         = new SqlCommand("GetTopicUpdates", connection) {
+        CommandType             = CommandType.StoredProcedure,
+        CommandTimeout          = 120
+      };
+
+      command.CommandType       = CommandType.StoredProcedure;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish query parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      command.AddParameter("Since", since);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process database query
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      try {
+        connection.Open();
+        using var reader        = command.ExecuteReader();
+        reader.LoadTopicGraph(referenceTopic.GetRootTopic(), false);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Catch exception
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      catch (SqlException exception) {
+        throw new TopicRepositoryException($"Topics failed to update: '{exception.Message}'", exception);
+      }
+
+    }
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />

@@ -127,6 +127,7 @@
     <Build Include="Stored Procedures\UpdateExtendedAttributes.sql" />
     <Build Include="Views\ReferenceIndex.sql" />
     <Build Include="Views\RelationshipIndex.sql" />
+    <Build Include="Stored Procedures\GetTopicUpdates.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
