@@ -198,7 +198,7 @@ namespace OnTopic.Mapping.Reverse {
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.RelationshipType is RelationshipType.Children) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
           $"it from being evaluated by the {nameof(ReverseTopicMappingService)}. If children must be mapped, then the " +
@@ -211,7 +211,7 @@ namespace OnTopic.Mapping.Reverse {
       | Handle parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.AttributeKey is "Parent") {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping Parent topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
           $"it from being evaluated by the {nameof(ReverseTopicMappingService)}."
@@ -222,7 +222,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate attribute type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (attributeDescriptor is null) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"A '{nameof(sourceType)}' object was provided with a content type set to '{contentTypeDescriptor.Key}'. This " +
           $"content type does not contain an attribute named '{compositeAttributeKey}', as requested by the " +
           $"'{configuration.Property.Name}' property. If this property is not intended to be mapped by the " +
@@ -245,7 +245,7 @@ namespace OnTopic.Mapping.Reverse {
         !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
         listType is not null
       ) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.RelationshipType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(ITopicBindingModel)} interface. This is required for binding models. If this collection is not intended " +
@@ -262,7 +262,7 @@ namespace OnTopic.Mapping.Reverse {
         attributeDescriptor.ModelType is ModelType.Reference &&
         !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{ModelType.Reference}, but the generic type '{propertyType.Name}' does not implement the " +
           $"{nameof(IRelatedTopicBindingModel)} interface. This is required for references. If this property is not intended " +
@@ -315,7 +315,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate list
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but does not implement {nameof(IList)}. Relationships must implement " +
           $"{nameof(IList)} or derive from a collection that does."
@@ -326,7 +326,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate relationship type
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!new[] { RelationshipType.Any, RelationshipType.Relationship }.Contains(configuration.RelationshipType)) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
           $"'{attributeDescriptor.Key}', but is configured as a {configuration.RelationshipType}. The property should be " +
           $"flagged as either {nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
@@ -337,7 +337,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate the correct base class for relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
-        throw new TopicMappingException(
+        throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.RelationshipType}, but the generic type '{listType?.Name}' does not implement the " +
           $"{nameof(IRelatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
