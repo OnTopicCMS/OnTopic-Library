@@ -39,6 +39,12 @@ namespace OnTopic.TestDoubles {
     public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public void Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />

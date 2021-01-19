@@ -112,6 +112,20 @@ namespace OnTopic.Repositories {
     void Rollback(Topic topic, DateTime version);
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Updates the topic graph represented by the <paramref name="referenceTopic"/> by loading any changes <paramref name="
+    ///   since"/> the specified <see cref="DateTime"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="Refresh(Topic, DateTime)"/> method is intended to provide basic synchronization of core attributes,
+    ///   indexed attributes, extended attributes, relationships, and topic references. It is not expected to handle deletes
+    ///   or reordering of topics.
+    /// </remarks>
+    void Refresh(Topic referenceTopic, DateTime since);
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
