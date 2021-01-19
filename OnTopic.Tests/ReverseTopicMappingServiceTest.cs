@@ -369,7 +369,7 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidChildrenProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -387,7 +387,7 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidParentProperty_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -408,7 +408,7 @@ namespace OnTopic.Tests {
     ///   <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidAttribute_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -426,7 +426,7 @@ namespace OnTopic.Tests {
     ///   is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipBaseType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -446,7 +446,7 @@ namespace OnTopic.Tests {
     ///   cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -465,7 +465,7 @@ namespace OnTopic.Tests {
     ///   cref="IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidRelationshipListType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
@@ -484,7 +484,7 @@ namespace OnTopic.Tests {
     ///   cref="IRelatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(TopicMappingException))]
+    [ExpectedException(typeof(MappingModelValidationException))]
     public async Task Map_InvalidTopicReferenceType_ThrowsInvalidOperationException() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
