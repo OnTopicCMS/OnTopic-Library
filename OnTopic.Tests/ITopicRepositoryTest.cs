@@ -224,5 +224,30 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: DELETE: DELETE EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
+    ///   DeleteEvent"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
+    ///   and not the immediate <see cref="CachedTopicRepository"/>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DeleteEvent_IsFired() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var hasFired              = false;
+
+      _topicRepository.Save(topic);
+      _topicRepository.DeleteEvent += eventHandler;
+      _topicRepository.Delete(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, DeleteEventArgs eventArgs) => hasFired = true;
+
+    }
+
+
   } //Class
 } //Namespace
