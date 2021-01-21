@@ -194,7 +194,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
         new XElement(_sitemapNamespace + "changefreq", "monthly"),
         new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
         new XElement(_sitemapNamespace + "priority", 1),
-        #pragma warning disable CS8604 // Possible null reference argument.
         includeMetadata? new XElement(_pagemapNamespace + "PageMap",
           new XElement(_pagemapNamespace + "DataObject",
             new XAttribute("type", topic.ContentType?? "Page"),
@@ -202,7 +201,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
           ),
           getRelationships()
         ) : null
-        #pragma warning restore CS8604 // Possible null reference argument.
       );
       if (
         !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
