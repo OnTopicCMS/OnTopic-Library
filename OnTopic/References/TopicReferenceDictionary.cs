@@ -349,7 +349,7 @@ namespace OnTopic.References {
     | TRY/GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public bool TryGetValue(string key, out Topic value) => _storage.TryGetValue(key, out value);
+    public bool TryGetValue(string key, out Topic value) => _storage.TryGetValue(key, out value!);
 
     /*==========================================================================================================================
     | GET TOPIC
