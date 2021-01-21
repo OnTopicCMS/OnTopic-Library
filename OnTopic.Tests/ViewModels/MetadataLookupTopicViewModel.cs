@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using OnTopic.Mapping.Annotations;
 using OnTopic.ViewModels;
+using OnTopic.ViewModels.Collections;
 
 namespace OnTopic.Tests.ViewModels {
 

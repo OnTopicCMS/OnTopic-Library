@@ -31,19 +31,19 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 ## Inventory
 - [`TopicViewModel`](TopicViewModel.cs)
   - [`PageTopicViewModel`](PageTopicViewModel.cs)
-    - [`ContentListTopicViewModel`](ContentListTopicViewModel.cs) ([`ContentItemTopicViewModel`](ContentItemTopicViewModel.cs))
+    - [`ContentListTopicViewModel`](ContentListTopicViewModel.cs) ([`ContentItemTopicViewModel`](Items/ContentItemTopicViewModel.cs))
     - [`IndexTopicViewModel`](IndexTopicViewModel.cs)
-    - [`SlideshowTopicViewModel`](SlideshowTopicViewModel.cs) ([`SlideTopicViewModel`](SlideTopicViewModel.cs))
+    - [`SlideshowTopicViewModel`](SlideshowTopicViewModel.cs) ([`SlideTopicViewModel`](Items/SlideTopicViewModel.cs))
     - [`VideoTopicViewModel`](VideoTopicViewModel.cs)
   - [`SectionTopicViewModel`](SectionTopicViewModel.cs)
     - [`PageGroupTopicViewModel`](PageGroupTopicViewModel.cs)
   - [`NavigationTopicViewModel`](NavigationTopicViewModel.cs) 
-  - [`ItemTopicViewModel`](ItemTopicViewModel.cs)
-    - [`ContentItemTopicViewModel`](ContentItemTopicViewModel.cs)
-    - [`LookupListItemTopicViewModel`](LookupListItemTopicViewModel.cs)
-    - [`SlideTopicViewModel`](SlideTopicViewModel.cs)
+  - [`ItemTopicViewModel`](Items/ItemTopicViewModel.cs)
+    - [`ContentItemTopicViewModel`](Items/ContentItemTopicViewModel.cs)
+    - [`LookupListItemTopicViewModel`](Items/LookupListItemTopicViewModel.cs)
+    - [`SlideTopicViewModel`](Items/SlideTopicViewModel.cs)
 - [`TopicViewModelLookupService`](TopicViewModelLookupService.cs)
-- [`TopicViewModelCollection<>`](TopicViewModelCollection.cs)
+- [`TopicViewModelCollection<>`](Collections/TopicViewModelCollection.cs)
 
 ## Usage
 By default, the [`OnTopic.AspNetCore.Mvc`](../OnTopic.AspNetCore.Mvc/README.md)'s [`TopicController`](../OnTopic.AspNetCore.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../OnTopic/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
