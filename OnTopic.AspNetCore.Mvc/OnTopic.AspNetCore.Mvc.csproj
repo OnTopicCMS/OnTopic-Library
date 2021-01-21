@@ -16,7 +16,7 @@
     <Company>Ignia</Company>
     <Product>OnTopic</Product>
     <Description>Provides presentation-layer support for the ASP.NET Core Framework.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
+    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>

@@ -13,7 +13,7 @@
     <Company>Ignia</Company>
     <Product>Ignia OnTopic Library</Product>
     <Description>Provides unit tests for the OnTopic library.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
+    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
