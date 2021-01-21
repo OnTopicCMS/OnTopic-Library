@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
+    <ProjectReference Include="..\OnTopic.Data.Sql\OnTopic.Data.Sql.csproj" />
     <ProjectReference Include="..\OnTopic.TestDoubles\OnTopic.TestDoubles.csproj" />
     <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
     <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
