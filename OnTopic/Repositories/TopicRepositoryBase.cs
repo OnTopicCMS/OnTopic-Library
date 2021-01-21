@@ -25,19 +25,32 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ContentTypeDescriptorCollection _contentTypeDescriptors = new();
+    private readonly            ContentTypeDescriptorCollection _contentTypeDescriptors         = new();
+    private                     EventHandler<DeleteEventArgs>?  _deleteEvent;
+    private                     EventHandler<MoveEventArgs>?    _moveEvent;
+    private                     EventHandler<RenameEventArgs>?  _renameEvent;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public event EventHandler<DeleteEventArgs>? DeleteEvent;
 
     /// <inheritdoc />
-    public event EventHandler<MoveEventArgs>? MoveEvent;
+    public virtual event EventHandler<DeleteEventArgs>? DeleteEvent {
+      add => _deleteEvent += value;
+      remove => _deleteEvent -= value;
+    }
 
     /// <inheritdoc />
-    public event EventHandler<RenameEventArgs>? RenameEvent;
+    public virtual event EventHandler<MoveEventArgs>? MoveEvent {
+      add => _moveEvent += value;
+      remove => _moveEvent -= value;
+    }
+
+    /// <inheritdoc />
+    public virtual event EventHandler<RenameEventArgs>? RenameEvent {
+      add => _renameEvent += value;
+      remove => _renameEvent -= value;
+    }
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
@@ -301,7 +314,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
         var args = new RenameEventArgs(topic);
-        RenameEvent?.Invoke(this, args);
+        _renameEvent?.Invoke(this, args);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -385,7 +398,7 @@ namespace OnTopic.Repositories {
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
-      MoveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      _moveEvent?.Invoke(this, new MoveEventArgs(topic, target));
       if (sibling is null) {
         topic.SetParent(target);
       }
@@ -447,7 +460,7 @@ namespace OnTopic.Repositories {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       var args = new DeleteEventArgs(topic);
-      DeleteEvent?.Invoke(this, args);
+      _deleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
