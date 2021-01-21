@@ -13,7 +13,6 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   The DeleteEventArgs class defines an event argument type specific to deletion events
   /// </summary>
-  [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
   public class DeleteEventArgs : EventArgs {
 
     /*==========================================================================================================================

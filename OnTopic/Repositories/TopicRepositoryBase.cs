@@ -12,8 +12,6 @@ using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
 
-#pragma warning disable CS0618 // Type or member is obsolete; used to hide known deprecation of events until v5.0.0
-
 namespace OnTopic.Repositories {
 
   /*============================================================================================================================
@@ -33,15 +31,12 @@ namespace OnTopic.Repositories {
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     public event EventHandler<DeleteEventArgs>? DeleteEvent;
 
     /// <inheritdoc />
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     public event EventHandler<MoveEventArgs>? MoveEvent;
 
     /// <inheritdoc />
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
     public event EventHandler<RenameEventArgs>? RenameEvent;
 
     /*==========================================================================================================================
@@ -756,5 +751,3 @@ namespace OnTopic.Repositories {
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS0618 // Type or member is obsolete
