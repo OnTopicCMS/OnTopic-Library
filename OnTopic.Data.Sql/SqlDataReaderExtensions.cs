@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -19,7 +20,7 @@ namespace OnTopic.Data.Sql {
   | CLASS: SQL DATA READER EXTENSIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Extension methods for the <see cref="SqlDataReader"/> class.
+  ///   Extension methods for the <see cref="IDataReader"/> class.
   /// </summary>
   /// <remarks>
   ///   Most of the extensions are optimized for reading the data returned from the <c>GetTopics</c> and <c>GetTopicVersion</c>
@@ -36,10 +37,10 @@ namespace OnTopic.Data.Sql {
     | METHOD: LOAD TOPIC GRAPH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="SqlDataReader"/> from a call to the <c>GetTopics</c> stored procedure, will extract a list of
+    ///   Given a <see cref="IDataReader"/> from a call to the <c>GetTopics</c> stored procedure, will extract a list of
     ///   topics and populate their attributes, relationships, and children.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="referenceTopic">
     ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
     ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
@@ -56,7 +57,7 @@ namespace OnTopic.Data.Sql {
     ///   thus external references aren't likely to be available.
     /// </param>
     internal static Topic LoadTopicGraph(
-      this SqlDataReader reader,
+      this IDataReader reader,
       Topic? referenceTopic = null,
       bool? markDirty = null,
       bool includeExternalReferences = true
@@ -65,6 +66,7 @@ namespace OnTopic.Data.Sql {
       /*----------------------------------------------------------------------------------------------------------------------
       | Establish topic index
       \---------------------------------------------------------------------------------------------------------------------*/
+      var sqlDataReader         = reader as SqlDataReader;
       var topics                = referenceTopic is not null? referenceTopic.GetRootTopic().GetTopicIndex() : new();
       var rootTopicId           = -1;
 
@@ -101,7 +103,9 @@ namespace OnTopic.Data.Sql {
 
       // Loop through each extended attribute record associated with a specific topic
       while (reader.Read()) {
-        reader.SetExtendedAttributes(topics, markDirty);
+        if (sqlDataReader is not null) {
+          sqlDataReader.SetExtendedAttributes(topics, markDirty);
+        }
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -162,7 +166,7 @@ namespace OnTopic.Data.Sql {
     ///   Given the primary topic attributes from the <c>TopicIndex</c> view, establishes a barebones <see cref="Topic"/>
     ///   instance and adds it to the <paramref name="topics"/> collection.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
     /// <param name="markDirty">
     ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
@@ -170,7 +174,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void AddTopic(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
+    private static void AddTopic(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -217,7 +221,7 @@ namespace OnTopic.Data.Sql {
     ///   Given an attribute record from the <c>AttributeIndex</c> view, finds the associated <see cref="Topic"/> in the
     ///   <paramref name="topics"/> collection, and sets the corresponding <see cref="Topic.Attributes"/> value.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
     /// <param name="markDirty">
     ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
@@ -225,7 +229,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void SetIndexedAttributes(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
+    private static void SetIndexedAttributes(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -335,7 +339,7 @@ namespace OnTopic.Data.Sql {
     ///   Topics can be cross-referenced with each other via a many-to-many relationships. Once the topics are populated in
     ///   memory, loop through the data to create these associations.
     /// </remarks>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
     /// <param name="markDirty">
     ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
@@ -343,7 +347,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void SetRelationships(this SqlDataReader reader, TopicIndex topics, bool? isDirty = false) {
+    private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? isDirty = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -392,7 +396,7 @@ namespace OnTopic.Data.Sql {
     ///   Topics can be cross-referenced with each other topics via a one-to-one relationships. Once the topics are populated in
     ///   memory, loop through the data to create these associations.
     /// </remarks>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
     /// <param name="markDirty">
     ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
@@ -400,7 +404,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void SetReferences(this SqlDataReader reader, TopicIndex topics, bool? markDirty) {
+    private static void SetReferences(this IDataReader reader, TopicIndex topics, bool? markDirty) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -444,9 +448,9 @@ namespace OnTopic.Data.Sql {
     ///   version history is aggregated per topic to allow topic information to be rolled back to a specific date.While version
     ///   content is not exposed directly via the Load() method, the metadata is.
     /// </remarks>
-    /// <param name="reader">The <see cref="SqlDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="topics">A <see cref="Dictionary{Int32, Topic}"/> of topics to be loaded.</param>
-    private static void SetVersionHistory(this SqlDataReader reader, TopicIndex topics) {
+    private static void SetVersionHistory(this IDataReader reader, TopicIndex topics) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -474,9 +478,9 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves a string value by column name.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static string GetString(this SqlDataReader reader, string columnName) =>
+    private static string GetString(this IDataReader reader, string columnName) =>
       reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -485,9 +489,9 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves a boolean value by column name.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static bool GetBoolean(this SqlDataReader reader, string columnName) =>
+    private static bool GetBoolean(this IDataReader reader, string columnName) =>
       reader.GetBoolean(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -496,9 +500,9 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves an integer value by column name.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static int GetInteger(this SqlDataReader reader, string columnName) =>
+    private static int GetInteger(this IDataReader reader, string columnName) =>
       Int32.TryParse(reader.GetValue(reader.GetOrdinal(columnName)).ToString(), out var output)? output : -1;
 
     /*==========================================================================================================================
@@ -507,9 +511,9 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves a <see cref="Topic.Id"/> value by column name.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static int GetTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+    private static int GetTopicId(this IDataReader reader, string columnName = "TopicID") =>
       reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -518,9 +522,9 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves a <see cref="Topic.Id"/> value by column name, while accepting null values.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
-    private static int? GetNullableTopicId(this SqlDataReader reader, string columnName = "TopicID") =>
+    private static int? GetNullableTopicId(this IDataReader reader, string columnName = "TopicID") =>
       reader.IsDBNull(reader.GetOrdinal(columnName))? null : reader.GetInt32(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
@@ -529,8 +533,8 @@ namespace OnTopic.Data.Sql {
     /// <summary>
     ///   Retrieves the version column, with precisions appropriate for setting the <see cref="Topic.VersionHistory"/>.
     /// </summary>
-    /// <param name="reader">The <see cref="SqlDataReader"/> object.</param>
-    private static DateTime GetVersion(this SqlDataReader reader) =>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
+    private static DateTime GetVersion(this IDataReader reader) =>
       reader.GetDateTime(reader.GetOrdinal("Version"));
 
   } //Class
