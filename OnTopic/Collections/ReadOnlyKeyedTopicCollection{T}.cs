@@ -50,22 +50,6 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
-    | FACTORY METHOD: FROM LIST
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Establishes a new <see cref="ReadOnlyKeyedTopicCollection{T}"/> based on an existing <see cref="List{T}"/>.
-    /// </summary>
-    /// <remarks>
-    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="KeyedTopicCollection{T}"/>.
-    /// </remarks>
-    /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection{T}"/>.</param>
-    [Obsolete("This is effectively satisfied by the related overload, and will be removed in OnTopic 5.0.0.", true)]
-    public ReadOnlyKeyedTopicCollection<T> FromList(IList<T> innerCollection) {
-      Contract.Requires(innerCollection, "innerCollection should not be null");
-      return new(innerCollection);
-    }
-
-    /*==========================================================================================================================
     | INDEXER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

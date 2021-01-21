@@ -4,9 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.References;
 
-namespace OnTopic.Attributes {
+namespace OnTopic.References {
 
   /*============================================================================================================================
   | CLASS: REFERENCE SETTER [ATTRIBUTE]

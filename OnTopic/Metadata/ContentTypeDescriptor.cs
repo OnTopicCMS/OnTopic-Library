@@ -176,14 +176,7 @@ namespace OnTopic.Metadata {
           _attributeDescriptors = new();
 
           /*--------------------------------------------------------------------------------------------------------------------
-          | Get values from self
-          >---------------------------------------------------------------------------------------------------------------------
-          | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
-          | collection.
-          >---------------------------------------------------------------------------------------------------------------------
-          | ### NOTE KLT052015: The only place this is really used (and where the strongly-typed Attribute is needed) is in
-          | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
-          | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
+          | Get values from nested topics
           \-------------------------------------------------------------------------------------------------------------------*/
           if (Children.Contains("Attributes")) {
             foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
