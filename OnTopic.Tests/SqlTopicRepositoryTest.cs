@@ -160,5 +160,34 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+    ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.
+    ///   IsFullyLoaded"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
+
+      using var topics          = new TopicsDataTable();
+      using var empty           = new AttributesDataTable();
+      using var references      = new TopicReferencesDataTable();
+
+      topics.AddRow(1, "Root", "Container", null);
+      references.AddRow(1, "Test", 2);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+
+      var topic                 = tableReader.LoadTopicGraph();
+
+      Assert.IsNotNull(topic);
+      Assert.AreEqual<int>(1, topic.Id);
+      Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.IsFalse(topic.References.IsFullyLoaded);
+
+    }
+
   } //Class
 } //Namespace
