@@ -276,7 +276,10 @@ namespace OnTopic.Internal.Reflection {
           if (PropertyCache.ContainsKey(itemKey)) {
             PropertyCache.Remove(itemKey);
           }
-          ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+          if (ex.InnerException is not null) {
+            ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+          }
+          throw;
         }
         _setCounter = 0;
         return false;

@@ -129,6 +129,12 @@ namespace OnTopic.Mapping {
 
         target                  = Activator.CreateInstance(viewModelType);
 
+        Contract.Assume(
+          target,
+          $"The target type '{viewModelType}' could not be properly constructed, as required to map the topic " +
+          $"'{topic.GetUniqueKey()}'."
+        );
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -319,13 +325,17 @@ namespace OnTopic.Mapping {
         }
       }
       else if (configuration.MapToParent) {
-        await MapAsync(
-          source,
-          property.GetValue(target),
-          relationships,
-          cache,
-          configuration.AttributePrefix
-        ).ConfigureAwait(false);
+        var targetProperty = property.GetValue(target);
+        if (targetProperty is not null) {
+          await MapAsync(
+            source,
+            targetProperty,
+            relationships,
+            cache,
+            configuration.AttributePrefix
+          ).ConfigureAwait(false);
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -453,6 +463,12 @@ namespace OnTopic.Mapping {
         targetList = (IList?)Activator.CreateInstance(configuration.Property.PropertyType);
         configuration.Property.SetValue(target, targetList);
       }
+
+      Contract.Assume(
+        targetList,
+        $"The target list type, '{configuration.Property.PropertyType}', could not be properly constructed, as required to " +
+        $"map the '{configuration.Property.Name}' property on the '{target?.GetType().Name}' object."
+      );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
