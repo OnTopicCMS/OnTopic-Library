@@ -3,10 +3,12 @@
   <PropertyGroup>
     <ProjectGuid>{E52FC633-B4C5-4A2B-8CAF-30E756D7A6A7}</ProjectGuid>
     <RootNamespace>OnTopic.ViewModels</RootNamespace>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <Nullable>enable</Nullable>
+    <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 

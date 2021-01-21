@@ -3,10 +3,12 @@
   <PropertyGroup>
     <ProjectGuid>{206B7F91-CA25-4E9D-9576-60D2E54A2C0A}</ProjectGuid>
     <RootNamespace>OnTopic.Data.Caching</RootNamespace>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
     <Nullable>enable</Nullable>
+    <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
