@@ -219,7 +219,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="initialObject">The <typeparamref name="TValueType"/> object which is being inserted.</param>
     /// <returns>Returns <c>true</c> if the <paramref name="itemKey"/> has been registered, otherwise <c>false</c>.</returns>
     internal bool IsRegistered(string itemKey, [NotNullWhen(true)] out TValueType? initialObject) =>
-      PropertyCache.TryGetValue(itemKey, out initialObject);
+      PropertyCache.TryGetValue(itemKey, out initialObject!);
 
     /*==========================================================================================================================
     | METHOD: ENFORCE
@@ -276,7 +276,10 @@ namespace OnTopic.Internal.Reflection {
           if (PropertyCache.ContainsKey(itemKey)) {
             PropertyCache.Remove(itemKey);
           }
-          ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+          if (ex.InnerException is not null) {
+            ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+          }
+          throw;
         }
         _setCounter = 0;
         return false;

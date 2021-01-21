@@ -3,10 +3,9 @@
   <PropertyGroup>
     <ProjectGuid>{B7F136A1-C86D-4A74-AC4F-3693CD1358A4}</ProjectGuid>
     <RootNamespace>OnTopic.AspNetCore.Mvc</RootNamespace>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <ShouldCreateLogs>True</ShouldCreateLogs>
     <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
@@ -17,7 +16,7 @@
     <Company>Ignia</Company>
     <Product>OnTopic</Product>
     <Description>Provides presentation-layer support for the ASP.NET Core Framework.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
+    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>

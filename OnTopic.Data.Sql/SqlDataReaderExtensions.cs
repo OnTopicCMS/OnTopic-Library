@@ -56,7 +56,7 @@ namespace OnTopic.Data.Sql {
     ///   cref="Topic.DerivedTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
     ///   thus external references aren't likely to be available.
     /// </param>
-    internal static Topic LoadTopicGraph(
+    internal static Topic? LoadTopicGraph(
       this IDataReader reader,
       Topic? referenceTopic = null,
       bool? markDirty = null,
@@ -307,7 +307,7 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        var attributeKey        = (string)xmlReader.GetAttribute("key");
+        var attributeKey        = (string?)xmlReader.GetAttribute("key");
         var attributeValue      = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
 
         /*----------------------------------------------------------------------------------------------------------------------

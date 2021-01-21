@@ -82,7 +82,7 @@ namespace OnTopic.AspNetCore.Mvc {
       Contract.Requires(context, nameof(context));
       context.Values["action_displayname"] = context.ActionContext.ActionDescriptor.DisplayName;
       context.ActionContext.RouteData.Values.TryGetValue("contenttype", out var contentType);
-      context.Values["content_type"] = (string)contentType;
+      context.Values["content_type"] = (string?)contentType;
     }
 
     /*==========================================================================================================================
@@ -109,14 +109,14 @@ namespace OnTopic.AspNetCore.Mvc {
       | Yield view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in ViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
+        yield return location.Replace(@"{3}", (string?)contentType, StringComparison.InvariantCulture);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Yield area view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in AreaViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
+        yield return location.Replace(@"{3}", (string?)contentType, StringComparison.InvariantCulture);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

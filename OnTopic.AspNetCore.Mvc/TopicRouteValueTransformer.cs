@@ -43,8 +43,8 @@ namespace OnTopic.AspNetCore.Mvc {
       | If the area is set, but not the controller, assume that the controller is named after the area by convention. If the
       | controller is being set in the route pattern, this won't change that.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = (string)values["controller"];
-      var area                  = (string)values["area"];
+      var controller            = (string?)values["controller"];
+      var area                  = (string?)values["area"];
       if (area is not null && controller is null) {
         values["controller"]    = area;
       }
@@ -54,7 +54,7 @@ namespace OnTopic.AspNetCore.Mvc {
       >-------------------------------------------------------------------------------------------------------------------------
       | If the action isn't defined in the route, assume Index—which is the default action for the TopicController.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var action                = (string)values["action"];
+      var action                = (string?)values["action"];
       if (action is null) {
         action                  = "Index";
         values["action"]        = action;
@@ -67,7 +67,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | required by the TopicRepositoryExtensions to create a fully qualified topic path, and correctly identify the topic
       | based on the path. It is not needed when routing by controller/action pairs.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var path                  = (string)values["path"];
+      var path                  = (string?)values["path"];
       if (path is not null || action.Equals("Index", StringComparison.OrdinalIgnoreCase)) {
         values["rootTopic"]     = area;
       }

@@ -419,7 +419,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList)configuration.Property.GetValue(source, null);
+      var sourceList = (IList?)configuration.Property.GetValue(source, null);
 
       if (sourceList is null) {
         sourceList = new List<IRelatedTopicBindingModel>();
@@ -476,7 +476,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
+      var sourceList = (IList?)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
@@ -524,7 +524,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var modelReference = (IRelatedTopicBindingModel)configuration.Property.GetValue(source);
+      var modelReference = (IRelatedTopicBindingModel?)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)
