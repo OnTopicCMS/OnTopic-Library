@@ -447,7 +447,7 @@ namespace OnTopic.Mapping.Internal {
     /// <param name="property">The <see cref="PropertyInfo"/> instance to pull the attribute from.</param>
     /// <param name="action">The <see cref="Action{T}"/> to execute on the attribute.</param>
     private static void GetAttributeValue<T>(PropertyInfo property, Action<T> action) where T : Attribute {
-      var attribute = (T)property.GetCustomAttribute(typeof(T), true);
+      var attribute = (T?)property.GetCustomAttribute(typeof(T), true);
       if (attribute is not null) {
         action(attribute);
       }

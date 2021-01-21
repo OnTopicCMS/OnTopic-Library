@@ -307,7 +307,7 @@ namespace OnTopic.Data.Sql {
         /*----------------------------------------------------------------------------------------------------------------------
         | Identify attributes
         \---------------------------------------------------------------------------------------------------------------------*/
-        var attributeKey        = (string)xmlReader.GetAttribute("key");
+        var attributeKey        = (string?)xmlReader.GetAttribute("key");
         var attributeValue      = WebUtility.HtmlDecode(xmlReader.ReadInnerXml());
 
         /*----------------------------------------------------------------------------------------------------------------------

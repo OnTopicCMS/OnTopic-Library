@@ -78,10 +78,16 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var targetType = TypeLookupService.Lookup(contentType);
 
+      Contract.Assume(
+        targetType,
+        $"The content type {contentType} could not be located in the ITypeLookupService, and no fallback could be " +
+        $"identified."
+      );
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1);
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1)!;
 
     }
 
@@ -119,10 +125,16 @@ namespace OnTopic {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var targetType = TypeLookupService.Lookup(contentType);
 
+      Contract.Assume(
+        targetType,
+        $"The content type {contentType} could not be located in the ITypeLookupService, and no fallback could be " +
+        $"identified."
+      );
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
       \---------------------------------------------------------------------------------------------------------------------*/
-      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id);
+      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id)!;
 
     }
 

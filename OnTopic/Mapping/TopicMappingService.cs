@@ -448,9 +448,9 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure target list is created
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetList = (IList)configuration.Property.GetValue(target, null);
+      var targetList = (IList?)configuration.Property.GetValue(target, null);
       if (targetList is null) {
-        targetList = (IList)Activator.CreateInstance(configuration.Property.PropertyType);
+        targetList = (IList?)Activator.CreateInstance(configuration.Property.PropertyType);
         configuration.Property.SetValue(target, targetList);
       }
 
