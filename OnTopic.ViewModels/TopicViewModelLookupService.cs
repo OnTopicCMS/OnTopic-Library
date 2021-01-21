@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using OnTopic.Lookup;
+using OnTopic.ViewModels.Items;
 
 namespace OnTopic.ViewModels {
 
@@ -36,20 +37,28 @@ namespace OnTopic.ViewModels {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure local view models are accounted for
       \-----------------------------------------------------------------------------------------------------------------------*/
-      TryAdd(typeof(ContentItemTopicViewModel));
       TryAdd(typeof(ContentListTopicViewModel));
       TryAdd(typeof(IndexTopicViewModel));
-      TryAdd(typeof(ItemTopicViewModel));
-      TryAdd(typeof(ListTopicViewModel));
-      TryAdd(typeof(LookupListItemTopicViewModel));
       TryAdd(typeof(NavigationTopicViewModel));
       TryAdd(typeof(PageGroupTopicViewModel));
       TryAdd(typeof(PageTopicViewModel));
       TryAdd(typeof(SectionTopicViewModel));
-      TryAdd(typeof(SlideTopicViewModel));
       TryAdd(typeof(SlideshowTopicViewModel));
       TryAdd(typeof(TopicViewModel));
       TryAdd(typeof(VideoTopicViewModel));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add item types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      TryAdd(typeof(ItemTopicViewModel));
+      TryAdd(typeof(ContentItemTopicViewModel));
+      TryAdd(typeof(ListTopicViewModel));
+      TryAdd(typeof(LookupListItemTopicViewModel));
+      TryAdd(typeof(SlideTopicViewModel));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Add support types
+      \-----------------------------------------------------------------------------------------------------------------------*/
 
     }
 
