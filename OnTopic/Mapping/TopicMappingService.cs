@@ -555,7 +555,7 @@ namespace OnTopic.Mapping {
           if (
             sourceProperty.GetValue(source) is IList sourcePropertyValue &&
             sourcePropertyValue.Count > 0 &&
-            typeof(Topic).IsAssignableFrom(sourcePropertyValue[0].GetType())
+            typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
           ) {
             listSource = GetRelationship(
               RelationshipType.MappedCollection,

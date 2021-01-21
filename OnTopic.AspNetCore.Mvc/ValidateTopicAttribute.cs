@@ -135,7 +135,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "PageGroup") {
         context.Result = controller.Redirect(
-          currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
+          currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath()
         );
         return;
       }
