@@ -19,7 +19,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class VideoTopicViewModel: PageTopicViewModel {
+  public record VideoTopicViewModel: PageTopicViewModel {
 
     /*==========================================================================================================================
     | VIDEO URL
@@ -27,7 +27,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to a video to display on the page.
     /// </summary>
-    public Uri? VideoUrl { get; set; }
+    public Uri? VideoUrl { get; init; }
 
     /*==========================================================================================================================
     | POSTER URL
@@ -35,7 +35,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to an image to display prior to playing the video.
     /// </summary>
-    public Uri? PosterUrl { get; set; }
+    public Uri? PosterUrl { get; init; }
 
   } //Class
 } //Namespace

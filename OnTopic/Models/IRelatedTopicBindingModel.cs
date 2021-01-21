@@ -31,7 +31,7 @@ namespace OnTopic.Models {
     ///   value is not null
     /// </requires>
     [Required]
-    string? UniqueKey { get; set; }
+    string? UniqueKey { get; init; }
 
   } //Class
 } //Namespace

@@ -26,10 +26,10 @@ namespace OnTopic.Tests.BindingModels {
       ContentType = contentType;
     }
 
-    public string? Key { get; set; }
+    public string? Key { get; init; }
 
     [Required]
-    public string? ContentType { get; set; }
+    public string? ContentType { get; init; }
 
   } //Class
 } //Namespace

@@ -17,7 +17,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class SlideshowTopicViewModel: ContentListTopicViewModel {
+  public record SlideshowTopicViewModel: ContentListTopicViewModel {
 
     /*==========================================================================================================================
     | TRANSITION EFFECT
@@ -30,7 +30,7 @@ namespace OnTopic.ViewModels {
     ///   slideshow. Typically, they will map to standard HTML5/CSS3 transition effects, but they could differ depending on the
     ///   implementation.
     /// </remarks>
-    public string? TransitionEffect { get; set; }
+    public string? TransitionEffect { get; init; }
 
   } //Class
 } //Namespace

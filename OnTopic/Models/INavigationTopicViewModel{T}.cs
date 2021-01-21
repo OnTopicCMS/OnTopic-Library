@@ -28,7 +28,7 @@ namespace OnTopic.Models {
     ///   In addition to the Title, a site may opt to define a Short Title used exclusively in the navigation. If present, this
     ///   value should be used instead of Title.
     /// </summary>
-    string? ShortTitle { get; set; }
+    string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | METHOD: ISSELECTED

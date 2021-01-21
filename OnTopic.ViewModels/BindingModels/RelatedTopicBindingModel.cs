@@ -21,7 +21,7 @@ namespace OnTopic.ViewModels.BindingModels {
   ///   cref="ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
   ///   metadata for separate validation or processing.
   /// </remarks>
-  public class RelatedTopicBindingModel : IRelatedTopicBindingModel {
+  public record RelatedTopicBindingModel : IRelatedTopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -33,7 +33,7 @@ namespace OnTopic.ViewModels.BindingModels {
     ///   value is not null
     /// </requires>
     [Required]
-    public string? UniqueKey { get; set; }
+    public string? UniqueKey { get; init; }
 
   } //Class
 } //Namespaces

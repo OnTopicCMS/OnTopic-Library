@@ -36,7 +36,7 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets the topic's ID attribute, the primary unique identifier for the topic.
     /// </summary>
-    int Id { get; set; }
+    int Id { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: KEY
@@ -44,7 +44,7 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
     /// </summary>
-    string? Key { get; set; }
+    string? Key { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -52,7 +52,7 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
     /// </summary>
-    string? UniqueKey { get; set; }
+    string? UniqueKey { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: WEB PATH
@@ -61,7 +61,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="UniqueKey"/> in its URL
     ///   format.
     /// </summary>
-    string? WebPath { get; set; }
+    string? WebPath { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
@@ -73,7 +73,7 @@ namespace OnTopic.Models {
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
     ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
     /// </remarks>
-    string? ContentType { get; set; }
+    string? ContentType { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: VIEW
@@ -88,7 +88,7 @@ namespace OnTopic.Models {
     ///   Content Type is "Page", then the view will be "Page". This will cause the <c>TopicViewResultExecutor</c> to look
     ///   for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
-    string? View { get; set; }
+    string? View { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: IS HIDDEN
@@ -96,7 +96,7 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
-    bool IsHidden { get; set; }
+    bool IsHidden { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: TITLE
@@ -109,7 +109,7 @@ namespace OnTopic.Models {
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>
-    string? Title { get; set; }
+    string? Title { get; init; }
 
   } //Class
 } //Namespace

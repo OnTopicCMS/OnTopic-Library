@@ -17,7 +17,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class SlideTopicViewModel: ContentItemTopicViewModel {
+  public record SlideTopicViewModel: ContentItemTopicViewModel {
 
 
   } //Class

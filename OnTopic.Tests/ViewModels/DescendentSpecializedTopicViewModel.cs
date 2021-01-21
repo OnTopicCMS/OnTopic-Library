@@ -24,7 +24,7 @@ namespace OnTopic.Tests.ViewModels {
   ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   ///   </para>
   /// </remarks>
-  public class DescendentSpecializedTopicViewModel: DescendentTopicViewModel {
+  public record DescendentSpecializedTopicViewModel: DescendentTopicViewModel {
 
     public bool IsLeaf { get; set; }
 

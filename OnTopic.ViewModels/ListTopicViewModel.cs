@@ -25,7 +25,7 @@ namespace OnTopic.ViewModels {
   ///     are supplied for convenience to model factory default settings for out-of-the-box content types.
   ///   </para>
   /// </remarks>
-  public class ListTopicViewModel: ContentItemTopicViewModel {
+  public record ListTopicViewModel: ContentItemTopicViewModel {
 
   } //Class
 } //Namespace
