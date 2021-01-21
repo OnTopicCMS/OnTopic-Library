@@ -492,11 +492,11 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic2"));
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic3"));
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic4"));
-      Assert.IsTrue(((DescendentSpecializedTopicViewModel)GetChildTopic(target.Children, "ChildTopic4")).IsLeaf);
+      Assert.IsTrue(((DescendentSpecializedTopicViewModel?)GetChildTopic(target.Children, "ChildTopic4")).IsLeaf);
       Assert.IsNull(GetChildTopic(target.Children, "invalidChildTopic"));
       Assert.IsNull(GetChildTopic(target.Children, "GrandchildTopic"));
       Assert.IsNotNull(GetChildTopic(
-        ((DescendentTopicViewModel)GetChildTopic(target.Children, "ChildTopic3")).Children,
+        ((DescendentTopicViewModel?)GetChildTopic(target.Children, "ChildTopic3")).Children,
         "GrandchildTopic"
       ));
     }
