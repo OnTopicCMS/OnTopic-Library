@@ -70,6 +70,28 @@ namespace OnTopic.Data.Caching {
     }
 
     /*==========================================================================================================================
+    | EVENT PASSTHROUGHS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <inheritdoc/>
+    public override event EventHandler<DeleteEventArgs>? DeleteEvent {
+      add => _dataProvider.DeleteEvent += value;
+      remove => _dataProvider.DeleteEvent -= value;
+    }
+
+    /// <inheritdoc/>
+    public override event EventHandler<MoveEventArgs>? MoveEvent {
+      add => _dataProvider.MoveEvent += value;
+      remove => _dataProvider.MoveEvent -= value;
+    }
+
+    /// <inheritdoc/>
+    public override event EventHandler<RenameEventArgs>? RenameEvent {
+      add => _dataProvider.RenameEvent += value;
+      remove => _dataProvider.RenameEvent -= value;
+    }
+
+    /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
