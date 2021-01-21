@@ -4,6 +4,7 @@
     <ProjectGuid>{1DE1F923-C7C2-435B-B49A-975ACBCB5FF0}</ProjectGuid>
     <RootNamespace>OnTopic.Data.Sql</RootNamespace>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
