@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
