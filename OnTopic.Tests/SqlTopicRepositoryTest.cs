@@ -100,5 +100,34 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH REFERENCE: RETURNS REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+    ///   TopicReferencesDataTable"/> record and confirms that a topic with those values is returned.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithReference_ReturnsReference() {
+
+      using var topics          = new TopicsDataTable();
+      using var empty           = new AttributesDataTable();
+      using var references      = new TopicReferencesDataTable();
+
+      topics.AddRow(1, "Root", "Container", null);
+      topics.AddRow(2, "Web", "Container", 1);
+      references.AddRow(1, "Test", 2);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+
+      var topic                 = tableReader.LoadTopicGraph();
+
+      Assert.IsNotNull(topic);
+      Assert.AreEqual<int>(1, topic.Id);
+      Assert.AreEqual<int?>(2, topic.References.GetTopic("Test")?.Id);
+      Assert.IsTrue(topic.References.IsDirty());
+
+    }
+
   } //Class
 } //Namespace
