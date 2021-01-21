@@ -189,5 +189,34 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH DELETED RELATIONSHIP: REMOVES RELATIONSHIP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a deleted <see
+    ///   cref="RelationshipsDataTable"/> record and confirms that it is deleted from the <c>referenceTopic</c> graph.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
+
+      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var child                 = TopicFactory.Create("Child", "Container", 2, topic);
+      var related               = TopicFactory.Create("Related", "Container", 3, topic);
+
+      child.Relationships.SetTopic("Test", related);
+
+      using var empty           = new AttributesDataTable();
+      using var relationships   = new RelationshipsDataTable();
+
+      relationships.AddRow(2, "Test", 3, true);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { empty, empty, empty, relationships });
+
+      tableReader.LoadTopicGraph(related);
+
+      Assert.AreEqual<int>(0, topic.Relationships.GetTopics("Test").Count);
+
+    }
+
   } //Class
 } //Namespace
