@@ -32,12 +32,10 @@
     <DebugType>full</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <LangVersion>latest</LangVersion>
-    <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <NoWarn>1701;1702;CA1303</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
