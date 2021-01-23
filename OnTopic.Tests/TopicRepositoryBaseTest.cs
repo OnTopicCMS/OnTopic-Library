@@ -605,7 +605,7 @@ namespace OnTopic.Tests {
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
 
       _topicRepository.Save(newAttribute);
 
@@ -626,7 +626,7 @@ namespace OnTopic.Tests {
 
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 

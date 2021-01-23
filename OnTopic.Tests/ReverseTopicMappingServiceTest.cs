@@ -67,16 +67,16 @@ namespace OnTopic.Tests {
 
       var bindingModel          = new TextAttributeTopicBindingModel() {
         Key                     = "Test",
-        ContentType             = "TextAttribute",
+        ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
         IsRequired              = true
       };
 
-      var target                = await mappingService.MapAsync<TextAttribute>(bindingModel).ConfigureAwait(false);
+      var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttribute", target.ContentType);
+      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
       Assert.AreEqual<string>("Test Attribute", target.Title);
       Assert.AreEqual<string>("Hello", target.DefaultValue);
       Assert.AreEqual<bool>(true, target.IsRequired);
@@ -97,17 +97,17 @@ namespace OnTopic.Tests {
 
       var bindingModel          = new TextAttributeTopicBindingModel {
         Key                     = "Test",
-        ContentType             = "TextAttribute",
+        ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
         IsRequired              = true
       };
 
-      var target                = (TextAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttribute", target.ContentType);
+      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
       Assert.AreEqual<string>("Test Attribute", target.Title);
       Assert.AreEqual<string>("Hello", target.DefaultValue);
       Assert.AreEqual<bool>(true, target.IsRequired);
@@ -128,13 +128,13 @@ namespace OnTopic.Tests {
 
       var bindingModel          = new TextAttributeTopicBindingModel() {
         Key                     = "Test",
-        ContentType             = "TextAttribute",
+        ContentType             = "TextAttributeDescriptor",
         Title                   = null,
         DefaultValue            = "World",
         IsRequired              = false
       };
 
-      var target                = (TextAttribute?)TopicFactory.Create("Test", "TextAttribute");
+      var target                = (TextAttributeDescriptor?)TopicFactory.Create("Test", "TextAttributeDescriptor");
 
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
@@ -143,10 +143,10 @@ namespace OnTopic.Tests {
 
       target.Attributes.SetValue("Description", "Original Description");
 
-      target                    = (TextAttribute?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
+      target                    = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
       Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttribute", target.ContentType);
+      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
       Assert.AreEqual<string>("Test", target.Title); //Should inherit from "Key" since it will be null
       Assert.AreEqual<string>("World", target.DefaultValue);
       Assert.AreEqual<bool>(false, target.IsRequired);
@@ -262,8 +262,8 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor");
       var attributes            = TopicFactory.Create("Attributes", "List", topic);
 
-      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttribute", attributes);
-      var attribute4            = TopicFactory.Create("Attribute4", "TextAttribute", attributes);
+      var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttributeDescriptor", attributes);
+      var attribute4            = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 
@@ -295,7 +295,7 @@ namespace OnTopic.Tests {
         }
       };
 
-      var target                = (TopicReferenceAttribute?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TopicReferenceAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target.DerivedTopic);
       Assert.AreEqual<string>("Title", target.DerivedTopic.Key);
