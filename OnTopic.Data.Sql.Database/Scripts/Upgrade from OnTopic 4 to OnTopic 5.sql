@@ -121,3 +121,20 @@ WHERE	AttributeKey		LIKE '%ID'
 UPDATE	TopicReferences
 SET	ReferenceKey		= 'DerivedTopic'
 WHERE	ReferenceKey		= 'Topic'
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- MIGRATE ATTRIBUTE KEYS
+--------------------------------------------------------------------------------------------------------------------------------
+-- In OnTopic 5, attribute content types have been renamed to have the suffix "AttributeDescriptor" instead of just "Attribute".
+-- This has a number of benefits, including consistency with the base "AttributeDescriptor" content type, and avoiding a naming
+-- conflict with .NET's own "*Attribute" convention (which is usually reserved for actual attributes).
+--------------------------------------------------------------------------------------------------------------------------------
+
+UPDATE	Topics
+SET	TopicKey		= TopicKey + 'Descriptor'
+WHERE	TopicKey		LIKE '%Attribute'
+AND	ContentType		= 'ContentTypeDescriptor'
+
+UPDATE	Topics
+SET	ContentType		= ContentType + 'Descriptor'
+WHERE	ContentType		LIKE '%Attribute'
