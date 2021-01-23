@@ -109,7 +109,7 @@ namespace OnTopic.Metadata {
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
     [AttributeSetter]
-    public virtual string EditorType => GetType().Name.Replace("Attribute", "", StringComparison.OrdinalIgnoreCase);
+    public virtual string EditorType => GetType().Name.Replace("AttributeDescriptor", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
