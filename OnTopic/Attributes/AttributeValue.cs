@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 
