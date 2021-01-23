@@ -681,7 +681,7 @@ namespace OnTopic.Repositories {
         .Union(topic.Attributes.DeletedAttributes);
       foreach (var attributeKey in attributeKeys) {
         if (!attributes.Contains(attributeKey)) {
-          attributes.Add((AttributeDescriptor)TopicFactory.Create(attributeKey, "TextAttribute"));
+          attributes.Add((AttributeDescriptor)TopicFactory.Create(attributeKey, "TextAttributeDescriptor"));
         }
       }
 
