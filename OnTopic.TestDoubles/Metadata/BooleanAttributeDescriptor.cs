@@ -8,23 +8,23 @@ using OnTopic.Metadata;
 namespace OnTopic.TestDoubles.Metadata {
 
   /*============================================================================================================================
-  | CLASS: NESTED TOPIC LIST ATTRIBUTE (DESCRIPTOR)
+  | CLASS: BOOLEAN (ATTRIBUTE DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a nested topic list attribute type, including information on how it will be presented
-  ///   and validated in the editor.
+  ///   Represents metadata for describing an boolean attribute type, including information on how it will be presented and
+  ///   validated in the editor.
   /// </summary>
   /// <remarks>
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class NestedTopicListAttribute : AttributeDescriptor {
+  public class BooleanAttributeDescriptor : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public NestedTopicListAttribute(
+    public BooleanAttributeDescriptor(
       string key,
       string contentType,
       Topic parent,
@@ -36,12 +36,6 @@ namespace OnTopic.TestDoubles.Metadata {
       id
     ) {
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: MODEL TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override ModelType ModelType => ModelType.NestedTopic;
 
   } //Class
 } //Namespace

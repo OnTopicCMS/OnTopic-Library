@@ -55,7 +55,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(RelationWithChildrenTopicViewModel));
       Add(typeof(RequiredObjectTopicViewModel));
       Add(typeof(RequiredTopicViewModel));
-      Add(typeof(TopicReferenceAttributeTopicViewModel));
+      Add(typeof(TopicReferenceAttributeDescriptorTopicViewModel));
       Add(typeof(TopicReferenceTopicViewModel));
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(AttributeDescriptorTopicViewModel));
       Add(typeof(ContentTypeDescriptorTopicViewModel));
       Add(typeof(MetadataLookupTopicViewModel));
-      Add(typeof(TextAttributeTopicViewModel));
+      Add(typeof(TextAttributeDescriptorTopicViewModel));
 
     }
 

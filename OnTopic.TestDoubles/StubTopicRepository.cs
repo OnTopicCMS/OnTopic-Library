@@ -219,15 +219,15 @@ namespace OnTopic.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      addAttribute(contentTypes, "Key", "TextAttribute", false, true);
-      addAttribute(contentTypes, "ContentType", "TextAttribute", false, true);
-      addAttribute(contentTypes, "Title", "TextAttribute", true, true);
-      addAttribute(contentTypes, "DerivedTopic", "TopicReferenceAttribute", false);
+      addAttribute(contentTypes, "Key", "TextAttributeDescriptor", false, true);
+      addAttribute(contentTypes, "ContentType", "TextAttributeDescriptor", false, true);
+      addAttribute(contentTypes, "Title", "TextAttributeDescriptor", true, true);
+      addAttribute(contentTypes, "DerivedTopic", "TopicReferenceAttributeDescriptor", false);
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttribute");
-      addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttribute");
+      addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
+      addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
 
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
@@ -236,22 +236,22 @@ namespace OnTopic.TestDoubles {
 
       var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(attributeDescriptor, "DefaultValue", "TextAttribute", false, true);
-      addAttribute(attributeDescriptor, "IsRequired", "TextAttribute", false, true);
+      addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
+      addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
 
-      TopicFactory.Create("BooleanAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("NestedTopicListAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("NumberAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("RelationshipAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("TextAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("TopicReferenceAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("BooleanAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NestedTopicListAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NumberAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("RelationshipAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
       var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
-      addAttribute(pageContentType, "IsHidden", "TextAttribute", false);
-      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttribute", false);
+      addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
+      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
       pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
       pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
@@ -268,7 +268,7 @@ namespace OnTopic.TestDoubles {
       AttributeDescriptor addAttribute(
         Topic contentType,
         string attributeKey,
-        string editorType       = "TextAttribute",
+        string editorType       = "TextAttributeDescriptor",
         bool isExtended         = true,
         bool isRequired         = false
       ) {

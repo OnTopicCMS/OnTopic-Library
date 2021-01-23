@@ -835,7 +835,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_CompatibleProperties_MapObjectReference() {
 
-      var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
+      var topic                 = (TextAttributeDescriptor)TopicFactory.Create("Attribute", "TextAttributeDescriptor");
 
       topic.VersionHistory.Add(new(1976, 10, 15, 9, 30, 00));
 

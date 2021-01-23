@@ -8,23 +8,23 @@ using OnTopic.Metadata;
 namespace OnTopic.TestDoubles.Metadata {
 
   /*============================================================================================================================
-  | CLASS: TEXT ATTRIBUTE (DESCRIPTOR)
+  | CLASS: NESTED TOPIC LIST (ATTRIBUTE DESCRIPTOR)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents metadata for describing a text attribute type, including information on how it will be presented and
-  ///   validated in the editor.
+  ///   Represents metadata for describing a nested topic list attribute type, including information on how it will be presented
+  ///   and validated in the editor.
   /// </summary>
   /// <remarks>
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
-  public class TextAttribute : AttributeDescriptor {
+  public class NestedTopicListAttributeDescriptor : AttributeDescriptor {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public TextAttribute(
+    public NestedTopicListAttributeDescriptor(
       string key,
       string contentType,
       Topic parent,
@@ -36,6 +36,12 @@ namespace OnTopic.TestDoubles.Metadata {
       id
     ) {
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: MODEL TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc />
+    public override ModelType ModelType => ModelType.NestedTopic;
 
   } //Class
 } //Namespace
