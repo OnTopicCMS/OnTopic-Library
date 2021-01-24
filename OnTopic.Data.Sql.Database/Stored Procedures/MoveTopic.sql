@@ -100,6 +100,7 @@ IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
       1, -- State,
       @TopicID
     );
+    COMMIT
     RETURN
   END
 
@@ -111,6 +112,7 @@ IF @ParentID IS NULL OR @InsertionPoint IS NULL
       1, -- State,
       @ParentID
     );
+    COMMIT
     RETURN
   END
 
@@ -123,6 +125,7 @@ IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
       @TopicID,
       @ParentID
     );
+    COMMIT
     RETURN
   END
 
