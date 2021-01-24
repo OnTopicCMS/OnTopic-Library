@@ -24,7 +24,7 @@ INTO	Attributes (
 	)
 SELECT	@TopicID,
 	AttributeKey,
-	AttributeValue,
+	ISNULL(AttributeValue, ''),
 	@Version
 FROM	@Attributes		New
 OUTER APPLY (
