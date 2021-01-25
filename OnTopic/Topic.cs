@@ -241,7 +241,7 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   The original key is automatically set by <see cref="Key" /> when its value is updated (assuming the original key isn't
-    ///   already set). This is, in turn, used by the <see cref="Repositories.RenameEventArgs" /> to represent the original
+    ///   already set). This is, in turn, used by the <see cref="Repositories.TopicRenameEventArgs" /> to represent the original
     ///   value, and thus allow the <see cref="Repositories.ITopicRepository" /> (or derived providers) from updating the data
     ///   store appropriately.
     /// </remarks>

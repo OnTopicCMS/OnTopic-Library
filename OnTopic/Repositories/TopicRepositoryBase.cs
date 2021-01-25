@@ -28,7 +28,7 @@ namespace OnTopic.Repositories {
     private readonly            ContentTypeDescriptorCollection _contentTypeDescriptors         = new();
     private                     EventHandler<TopicEventArgs>?  _deleteEvent;
     private                     EventHandler<TopicMoveEventArgs>?    _moveEvent;
-    private                     EventHandler<RenameEventArgs>?  _renameEvent;
+    private                     EventHandler<TopicRenameEventArgs>?  _renameEvent;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
@@ -47,7 +47,7 @@ namespace OnTopic.Repositories {
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<RenameEventArgs>? RenameEvent {
+    public virtual event EventHandler<TopicRenameEventArgs>? RenameEvent {
       add => _renameEvent += value;
       remove => _renameEvent -= value;
     }
@@ -313,7 +313,7 @@ namespace OnTopic.Repositories {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
-        var args = new RenameEventArgs(topic);
+        var args = new TopicRenameEventArgs(topic, topic.Key, topic.OriginalKey);
         _renameEvent?.Invoke(this, args);
       }
 

@@ -30,9 +30,9 @@ namespace OnTopic.Repositories {
     event EventHandler<TopicMoveEventArgs> MoveEvent;
 
     /// <summary>
-    ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
+    ///   Instantiates the <see cref="TopicRenameEventArgs"/> event handler.
     /// </summary>
-    event EventHandler<RenameEventArgs> RenameEvent;
+    event EventHandler<TopicRenameEventArgs> RenameEvent;
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS

@@ -86,7 +86,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc/>
-    public override event EventHandler<RenameEventArgs>? RenameEvent {
+    public override event EventHandler<TopicRenameEventArgs>? RenameEvent {
       add => _dataProvider.RenameEvent += value;
       remove => _dataProvider.RenameEvent -= value;
     }
