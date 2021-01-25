@@ -26,7 +26,7 @@ namespace OnTopic.Repositories {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ContentTypeDescriptorCollection _contentTypeDescriptors         = new();
-    private                     EventHandler<DeleteEventArgs>?  _deleteEvent;
+    private                     EventHandler<TopicEventArgs>?  _deleteEvent;
     private                     EventHandler<MoveEventArgs>?    _moveEvent;
     private                     EventHandler<RenameEventArgs>?  _renameEvent;
 
@@ -35,7 +35,7 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc />
-    public virtual event EventHandler<DeleteEventArgs>? DeleteEvent {
+    public virtual event EventHandler<TopicEventArgs>? DeleteEvent {
       add => _deleteEvent += value;
       remove => _deleteEvent -= value;
     }
@@ -459,7 +459,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var args = new DeleteEventArgs(topic);
+      var args = new TopicEventArgs(topic);
       _deleteEvent?.Invoke(this, args);
 
       /*------------------------------------------------------------------------------------------------------------------------

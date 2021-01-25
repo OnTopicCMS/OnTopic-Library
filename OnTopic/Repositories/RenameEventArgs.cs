@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 
 namespace OnTopic.Repositories {
 
@@ -13,7 +12,7 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   The RenameEventArgs object defines an event argument type specific to rename events.
   /// </summary>
-  public class RenameEventArgs : EventArgs {
+  public class RenameEventArgs : TopicEventArgs {
 
     /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY RENAME EVENT ARGS
@@ -23,20 +22,8 @@ namespace OnTopic.Repositories {
     ///   on the specified object.
     /// </summary>
     /// <param name="topic">The topic object associated with the rename event.</param>
-    public RenameEventArgs(Topic topic) {
-      Topic = topic;
+    public RenameEventArgs(Topic topic): base(topic) {
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    /// Gets or sets the Topic object associated with the event.
-    /// </summary>
-    /// <value>
-    /// The topic.
-    /// </value>
-    public Topic Topic { get; }
 
   } //Class
 } //Namespace

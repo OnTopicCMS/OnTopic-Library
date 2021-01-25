@@ -17,7 +17,7 @@ namespace OnTopic.Repositories {
   /// <remarks>
   ///   Allows tracking of the source and destination topics.
   /// </remarks>
-  public class MoveEventArgs : EventArgs {
+  public class MoveEventArgs : TopicEventArgs {
 
     /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY MOVE EVENT ARGS
@@ -39,21 +39,13 @@ namespace OnTopic.Repositories {
     /// <requires description="The topic cannot be its own parent." exception="T:System.ArgumentException">
     ///   topic != target
     /// </requires>
-    public MoveEventArgs(Topic topic, Topic target) {
+    public MoveEventArgs(Topic topic, Topic target): base(topic) {
       Contract.Requires(topic, "topic");
       Contract.Requires(target, "target");
       Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
       Topic = topic;
       Target = target;
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: EVENT TOPIC
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the Topic object associated with the event.
-    /// </summary>
-    public Topic Topic { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: TARGET

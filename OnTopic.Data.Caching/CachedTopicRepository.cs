@@ -74,7 +74,7 @@ namespace OnTopic.Data.Caching {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc/>
-    public override event EventHandler<DeleteEventArgs>? DeleteEvent {
+    public override event EventHandler<TopicEventArgs>? DeleteEvent {
       add => _dataProvider.DeleteEvent += value;
       remove => _dataProvider.DeleteEvent -= value;
     }

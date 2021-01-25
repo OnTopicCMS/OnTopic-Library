@@ -655,7 +655,7 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(hasFired);
 
-      void eventHandler(object? sender, DeleteEventArgs eventArgs) => hasFired = true;
+      void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
     }
 

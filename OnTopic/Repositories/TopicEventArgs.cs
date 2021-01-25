@@ -8,21 +8,28 @@ using System;
 namespace OnTopic.Repositories {
 
   /*============================================================================================================================
-  | CLASS: TAXONOMY DELETE EVENT ARGS
+  | CLASS: TOPIC EVENT ARGS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The DeleteEventArgs class defines an event argument type specific to deletion events
+  ///   The <see cref="TopicEventArgs"/> class defines an event argument type shared among <see cref="ITopicRepository"/>
+  ///   events. It contains the <see cref="Topic"/> being operated against.
   /// </summary>
-  public class DeleteEventArgs : EventArgs {
+  /// <remarks>
+  ///   All <see cref="ITopicRepository"/> events share at least one shared element: the <see cref="Topic"/> being operated
+  ///   against. Some, such as the <see cref="ITopicRepository.DeleteEvent"/>, <i>only</i> relate to that information. Others,
+  ///   such as <see cref="ITopicRepository.MoveEvent"/>, need additional information, and thus offer derived classes, such as
+  ///   <see cref="MoveEventArgs"/>, to capture additional information.
+  /// </remarks>
+  public class TopicEventArgs : EventArgs {
 
     /*==========================================================================================================================
     | CONSTRUCTOR: TAXONOMY DELETE EVENT ARGS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="DeleteEventArgs"/> class.
+    ///   Initializes a new instance of the <see cref="TopicEventArgs"/> class.
     /// </summary>
-    /// <param name="topic">The topic.</param>
-    public DeleteEventArgs(Topic topic) : base() {
+    /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
+    public TopicEventArgs(Topic topic) : base() {
       Topic = topic;
     }
 

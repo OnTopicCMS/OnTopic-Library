@@ -20,9 +20,9 @@ namespace OnTopic.Repositories {
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
+    ///   Instantiates the <see cref="TopicEventArgs"/> event handler.
     /// </summary>
-    event EventHandler<DeleteEventArgs> DeleteEvent;
+    event EventHandler<TopicEventArgs> DeleteEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
