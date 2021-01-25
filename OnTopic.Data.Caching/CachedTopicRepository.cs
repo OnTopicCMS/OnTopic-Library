@@ -80,7 +80,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc/>
-    public override event EventHandler<MoveEventArgs>? MoveEvent {
+    public override event EventHandler<TopicMoveEventArgs>? MoveEvent {
       add => _dataProvider.MoveEvent += value;
       remove => _dataProvider.MoveEvent -= value;
     }

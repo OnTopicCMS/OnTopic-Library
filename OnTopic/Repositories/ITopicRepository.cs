@@ -25,9 +25,9 @@ namespace OnTopic.Repositories {
     event EventHandler<TopicEventArgs> DeleteEvent;
 
     /// <summary>
-    ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
+    ///   Instantiates the <see cref="TopicMoveEventArgs"/> event handler.
     /// </summary>
-    event EventHandler<MoveEventArgs> MoveEvent;
+    event EventHandler<TopicMoveEventArgs> MoveEvent;
 
     /// <summary>
     ///   Instantiates the <see cref="RenameEventArgs"/> event handler.

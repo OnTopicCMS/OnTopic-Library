@@ -27,7 +27,7 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ContentTypeDescriptorCollection _contentTypeDescriptors         = new();
     private                     EventHandler<TopicEventArgs>?  _deleteEvent;
-    private                     EventHandler<MoveEventArgs>?    _moveEvent;
+    private                     EventHandler<TopicMoveEventArgs>?    _moveEvent;
     private                     EventHandler<RenameEventArgs>?  _renameEvent;
 
     /*==========================================================================================================================
@@ -41,7 +41,7 @@ namespace OnTopic.Repositories {
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<MoveEventArgs>? MoveEvent {
+    public virtual event EventHandler<TopicMoveEventArgs>? MoveEvent {
       add => _moveEvent += value;
       remove => _moveEvent -= value;
     }
@@ -398,7 +398,7 @@ namespace OnTopic.Repositories {
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
-      _moveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      _moveEvent?.Invoke(this, new TopicMoveEventArgs(topic, previousParent, target, sibling));
       if (sibling is null) {
         topic.SetParent(target);
       }
