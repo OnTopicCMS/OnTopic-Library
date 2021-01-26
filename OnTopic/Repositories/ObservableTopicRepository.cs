@@ -9,11 +9,17 @@ using OnTopic.Metadata;
 namespace OnTopic.Repositories {
 
   /*============================================================================================================================
-  | CLASS: TOPIC DATA PROVIDER BASE
+  | CLASS: OBSERVABLE TOPIC REPOSITORY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a base abstract class for taxonomy data providers.
+  ///   Provides an abstract base class for <see cref="ITopicRepository"/> implementations which implements the event handling
+  ///   logic.
   /// </summary>
+  /// <remarks>
+  ///   All implementations of <see cref="ITopicRepository"/> are expected to need the following logic at minimum.
+  ///   Concrete implementations that are working directly with an underlying data source should prefer to instead derive from
+  ///   the more opinionated <see cref="TopicRepositoryBase"/>, which provides more built-in business logic.
+  /// </remarks>
   public abstract class ObservableTopicRepository : ITopicRepository {
 
     /*==========================================================================================================================
