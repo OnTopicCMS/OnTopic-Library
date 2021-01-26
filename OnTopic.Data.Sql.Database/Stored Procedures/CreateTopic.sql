@@ -119,6 +119,7 @@ IF @ReferenceCount > 0
   BEGIN
     EXEC	UpdateReferences	@TopicID,
 			@References,
+			@Version,
 			1
   END
 
