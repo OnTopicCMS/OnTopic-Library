@@ -77,5 +77,39 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: DEFAULT TOPIC LOOKUP SERVICE: LOOKUP MISSING ATTRIBUTE DESCRIPTOR: RETURNS ATTRIBUTE DESCRIPTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="DefaultTopicLookupService"/> and requests a missing attribute type; confirms it correctly
+    ///   falls back to the expected <see cref="AttributeDescriptor"/> as a logical default.
+    /// </summary>
+    [TestMethod]
+    public void DefaultTopicLookupService_LookupMissingAttributeDescriptor_ReturnsAttributeDescriptor() {
+
+      var lookupService         = new DefaultTopicLookupService();
+      var attributeType         = lookupService.Lookup("ArbitraryAttributeDescriptor");
+
+      Assert.AreEqual(typeof(AttributeDescriptor), attributeType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DEFAULT TOPIC VIEW MODEL LOOKUP SERVICE: LOOKUP TOPIC VIEW MODEL: RETURNS FALLBACK VIEW MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
+    ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
+    /// </summary>
+    [TestMethod]
+    public void TopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
+
+      var lookupService         = new FakeViewModelLookupService();
+      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel");
+
+      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
+
+    }
+
   } //Class
 } //Namespace
