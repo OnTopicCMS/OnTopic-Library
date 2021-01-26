@@ -37,7 +37,7 @@ namespace OnTopic.Metadata {
   ///     the CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   ///   </para>
   /// </remarks>
-  public abstract class AttributeDescriptor : Topic {
+  public class AttributeDescriptor : Topic {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -62,7 +62,7 @@ namespace OnTopic.Metadata {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    protected AttributeDescriptor(
+    public AttributeDescriptor(
       string key,
       string contentType,
       Topic? parent = null,
