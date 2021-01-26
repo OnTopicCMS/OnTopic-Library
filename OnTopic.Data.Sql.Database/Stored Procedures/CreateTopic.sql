@@ -11,7 +11,7 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	XML		= NULL,
 	@References		TopicReferences		READONLY,
-	@Version		DATETIME		= NULL
+	@Version		DATETIME2(7)		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------

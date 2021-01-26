@@ -9,9 +9,9 @@
 CREATE
 TABLE	[dbo].[Attributes] (
 	  [TopicID]		INT	NOT NULL,
-	  [AttributeKey]	VARCHAR (128)	NOT NULL,
-	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
-	  [Version]		DATETIME	NOT NULL	DEFAULT GETUTCDATE()
+	  [AttributeKey]	VARCHAR(128)	NOT NULL,
+	  [AttributeValue]	NVARCHAR(255)	NOT NULL,
+	  [Version]		DATETIME2(7)	NOT NULL	DEFAULT GETUTCDATE()
   CONSTRAINT	  [PK_Attributes]	PRIMARY KEY
   CLUSTERED (	    [TopicID]		ASC,
 	    [AttributeKey]	ASC,

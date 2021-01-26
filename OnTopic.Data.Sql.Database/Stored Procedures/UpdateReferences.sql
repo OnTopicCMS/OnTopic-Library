@@ -7,7 +7,7 @@
 CREATE PROCEDURE [dbo].[UpdateReferences]
 	@TopicID		INT,
 	@ReferencedTopics	TopicReferences		READONLY		,
-	@Version		DATETIME		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 

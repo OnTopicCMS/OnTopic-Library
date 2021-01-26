@@ -7,7 +7,7 @@
 CREATE PROCEDURE [dbo].[UpdateExtendedAttributes]
 	@TopicID		INT,
 	@ExtendedAttributes	XML		= NULL		,
-	@Version		DATETIME		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 
