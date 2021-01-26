@@ -32,7 +32,7 @@ INTO	topics_TopicAttributes
 SELECT	SourceTopicID,
 	'Type',
 	AttributeTypes.AttributeValue,
-	GETDATE()
+	SYSUTCDATETIME()
 FROM (
   SELECT	TopicID		AS SourceTopicID,
 	AttributeKey,

@@ -341,7 +341,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var version               = new SqlDateTime(DateTime.UtcNow);
+      var version               = DateTime.UtcNow;
       var unresolvedTopics      = new List<Topic>();
 
       using var connection      = new SqlConnection(_connectionString);
@@ -396,7 +396,7 @@ namespace OnTopic.Data.Sql {
       bool isRecursive,
       SqlConnection connection,
       List<Topic> unresolvedRelationships,
-      SqlDateTime version
+      DateTime version
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -531,7 +531,7 @@ namespace OnTopic.Data.Sql {
         command.AddParameter("Key", topic.Key);
         command.AddParameter("ContentType", topic.ContentType);
       }
-      command.AddParameter("Version", version.Value);
+      command.AddParameter("Version", version);
       if (areAttributesDirty) {
         command.AddParameter("Attributes", attributeValues);
         command.AddParameter("ExtendedAttributes", extendedAttributes);
@@ -561,11 +561,11 @@ namespace OnTopic.Data.Sql {
           PersistReferences(topic, version, connection);
         }
 
-        if (!topic.VersionHistory.Contains(version.Value)) {
-          topic.VersionHistory.Insert(0, version.Value);
+        if (!topic.VersionHistory.Contains(version)) {
+          topic.VersionHistory.Insert(0, version);
         }
 
-        topic.Attributes.MarkClean(version.Value);
+        topic.Attributes.MarkClean(version);
 
       }
 
@@ -700,7 +700,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistRelations(Topic topic, SqlDateTime version, SqlConnection connection) {
+    private static void PersistRelations(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -734,7 +734,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("TopicID", topicId);
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
-          command.AddParameter("Version", version.Value);
+          command.AddParameter("Version", version);
           command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
 
           command.ExecuteNonQuery();
@@ -773,7 +773,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose references should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistReferences(Topic topic, SqlDateTime version, SqlConnection connection) {
+    private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Persist relations to database
@@ -793,7 +793,7 @@ namespace OnTopic.Data.Sql {
         // Add Parameters
         command.AddParameter("TopicID", topicId);
         command.AddParameter("ReferencedTopics", references);
-        command.AddParameter("Version", version.Value);
+        command.AddParameter("Version", version);
         command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
 
         command.ExecuteNonQuery();
