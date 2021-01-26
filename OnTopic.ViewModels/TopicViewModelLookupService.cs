@@ -62,5 +62,32 @@ namespace OnTopic.ViewModels {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: LOOKUP
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    /// <remarks>
+    ///   The <see cref="TopicViewModelLookupService"/> version of <see cref="Lookup(String)"/> will first look for
+    ///   the exact <paramref name="typeName"/>. If that fails, and the <paramref name="typeName"/> ends with <c>TopicViewModel
+    ///   </c>, then it will automatically fall back to look for the <paramref name="typeName"/> with the <c>ViewModel</c>
+    ///   suffix. If that cannot be found, it will return the <see cref="StaticTypeLookupService.DefaultType"/> of <see cref="
+    ///   TopicViewModel"/>. This allows implementors to use the shorter name, if preferred, without breaking compatibility with
+    ///   implementations which default to looking for <c>TopicViewModel</c>, such as the <see cref="TopicMappingService"/>.
+    ///   While this convention is not used by the <see cref="ViewModels"/>, this fallback provides support for derived classes
+    ///   which may prefer that convention.
+    /// </remarks>
+    public override Type? Lookup(string typeName) {
+      if (typeName is null) {
+        return DefaultType;
+      }
+      else if (Contains(typeName)) {
+        return base.Lookup(typeName);
+      }
+      else if (typeName.EndsWith("TopicViewModel", StringComparison.OrdinalIgnoreCase)) {
+        return base.Lookup(typeName.Replace("TopicViewModel", "ViewModel", StringComparison.CurrentCultureIgnoreCase));
+      }
+      return DefaultType;
+    }
+
   } //Class
 } //Namespace
