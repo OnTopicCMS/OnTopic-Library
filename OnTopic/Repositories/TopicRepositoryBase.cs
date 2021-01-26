@@ -20,43 +20,18 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   Defines a base abstract class for taxonomy data providers.
   /// </summary>
-  public abstract class TopicRepositoryBase : ITopicRepository {
+  public abstract class TopicRepositoryBase : ObservableTopicRepository {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            ContentTypeDescriptorCollection _contentTypeDescriptors         = new();
-    private                     EventHandler<DeleteEventArgs>?  _deleteEvent;
-    private                     EventHandler<MoveEventArgs>?    _moveEvent;
-    private                     EventHandler<RenameEventArgs>?  _renameEvent;
-
-    /*==========================================================================================================================
-    | EVENT HANDLERS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /// <inheritdoc />
-    public virtual event EventHandler<DeleteEventArgs>? DeleteEvent {
-      add => _deleteEvent += value;
-      remove => _deleteEvent -= value;
-    }
-
-    /// <inheritdoc />
-    public virtual event EventHandler<MoveEventArgs>? MoveEvent {
-      add => _moveEvent += value;
-      remove => _moveEvent -= value;
-    }
-
-    /// <inheritdoc />
-    public virtual event EventHandler<RenameEventArgs>? RenameEvent {
-      add => _renameEvent += value;
-      remove => _renameEvent -= value;
-    }
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual ContentTypeDescriptorCollection GetContentTypeDescriptors() {
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize content types
@@ -226,31 +201,16 @@ namespace OnTopic.Repositories {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
-
-    /// <inheritdoc />
-    public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
-
-    /// <inheritdoc />
-    public Topic? Load(Topic topic, DateTime version) {
+    public override Topic? Load(Topic topic, DateTime version) {
       Contract.Requires(topic, nameof(topic));
       return Load(topic.Id, version, topic);
     }
-
-    /// <inheritdoc />
-    public abstract Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
-
-    /*==========================================================================================================================
-    | METHOD: LOAD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public abstract void Refresh(Topic referenceTopic, DateTime since);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
+    public override void Rollback([ValidatedNotNull]Topic topic, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -278,7 +238,7 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
+    public override void Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -314,7 +274,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
         var args = new RenameEventArgs(topic);
-        _renameEvent?.Invoke(this, args);
+        OnTopicRenamed(args);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------
@@ -372,7 +332,7 @@ namespace OnTopic.Repositories {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
+    public override void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -398,7 +358,8 @@ namespace OnTopic.Repositories {
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
-      _moveEvent?.Invoke(this, new MoveEventArgs(topic, target));
+      var args                  = new MoveEventArgs(topic, target);
+      OnTopicMoved(args);
       if (sibling is null) {
         topic.SetParent(target);
       }
@@ -424,7 +385,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public virtual void Delete([ValidatedNotNull]Topic topic, bool isRecursive) {
+    public override void Delete([ValidatedNotNull]Topic topic, bool isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -460,7 +421,7 @@ namespace OnTopic.Repositories {
       | Trigger event
       \-----------------------------------------------------------------------------------------------------------------------*/
       var args = new DeleteEventArgs(topic);
-      _deleteEvent?.Invoke(this, args);
+      OnTopicDeleted(args);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
