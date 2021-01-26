@@ -6,6 +6,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
+using OnTopic.Metadata;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
@@ -39,6 +40,40 @@ namespace OnTopic.Tests {
       Assert.AreEqual(typeof(SlideshowTopicViewModel), compositeLookup.Lookup(nameof(SlideshowTopicViewModel)));
       Assert.AreEqual(typeof(MapToParentTopicViewModel), compositeLookup.Lookup(nameof(MapToParentTopicViewModel)));
       Assert.AreEqual(typeof(Object), compositeLookup.Lookup(nameof(Topic)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DYNAMIC TOPIC LOOKUP SERVICE: LOOKUP MISSING ATTRIBUTE DESCRIPTOR: RETURNS ATTRIBUTE DESCRIPTOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="DynamicTopicLookupService"/> and requests a missing attribute type; confirms it correctly
+    ///   falls back to the expected <see cref="AttributeDescriptor"/> as a logical default.
+    /// </summary>
+    [TestMethod]
+    public void DynamicTopicLookupService_LookupMissingAttributeDescriptor_ReturnsAttributeDescriptor() {
+
+      var lookupService         = new DynamicTopicLookupService();
+      var attributeType         = lookupService.Lookup("ArbitraryAttributeDescriptor");
+
+      Assert.AreEqual(typeof(AttributeDescriptor), attributeType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DYNAMIC TOPIC VIEW MODEL LOOKUP SERVICE: LOOKUP TOPIC VIEW MODEL: RETURNS FALLBACK VIEW MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="DynamicTopicViewModelLookupService"/> and requests a type with the <c>TopicViewModel</c>
+    ///   suffix; confirms it correctly falls back to a type with the <c>ViewModel</c> suffix.
+    /// </summary>
+    [TestMethod]
+    public void DynamicTopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
+
+      var lookupService         = new DynamicTopicViewModelLookupService();
+      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel");
+
+      Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
 
     }
 
