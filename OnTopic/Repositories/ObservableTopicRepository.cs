@@ -25,6 +25,8 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    private                     EventHandler<TopicLoadEventArgs>?                               _topicLoaded;
+    private                     EventHandler<TopicSaveEventArgs>?                               _topicSaved;
     private                     EventHandler<TopicEventArgs>?                                   _topicDeleted;
     private                     EventHandler<TopicMoveEventArgs>?                               _topicMoved;
     private                     EventHandler<TopicRenameEventArgs>?                             _topicRenamed;
@@ -32,6 +34,18 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <inheritdoc />
+    public virtual event EventHandler<TopicLoadEventArgs>? TopicLoaded {
+      add => _topicLoaded += value;
+      remove => _topicLoaded -= value;
+    }
+
+    /// <inheritdoc />
+    public virtual event EventHandler<TopicSaveEventArgs>? TopicSaved {
+      add => _topicSaved += value;
+      remove => _topicSaved -= value;
+    }
 
     /// <inheritdoc />
     public virtual event EventHandler<TopicEventArgs>? TopicDeleted {

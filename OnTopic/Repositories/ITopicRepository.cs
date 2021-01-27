@@ -19,6 +19,19 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Load(String?, Topic?, Boolean)"/> operation, or one of its overloads.
+    /// </summary>
+    event EventHandler<TopicLoadEventArgs> TopicLoaded;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is saved in the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Save(Topic, Boolean)"/> operation.
+    /// </summary>
+    event EventHandler<TopicSaveEventArgs> TopicSaved;
+
     /// <summary>
     ///   Raised after a <see cref="Topic"/> is deleted from the <see cref="ITopicRepository"/> as part of a <see cref="
     ///   ITopicRepository.Delete(Topic, Boolean)"/> operation.
