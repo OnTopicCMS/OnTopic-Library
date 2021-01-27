@@ -628,11 +628,11 @@ namespace OnTopic {
     ///     The underlying value of the <see cref="DerivedTopic"/> is stored as the <c>TopicID</c> <see cref="AttributeValue"/>.
     ///     If the <see cref="Topic"/> hasn't been saved, then the relationship will be established, but the <c>TopicID</c>
     ///     won't be persisted to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said,
-    ///     when <see cref="Repositories.TopicRepository.Save"/> is called, the <see cref="DerivedTopic"/> will be
-    ///     reevaluated and, if it has subsequently been saved, then the <c>TopicID</c> will be updated accordingly. This allows
-    ///     in-memory topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to
-    ///     the underlying data storage. As a result, however, a <see cref="Topic"/> referencing a <see cref="DerivedTopic"/>
-    ///     that is unsaved will need to be saved again once the <see cref="DerivedTopic"/> has been saved.
+    ///     when <see cref="Repositories.TopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="DerivedTopic"/> will
+    ///     be reevaluated and, if it has subsequently been saved, then the <c>TopicID</c> will be updated accordingly. This
+    ///     allows in-memory topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being
+    ///     persisted to the underlying data storage. As a result, however, a <see cref="Topic"/> referencing a <see cref="
+    ///     DerivedTopic"/> that is unsaved will need to be saved again once the <see cref="DerivedTopic"/> has been saved.
     ///   </para>
     /// </remarks>
     /// <value>The <see cref="Topic"/> that values should be derived from, if not otherwise available.</value>
