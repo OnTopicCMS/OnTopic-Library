@@ -359,14 +359,6 @@ namespace OnTopic.Repositories {
         topic.VersionHistory.Insert(0, version);
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Trigger event
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
-        var args = new TopicRenameEventArgs(topic, topic.Key, topic.OriginalKey);
-        OnTopicRenamed(args);
-      }
-
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
@@ -415,6 +407,13 @@ namespace OnTopic.Repositories {
       | Reset original key
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
+        OnTopicRenamed(new(topic, topic.Key, topic.OriginalKey));
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
@@ -489,8 +488,6 @@ namespace OnTopic.Repositories {
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
-      var args                  = new TopicMoveEventArgs(topic, previousParent, target, sibling);
-      OnTopicMoved(args);
       if (sibling is null) {
         topic.SetParent(target);
       }
@@ -509,6 +506,11 @@ namespace OnTopic.Repositories {
         SetContentTypeDescriptors(topic);
         ResetAttributeDescriptors(topic);
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      OnTopicMoved(new (topic, previousParent, target, sibling));
 
     }
 
@@ -570,12 +572,6 @@ namespace OnTopic.Repositories {
       DeleteTopic(topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Trigger event
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var args = new TopicEventArgs(topic);
-      OnTopicDeleted(args);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Parent is not null) {
@@ -621,6 +617,12 @@ namespace OnTopic.Repositories {
       if (IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var args = new TopicEventArgs(topic);
+      OnTopicDeleted(args);
 
     }
 
