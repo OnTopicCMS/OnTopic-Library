@@ -29,7 +29,8 @@ namespace OnTopic.Repositories {
     ///   Initializes a new instance of the <see cref="TopicEventArgs"/> class.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
-    public TopicEventArgs(Topic topic) : base() {
+    /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
+    public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
       Topic = topic;
     }
 
@@ -40,6 +41,14 @@ namespace OnTopic.Repositories {
     ///   Getter that returns the Topic object associated with the event
     /// </summary>
     public Topic Topic { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: IS RECURSIVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the descendents of the <see cref="Topic"/> are also impacted by this operation.
+    /// </summary>
+    public bool IsRecursive { get; set; }
 
   } //Class
 } //Namespace
