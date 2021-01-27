@@ -348,7 +348,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Save(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
+      SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Update version history
@@ -425,10 +425,23 @@ namespace OnTopic.Repositories {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: SAVE TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   The core implementation logic that's executed for every see <see cref="Topic"/> during a <see cref="Save(Topic,
-    ///   Boolean)"/> operation.
+    ///   The core implementation logic for saving an individual <see cref="Topic"/> during a <see cref="Save(Topic, Boolean)"/>
+    ///   operation.
     /// </summary>
+    /// <remarks>
+    ///   The main <see cref="Save(Topic, Boolean)"/> implementation handles advanced validation of the parameters, updating the
+    ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref="
+    ///   ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref="
+    ///   ITopicRepository.RenameEvent"/>, if needed, and recursing over children. The derived implementation of <see cref="
+    ///   SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
+    ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
+    ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
+    ///   true</c>.
+    /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to save.</param>
     /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
     /// <param name="persistRelationships">
@@ -437,13 +450,13 @@ namespace OnTopic.Repositories {
     ///   call <c>isRecursive</c>; in that case, <see cref="Save(Topic, Boolean)"/> will circle back and attempt to save them
     ///   after the rest of the topic graph has been saved.
     /// </param>
-    protected abstract void Save([NotNull] Topic topic, DateTime version, bool persistRelationships);
+    protected abstract void SaveTopic([NotNull] Topic topic, DateTime version, bool persistRelationships);
 
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
+    public override sealed void Move([ValidatedNotNull]Topic topic, [ValidatedNotNull]Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -464,6 +477,11 @@ namespace OnTopic.Repositories {
         topic.Parent.Children.IndexOf(sibling) == topic.Parent.Children.IndexOf(topic)-1) {
         return;
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Execute core implementation
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      MoveTopic(topic, target, sibling);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Perform base logic
@@ -493,10 +511,26 @@ namespace OnTopic.Repositories {
     }
 
     /*==========================================================================================================================
+    | METHOD: MOVE TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="Move(Topic, Topic, Topic?)" />
+    /// <summary>
+    ///   The core implementation logic for moving a <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The main <see cref="Move(Topic, Topic, Topic?)"/> implementation handles advanced validation of the parameters,
+    ///   updating the <see cref="Topic"/>'s location within the topic graph, updating <see cref="ContentTypeDescriptor"/> and
+    ///   <see cref="AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.MoveEvent"/>.
+    ///   The derived implementation of <see cref="MoveTopic(Topic, Topic, Topic?)"/> is then left to focus exclusively on the
+    ///   core logic of persisting the change to the underlying data store.
+    /// </remarks>
+    protected abstract void MoveTopic(Topic topic, Topic target, Topic? sibling = null);
+
+    /*==========================================================================================================================
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete([ValidatedNotNull]Topic topic, bool isRecursive) {
+    public override sealed void Delete([ValidatedNotNull]Topic topic, bool isRecursive = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -527,6 +561,11 @@ namespace OnTopic.Repositories {
           $"persistence store."
         );
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Execute core implementation
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      DeleteTopic(topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
@@ -582,6 +621,22 @@ namespace OnTopic.Repositories {
       }
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: DELETE TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="Delete(Topic, Boolean)" />
+    /// <summary>
+    ///   The core implementation logic for deleting a <see cref="Topic"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The main <see cref="Delete(Topic, Boolean)"/> implementation handles advanced validation of the parameters,
+    ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref="
+    ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.DeleteEvent"/>. The
+    ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
+    ///   persisting the change to the underlying data store.
+    /// </remarks>
+    protected abstract void DeleteTopic(Topic topic);
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES

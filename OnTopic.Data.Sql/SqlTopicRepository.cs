@@ -337,7 +337,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override sealed void Save(
+    protected override sealed void SaveTopic(
       [NotNull]Topic topic,
       DateTime version,
       bool persistRelationships
@@ -508,15 +508,16 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: MOVE
+    | METHOD: MOVE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) {
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target, sibling);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -558,15 +559,15 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: DELETE
+    | METHOD: DELETE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) {
+    protected override void DeleteTopic(Topic topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Delete(topic, isRecursive);
+      Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database

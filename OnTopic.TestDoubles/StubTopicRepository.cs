@@ -112,7 +112,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    protected override void Save([NotNull]Topic topic, DateTime version, bool persistRelationships) {
+    protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign faux identity
@@ -127,12 +127,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling = null) {
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target, sibling);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
@@ -145,7 +146,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
+    protected override void DeleteTopic(Topic topic) { }
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)
