@@ -127,20 +127,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, nameof(topic));
-      Contract.Requires(target, nameof(target));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Reset dirty status
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
-
-    }
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) { }
 
     /*==========================================================================================================================
     | METHOD: DELETE
