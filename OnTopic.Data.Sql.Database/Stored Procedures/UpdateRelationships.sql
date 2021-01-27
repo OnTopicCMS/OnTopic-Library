@@ -8,7 +8,7 @@ CREATE PROCEDURE [dbo].[UpdateRelationships]
 	@TopicID		INT,
 	@RelationshipKey	VARCHAR(255),
 	@RelatedTopics		TopicList		READONLY		,
-	@Version		DATETIME		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 
@@ -16,7 +16,7 @@ AS
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= GETUTCDATE()
+SET	@Version		= SYSUTCDATETIME()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- INSERT NOVEL VALUES

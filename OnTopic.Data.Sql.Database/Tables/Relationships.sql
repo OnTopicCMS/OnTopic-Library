@@ -9,7 +9,7 @@ TABLE	[dbo].[Relationships] (
 	  [Source_TopicID]	INT	NOT NULL,
 	  [RelationshipKey]	VARCHAR(255)	NOT NULL,
 	  [IsDeleted]		BIT	NOT NULL	DEFAULT 0,
-	  [Version]		DATETIME	NOT NULL	DEFAULT GETUTCDATE()
+	  [Version]		DATETIME2(7)	NOT NULL	DEFAULT SYSUTCDATETIME()
   CONSTRAINT	  [PK_Relationships]	PRIMARY KEY
   CLUSTERED (	    [Source_TopicID]	ASC,
 	    [RelationshipKey]	ASC,

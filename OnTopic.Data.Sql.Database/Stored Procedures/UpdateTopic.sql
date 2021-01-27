@@ -10,7 +10,7 @@ CREATE PROCEDURE [dbo].[UpdateTopic]
 	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
 	@ExtendedAttributes	XML		= NULL		,
-	@Version		DATETIME		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 
@@ -18,7 +18,7 @@ AS
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= GETUTCDATE()
+SET	@Version		= SYSUTCDATETIME()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE KEY ATTRIBUTES

@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
+using OnTopic.Collections;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
@@ -28,7 +29,7 @@ namespace OnTopic.Data.Sql {
   /// <remarks>
   ///   Concrete implementation of the <see cref="OnTopic.Repositories.IDataRepository"/> class.
   /// </remarks>
-  public class SqlTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class SqlTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -253,6 +254,10 @@ namespace OnTopic.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
+        if (topic is not null) {
+          topic.Relationships.IsFullyLoaded = false;
+          topic.References.IsFullyLoaded = false;
+        }
         throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
       }
 
@@ -335,79 +340,16 @@ namespace OnTopic.Data.Sql {
     /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Save([NotNull]Topic topic, bool isRecursive = false) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish dependencies
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var version               = new SqlDateTime(DateTime.UtcNow);
-      var unresolvedTopics      = new List<Topic>();
-
-      using var connection      = new SqlConnection(_connectionString);
-
-      connection.Open();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle first pass
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Save(topic, isRecursive, connection, unresolvedTopics, version);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to resolve outstanding relationships
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var unresolvedTopic in unresolvedTopics) {
-        Save(unresolvedTopic, false, connection, unresolvedTopics, version);
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Close shared connection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      connection.Close();
-
-    }
-
-    /// <summary>
-    ///   The private overload of the <see cref="Save"/> method provides support for sharing the <see cref="SqlConnection"/>
-    ///   between multiple requests, and maintaining a list of <paramref name="unresolvedRelationships"/>.
-    /// </summary>
-    /// <remarks>
-    ///   <para>
-    ///     When recursively saving a topic graph, it is conceivable that references to other topics—such as <see
-    ///     cref="Topic.Relationships"/> or <see cref="Topic.DerivedTopic"/>—can't yet be persisted because the target <see
-    ///     cref="Topic"/> hasn't yet been saved, and thus the <see cref="Topic.Id"/> is still set to <c>-1</c>. To mitigate
-    ///     this, the <paramref name="unresolvedRelationships"/> allows this private overload to keep track of unresolved
-    ///     relationships. The public <see cref="Save(Topic, Boolean, Boolean)"/> overload uses this list to resave any topics
-    ///     that include such references. This adds some overhead due to the duplicate <see cref="Save"/>, but helps avoid
-    ///     potential data loss when working with complex topic graphs.
-    ///   </para>
-    ///   <para>
-    ///     The connection sharing probably doesn't provide that much of a gain in that .NET does a good job of connection
-    ///     pooling. Nevertheless, there is some overhead to opening a new connection, so sharing an open connection when we
-    ///     doing a recursive save could potentially provide some performance benefit.
-    ///   </para>
-    /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> to save.</param>
-    /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
-    /// <param name="connection">The open <see cref="SqlConnection"/> to use for executing <see cref="SqlCommand"/>s.</param>
-    /// <param name="unresolvedRelationships">A list of <see cref="Topic"/>s with unresolved topic references.</param>
-    private void Save(
+    /// <inheritdoc/>
+    protected override sealed void SaveTopic(
       [NotNull]Topic topic,
-      bool isRecursive,
-      SqlConnection connection,
-      List<Topic> unresolvedRelationships,
-      SqlDateTime version
+      DateTime version,
+      bool persistRelationships
     ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Call base method - will trigger any events associated with the save
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var areReferencesResolved = true;
       var isTopicDirty          = topic.IsDirty();
       var areRelationshipsDirty = topic.Relationships.IsDirty();
       var areReferencesDirty    = topic.References.IsDirty();
@@ -440,7 +382,6 @@ namespace OnTopic.Data.Sql {
       | Bypass is not dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isDirty) {
-        recurse();
         return;
       }
 
@@ -494,28 +435,14 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
       \-----------------------------------------------------------------------------------------------------------------------*/
+      using var connection      = new SqlConnection(_connectionString);
       var procedureName         = topic.IsNew? "CreateTopic" : "UpdateTopic";
+
+      connection.Open();
 
       using var command         = new SqlCommand(procedureName, connection) {
         CommandType             = CommandType.StoredProcedure
       };
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle unresolved references
-      >-------------------------------------------------------------------------------------------------------------------------
-      | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
-      | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
-      | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (
-        isRecursive &&
-        (  topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
-           topic.References.Values.Any(t => t.Id < 0)
-        )
-      ) {
-        unresolvedRelationships.Add(topic);
-        areReferencesResolved = false;
-      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish query parameters
@@ -531,7 +458,7 @@ namespace OnTopic.Data.Sql {
         command.AddParameter("Key", topic.Key);
         command.AddParameter("ContentType", topic.ContentType);
       }
-      command.AddParameter("Version", version.Value);
+      command.AddParameter("Version", version);
       if (areAttributesDirty) {
         command.AddParameter("Attributes", attributeValues);
         command.AddParameter("ExtendedAttributes", extendedAttributes);
@@ -553,19 +480,15 @@ namespace OnTopic.Data.Sql {
           "The call to the CreateTopic stored procedure did not return the expected 'Id' parameter."
         );
 
-        if (areReferencesResolved && areRelationshipsDirty) {
+        if (persistRelationships && areRelationshipsDirty) {
           PersistRelations(topic, version, connection);
         }
 
-        if (areReferencesResolved && areReferencesDirty) {
+        if (persistRelationships && areReferencesDirty) {
           PersistReferences(topic, version, connection);
         }
 
-        if (!topic.VersionHistory.Contains(version.Value)) {
-          topic.VersionHistory.Insert(0, version.Value);
-        }
-
-        topic.Attributes.MarkClean(version.Value);
+        topic.Attributes.MarkClean(version);
 
       }
 
@@ -580,34 +503,25 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Recuse over any children
+      | Close connection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      recurse();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Function: Recurse
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      void recurse() {
-        if (isRecursive) {
-          foreach (var childTopic in topic.Children) {
-            childTopic.Attributes.SetValue("ParentID", topic.Id.ToString(CultureInfo.InvariantCulture));
-            Save(childTopic, isRecursive, connection, unresolvedRelationships, version);
-          }
-        }
+      finally {
+        connection.Close();
       }
 
     }
 
     /*==========================================================================================================================
-    | METHOD: MOVE
+    | METHOD: MOVE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) {
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target, sibling);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish database connection
@@ -649,15 +563,15 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: DELETE
+    | METHOD: DELETE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) {
+    protected override void DeleteTopic(Topic topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Delete(topic, isRecursive);
+      Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Delete from database
@@ -700,7 +614,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistRelations(Topic topic, SqlDateTime version, SqlConnection connection) {
+    private static void PersistRelations(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -734,7 +648,7 @@ namespace OnTopic.Data.Sql {
           command.AddParameter("TopicID", topicId);
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
-          command.AddParameter("Version", version.Value);
+          command.AddParameter("Version", version);
           command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
 
           command.ExecuteNonQuery();
@@ -773,7 +687,7 @@ namespace OnTopic.Data.Sql {
     /// </summary>
     /// <param name="topic">The topic object whose references should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistReferences(Topic topic, SqlDateTime version, SqlConnection connection) {
+    private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Persist relations to database
@@ -793,7 +707,7 @@ namespace OnTopic.Data.Sql {
         // Add Parameters
         command.AddParameter("TopicID", topicId);
         command.AddParameter("ReferencedTopics", references);
-        command.AddParameter("Version", version.Value);
+        command.AddParameter("Version", version);
         command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
 
         command.ExecuteNonQuery();

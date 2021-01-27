@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using OnTopic.Collections;
+using OnTopic.Metadata;
 using OnTopic.Repositories;
 
 namespace OnTopic.TestDoubles {
@@ -15,7 +17,7 @@ namespace OnTopic.TestDoubles {
   ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
   ///   but is not intended to be called.
   /// </summary>
-  public class DummyTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class DummyTopicRepository : ObservableTopicRepository {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -27,6 +29,12 @@ namespace OnTopic.TestDoubles {
     public DummyTopicRepository() : base() { }
 
     /*==========================================================================================================================
+    | METHOD: GET CONTENT TYPE DESCRIPTORS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc />
+    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => new();
+
+    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
@@ -36,7 +44,16 @@ namespace OnTopic.TestDoubles {
     public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
+    public override Topic? Load(Topic? topic, DateTime version) => throw new NotImplementedException();
+
+    /// <inheritdoc />
     public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
+    | METHOD: ROLLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override void Rollback(Topic topic, DateTime version) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: REFRESH

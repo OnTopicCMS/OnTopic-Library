@@ -177,9 +177,9 @@ namespace OnTopic.Attributes {
     ///     This is important because, otherwise, <see cref="ITopicRepository"/> implementations rely primarily on <see
     ///     cref="IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but the location
     ///     it should be stored has, that could potentially result in the attribute being deleted, as the attribute won't show
-    ///     up for when <see cref="TopicRepositoryBase.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c> and
+    ///     up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c> and
     ///     <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see
-    ///     cref="IsExtendedAttribute"/>, the <see cref="TopicRepositoryBase"/> is able to detect conflicts between the
+    ///     cref="IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the
     ///     configuration and the underlying data store, and ensure data is stored appropriately.
     ///   </para>
     ///   <para>

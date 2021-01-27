@@ -11,14 +11,14 @@ CREATE PROCEDURE [dbo].[CreateTopic]
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	XML		= NULL,
 	@References		TopicReferences		READONLY,
-	@Version		DATETIME		= NULL
+	@Version		DATETIME2(7)		= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= GETUTCDATE()
+SET	@Version		= SYSUTCDATETIME()
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DECLARE AND SET VARIABLES
@@ -119,6 +119,7 @@ IF @ReferenceCount > 0
   BEGIN
     EXEC	UpdateReferences	@TopicID,
 			@References,
+			@Version,
 			1
   END
 

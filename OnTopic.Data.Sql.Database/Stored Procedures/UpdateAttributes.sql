@@ -8,7 +8,7 @@
 CREATE PROCEDURE [dbo].[UpdateAttributes]
 	@TopicID		INT,
 	@Attributes		AttributeValues		READONLY		,
-	@Version		DATETIME		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
 	@DeleteUnmatched	BIT		= 0
 AS
 

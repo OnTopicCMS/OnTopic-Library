@@ -6,7 +6,7 @@
 
 CREATE PROCEDURE [dbo].[GetTopicVersion]
 	@TopicID		INT	= -1,
-	@Version		DATETIME	= NULL
+	@Version		DATETIME2(7)	= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------

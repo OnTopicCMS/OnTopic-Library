@@ -84,7 +84,7 @@ namespace OnTopic.Lookup {
     ///   exception="T:System.ArgumentException">
     ///   !contentType.Contains(" ")
     /// </requires>
-    public Type? Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
+    public virtual Type? Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
 
     /*==========================================================================================================================
     | METHOD: ADD
