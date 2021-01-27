@@ -566,6 +566,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SAVE: IS RECURSIVE: SAVES CHILD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with a child <see cref="Topic"/> and confirms that the <see cref="Topic.Id"/> of the
+    ///   child <see cref="Topic"/> is correctly updated.
+    /// </summary>
+    [TestMethod]
+    public void Save_IsRecursive_SavesChild() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Save(topic, true);
+
+      Assert.IsFalse(child.IsNew);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
