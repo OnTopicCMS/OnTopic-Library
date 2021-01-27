@@ -295,26 +295,6 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: UNSAVED VALUE: RETURNS EXPECTED VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Sets a derived topic to an unsaved topic entity. Ensures that the derived topic is correctly set, but that the <see
-    ///   cref="Topic.Id"/> is not persisted as an underlying <see cref="AttributeValue"/>.
-    /// </summary>
-    [TestMethod]
-    public void DerivedTopic_UnsavedValue_ReturnsExpectedValue() {
-
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
-
-      topic.DerivedTopic        = derivedTopic;
-
-      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
-      Assert.AreEqual<int>(-2, topic.Attributes.GetInteger("TopicID", -2));
-
-    }
-
-    /*==========================================================================================================================
     | TEST: DERIVED TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
