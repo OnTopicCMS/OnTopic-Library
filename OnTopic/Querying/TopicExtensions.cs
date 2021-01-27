@@ -161,8 +161,8 @@ namespace OnTopic.Querying {
     ///   Retrieves a collection of topics based on an attribute name and value.
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="attributeValue">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(name)
@@ -172,22 +172,22 @@ namespace OnTopic.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static ReadOnlyTopicCollection FindAllByAttribute(this Topic topic, string name, string value) {
+    public static ReadOnlyTopicCollection FindAllByAttribute(this Topic topic, string attributeKey, string attributeValue) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, nameof(topic));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
-      TopicFactory.ValidateKey(name);
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(attributeKey), nameof(attributeKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(attributeValue), nameof(attributeValue));
+      TopicFactory.ValidateKey(attributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic.FindAll(t =>
-        !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
-        t.Attributes.GetValue(name).Contains(value, StringComparison.OrdinalIgnoreCase)
+        !String.IsNullOrEmpty(t.Attributes.GetValue(attributeKey)) &&
+        t.Attributes.GetValue(attributeKey).Contains(attributeValue, StringComparison.OrdinalIgnoreCase)
       );
 
     }
