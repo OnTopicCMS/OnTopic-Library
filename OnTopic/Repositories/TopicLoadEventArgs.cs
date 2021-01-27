@@ -26,7 +26,7 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The <see cref="Topic"/> object associated with the rename event.</param>
     /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
     /// <param name="version">If a specific version was loaded, specified that version.</param>
-    public TopicLoadEventArgs(Topic topic, bool isRecursive, DateTime version): base(topic, isRecursive) {
+    public TopicLoadEventArgs(Topic topic, bool isRecursive, DateTime? version = null): base(topic, isRecursive) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Vaidate parameters
@@ -46,7 +46,7 @@ namespace OnTopic.Repositories {
     /// <summary>
     ///   Gets or sets the specific version of the <see cref="TopicEventArgs.Topic"/> that has been loaded.
     /// </summary>
-    public DateTime Version { get; set; }
+    public DateTime? Version { get; set; }
 
   } //Class
 } //Namespace
