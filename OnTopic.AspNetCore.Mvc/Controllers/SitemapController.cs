@@ -98,7 +98,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    public virtual ActionResult Index(bool indent = false, bool includeMetadata = false) {
+    public ActionResult Index(bool indent = false, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
@@ -138,7 +138,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </remarks>
     /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    public virtual ActionResult Extended(bool indent = false) => Index(indent, true);
+    public ActionResult Extended(bool indent = false) => Index(indent, true);
 
     /*==========================================================================================================================
     | METHOD: GENERATE SITEMAP
