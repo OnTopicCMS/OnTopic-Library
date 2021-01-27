@@ -66,10 +66,56 @@ namespace OnTopic.Repositories {
     }
 
     /*==========================================================================================================================
+    | ON TOPIC LOADED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Raises the <see cref="TopicLoaded"/> event.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Raising an event invokes the event handler through a delegate. For more information, see <seealso href="
+    ///     https://docs.microsoft.com/en-us/dotnet/standard/events/">Handling and Raising Events</seealso>.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="OnTopicLoaded(TopicLoadEventArgs)"/> method also allows derived classes to handle the event without
+    ///     attaching a delegate. This is the preferred technique for handling the event in a derived class.
+    ///   </para>
+    ///   <para>
+    ///     When overriding the <see cref="OnTopicLoaded(TopicLoadEventArgs)"/> method in a derived class, be sure to call the
+    ///     base class's <see cref="OnTopicLoaded(TopicLoadEventArgs)"/> method so that registered delegates receive the event.
+    ///   </para>
+    /// </remarks>
+    /// <param name="args">An instance of the <see cref="TopicLoadEventArgs"/> associated with the event.</param>
+    protected virtual void OnTopicLoaded(TopicLoadEventArgs args) => _topicLoaded?.Invoke(this, args);
+
+    /*==========================================================================================================================
+    | ON TOPIC SAVED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Raises the <see cref="TopicSaved"/> event.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Raising an event invokes the event handler through a delegate. For more information, see <seealso href="
+    ///     https://docs.microsoft.com/en-us/dotnet/standard/events/">Handling and Raising Events</seealso>.
+    ///   </para>
+    ///   <para>
+    ///     The <see cref="OnTopicSaved(TopicSaveEventArgs)"/> method also allows derived classes to handle the event without
+    ///     attaching a delegate. This is the preferred technique for handling the event in a derived class.
+    ///   </para>
+    ///   <para>
+    ///     When overriding the <see cref="OnTopicSaved(TopicSaveEventArgs)"/> method in a derived class, be sure to call the
+    ///     base class's <see cref="OnTopicSaved(TopicSaveEventArgs)"/> method so that registered delegates receive the event.
+    ///   </para>
+    /// </remarks>
+    /// <param name="args">An instance of the <see cref="TopicSaveEventArgs"/> associated with the event.</param>
+    protected virtual void OnTopicSaved(TopicSaveEventArgs args) => _topicSaved?.Invoke(this, args);
+
+    /*==========================================================================================================================
     | ON TOPIC DELETED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="TopicDeleted"/>.
+    ///   Raises the <see cref="TopicDeleted"/> event.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -92,7 +138,7 @@ namespace OnTopic.Repositories {
     | ON TOPIC MOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="TopicMoved"/>.
+    ///   Raises the <see cref="TopicMoved"/> event.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -115,7 +161,7 @@ namespace OnTopic.Repositories {
     | ON TOPIC RENAMED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="TopicRenamed"/>.
+    ///   Raises the <see cref="TopicRenamed"/> event.
     /// </summary>
     /// <remarks>
     ///   <para>
