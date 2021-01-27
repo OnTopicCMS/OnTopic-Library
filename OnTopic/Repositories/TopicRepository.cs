@@ -118,7 +118,7 @@ namespace OnTopic.Repositories {
     ///   "ContentTypeDescriptor"/> within the graph.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(Topic? sourceTopic) =>
+    protected ContentTypeDescriptorCollection SetContentTypeDescriptors(Topic? sourceTopic) =>
       SetContentTypeDescriptors(sourceTopic?.GetByUniqueKey("Root:Configuration:ContentTypes") as ContentTypeDescriptor);
 
     /// <summary>
@@ -139,7 +139,7 @@ namespace OnTopic.Repositories {
     ///   "ContentTypeDescriptor"/>, but also any descendents.
     /// </param>
     /// <returns></returns>
-    protected virtual ContentTypeDescriptorCollection SetContentTypeDescriptors(ContentTypeDescriptor? rootContentType) {
+    protected ContentTypeDescriptorCollection SetContentTypeDescriptors(ContentTypeDescriptor? rootContentType) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish cache
