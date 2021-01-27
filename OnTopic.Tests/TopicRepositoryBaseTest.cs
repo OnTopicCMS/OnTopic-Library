@@ -19,10 +19,10 @@ namespace OnTopic.Tests {
   | CLASS: TOPIC REPOSITORY BASE TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicRepositoryBase"/> class.
+  ///   Provides unit tests for the <see cref="TopicRepository"/> class.
   /// </summary>
   /// <remarks>
-  ///   These tests evaluate features that are specific to the <see cref="TopicRepositoryBase"/> class.
+  ///   These tests evaluate features that are specific to the <see cref="TopicRepository"/> class.
   /// </remarks>
   [TestClass]
   public class TopicRepositoryBaseTest {
@@ -302,7 +302,7 @@ namespace OnTopic.Tests {
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects the <see
     ///   cref="AttributeValue"/> to <i>not</i> be returned even though its <see cref="AttributeValue.IsExtendedAttribute"/>
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
@@ -344,7 +344,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
     ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
@@ -365,7 +365,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
     ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
@@ -384,7 +384,7 @@ namespace OnTopic.Tests {
     | TEST: GET UNMATCHED ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="ContentTypeDescriptor"/> but not the <see cref="Topic"/> are returned.
     /// </summary>
     [TestMethod]
@@ -405,7 +405,7 @@ namespace OnTopic.Tests {
     | TEST: GET UNMATCHED ATTRIBUTES: EMPTY ARBITRARY ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="Topic"/> but not the <see cref="ContentTypeDescriptor"/> <i>and</i> are either <c>null</c> or empty are
     ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
     ///   the database.
@@ -506,9 +506,9 @@ namespace OnTopic.Tests {
     | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
-    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that it is
-    ///   immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
+    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -526,8 +526,8 @@ namespace OnTopic.Tests {
     | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES PERMITTED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
-    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean)"/>, and ensures that
+    ///   Loads the <see cref="TopicRepository.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
+    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
     [TestMethod]
@@ -550,9 +550,9 @@ namespace OnTopic.Tests {
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then deletes one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/>, and ensures that it
-    ///   is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then deletes one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Delete(Topic, Boolean)"/>, and ensures that it
+    ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -570,9 +570,9 @@ namespace OnTopic.Tests {
     | TEST: MOVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic, Topic?)"/>, and ensures
-    ///   that it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Move(Topic, Topic, Topic?)"/>, and ensures
+    ///   that it is immediately reflected in the <see cref="TopicRepository"/> cache of <see
     ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]

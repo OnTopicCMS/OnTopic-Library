@@ -15,12 +15,28 @@ using OnTopic.Querying;
 namespace OnTopic.Repositories {
 
   /*============================================================================================================================
-  | CLASS: TOPIC DATA PROVIDER BASE
+  | CLASS: TOPIC DATA PROVIDER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a base abstract class for taxonomy data providers.
+  ///   Provides a base class for <see cref="ITopicRepository"/> which are responsible for persisting data.
   /// </summary>
-  public abstract class TopicRepositoryBase : ObservableTopicRepository {
+  /// <remarks>
+  ///   <para>
+  ///     The <see cref="TopicRepository"/> is a highly opinionated base implementation of <see cref="ITopicRepository"/>.
+  ///     In addition to validating parameters and raising events on <see cref="Save(Topic, Boolean)"/>, <see cref="Delete(
+  ///     Topic, Boolean)"/>, and <see cref="Move(Topic, Topic, Topic?)"/>, it also provides a number of (protected) methods to
+  ///     aid implementors in evaluating and parsing <see cref="Topic"/> data, such as <see cref="GetUnmatchedAttributes(Topic)
+  ///     "/>. It is recommended that all concrete implementations of <see cref="ITopicRepository"/> that are responsible for
+  ///     persisting data to a data store use this as a base class.
+  ///   </para>
+  ///   <para>
+  ///     Implementations of <see cref="ITopicRepository"/> which need to use different business logic, or do not need to
+  ///     implement business logic (such as unit test doubles) may instead opt to derive directly from the <see cref="
+  ///     ObservableTopicRepository"/>, which handles the basic event handling, and nothing else. Implementations of decorators
+  ///     should instead derive from the <see cref="TopicRepositoryDecorator"/>.
+  ///   </para>
+  /// </remarks>
+  public abstract class TopicRepository : ObservableTopicRepository {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

@@ -28,7 +28,7 @@ namespace OnTopic.Data.Sql {
   /// <remarks>
   ///   Concrete implementation of the <see cref="OnTopic.Repositories.IDataRepository"/> class.
   /// </remarks>
-  public class SqlTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class SqlTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

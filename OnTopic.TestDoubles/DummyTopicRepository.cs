@@ -15,7 +15,7 @@ namespace OnTopic.TestDoubles {
   ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
   ///   but is not intended to be called.
   /// </summary>
-  public class DummyTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class DummyTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

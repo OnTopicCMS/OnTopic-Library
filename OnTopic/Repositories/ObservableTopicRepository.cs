@@ -18,7 +18,7 @@ namespace OnTopic.Repositories {
   /// <remarks>
   ///   All implementations of <see cref="ITopicRepository"/> are expected to need the following logic at minimum.
   ///   Concrete implementations that are working directly with an underlying data source should prefer to instead derive from
-  ///   the more opinionated <see cref="TopicRepositoryBase"/>, which provides more built-in business logic.
+  ///   the more opinionated <see cref="TopicRepository"/>, which provides more built-in business logic.
   /// </remarks>
   public abstract class ObservableTopicRepository : ITopicRepository {
 
