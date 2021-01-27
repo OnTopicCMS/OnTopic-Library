@@ -495,7 +495,7 @@ namespace OnTopic.Attributes {
     ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
     ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
     /// </exception>
-    protected override void InsertItem(int index, AttributeValue item) {
+    protected override sealed void InsertItem(int index, AttributeValue item) {
       Contract.Requires(item, nameof(item));
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         if (!Contains(item.Key)) {
@@ -530,7 +530,7 @@ namespace OnTopic.Attributes {
     /// </remarks>
     /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
     /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    protected override void SetItem(int index, AttributeValue item) {
+    protected override sealed void SetItem(int index, AttributeValue item) {
       Contract.Requires(item, nameof(item));
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
@@ -551,7 +551,7 @@ namespace OnTopic.Attributes {
     ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
     ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
     /// </remarks>
-    protected override void RemoveItem(int index) {
+    protected override sealed void RemoveItem(int index) {
       var attribute = this[index];
       DeletedAttributes.Add(attribute.Key);
       base.RemoveItem(index);
@@ -568,7 +568,7 @@ namespace OnTopic.Attributes {
     ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
     ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
     /// </remarks>
-    protected override void ClearItems() {
+    protected override sealed void ClearItems() {
       DeletedAttributes.AddRange(Items.Select(a => a.Key));
       base.ClearItems();
     }
@@ -581,7 +581,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(AttributeValue item) {
+    protected override sealed string GetKeyForItem(AttributeValue item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
     }

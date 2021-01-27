@@ -525,7 +525,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: MOVE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling) {
+    protected override sealed void MoveTopic(Topic topic, Topic target, Topic? sibling) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -576,7 +576,7 @@ namespace OnTopic.Data.Sql {
     | METHOD: DELETE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    protected override void DeleteTopic(Topic topic) {
+    protected override sealed void DeleteTopic(Topic topic) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

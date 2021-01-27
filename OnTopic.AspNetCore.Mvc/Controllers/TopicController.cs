@@ -121,7 +121,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="viewName">The optional name of the view that is rendered to the response.</param>
     /// <returns>The created <see cref="TopicViewResult"/> object for the response.</returns>
     [NonAction]
-    public virtual TopicViewResult TopicView(object model, string? viewName = null) =>
+    public TopicViewResult TopicView(object model, string? viewName = null) =>
       new(ViewData, TempData, model, CurrentTopic?.ContentType, viewName);
 
   } //Class

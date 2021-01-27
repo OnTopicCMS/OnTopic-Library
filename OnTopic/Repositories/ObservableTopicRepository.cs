@@ -36,31 +36,31 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicLoadEventArgs>? TopicLoaded {
+    public event EventHandler<TopicLoadEventArgs>? TopicLoaded {
       add => _topicLoaded += value;
       remove => _topicLoaded -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicSaveEventArgs>? TopicSaved {
+    public event EventHandler<TopicSaveEventArgs>? TopicSaved {
       add => _topicSaved += value;
       remove => _topicSaved -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicEventArgs>? TopicDeleted {
+    public event EventHandler<TopicEventArgs>? TopicDeleted {
       add => _topicDeleted += value;
       remove => _topicDeleted -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicMoveEventArgs>? TopicMoved {
+    public event EventHandler<TopicMoveEventArgs>? TopicMoved {
       add => _topicMoved += value;
       remove => _topicMoved -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicRenameEventArgs>? TopicRenamed {
+    public event EventHandler<TopicRenameEventArgs>? TopicRenamed {
       add => _topicRenamed += value;
       remove => _topicRenamed -= value;
     }

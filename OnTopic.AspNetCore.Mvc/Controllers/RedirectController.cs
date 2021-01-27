@@ -49,7 +49,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     ///   Redirect based on <see cref="Topic.Id"/>.
     /// </summary>
     /// <param name="topicId">The <see cref="Topic.Id"/> to lookup in the <see cref="ITopicRepository"/>.</param>
-    public virtual ActionResult Redirect(int topicId) {
+    public ActionResult Redirect(int topicId) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find the topic with the correct PageID.

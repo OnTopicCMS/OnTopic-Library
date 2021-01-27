@@ -70,7 +70,7 @@ namespace OnTopic.Collections {
     ///   A {typeof(T).Name} with the Key '{item.Key}' already exists. The UniqueKey of the existing {typeof(T).Name} is
     ///   '{GetUniqueKey()}'; the new item's is '{item.GetUniqueKey()}'.
     /// </exception>
-    protected override void InsertItem(int index, T item) {
+    protected override sealed void InsertItem(int index, T item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -115,7 +115,7 @@ namespace OnTopic.Collections {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(T item) {
+    protected override sealed string GetKeyForItem(T item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
     }
