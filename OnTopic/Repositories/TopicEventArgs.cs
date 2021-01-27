@@ -31,7 +31,8 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
     /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
     public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
-      Topic = topic;
+      Topic                     = topic;
+      IsRecursive               = isRecursive;
     }
 
     /*==========================================================================================================================
