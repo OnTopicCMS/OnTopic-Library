@@ -75,7 +75,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
     /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
-    protected override void InsertItem(int index, T item) {
+    protected override sealed void InsertItem(int index, T item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -109,7 +109,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(T item) {
+    protected override sealed string GetKeyForItem(T item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Name;
     }

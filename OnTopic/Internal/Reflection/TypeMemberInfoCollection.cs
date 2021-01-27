@@ -124,7 +124,7 @@ namespace OnTopic.Internal.Reflection {
     /// <exception cref="ArgumentException">
     ///   The TypeMemberInfoCollection already contains the MemberInfoCollection of the Type '{item.Type}'.
     /// </exception>
-    protected override void InsertItem(int index, MemberInfoCollection item) {
+    protected override sealed void InsertItem(int index, MemberInfoCollection item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -154,7 +154,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override Type GetKeyForItem(MemberInfoCollection item) {
+    protected override sealed Type GetKeyForItem(MemberInfoCollection item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Type;
     }
