@@ -24,7 +24,7 @@ namespace OnTopic.Lookup {
     ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
     public DynamicTopicViewModelLookupService() : base(
-      t => t.Name.EndsWith("ViewModel", StringComparison.InvariantCultureIgnoreCase),
+      t => t.Name.EndsWith("ViewModel", StringComparison.OrdinalIgnoreCase),
       typeof(object)
     ) { }
 

@@ -36,7 +36,7 @@ namespace OnTopic.Lookup {
         .GetAssemblies()
         .SelectMany(t => t.GetTypes())
         .Where(t => t.IsClass && predicate(t))
-        .OrderBy(t => t.Namespace?.StartsWith("OnTopic", StringComparison.InvariantCultureIgnoreCase))
+        .OrderBy(t => t.Namespace?.StartsWith("OnTopic", StringComparison.OrdinalIgnoreCase))
         .ToList();
 
       /*------------------------------------------------------------------------------------------------------------------------

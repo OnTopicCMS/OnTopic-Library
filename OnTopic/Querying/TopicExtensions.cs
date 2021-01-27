@@ -187,7 +187,7 @@ namespace OnTopic.Querying {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic.FindAll(t =>
         !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
-        t.Attributes.GetValue(name).Contains(value, StringComparison.InvariantCultureIgnoreCase)
+        t.Attributes.GetValue(name).Contains(value, StringComparison.OrdinalIgnoreCase)
       );
 
     }
