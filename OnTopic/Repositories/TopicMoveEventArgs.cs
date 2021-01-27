@@ -47,7 +47,6 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Vaidate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "topic");
       Contract.Requires(target, "target");
       Contract.Requires<ArgumentException>(topic != target, "The topic cannot be its own parent.");
       Contract.Requires<ArgumentException>(topic != source, "The topic cannot be its own parent.");
@@ -56,7 +55,6 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Initialize properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Topic                     = topic;
       Source                    = source;
       Target                    = target;
       Sibling                   = sibling;
