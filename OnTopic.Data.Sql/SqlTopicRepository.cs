@@ -254,6 +254,10 @@ namespace OnTopic.Data.Sql {
       | Catch exception
       \-----------------------------------------------------------------------------------------------------------------------*/
       catch (SqlException exception) {
+        if (topic is not null) {
+          topic.Relationships.IsFullyLoaded = false;
+          topic.References.IsFullyLoaded = false;
+        }
         throw new TopicRepositoryException($"Topics failed to load: '{exception.Message}'", exception);
       }
 
