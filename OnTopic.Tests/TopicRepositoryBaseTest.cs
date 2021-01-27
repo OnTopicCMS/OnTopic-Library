@@ -535,13 +535,14 @@ namespace OnTopic.Tests {
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var contentTypesRoot      = contentTypes.GetTopic("ContentTypes");
       var pageContentType       = contentTypes.GetTopic("Page");
       var lookupContentType     = contentTypes.GetTopic("Lookup");
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
       pageContentType.Relationships.SetTopic("ContentTypes", lookupContentType);
 
-      _topicRepository.Save(pageContentType);
+      _topicRepository.Save(contentTypesRoot, true);
 
       Assert.AreNotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
 
