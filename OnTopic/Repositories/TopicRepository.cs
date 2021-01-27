@@ -273,7 +273,20 @@ namespace OnTopic.Repositories {
       | Attempt to resolve outstanding relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics.ToList()) {
+        unresolvedTopics.Remove(unresolvedTopic);
         Save(unresolvedTopic, false, unresolvedTopics, version);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Throw exception if unresolved topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (unresolvedTopics.Count > 0) {
+        throw new ReferentialIntegrityException(
+          $"The call to ITopicRepository.Save() introduced unresolved references on {unresolvedTopics.Count} topics, " +
+          $"including '{unresolvedTopics.LastOrDefault().GetUniqueKey()}'. This is usually due to relationships or topic " +
+          $"references outside the scope of the Save() which, themselves, have not yet been persisted to the data store. If " +
+          $"this is not resolved, these items will not be correctly persisted."
+        );
       }
 
     }
