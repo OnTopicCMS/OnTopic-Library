@@ -586,6 +586,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SAVE: UNRESOLVED REFERENCE: RESOLVES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
+    ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TopicReferenceDictionary.IsDirty()"
+    ///   /> as <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void Save_UnresolvedReference_Resolves() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var reference             = TopicFactory.Create("Reference", "Page", topic);
+
+      topic.References.SetTopic("Test", reference);
+
+      _topicRepository.Save(topic, true);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
