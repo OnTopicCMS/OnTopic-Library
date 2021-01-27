@@ -736,7 +736,7 @@ namespace OnTopic.Tests {
       Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy.Key);
 
       Topic? getRelatedTopic(RelatedEntityTopicViewModel topic, string key)
-        => topic.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+        => topic.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
     }
 
@@ -1044,10 +1044,10 @@ namespace OnTopic.Tests {
     ///   A helper function which retrieves a child topic based on the key.
     /// </summary>
     public static KeyOnlyTopicViewModel? GetChildTopic(IEnumerable<KeyOnlyTopicViewModel> topicCollection, string key)
-      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
     public static TopicViewModel? GetChildTopic(IEnumerable<TopicViewModel> topicCollection, string key)
-      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
   } //Class
 } //Namespace

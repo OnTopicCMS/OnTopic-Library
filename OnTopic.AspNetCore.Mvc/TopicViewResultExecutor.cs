@@ -122,8 +122,8 @@ namespace OnTopic.AspNetCore.Mvc {
             // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding
             // purposes
             var acceptHeader = splitHeaders[i]
-              [(splitHeaders[i].IndexOf("/", StringComparison.InvariantCulture) + 1)..]
-              .Replace("+", "-", StringComparison.InvariantCulture);
+              [(splitHeaders[i].IndexOf("/", StringComparison.Ordinal) + 1)..]
+              .Replace("+", "-", StringComparison.Ordinal);
             // Validate against available views; if content-type represents a valid view, stop validation
             if (acceptHeader is not null) {
               view = viewEngine.FindView(actionContext, acceptHeader, isMainPage: true);
