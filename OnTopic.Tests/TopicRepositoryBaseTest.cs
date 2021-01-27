@@ -547,6 +547,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SAVE: NEW TOPIC: UPDATES VERSION HISTORY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> and confirms that the <see cref="Topic.VersionHistory"/> is correctly updated with a
+    ///   new version.
+    /// </summary>
+    [TestMethod]
+    public void Save_NewTopic_UpdatesVersionHistory() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(topic.VersionHistory.Count > 0);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
