@@ -364,7 +364,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
         var args = new TopicRenameEventArgs(topic, topic.Key, topic.OriginalKey);
-        _renameEvent?.Invoke(this, args);
+        OnTopicRenamed(args);
       }
 
       /*----------------------------------------------------------------------------------------------------------------------

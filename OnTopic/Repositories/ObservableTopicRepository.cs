@@ -25,28 +25,28 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     EventHandler<DeleteEventArgs>?  _deleteEvent;
-    private                     EventHandler<MoveEventArgs>?    _moveEvent;
-    private                     EventHandler<RenameEventArgs>?  _renameEvent;
+    private                     EventHandler<TopicEventArgs>?                                   _deleteEvent;
+    private                     EventHandler<TopicMoveEventArgs>?                               _moveEvent;
+    private                     EventHandler<TopicRenameEventArgs>?                             _renameEvent;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc />
-    public virtual event EventHandler<DeleteEventArgs>? DeleteEvent {
+    public virtual event EventHandler<TopicEventArgs>? DeleteEvent {
       add => _deleteEvent += value;
       remove => _deleteEvent -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<MoveEventArgs>? MoveEvent {
+    public virtual event EventHandler<TopicMoveEventArgs>? MoveEvent {
       add => _moveEvent += value;
       remove => _moveEvent -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<RenameEventArgs>? RenameEvent {
+    public virtual event EventHandler<TopicRenameEventArgs>? RenameEvent {
       add => _renameEvent += value;
       remove => _renameEvent -= value;
     }
@@ -63,16 +63,16 @@ namespace OnTopic.Repositories {
     ///     https://docs.microsoft.com/en-us/dotnet/standard/events/">Handling and Raising Events</seealso>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="OnTopicDeleted(DeleteEventArgs)"/> method also allows derived classes to handle the event without
+    ///     The <see cref="OnTopicDeleted(TopicEventArgs)"/> method also allows derived classes to handle the event without
     ///     attaching a delegate. This is the preferred technique for handling the event in a derived class.
     ///   </para>
     ///   <para>
-    ///     When overriding the <see cref="OnTopicDeleted(DeleteEventArgs)"/> method in a derived class, be sure to call the
-    ///     base class's <see cref="OnTopicDeleted(DeleteEventArgs)"/> method so that registered delegates receive the event.
+    ///     When overriding the <see cref="OnTopicDeleted(TopicEventArgs)"/> method in a derived class, be sure to call the
+    ///     base class's <see cref="OnTopicDeleted(TopicEventArgs)"/> method so that registered delegates receive the event.
     ///   </para>
     /// </remarks>
-    /// <param name="args">An instance of the <see cref="DeleteEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicDeleted(DeleteEventArgs args) => _deleteEvent?.Invoke(this, args);
+    /// <param name="args">An instance of the <see cref="TopicEventArgs"/> associated with the event.</param>
+    protected virtual void OnTopicDeleted(TopicEventArgs args) => _deleteEvent?.Invoke(this, args);
 
     /*==========================================================================================================================
     | ON TOPIC MOVED
@@ -86,16 +86,16 @@ namespace OnTopic.Repositories {
     ///     https://docs.microsoft.com/en-us/dotnet/standard/events/">Handling and Raising Events</seealso>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="OnTopicMoved(MoveEventArgs)"/> method also allows derived classes to handle the event without
+    ///     The <see cref="OnTopicMoved(TopicMoveEventArgs)"/> method also allows derived classes to handle the event without
     ///     attaching a delegate. This is the preferred technique for handling the event in a derived class.
     ///   </para>
     ///   <para>
-    ///     When overriding the <see cref="OnTopicMoved(MoveEventArgs)"/> method in a derived class, be sure to call the
-    ///     base class's <see cref="OnTopicMoved(MoveEventArgs)"/> method so that registered delegates receive the event.
+    ///     When overriding the <see cref="OnTopicMoved(TopicMoveEventArgs)"/> method in a derived class, be sure to call the
+    ///     base class's <see cref="OnTopicMoved(TopicMoveEventArgs)"/> method so that registered delegates receive the event.
     ///   </para>
     /// </remarks>
-    /// <param name="args">An instance of the <see cref="MoveEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicMoved(MoveEventArgs args) => _moveEvent?.Invoke(this, args);
+    /// <param name="args">An instance of the <see cref="TopicMoveEventArgs"/> associated with the event.</param>
+    protected virtual void OnTopicMoved(TopicMoveEventArgs args) => _moveEvent?.Invoke(this, args);
 
     /*==========================================================================================================================
     | ON TOPIC RENAMED
@@ -109,16 +109,17 @@ namespace OnTopic.Repositories {
     ///     https://docs.microsoft.com/en-us/dotnet/standard/events/">Handling and Raising Events</seealso>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="OnTopicRenamed(RenameEventArgs)"/> method also allows derived classes to handle the event without
-    ///     attaching a delegate. This is the preferred technique for handling the event in a derived class.
+    ///     The <see cref="OnTopicRenamed(TopicRenameEventArgs)"/> method also allows derived classes to handle the event
+    ///     without attaching a delegate. This is the preferred technique for handling the event in a derived class.
     ///   </para>
     ///   <para>
-    ///     When overriding the <see cref="OnTopicRenamed(RenameEventArgs)"/> method in a derived class, be sure to call the
-    ///     base class's <see cref="OnTopicRenamed(RenameEventArgs)"/> method so that registered delegates receive the event.
+    ///     When overriding the <see cref="OnTopicRenamed(TopicRenameEventArgs)"/> method in a derived class, be sure to call
+    ///     the base class's <see cref="OnTopicRenamed(TopicRenameEventArgs)"/> method so that registered delegates receive the
+    ///     event.
     ///   </para>
     /// </remarks>
-    /// <param name="args">An instance of the <see cref="RenameEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicRenamed(RenameEventArgs args) => _renameEvent?.Invoke(this, args);
+    /// <param name="args">An instance of the <see cref="TopicRenameEventArgs"/> associated with the event.</param>
+    protected virtual void OnTopicRenamed(TopicRenameEventArgs args) => _renameEvent?.Invoke(this, args);
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
