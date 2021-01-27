@@ -20,19 +20,22 @@ namespace OnTopic.Repositories {
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates the <see cref="TopicEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is deleted from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Delete(Topic, Boolean)"/> operation.
     /// </summary>
-    event EventHandler<TopicEventArgs> DeleteEvent;
+    event EventHandler<TopicEventArgs> TopicDeleted;
 
     /// <summary>
-    ///   Instantiates the <see cref="TopicMoveEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is moved within the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Move(Topic, Topic, Topic?)"/> operation.
     /// </summary>
-    event EventHandler<TopicMoveEventArgs> MoveEvent;
+    event EventHandler<TopicMoveEventArgs> TopicMoved;
 
     /// <summary>
-    ///   Instantiates the <see cref="TopicRenameEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is renamed as ppart of a <see cref="ITopicRepository.Save(Topic, Boolean)"/>
+    ///   operation.
     /// </summary>
-    event EventHandler<TopicRenameEventArgs> RenameEvent;
+    event EventHandler<TopicRenameEventArgs> TopicRenamed;
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS

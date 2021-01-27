@@ -16,8 +16,8 @@ namespace OnTopic.Repositories {
   /// </summary>
   /// <remarks>
   ///   All <see cref="ITopicRepository"/> events share at least one shared element: the <see cref="Topic"/> being operated
-  ///   against. Some, such as the <see cref="ITopicRepository.DeleteEvent"/>, <i>only</i> relate to that information. Others,
-  ///   such as <see cref="ITopicRepository.MoveEvent"/>, need additional information, and thus offer derived classes, such as
+  ///   against. Some, such as the <see cref="ITopicRepository.TopicDeleted"/>, <i>only</i> relate to that information. Others,
+  ///   such as <see cref="ITopicRepository.TopicMoved"/>, need additional information, and thus offer derived classes, such as
   ///   <see cref="TopicMoveEventArgs"/>, to capture additional information.
   /// </remarks>
   public class TopicEventArgs : EventArgs {

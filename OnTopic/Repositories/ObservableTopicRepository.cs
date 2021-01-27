@@ -25,37 +25,37 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     EventHandler<TopicEventArgs>?                                   _deleteEvent;
-    private                     EventHandler<TopicMoveEventArgs>?                               _moveEvent;
-    private                     EventHandler<TopicRenameEventArgs>?                             _renameEvent;
+    private                     EventHandler<TopicEventArgs>?                                   _topicDeleted;
+    private                     EventHandler<TopicMoveEventArgs>?                               _topicMoved;
+    private                     EventHandler<TopicRenameEventArgs>?                             _topicRenamed;
 
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicEventArgs>? DeleteEvent {
-      add => _deleteEvent += value;
-      remove => _deleteEvent -= value;
+    public virtual event EventHandler<TopicEventArgs>? TopicDeleted {
+      add => _topicDeleted += value;
+      remove => _topicDeleted -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicMoveEventArgs>? MoveEvent {
-      add => _moveEvent += value;
-      remove => _moveEvent -= value;
+    public virtual event EventHandler<TopicMoveEventArgs>? TopicMoved {
+      add => _topicMoved += value;
+      remove => _topicMoved -= value;
     }
 
     /// <inheritdoc />
-    public virtual event EventHandler<TopicRenameEventArgs>? RenameEvent {
-      add => _renameEvent += value;
-      remove => _renameEvent -= value;
+    public virtual event EventHandler<TopicRenameEventArgs>? TopicRenamed {
+      add => _topicRenamed += value;
+      remove => _topicRenamed -= value;
     }
 
     /*==========================================================================================================================
     | ON TOPIC DELETED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="DeleteEvent"/>.
+    ///   Raises the <see cref="TopicDeleted"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -72,13 +72,13 @@ namespace OnTopic.Repositories {
     ///   </para>
     /// </remarks>
     /// <param name="args">An instance of the <see cref="TopicEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicDeleted(TopicEventArgs args) => _deleteEvent?.Invoke(this, args);
+    protected virtual void OnTopicDeleted(TopicEventArgs args) => _topicDeleted?.Invoke(this, args);
 
     /*==========================================================================================================================
     | ON TOPIC MOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="MoveEvent"/>.
+    ///   Raises the <see cref="TopicMoved"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -95,13 +95,13 @@ namespace OnTopic.Repositories {
     ///   </para>
     /// </remarks>
     /// <param name="args">An instance of the <see cref="TopicMoveEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicMoved(TopicMoveEventArgs args) => _moveEvent?.Invoke(this, args);
+    protected virtual void OnTopicMoved(TopicMoveEventArgs args) => _topicMoved?.Invoke(this, args);
 
     /*==========================================================================================================================
     | ON TOPIC RENAMED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Raises the <see cref="RenameEvent"/>.
+    ///   Raises the <see cref="TopicRenamed"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -119,7 +119,7 @@ namespace OnTopic.Repositories {
     ///   </para>
     /// </remarks>
     /// <param name="args">An instance of the <see cref="TopicRenameEventArgs"/> associated with the event.</param>
-    protected virtual void OnTopicRenamed(TopicRenameEventArgs args) => _renameEvent?.Invoke(this, args);
+    protected virtual void OnTopicRenamed(TopicRenameEventArgs args) => _topicRenamed?.Invoke(this, args);
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS

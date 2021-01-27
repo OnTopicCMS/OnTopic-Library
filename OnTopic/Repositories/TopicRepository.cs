@@ -437,7 +437,7 @@ namespace OnTopic.Repositories {
     ///   The main <see cref="Save(Topic, Boolean)"/> implementation handles advanced validation of the parameters, updating the
     ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref="
     ///   ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref="
-    ///   ITopicRepository.RenameEvent"/>, if needed, and recursing over children. The derived implementation of <see cref="
+    ///   ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref="
     ///   SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
     ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
     ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
@@ -524,7 +524,7 @@ namespace OnTopic.Repositories {
     /// <remarks>
     ///   The main <see cref="Move(Topic, Topic, Topic?)"/> implementation handles advanced validation of the parameters,
     ///   updating the <see cref="Topic"/>'s location within the topic graph, updating <see cref="ContentTypeDescriptor"/> and
-    ///   <see cref="AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.MoveEvent"/>.
+    ///   <see cref="AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicMoved"/>.
     ///   The derived implementation of <see cref="MoveTopic(Topic, Topic, Topic?)"/> is then left to focus exclusively on the
     ///   core logic of persisting the change to the underlying data store.
     /// </remarks>
@@ -636,7 +636,7 @@ namespace OnTopic.Repositories {
     /// <remarks>
     ///   The main <see cref="Delete(Topic, Boolean)"/> implementation handles advanced validation of the parameters,
     ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref="
-    ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.DeleteEvent"/>. The
+    ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
     ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
     ///   persisting the change to the underlying data store.
     /// </remarks>

@@ -52,9 +52,9 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Subscribe to underlying events
       \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicRepository.DeleteEvent += (object sender, TopicEventArgs args)                       => OnTopicDeleted(args);
-      TopicRepository.MoveEvent   += (object sender, TopicMoveEventArgs args)                   => OnTopicMoved(args);
-      TopicRepository.RenameEvent += (object sender, TopicRenameEventArgs args)                 => OnTopicRenamed(args);
+      TopicRepository.TopicDeleted += (object sender, TopicEventArgs args)                       => OnTopicDeleted(args);
+      TopicRepository.TopicMoved   += (object sender, TopicMoveEventArgs args)                   => OnTopicMoved(args);
+      TopicRepository.TopicRenamed += (object sender, TopicRenameEventArgs args)                 => OnTopicRenamed(args);
 
     }
 
