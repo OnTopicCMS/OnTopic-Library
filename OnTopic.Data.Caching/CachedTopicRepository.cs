@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 
@@ -22,39 +21,30 @@ namespace OnTopic.Data.Caching {
   ///   for an actual data access class.
   /// </remarks>
 
-  public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class CachedTopicRepository : TopicRepositoryDecorator {
 
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _dataProvider;
     private readonly            Topic                           _cache;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicRepository in order
-    ///   to provide necessary data access.
+    ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref="
+    ///   ITopicRepository"/> in order to provide necessary data access.
     /// </summary>
-    /// <param name="dataProvider">A concrete instance of an ITopicRepository, which will be used for data access.</param>
-    /// <returns>A new instance of the CachedTopicRepository.</returns>
-    public CachedTopicRepository(ITopicRepository dataProvider) : base() {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(dataProvider, "A concrete implementation of an ITopicRepository is required.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set values locally
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _dataProvider = dataProvider;
+    /// <param name="topicRepository">
+    ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
+    /// </param>
+    /// <returns>A new instance of a <see cref="CachedTopicRepository"/>.</returns>
+    public CachedTopicRepository(ITopicRepository topicRepository) : base(topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = _dataProvider.Load();
+      var rootTopic = TopicRepository.Load();
 
       Contract.Assume(
         rootTopic,
@@ -68,34 +58,6 @@ namespace OnTopic.Data.Caching {
       _cache = rootTopic;
 
     }
-
-    /*==========================================================================================================================
-    | EVENT PASSTHROUGHS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-
-    /// <inheritdoc/>
-    public override event EventHandler<DeleteEventArgs>? DeleteEvent {
-      add => _dataProvider.DeleteEvent += value;
-      remove => _dataProvider.DeleteEvent -= value;
-    }
-
-    /// <inheritdoc/>
-    public override event EventHandler<MoveEventArgs>? MoveEvent {
-      add => _dataProvider.MoveEvent += value;
-      remove => _dataProvider.MoveEvent -= value;
-    }
-
-    /// <inheritdoc/>
-    public override event EventHandler<RenameEventArgs>? RenameEvent {
-      add => _dataProvider.RenameEvent += value;
-      remove => _dataProvider.RenameEvent -= value;
-    }
-
-    /*==========================================================================================================================
-    | GET CONTENT TYPE DESCRIPTORS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => _dataProvider.GetContentTypeDescriptors();
 
     /*==========================================================================================================================
     | METHOD: LOAD
@@ -149,34 +111,9 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _dataProvider.Load(topicId, version, referenceTopic?? _cache);
+      return TopicRepository.Load(topicId, version, referenceTopic?? _cache);
 
     }
-
-    /*==========================================================================================================================
-    | METHOD: REFRESH
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    public override void Refresh(Topic referenceTopic, DateTime since) => _dataProvider.Refresh(referenceTopic, since);
-
-    /*==========================================================================================================================
-    | METHOD: SAVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Save(Topic topic, bool isRecursive = false) =>
-      _dataProvider.Save(topic, isRecursive);
-
-    /*==========================================================================================================================
-    | METHOD: MOVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) => _dataProvider.Move(topic, target, sibling);
-
-    /*==========================================================================================================================
-    | METHOD: DELETE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) => _dataProvider.Delete(topic, isRecursive);
 
   } //Class
 } //Namespace
