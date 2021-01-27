@@ -62,7 +62,7 @@ namespace OnTopic.Repositories {
         var configuration       = (Topic?)null;
 
         try {
-          configuration         = Load("Configuration");
+          configuration         = Load("Root:Configuration");
         }
         catch (TopicNotFoundException) {
           //Swallow missing configuration, as this is an expected condition when working with a new database
