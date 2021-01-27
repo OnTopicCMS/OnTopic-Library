@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
+using OnTopic.References;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
@@ -599,6 +600,30 @@ namespace OnTopic.Tests {
       var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
       var topic                 = TopicFactory.Create("Test", "Page", parent);
       var reference             = TopicFactory.Create("Reference", "Page", topic);
+
+      topic.References.SetTopic("Test", reference);
+
+      _topicRepository.Save(topic, true);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: UNRESOLVED REFERENCE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws an
+    ///   exception if that reference cannot be resolved.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ReferentialIntegrityException),
+      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
+    )]
+    public void Save_UnresolvedReference_ThrowsException() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var reference             = TopicFactory.Create("Reference", "Page", parent);
 
       topic.References.SetTopic("Test", reference);
 
