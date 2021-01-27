@@ -48,7 +48,7 @@ namespace OnTopic.Attributes {
     ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-    internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.InvariantCultureIgnoreCase) {
+    internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
       _associatedTopic = parentTopic;
       _topicPropertyDispatcher = new(parentTopic);
     }
@@ -91,7 +91,7 @@ namespace OnTopic.Attributes {
     public bool IsDirty(bool excludeLastModified = false)
       => DeletedAttributes.Count > 0 || Items.Any(a =>
         a.IsDirty &&
-        (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase))
+        (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.OrdinalIgnoreCase))
       );
 
     /// <summary>

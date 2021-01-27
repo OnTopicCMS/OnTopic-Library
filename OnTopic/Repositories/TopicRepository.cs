@@ -698,7 +698,7 @@ namespace OnTopic.Repositories {
         var attribute           = (AttributeDescriptor?)null;
 
         //Optionally exclude LastModified attributes
-        if (excludeLastModified && attributeValue.Key.StartsWith("LastModified", StringComparison.InvariantCultureIgnoreCase)) {
+        if (excludeLastModified && attributeValue.Key.StartsWith("LastModified", StringComparison.OrdinalIgnoreCase)) {
           continue;
         }
 

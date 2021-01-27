@@ -240,7 +240,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
           from relatedTopic in relationship.Values
           select new XElement(_pagemapNamespace + "Attribute",
             new XAttribute("name", "TopicKey"),
-            new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.InvariantCultureIgnoreCase))
+            new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
           )
         );
 

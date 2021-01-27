@@ -462,7 +462,7 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Check to ensure that the topic isn't being moved to a descendant (topics cannot be their own grandpa)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (parent.GetUniqueKey().StartsWith(GetUniqueKey(), StringComparison.InvariantCultureIgnoreCase)) {
+      if (parent.GetUniqueKey().StartsWith(GetUniqueKey(), StringComparison.OrdinalIgnoreCase)) {
         throw new ArgumentOutOfRangeException(nameof(parent), "A descendant cannot be its own parent.");
       }
 
@@ -545,7 +545,7 @@ namespace OnTopic {
       var uniqueKey = GetUniqueKey()
         .Replace("Root:", "/", StringComparison.Ordinal)
         .Replace(":", "/", StringComparison.Ordinal) + "/";
-      if (!uniqueKey.StartsWith("/", StringComparison.InvariantCulture)) {
+      if (!uniqueKey.StartsWith("/", StringComparison.Ordinal)) {
         uniqueKey = $"/{uniqueKey}";
       }
       return uniqueKey;
