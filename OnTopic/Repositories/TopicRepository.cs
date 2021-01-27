@@ -5,9 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft;
 using OnTopic.Attributes;
+using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
@@ -254,12 +256,56 @@ namespace OnTopic.Repositories {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Save([ValidatedNotNull]Topic topic, bool isRecursive = false) {
+    public override sealed void Save([ValidatedNotNull] Topic topic, bool isRecursive = false) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var version               = DateTime.UtcNow;
+      var unresolvedTopics      = new TopicCollection();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle first pass
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Save(topic, isRecursive, unresolvedTopics, version);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to resolve outstanding relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var unresolvedTopic in unresolvedTopics.ToList()) {
+        Save(unresolvedTopic, false, unresolvedTopics, version);
+      }
+
+    }
+
+    /// <summary>
+    ///   Recursive method that validates an individual topic, calls the derived implementation, and then recurses over any
+    ///   child topics.
+    /// </summary>
+    /// <remarks>
+    ///   When recursively saving a topic graph, it is conceivable that references to other topics—such as <see
+    ///   cref="Topic.Relationships"/> or <see cref="Topic.DerivedTopic"/>—can't yet be persisted because the target <see
+    ///   cref="Topic"/> hasn't yet been saved, and thus the <see cref="Topic.Id"/> is still set to <c>-1</c>. To mitigate
+    ///   this, the <paramref name="unresolvedTopics"/> allows this private overload to keep track of unresolved
+    ///   relationships. The public <see cref="Save(Topic, Boolean)"/> overload uses this list to resave any topics
+    ///   that include such references. This adds some overhead due to the duplicate <see cref="Save(Topic, Boolean)"/>, but
+    ///   helps avoid potential data loss when working with complex topic graphs.
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> to save.</param>
+    /// <param name="isRecursive">Determines whether or not to recursively save <see cref="Topic.Children"/>.</param>
+    /// <param name="unresolvedTopics">A list of <see cref="Topic"/>s with unresolved topic references.</param>
+    /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
+    private void Save([NotNull]Topic topic, bool isRecursive, TopicCollection unresolvedTopics, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, nameof(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var isNew                 = topic.IsNew;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate content type
@@ -275,6 +321,20 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Handle unresolved references
+      >-------------------------------------------------------------------------------------------------------------------------
+      | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
+      | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
+      | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (
+        topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
+        topic.References.Values.Any(t => t.Id < 0)
+      ) {
+        unresolvedTopics.Add(topic);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Ensure derived topic is set
       >-------------------------------------------------------------------------------------------------------------------------
       | ### HACK JJC20200523: If a derived topic is linked but hasn't been saved yet, then it should not be persisted to the
@@ -284,6 +344,18 @@ namespace OnTopic.Repositories {
       | will be set; if not, the topic.Id will remain -1.
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.DerivedTopic = topic.DerivedTopic;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Execute core implementation
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Save(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update version history
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!topic.VersionHistory.Contains(version)) {
+        topic.VersionHistory.Insert(0, version);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Trigger event
@@ -311,7 +383,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var asContentType         = topic as ContentTypeDescriptor;
       if (
-        topic.IsNew &&
+        isNew &&
         asContentType is not null &&
         _contentTypeDescriptors is not null &&
         !_contentTypeDescriptors.Contains(topic.Key)
@@ -333,7 +405,7 @@ namespace OnTopic.Repositories {
       | AttributeDescriptors. When a new AttributeDescriptor is added, these collections are reset for the current
       | ContentTypeDescriptor and all descendents to ensure that they all reflect the new AttributeDescriptor.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.IsNew && IsAttributeDescriptor(topic)) {
+      if (isNew && IsAttributeDescriptor(topic)) {
         ResetAttributeDescriptors(topic);
       }
 
@@ -342,7 +414,30 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       topic.OriginalKey = null;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Recurse over children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (isRecursive) {
+        foreach (var childTopic in topic.Children) {
+          Save(childTopic, isRecursive, unresolvedTopics, version);
+        }
+      }
+
     }
+
+    /// <summary>
+    ///   The core implementation logic that's executed for every see <see cref="Topic"/> during a <see cref="Save(Topic,
+    ///   Boolean)"/> operation.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to save.</param>
+    /// <param name="version">The version to assign to the <paramref name="topic"/> updates.</param>
+    /// <param name="persistRelationships">
+    ///   Determines whether or not <see cref="Topic.References"/> and <see cref="Topic.Relationships"/> should be persisted.
+    ///   This may be set to <c>false</c> if not all references have yet been saved, and the <see cref="Save(Topic, Boolean)"/>
+    ///   call <c>isRecursive</c>; in that case, <see cref="Save(Topic, Boolean)"/> will circle back and attempt to save them
+    ///   after the rest of the topic graph has been saved.
+    /// </param>
+    protected abstract void Save([NotNull] Topic topic, DateTime version, bool persistRelationships);
 
     /*==========================================================================================================================
     | METHOD: MOVE

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
@@ -111,27 +112,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Save(Topic topic, bool isRecursive = false) {
+    protected override void Save([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Call base method - will trigger any events associated with the save
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
+      | Assign faux identity
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsNew) {
         topic.Id = _identity++;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive) {
-        foreach (var childTopic in topic.Children) {
-          Save(childTopic, isRecursive);
-        }
       }
 
     }
