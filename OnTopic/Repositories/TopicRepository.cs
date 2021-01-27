@@ -263,6 +263,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var version               = DateTime.UtcNow;
       var unresolvedTopics      = new TopicCollection();
+      var isNew                 = topic.IsNew;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
@@ -288,6 +289,11 @@ namespace OnTopic.Repositories {
           $"this is not resolved, these items will not be correctly persisted."
         );
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      OnTopicSaved(new(topic, isRecursive, isNew));
 
     }
 
