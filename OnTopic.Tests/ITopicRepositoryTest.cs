@@ -229,7 +229,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-    ///   DeleteEvent"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
+    ///   TopicDeleted"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
     ///   and not the immediate <see cref="CachedTopicRepository"/>.
     /// </summary>
     [TestMethod]
@@ -239,12 +239,12 @@ namespace OnTopic.Tests {
       var hasFired              = false;
 
       _topicRepository.Save(topic);
-      _topicRepository.DeleteEvent += eventHandler;
+      _topicRepository.TopicDeleted += eventHandler;
       _topicRepository.Delete(topic);
 
       Assert.IsTrue(hasFired);
 
-      void eventHandler(object? sender, DeleteEventArgs eventArgs) => hasFired = true;
+      void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
     }
 

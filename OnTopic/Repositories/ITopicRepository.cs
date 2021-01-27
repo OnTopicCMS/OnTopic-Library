@@ -19,20 +19,42 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
-    /// </summary>
-    event EventHandler<DeleteEventArgs> DeleteEvent;
 
     /// <summary>
-    ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Load(String?, Topic?, Boolean)"/> operation, or one of its overloads.
     /// </summary>
-    event EventHandler<MoveEventArgs> MoveEvent;
+    /// <remarks>
+    ///   The <see cref="TopicLoaded"/> event should only be raised when a new <see cref="Topic"/> is loaded from the underlying
+    ///   persistence store. It should not be loaded, for example, if a value is loaded from the cache, or a <c>topicId</c> is
+    ///   queried from the database. Given this, this event will need to be raised in actual implementations, since it is
+    ///   specific to the business logic of each <see cref="ITopicRepository"/>.
+    /// </remarks>
+    event EventHandler<TopicLoadEventArgs> TopicLoaded;
 
     /// <summary>
-    ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is saved in the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Save(Topic, Boolean)"/> operation.
     /// </summary>
-    event EventHandler<RenameEventArgs> RenameEvent;
+    event EventHandler<TopicSaveEventArgs> TopicSaved;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is deleted from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Delete(Topic, Boolean)"/> operation.
+    /// </summary>
+    event EventHandler<TopicEventArgs> TopicDeleted;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is moved within the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Move(Topic, Topic, Topic?)"/> operation.
+    /// </summary>
+    event EventHandler<TopicMoveEventArgs> TopicMoved;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is renamed as ppart of a <see cref="ITopicRepository.Save(Topic, Boolean)"/>
+    ///   operation.
+    /// </summary>
+    event EventHandler<TopicRenameEventArgs> TopicRenamed;
 
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS

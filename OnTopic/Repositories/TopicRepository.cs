@@ -263,6 +263,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var version               = DateTime.UtcNow;
       var unresolvedTopics      = new TopicCollection();
+      var isNew                 = topic.IsNew;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
@@ -288,6 +289,11 @@ namespace OnTopic.Repositories {
           $"this is not resolved, these items will not be correctly persisted."
         );
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      OnTopicSaved(new(topic, isRecursive, isNew));
 
     }
 
@@ -359,14 +365,6 @@ namespace OnTopic.Repositories {
         topic.VersionHistory.Insert(0, version);
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Trigger event
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
-        var args = new RenameEventArgs(topic);
-        OnTopicRenamed(args);
-      }
-
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
@@ -417,6 +415,13 @@ namespace OnTopic.Repositories {
       topic.OriginalKey = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.OriginalKey is not null && topic.OriginalKey != topic.Key) {
+        OnTopicRenamed(new(topic, topic.Key, topic.OriginalKey));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
@@ -438,7 +443,7 @@ namespace OnTopic.Repositories {
     ///   The main <see cref="Save(Topic, Boolean)"/> implementation handles advanced validation of the parameters, updating the
     ///   <see cref="Topic.VersionHistory"/>, attempting to pick up any unresolved topics, updating <see cref="
     ///   ContentTypeDescriptor"/> and <see cref="AttributeDescriptor"/> instances as appropriate, raising the <see cref="
-    ///   ITopicRepository.RenameEvent"/>, if needed, and recursing over children. The derived implementation of <see cref="
+    ///   ITopicRepository.TopicRenamed"/>, if needed, and recursing over children. The derived implementation of <see cref="
     ///   SaveTopic(Topic, DateTime, Boolean)"/> is then left to focus exclusively on the core logic of persisting the changes
     ///   to the individual <paramref name="topic"/> to the underlying data store, and optionally updating its <see cref="Topic.
     ///   Relationships"/> and <see cref="Topic.References"/>, assuming <paramref name="persistRelationships"/> is set to <c>
@@ -489,8 +494,6 @@ namespace OnTopic.Repositories {
       | Perform base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       var previousParent        = topic.Parent;
-      var args                  = new MoveEventArgs(topic, target);
-      OnTopicMoved(args);
       if (sibling is null) {
         topic.SetParent(target);
       }
@@ -510,6 +513,11 @@ namespace OnTopic.Repositories {
         ResetAttributeDescriptors(topic);
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      OnTopicMoved(new (topic, previousParent, target, sibling));
+
     }
 
     /*==========================================================================================================================
@@ -522,7 +530,7 @@ namespace OnTopic.Repositories {
     /// <remarks>
     ///   The main <see cref="Move(Topic, Topic, Topic?)"/> implementation handles advanced validation of the parameters,
     ///   updating the <see cref="Topic"/>'s location within the topic graph, updating <see cref="ContentTypeDescriptor"/> and
-    ///   <see cref="AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.MoveEvent"/>.
+    ///   <see cref="AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicMoved"/>.
     ///   The derived implementation of <see cref="MoveTopic(Topic, Topic, Topic?)"/> is then left to focus exclusively on the
     ///   core logic of persisting the change to the underlying data store.
     /// </remarks>
@@ -568,12 +576,6 @@ namespace OnTopic.Repositories {
       | Execute core implementation
       \-----------------------------------------------------------------------------------------------------------------------*/
       DeleteTopic(topic);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Trigger event
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var args = new DeleteEventArgs(topic);
-      OnTopicDeleted(args);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove from parent
@@ -622,6 +624,12 @@ namespace OnTopic.Repositories {
         ResetAttributeDescriptors(topic);
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var args = new TopicEventArgs(topic);
+      OnTopicDeleted(args);
+
     }
 
     /*==========================================================================================================================
@@ -634,7 +642,7 @@ namespace OnTopic.Repositories {
     /// <remarks>
     ///   The main <see cref="Delete(Topic, Boolean)"/> implementation handles advanced validation of the parameters,
     ///   removing the <see cref="Topic"/> from the topic graph, updating <see cref="ContentTypeDescriptor"/> and <see cref="
-    ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.DeleteEvent"/>. The
+    ///   AttributeDescriptor"/> instances as appropriate, and raising the <see cref="ITopicRepository.TopicDeleted"/>. The
     ///   derived implementation of <see cref="DeleteTopic(Topic)"/> is then left to focus exclusively on the core logic of
     ///   persisting the change to the underlying data store.
     /// </remarks>
