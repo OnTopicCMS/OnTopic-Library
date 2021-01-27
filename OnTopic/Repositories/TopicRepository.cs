@@ -781,7 +781,7 @@ namespace OnTopic.Repositories {
           continue;
         }
 
-        // Ignore system attributes
+        // Ignore (now legacy) core attributes
         if (attribute.Key is "Key" or "ContentType" or "ParentID") {
           continue;
         }

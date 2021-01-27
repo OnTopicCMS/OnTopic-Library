@@ -246,7 +246,6 @@ namespace OnTopic.Attributes {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        !name.Equals("TopicId", StringComparison.OrdinalIgnoreCase) &&
         _associatedTopic.DerivedTopic is not null &&
         maxHops > 0
       ) {
