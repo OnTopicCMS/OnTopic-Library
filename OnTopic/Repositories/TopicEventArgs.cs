@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Repositories {
 
@@ -31,8 +32,18 @@ namespace OnTopic.Repositories {
     /// <param name="topic">The <see cref="Topic"/> being operated against.</param>
     /// <param name="isRecursive">Whether or not descendants of the <see cref="Topic"/> were also loaded.</param>
     public TopicEventArgs(Topic topic, bool isRecursive = true) : base() {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Vaidate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Initialize properties
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Topic                     = topic;
       IsRecursive               = isRecursive;
+
     }
 
     /*==========================================================================================================================
