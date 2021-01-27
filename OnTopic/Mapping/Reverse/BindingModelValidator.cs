@@ -51,7 +51,7 @@ namespace OnTopic.Mapping.Reverse {
     static readonly ConcurrentBag<(Type, string)> _modelsValidated = new();
 
     /*==========================================================================================================================
-    | PROTECTED: VALIDATE MODEL
+    | INTERNAL: VALIDATE MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates the binding model against the associated content type to identify any potential
@@ -125,7 +125,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: VALIDATE PROPERTY
+    | INTERNAL: VALIDATE PROPERTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates a property of the binding model against the associated content type to identify any
@@ -275,7 +275,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: VALIDATE RELATIONSHIP
+    | INTERNAL: VALIDATE RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates a relationship property on the binding model against the associated content type to
