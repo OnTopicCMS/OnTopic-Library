@@ -118,7 +118,7 @@ namespace OnTopic.AspNetCore.Mvc {
         var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
         // Validate the content-type after the slash, then validate it against available views
         for (var i = 0; i < splitHeaders.Length; i++) {
-          if (splitHeaders[i].Contains("/", StringComparison.OrdinalIgnoreCase)) {
+          if (splitHeaders[i].Contains("/", StringComparison.Ordinal)) {
             // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding
             // purposes
             var acceptHeader = splitHeaders[i]
