@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
@@ -25,7 +26,7 @@ namespace OnTopic.TestDoubles {
   ///   database, or working against actual data. This is faster and safer for test methods since it doesn't maintain a
   ///   dependency on a live database or persistent data.
   /// </remarks>
-  public class StubTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class StubTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES
@@ -111,27 +112,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Save(Topic topic, bool isRecursive = false) {
+    protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Call base method - will trigger any events associated with the save
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
+      | Assign faux identity
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsNew) {
         topic.Id = _identity++;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive) {
-        foreach (var childTopic in topic.Children) {
-          Save(childTopic, isRecursive);
-        }
       }
 
     }
@@ -140,12 +127,13 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling = null) {
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target, sibling);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(target, nameof(target));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset dirty status
@@ -158,12 +146,12 @@ namespace OnTopic.TestDoubles {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => base.Delete(topic, isRecursive);
+    protected override void DeleteTopic(Topic topic) { }
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)" />
+    /// <inheritdoc cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?)" />
     public IEnumerable<AttributeValue> GetAttributesProxy(
       Topic topic,
       bool? isExtendedAttribute,
@@ -174,13 +162,13 @@ namespace OnTopic.TestDoubles {
     /*==========================================================================================================================
     | METHOD: GET UNMATCHED ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)" />
+    /// <inheritdoc cref="TopicRepository.GetUnmatchedAttributes(Topic)" />
     public IEnumerable<AttributeDescriptor> GetUnmatchedAttributesProxy(Topic topic) => base.GetUnmatchedAttributes(topic);
 
     /*==========================================================================================================================
     | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptors(ContentTypeDescriptor)" />
     [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", true)]
     public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
@@ -188,14 +176,14 @@ namespace OnTopic.TestDoubles {
     /*==========================================================================================================================
     | METHOD: SET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.SetContentTypeDescriptors(ContentTypeDescriptor)" />
+    /// <inheritdoc cref="TopicRepository.SetContentTypeDescriptors(ContentTypeDescriptor)" />
     public ContentTypeDescriptorCollection SetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
 
     /*==========================================================================================================================
     | METHOD: GET CONTENT TYPE DESCRIPTOR (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptor(Topic)" />
+    /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptor(Topic)" />
     public ContentTypeDescriptor? GetContentTypeDescriptorProxy(Topic sourceTopic) =>
       base.GetContentTypeDescriptor(sourceTopic);
 

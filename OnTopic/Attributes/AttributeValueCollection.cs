@@ -63,7 +63,7 @@ namespace OnTopic.Attributes {
     ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
     ///   <see cref="IsDirty(Boolean)"/>. If a <see cref="AttributeValue"/> is deleted, then it won't be marked as dirty. If no
     ///   other <see cref="AttributeValue"/> instances were modified, then the topic won't get saved, and that value won't be
-    ///   deleted. Further more, the <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/> method has no way of
+    ///   deleted. Further more, the <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method has no way of
     ///   detecting the deletion of arbitrary attributes�i.e., attributes that were deleted which don't correspond to attributes
     ///   configured on the <see cref="Metadata.ContentTypeDescriptor"/>. By tracking any deleted attributes, we ensure both
     ///   scenarios can be accounted for.
