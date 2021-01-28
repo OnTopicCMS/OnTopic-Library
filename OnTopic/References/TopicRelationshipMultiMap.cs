@@ -130,7 +130,7 @@ namespace OnTopic.References {
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew && !topic.IsNew);
+      _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
       _storage.Remove(relationshipKey, topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
