@@ -222,6 +222,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       XElement getAttributes() =>
         new XElement(_pagemapNamespace + "DataObject",
           new XAttribute("type", "Attributes"),
+            new XElement(_pagemapNamespace + "Attribute",
+              new XAttribute("name", "ContentType"),
+              new XText(topic.ContentType?? "Page")
+            ),
             from attribute in topic.Attributes
             where !ExcludeAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
             where topic.Attributes.GetValue(attribute.Key)?.Length < 256
