@@ -7,7 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Collections {
+namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
   | CLASS: TOPIC MULTIMAP

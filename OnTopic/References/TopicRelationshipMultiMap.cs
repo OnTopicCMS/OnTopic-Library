@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 

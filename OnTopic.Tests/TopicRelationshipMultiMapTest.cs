@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.References;
 
 namespace OnTopic.Tests {

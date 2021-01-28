@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Collections {
+namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
   | CLASS: READ-ONLY TOPIC MULTIMAP

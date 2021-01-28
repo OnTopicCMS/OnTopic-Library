@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Collections {
+namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
   | CLASS: KEY VALUES PAIR
