@@ -7,7 +7,7 @@
 CREATE PROCEDURE [dbo].[CreateTopic]
 	@Key		VARCHAR(128)		,
 	@ContentType		VARCHAR(128)		,
-	@ParentID		INT		= -1,
+	@ParentID		INT		= NULL,
 	@Attributes		AttributeValues		READONLY,
 	@ExtendedAttributes 	XML		= NULL,
 	@References		TopicReferences		READONLY,
@@ -29,7 +29,7 @@ SET	@RangeRight		= 0
 --------------------------------------------------------------------------------------------------------------------------------
 -- RESERVE SPACE FOR NEW CHILD.
 --------------------------------------------------------------------------------------------------------------------------------
-IF (@ParentID > -1)
+IF (@ParentID IS NOT NULL)
   BEGIN
     SELECT	@RangeRight		= RangeRight
     FROM	Topics

@@ -6,7 +6,7 @@
 
 CREATE PROCEDURE [dbo].[MoveTopic]
 	@TopicID		INT		,
-	@ParentID		INT		,
+	@ParentID		INT	= NULL	,
 	@SiblingID		INT	= -1
 AS
 
@@ -104,7 +104,7 @@ IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
     RETURN
   END
 
-IF @ParentID IS NULL OR @InsertionPoint IS NULL
+IF @InsertionPoint IS NULL
   BEGIN
     RAISERROR (
       N'The parent ("%d") could not be found.',
