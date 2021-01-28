@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
@@ -23,6 +24,22 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///   Responds to requests for a sitemap according to sitemap.org's schema. The view is expected to recursively loop over
   ///   child topics to generate the appropriate markup.
   /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     By default, some <see cref="Topic"/>s are <i>excluded</i> based on their content types—which includes not only the
+  ///     <see cref="Topic"/>, but also all of its descendents. Other <see cref="Topic"/>s are <i>skipped</i>, also based on
+  ///     their content types; in this case, the <see cref="Topic"/> is excluded, but its descendents are not. What content
+  ///     types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes
+  ///     "/> and <see cref="SkippedContentTypes"/> collections.
+  ///     </i>.
+  ///   </para>
+  ///   <para>
+  ///     The <see cref="Extended(Boolean)"/> action enables an extended sitemap with Google's custom <c>PageMap</c> schema for
+  ///     exposing <see cref="Topic.Attributes"/>, <see cref="Topic.Relationships"/>, and <see cref="Topic.References"/>. By
+  ///     default, some content attributes, such as <c>Body</c>, <c>IsDisabled</c>, and <c>NoIndex</c>, are hidden. This list
+  ///     can be modified by updating the static <see cref="ExcludedAttributes"/> collection.
+  ///   </para>
+  /// </remarks>
   public class SitemapController : Controller {
 
     /*==========================================================================================================================
@@ -37,12 +54,14 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     private static readonly XNamespace _pagemapNamespace = "http://www.google.com/schemas/sitemap-pagemap/1.0";
 
     /*==========================================================================================================================
-    | EXCLUDE CONTENT TYPES
+    | EXCLUDED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Specifies what content types should not be listed in the sitemap, including any descendents.
     /// </summary>
-    private static string[] ExcludeContentTypes { get; } = { "List" };
+    public static Collection<string> ExcludedContentTypes { get; } = new() {
+      "List"
+    };
 
     /*==========================================================================================================================
     | SKIPPED CONTENT TYPES
@@ -50,19 +69,22 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Specifies what content types should not be listed in the sitemap—but whose descendents should still be evaluated.
     /// </summary>
-    private static string[] SkippedContentTypes { get; } = { "PageGroup", "Container" };
+    public static Collection<string> SkippedContentTypes { get; } = new() {
+      "PageGroup",
+      "Container"
+    };
 
     /*==========================================================================================================================
-    | EXCLUDE ATTRIBUTES
+    | EXCLUDED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Specifies what attributes should not be listed in the sitemap.
     /// </summary>
-    private static string[] ExcludeAttributes { get; } = {
+    public static Collection<string> ExcludedAttributes { get; } = new() {
       "Body",
       "IsDisabled",
-      "ParentID",
-      "TopicID",
+      "ParentID",               //Legacy, but exposed for avoid leacking legacy data
+      "TopicID",                //Legacy, but exposed for avoid leacking legacy data
       "IsHidden",
       "NoIndex",
       "SortOrder"
@@ -178,7 +200,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       if (topic is null) return topics;
       if (topic.Attributes.GetBoolean("NoIndex")) return topics;
       if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
-      if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
+      if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -227,7 +249,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
               new XText(topic.ContentType?? "Page")
             ),
             from attribute in topic.Attributes
-            where !ExcludeAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
+            where !ExcludedAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
             where topic.Attributes.GetValue(attribute.Key)?.Length < 256
             select new XElement(_pagemapNamespace + "Attribute",
               new XAttribute("name", attribute.Key),
