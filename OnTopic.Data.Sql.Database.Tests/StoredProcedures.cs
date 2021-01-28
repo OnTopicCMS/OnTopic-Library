@@ -117,19 +117,20 @@ namespace OnTopic.Data.Sql.Database.Tests {
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postUpdateExtendedAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction testInitializeAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicUpdatesTest_TestAction;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesTopicCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesExtendedAttributeCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesRelationshipCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesReferenceCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesVersionHistoryCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicUpdatesTest_PretestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetUpdatesTopicCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetUpdatesAttributeCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetUpdatesRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition preGetUpdatesReferenceCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesTopicCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesExtendedAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesRelationshipCount;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction dbo_GetTopicUpdatesTest_PosttestAction;
       Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition postGetUpdatesAttributeCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesReferenceCount;
-      Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition getUpdatesVersionHistoryCount;
+      Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction testCleanupAction;
       this.dbo_CreateTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_DeleteTopicTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
       this.dbo_GetTopicVersionTestData = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestActions();
@@ -226,19 +227,20 @@ namespace OnTopic.Data.Sql.Database.Tests {
       postUpdateExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       testInitializeAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       dbo_GetTopicUpdatesTest_TestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
+      getUpdatesTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getUpdatesAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getUpdatesExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getUpdatesRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getUpdatesReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      getUpdatesVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetTopicUpdatesTest_PretestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       preGetUpdatesTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       preGetUpdatesAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       preGetUpdatesRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       preGetUpdatesReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesTopicCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesExtendedAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesRelationshipCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
       dbo_GetTopicUpdatesTest_PosttestAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       postGetUpdatesAttributeCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesReferenceCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
-      getUpdatesVersionHistoryCount = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.Conditions.RowCountCondition();
+      testCleanupAction = new Microsoft.Data.Tools.Schema.Sql.UnitTesting.SqlDatabaseTestAction();
       // 
       // dbo_CreateTopicTest_TestAction
       // 
@@ -833,6 +835,48 @@ namespace OnTopic.Data.Sql.Database.Tests {
       dbo_GetTopicUpdatesTest_TestAction.Conditions.Add(getUpdatesVersionHistoryCount);
       resources.ApplyResources(dbo_GetTopicUpdatesTest_TestAction, "dbo_GetTopicUpdatesTest_TestAction");
       // 
+      // getUpdatesTopicCount
+      // 
+      getUpdatesTopicCount.Enabled = true;
+      getUpdatesTopicCount.Name = "getUpdatesTopicCount";
+      getUpdatesTopicCount.ResultSet = 5;
+      getUpdatesTopicCount.RowCount = 1;
+      // 
+      // getUpdatesAttributeCount
+      // 
+      getUpdatesAttributeCount.Enabled = true;
+      getUpdatesAttributeCount.Name = "getUpdatesAttributeCount";
+      getUpdatesAttributeCount.ResultSet = 2;
+      getUpdatesAttributeCount.RowCount = 4;
+      // 
+      // getUpdatesExtendedAttributeCount
+      // 
+      getUpdatesExtendedAttributeCount.Enabled = true;
+      getUpdatesExtendedAttributeCount.Name = "getUpdatesExtendedAttributeCount";
+      getUpdatesExtendedAttributeCount.ResultSet = 3;
+      getUpdatesExtendedAttributeCount.RowCount = 2;
+      // 
+      // getUpdatesRelationshipCount
+      // 
+      getUpdatesRelationshipCount.Enabled = true;
+      getUpdatesRelationshipCount.Name = "getUpdatesRelationshipCount";
+      getUpdatesRelationshipCount.ResultSet = 4;
+      getUpdatesRelationshipCount.RowCount = 1;
+      // 
+      // getUpdatesReferenceCount
+      // 
+      getUpdatesReferenceCount.Enabled = true;
+      getUpdatesReferenceCount.Name = "getUpdatesReferenceCount";
+      getUpdatesReferenceCount.ResultSet = 5;
+      getUpdatesReferenceCount.RowCount = 1;
+      // 
+      // getUpdatesVersionHistoryCount
+      // 
+      getUpdatesVersionHistoryCount.Enabled = true;
+      getUpdatesVersionHistoryCount.Name = "getUpdatesVersionHistoryCount";
+      getUpdatesVersionHistoryCount.ResultSet = 6;
+      getUpdatesVersionHistoryCount.RowCount = 2;
+      // 
       // dbo_GetTopicUpdatesTest_PretestAction
       // 
       dbo_GetTopicUpdatesTest_PretestAction.Conditions.Add(preGetUpdatesTopicCount);
@@ -854,6 +898,32 @@ namespace OnTopic.Data.Sql.Database.Tests {
       preGetUpdatesAttributeCount.Name = "preGetUpdatesAttributeCount";
       preGetUpdatesAttributeCount.ResultSet = 2;
       preGetUpdatesAttributeCount.RowCount = 8;
+      // 
+      // preGetUpdatesRelationshipCount
+      // 
+      preGetUpdatesRelationshipCount.Enabled = true;
+      preGetUpdatesRelationshipCount.Name = "preGetUpdatesRelationshipCount";
+      preGetUpdatesRelationshipCount.ResultSet = 3;
+      preGetUpdatesRelationshipCount.RowCount = 2;
+      // 
+      // preGetUpdatesReferenceCount
+      // 
+      preGetUpdatesReferenceCount.Enabled = true;
+      preGetUpdatesReferenceCount.Name = "preGetUpdatesReferenceCount";
+      preGetUpdatesReferenceCount.ResultSet = 3;
+      preGetUpdatesReferenceCount.RowCount = 2;
+      // 
+      // dbo_GetTopicUpdatesTest_PosttestAction
+      // 
+      dbo_GetTopicUpdatesTest_PosttestAction.Conditions.Add(postGetUpdatesAttributeCount);
+      resources.ApplyResources(dbo_GetTopicUpdatesTest_PosttestAction, "dbo_GetTopicUpdatesTest_PosttestAction");
+      // 
+      // postGetUpdatesAttributeCount
+      // 
+      postGetUpdatesAttributeCount.Enabled = true;
+      postGetUpdatesAttributeCount.Name = "postGetUpdatesAttributeCount";
+      postGetUpdatesAttributeCount.ResultSet = 1;
+      postGetUpdatesAttributeCount.RowCount = 0;
       // 
       // dbo_CreateTopicTestData
       // 
@@ -921,76 +991,13 @@ namespace OnTopic.Data.Sql.Database.Tests {
       this.dbo_GetTopicUpdatesTestData.PretestAction = dbo_GetTopicUpdatesTest_PretestAction;
       this.dbo_GetTopicUpdatesTestData.TestAction = dbo_GetTopicUpdatesTest_TestAction;
       // 
-      // preGetUpdatesRelationshipCount
+      // testCleanupAction
       // 
-      preGetUpdatesRelationshipCount.Enabled = true;
-      preGetUpdatesRelationshipCount.Name = "preGetUpdatesRelationshipCount";
-      preGetUpdatesRelationshipCount.ResultSet = 3;
-      preGetUpdatesRelationshipCount.RowCount = 2;
-      // 
-      // preGetUpdatesReferenceCount
-      // 
-      preGetUpdatesReferenceCount.Enabled = true;
-      preGetUpdatesReferenceCount.Name = "preGetUpdatesReferenceCount";
-      preGetUpdatesReferenceCount.ResultSet = 3;
-      preGetUpdatesReferenceCount.RowCount = 2;
-      // 
-      // getUpdatesTopicCount
-      // 
-      getUpdatesTopicCount.Enabled = true;
-      getUpdatesTopicCount.Name = "getUpdatesTopicCount";
-      getUpdatesTopicCount.ResultSet = 5;
-      getUpdatesTopicCount.RowCount = 1;
-      // 
-      // getUpdatesAttributeCount
-      // 
-      getUpdatesAttributeCount.Enabled = true;
-      getUpdatesAttributeCount.Name = "getUpdatesAttributeCount";
-      getUpdatesAttributeCount.ResultSet = 2;
-      getUpdatesAttributeCount.RowCount = 4;
-      // 
-      // getUpdatesExtendedAttributeCount
-      // 
-      getUpdatesExtendedAttributeCount.Enabled = true;
-      getUpdatesExtendedAttributeCount.Name = "getUpdatesExtendedAttributeCount";
-      getUpdatesExtendedAttributeCount.ResultSet = 3;
-      getUpdatesExtendedAttributeCount.RowCount = 2;
-      // 
-      // getUpdatesRelationshipCount
-      // 
-      getUpdatesRelationshipCount.Enabled = true;
-      getUpdatesRelationshipCount.Name = "getUpdatesRelationshipCount";
-      getUpdatesRelationshipCount.ResultSet = 4;
-      getUpdatesRelationshipCount.RowCount = 1;
-      // 
-      // dbo_GetTopicUpdatesTest_PosttestAction
-      // 
-      dbo_GetTopicUpdatesTest_PosttestAction.Conditions.Add(postGetUpdatesAttributeCount);
-      resources.ApplyResources(dbo_GetTopicUpdatesTest_PosttestAction, "dbo_GetTopicUpdatesTest_PosttestAction");
-      // 
-      // postGetUpdatesAttributeCount
-      // 
-      postGetUpdatesAttributeCount.Enabled = true;
-      postGetUpdatesAttributeCount.Name = "postGetUpdatesAttributeCount";
-      postGetUpdatesAttributeCount.ResultSet = 1;
-      postGetUpdatesAttributeCount.RowCount = 0;
-      // 
-      // getUpdatesReferenceCount
-      // 
-      getUpdatesReferenceCount.Enabled = true;
-      getUpdatesReferenceCount.Name = "getUpdatesReferenceCount";
-      getUpdatesReferenceCount.ResultSet = 5;
-      getUpdatesReferenceCount.RowCount = 1;
-      // 
-      // getUpdatesVersionHistoryCount
-      // 
-      getUpdatesVersionHistoryCount.Enabled = true;
-      getUpdatesVersionHistoryCount.Name = "getUpdatesVersionHistoryCount";
-      getUpdatesVersionHistoryCount.ResultSet = 6;
-      getUpdatesVersionHistoryCount.RowCount = 2;
+      resources.ApplyResources(testCleanupAction, "testCleanupAction");
       // 
       // StoredProcedures
       // 
+      this.TestCleanupAction = testCleanupAction;
       this.TestInitializeAction = testInitializeAction;
     }
 
