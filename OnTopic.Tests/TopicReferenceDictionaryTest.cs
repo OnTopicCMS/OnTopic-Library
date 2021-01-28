@@ -15,7 +15,7 @@ namespace OnTopic.Tests {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicReferenceDictionary"/>, with a particular emphasis on the custom features
-  ///   such as <see cref="TopicReferenceDictionary.IsDirty"/>, <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"
+  ///   such as <see cref="TopicReferenceDictionary.IsDirty()"/>, <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"
   ///   />, <see cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and the cross-referencing of reciprocal
   ///   values in the <see cref="Topic.IncomingRelationships"/> property.
   /// </summary>
@@ -27,7 +27,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.IsDirty"/> is correctly set.
+    ///   <see cref="TopicReferenceDictionary.IsDirty()"/> is correctly set.
     /// </summary>
     [TestMethod]
     public void Add_NewReference_IsDirty() {
@@ -48,7 +48,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
     ///   cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and confirms that <see cref="
-    ///   TopicReferenceDictionary.IsDirty"/> is not set.
+    ///   TopicReferenceDictionary.IsDirty()"/> is not set.
     /// </summary>
     [TestMethod]
     public void SetTopic_NewReference_NotDirty() {
@@ -68,12 +68,13 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a topic reference, removes that reference using <see cref=
-    ///   "TopicReferenceDictionary.Remove(String)"/> , and confirms that <see cref="TopicReferenceDictionary.IsDirty"/> is set.
+    ///   "TopicReferenceDictionary.Remove(String)"/> , and confirms that <see cref="TopicReferenceDictionary.IsDirty()"/> is
+    ///   set.
     /// </summary>
     [TestMethod]
     public void Remove_ExistingReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetTopic("Reference", reference, false);
@@ -90,12 +91,12 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
     ///   cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, calls <see cref="TopicReferenceDictionary
-    ///   .Clear()"/> and confirms that <see cref="TopicReferenceDictionary.IsDirty"/> is set.
+    ///   .Clear()"/> and confirms that <see cref="TopicReferenceDictionary.IsDirty()"/> is set.
     /// </summary>
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetTopic("Reference", reference, false);

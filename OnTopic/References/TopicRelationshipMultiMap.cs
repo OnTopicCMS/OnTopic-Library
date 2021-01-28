@@ -4,8 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
-using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
@@ -23,14 +22,14 @@ namespace OnTopic.References {
   ///   simplifying access to the <see cref="TopicMultiMap"/>, but also ensuring that business logic is enforced, such as local
   ///   state tracking and handling of reciprocal relationships.
   /// </remarks>
-  public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap {
+  public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    Topic                           _parent;
     readonly                    bool                            _isIncoming;
-    readonly                    List<string>                    _isDirty                        = new();
+    readonly                    DirtyKeyCollection              _dirtyKeys                      = new();
     readonly                    TopicMultiMap                   _storage                        = new();
 
     /*==========================================================================================================================
@@ -68,7 +67,7 @@ namespace OnTopic.References {
       if (_storage.Contains(relationshipKey)) {
         var relationship = _storage.GetTopics(relationshipKey);
         if (relationship.Count > 0) {
-          MarkDirty(relationshipKey);
+          _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
         }
         _storage.Clear(relationshipKey);
       }
@@ -131,7 +130,7 @@ namespace OnTopic.References {
       /*------------------------------------------------------------------------------------------------------------------------
       | Remove relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      MarkDirty(relationshipKey);
+      _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
       _storage.Remove(relationshipKey, topic);
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -185,14 +184,14 @@ namespace OnTopic.References {
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topics                = _storage.GetTopics(relationshipKey);
-      var wasDirty              = _isDirty.Contains(relationshipKey);
+      var wasDirty              = _dirtyKeys.IsDirty(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);
         if (markDirty.HasValue && !markDirty.Value && !wasDirty) {
           MarkClean(relationshipKey);
         }
         else {
-          MarkDirty(relationshipKey);
+          _dirtyKeys.MarkDirty(relationshipKey);
         }
       }
 
@@ -236,40 +235,20 @@ namespace OnTopic.References {
     /*==========================================================================================================================
     | METHOD: IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines if any of the relationships have been modified; if they have, returns <c>true</c>.
-    /// </summary>
-    public bool IsDirty() => _isDirty.Count > 0;
+    /// <inheritdoc/>
+    public bool IsDirty() => _dirtyKeys.IsDirty();
 
-    /*==========================================================================================================================
-    | METHOD: MARK DIRTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Evaluates each of the relationships to determine if any of them are set to <see cref="IsDirty()"/>. If they are,
-    ///   returns <c>true</c>.
-    /// </summary>
-    private void MarkDirty(string relationshipKey) {
-      if (!_isDirty.Contains(relationshipKey)) {
-        _isDirty.Add(relationshipKey);
-      }
-    }
+    /// <inheritdoc/>
+    public bool IsDirty(string key) => _dirtyKeys.IsDirty(key);
 
     /*==========================================================================================================================
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Marks the relationships collections as clean.
-    /// </summary>
-    public void MarkClean() => _isDirty.Clear();
+    /// <inheritdoc/>
+    public void MarkClean() => _dirtyKeys.MarkClean();
 
-    /// <summary>
-    ///   Removes the <paramref name="relationshipKey"/> from the <see cref="_isDirty"/> collection, if it exists.
-    /// </summary>
-    public void MarkClean(string relationshipKey) {
-      if (_isDirty.Contains(relationshipKey)) {
-        _isDirty.Remove(relationshipKey);
-      }
-    }
+    /// <inheritdoc/>
+    public void MarkClean(string key) => _dirtyKeys.MarkClean(key);
 
   } //Class
 } //Namespace
