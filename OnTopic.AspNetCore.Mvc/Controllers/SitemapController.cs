@@ -199,7 +199,8 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
             new XAttribute("type", topic.ContentType?? "Page"),
             getAttributes()
           ),
-          getRelationships()
+          getRelationships(),
+          getReferences()
         ) : null
       );
       if (
@@ -243,6 +244,21 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
             new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
           )
         );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      XElement? getReferences() =>
+        topic.References.Count is 0?
+          null :
+          new XElement(_pagemapNamespace + "DataObject",
+            new XAttribute("type", "References"),
+              from reference in topic.References
+              select new XElement(_pagemapNamespace + "Attribute",
+                new XAttribute("name", reference.Key),
+                new XText(reference.Value.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
+              )
+            );
 
     }
 
