@@ -50,6 +50,11 @@ IF (@ParentID IS NOT NULL)
         END
     WHERE	RangeRight		>= @RangeRight
   END
+ELSE
+  BEGIN
+    SELECT	@RangeRight		= MAX(RangeRight) + 1
+    FROM	Topics
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- CREATE NEW TOPIC
