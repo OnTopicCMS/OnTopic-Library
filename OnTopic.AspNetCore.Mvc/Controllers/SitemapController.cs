@@ -195,10 +195,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
         new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
         new XElement(_sitemapNamespace + "priority", 1),
         includeMetadata? new XElement(_pagemapNamespace + "PageMap",
-          new XElement(_pagemapNamespace + "DataObject",
-            new XAttribute("type", topic.ContentType?? "Page"),
-            getAttributes()
-          ),
+          getAttributes(),
           getRelationships(),
           getReferences()
         ) : null
@@ -222,14 +219,17 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IEnumerable<XElement> getAttributes() =>
-        from attribute in topic.Attributes
-        where !ExcludeAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
-        where topic.Attributes.GetValue(attribute.Key)?.Length < 256
-        select new XElement(_pagemapNamespace + "Attribute",
-          new XAttribute("name", attribute.Key),
-          new XText(topic.Attributes.GetValue(attribute.Key))
-        );
+      XElement getAttributes() =>
+        new XElement(_pagemapNamespace + "DataObject",
+          new XAttribute("type", "Attributes"),
+            from attribute in topic.Attributes
+            where !ExcludeAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
+            where topic.Attributes.GetValue(attribute.Key)?.Length < 256
+            select new XElement(_pagemapNamespace + "Attribute",
+              new XAttribute("name", attribute.Key),
+              new XText(topic.Attributes.GetValue(attribute.Key))
+            )
+          );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get relationships
