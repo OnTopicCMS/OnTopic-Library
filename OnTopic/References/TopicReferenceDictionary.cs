@@ -6,7 +6,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
@@ -32,7 +31,7 @@ namespace OnTopic.References {
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    Topic                           _parent;
     readonly                    IDictionary<string, Topic>      _storage;
-    private                     bool                            _isDirty;
+    readonly                    DirtyKeyCollection              _dirtyKeys;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -53,6 +52,7 @@ namespace OnTopic.References {
       _parent                   = parent;
       _storage                  = new Dictionary<string, Topic>();
       _topicPropertyDispatcher  = new(parent);
+      _dirtyKeys                = new();
 
     }
 
@@ -120,7 +120,7 @@ namespace OnTopic.References {
         | Set dirty state
         \---------------------------------------------------------------------------------------------------------------------*/
         if (!_storage.TryGetValue(referenceKey, out var existing) || existing != value) {
-          _isDirty = true;
+          _dirtyKeys.MarkDirty(referenceKey);
         }
 
         /*----------------------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ namespace OnTopic.References {
       | Mark dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!_storage.TryGetValue(item.Key, out var existing) || existing != item.Value) {
-        _isDirty = true;
+        _dirtyKeys.MarkDirty(item.Key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ namespace OnTopic.References {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish state
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var wasDirty = _isDirty;
+      var wasDirty = _dirtyKeys.IsDirty(key);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Register that business logic has already been enforced
@@ -257,7 +257,7 @@ namespace OnTopic.References {
       | Set dirty state
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (wasDirty is false && markDirty is false) {
-        _isDirty = false;
+        _dirtyKeys.MarkClean(key);
       }
 
     }
@@ -269,10 +269,10 @@ namespace OnTopic.References {
     public void Clear() {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Mark dirty
+      | Mark keys as dirty
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Count > 0) {
-        _isDirty = true;
+      foreach (var item in _storage) {
+        _dirtyKeys.MarkAs(item.Key, markDirty: !_parent.IsNew);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ namespace OnTopic.References {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (TryGetValue(key, out var existing)) {
         existing.IncomingRelationships.RemoveTopic(key, _parent, true);
-        _isDirty = true;
+        _dirtyKeys.MarkAs(key, markDirty: !_parent.IsNew);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -375,7 +375,7 @@ namespace OnTopic.References {
     ///   Determines if the dictionary has been modified. This value is set to <c>true</c> any time a new item is inserted or
     ///   removed from the dictionary.
     /// </summary>
-    public bool IsDirty() => _isDirty;
+    public bool IsDirty() => _dirtyKeys.IsDirty();
 
     /*==========================================================================================================================
     | MARK CLEAN
@@ -383,7 +383,7 @@ namespace OnTopic.References {
     /// <summary>
     ///   Resets the <see cref="IsDirty"/> status of the <see cref="TopicReferenceDictionary"/>.
     /// </summary>
-    public void MarkClean() => _isDirty = false;
+    public void MarkClean() => _dirtyKeys.MarkClean();
 
   } //Class
 } //Namespace
