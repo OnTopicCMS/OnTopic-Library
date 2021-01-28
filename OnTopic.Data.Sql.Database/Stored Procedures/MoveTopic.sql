@@ -74,16 +74,20 @@ WHERE	TopicID		= @TopicID
 -- EXAMPLE: If a sibling (@SiblingID) lives between 12 and 24, then the insertion point (@InsertionPoint) will be 25; if there
 -- is no sibling, but a parent lives between 6 and 26, then the insertion point (@InsertionPoint) will be 7.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @SiblingID < 0
+IF @SiblingID >= 0
+  -- Place immediately to the right of a sibling, if specified
+  SELECT	@InsertionPoint		= RangeRight + 1
+  FROM	Topics
+  WHERE	TopicID		= @SiblingID
+ELSE IF ISNULL(@ParentID, -1) >= 0
   -- Place as the first sibling if a sibling isn't specified
   SELECT	@InsertionPoint		= RangeLeft + 1
   FROM	Topics
   WHERE	TopicID		= @ParentID
 ELSE
-  -- Place immediately to the right of a sibling, if specified
-  SELECT	@InsertionPoint		= RangeRight + 1
+  -- Place after the last node
+  SELECT	@InsertionPoint		= MAX(RangeRight) + 1
   FROM	Topics
-  WHERE	TopicID		= @SiblingID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- VALIDATE REQUEST
