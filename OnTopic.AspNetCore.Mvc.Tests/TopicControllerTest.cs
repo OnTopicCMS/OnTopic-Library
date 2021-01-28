@@ -182,7 +182,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model.Contains("<DataObject type=\"Page\">"));
+      Assert.IsTrue(model.Contains("<DataObject type=\"Attributes\">"));
       Assert.IsFalse(model.Contains("<DataObject type=\"List\">"));
       Assert.IsFalse(model.Contains("<DataObject type=\"Container\">"));
       Assert.IsFalse(model.Contains("<DataObject type=\"PageGroup\">"));
