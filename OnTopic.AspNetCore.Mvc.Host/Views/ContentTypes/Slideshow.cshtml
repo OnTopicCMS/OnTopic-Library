@@ -1,0 +1,27 @@
+﻿@model SlideshowTopicViewModel
+
+<partial name="_PageAttributes" />
+
+<h2>Attributes</h2>
+<ul>
+  <li>TransitionEffect: @Model.TransitionEffect</li>
+</ul>
+
+<h2>Collections</h2>
+
+<h3>Slides</h3>
+@foreach (var contentItem in Model.ContentItems) {
+  <h4>@contentItem.Key</h4>
+  <ul>
+    <li>Title: @contentItem.Title</li>
+    <li>Category: @contentItem.Category</li>
+    <li><a href="@contentItem.LearnMoreUrl">Learn More</a></li>
+    <li><img src="@contentItem.ThumbnailImage" /></li>
+    <li>Description: @contentItem.Description</li>
+  </ul>
+}
+
+<!--
+  Content Type: Slideshow
+  View Location: ~/Views/ContentTypes/Slideshow.cshtml
+-->
