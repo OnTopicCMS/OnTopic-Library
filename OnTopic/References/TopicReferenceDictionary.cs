@@ -19,7 +19,7 @@ namespace OnTopic.References {
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects associated with particular reference keys.
   /// </summary>
-  public class TopicReferenceDictionary : IDictionary<string, Topic> {
+  public class TopicReferenceDictionary : IDictionary<string, Topic>, ITrackDirtyKeys {
 
     /*==========================================================================================================================
     | DISPATCHER
@@ -371,19 +371,20 @@ namespace OnTopic.References {
     /*==========================================================================================================================
     | IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines if the dictionary has been modified. This value is set to <c>true</c> any time a new item is inserted or
-    ///   removed from the dictionary.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsDirty() => _dirtyKeys.IsDirty();
+
+    /// <inheritdoc/>
+    public bool IsDirty(string key) => _dirtyKeys.IsDirty(key);
 
     /*==========================================================================================================================
     | MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Resets the <see cref="IsDirty"/> status of the <see cref="TopicReferenceDictionary"/>.
-    /// </summary>
+    /// <inheritdoc/>
     public void MarkClean() => _dirtyKeys.MarkClean();
+
+    /// <inheritdoc/>
+    public void MarkClean(string key) => _dirtyKeys.MarkClean(key);
 
   } //Class
 } //Namespace
