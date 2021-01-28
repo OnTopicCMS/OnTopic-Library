@@ -95,7 +95,7 @@ ELSE
 IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
   BEGIN
     RAISERROR (
-      N'The topic ("%n") could not be found.',
+      N'The topic ("%d") could not be found.',
       15, -- Severity,
       1, -- State,
       @TopicID
@@ -107,7 +107,7 @@ IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
 IF @ParentID IS NULL OR @InsertionPoint IS NULL
   BEGIN
     RAISERROR (
-      N'The parent ("%n") could not be found.',
+      N'The parent ("%d") could not be found.',
       15, -- Severity,
       1, -- State,
       @ParentID
@@ -119,7 +119,7 @@ IF @ParentID IS NULL OR @InsertionPoint IS NULL
 IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
   BEGIN
     RAISERROR (
-      N'A topic ("%n") cannot be moved within a child of itself ("%n").',
+      N'A topic ("%d") cannot be moved within a child of itself ("%d").',
       10, -- Severity,
       1, -- State,
       @TopicID,
