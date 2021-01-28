@@ -22,7 +22,7 @@ namespace OnTopic.References {
   ///   simplifying access to the <see cref="TopicMultiMap"/>, but also ensuring that business logic is enforced, such as local
   ///   state tracking and handling of reciprocal relationships.
   /// </remarks>
-  public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap {
+  public class TopicRelationshipMultiMap : ReadOnlyTopicMultiMap, ITrackDirtyKeys {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -235,24 +235,19 @@ namespace OnTopic.References {
     /*==========================================================================================================================
     | METHOD: IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines if any of the relationships have been modified; if they have, returns <c>true</c>.
-    /// </summary>
-    public bool IsDirty() => _isDirty.Count > 0;
+    /// <inheritdoc/>
     public bool IsDirty() => _dirtyKeys.IsDirty();
 
+    /// <inheritdoc/>
+    public bool IsDirty(string key) => _dirtyKeys.IsDirty(key);
 
     /*==========================================================================================================================
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Marks the relationships collections as clean.
-    /// </summary>
+    /// <inheritdoc/>
     public void MarkClean() => _dirtyKeys.MarkClean();
 
-    /// <summary>
-    ///   Removes the <paramref name="relationshipKey"/> from the <see cref="_isDirty"/> collection, if it exists.
-    /// </summary>
+    /// <inheritdoc/>
     public void MarkClean(string key) => _dirtyKeys.MarkClean(key);
 
   } //Class
