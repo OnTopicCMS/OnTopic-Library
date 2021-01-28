@@ -74,7 +74,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Remove_ExistingReference_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetTopic("Reference", reference, false);
@@ -96,7 +96,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetTopic("Reference", reference, false);

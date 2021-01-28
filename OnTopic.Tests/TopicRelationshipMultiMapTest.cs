@@ -238,7 +238,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void RemoveTopic_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
@@ -305,7 +305,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void ClearTopics_ExistingTopics_IsDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
