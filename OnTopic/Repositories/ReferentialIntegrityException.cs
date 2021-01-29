@@ -33,30 +33,6 @@ namespace OnTopic.Repositories {
     public ReferentialIntegrityException() : base() { }
 
     /// <summary>
-    ///   Initializes a new <see cref="ReferentialIntegrityException" /> instance based on the source <see cref=
-    ///   "Topic"/>.
-    /// </summary>
-    /// <param name="sourceTopic">The source <see cref="Topic"/> which triggered the exception.</param>
-    public ReferentialIntegrityException(Topic sourceTopic):
-      base(
-        $"The operation on the topic '{sourceTopic?.DerivedTopic?.GetUniqueKey()}' would introduce a referential integrity " +
-        $"violation in the underlying persistence layer; the topic '{sourceTopic?.GetUniqueKey()}' depends upon it."
-      ) { }
-
-    /// <summary>
-    ///   Initializes a new <see cref="ReferentialIntegrityException" /> instance based on the source <see cref=
-    ///   "Topic"/>.
-    /// </summary>
-    /// <param name="sourceTopic">The source <see cref="Topic"/> which triggered the exception.</param>
-    /// <param name="innerException">The reference to the original, underlying exception.</param>
-    public ReferentialIntegrityException(Topic sourceTopic, Exception innerException):
-      base(
-        $"The operation on the topic '{sourceTopic?.DerivedTopic?.GetUniqueKey()}' would introduce a referential integrity " +
-        $"violation in the underlying persistence layer; the topic '{sourceTopic?.GetUniqueKey()}' depends upon it.",
-        innerException
-      ) { }
-
-    /// <summary>
     ///   Initializes a new <see cref="ReferentialIntegrityException" /> instance based on a <paramref name=
     ///   "message"/>.
     /// </summary>
