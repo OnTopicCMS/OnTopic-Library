@@ -71,20 +71,17 @@ namespace OnTopic.Lookup {
     /*==========================================================================================================================
     | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a <see cref="Type"/> from the class based on its string representation.
-    /// </summary>
-    /// <param name="typeName">A string representing the type.</param>
-    /// <returns>A class type corresponding to the specified string.</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public virtual Type? Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
+    /// <inheritdoc/>
+    public virtual Type? Lookup(params string[] typeNames) {
+      if (typeNames is not null) {
+        foreach (var typeName in typeNames) {
+          if (Contains(typeName)) {
+            return _typeCollection[typeName];
+          }
+        }
+      }
+      return null;
+    }
 
     /*==========================================================================================================================
     | METHOD: ADD
