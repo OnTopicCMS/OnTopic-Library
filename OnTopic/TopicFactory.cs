@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
+using OnTopic.Metadata;
 
 namespace OnTopic {
 
@@ -63,13 +64,16 @@ namespace OnTopic {
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine target type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetType = TypeLookupService.Lookup(contentType);
+      var targetType            = TypeLookupService.Lookup(contentType);
 
-      Contract.Assume(
-        targetType,
-        $"The content type {contentType} could not be located in the ITypeLookupService, and no fallback could be " +
-        $"identified."
-      );
+      //Fallback to generic AttributeDescriptor if the specific attribute descriptor cannot be found
+      if (targetType is null && contentType.EndsWith("AttributeDescriptor", StringComparison.OrdinalIgnoreCase)) {
+        targetType              = typeof(AttributeDescriptor);
+      }
+
+      if (targetType is null) {
+        targetType              = typeof(Topic);
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify the appropriate topic
