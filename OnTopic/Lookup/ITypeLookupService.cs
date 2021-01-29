@@ -27,10 +27,21 @@ namespace OnTopic.Lookup {
     | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the requested <see cref="Type"/>.
+    ///   Attempts to retrieve a <see cref="Type"/> based on one or more supplied <paramref name="typeNames"/>.
     /// </summary>
-    /// <param name="typeName">The name of the <see cref="Type"/> to retrieve.</param>
-    Type? Lookup(string typeName);
+    /// <remarks>
+    ///   No matter how many <paramref name="typeNames"/> are entered, at most one <see cref="Type"/> will be returned. Each
+    ///   subsequent <paramref name="typeNames"/> is treated as a fallback in case the previous one cannot be located. As such,
+    ///   the <paramref name="typeNames"/> offers a way for callers to provide a prioritized list of fallbacks. This is useful
+    ///   for scenarios where there are multiple accepted naming conventions, or there's a global default that can be accepted.
+    /// </remarks>
+    /// <param name="typeNames">
+    ///   The name of the <see cref="Type"/> to retrieve. If multiple names are supplied, then the first match is returned.
+    /// </param>
+    /// <returns>
+    ///   A <see cref="Type"/> corresponding to one of the specified <paramref name="typeNames"/>, if available.
+    /// </returns>
+    Type? Lookup(params string[] typeNames);
 
   } //Class
 } //Namespace
