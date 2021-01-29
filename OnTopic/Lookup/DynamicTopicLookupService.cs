@@ -24,8 +24,7 @@ namespace OnTopic.Lookup {
     ///   Establishes a new instance of a <see cref="DynamicTopicLookupService"/>.
     /// </summary>
     public DynamicTopicLookupService() : base(
-      t => typeof(Topic).IsAssignableFrom(t),
-      typeof(Topic)
+      t => typeof(Topic).IsAssignableFrom(t)
     ) { }
 
     /*==========================================================================================================================

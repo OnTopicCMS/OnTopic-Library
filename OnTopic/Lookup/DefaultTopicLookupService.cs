@@ -30,9 +30,7 @@ namespace OnTopic.Lookup {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public DefaultTopicLookupService(IEnumerable<Type>? types = null, Type? defaultType = null) :
-      base(types, defaultType?? typeof(Topic)) {
+    public DefaultTopicLookupService(IEnumerable<Type>? types = null) : base(types) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure editor types are accounted for

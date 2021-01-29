@@ -30,9 +30,7 @@ namespace OnTopic.ViewModels {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public TopicViewModelLookupService(IEnumerable<Type>? types = null, Type? defaultType = null) :
-      base(types, defaultType?? typeof(TopicViewModel)) {
+    public TopicViewModelLookupService(IEnumerable<Type>? types = null) : base(types) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure local view models are accounted for

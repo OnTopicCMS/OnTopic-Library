@@ -28,7 +28,7 @@ namespace OnTopic.Tests.TestDoubles {
     ///   Instantiates a new instance of the <see cref="FakeViewModelLookupService"/>.
     /// </summary>
     /// <returns>A new instance of the <see cref="FakeViewModelLookupService"/>.</returns>
-    public FakeViewModelLookupService() : base(null, typeof(object)) {
+    public FakeViewModelLookupService() : base() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
