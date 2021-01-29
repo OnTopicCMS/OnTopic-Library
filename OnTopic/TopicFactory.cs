@@ -78,6 +78,10 @@ namespace OnTopic {
 
     }
 
+    /// <inheritdoc cref="Create(String, String, Topic?, Int32)"/>
+    public static Topic Create(string key, string contentType, int id) =>
+      Create(key, contentType, null, id);
+
     /*==========================================================================================================================
     | METHOD: VALIDATE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
