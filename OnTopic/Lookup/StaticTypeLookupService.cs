@@ -36,16 +36,9 @@ namespace OnTopic.Lookup {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
     public StaticTypeLookupService(
-      IEnumerable<Type>? types = null,
-      Type? defaultType = null
+      IEnumerable<Type>? types = null
     ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set default type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      DefaultType = defaultType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Populate collection
@@ -59,14 +52,6 @@ namespace OnTopic.Lookup {
       }
 
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: DEFAULT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   The default type to return in case <see cref="Lookup(String)"/> cannot find a match.
-    /// </summary>
-    public Type? DefaultType { get; }
 
     /*==========================================================================================================================
     | METHOD: LOOKUP
