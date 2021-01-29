@@ -252,7 +252,7 @@ namespace OnTopic.TestDoubles {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, currentAttributeId++, container);
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
         attribute.IsRequired = isRequired;
         attribute.IsExtendedAttribute = isExtended;
         return attribute;
@@ -272,7 +272,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish content
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var web = TopicFactory.Create("Web", "Page", 10000, rootTopic);
+      var web = TopicFactory.Create("Web", "Page", rootTopic, 10000);
 
       CreateFakeData(web, 2, 3);
 
@@ -296,7 +296,7 @@ namespace OnTopic.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent.Id + (int)Math.Pow(10, depth) * i, parent);
+        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
         if (depth > 0) {

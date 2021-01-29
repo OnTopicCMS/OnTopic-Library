@@ -770,7 +770,7 @@ namespace OnTopic.Tests {
     public async Task Map_CircularReference_ReturnsCachedParent() {
 
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", topic, 2);
 
       var mappedTopic           = await _mappingService.MapAsync<CircularTopicViewModel>(topic).ConfigureAwait(false);
 
