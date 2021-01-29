@@ -33,66 +33,6 @@ namespace OnTopic {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
-    ///   available.
-    /// </summary>
-    /// <remarks>
-    ///   When creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
-    ///   correctly save new topics to the database.
-    /// </remarks>
-    /// <param name="key">A string representing the key for the new topic instance.</param>
-    /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="parent">Optional topic to set as the new topic's parent.</param>
-    /// <exception cref="ArgumentException">
-    ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
-    /// </exception>
-    /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    /// <requires description="The topic key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    /// <requires
-    ///   decription="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !key.Contains(" ")
-    /// </requires>
-    /// <requires description="The content type key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public static Topic Create(string key, string contentType, Topic? parent = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate contracts
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
-      TopicFactory.ValidateKey(key);
-      TopicFactory.ValidateKey(contentType);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Determine target type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var targetType = TypeLookupService.Lookup(contentType);
-
-      Contract.Assume(
-        targetType,
-        $"The content type {contentType} could not be located in the ITypeLookupService, and no fallback could be " +
-        $"identified."
-      );
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Identify the appropriate topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, -1)!;
-
-    }
-
-    /// <summary>
-    ///   Factory method for creating new strongly-typed instances of the topics class, assuming a strongly-typed subclass is
     ///   available. Used for cases where a <see cref="Topic"/> is being deserialized from an existing instance, as indicated
     ///   by the <paramref name="id"/> parameter.
     /// </summary>
@@ -103,22 +43,22 @@ namespace OnTopic {
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
     /// <param name="contentType">A string representing the key of the target content type.</param>
-    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <param name="parent">Optional topic to set as the new topic's parent.</param>
+    /// <param name="id">The unique identifier assigned by the data store for an existing topic.</param>
     /// <exception cref="ArgumentException">
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    public static Topic Create(string key, string contentType, int id, Topic? parent = null) {
+    public static Topic Create(string key, string contentType, Topic? parent = null, int id = -1) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(contentType), nameof(contentType));
-      Contract.Requires<ArgumentOutOfRangeException>(id > 0, nameof(id));
-      TopicFactory.ValidateKey(key);
-      TopicFactory.ValidateKey(contentType);
+
+      ValidateKey(key);
+      ValidateKey(contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine target type
@@ -137,6 +77,10 @@ namespace OnTopic {
       return (Topic)Activator.CreateInstance(targetType, key, contentType, parent, id)!;
 
     }
+
+    /// <inheritdoc cref="Create(String, String, Topic?, Int32)"/>
+    public static Topic Create(string key, string contentType, int id) =>
+      Create(key, contentType, null, id);
 
     /*==========================================================================================================================
     | METHOD: VALIDATE KEY

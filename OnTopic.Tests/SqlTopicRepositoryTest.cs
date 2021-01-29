@@ -200,8 +200,8 @@ namespace OnTopic.Tests {
     public void LoadTopicGraph_WithDeletedRelationship_RemovesRelationship() {
 
       var topic                 = TopicFactory.Create("Test", "Container", 1);
-      var child                 = TopicFactory.Create("Child", "Container", 2, topic);
-      var related               = TopicFactory.Create("Related", "Container", 3, topic);
+      var child                 = TopicFactory.Create("Child", "Container", topic, 2);
+      var related               = TopicFactory.Create("Related", "Container", topic, 3);
 
       child.Relationships.SetTopic("Test", related);
 
