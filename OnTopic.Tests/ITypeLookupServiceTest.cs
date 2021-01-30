@@ -72,7 +72,7 @@ namespace OnTopic.Tests {
     public void DynamicTopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new DynamicTopicViewModelLookupService();
-      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel");
+      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
       Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
 
@@ -106,7 +106,7 @@ namespace OnTopic.Tests {
     public void TopicViewModelLookupService_LookupTopicViewModel_ReturnsFallbackViewModel() {
 
       var lookupService         = new FakeViewModelLookupService();
-      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel");
+      var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
       Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
 
