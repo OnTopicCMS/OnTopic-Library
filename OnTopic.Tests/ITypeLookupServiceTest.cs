@@ -45,23 +45,6 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DYNAMIC TOPIC LOOKUP SERVICE: LOOKUP MISSING ATTRIBUTE DESCRIPTOR: RETURNS ATTRIBUTE DESCRIPTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Assembles a new <see cref="DynamicTopicLookupService"/> and requests a missing attribute type; confirms it correctly
-    ///   falls back to the expected <see cref="AttributeDescriptor"/> as a logical default.
-    /// </summary>
-    [TestMethod]
-    public void DynamicTopicLookupService_LookupMissingAttributeDescriptor_ReturnsAttributeDescriptor() {
-
-      var lookupService         = new DynamicTopicLookupService();
-      var attributeType         = lookupService.Lookup("ArbitraryAttributeDescriptor");
-
-      Assert.AreEqual(typeof(AttributeDescriptor), attributeType);
-
-    }
-
-    /*==========================================================================================================================
     | TEST: DYNAMIC TOPIC VIEW MODEL LOOKUP SERVICE: LOOKUP TOPIC VIEW MODEL: RETURNS FALLBACK VIEW MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -75,23 +58,6 @@ namespace OnTopic.Tests {
       var topicViewModel        = lookupService.Lookup("FallbackTopicViewModel", "FallbackViewModel");
 
       Assert.AreEqual(typeof(FallbackViewModel), topicViewModel);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: DEFAULT TOPIC LOOKUP SERVICE: LOOKUP MISSING ATTRIBUTE DESCRIPTOR: RETURNS ATTRIBUTE DESCRIPTOR
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Assembles a new <see cref="DefaultTopicLookupService"/> and requests a missing attribute type; confirms it correctly
-    ///   falls back to the expected <see cref="AttributeDescriptor"/> as a logical default.
-    /// </summary>
-    [TestMethod]
-    public void DefaultTopicLookupService_LookupMissingAttributeDescriptor_ReturnsAttributeDescriptor() {
-
-      var lookupService         = new DefaultTopicLookupService();
-      var attributeType         = lookupService.Lookup("ArbitraryAttributeDescriptor");
-
-      Assert.AreEqual(typeof(AttributeDescriptor), attributeType);
 
     }
 
