@@ -28,7 +28,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="CompositeTypeLookupService"/> with two instances of a <see cref="ITypeLookupService"/> and
-    ///   confirms that it returns the expected <see cref="Type"/> for a <see cref="ITypeLookupService.Lookup(String)"/> query.
+    ///   confirms that it returns the expected <see cref="Type"/> for a <see cref="ITypeLookupService.Lookup(String[])"/>
+    ///   query.
     /// </summary>
     [TestMethod]
     public void Composite_LookupValidType_ReturnsType() {
