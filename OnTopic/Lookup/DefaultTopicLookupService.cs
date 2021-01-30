@@ -30,9 +30,7 @@ namespace OnTopic.Lookup {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public DefaultTopicLookupService(IEnumerable<Type>? types = null, Type? defaultType = null) :
-      base(types, defaultType?? typeof(Topic)) {
+    public DefaultTopicLookupService(IEnumerable<Type>? types = null) : base(types) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure editor types are accounted for
@@ -40,31 +38,6 @@ namespace OnTopic.Lookup {
       TryAdd(typeof(ContentTypeDescriptor));
       TryAdd(typeof(AttributeDescriptor));
 
-    }
-
-    /*==========================================================================================================================
-    | METHOD: LOOKUP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    /// <remarks>
-    ///   The <see cref="DefaultTopicLookupService"/> version of <see cref="Lookup(String)"/> will automatically fall back to
-    ///   <see cref="AttributeDescriptor"/> if the <paramref name="typeName"/> ends with <c>AttributeDescriptor</c>, but a
-    ///   <see cref="AttributeDescriptor"/> with the specified name cannot be found. This accounts for the fact that strongly
-    ///   typed <see cref="AttributeDescriptor"/> classes are expected to be in external plugins which are not statically
-    ///   registered with the <see cref="DefaultTopicLookupService"/>. In that case, the base <see cref="AttributeDescriptor"/>
-    ///   class will provide access to the attributes needed by most applications, including the core OnTopic library.
-    /// </remarks>
-    public override Type? Lookup(string typeName) {
-      if (typeName is null) {
-        return DefaultType;
-      }
-      else if (Contains(typeName)) {
-        return base.Lookup(typeName);
-      }
-      else if (typeName.EndsWith("AttributeDescriptor", StringComparison.OrdinalIgnoreCase)) {
-        return typeof(AttributeDescriptor);
-      }
-      return DefaultType;
     }
 
   } //Class

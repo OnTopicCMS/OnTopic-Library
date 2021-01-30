@@ -36,16 +36,9 @@ namespace OnTopic.Lookup {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
     public StaticTypeLookupService(
-      IEnumerable<Type>? types = null,
-      Type? defaultType = null
+      IEnumerable<Type>? types = null
     ) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set default type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      DefaultType = defaultType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Populate collection
@@ -61,30 +54,19 @@ namespace OnTopic.Lookup {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: DEFAULT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   The default type to return in case <see cref="Lookup(String)"/> cannot find a match.
-    /// </summary>
-    public Type? DefaultType { get; }
-
-    /*==========================================================================================================================
     | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Retrieves a <see cref="Type"/> from the class based on its string representation.
-    /// </summary>
-    /// <param name="typeName">A string representing the type.</param>
-    /// <returns>A class type corresponding to the specified string.</returns>
-    /// <requires description="The contentType key must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(contentType)
-    /// </requires>
-    /// <requires
-    ///   decription="The contentType should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !contentType.Contains(" ")
-    /// </requires>
-    public virtual Type? Lookup(string typeName) => Contains(typeName) ? _typeCollection[typeName] : DefaultType;
+    /// <inheritdoc/>
+    public virtual Type? Lookup(params string[] typeNames) {
+      if (typeNames is not null) {
+        foreach (var typeName in typeNames) {
+          if (Contains(typeName)) {
+            return _typeCollection[typeName];
+          }
+        }
+      }
+      return null;
+    }
 
     /*==========================================================================================================================
     | METHOD: ADD

@@ -23,10 +23,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   Establishes a new instance of a <see cref="DynamicTopicBindingModelLookupService"/>.
     /// </summary>
-    public DynamicTopicBindingModelLookupService() : base(
-      t => typeof(ITopicBindingModel).IsAssignableFrom(t),
-      typeof(object)
-    ) { }
+    public DynamicTopicBindingModelLookupService() : base(t => typeof(ITopicBindingModel).IsAssignableFrom(t)) { }
 
   } //Class
 } //Namespace

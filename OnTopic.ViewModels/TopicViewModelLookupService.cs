@@ -30,9 +30,7 @@ namespace OnTopic.ViewModels {
     ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
     /// </remarks>
     /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public TopicViewModelLookupService(IEnumerable<Type>? types = null, Type? defaultType = null) :
-      base(types, defaultType?? typeof(TopicViewModel)) {
+    public TopicViewModelLookupService(IEnumerable<Type>? types = null) : base(types) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure local view models are accounted for
@@ -60,33 +58,6 @@ namespace OnTopic.ViewModels {
       | Add support types
       \-----------------------------------------------------------------------------------------------------------------------*/
 
-    }
-
-    /*==========================================================================================================================
-    | METHOD: LOOKUP
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc/>
-    /// <remarks>
-    ///   The <see cref="TopicViewModelLookupService"/> version of <see cref="Lookup(String)"/> will first look for
-    ///   the exact <paramref name="typeName"/>. If that fails, and the <paramref name="typeName"/> ends with <c>TopicViewModel
-    ///   </c>, then it will automatically fall back to look for the <paramref name="typeName"/> with the <c>ViewModel</c>
-    ///   suffix. If that cannot be found, it will return the <see cref="StaticTypeLookupService.DefaultType"/> of <see cref="
-    ///   TopicViewModel"/>. This allows implementors to use the shorter name, if preferred, without breaking compatibility with
-    ///   implementations which default to looking for <c>TopicViewModel</c>, such as the <see cref="TopicMappingService"/>.
-    ///   While this convention is not used by the <see cref="ViewModels"/>, this fallback provides support for derived classes
-    ///   which may prefer that convention.
-    /// </remarks>
-    public override Type? Lookup(string typeName) {
-      if (typeName is null) {
-        return DefaultType;
-      }
-      else if (Contains(typeName)) {
-        return base.Lookup(typeName);
-      }
-      else if (typeName.EndsWith("TopicViewModel", StringComparison.OrdinalIgnoreCase)) {
-        return base.Lookup(typeName.Replace("TopicViewModel", "ViewModel", StringComparison.CurrentCultureIgnoreCase));
-      }
-      return DefaultType;
     }
 
   } //Class

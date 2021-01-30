@@ -25,8 +25,7 @@ namespace OnTopic.Lookup {
     ///   optionally, a default <see cref="Type"/> object to return if none is specified.
     /// </summary>
     /// <param name="predicate">The search condition to use to identify target classes.</param>
-    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
-    public DynamicTypeLookupService(Func<Type, bool> predicate, Type? defaultType = null) : base(null, defaultType) {
+    public DynamicTypeLookupService(Func<Type, bool> predicate) : base() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find target classes
