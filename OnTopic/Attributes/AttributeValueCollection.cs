@@ -197,7 +197,7 @@ namespace OnTopic.Attributes {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/> topics in
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
@@ -209,7 +209,7 @@ namespace OnTopic.Attributes {
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of
-    ///   <see cref="Topic.DerivedTopic"/>s through whom to crawl to retrieve an inherited value.
+    ///   <see cref="Topic.BaseTopic"/>s through whom to crawl to retrieve an inherited value.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
@@ -259,10 +259,10 @@ namespace OnTopic.Attributes {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        _associatedTopic.DerivedTopic is not null &&
+        _associatedTopic.BaseTopic is not null &&
         maxHops > 0
       ) {
-        value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
+        value = _associatedTopic.BaseTopic.Attributes.GetValue(name, null, false, maxHops - 1);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

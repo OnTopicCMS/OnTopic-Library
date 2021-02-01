@@ -271,49 +271,48 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
+    | TEST: BASE TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
-    ///   derived topic as well as the underlying <see cref="AttributeValue"/> correctly reference the new value.
+    ///   Sets a base topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
+    ///   base topic as well as the underlying <see cref="AttributeValue"/> correctly reference the new value.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic_UpdateValue_ReturnsExpectedValue() {
+    public void BaseTopic_UpdateValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var firstDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page");
-      var secondDerivedTopic    = TopicFactory.Create("DerivedTopic", "Page", 1);
-      var finalDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page", 2);
+      var firstBaseTopic        = TopicFactory.Create("BaseTopic", "Page");
+      var secondBaseTopic       = TopicFactory.Create("BaseTopic", "Page", 1);
+      var finalBaseTopic        = TopicFactory.Create("BaseTopic", "Page", 2);
 
-      topic.DerivedTopic        = firstDerivedTopic;
-      topic.DerivedTopic        = secondDerivedTopic;
-      topic.DerivedTopic        = finalDerivedTopic;
+      topic.BaseTopic           = firstBaseTopic;
+      topic.BaseTopic           = secondBaseTopic;
+      topic.BaseTopic           = finalBaseTopic;
 
-      Assert.ReferenceEquals(topic.DerivedTopic, finalDerivedTopic);
-      Assert.AreEqual<int>(2, topic.References.GetTopic("DerivedTopic").Id);
+      Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
+      Assert.AreEqual<int>(2, topic.References.GetTopic("BaseTopic").Id);
 
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
+    | TEST: BASE TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic to an unsaved topic entity, then saves the entity and reestablishes the relationship. Ensures
-    ///   that the derived topic is correctly set, including the <see cref="Topic.Id"/> as an underlying <see
-    ///   cref="AttributeValue"/>.
+    ///   Sets a base topic to an unsaved topic entity, then saves the entity and reestablishes the relationship. Ensures
+    ///   that the base topic is correctly set as a <see cref="Topic.References"/> entry.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic_ResavedValue_ReturnsExpectedValue() {
+    public void BaseTopic_ResavedValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
+      var baseTopic             = TopicFactory.Create("BaseTopic", "Page");
 
-      topic.DerivedTopic        = derivedTopic;
-      derivedTopic.Id           = 5;
-      topic.DerivedTopic        = derivedTopic;
+      topic.BaseTopic           = baseTopic;
+      baseTopic.Id              = 5;
+      topic.BaseTopic           = baseTopic;
 
-      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
-      Assert.AreEqual<int>(5, topic.References.GetTopic("DerivedTopic").Id);
+      Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
+      Assert.AreEqual<int>(5, topic.References.GetTopic("BaseTopic").Id);
 
     }
 

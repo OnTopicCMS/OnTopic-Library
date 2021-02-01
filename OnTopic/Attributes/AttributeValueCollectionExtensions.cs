@@ -33,8 +33,8 @@ namespace OnTopic.Attributes {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
     ///   order to get the value.
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
     /// </param>
     /// <returns>The value for the attribute as a boolean.</returns>
     public static bool GetBoolean(
@@ -71,8 +71,8 @@ namespace OnTopic.Attributes {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
     ///   order to get the value.
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
     /// </param>
     /// <returns>The value for the attribute as an integer.</returns>
     public static int GetInteger(
@@ -109,8 +109,8 @@ namespace OnTopic.Attributes {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
-    ///   order to get the value.
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s  in order to get
+    ///   the value.
     /// </param>
     /// <returns>The value for the attribute as a double.</returns>
     public static double GetDouble(
@@ -147,8 +147,8 @@ namespace OnTopic.Attributes {
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
     /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
-    ///   order to get the value.
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
+    ///   the value.
     /// </param>
     /// <returns>The value for the attribute as a DateTime object.</returns>
     public static DateTime GetDateTime(

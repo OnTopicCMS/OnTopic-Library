@@ -86,7 +86,7 @@ namespace OnTopic.Mapping.Annotations {
     | REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Map topic pointer references, such as <see cref="Topic.DerivedTopic"/>.
+    ///   Map topic pointer references, such as <see cref="Topic.BaseTopic"/>.
     /// </summary>
     /// <remarks>
     ///   By convention, <see cref="References"/> types refer to a <see cref="AttributeDescriptor"/>, <see

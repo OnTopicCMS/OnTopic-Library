@@ -363,7 +363,7 @@ namespace OnTopic.References {
         return existing;
       }
       else if (inheritFromDerived) {
-        return _parent.DerivedTopic?.References.GetTopic(key);
+        return _parent.BaseTopic?.References.GetTopic(key);
       }
       return null;
     }

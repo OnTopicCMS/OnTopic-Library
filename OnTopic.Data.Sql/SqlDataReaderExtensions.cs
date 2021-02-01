@@ -54,7 +54,7 @@ namespace OnTopic.Data.Sql {
     /// </param>
     /// <param name="includeExternalReferences">
     ///   Optionally disables populating external references such as <see cref="Topic.Relationships"/> and <see
-    ///   cref="Topic.DerivedTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
+    ///   cref="Topic.BaseTopic"/>. This is useful for cases where it's known that a shallow copy is being retrieved, and
     ///   thus external references aren't likely to be available.
     /// </param>
     internal static Topic? LoadTopicGraph(

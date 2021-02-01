@@ -26,7 +26,7 @@ namespace OnTopic.Internal.Reflection {
   ///     Collections on <see cref="Topic"/>, such as <see cref="Topic.Attributes"/> and <see cref="Topic.References"/>, aren't
   ///     well-positioned to enforce attribute-specific business logic when adding or setting items in the collection. Instead,
   ///     this logic is typically handled by property setters on <see cref="Topic"/>, such as <see cref="Topic.View"/> or <see
-  ///     cref="Topic.DerivedTopic"/>. This introduces a potential backdoor, as updates made directly to the collection can
+  ///     cref="Topic.BaseTopic"/>. This introduces a potential backdoor, as updates made directly to the collection can
   ///     bypass any business logic—such as data validation or local state management—handled by those property setters. The
   ///     <see cref="TopicPropertyDispatcher{TAttributeType, TValueType}"/> class addresses this by allowing those collections
   ///     to route requests through appropriately decorated properties on <see cref="Topic"/> prior to adding or setting a

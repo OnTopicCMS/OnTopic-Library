@@ -23,9 +23,9 @@ namespace OnTopic.References {
   ///     business logic to be potentially bypassed by writing directly to the <see cref="Topic.References"/> collection.
   ///   </para>
   ///   <para>
-  ///     As an example, the <see cref="Topic.DerivedTopic"/> property is adorned with the <see cref="ReferenceSetterAttribute"
-  ///     />. As a result, if a client calls <code>topic.References.SetTopic("DerivedTopic", topic)</code>, then that update
-  ///     will be routed through <see cref="Topic.DerivedTopic"/>, thus enforcing any validation.
+  ///     As an example, the <see cref="Topic.BaseTopic"/> property is adorned with the <see cref="ReferenceSetterAttribute"
+  ///     />. As a result, if a client calls <code>topic.References.SetTopic("BaseTopic", topic)</code>, then that update
+  ///     will be routed through <see cref="Topic.BaseTopic"/>, thus enforcing any validation.
   ///   </para>
   ///   <para>
   ///     To ensure this logic, it is critical that implementers of <see cref="ReferenceSetterAttribute"/> ensure that the
