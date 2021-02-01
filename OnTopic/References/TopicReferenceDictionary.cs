@@ -358,11 +358,11 @@ namespace OnTopic.References {
     /// <summary>
     ///   Attempts to retrieve a topic reference based on its <paramref name="key"/>; if it doesn't exist, returns null.
     /// </summary>
-    public Topic? GetTopic(string key, bool inheritFromDerived = true) {
+    public Topic? GetTopic(string key, bool inheritFromBase = true) {
       if (TryGetValue(key, out var existing)) {
         return existing;
       }
-      else if (inheritFromDerived) {
+      else if (inheritFromBase) {
         return _parent.BaseTopic?.References.GetTopic(key);
       }
       return null;

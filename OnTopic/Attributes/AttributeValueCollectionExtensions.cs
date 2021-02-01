@@ -32,9 +32,9 @@ namespace OnTopic.Attributes {
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
-    /// <param name="inheritFromDerived">
-    ///   order to get the value.
+    /// <param name="inheritFromBase">
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
+    ///   the value.
     /// </param>
     /// <returns>The value for the attribute as a boolean.</returns>
     public static bool GetBoolean(
@@ -42,7 +42,7 @@ namespace OnTopic.Attributes {
       string                    name,
       bool                      defaultValue                    = default,
       bool                      inheritFromParent               = false,
-      bool                      inheritFromDerived              = true
+      bool                      inheritFromBase                 = true
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
@@ -51,7 +51,7 @@ namespace OnTopic.Attributes {
           name,
           defaultValue ? "1" : "0",
           inheritFromParent,
-          inheritFromDerived ? 5 : 0
+          inheritFromBase ? 5 : 0
         ),
         out var result
       ) ? result is 1 : defaultValue;
@@ -70,9 +70,9 @@ namespace OnTopic.Attributes {
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
-    /// <param name="inheritFromDerived">
-    ///   order to get the value.
+    /// <param name="inheritFromBase">
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
+    ///   the value.
     /// </param>
     /// <returns>The value for the attribute as an integer.</returns>
     public static int GetInteger(
@@ -80,7 +80,7 @@ namespace OnTopic.Attributes {
       string                    name,
       int                       defaultValue                    = default,
       bool                      inheritFromParent               = false,
-      bool                      inheritFromDerived              = true
+      bool                      inheritFromBase                 = true
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
@@ -89,7 +89,7 @@ namespace OnTopic.Attributes {
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
-          inheritFromDerived? 5 : 0
+          inheritFromBase? 5 : 0
         ),
         out var result
       ) ? result : defaultValue;
@@ -108,7 +108,7 @@ namespace OnTopic.Attributes {
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
-    /// <param name="inheritFromDerived">
+    /// <param name="inheritFromBase">
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s  in order to get
     ///   the value.
     /// </param>
@@ -118,7 +118,7 @@ namespace OnTopic.Attributes {
       string                    name,
       double                    defaultValue                    = default,
       bool                      inheritFromParent               = false,
-      bool                      inheritFromDerived              = true
+      bool                      inheritFromBase                 = true
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
@@ -127,7 +127,7 @@ namespace OnTopic.Attributes {
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
-          inheritFromDerived? 5 : 0
+          inheritFromBase? 5 : 0
         ),
         out var result
       ) ? result : defaultValue;
@@ -146,7 +146,7 @@ namespace OnTopic.Attributes {
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
-    /// <param name="inheritFromDerived">
+    /// <param name="inheritFromBase">
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/>s in order to get
     ///   the value.
     /// </param>
@@ -156,7 +156,7 @@ namespace OnTopic.Attributes {
       string                    name,
       DateTime                  defaultValue                    = default,
       bool                      inheritFromParent               = false,
-      bool                      inheritFromDerived              = true
+      bool                      inheritFromBase                 = true
     ) {
       Contract.Requires(attributes);
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
@@ -165,7 +165,7 @@ namespace OnTopic.Attributes {
           name,
           defaultValue.ToString(CultureInfo.InvariantCulture),
           inheritFromParent,
-          inheritFromDerived ? 5 : 0
+          inheritFromBase ? 5 : 0
         ),
         out var result
       ) ? result : defaultValue;
