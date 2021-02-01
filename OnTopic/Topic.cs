@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.References;
@@ -610,45 +611,49 @@ namespace OnTopic {
     #region Relationship and Collection Properties
 
     /*==========================================================================================================================
-    | PROPERTY: DERIVED TOPIC
+    | PROPERTY: BASE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Reference to the topic that this topic is derived from, if available.
+    ///   Reference to the topic that this topic inherits from, if available.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Derived topics allow attribute values to be inherited from another topic. When a derived topic is configured via the
-    ///     TopicId attribute key, values from that topic are used when the <see cref="AttributeValueCollection.GetValue(String,
-    ///     Boolean)" /> method unable to find a local value for the attribute.
+    ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured
+    ///     as a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method is unable to find a local value for the
+    ///     attribute.
     ///   </para>
     ///   <para>
-    ///     Be aware that while multiple levels of derived topics can be configured, the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops".
+    ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see
+    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops" in
+    ///     order to help avoid an infinite loop.
     ///   </para>
     ///   <para>
-    ///     The underlying value of the <see cref="DerivedTopic"/> is stored as the <c>TopicID</c> <see cref="AttributeValue"/>.
-    ///     If the <see cref="Topic"/> hasn't been saved, then the relationship will be established, but the <c>TopicID</c>
-    ///     won't be persisted to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said,
-    ///     when <see cref="Repositories.TopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="DerivedTopic"/> will
-    ///     be reevaluated and, if it has subsequently been saved, then the <c>TopicID</c> will be updated accordingly. This
-    ///     allows in-memory topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being
-    ///     persisted to the underlying data storage. As a result, however, a <see cref="Topic"/> referencing a <see cref="
-    ///     DerivedTopic"/> that is unsaved will need to be saved again once the <see cref="DerivedTopic"/> has been saved.
+    ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="
+    ///     KeyValuesPair{String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="
+    ///     Topic"/> hasn't been saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted
+    ///     to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="
+    ///     Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
+    ///     and, if it has subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory
+    ///     topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the
+    ///     underlying data storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is
+    ///     unsaved will need to be saved again once the <see cref="BaseTopic"/> has been saved, assuming it's otherwise outside
+    ///     the scope of the original <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> call.
     ///   </para>
     /// </remarks>
-    /// <value>The <see cref="Topic"/> that values should be derived from, if not otherwise available.</value>
+    /// <value>The <see cref="Topic"/> that values should be inherited from, if not otherwise available.</value>
     /// <requires description="A topic key must not derive from itself." exception="T:System.ArgumentException">
     ///   value != this
     /// </requires>
     [ReferenceSetter]
-    public Topic? DerivedTopic {
-      get => References.GetTopic("DerivedTopic", false);
+    public Topic? BaseTopic {
+      get => References.GetTopic("BaseTopic", false);
       set {
         Contract.Requires<ArgumentException>(
           value != this,
           "A topic may not derive from itself."
         );
-        References.SetTopic("DerivedTopic", value);
+        References.SetTopic("BaseTopic", value);
       }
     }
 
@@ -686,11 +691,11 @@ namespace OnTopic {
     | PROPERTY: REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A façade for accessing references topics based on a reference key; can be used for derived topics, etc.
+    ///   A façade for accessing referenced topics based on a reference key; can be used for base topics, etc.
     /// </summary>
     /// <remarks>
     ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
-    ///   "DerivedTopic" for a derived topic).
+    ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
     public TopicReferenceDictionary References { get; }

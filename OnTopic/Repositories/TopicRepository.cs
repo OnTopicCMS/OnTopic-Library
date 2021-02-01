@@ -303,7 +303,7 @@ namespace OnTopic.Repositories {
     /// </summary>
     /// <remarks>
     ///   When recursively saving a topic graph, it is conceivable that references to other topics—such as <see
-    ///   cref="Topic.Relationships"/> or <see cref="Topic.DerivedTopic"/>—can't yet be persisted because the target <see
+    ///   cref="Topic.Relationships"/> or <see cref="Topic.BaseTopic"/>—can't yet be persisted because the target <see
     ///   cref="Topic"/> hasn't yet been saved, and thus the <see cref="Topic.Id"/> is still set to <c>-1</c>. To mitigate
     ///   this, the <paramref name="unresolvedTopics"/> allows this private overload to keep track of unresolved
     ///   relationships. The public <see cref="Save(Topic, Boolean)"/> overload uses this list to resave any topics
@@ -344,7 +344,7 @@ namespace OnTopic.Repositories {
       >-------------------------------------------------------------------------------------------------------------------------
       | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
       | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
-      | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
+      | same can be done for Base Topic references, which are effectively establish a 1:1 relationship.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
@@ -558,16 +558,16 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate derived topics
+      | Validate base topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var childTopics           = topic.FindAll();
       var allTopics             = topic.GetRootTopic().FindAll().Except(childTopics);
-      var derivedTopic          = allTopics.FirstOrDefault(t => t.DerivedTopic is not null && childTopics.Contains(t.DerivedTopic));
+      var baseTopic             = allTopics.FirstOrDefault(t => t.BaseTopic is not null && childTopics.Contains(t.BaseTopic));
 
-      if (derivedTopic is not null) {
+      if (baseTopic is not null) {
         throw new ReferentialIntegrityException(
-          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. The topic '{derivedTopic.GetUniqueKey()}' derives from the " +
-          $"topic '{derivedTopic.DerivedTopic!.GetUniqueKey()}'. Deleting this would cause violate the integrity of the " +
+          $"The topic '{topic.GetUniqueKey()}' cannot be deleted. The topic '{baseTopic.GetUniqueKey()}' derives from the " +
+          $"topic '{baseTopic.BaseTopic!.GetUniqueKey()}'. Deleting this would cause violate the integrity of the " +
           $"persistence store."
         );
       }

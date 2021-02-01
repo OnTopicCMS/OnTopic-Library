@@ -50,21 +50,21 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: DERIVED TOPIC: THROWS EXCEPTION
+    | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ReferentialIntegrityException))]
-    public void Delete_DerivedTopic_ThrowsException() {
+    public void Delete_BaseTopic_ThrowsException() {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derived               = TopicFactory.Create("Derived", "Page", root);
+      var derivedTopic          = TopicFactory.Create("Derived", "Page", root);
 
-      derived.DerivedTopic      = child;
+      derivedTopic.BaseTopic    = child;
 
       _topicRepository.Delete(topic, true);
 
@@ -84,7 +84,7 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var derived               = TopicFactory.Create("Derived", "Page", topic);
 
-      derived.DerivedTopic      = child;
+      derived.BaseTopic         = child;
 
       _topicRepository.Delete(topic, true);
 

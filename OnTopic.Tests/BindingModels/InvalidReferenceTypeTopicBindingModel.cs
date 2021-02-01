@@ -24,7 +24,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public InvalidReferenceTypeTopicBindingModel(string? key = null) : base(key, "Page") { }
 
-    public TopicViewModel DerivedTopic { get; } = new();
+    public TopicViewModel BaseTopic { get; } = new();
 
   } //Class
 } //Namespace

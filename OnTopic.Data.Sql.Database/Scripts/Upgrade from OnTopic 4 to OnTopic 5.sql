@@ -93,7 +93,7 @@ IN (	'Key',
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE TOPIC REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
--- In OnTopic 5, references to other topics—such as `DerivedTopic`—have been moved from the Attributes table to a new
+-- In OnTopic 5, references to other topics—such as `BaseTopic`—have been moved from the Attributes table to a new
 -- TopicReferences table, where they act more like relationships. This allows referential integrity to be enforced through
 -- foreign key constraints, and formalizes the relationship so we don't need to rely on hacks in e.g. the Topic Data Transer
 -- service to infer which attributes represent relationships in order to translate their values from `TopicID` to `UniqueKey`.
@@ -118,9 +118,23 @@ WHERE	AttributeKey		LIKE '%ID'
   AND	ISNUMERIC(AttributeValue)	= 1
   AND	Topics.TopicID		IS NOT NULL
 
+--------------------------------------------------------------------------------------------------------------------------------
+-- MIGRATE DERIVED TOPICS
+--------------------------------------------------------------------------------------------------------------------------------
+-- The above migration to topic references includes the DerivedTopic. To better clarify the purpose and intent of that
+-- relationship, we're renaming the attribute from 'DerivedTopic' to 'BaseTopic', and the actual storage field from 'Topic(ID)'
+-- to 'BaseTopic'. This is not only a more accurate identifier, but also unifies the label between the attribute descriptor
+-- and how its 'ReferenceKey'.
+--------------------------------------------------------------------------------------------------------------------------------
+
 UPDATE	TopicReferences
-SET	ReferenceKey		= 'DerivedTopic'
+SET	ReferenceKey		= 'BaseTopic'
 WHERE	ReferenceKey		= 'Topic'
+
+UPDATE	Topics
+SET	TopicKey		= 'BaseTopic'
+WHERE	TopicKey		= 'DerivedTopic'
+AND	ContentType		= 'TopicReferenceAttributeDescriptor'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE ATTRIBUTE KEYS

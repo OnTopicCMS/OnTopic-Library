@@ -22,8 +22,8 @@ COLUMN	AttributeID
 -- INHERIT TYPES
 --------------------------------------------------------------------------------------------------------------------------------
 -- Attribute Descriptors will be converted to more specific content types based on their legacy attribute type. Attribute types
--- may be inherited from derived topics, however. This script identifies any cases where the attribute type is inherited, and
--- updates the target topic with the derived value. This may need to be run multiple times if there are multiple layers of
+-- may be inherited from base topics, however. This script identifies any cases where the attribute type is inherited, and
+-- updates the target topic with the inherited value. This may need to be run multiple times if there are multiple layers of
 -- inheritance (e.g., an attribute derives from an attribute which derives from another attribute).
 --------------------------------------------------------------------------------------------------------------------------------
 

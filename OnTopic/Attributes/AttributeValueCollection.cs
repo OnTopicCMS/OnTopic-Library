@@ -106,7 +106,7 @@ namespace OnTopic.Attributes {
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
     ///   to determine if a specific attribute key is dirty prior to saving it to the data storage medium. Because <c>IsDirty
     ///   </c> is a state of the current <see cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>
-    ///   inheritFromDerived</c> (which otherwise default to <c>true</c>).
+    ///   inheritFromBase</c> (which otherwise default to <c>true</c>).
     /// </remarks>
     /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
@@ -189,27 +189,27 @@ namespace OnTopic.Attributes {
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values.
+    ///   of inheritance, and an optional setting for searching through base topics for values.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
     /// </param>
-    /// <param name="inheritFromDerived">
-    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.DerivedTopic"/> topics in
+    /// <param name="inheritFromBase">
+    ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/> topics in
     ///   order to get the value.
     /// </param>
     /// <returns>The string value for the Attribute.</returns>
     [return: NotNullIfNotNull("defaultValue")]
-    public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromDerived = true) {
+    public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return GetValue(name, defaultValue, inheritFromParent, (inheritFromDerived? 5 : 0));
+      return GetValue(name, defaultValue, inheritFromParent, (inheritFromBase? 5 : 0));
     }
 
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of
-    ///   <see cref="Topic.DerivedTopic"/>s through whom to crawl to retrieve an inherited value.
+    ///   <see cref="Topic.BaseTopic"/>s through whom to crawl to retrieve an inherited value.
     /// </summary>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
@@ -259,10 +259,10 @@ namespace OnTopic.Attributes {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         String.IsNullOrEmpty(value) &&
-        _associatedTopic.DerivedTopic is not null &&
+        _associatedTopic.BaseTopic is not null &&
         maxHops > 0
       ) {
-        value = _associatedTopic.DerivedTopic.Attributes.GetValue(name, null, false, maxHops - 1);
+        value = _associatedTopic.BaseTopic.Attributes.GetValue(name, null, false, maxHops - 1);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

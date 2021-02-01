@@ -45,7 +45,7 @@ namespace OnTopic.Metadata {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   A reference to a separate <see cref="Topic"/>. References are ideally exposed and populated as strongly-typed
-    ///   properties on <see cref="Topic"/>—or a derived class—as done with e.g. <see cref="Topic.DerivedTopic"/>.
+    ///   properties on <see cref="Topic"/>—or a derived class—as done with e.g. <see cref="Topic.BaseTopic"/>.
     /// </summary>
     Reference                   = 3,
 

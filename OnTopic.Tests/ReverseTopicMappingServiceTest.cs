@@ -290,15 +290,15 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
       var bindingModel          = new ReferenceTopicBindingModel("Test") {
-        DerivedTopic            = new() {
+        BaseTopic               = new() {
           UniqueKey             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
         }
       };
 
       var target                = (TopicReferenceAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target.DerivedTopic);
-      Assert.AreEqual<string>("Title", target.DerivedTopic.Key);
+      Assert.IsNotNull(target.BaseTopic);
+      Assert.AreEqual<string>("Title", target.BaseTopic.Key);
       Assert.AreEqual<string>("TopicReference", target.EditorType);
 
     }

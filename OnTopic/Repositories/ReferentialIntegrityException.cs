@@ -18,7 +18,7 @@ namespace OnTopic.Repositories {
   /// </summary>
   /// <remarks>
   ///   Generally, the <see cref="ReferentialIntegrityException"/> will occur when a <see cref="Topic"/> is being
-  ///   deleted, but the topic or one of its descendents is the <see cref="Topic.DerivedTopic"/> of another <see cref="Topic"/>.
+  ///   deleted, but the topic or one of its descendents is the <see cref="Topic.BaseTopic"/> of another <see cref="Topic"/>.
   ///   In that case, deleting the topic will violate the referential integrity of the target topic.
   /// </remarks>
   [Serializable]

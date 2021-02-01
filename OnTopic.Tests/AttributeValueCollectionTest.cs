@@ -712,19 +712,19 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET VALUE: INHERIT FROM DERIVED: RETURNS DERIVED VALUE
+    | TEST: GET VALUE: INHERIT FROM BASE: RETURNS INHERITED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a long tree of derives topics, and ensures that the derived value is returned.
+    ///   Establishes a long tree of derived topics, and ensures that the inherited value is returned.
     /// </summary>
     [TestMethod]
-    public void GetValue_InheritFromDerived_ReturnsDerivedValue() {
+    public void GetValue_InheritFromBase_ReturnsInheritedValue() {
 
       var topics = new Topic[5];
 
       for (var i = 0; i <= 4; i++) {
         var topic = TopicFactory.Create("Topic" + i, "Container");
-        if (i > 0) topics[i - 1].DerivedTopic = topic;
+        if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }
 
@@ -747,7 +747,7 @@ namespace OnTopic.Tests {
 
       for (var i = 0; i <= 7; i++) {
         var topic = TopicFactory.Create("Topic" + i, "Container");
-        if (i > 0) topics[i - 1].DerivedTopic = topic;
+        if (i > 0) topics[i - 1].BaseTopic = topic;
         topics[i] = topic;
       }
 
