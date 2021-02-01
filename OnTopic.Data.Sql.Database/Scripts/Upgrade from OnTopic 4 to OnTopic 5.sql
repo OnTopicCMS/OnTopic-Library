@@ -93,7 +93,7 @@ IN (	'Key',
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE TOPIC REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
--- In OnTopic 5, references to other topics—such as `DerivedTopic`—have been moved from the Attributes table to a new
+-- In OnTopic 5, references to other topics—such as `BaseTopic`—have been moved from the Attributes table to a new
 -- TopicReferences table, where they act more like relationships. This allows referential integrity to be enforced through
 -- foreign key constraints, and formalizes the relationship so we don't need to rely on hacks in e.g. the Topic Data Transer
 -- service to infer which attributes represent relationships in order to translate their values from `TopicID` to `UniqueKey`.
@@ -119,7 +119,7 @@ WHERE	AttributeKey		LIKE '%ID'
   AND	Topics.TopicID		IS NOT NULL
 
 UPDATE	TopicReferences
-SET	ReferenceKey		= 'DerivedTopic'
+SET	ReferenceKey		= 'BaseTopic'
 WHERE	ReferenceKey		= 'Topic'
 
 --------------------------------------------------------------------------------------------------------------------------------
