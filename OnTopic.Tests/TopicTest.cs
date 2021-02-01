@@ -39,8 +39,8 @@ namespace OnTopic.Tests {
     | TEST: CREATE: CONTENT TYPE: RETURNS DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a topic of a content type which has been derived, and ensures the derived version of <see cref="Topic"/> is
-    ///   returned.
+    ///   Creates a topic of a content type which maps to a class derived from <see cref="Topic"/>, and ensures the derived
+    ///   version of the <see cref="Topic"/> class is returned.
     /// </summary>
     [TestMethod]
     public void Create_ContentType_ReturnsDerivedTopic() {

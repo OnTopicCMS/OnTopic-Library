@@ -24,7 +24,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a boolean.
+    ///   of inheritance, and an optional setting for searching through base topics for values. Return as a boolean.
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
@@ -62,7 +62,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a integer.
+    ///   of inheritance, and an optional setting for searching through base topics for values. Return as a integer.
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
@@ -100,7 +100,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a double.
+    ///   of inheritance, and an optional setting for searching through base topics for values. Return as a double.
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
@@ -138,7 +138,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through derived topics for values. Return as a DateTime.
+    ///   of inheritance, and an optional setting for searching through base topics for values. Return as a DateTime.
     /// </summary>
     /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
     /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>

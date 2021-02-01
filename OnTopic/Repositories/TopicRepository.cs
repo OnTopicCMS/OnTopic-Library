@@ -344,7 +344,7 @@ namespace OnTopic.Repositories {
       >-------------------------------------------------------------------------------------------------------------------------
       | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
       | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
-      | same can be done for DerivedTopics references, which are effectively establish a 1:1 relationship.
+      | same can be done for Base Topic references, which are effectively establish a 1:1 relationship.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
