@@ -45,9 +45,9 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
-    ///   cref="ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to correctly save
+    ///   cref="ContentType"/> will be set to <see cref="TrackedItem{T}.IsDirty"/>, which is required in order to correctly save
     ///   new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
+    ///   cref="TrackedItem{T}.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
     ///   it is assumed these are being set to the same values currently used in the persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
@@ -666,8 +666,8 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   Attributes are stored via an <see cref="AttributeValue" /> class which, in addition to the Attribute Key and Value,
-    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified" />
-    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty" />
+    ///   also track other metadata for the attribute, such as the version (via the <see cref="TrackedItem{T}.LastModified" />
+    ///   property) and whether it has been persisted to the database or not (via the <see cref="TrackedItem{T}.IsDirty" />
     ///   property).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s attributes.</value>
@@ -750,7 +750,7 @@ namespace OnTopic {
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty" />. By default, it will be marked
+    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty" />. By default, it will be marked
     ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)" />.

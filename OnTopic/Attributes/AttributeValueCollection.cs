@@ -299,7 +299,7 @@ namespace OnTopic.Attributes {
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
@@ -346,7 +346,7 @@ namespace OnTopic.Attributes {
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty"/>. By default, it will be marked as
+    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
@@ -490,14 +490,14 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///     If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
     ///     through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
     ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/>'s
     ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
     ///   </para>
     ///   <para>
     ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
-    ///     is inserted. This conveniently provides the name of the <see cref="AttributeValue.Key"/> so it's clear what key is
+    ///     is inserted. This conveniently provides the name of the <see cref="TrackedItem{T}.Key"/> so it's clear what key is
     ///     being duplicated.
     ///   </para>
     /// </remarks>
@@ -535,7 +535,7 @@ namespace OnTopic.Attributes {
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
-    ///   If a settable property is available corresponding to the <see cref="AttributeValue.Key"/>, the call should be routed
+    ///   If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
     ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/>'s
     ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
@@ -561,7 +561,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <remarks>
     ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
-    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
     /// </remarks>
     protected override sealed void RemoveItem(int index) {
       var attribute = this[index];
@@ -578,7 +578,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <remarks>
     ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
-    ///   <see cref="AttributeValue"/>s are marked as <see cref="AttributeValue.IsDirty"/>.
+    ///   <see cref="AttributeValue"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
     /// </remarks>
     protected override sealed void ClearItems() {
       DeletedAttributes.AddRange(Items.Select(a => a.Key));

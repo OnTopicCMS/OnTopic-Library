@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.References;
 
@@ -50,9 +51,9 @@ namespace OnTopic.Metadata {
     /// </summary>
     /// <remarks>
     ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
+    ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedItem{T}.IsDirty"/>, which is required in order to
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
+    ///   cref="TrackedItem{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
     ///   persistence store.
     /// </remarks>

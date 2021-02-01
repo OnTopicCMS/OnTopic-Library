@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.References;
 
 namespace OnTopic.Internal.Reflection {
@@ -51,7 +52,7 @@ namespace OnTopic.Internal.Reflection {
   ///     and can optionally be retrieved via <see cref="IsRegistered(String, out TValueType?)"/>. This is useful in case there
   ///     is data from the original request that might be lost when routed through the property setter. For example, the <see
   ///     cref="Topic.Attributes"/> collection works with <see cref="AttributeValue"/> instances, which contain metadata such as
-  ///     <see cref="AttributeValue.IsDirty"/>, <see cref="AttributeValue.IsExtendedAttribute"/>, and <see cref="AttributeValue.
+  ///     <see cref="TrackedItem{T}.IsDirty"/>, <see cref="AttributeValue.IsExtendedAttribute"/>, and <see cref="TrackedItem{T}.
   ///     LastModified"/>, which are not passed to the corresponding property decorated with <see cref="AttributeSetterAttribute
   ///     "/>. As such, by saving a reference to those as part of the <see cref="Register(String, TValueType?)"/> process, we
   ///     allow the source collection to retrieve the original request in order to ensure that data isn't lost. This isn't as

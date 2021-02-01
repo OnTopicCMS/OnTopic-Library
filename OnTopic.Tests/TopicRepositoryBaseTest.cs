@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
 using OnTopic.References;
@@ -278,8 +279,8 @@ namespace OnTopic.Tests {
     | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS EXTENDED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects an <see
-    ///   cref="AttributeValue"/> to be returned even if it's <i>not</i> <see cref="AttributeValue.IsDirty"/> <i>but</i> its
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedItem{T}.IsDirty"/>. Expects an <see
+    ///   cref="AttributeValue"/> to be returned even if it's <i>not</i> <see cref="TrackedItem{T}.IsDirty"/> <i>but</i> its
     ///   <see cref="AttributeValue.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
     [TestMethod]
@@ -300,7 +301,7 @@ namespace OnTopic.Tests {
     | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS NOTHING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects the <see
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedItem{T}.IsDirty"/>. Expects the <see
     ///   cref="AttributeValue"/> to <i>not</i> be returned even though its <see cref="AttributeValue.IsExtendedAttribute"/>
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.

@@ -8,6 +8,7 @@ using System.Collections;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Tests.Entities;
 
 namespace OnTopic.Tests {
@@ -317,7 +318,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
-    ///   <see cref="AttributeValue.IsDirty"/>.
+    ///   <see cref="TrackedItem{T}.IsDirty"/>.
     /// </summary>
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
@@ -336,7 +337,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
-    ///   cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   cref="TrackedItem{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>true</c>.
     /// </summary>
     [TestMethod]
@@ -374,7 +375,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
-    ///   <see cref="AttributeValue.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   <see cref="TrackedItem{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>false</c>/
     /// </summary>
     [TestMethod]
@@ -393,7 +394,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
-    ///   <see cref="AttributeValue.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
+    ///   <see cref="TrackedItem{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -414,7 +415,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
-    ///   that the <see cref="AttributeValue.LastModified"/> returns the new <c>version</c> after calling <see cref="
+    ///   that the <see cref="TrackedItem{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
     ///   AttributeValueCollection.MarkClean(DateTime?)"/>.
     /// </summary>
     [TestMethod]
@@ -623,8 +624,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
-    ///   "AttributeValueCollection"/> and confirms that the original <see cref="AttributeValue.IsDirty"/> is replaced if the
-    ///   <see cref="AttributeValue.Value"/> changes.
+    ///   "AttributeValueCollection"/> and confirms that the original <see cref="TrackedItem{T}.IsDirty"/> is replaced if the
+    ///   <see cref="TrackedItem{T}.Value"/> changes.
     /// </summary>
     [TestMethod]
     public void Add_WithBusinessLogic_MaintainsIsDirty() {
