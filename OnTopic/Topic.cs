@@ -647,7 +647,7 @@ namespace OnTopic {
     /// </requires>
     [ReferenceSetter]
     public Topic? BaseTopic {
-      get => References.GetTopic("BaseTopic", false);
+      get => References.Contains("BaseTopic") ? References["BaseTopic"].Value : null;
       set {
         Contract.Requires<ArgumentException>(
           value != this,
