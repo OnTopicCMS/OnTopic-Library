@@ -401,7 +401,7 @@ namespace OnTopic.Collections.Specialized {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public void SetValue(
+    internal void SetValue(
       string key,
       TValue? value,
       bool enforceBusinessLogic,
