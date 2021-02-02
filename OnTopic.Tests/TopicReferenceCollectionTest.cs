@@ -45,7 +45,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: NEW REFERENCE: NOT DIRTY
+    | TEST: SET VALUE: NEW REFERENCE: NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
@@ -153,7 +153,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: EXISTING REFERENCE: TOPIC UPDATED
+    | TEST: SET VALUE: EXISTING REFERENCE: TOPIC UPDATED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
     ///   confirms that the <see cref="Topic"/> reference is correctly updated.
     /// </summary>
     [TestMethod]
-    public void SetTopic_ExistingReference_TopicUpdated() {
+    public void SetValue_ExistingReference_TopicUpdated() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
@@ -176,7 +176,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: NULL REFERENCE: TOPIC REMOVED
+    | TEST: SET VALUE: NULL REFERENCE: TOPIC REMOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
@@ -185,7 +185,7 @@ namespace OnTopic.Tests {
     ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference is correctly removed.
     /// </summary>
     [TestMethod]
-    public void SetTopic_NullReference_TopicRemoved() {
+    public void SetValue_NullReference_TopicRemoved() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
