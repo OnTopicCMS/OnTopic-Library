@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
@@ -29,6 +30,14 @@ namespace OnTopic.Collections.Specialized {
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <summary>
+    ///   Constructs a new instance of a <see cref="TrackedItem{T}"/> class.
+    /// </summary>
+    protected TrackedItem() {
+      LastModified              = DateTime.UtcNow;
+    }
+
     /// <summary>
     ///   Constructs a new instance of a <see cref="TrackedItem{T}"/> class.
     /// </summary>
@@ -65,7 +74,8 @@ namespace OnTopic.Collections.Specialized {
     ///   exception="T:System.ArgumentException">
     ///   !value.Contains(" ")
     /// </requires>
-    public string Key { get; init; }
+    [NotNull]
+    public string? Key { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: VALUE
