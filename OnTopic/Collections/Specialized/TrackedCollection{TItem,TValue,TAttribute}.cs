@@ -39,7 +39,7 @@ namespace OnTopic.Collections.Specialized {
     /*==========================================================================================================================
     | DISPATCHER
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly TopicPropertyDispatcher<TAttribute, TItem> _topicPropertyDispatcher;
+    private readonly TopicPropertyDispatcher<TItem, TValue, TAttribute> _topicPropertyDispatcher;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
