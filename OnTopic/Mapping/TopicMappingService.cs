@@ -281,6 +281,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property, attributePrefix);
       var topicReferenceId      = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+      var topicReference        = source.References.GetValue(configuration.AttributeKey);
 
       if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
         topicReferenceId        = source.Attributes.GetInteger(configuration.AttributeKey, 0);
@@ -314,7 +315,7 @@ namespace OnTopic.Mapping {
         }
       }
       else if (
-        source.References.TryGetValue(configuration.AttributeKey, out var topicReference) &&
+        topicReference is not null &&
         relationships.HasFlag(Relationships.References)
       ) {
         await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
