@@ -282,7 +282,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
               from reference in topic.References
               select new XElement(_pagemapNamespace + "Attribute",
                 new XAttribute("name", reference.Key),
-                new XText(reference.Value.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
+                new XText(reference.Value?.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
               )
             );
 

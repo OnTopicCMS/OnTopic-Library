@@ -349,7 +349,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
-        topic.References.Values.Any(t => t.Id < 0)
+        topic.References.Any(t => t.Value?.Id < 0)
       ) {
         unresolvedTopics.Add(topic);
       }
