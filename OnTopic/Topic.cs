@@ -698,7 +698,7 @@ namespace OnTopic {
     ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
-    public TopicReferenceDictionary References { get; }
+    public TopicReferenceCollection References { get; }
 
     /*==========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS

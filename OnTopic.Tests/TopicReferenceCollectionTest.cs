@@ -7,11 +7,12 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.References;
 using OnTopic.Tests.Entities;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: TOPIC REFERENCE DICTIONARY TEST
+  | CLASS: TOPIC REFERENCE COLLECTION TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicReferenceDictionary"/>, with a particular emphasis on the custom features
@@ -20,7 +21,7 @@ namespace OnTopic.Tests {
   ///   values in the <see cref="Topic.IncomingRelationships"/> property.
   /// </summary>
   [TestClass]
-  public class TopicReferenceDictionaryTest {
+  public class TopicReferenceCollectionTest {
 
     /*==========================================================================================================================
     | TEST: ADD: NEW REFERENCE: IS DIRTY
