@@ -309,7 +309,7 @@ namespace OnTopic.Tests {
       topic.Attributes.Clear();
 
       Assert.IsTrue(topic.Attributes.IsDirty());
-      Assert.IsTrue(topic.Attributes.DeletedAttributes.Contains("Foo"));
+      Assert.IsTrue(topic.Attributes.DeletedItems.Contains("Foo"));
 
     }
 
