@@ -95,13 +95,13 @@ namespace OnTopic.Tests.Entities {
     /// </summary>
     [ReferenceSetter]
     public Topic? TopicReference {
-      get => References.GetTopic("TopicReference");
+      get => References.GetValue("TopicReference");
       set {
         Contract.Requires<ArgumentOutOfRangeException>(
           value.ContentType == ContentType,
           $"{nameof(TopicReference)} expects a topic with the same content type as the parent: {ContentType}."
         );
-        References.SetTopic("TopicReference", value);
+        References.SetValue("TopicReference", value);
       }
     }
 

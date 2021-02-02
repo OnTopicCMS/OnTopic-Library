@@ -290,7 +290,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = finalBaseTopic;
 
       Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
-      Assert.AreEqual<int>(2, topic.References.GetTopic("BaseTopic").Id);
+      Assert.AreEqual<int>(2, topic.References.GetValue("BaseTopic").Id);
 
     }
 
@@ -312,7 +312,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
 
       Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
-      Assert.AreEqual<int>(5, topic.References.GetTopic("BaseTopic").Id);
+      Assert.AreEqual<int>(5, topic.References.GetValue("BaseTopic").Id);
 
     }
 
@@ -379,7 +379,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page", 2);
 
       topic.Attributes.SetValue("Related", related.Key);
-      topic.References.SetTopic("Related", related);
+      topic.References.SetValue("Related", related);
       topic.Relationships.SetTopic("Related", related);
 
       Assert.IsTrue(topic.IsDirty(true));
@@ -401,7 +401,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page");
 
       topic.Attributes.SetValue("Related", related.Key);
-      topic.References.SetTopic("Related", related);
+      topic.References.SetValue("Related", related);
       topic.Relationships.SetTopic("Related", related);
 
       topic.MarkClean(true);

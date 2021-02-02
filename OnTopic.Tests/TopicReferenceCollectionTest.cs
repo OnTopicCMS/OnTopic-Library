@@ -57,7 +57,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetTopic("Reference", reference, false);
+      topic.References.SetValue("Reference", reference, false);
 
       Assert.AreEqual<int>(1, topic.References.Count);
       Assert.IsFalse(topic.References.IsDirty());
@@ -78,7 +78,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetTopic("Reference", reference, false);
+      topic.References.SetValue("Reference", reference, false);
       topic.References.Remove("Reference");
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -100,7 +100,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetTopic("Reference", reference, false);
+      topic.References.SetValue("Reference", reference, false);
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -165,10 +165,10 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
       var newReference          = TopicFactory.Create("NewReference", "Page");
 
-      topic.References.Add("Reference", reference);
-      topic.References.SetTopic("Reference", newReference);
+      topic.References.SetValue("Reference", reference);
+      topic.References.SetValue("Reference", newReference);
 
-      Assert.AreEqual(newReference, topic.References.GetTopic("Reference"));
+      Assert.AreEqual(newReference, topic.References.GetValue("Reference"));
 
     }
 
@@ -188,9 +188,10 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.Add("Reference", reference);
-      topic.References.SetTopic("Reference", null);
+      topic.References.SetValue("Reference", null);
 
       Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.IsNull(topic.References.GetValue("Reference"));
 
     }
 
@@ -229,7 +230,7 @@ namespace OnTopic.Tests {
 
       topic.References.Add("Reference", reference);
 
-      Assert.AreEqual(reference, topic.References.GetTopic("Reference"));
+      Assert.AreEqual(reference, topic.References.GetValue("Reference"));
 
     }
 
@@ -249,7 +250,7 @@ namespace OnTopic.Tests {
 
       topic.References.Add("Reference", reference);
 
-      Assert.IsNull(topic.References.GetTopic("MissingReference"));
+      Assert.IsNull(topic.References.GetValue("MissingReference"));
 
     }
 
@@ -271,7 +272,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
       baseTopic.References.Add("Reference", reference);
 
-      Assert.AreEqual(reference, topic.References.GetTopic("Reference"));
+      Assert.AreEqual(reference, topic.References.GetValue("Reference"));
 
     }
 
@@ -294,7 +295,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
       baseTopic.References.Add("Reference", reference);
 
-      Assert.IsNull(topic.References.GetTopic("MissingReference"));
+      Assert.IsNull(topic.References.GetValue("MissingReference"));
 
     }
 
@@ -317,7 +318,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
       baseTopic.References.Add("Reference", reference);
 
-      Assert.IsNull(topic.References.GetTopic("Reference", false));
+      Assert.IsNull(topic.References.GetValue("Reference", null, false, false));
 
     }
 

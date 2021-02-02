@@ -603,7 +603,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Page", parent);
       var reference             = TopicFactory.Create("Reference", "Page", topic);
 
-      topic.References.SetTopic("Test", reference);
+      topic.References.SetValue("Test", reference);
 
       _topicRepository.Save(topic, true);
 
@@ -627,7 +627,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Page", parent);
       var reference             = TopicFactory.Create("Reference", "Page", parent);
 
-      topic.References.SetTopic("Test", reference);
+      topic.References.SetValue("Test", reference);
 
       _topicRepository.Save(topic, true);
 

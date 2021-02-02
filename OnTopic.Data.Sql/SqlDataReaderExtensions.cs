@@ -434,7 +434,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.References.SetTopic(relationshipKey, referenced, markDirty);
+      current.References.SetValue(relationshipKey, referenced, markDirty);
 
     }
 
