@@ -34,7 +34,7 @@ namespace OnTopic.Tests.Entities {
     ///   Provides a text property which is intended to be mapped to a text attribute.
     /// </summary>
     [AttributeSetter]
-    public string TextAttribute {
+    public string? TextAttribute {
       get => Attributes.GetValue("TextAttribute");
       set => SetAttributeValue("TextAttribute", value);
     }
