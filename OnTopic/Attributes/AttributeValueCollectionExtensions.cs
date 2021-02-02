@@ -208,7 +208,7 @@ namespace OnTopic.Attributes {
       string                    key,
       bool                      value,
       bool?                     isDirty                         = null
-    ) => attributes?.SetValue(key, value ? "1" : "0", isDirty, true);
+    ) => attributes?.SetValue(key, value ? "1" : "0", isDirty);
 
     /*==========================================================================================================================
     | METHOD: SET INTEGER
@@ -249,7 +249,7 @@ namespace OnTopic.Attributes {
     ) => attributes?.SetValue(
       key,
       value.ToString(CultureInfo.InvariantCulture),
-      isDirty, true
+      isDirty
     );
 
     /*==========================================================================================================================
@@ -291,7 +291,7 @@ namespace OnTopic.Attributes {
     ) => attributes?.SetValue(
       key,
       value.ToString(CultureInfo.InvariantCulture),
-      isDirty, true
+      isDirty
     );
 
     /*==========================================================================================================================
@@ -333,8 +333,7 @@ namespace OnTopic.Attributes {
     ) => attributes?.SetValue(
       key,
       value.ToString(CultureInfo.InvariantCulture),
-      isDirty,
-      true
+      isDirty
     );
 
   } //Class
