@@ -36,7 +36,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
 
       Assert.AreEqual<int>(1, topic.References.Count);
       Assert.IsTrue(topic.References.IsDirty());
@@ -52,7 +52,7 @@ namespace OnTopic.Tests {
     ///   TopicReferenceDictionary.IsDirty()"/> is not set.
     /// </summary>
     [TestMethod]
-    public void SetTopic_NewReference_NotDirty() {
+    public void SetValue_NewReference_NotDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
@@ -122,7 +122,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
 
       Assert.AreEqual<int>(1, reference.IncomingRelationships.GetTopics("Reference").Count);
 
@@ -143,7 +143,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
       topic.References.Remove("Reference");
 
       Assert.AreEqual<int>(0, reference.IncomingRelationships.GetTopics("Reference").Count);
@@ -187,7 +187,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -208,7 +208,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page", 2);
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
 
       Assert.IsTrue(topic.IsDirty(true));
       Assert.IsFalse(reference.IsDirty(true));
@@ -228,7 +228,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
 
       Assert.AreEqual(reference, topic.References.GetValue("Reference"));
 
@@ -248,7 +248,7 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("Reference", reference);
+      topic.References.SetValue("Reference", reference);
 
       Assert.IsNull(topic.References.GetValue("MissingReference"));
 
@@ -270,7 +270,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
-      baseTopic.References.Add("Reference", reference);
+      baseTopic.References.SetValue("Reference", reference);
 
       Assert.AreEqual(reference, topic.References.GetValue("Reference"));
 
@@ -293,7 +293,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
-      baseTopic.References.Add("Reference", reference);
+      baseTopic.References.SetValue("Reference", reference);
 
       Assert.IsNull(topic.References.GetValue("MissingReference"));
 
@@ -316,7 +316,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.BaseTopic           = baseTopic;
-      baseTopic.References.Add("Reference", reference);
+      baseTopic.References.SetValue("Reference", reference);
 
       Assert.IsNull(topic.References.GetValue("Reference", null, false, false));
 
@@ -335,7 +335,7 @@ namespace OnTopic.Tests {
       var topic                 = new CustomTopic("Test", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.Add("TopicReference", reference);
+      topic.References.SetValue("TopicReference", reference);
 
       Assert.AreEqual<Topic>(reference, topic.TopicReference);
 
@@ -357,7 +357,7 @@ namespace OnTopic.Tests {
       var topic                 = new CustomTopic("Test", "Page");
       var reference             = TopicFactory.Create("Reference", "Container");
 
-      topic.References.Add("TopicReference", reference);
+      topic.References.SetValue("TopicReference", reference);
 
     }
 

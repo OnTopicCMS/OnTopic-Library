@@ -653,7 +653,7 @@ namespace OnTopic {
           value != this,
           "A topic may not derive from itself."
         );
-        References.SetTopic("BaseTopic", value);
+        References.SetValue("BaseTopic", value);
       }
     }
 
