@@ -187,6 +187,9 @@ namespace OnTopic.Internal.Reflection {
       if (typeof(AttributeValue).IsAssignableFrom(type)) {
         type = null;
       }
+      else if (typeof(TopicReference).IsAssignableFrom(type)) {
+        type = (initialValue as TopicReference)?.Value?.GetType();
+      }
       if (
         _typeCache.HasSettableProperty(_associatedTopic.GetType(), itemKey, type) &&
         !PropertyCache.ContainsKey(itemKey)
@@ -265,12 +268,13 @@ namespace OnTopic.Internal.Reflection {
           );
         }
         var attribute = initialObject as AttributeValue;
+        var topicReference = initialObject as TopicReference;
         try {
           if (attribute is not null) {
             _typeCache.SetPropertyValue(_associatedTopic, itemKey, attribute.Value);
           }
-          else {
-            _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject);
+          else if (topicReference is not null) {
+            _typeCache.SetPropertyValue(_associatedTopic, itemKey, topicReference.Value);
           }
         }
         catch (TargetInvocationException ex) {
