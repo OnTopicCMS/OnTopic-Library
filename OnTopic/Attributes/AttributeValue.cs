@@ -44,6 +44,9 @@ namespace OnTopic.Attributes {
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public AttributeValue(): base() { }
+
     /// <summary>
     ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair.
     /// </summary>
