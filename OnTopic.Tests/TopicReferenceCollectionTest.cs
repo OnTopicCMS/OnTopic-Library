@@ -381,7 +381,7 @@ namespace OnTopic.Tests {
       var topic                 = new CustomTopic("Test", "Page");
       var reference             = TopicFactory.Create("Reference", "Container");
 
-      topic.References["TopicReference"] = reference;
+      topic.References.Add(new("TopicReference", reference));
 
     }
 
