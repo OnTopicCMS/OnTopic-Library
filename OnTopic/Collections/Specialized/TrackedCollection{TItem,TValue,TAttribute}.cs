@@ -363,7 +363,7 @@ namespace OnTopic.Collections.Specialized {
       bool? markDirty = null,
       DateTime? version = null
     )
-      => SetValue(key, value, true, markDirty, version);
+      => SetValue(key, value, markDirty, true, version);
 
     /// <summary>
     ///   Internal helper method that either adds a new <see cref="TrackedItem{T}"/> object or updates the value of an existing
@@ -404,8 +404,8 @@ namespace OnTopic.Collections.Specialized {
     internal void SetValue(
       string key,
       TValue? value,
-      bool enforceBusinessLogic,
       bool? markDirty,
+      bool enforceBusinessLogic,
       DateTime? version = null
     ) {
 
