@@ -193,7 +193,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference);
       topic.References.SetValue("Reference", null);
 
-      Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.AreEqual<int>(1, topic.References.Count);
       Assert.IsNull(topic.References.GetValue("Reference"));
 
     }
