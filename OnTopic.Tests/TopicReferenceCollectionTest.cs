@@ -15,10 +15,11 @@ namespace OnTopic.Tests {
   | CLASS: TOPIC REFERENCE COLLECTION TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicReferenceDictionary"/>, with a particular emphasis on the custom features
-  ///   such as <see cref="TopicReferenceDictionary.IsDirty()"/>, <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"
-  ///   />, <see cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and the cross-referencing of reciprocal
-  ///   values in the <see cref="Topic.IncomingRelationships"/> property.
+  ///   Provides unit tests for the <see cref="TopicReferenceCollection"/>, with a particular emphasis on the custom features
+  ///   such as <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/>, <see cref="TrackedCollection{TItem,
+  ///   TValue, TAttribute}.GetValue(String, Boolean)"/>, <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(
+  ///   String, TValue, Boolean?, DateTime?)"/>, and the cross-referencing of reciprocal values in the <see cref="Topic.
+  ///   IncomingRelationships"/> property.
   /// </summary>
   [TestClass]
   public class TopicReferenceCollectionTest {
@@ -27,8 +28,8 @@ namespace OnTopic.Tests {
     | TEST: ADD: NEW REFERENCE: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.IsDirty()"/> is correctly set.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
+    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> is correctly set.
     /// </summary>
     [TestMethod]
     public void Add_NewReference_IsDirty() {
@@ -47,9 +48,9 @@ namespace OnTopic.Tests {
     | TEST: SET TOPIC: NEW REFERENCE: NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and confirms that <see cref="
-    ///   TopicReferenceDictionary.IsDirty()"/> is not set.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that <see
+    ///   cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> is not set.
     /// </summary>
     [TestMethod]
     public void SetValue_NewReference_NotDirty() {
@@ -68,9 +69,9 @@ namespace OnTopic.Tests {
     | TEST: REMOVE: EXISTING REFERENCE: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a topic reference, removes that reference using <see cref=
-    ///   "TopicReferenceDictionary.Remove(String)"/> , and confirms that <see cref="TopicReferenceDictionary.IsDirty()"/> is
-    ///   set.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/> with a topic reference, removes that reference using <see cref=
+    ///   "TrackedCollection{TItem, TValue, TAttribute}.RemoveItem(Int32)"/>, and confirms that <see cref="TrackedCollection{
+    ///   TItem, TValue, TAttribute}.IsDirty()"/> is set.
     /// </summary>
     [TestMethod]
     public void Remove_ExistingReference_IsDirty() {
@@ -90,9 +91,10 @@ namespace OnTopic.Tests {
     | TEST: CLEAR: EXISTING REFERENCES: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, calls <see cref="TopicReferenceDictionary
-    ///   .Clear()"/> and confirms that <see cref="TopicReferenceDictionary.IsDirty()"/> is set.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, calls <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.ClearItems()"/> and confirms that <see cref="TrackedCollection{TItem,
+    ///   TValue, TAttribute}.IsDirty()"/> is set.
     /// </summary>
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
@@ -112,9 +114,9 @@ namespace OnTopic.Tests {
     | TEST: ADD: NEW REFERENCE: INCOMING RELATIONSHIP SET
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.Add(String, Topic)"/>, and confirms that <see cref="Topic.IncomingRelationships"/>
-    ///   reference is correctly set.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and confirms that <see
+    ///   cref="Topic.IncomingRelationships"/> reference is correctly set.
     /// </summary>
     [TestMethod]
     public void Add_NewReference_IncomingRelationshipSet() {
@@ -132,10 +134,10 @@ namespace OnTopic.Tests {
     | TEST: REMOVE: EXISTING REFERENCE: INCOMING RELATIONSHIP REMOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.Add(String, Topic)"/>, removes the reference using <see cref="TopicReferenceDictionary
-    ///   .Remove(String)"/>, and confirms that the <see cref="Topic.IncomingRelationships"/> reference is correctly removed as
-    ///   well.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, removes the reference
+    ///   using <see cref="TrackedCollection{TItem, TValue, TAttribute}.RemoveItem(Int32)"/>, and confirms that the <see cref="
+    ///   Topic.IncomingRelationships"/> reference is correctly removed as well.
     /// </summary>
     [TestMethod]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
@@ -154,9 +156,10 @@ namespace OnTopic.Tests {
     | TEST: SET TOPIC: EXISTING REFERENCE: TOPIC UPDATED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.Add(String, Topic)"/>, updates the reference using <see cref="TopicReferenceDictionary
-    ///   .SetTopic(String, Topic?, Boolean?)"/>, and confirms that the <see cref="Topic"/> reference is correctly updated.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, updates the reference
+    ///   using <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, and
+    ///   confirms that the <see cref="Topic"/> reference is correctly updated.
     /// </summary>
     [TestMethod]
     public void SetTopic_ExistingReference_TopicUpdated() {
@@ -176,10 +179,10 @@ namespace OnTopic.Tests {
     | TEST: SET TOPIC: NULL REFERENCE: TOPIC REMOVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference using <see
-    ///   cref="TopicReferenceDictionary.Add(String, Topic)"/>, updates the reference with a null value using <see cref=
-    ///   "TopicReferenceDictionary.SetTopic(String, Topic?, Boolean?)"/>, and confirms that the <see cref="Topic"/> reference
-    ///   is correctly removed.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, updates the reference
+    ///   with a null value using <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
+    ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference is correctly removed.
     /// </summary>
     [TestMethod]
     public void SetTopic_NullReference_TopicRemoved() {
@@ -199,7 +202,7 @@ namespace OnTopic.Tests {
     | TEST: ADD: NEW REFERENCE: TOPIC IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
     ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/> is correctly set.
     /// </summary>
     [TestMethod]
@@ -219,8 +222,9 @@ namespace OnTopic.Tests {
     | TEST: GET TOPIC: EXISTING REFERENCE: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns the <see cref="Topic"/>.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
+    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the <see cref="
+    ///   Topic"/>.
     /// </summary>
     [TestMethod]
     public void GetTopic_ExistingReference_ReturnsTopic() {
@@ -238,9 +242,9 @@ namespace OnTopic.Tests {
     | TEST: GET TOPIC: MISSING REFERENCE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/>, adds a new <see cref="Topic"/> reference, and confirms that
-    ///   <see cref="TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if an incorrect
-    ///   <c>referencedKey</c> is entered.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference, and confirms that
+    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if
+    ///   an incorrect <c>referencedKey</c> is entered.
     /// </summary>
     [TestMethod]
     public void GetTopic_MissingReference_ReturnsNull() {
@@ -258,9 +262,9 @@ namespace OnTopic.Tests {
     | TEST: GET TOPIC: INHERITED REFERENCE: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see
-    ///   cref="Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref=
-    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns the related topic reference.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see cref="
+    ///   Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref="TrackedCollection{TItem, TValue,
+    ///   TAttribute}.GetValue(String, Boolean)"/> correctly returns the related topic reference.
     /// </summary>
     [TestMethod]
     public void GetTopic_InheritedReference_ReturnsTopic() {
@@ -280,10 +284,10 @@ namespace OnTopic.Tests {
     | TEST: GET TOPIC: INHERITED REFERENCE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see
-    ///   cref="Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref=
-    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if an incorrect <c>referencedKey
-    ///   </c> is entered.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see cref="
+    ///   Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref="TrackedCollection{TItem, TValue,
+    ///   TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if an incorrect <c>referencedKey</c> is
+    ///   entered.
     /// </summary>
     [TestMethod]
     public void GetTopic_InheritedReference_ReturnsNull() {
@@ -303,10 +307,10 @@ namespace OnTopic.Tests {
     | TEST: GET TOPIC: INHERITED REFERENCE WITHOUT INHERITANCE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Assembles a new <see cref="TopicReferenceDictionary"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see
-    ///   cref="Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref=
-    ///   "TopicReferenceDictionary.GetTopic(String, Boolean)"/> correctly returns <c>null</c> if <c>inheritFromBase</c> is
-    ///   set to <c>false</c>.
+    ///   Assembles a new <see cref="TopicReferenceCollection"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see cref="
+    ///   Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref="TrackedCollection{TItem, TValue,
+    ///   TAttribute}.GetValue(String, Boolean)"/> correctly returns <c>null</c> if <c>inheritFromBase</c> is set to
+    ///   <c>false</c>.
     /// </summary>
     [TestMethod]
     public void GetTopic_InheritedReferenceWithoutInheritance_ReturnsNull() {

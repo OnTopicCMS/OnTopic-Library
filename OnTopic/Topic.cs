@@ -629,16 +629,16 @@ namespace OnTopic {
     ///     to help avoid an infinite loop.
     ///   </para>
     ///   <para>
-    ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="
-    ///     KeyValuesPair{String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="
-    ///     Topic"/> hasn't been saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted
-    ///     to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="
-    ///     Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
-    ///     and, if it has subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory
-    ///     topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the
-    ///     underlying data storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is
-    ///     unsaved will need to be saved again once the <see cref="BaseTopic"/> has been saved, assuming it's otherwise outside
-    ///     the scope of the original <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> call.
+    ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
+    ///     {String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="Topic"/> hasn't been
+    ///     saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
+    ///     repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="Repositories.
+    ///     ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated and, if it has
+    ///     subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory topic graphs to
+    ///     be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the underlying data
+    ///     storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is unsaved will
+    ///     need to be saved again once the <see cref="BaseTopic"/> has been saved, assuming it's otherwise outside the scope of
+    ///     the original <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> call.
     ///   </para>
     /// </remarks>
     /// <value>The <see cref="Topic"/> that values should be inherited from, if not otherwise available.</value>

@@ -23,7 +23,7 @@ namespace OnTopic.References {
   ///     LastModified"/> date.
   ///   </para>
   ///   <para>
-  ///     Typically, the <see cref="TopicReference"/> will be exposed as part of a <see cref="TopicReferenceDictionary"/> via
+  ///     Typically, the <see cref="TopicReference"/> will be exposed as part of a <see cref="TopicReferenceCollection"/> via
   ///     the <see cref="Topic.References"/> collection.
   ///   </para>
   ///   <para>

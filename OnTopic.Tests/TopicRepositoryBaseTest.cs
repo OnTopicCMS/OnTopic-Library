@@ -593,8 +593,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
-    ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TopicReferenceDictionary.IsDirty()"
-    ///   /> as <c>false</c>.
+    ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedCollection{TItem, TValue,
+    ///   TAttribute}.IsDirty()"/> as <c>false</c>.
     /// </summary>
     [TestMethod]
     public void Save_UnresolvedReference_Resolves() {
