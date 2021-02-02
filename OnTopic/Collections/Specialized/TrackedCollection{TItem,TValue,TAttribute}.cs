@@ -8,108 +8,115 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Repositories;
 
-namespace OnTopic.Attributes {
+namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION
+  | CLASS: TRACKED COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents a collection of <see cref="AttributeValue"/> objects.
+  ///   Represents a collection of <see cref="TrackedItem{T}"/> records, along with methods "updating" those records and working
+  ///   with their <see cref="TrackedItem{T}.IsDirty"/> state.
   /// </summary>
   /// <remarks>
-  ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics.
-  ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
-  ///   the <see cref="AttributeValueCollection"/> class.
+  ///   <see cref="TrackedItem{T}"/> records represent individual instances of values associated with a particular <see cref="
+  ///   Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
+  ///   cref="TrackedCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with these
+  ///   records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
+  ///   "SetValue(String, TValue?, Boolean?, DateTime?)"/> for creating or "updating" a record. (Records are
+  ///   immutable, so updates actually involve cloning the record with updated values.)
   /// </remarks>
-  public class AttributeValueCollection : KeyedCollection<string, AttributeValue>, ITrackDirtyKeys {
+  public abstract class TrackedCollection<TItem, TValue, TAttribute> :
+    KeyedCollection<string, TItem>, ITrackDirtyKeys
+    where TItem: TrackedItem<TValue>, new()
+    where TAttribute: Attribute
+    where TValue : class
+  {
 
     /*==========================================================================================================================
     | DISPATCHER
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly TopicPropertyDispatcher<AttributeSetterAttribute, AttributeValue> _topicPropertyDispatcher;
-
-    /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            Topic                           _associatedTopic;
+    private readonly TopicPropertyDispatcher<TAttribute, TItem> _topicPropertyDispatcher;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
+    ///   Initializes a new instance of the <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> class.
     /// </summary>
-    /// <remarks>
-    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the
-    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
-    /// </remarks>
-    /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-    internal AttributeValueCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
-      _associatedTopic = parentTopic;
-      _topicPropertyDispatcher = new(parentTopic);
+    /// <param name="parentTopic">A reference to the topic that the current collection is bound to.</param>
+    internal TrackedCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(parentTopic, nameof(parentTopic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set properties
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      AssociatedTopic           = parentTopic;
+      _topicPropertyDispatcher  = new(parentTopic);
+
     }
 
     /*==========================================================================================================================
-    | PROPERTY: DELETED ATTRIBUTES
+    | ASSOCIATED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   When an attribute is deleted, keep track of it so that it can be marked for deletion when the topic is saved.
+    ///   The <see cref="Topic"/> that the current collection is associated with.
+    /// </summary>
+    /// <remarks>
+    ///   This is used for operations that require inheritance or pass-through of <see cref="Topic"/> properies in order to e.g.
+    ///   enforce business logic.
+    /// </remarks>
+    protected Topic AssociatedTopic { get; init; }
+
+    /*==========================================================================================================================
+    | PROPERTY: DELETED ITEMS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   When a <see cref="TrackedItem{T}"/> is deleted, keep track of it so that it can be marked for deletion when the <see
+    ///   cref="Topic"/> is saved.
     /// </summary>
     /// <remarks>
     ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
-    ///   <see cref="IsDirty(Boolean)"/>. If a <see cref="AttributeValue"/> is deleted, then it won't be marked as dirty. If no
-    ///   other <see cref="AttributeValue"/> instances were modified, then the topic won't get saved, and that value won't be
-    ///   deleted. Further more, the <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method has no way of
-    ///   detecting the deletion of arbitrary attributesï¿½i.e., attributes that were deleted which don't correspond to attributes
-    ///   configured on the <see cref="Metadata.ContentTypeDescriptor"/>. By tracking any deleted attributes, we ensure both
-    ///   scenarios can be accounted for.
+    ///   <see cref="IsDirty()"/>. If a <see cref="TrackedItem{T}"/> is deleted, then it won't be marked as <see cref="
+    ///   TrackedItem{T}.IsDirty"/>. If no other <see cref="TrackedItem{T}"/> instances were modified, then the <see cref="Topic
+    ///   "/> won't get saved, and that <see cref="TrackedItem{T}.Value"/> won't be deleted. Further more, methods like the <see
+    ///   cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of arbitrary
+    ///   values—i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref="Metadata.
+    ///   ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedItem{T}"/> instances, we ensure both scenarios can
+    ///   be accounted for.
     /// </remarks>
-    internal List<string> DeletedAttributes { get; } = new();
+    internal List<string> DeletedItems { get; } = new();
 
     /*==========================================================================================================================
     | METHOD: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc/>
-    public bool IsDirty() => IsDirty(false);
+    public virtual bool IsDirty() => DeletedItems.Count > 0 || Items.Any(a => a.IsDirty);
 
     /// <summary>
-    ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
+    ///   Determine if a given <see cref="TrackedItem{T}"/> is marked as <see cref="TrackedItem{T}.IsDirty"/>. Will return <c>
+    ///   false</c> if the <see cref="TrackedItem{T}.Key"/> cannot be found in the collection.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
-    ///   to determine if any attributes are dirty prior to saving them to the data storage medium. Be aware that this does
-    ///   <i>not</i> track whether any <see cref="Topic.Relationships"/> have been modified; as such, it may still be necessary
-    ///   to persist changes to the storage medium.
+    ///   to determine the <see cref="TrackedItem{T}.IsDirty"/> state of a <see cref="TrackedItem{T}"/> prior to saving it to
+    ///   the data storage medium. Because <see cref="TrackedItem{T}.IsDirty"/> is a state of the current <see cref="
+    ///   TrackedItem{T}"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromBase</c> (which otherwise default to
+    ///   <c>true</c>).
     /// </remarks>
-    /// <param name="excludeLastModified">
-    ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
-    ///   excluding the byline (<c>LastModifiedBy</c>) and dateline (<c>LastModified</c>) since these values are automatically
-    ///   generated by e.g. the OnTopic Editor and, thus, may be irrelevant updates if no other attribute values have changed.
-    /// </param>
-    /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
-    public bool IsDirty(bool excludeLastModified)
-      => DeletedAttributes.Count > 0 || Items.Any(a =>
-        a.IsDirty &&
-        (!excludeLastModified || !a.Key.StartsWith("LastModified", StringComparison.OrdinalIgnoreCase))
-      );
-
-    /// <summary>
-    ///   Determine if a given attribute is marked as dirty. Will return false if the attribute key cannot be found.
-    /// </summary>
-    /// <remarks>
-    ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
-    ///   to determine if a specific attribute key is dirty prior to saving it to the data storage medium. Because <c>IsDirty
-    ///   </c> is a state of the current <see cref="AttributeValue"/>, it does not support <c>inheritFromParent</c> or <c>
-    ///   inheritFromBase</c> (which otherwise default to <c>true</c>).
-    /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <returns>True if the attribute value is marked as dirty; otherwise false.</returns>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <returns>
+    ///   Returns <c>true</c> if the <see cref="TrackedItem{T}"/> is marked as <see cref="TrackedItem{T}.IsDirty"/>; otherwise
+    ///   <c>false</c>.
+    /// </returns>
     public bool IsDirty(string key) {
       if (!Contains(key)) {
         return false;
@@ -125,50 +132,47 @@ namespace OnTopic.Attributes {
     public void MarkClean() => MarkClean((DateTime?)null);
 
     /// <summary>
-    ///   Marks the collection—including all <see cref="AttributeValue"/> items—as clean, meaning they have been persisted to
-    ///   the underlying <see cref="ITopicRepository"/>.
+    ///   Marks the collection—including all <see cref="TrackedItem{T}"/> instances—as clean, meaning they have been persisted
+    ///   to the underlying <see cref="ITopicRepository"/>.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
-    ///   mark the collection, and all <see cref="AttributeValue"/> items it contains, as clean. After this, <see cref="IsDirty(
-    ///   Boolean)"/> will return <c>false</c> until any <see cref="AttributeValue"/> items are modified or removed.
+    ///   mark the collection, and all <see cref="TrackedItem{T}"/> instances it contains, as clean. After this, <see cref="
+    ///   IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedItem{T}"/> instances are added, modified, or
+    ///   removed.
     /// </remarks>
     /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
-    ///   VersionHistory"/>.
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last saved. This corresponds to the <see
+    ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(DateTime? version) {
-      foreach (var attribute in Items.Where(a => a.IsDirty).ToArray()) {
-        SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
+      foreach (var trackedItem in Items.Where(a => a.IsDirty).ToArray()) {
+        SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
       }
-      DeletedAttributes.Clear();
+      DeletedItems.Clear();
     }
-
-    /*==========================================================================================================================
-    | METHOD: MARK CLEAN
-    \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <inheritdoc/>
     public void MarkClean(string key) => MarkClean(key, null);
 
     /// <summary>
-    ///   Marks an individual <see cref="AttributeValue"/> as clean.
+    ///   Marks an individual <see cref="TrackedItem{T}"/> as clean.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
-    ///   mark an <see cref="AttributeValue"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
+    ///   mark an <see cref="TrackedItem{T}"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
     ///   that item until it is modified.
     /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
     /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the attribute was last modified. This denotes the <see cref="Topic.
-    ///   VersionHistory"/> associated with the specific attribute.
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last saved. This corresponds to the <see
+    ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(string key, DateTime? version) {
       if (Contains(key)) {
-        var attribute           = this[key];
-        if (attribute.IsDirty) {
-          SetValue(attribute.Key, attribute.Value, false, false, version?? DateTime.UtcNow);
+        var trackedItem         = this[key];
+        if (trackedItem.IsDirty) {
+          SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
         }
       }
     }
@@ -176,55 +180,59 @@ namespace OnTopic.Attributes {
     /*==========================================================================================================================
     | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary.
-    /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="inheritFromParent">
-    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
-    /// </param>
-    /// <returns>The string value for the Attribute.</returns>
-    [return: NotNull]
-    public string GetValue(string name, bool inheritFromParent = false) => GetValue(name, "", inheritFromParent);
 
     /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
-    ///   of inheritance, and an optional setting for searching through base topics for values.
+    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/>.
     /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="inheritFromParent">
+    ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
+    /// </param>
+    /// <returns>The <typeparamref name="TValue"/> for the <typeparamref name="TItem"/>.</returns>
+    public TValue? GetValue(string key, bool inheritFromParent = false) => GetValue(key, null, inheritFromParent);
+
+    /// <summary>
+    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/> with a specified
+    ///   <paramref name="defaultValue"/>, an optional setting to enable <paramref name="inheritFromParent"/>, and an optional
+    ///   setting for <paramref name="inheritFromBase"/>.
+    /// </summary>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
-    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
     /// </param>
     /// <param name="inheritFromBase">
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/> topics in
     ///   order to get the value.
     /// </param>
-    /// <returns>The string value for the Attribute.</returns>
+    /// <returns>The <typeparamref name="TValue"/> for the <see cref="TrackedItem{T}"/>.</returns>
     [return: NotNullIfNotNull("defaultValue")]
-    public string? GetValue(string name, string? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
-      return GetValue(name, defaultValue, inheritFromParent, (inheritFromBase? 5 : 0));
+    public TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
+      return GetValue(key, defaultValue, inheritFromParent, inheritFromBase ? 5 : 0);
     }
 
     /// <summary>
-    ///   Gets a named attribute from the Attributes dictionary with a specified default value and an optional number of
-    ///   <see cref="Topic.BaseTopic"/>s through whom to crawl to retrieve an inherited value.
+    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/> with a specified
+    ///   <paramref name="defaultValue"/> and an optional number of <see cref="Topic.BaseTopic"/>s through whom to crawl to
+    ///   retrieve an inherited value.
     /// </summary>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="defaultValue">
+    ///   A <typeparamref name="TValue"/> to which to fall back in the case the value is not found.
+    /// </param>
     /// <param name="inheritFromParent">
-    ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
+    ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
     /// </param>
     /// <param name="maxHops">The number of recursions to perform when attempting to get the value.</param>
-    /// <returns>The string value for the Attribute.</returns>
-    /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(name)
+    /// <returns>The <typeparamref name="TValue"/> value for the <typeparamref name="TItem"/>.</returns>
+    /// <requires description="The key name must be specified." exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The name should be an alphanumeric sequence; it should not contain spaces or symbols."
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
     ///   exception="T:System.ArgumentException">
-    ///   !name.Contains(" ")
+    ///   !key.Contains(" ")
     /// </requires>
     /// <requires
     ///   description="The maximum number of hops should be a positive number." exception="T:System.ArgumentException">
@@ -235,47 +243,54 @@ namespace OnTopic.Attributes {
     ///   maxHops &lt;= 100
     /// </requires>
     [return: NotNullIfNotNull("defaultValue")]
-    internal string? GetValue(string name, string? defaultValue, bool inheritFromParent, int maxHops) {
+    internal virtual TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent, int maxHops) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), nameof(name));
+      TopicFactory.ValidateKey(key, true);
       Contract.Requires<ArgumentOutOfRangeException>(maxHops >= 0, "The maximum number of hops should be a positive number.");
       Contract.Requires<ArgumentOutOfRangeException>(maxHops <= 100, "The maximum number of hops should not exceed 100.");
-      TopicFactory.ValidateKey(name);
 
-      string? value = null;
+      TValue? value = null;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Look up value from Attributes
+      | Look up value from collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (Contains(name)) {
-        value = this[name]?.Value;
+      if (Contains(key)) {
+        value = this[key].Value;
+      }
+
+      if (value is not null && value.ToString().Length == 0) {
+        value = null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from topic pointer
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
-        String.IsNullOrEmpty(value) &&
-        _associatedTopic.BaseTopic is not null &&
-        maxHops > 0
+        value is null &&
+        maxHops > 0 &&
+        BaseCollection is not null
       ) {
-        value = _associatedTopic.BaseTopic.Attributes.GetValue(name, null, false, maxHops - 1);
+        value = BaseCollection.GetValue(key, null, false, maxHops - 1);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Look up value from parent
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(value) && inheritFromParent && _associatedTopic.Parent is not null) {
-        value = _associatedTopic.Parent.Attributes.GetValue(name, defaultValue, inheritFromParent);
+      if (
+        value is null &&
+        inheritFromParent &&
+        ParentCollection is not null
+      ) {
+        value = ParentCollection.GetValue(key, defaultValue, inheritFromParent);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return value, if found
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!String.IsNullOrEmpty(value)) {
+      if (value is not null) {
         return value;
       }
 
@@ -287,20 +302,87 @@ namespace OnTopic.Attributes {
     }
 
     /*==========================================================================================================================
+    | METHOD: PARENT COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the corresponding <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> on the <see cref=
+    ///   "Topic.Parent"/>, if available.
+    /// </summary>
+    protected abstract TrackedCollection<TItem, TValue, TAttribute>? ParentCollection { get; }
+
+    /*==========================================================================================================================
+    | METHOD: BASE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a reference to the corresponding <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> on the <see cref=
+    ///   "Topic.BaseTopic"/>, if available.
+    /// </summary>
+    protected abstract TrackedCollection<TItem, TValue, TAttribute>? BaseCollection { get; }
+
+    /*==========================================================================================================================
     | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="TrackedItem{T}"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
     /// <remarks>
-    ///   Minimizes the need for defensive conditions throughout the library.
+    ///   Working with records can be a bit cumbersome, and especially in determining if a value should be marked as <see cref="
+    ///   TrackedItem{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(String,
+    ///   TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously allowing callers to
+    ///   explicitly set whether the <see cref="TrackedItem{T}"/> instances should be marked as dirty—via the <paramref name="
+    ///   markDirty"/> parameter—and, optionally, what the <paramref name="version"/> should be.
     /// </remarks>
-    /// <param name="key">The string identifier for the AttributeValue.</param>
-    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="value">The text value for the <see cref="TrackedItem{T}"/>.</param>
     /// <param name="markDirty">
     ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
     ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
+    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
+    /// </param>
+    /// <param name="version">
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last modified. This is intended exclusively
+    ///   for use when populating the topic graph from a persistent data store as a means of indicating the current version for
+    ///   each <see cref="TrackedItem{T}"/>. This is used when e.g. importing values to determine if the existing value is newer
+    ///   than the source value.
+    /// </param>
+    /// <requires
+    ///   description="The key must be specified for the TrackedItem{T} key/value pair."
+    ///   exception="T:System.ArgumentNullException">
+    ///   !String.IsNullOrWhiteSpace(key)
+    /// </requires>
+    /// <requires
+    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
+    ///   exception="T:System.ArgumentException">
+    ///   !value.Contains(" ")
+    /// </requires>
+    public virtual void SetValue(
+      string key,
+      TValue? value,
+      bool? markDirty = null,
+      DateTime? version = null
+    )
+      => SetValue(key, value, true, markDirty, version);
+
+    /// <summary>
+    ///   Internal helper method that either adds a new <see cref="TrackedItem{T}"/> object or updates the value of an existing
+    ///   one, depending on whether that value already exists.
+    /// </summary>
+    /// <remarks>
+    ///   When the <paramref name="enforceBusinessLogic"/> parameter is called, no attempt will be made to route the call
+    ///   through the corresponding properties, if available. As such, this is intended specifically to be called by internal
+    ///   properties as a means of avoiding the property being called again when a caller uses the property's setter directly.
+    /// </remarks>
+    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="value">The text value for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="enforceBusinessLogic">
+    ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
+    ///   This should be set to <c>false</c> if setting items from internal properties in order to avoid an infinite loop.
+    /// </param>
+    /// <param name="markDirty">
+    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
+    ///   <c>true</c> if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
@@ -309,16 +391,10 @@ namespace OnTopic.Attributes {
     ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
     ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
     /// </param>
-    /// <param name="isExtendedAttribute">Determines if the attribute originated from an extended attributes data store.</param>
     /// <requires
     ///   description="The key must be specified for the AttributeValue key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
     /// <requires
     ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
@@ -327,77 +403,24 @@ namespace OnTopic.Attributes {
     /// </requires>
     public void SetValue(
       string key,
-      string? value,
-      bool? markDirty = null,
-      DateTime? version = null,
-      bool? isExtendedAttribute = null
-    )
-      => SetValue(key, value, markDirty, true, version, isExtendedAttribute);
-
-    /// <summary>
-    ///   Protected helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing
-    ///   one, depending on whether that value already exists.
-    /// </summary>
-    /// <remarks>
-    ///   When this overload is called, no attempt will be made to route the call through corresponding properties, if
-    ///   available. As such, this is intended specifically to be called by internal properties as a means of avoiding a
-    ///   feedback loop.
-    /// </remarks>
-    /// <param name="key">The string identifier for the AttributeValue.</param>
-    /// <param name="value">The text value for the AttributeValue.</param>
-    /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
-    ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
-    ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
-    /// </param>
-    /// <param name="enforceBusinessLogic">
-    ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
-    ///   This should be set to false if setting attributes from internal properties in order to avoid an infinite loop.
-    /// </param>
-    /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
-    ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
-    ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
-    /// </param>
-    /// <param name="isExtendedAttribute">Determines if the attribute originated from an extended attributes data store.</param>
-    /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
-    ///   exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(value)
-    /// </requires>
-    /// <requires
-    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols"
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
-    internal void SetValue(
-      string key,
-      string? value,
-      bool? markDirty,
+      TValue? value,
       bool enforceBusinessLogic,
-      DateTime? version = null,
-      bool? isExtendedAttribute = null
+      bool? markDirty,
+      DateTime? version = null
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate input
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
-      TopicFactory.ValidateKey(key);
+      TopicFactory.ValidateKey(key, true);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve original attribute
+      | Retrieve original item
       \-----------------------------------------------------------------------------------------------------------------------*/
-      AttributeValue? originalAttributeValue = null;
+      TItem? originalItem = null;
 
       if (Contains(key)) {
-        originalAttributeValue  = this[key];
+        originalItem  = this[key];
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -406,32 +429,31 @@ namespace OnTopic.Attributes {
       | If the original values have already been applied, and SetValue() is being triggered a second time after enforcing
       | business logic, then use the original values, while applying any change in the value triggered by the business logic.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (_topicPropertyDispatcher.IsRegistered(key, out var updatedAttributeValue)) {
-        if (updatedAttributeValue.Value != value) {
-          updatedAttributeValue = updatedAttributeValue with {
+      if (_topicPropertyDispatcher.IsRegistered(key, out var updatedItem)) {
+        if (updatedItem.Value != value) {
+          updatedItem = updatedItem with {
             Value               = value
           };
         }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Update existing attribute value
+      | Update existing item
       >-----------------------------------------------------------------------------------------------------------------------—
-      | Because AttributeValue is immutable, a new instance must be constructed to replace the previous version.
+      | Because TrackedItem<T> is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (originalAttributeValue is not null) {
-        var markAsDirty = originalAttributeValue.IsDirty;
+      else if (originalItem is not null) {
+        var markAsDirty = originalItem.IsDirty;
         if (markDirty.HasValue) {
           markAsDirty = markDirty.Value;
         }
-        else if (originalAttributeValue.Value != value) {
+        else if (originalItem.Value != value) {
           markAsDirty = true;
         }
-        updatedAttributeValue   = originalAttributeValue with {
+        updatedItem             = originalItem with {
           Value                 = value,
           IsDirty               = markAsDirty,
-          LastModified          = version?? originalAttributeValue.LastModified,
-          IsExtendedAttribute   = isExtendedAttribute?? originalAttributeValue.IsExtendedAttribute
+          LastModified          = version?? originalItem.LastModified
         };
       }
 
@@ -442,14 +464,19 @@ namespace OnTopic.Attributes {
       | existing values, these are written to ensure that the collection is marked as IsDirty, thus allowing previous values to
       | be overwritten. Non-existent values, however, should simply be ignored.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      else if (String.IsNullOrEmpty(value)) {
+      else if (value is null || String.IsNullOrEmpty(value.ToString())) {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Create new attribute value
+      | Create new item
       \-----------------------------------------------------------------------------------------------------------------------*/
       else {
-        updatedAttributeValue   = new AttributeValue(key, value, markDirty ?? true, version, isExtendedAttribute);
+        updatedItem = new TItem() {
+          Key                   = key,
+          Value                 = value,
+          IsDirty               = markDirty ?? true,
+          LastModified          = version?? DateTime.UtcNow
+        };
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -463,20 +490,20 @@ namespace OnTopic.Attributes {
       | scenario. This, of course, assumes that properties are correctly written to call the enforceBusinessLogic parameter.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!enforceBusinessLogic) {
-        _topicPropertyDispatcher.Register(key, updatedAttributeValue);
+        _topicPropertyDispatcher.Register(key, updatedItem);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Persist attribute value
+      | Persist item to collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (updatedAttributeValue is null) {
+      if (updatedItem is null) {
         return;
       }
-      else if (originalAttributeValue is not null) {
-        this[IndexOf(originalAttributeValue)] = updatedAttributeValue;
+      else if (originalItem is not null) {
+        this[IndexOf(originalItem)] = updatedItem;
       }
       else {
-        Add(updatedAttributeValue);
+        Add(updatedItem);
       }
 
     }
@@ -485,15 +512,13 @@ namespace OnTopic.Attributes {
     | OVERRIDE: INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to insert a new <see cref="AttributeValue"/> into the collection, to ensure that local
+    ///   Intercepts all attempts to insert a new <see cref="TrackedItem{T}"/> into the collection, to ensure that local
     ///   business logic is enforced.
     /// </summary>
     /// <remarks>
     ///   <para>
     ///     If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
-    ///     through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/>'s
-    ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
+    ///     through that to ensure local business logic is enforced, if it hasn't already been enforced.
     ///   </para>
     ///   <para>
     ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
@@ -501,26 +526,26 @@ namespace OnTopic.Attributes {
     ///     being duplicated.
     ///   </para>
     /// </remarks>
-    /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
-    /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
+    /// <param name="index">The location that the <see cref="TrackedItem{T}"/> should be set.</param>
+    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
     /// <exception cref="ArgumentException">
-    ///   An AttributeValue with the Key '{item.Key}' already exists. The Value of the existing item is "{this[item.Key].Value};
-    ///   the new item's Value is '{item.Value}'. These AttributeValues are associated with the Topic '{GetUniqueKey()}'."
+    ///   An <see cref="ArgumentException"/> is thrown if an <see cref="TrackedItem{T}"/> with the same <see cref="TrackedItem{T
+    ///   }.Key"/> as the <paramref name="item"/> already exists.
     /// </exception>
-    protected override sealed void InsertItem(int index, AttributeValue item) {
+    protected override void InsertItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
-          if (DeletedAttributes.Contains(item.Key)) {
-            DeletedAttributes.Remove(item.Key);
+          if (DeletedItems.Contains(item.Key)) {
+            DeletedItems.Remove(item.Key);
           }
         }
         else {
           throw new ArgumentException(
-            $"An {nameof(AttributeValue)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
-            $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(AttributeValue)}s are associated " +
-            $"with the {nameof(Topic)} '{_associatedTopic.GetUniqueKey()}'.",
+            $"An {nameof(TItem)} with the Key '{item.Key}' already exists. The Value of the existing item is " +
+            $"{this[item.Key].Value}; the new item's Value is '{item.Value}'. These {nameof(TItem)}s are associated " +
+            $"with the {nameof(Topic)} '{AssociatedTopic.GetUniqueKey()}'.",
             nameof(item)
           );
         }
@@ -531,23 +556,21 @@ namespace OnTopic.Attributes {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to update an <see cref="AttributeValue"/> in the collection, to ensure that local business
+    ///   Intercepts all attempts to update an <see cref="TrackedItem{T}"/> in the collection, to ensure that local business
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
     ///   If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
-    ///   through that to ensure local business logic is enforced. This is determined by looking for the "__" prefix, which is
-    ///     set by the <see cref="SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/>'s
-    ///     <c>enforceBusinessLogic</c> parameter. To avoid an infinite loop, internal setters <i>must</i> call this overload.
+    ///   through that to ensure local business logic is enforced, if it hasn't already been enforced.
     /// </remarks>
-    /// <param name="index">The location that the <see cref="AttributeValue"/> should be set.</param>
-    /// <param name="item">The <see cref="AttributeValue"/> object which is being inserted.</param>
-    protected override sealed void SetItem(int index, AttributeValue item) {
+    /// <param name="index">The location that the <see cref="TrackedItem{T}"/> should be set.</param>
+    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
+    protected override void SetItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
-        if (DeletedAttributes.Contains(item.Key)) {
-          DeletedAttributes.Remove(item.Key);
+        if (DeletedItems.Contains(item.Key)) {
+          DeletedItems.Remove(item.Key);
         }
       }
     }
@@ -556,16 +579,16 @@ namespace OnTopic.Attributes {
     | OVERRIDE: REMOVE ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to remove an <see cref="AttributeValue"/> from the collection, to ensure that it is
-    ///   appropriately marked as <see cref="IsDirty(Boolean)"/>.
+    ///   Intercepts all attempts to remove an <see cref="TrackedItem{T}"/> from the collection, to ensure that it is
+    ///   appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
-    ///   <see cref="AttributeValue"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   When an <see cref="TrackedItem{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
+    ///   cref="TrackedItem{T}"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
     /// </remarks>
-    protected override sealed void RemoveItem(int index) {
-      var attribute = this[index];
-      DeletedAttributes.Add(attribute.Key);
+    protected override void RemoveItem(int index) {
+      var trackedItem = this[index];
+      DeletedItems.Add(trackedItem.Key);
       base.RemoveItem(index);
     }
 
@@ -573,15 +596,15 @@ namespace OnTopic.Attributes {
     | OVERRIDE: CLEAR ITEMS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to clear the <see cref="AttributeValueCollection"/>, to ensure that it is appropriately marked
-    ///   as <see cref="IsDirty(Boolean)"/>.
+    ///   Intercepts all attempts to clear the <see cref="TrackedCollection{TItem, TValue, TAttribute}"/>, to ensure that it is
+    ///   appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="AttributeValue"/> is removed, <see cref="IsDirty(Boolean)"/> will return true—even if no remaining
-    ///   <see cref="AttributeValue"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   When an <see cref="TrackedItem{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
+    ///   cref="TrackedItem{T}"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
     /// </remarks>
-    protected override sealed void ClearItems() {
-      DeletedAttributes.AddRange(Items.Select(a => a.Key));
+    protected override void ClearItems() {
+      DeletedItems.AddRange(Items.Select(a => a.Key));
       base.ClearItems();
     }
 
@@ -593,7 +616,7 @@ namespace OnTopic.Attributes {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override sealed string GetKeyForItem(AttributeValue item) {
+    protected override sealed string GetKeyForItem(TItem item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
     }
