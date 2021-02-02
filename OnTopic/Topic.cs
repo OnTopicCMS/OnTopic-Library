@@ -620,13 +620,13 @@ namespace OnTopic {
     ///   <para>
     ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured
     ///     as a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method is unable to find a local value for the
-    ///     attribute.
+    ///     cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method is unable to find a local
+    ///     value for the attribute.
     ///   </para>
     ///   <para>
-    ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops" in
-    ///     order to help avoid an infinite loop.
+    ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref="TrackedCollection{
+    ///     TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops" in order
+    ///     to help avoid an infinite loop.
     ///   </para>
     ///   <para>
     ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="
@@ -744,8 +744,9 @@ namespace OnTopic {
     ///   called by the <see cref="AttributeValueCollection"/>. This is intended to enforce local business logic, and prevent
     ///   callers from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
     ///   <see cref="AttributeValueCollection"/> that the business logic has already been enforced. To do that, they must either
-    ///   call <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/> with the
-    ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
+    ///   call <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>
+    ///   with the <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this
+    ///   overload.
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
