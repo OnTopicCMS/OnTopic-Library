@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Querying;
@@ -348,7 +349,7 @@ namespace OnTopic.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
-        topic.References.Values.Any(t => t.Id < 0)
+        topic.References.Any(t => t.Value?.Id < 0)
       ) {
         unresolvedTopics.Add(topic);
       }
@@ -653,7 +654,7 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a <see cref="Topic"/>, returns a list of <see cref="AttributeValue"/>, optionally filtering based on <see
-    ///   cref="AttributeDescriptor.IsExtendedAttribute"/> and <see cref="AttributeValue.IsDirty"/>.
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/> and <see cref="TrackedItem{T}.IsDirty"/>.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
     /// <param name="isExtendedAttribute">
@@ -661,7 +662,7 @@ namespace OnTopic.Repositories {
     ///   cref="AttributeValue"/>s are returned.
     /// </param>
     /// <param name="isDirty">
-    ///   Whether or not to filter by <see cref="AttributeValue.IsDirty"/>. If <c>null</c>, all <see cref="AttributeValue"/>s
+    ///   Whether or not to filter by <see cref="TrackedItem{T}.IsDirty"/>. If <c>null</c>, all <see cref="AttributeValue"/>s
     ///   are returned.
     /// </param>
     /// <param name="excludeLastModified">Exclude any attributes that start with <c>LastModified</c>.</param>
@@ -815,7 +816,7 @@ namespace OnTopic.Repositories {
       var attributeKeys         = topic.Attributes
         .Where(a => String.IsNullOrEmpty(a.Value))
         .Select(a => a.Key)
-        .Union(topic.Attributes.DeletedAttributes);
+        .Union(topic.Attributes.DeletedItems);
       foreach (var attributeKey in attributeKeys) {
         if (!attributes.Contains(attributeKey)) {
           attributes.Add((AttributeDescriptor)TopicFactory.Create(attributeKey, "TextAttributeDescriptor"));
@@ -853,13 +854,13 @@ namespace OnTopic.Repositories {
     ///     <see cref="AttributeValue.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
     ///     values are in conflict, that suggests the coniguration for <see cref="AttributeDescriptor.IsExtendedAttribute"/> has
     ///     changed since the attribute value was last saved. In that case, it should be treated as <see
-    ///     cref="AttributeValue.IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is
+    ///     cref="TrackedItem{T}.IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is
     ///     updated.
     ///   </para>
     ///   <para>
     ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeValue"/> is arbitrary attribute
     ///     not mapped to the schema. In that case, its storage location is dynamically determined based on its length, and thus
-    ///     it should only change locations when it <see cref="AttributeValue.IsDirty"/>. Otherwise, its length will remain the
+    ///     it should only change locations when it <see cref="TrackedItem{T}.IsDirty"/>. Otherwise, its length will remain the
     ///     same, and thus the storage location should remain unchanged.
     ///   </para>
     /// </remarks>

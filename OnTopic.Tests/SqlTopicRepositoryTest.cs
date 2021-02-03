@@ -124,7 +124,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(topic);
       Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.References.GetTopic("Test")?.Id);
+      Assert.AreEqual<int?>(2, topic.References.GetValue("Test")?.Id);
       Assert.IsTrue(topic.References.IsDirty());
 
     }
@@ -154,7 +154,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(topic);
       Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.References.GetTopic("Test")?.Id);
+      Assert.AreEqual<int?>(2, topic.References.GetValue("Test")?.Id);
       Assert.IsTrue(topic.References.IsFullyLoaded);
       Assert.IsFalse(topic.References.IsDirty());
 

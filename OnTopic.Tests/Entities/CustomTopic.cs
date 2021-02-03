@@ -34,7 +34,7 @@ namespace OnTopic.Tests.Entities {
     ///   Provides a text property which is intended to be mapped to a text attribute.
     /// </summary>
     [AttributeSetter]
-    public string TextAttribute {
+    public string? TextAttribute {
       get => Attributes.GetValue("TextAttribute");
       set => SetAttributeValue("TextAttribute", value);
     }
@@ -95,13 +95,13 @@ namespace OnTopic.Tests.Entities {
     /// </summary>
     [ReferenceSetter]
     public Topic? TopicReference {
-      get => References.GetTopic("TopicReference");
+      get => References.GetValue("TopicReference");
       set {
         Contract.Requires<ArgumentOutOfRangeException>(
           value.ContentType == ContentType,
           $"{nameof(TopicReference)} expects a topic with the same content type as the parent: {ContentType}."
         );
-        References.SetTopic("TopicReference", value);
+        References.SetValue("TopicReference", value);
       }
     }
 

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Internal.Reflection;
 using OnTopic.Lookup;
@@ -280,6 +281,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property, attributePrefix);
       var topicReferenceId      = source.Attributes.GetInteger($"{configuration.AttributeKey}Id", 0);
+      var topicReference        = source.References.GetValue(configuration.AttributeKey);
 
       if (topicReferenceId == 0 && configuration.AttributeKey.EndsWith("Id", StringComparison.OrdinalIgnoreCase)) {
         topicReferenceId        = source.Attributes.GetInteger(configuration.AttributeKey, 0);
@@ -313,7 +315,7 @@ namespace OnTopic.Mapping {
         }
       }
       else if (
-        source.References.TryGetValue(configuration.AttributeKey, out var topicReference) &&
+        topicReference is not null &&
         relationships.HasFlag(Relationships.References)
       ) {
         await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
@@ -356,9 +358,9 @@ namespace OnTopic.Mapping {
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
     ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
     ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
-    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see
-    ///   cref="Attributes.AttributeValueCollection.GetValue(String, Boolean)"/>). If the property is not of a settable type,
-    ///   or the source value cannot be identified on the <paramref name="source"/>, then the property is not set.
+    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="TrackedCollection{TItem,
+    ///   TValue, TAttribute}.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source value
+    ///   cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>

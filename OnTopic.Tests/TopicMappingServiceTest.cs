@@ -593,7 +593,7 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
 
-      topic.References.SetTopic("TopicReference", topicReference);
+      topic.References.SetValue("TopicReference", topicReference);
 
       var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 
@@ -618,7 +618,7 @@ namespace OnTopic.Tests {
 
       topicReference.IsDisabled = true;
 
-      topic.References.SetTopic("TopicReference", topicReference);
+      topic.References.SetValue("TopicReference", topicReference);
 
       var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
 

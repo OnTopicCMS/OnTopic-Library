@@ -6,6 +6,7 @@
 using System;
 using System.Text.RegularExpressions;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
 using OnTopic.Metadata;
@@ -38,7 +39,7 @@ namespace OnTopic {
     ///   by the <paramref name="id"/> parameter.
     /// </summary>
     /// <remarks>
-    ///   When the <paramref name="id"/> parameter is set the <see cref="AttributeValue.IsDirty"/> property is set to
+    ///   When the <paramref name="id"/> parameter is set the <see cref="TrackedItem{T}.IsDirty"/> property is set to
     ///   <c>false</c> on <see cref="Topic.Key"/> as well as on <see cref="Topic.ContentType"/>, since it is assumed these are
     ///   being set to the same values currently used in the persistence store.
     /// </remarks>

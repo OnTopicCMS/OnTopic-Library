@@ -45,9 +45,9 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Key"/> and <see
-    ///   cref="ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to correctly save
+    ///   cref="ContentType"/> will be set to <see cref="TrackedItem{T}.IsDirty"/>, which is required in order to correctly save
     ///   new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
+    ///   cref="TrackedItem{T}.IsDirty"/> property is set to <c>false</c>on <see cref="Key"/> and <see cref="ContentType"/>, as
     ///   it is assumed these are being set to the same values currently used in the persistence store.
     /// </remarks>
     /// <param name="key">A string representing the key for the new topic instance.</param>
@@ -620,25 +620,25 @@ namespace OnTopic {
     ///   <para>
     ///     Base topics allow attribute values to be inherited from another topic. When a <see cref="BaseTopic"/> is configured
     ///     as a <c>BaseTopic</c> <see cref="Topic.References"/>, values from that <see cref="Topic"/> are used when the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method is unable to find a local value for the
-    ///     attribute.
+    ///     cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method is unable to find a local
+    ///     value for the attribute.
     ///   </para>
     ///   <para>
-    ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops" in
-    ///     order to help avoid an infinite loop.
+    ///     Be aware that while multiple levels of <see cref="BaseTopic"/>s can be configured, the <see cref="TrackedCollection{
+    ///     TItem, TValue, TAttribute}.GetValue(String, Boolean)" /> method defaults to a maximum level of five "hops" in order
+    ///     to help avoid an infinite loop.
     ///   </para>
     ///   <para>
-    ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="
-    ///     KeyValuesPair{String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="
-    ///     Topic"/> hasn't been saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted
-    ///     to the underlying repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="
-    ///     Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated
-    ///     and, if it has subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory
-    ///     topic graphs to be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the
-    ///     underlying data storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is
-    ///     unsaved will need to be saved again once the <see cref="BaseTopic"/> has been saved, assuming it's otherwise outside
-    ///     the scope of the original <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> call.
+    ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
+    ///     {String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="Topic"/> hasn't been
+    ///     saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
+    ///     repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="Repositories.
+    ///     ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated and, if it has
+    ///     subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory topic graphs to
+    ///     be constructed, while preventing invalid <see cref="Topic.Id"/>s from being persisted to the underlying data
+    ///     storage. As a result, however, a <see cref="Topic"/> referencing an <see cref="BaseTopic"/> that is unsaved will
+    ///     need to be saved again once the <see cref="BaseTopic"/> has been saved, assuming it's otherwise outside the scope of
+    ///     the original <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> call.
     ///   </para>
     /// </remarks>
     /// <value>The <see cref="Topic"/> that values should be inherited from, if not otherwise available.</value>
@@ -647,13 +647,13 @@ namespace OnTopic {
     /// </requires>
     [ReferenceSetter]
     public Topic? BaseTopic {
-      get => References.GetTopic("BaseTopic", false);
+      get => References.Contains("BaseTopic") ? References["BaseTopic"].Value : null;
       set {
         Contract.Requires<ArgumentException>(
           value != this,
           "A topic may not derive from itself."
         );
-        References.SetTopic("BaseTopic", value);
+        References.SetValue("BaseTopic", value);
       }
     }
 
@@ -666,8 +666,8 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   Attributes are stored via an <see cref="AttributeValue" /> class which, in addition to the Attribute Key and Value,
-    ///   also track other metadata for the attribute, such as the version (via the <see cref="AttributeValue.LastModified" />
-    ///   property) and whether it has been persisted to the database or not (via the <see cref="AttributeValue.IsDirty" />
+    ///   also track other metadata for the attribute, such as the version (via the <see cref="TrackedItem{T}.LastModified" />
+    ///   property) and whether it has been persisted to the database or not (via the <see cref="TrackedItem{T}.IsDirty" />
     ///   property).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s attributes.</value>
@@ -698,7 +698,7 @@ namespace OnTopic {
     ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s relationships.</value>
-    public TopicReferenceDictionary References { get; }
+    public TopicReferenceCollection References { get; }
 
     /*==========================================================================================================================
     | PROPERTY: INCOMING RELATIONSHIPS
@@ -744,13 +744,14 @@ namespace OnTopic {
     ///   called by the <see cref="AttributeValueCollection"/>. This is intended to enforce local business logic, and prevent
     ///   callers from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
     ///   <see cref="AttributeValueCollection"/> that the business logic has already been enforced. To do that, they must either
-    ///   call <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, Boolean, DateTime?, Boolean?)"/> with the
-    ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
+    ///   call <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>
+    ///   with the <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this
+    ///   overload.
     /// </remarks>
     /// <param name="key">The string identifier for the AttributeValue.</param>
     /// <param name="value">The text value for the AttributeValue.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="AttributeValue.IsDirty" />. By default, it will be marked
+    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty" />. By default, it will be marked
     ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)" />.

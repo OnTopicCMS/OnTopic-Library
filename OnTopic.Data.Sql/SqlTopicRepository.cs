@@ -710,8 +710,8 @@ namespace OnTopic.Data.Sql {
           CommandType           = CommandType.StoredProcedure
         };
 
-        foreach (var relatedTopic in topic.References.Where(t => !t.Value.IsNew)) {
-          references.AddRow(relatedTopic.Key, relatedTopic.Value.Id);
+        foreach (var relatedTopic in topic.References.Where(t => !t.Value?.IsNew?? false)) {
+          references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
         }
 
         // Add Parameters

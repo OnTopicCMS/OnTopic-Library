@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 
@@ -17,8 +18,9 @@ namespace OnTopic.Attributes {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="IsDirty"/>
-  ///     property signifies whether the attribute value has changed) and its <see cref="LastModified"/> date.
+  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="TrackedItem{
+  ///     T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="TrackedItem{T}.
+  ///     LastModified"/> date.
   ///   </para>
   ///   <para>
   ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
@@ -37,43 +39,13 @@ namespace OnTopic.Attributes {
   ///     method.
   ///   </para>
   /// </remarks>
-  public record AttributeValue {
+  public record AttributeValue: TrackedItem<string> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair.
-    /// </summary>
-    /// <param name="key">
-    ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
-    /// </param>
-    /// <param name="value">
-    ///   The string value text for the <see cref="AttributeValue"/> collection item key/value pair.
-    /// </param>
-    /// <param name="isDirty">
-    ///   An optional boolean indicator noting whether the <see cref="AttributeValue"/> collection item is a new value, and
-    ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean)"/> is next called.
-    /// </param>
-    /// <requires
-    ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(key)
-    /// </requires>
-    public AttributeValue(string key, string? value, bool isDirty = true) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      TopicFactory.ValidateKey(key, false);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set local values
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Key                       = key;
-      Value                     = value;
-      IsDirty                   = isDirty;
-
-    }
+    /// <inheritdoc/>
+    public AttributeValue(): base() { }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair.
@@ -89,7 +61,7 @@ namespace OnTopic.Attributes {
     ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean)"/> is next called.
     /// </param>
     /// <param name="lastModified">
-    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended exclusively for use when
+    ///   The <see cref="DateTime"/> value that the attribute was last modified. This is intended primarily for use when
     ///   populating the topic graph from a persistent data store as a means of indicating the current version for each
     ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
     /// </param>
@@ -98,66 +70,20 @@ namespace OnTopic.Attributes {
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    internal AttributeValue(
+    public AttributeValue(
       string key,
-      string? value,
-      bool isDirty,
+      string value,
+      bool isDirty              = true,
       DateTime? lastModified    = null,
       bool? isExtendedAttribute = null
-    ): this(
-      key,
-      value,
-      isDirty
-    ) {
-      LastModified              = lastModified?? DateTime.Now;
+    ): base(key, value, isDirty, lastModified) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set local values
+      \-----------------------------------------------------------------------------------------------------------------------*/
       IsExtendedAttribute       = isExtendedAttribute;
+
     }
-
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the key of the attribute.
-    /// </summary>
-    /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
-    ///   !String.IsNullOrWhiteSpace(value)
-    /// </requires>
-    /// <requires
-    ///   description="The key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
-    public string Key { get; init; }
-
-    /*==========================================================================================================================
-    | PROPERTY: VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the current value of the attribute.
-    /// </summary>
-    public string? Value { get; init; }
-
-    /*==========================================================================================================================
-    | PROPERTY: IS DIRTY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Boolean setting which is set automatically when an attribute's <see cref="Value"/> is set to a new value.
-    /// </summary>
-    /// <remarks>
-    ///   The IsDirty property is used by the <see cref="Repositories.ITopicRepository"/> to determine whether or not
-    ///   the value has been persisted to the database. If it is set to true, the attribute's value is sent to the database
-    ///   when <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/> is called. Otherwise, it is ignored, thus
-    ///   preventing the need to update attributes (or create new versions of attributes) whose values haven't changed.
-    /// </remarks>
-    public bool IsDirty { get; init; }
-
-    /*==========================================================================================================================
-    | PROPERTY: LAST MODIFIED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Read-only reference to the last DateTime the <see cref="AttributeValue"/> instance was updated.
-    /// </summary>
-    public DateTime LastModified { get; init; } = DateTime.Now;
 
     /*==========================================================================================================================
     | PROPERTY: IS EXTENDED ATTRIBUTE
@@ -175,12 +101,12 @@ namespace OnTopic.Attributes {
     ///   </para>
     ///   <para>
     ///     This is important because, otherwise, <see cref="ITopicRepository"/> implementations rely primarily on <see
-    ///     cref="IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but the location
-    ///     it should be stored has, that could potentially result in the attribute being deleted, as the attribute won't show
-    ///     up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c> and
-    ///     <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see
-    ///     cref="IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the
-    ///     configuration and the underlying data store, and ensure data is stored appropriately.
+    ///     cref="TrackedItem{T}.IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but
+    ///     the location it should be stored has, that could potentially result in the attribute being deleted, as the attribute
+    ///     won't show up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c>
+    ///     and <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref="
+    ///     IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
+    ///     the underlying data store, and ensure data is stored appropriately.
     ///   </para>
     ///   <para>
     ///     The <see cref="IsExtendedAttribute"/> property maps to the <see cref="AttributeDescriptor.IsExtendedAttribute"/>

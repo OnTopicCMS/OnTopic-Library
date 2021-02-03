@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Annotations;
 
@@ -221,8 +222,8 @@ namespace OnTopic.Mapping.Internal {
     ///   <para>
     ///     The <see cref="InheritValue"/> configuration is only applicable if the value is pulled from the <see
     ///     cref="Topic.Attributes"/> collection. This is the equivalent to calling the <see
-    ///     cref="AttributeValueCollection.GetValue(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
-    ///     <c>True</c>.
+    ///     cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> method with an <c>InheritFromParent
+    ///     </c> parameter set to <c>True</c>.
     ///   </para>
     ///   <para>
     ///     The <see cref="InheritValue"/> property corresponds to the <see cref="InheritAttribute"/> being set on a given

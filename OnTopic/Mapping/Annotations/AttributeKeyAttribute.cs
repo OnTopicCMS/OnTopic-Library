@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -13,7 +13,7 @@ namespace OnTopic.Mapping.Annotations {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see
-  ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>.
+  ///   cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>.
   /// </summary>
   /// <remarks>
   ///   By default, <see cref="ITopicMappingService"/> implementations will attempt to map the property of the target data
