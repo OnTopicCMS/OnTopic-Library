@@ -409,7 +409,7 @@ namespace OnTopic.Internal.Reflection {
     private static bool IsSettableType(Type sourceType, Type? targetType = null) {
 
       if (targetType is not null) {
-        return sourceType.Equals(targetType);
+        return sourceType.IsAssignableFrom(targetType);
       }
       return SettableTypes.Contains(sourceType);
 
