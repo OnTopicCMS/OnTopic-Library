@@ -23,7 +23,7 @@ namespace OnTopic.Mapping.Annotations {
   ///     relevant to the <see cref="Topic"/> class and its view models.
   ///   </para>
   ///   <para>
-  ///     This differs from <see cref="RelationshipType"/>, which only allows <i>one</i> relationship to be specified.
+  ///     This differs from <see cref="CollectionType"/>, which only allows <i>one</i> collection to be specified.
   ///   </para>
   /// </remarks>
   [Flags]
@@ -49,7 +49,7 @@ namespace OnTopic.Mapping.Annotations {
     | CHILDREN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Map <see cref="Topic.Children"/> references, or properties marked as <see cref="RelationshipType.Children"/>.
+    ///   Map <see cref="Topic.Children"/> references, or properties marked as <see cref="CollectionType.Children"/>.
     /// </summary>
     Children                    = 1 << 1,
 
@@ -57,7 +57,7 @@ namespace OnTopic.Mapping.Annotations {
     | RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Map <see cref="Topic.Relationships"/> references, or properties marked as <see cref="RelationshipType.Relationship"/>.
+    ///   Map <see cref="Topic.Relationships"/> references, or properties marked as <see cref="CollectionType.Relationship"/>.
     /// </summary>
     Relationships               = 1 << 2,
 
@@ -66,7 +66,7 @@ namespace OnTopic.Mapping.Annotations {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Map <see cref="Topic.IncomingRelationships"/> references, or properties marked as <see
-    ///   cref="RelationshipType.IncomingRelationship"/>.
+    ///   cref="CollectionType.IncomingRelationship"/>.
     /// </summary>
     IncomingRelationships       = 1 << 3,
 

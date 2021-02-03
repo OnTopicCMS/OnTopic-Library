@@ -387,12 +387,11 @@ namespace OnTopic.Tests {
     ///   type specified by <see cref="Mapping.Annotations.CollectionAttribute"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see
-    ///   cref="Mapping.Annotations.CollectionAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
-    ///   <see cref="RelationshipType"/> to <see cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c>
-    ///   refers to a relationship that is both outgoing and incoming. It should be smart enough to a) look for the
-    ///   <c>AmbigousRelationship</c> instead of the <c>RelationshipAlias</c>, and b) source from the <see
-    ///   cref="Topic.IncomingRelationships"/> collection.
+    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see cref="Mapping.Annotations.
+    ///   CollectionAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the <see cref="CollectionType"
+    ///   /> to <see cref="CollectionType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is
+    ///   both outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
+    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
     public async Task Map_AlternateRelationship_ReturnsCorrectRelationship() {

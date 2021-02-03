@@ -522,13 +522,13 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
       var                       relationshipKey                 = configuration.RelationshipKey;
-      var                       relationshipType                = configuration.RelationshipType;
+      var                       collectionType                  = configuration.CollectionType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
-        RelationshipType.Children,
+        CollectionType.Children,
         s => true,
         () => source.Children.ToList()
       );
@@ -537,7 +537,7 @@ namespace OnTopic.Mapping {
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
-        RelationshipType.Relationship,
+        CollectionType.Relationship,
         source.Relationships.Contains,
         () => source.Relationships.GetTopics(relationshipKey)
       );
@@ -546,7 +546,7 @@ namespace OnTopic.Mapping {
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
-        RelationshipType.NestedTopics,
+        CollectionType.NestedTopics,
         source.Children.Contains,
         () => source.Children[relationshipKey].Children
       );
@@ -555,7 +555,7 @@ namespace OnTopic.Mapping {
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       listSource = GetRelationship(
-        RelationshipType.IncomingRelationship,
+        CollectionType.IncomingRelationship,
         source.IncomingRelationships.Contains,
         () => source.IncomingRelationships.GetTopics(relationshipKey)
       );
@@ -576,7 +576,7 @@ namespace OnTopic.Mapping {
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
           ) {
             listSource = GetRelationship(
-              RelationshipType.MappedCollection,
+              CollectionType.MappedCollection,
               s => true,
               () => sourcePropertyValue.Cast<Topic>().ToList()
             );
@@ -609,12 +609,12 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide local function for evaluating current relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
+      IList<Topic> GetRelationship(CollectionType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
         var targetRelationships = RelationshipMap.Mappings[relationship];
         var preconditionsMet    =
           listSource.Count == 0 &&
-          (relationshipType is RelationshipType.Any || relationshipType.Equals(relationship)) &&
-          (relationshipType is RelationshipType.Children || relationship is not RelationshipType.Children) &&
+          (collectionType is CollectionType.Any || collectionType.Equals(relationship)) &&
+          (collectionType is CollectionType.Children || relationship is not CollectionType.Children) &&
           (targetRelationships is Relationships.None || relationships.HasFlag(targetRelationships)) &&
           contains(configuration.RelationshipKey);
         return preconditionsMet? getTopics() : listSource;

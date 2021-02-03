@@ -68,7 +68,7 @@ namespace OnTopic.Mapping.Internal {
       DefaultValue              = null;
       InheritValue              = false;
       RelationshipKey           = AttributeKey;
-      RelationshipType          = RelationshipType.Any;
+      CollectionType            = CollectionType.Any;
       CrawlRelationships        = Relationships.None;
       MetadataKey               = null;
       DisableMapping            = false;
@@ -96,12 +96,12 @@ namespace OnTopic.Mapping.Internal {
         property,
         a => {
           RelationshipKey = a.Key ?? RelationshipKey;
-          RelationshipType = a.Type;
+          CollectionType = a.Type;
         }
       );
 
       if (RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
-        RelationshipType = RelationshipType.Children;
+        CollectionType = CollectionType.Children;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -264,17 +264,17 @@ namespace OnTopic.Mapping.Internal {
     ///   <para>
     ///     By default, a collection property on a DTO class will attempt to find a match from, in order, <see
     ///     cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/>.
-    ///     If the <see cref="RelationshipType"/> is set, however, then the <see cref="ITopicMappingService"/> will <i>only</i>
+    ///     If the <see cref="CollectionType"/> is set, however, then the <see cref="ITopicMappingService"/> will <i>only</i>
     ///     map the collection to a relationship of that type. This can be valuable when the <see cref="RelationshipKey"/> might
     ///     be ambiguous between multiple collections.
     ///   </para>
     ///   <para>
-    ///     The <see cref="RelationshipType"/> property corresponds to the <see cref="CollectionAttribute.Type"/> property. It
+    ///     The <see cref="CollectionType"/> property corresponds to the <see cref="CollectionAttribute.Type"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[Relationship("AlternateRelationshipKey",
-    ///     RelationshipType.Children)]</c>.
+    ///     CollectionType.Children)]</c>.
     ///   </para>
     /// </remarks>
-    public RelationshipType RelationshipType { get; set; }
+    public CollectionType CollectionType { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: CRAWL RELATIONSHIPS
@@ -286,7 +286,7 @@ namespace OnTopic.Mapping.Internal {
     /// <remarks>
     ///   <para>
     ///     By default, the all relationships will be mapped on the target DTO, unless the caller specifies otherwise. On any
-    ///     related DTOs, however, only <see cref="RelationshipType.NestedTopics"/> will be mapped. So, if a mapped DTO has a
+    ///     related DTOs, however, only <see cref="CollectionType.NestedTopics"/> will be mapped. So, if a mapped DTO has a
     ///     collection for children, relationships, or even a parent property then any relationships on <i>those</i> DTOs will
     ///     not be mapped. This behavior can be changed by specifying the <see cref="CrawlRelationships"/> flag, which allows
     ///     one or multiple relationships to be specified for a given property.

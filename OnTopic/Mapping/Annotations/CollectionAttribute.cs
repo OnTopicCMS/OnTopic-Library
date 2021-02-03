@@ -43,10 +43,10 @@ namespace OnTopic.Mapping.Annotations {
     }
 
     /// <summary>
-    ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing the <see cref="RelationshipType"/>.
+    ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing the <see cref="CollectionType"/>.
     /// </summary>
     /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
-    public CollectionAttribute(RelationshipType type = RelationshipType.Any) {
+    public CollectionAttribute(CollectionType type = CollectionType.Any) {
       Type = type;
     }
 
@@ -54,7 +54,7 @@ namespace OnTopic.Mapping.Annotations {
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the value of the relationship key.
+    ///   Gets the value of the collection key.
     /// </summary>
     public string? Key { get; }
 
@@ -62,10 +62,10 @@ namespace OnTopic.Mapping.Annotations {
     | PROPERTY: TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the value of the relationship type.
+    ///   Gets the value of the <see cref="CollectionType"/>.
     /// </summary>
     #pragma warning disable CA1019 // Define accessors for attribute arguments
-    public RelationshipType Type { get; set; }
+    public CollectionType Type { get; set; }
     #pragma warning restore CA1019 // Define accessors for attribute arguments
 
   } //Class

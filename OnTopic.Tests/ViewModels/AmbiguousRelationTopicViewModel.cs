@@ -16,10 +16,9 @@ namespace OnTopic.Tests.ViewModels {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     The <see cref="RelationshipAlias"/> uses <see cref="CollectionAttribute"/> to set the relationship key to
-  ///     <c>AmbiguousRelationship</c> and the <see cref="RelationshipType"/> to <see
-  ///     cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is both
-  ///     outgoing and incoming.
+  ///     The <see cref="RelationshipAlias"/> uses <see cref="CollectionAttribute"/> to set the relationship key to <c>
+  ///     AmbiguousRelationship</c> and the <see cref="CollectionType"/> to <see cref="CollectionType.IncomingRelationship"/>.
+  ///     <c>AmbiguousRelationship</c> refers to a relationship that is both outgoing and incoming.
   ///   </para>
   ///   <para>
   ///     This is a sample class intended for test purposes only; it is not designed for use in a production environment.
@@ -27,7 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class AmbiguousRelationTopicViewModel: KeyOnlyTopicViewModel {
 
-    [Collection("AmbiguousRelationship", Type=RelationshipType.IncomingRelationship)]
+    [Collection("AmbiguousRelationship", Type= CollectionType.IncomingRelationship)]
     public Collection<KeyOnlyTopicViewModel> RelationshipAlias { get; } = new();
 
   } //Class

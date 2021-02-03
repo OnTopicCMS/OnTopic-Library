@@ -12,11 +12,11 @@ namespace OnTopic.Mapping.Internal {
   | CLASS: RELATIONSHIP MAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a mapping of the relationship between <see cref="RelationshipType"/> and <see cref="Relationships"/>.
+  ///   Provides a mapping of the relationship between <see cref="CollectionType"/> and <see cref="Relationships"/>.
   /// </summary>
   /// <remarks>
-  ///   While the <see cref="RelationshipType"/> and <see cref="Relationships"/> enumerations are distinct, there are times when
-  ///   a single <see cref="RelationshipType"/> needs to be related to an item in the collection of <see cref="Relationships"/>.
+  ///   While the <see cref="CollectionType"/> and <see cref="Relationships"/> enumerations are distinct, there are times when
+  ///   a single <see cref="CollectionType"/> needs to be related to an item in the collection of <see cref="Relationships"/>.
   ///   This mapping makes that feasible.
   /// </remarks>
   static internal class RelationshipMap {
@@ -26,13 +26,13 @@ namespace OnTopic.Mapping.Internal {
     \-------------------------------------------------------------------------------------------------------------------------*/
     static RelationshipMap() {
 
-      var mappings = new Dictionary<RelationshipType, Relationships> {
-        { RelationshipType.Any, Relationships.None },
-        { RelationshipType.Children, Relationships.Children },
-        { RelationshipType.Relationship, Relationships.Relationships },
-        { RelationshipType.NestedTopics, Relationships.None },
-        { RelationshipType.MappedCollection, Relationships.MappedCollections },
-        { RelationshipType.IncomingRelationship, Relationships.IncomingRelationships }
+      var mappings = new Dictionary<CollectionType, Relationships> {
+        { CollectionType.Any, Relationships.None },
+        { CollectionType.Children, Relationships.Children },
+        { CollectionType.Relationship, Relationships.Relationships },
+        { CollectionType.NestedTopics, Relationships.None },
+        { CollectionType.MappedCollection, Relationships.MappedCollections },
+        { CollectionType.IncomingRelationship, Relationships.IncomingRelationships }
       };
 
       Mappings = mappings;
@@ -42,7 +42,7 @@ namespace OnTopic.Mapping.Internal {
     /*==========================================================================================================================
     | PROPERTY: MAPPINGS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static internal Dictionary<RelationshipType, Relationships> Mappings { get; }
+    static internal Dictionary<CollectionType, Relationships> Mappings { get; }
 
   } //Class
 } //Namespace

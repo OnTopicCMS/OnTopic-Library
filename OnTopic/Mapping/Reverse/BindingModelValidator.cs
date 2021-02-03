@@ -162,8 +162,8 @@ namespace OnTopic.Mapping.Reverse {
       var configuration         = new PropertyConfiguration(property, attributePrefix);
       var compositeAttributeKey = configuration.AttributeKey;
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
-      var childRelationships    = new[] { RelationshipType.Children, RelationshipType.NestedTopics };
-      var relationships         = new[] { RelationshipType.Relationship, RelationshipType.IncomingRelationship };
+      var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
+      var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
       var listType              = (Type?)null;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (configuration.RelationshipType is RelationshipType.Children) {
+      if (configuration.CollectionType is CollectionType.Children) {
         throw new MappingModelValidationException(
           $"The {nameof(ReverseTopicMappingService)} does not support mapping child topics. This property should be " +
           $"removed from the binding model, or otherwise decorated with the {nameof(DisableMappingAttribute)} to prevent " +
@@ -247,7 +247,7 @@ namespace OnTopic.Mapping.Reverse {
       ) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
-          $"{configuration.RelationshipType}, but the generic type '{listType.Name}' does not implement the " +
+          $"{configuration.CollectionType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(ITopicBindingModel)} interface. This is required for binding models. If this collection is not intended " +
           $"to be mapped as a {ModelType.NestedTopic} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
@@ -325,11 +325,11 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate relationship type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!new[] { RelationshipType.Any, RelationshipType.Relationship }.Contains(configuration.RelationshipType)) {
+      if (!new[] { CollectionType.Any, CollectionType.Relationship }.Contains(configuration.CollectionType)) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class maps to a relationship attribute " +
-          $"'{attributeDescriptor.Key}', but is configured as a {configuration.RelationshipType}. The property should be " +
-          $"flagged as either {nameof(RelationshipType.Any)} or {nameof(RelationshipType.Relationship)}."
+          $"'{attributeDescriptor.Key}', but is configured as a {configuration.CollectionType}. The property should be " +
+          $"flagged as either {nameof(CollectionType.Any)} or {nameof(CollectionType.Relationship)}."
         );
       }
 
@@ -339,9 +339,9 @@ namespace OnTopic.Mapping.Reverse {
       if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
-          $"{configuration.RelationshipType}, but the generic type '{listType?.Name}' does not implement the " +
+          $"{configuration.CollectionType}, but the generic type '{listType?.Name}' does not implement the " +
           $"{nameof(IRelatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
-          $"intended to be mapped as a {configuration.RelationshipType} then update the definition in the associated " +
+          $"intended to be mapped as a {configuration.CollectionType} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
           $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
