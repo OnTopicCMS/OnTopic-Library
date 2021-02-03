@@ -92,7 +92,7 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Determine relationship key and type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      GetAttributeValue<RelationshipAttribute>(
+      GetAttributeValue<CollectionAttribute>(
         property,
         a => {
           RelationshipKey = a.Key ?? RelationshipKey;
@@ -248,7 +248,7 @@ namespace OnTopic.Mapping.Internal {
     ///     the DTO to be aliased to a different collection name on the source <see cref="Topic"/>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="RelationshipKey"/> property corresponds to the <see cref="RelationshipAttribute.Key"/> property. It
+    ///     The <see cref="RelationshipKey"/> property corresponds to the <see cref="CollectionAttribute.Key"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[Relationship("AlternateRelationshipKey")]</c>.
     ///   </para>
     /// </remarks>
@@ -269,7 +269,7 @@ namespace OnTopic.Mapping.Internal {
     ///     be ambiguous between multiple collections.
     ///   </para>
     ///   <para>
-    ///     The <see cref="RelationshipType"/> property corresponds to the <see cref="RelationshipAttribute.Type"/> property. It
+    ///     The <see cref="RelationshipType"/> property corresponds to the <see cref="CollectionAttribute.Type"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[Relationship("AlternateRelationshipKey",
     ///     RelationshipType.Children)]</c>.
     ///   </para>

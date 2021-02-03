@@ -7,7 +7,7 @@
 namespace OnTopic.Mapping.Annotations {
 
   /*============================================================================================================================
-  | ATTRIBUTE: RELATIONSHIP
+  | ATTRIBUTE: COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides the <see cref="ITopicMappingService"/> with instructions as to which key to follow for the relationship.
@@ -21,32 +21,32 @@ namespace OnTopic.Mapping.Annotations {
   ///   </para>
   ///   <para>
   ///     This attribute instructs the <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the
-  ///     target property name to be decoupled from the source's relationship key. In addition, this attribute can be used to
-  ///     specify the type of relationship expected, which is useful if there might be ambiguity between relationship names (for
-  ///     example, if there is a <see cref="Topic.Relationships"/> with the same key as an <see
-  ///     cref="Topic.IncomingRelationships"/>).
+  ///     target property name to be decoupled from the source's collection key. In addition, this attribute can be used to
+  ///     specify the type of collection expected, which is useful if there might be ambiguity between collection names (for
+  ///     example, if there is a <see cref="Topic.Relationships"/> with the same key as an <see cref="Topic.
+  ///     IncomingRelationships"/>), which is not an uncommon scenario.
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class RelationshipAttribute : System.Attribute {
+  public sealed class CollectionAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>.
+    ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing an <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key value of the relationships associated with the current property.</param>
-    public RelationshipAttribute(string key) {
+    public CollectionAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
       Key = key;
     }
 
     /// <summary>
-    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing the <see cref="RelationshipType"/>.
+    ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing the <see cref="RelationshipType"/>.
     /// </summary>
     /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
-    public RelationshipAttribute(RelationshipType type = RelationshipType.Any) {
+    public CollectionAttribute(RelationshipType type = RelationshipType.Any) {
       Type = type;
     }
 

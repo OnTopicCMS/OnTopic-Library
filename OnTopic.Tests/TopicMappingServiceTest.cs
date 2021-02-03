@@ -384,11 +384,11 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
-    ///   type specified by <see cref="Mapping.Annotations.RelationshipAttribute"/>.
+    ///   type specified by <see cref="Mapping.Annotations.CollectionAttribute"/>.
     /// </summary>
     /// <remarks>
     ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see
-    ///   cref="Mapping.Annotations.RelationshipAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
+    ///   cref="Mapping.Annotations.CollectionAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
     ///   <see cref="RelationshipType"/> to <see cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c>
     ///   refers to a relationship that is both outgoing and incoming. It should be smart enough to a) look for the
     ///   <c>AmbigousRelationship</c> instead of the <c>RelationshipAlias</c>, and b) source from the <see
