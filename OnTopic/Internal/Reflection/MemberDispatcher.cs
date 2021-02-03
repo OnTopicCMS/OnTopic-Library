@@ -137,39 +137,8 @@ namespace OnTopic.Internal.Reflection {
     | METHOD: SET PROPERTY VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>,
-    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
-    /// </summary>
-    /// <param name="target">The object on which the property is defined.</param>
-    /// <param name="name">The name of the property to assess.</param>
-    /// <param name="value">The value to set on the property.</param>
-    internal bool SetPropertyValue(object target, string name, string? value) {
-
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      if (!HasSettableProperty(target.GetType(), name)) {
-        return false;
-      }
-
-      var property = GetMember<PropertyInfo>(target.GetType(), name);
-
-      Contract.Assume(property, $"The {name} property could not be retrieved.");
-
-      var valueObject = GetValueObject(property.PropertyType, value);
-
-      if (valueObject is null) {
-        return false;
-      }
-
-      property.SetValue(target, valueObject);
-      return true;
-
-    }
-
-    /// <summary>
-    ///   Uses reflection to call a property, assuming that the property value is compatible with the <paramref name="value"/>
-    ///   type.
+    ///   Uses reflection to call a property, assuming that it is a) writable, and b) of type <see cref="String"/>, <see cref="
+    ///   Int32"/>, or <see cref="Boolean"/>, or is otherwise compatible with the <paramref name="value"/> type.
     /// </summary>
     /// <param name="target">The object on which the property is defined.</param>
     /// <param name="name">The name of the property to assess.</param>
@@ -179,7 +148,9 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
 
-      if (!HasSettableProperty(target.GetType(), name, value?.GetType())) {
+      var isString = value?.GetType() == typeof(string);
+
+      if (!HasSettableProperty(target.GetType(), name, isString? null : value?.GetType())) {
         return false;
       }
 
@@ -187,11 +158,13 @@ namespace OnTopic.Internal.Reflection {
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
 
-      if (value is null) {
+      var valueObject = isString? GetValueObject(property.PropertyType, value as string) : value;
+
+      if (valueObject is null) {
         return false;
       }
 
-      property.SetValue(target, value);
+      property.SetValue(target, valueObject);
       return true;
 
     }
