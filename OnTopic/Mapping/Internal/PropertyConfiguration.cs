@@ -67,7 +67,7 @@ namespace OnTopic.Mapping.Internal {
       AttributePrefix           = attributePrefix;
       DefaultValue              = null;
       InheritValue              = false;
-      RelationshipKey           = AttributeKey;
+      CollectionKey             = AttributeKey;
       CollectionType            = CollectionType.Any;
       CrawlRelationships        = Relationships.None;
       MetadataKey               = null;
@@ -95,12 +95,12 @@ namespace OnTopic.Mapping.Internal {
       GetAttributeValue<CollectionAttribute>(
         property,
         a => {
-          RelationshipKey = a.Key ?? RelationshipKey;
+          CollectionKey = a.Key ?? CollectionKey;
           CollectionType = a.Type;
         }
       );
 
-      if (RelationshipKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
+      if (CollectionKey.Equals("Children", StringComparison.OrdinalIgnoreCase)) {
         CollectionType = CollectionType.Children;
       }
 
@@ -244,15 +244,15 @@ namespace OnTopic.Mapping.Internal {
     ///     So, for instance, if the property on the DTO class is called <c>Cousins</c> then the <see
     ///     cref="ITopicMappingService"/> will search <see cref="Topic.Relationships"/>, <see
     ///     cref="Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/> for an object named <c>Cousins</c>.
-    ///     If the <see cref="RelationshipKey"/> is set, however, then that value is used instead, thus allowing the property on
+    ///     If the <see cref="CollectionKey"/> is set, however, then that value is used instead, thus allowing the property on
     ///     the DTO to be aliased to a different collection name on the source <see cref="Topic"/>.
     ///   </para>
     ///   <para>
-    ///     The <see cref="RelationshipKey"/> property corresponds to the <see cref="CollectionAttribute.Key"/> property. It
+    ///     The <see cref="CollectionKey"/> property corresponds to the <see cref="CollectionAttribute.Key"/> property. It
     ///     can be assigned by decorating a DTO property with e.g. <c>[Relationship("AlternateRelationshipKey")]</c>.
     ///   </para>
     /// </remarks>
-    public string RelationshipKey { get; set; }
+    public string CollectionKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIP TYPE
@@ -265,7 +265,7 @@ namespace OnTopic.Mapping.Internal {
     ///     By default, a collection property on a DTO class will attempt to find a match from, in order, <see
     ///     cref="Topic.Relationships"/>, <see cref="Topic.IncomingRelationships"/>, and, finally, <see cref="Topic.Children"/>.
     ///     If the <see cref="CollectionType"/> is set, however, then the <see cref="ITopicMappingService"/> will <i>only</i>
-    ///     map the collection to a relationship of that type. This can be valuable when the <see cref="RelationshipKey"/> might
+    ///     map the collection to a relationship of that type. This can be valuable when the <see cref="CollectionKey"/> might
     ///     be ambiguous between multiple collections.
     ///   </para>
     ///   <para>

@@ -521,7 +521,7 @@ namespace OnTopic.Mapping {
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
-      var                       relationshipKey                 = configuration.RelationshipKey;
+      var                       relationshipKey                 = configuration.CollectionKey;
       var                       collectionType                  = configuration.CollectionType;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -616,7 +616,7 @@ namespace OnTopic.Mapping {
           (collectionType is CollectionType.Any || collectionType.Equals(relationship)) &&
           (collectionType is CollectionType.Children || relationship is not CollectionType.Children) &&
           (targetRelationships is Relationships.None || relationships.HasFlag(targetRelationships)) &&
-          contains(configuration.RelationshipKey);
+          contains(configuration.CollectionKey);
         return preconditionsMet? getTopics() : listSource;
       }
 
