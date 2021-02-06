@@ -22,7 +22,7 @@ namespace OnTopic.Tests.BindingModels {
 
     public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttributeDescriptor") { }
 
-    public RelatedTopicBindingModel? BaseTopic { get; set; }
+    public AssociatedTopicBindingModel? BaseTopic { get; set; }
 
   } //Class
 } //Namespace

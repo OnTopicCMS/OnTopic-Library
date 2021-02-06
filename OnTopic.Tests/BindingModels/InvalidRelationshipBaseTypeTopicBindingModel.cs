@@ -15,7 +15,7 @@ namespace OnTopic.Tests.BindingModels {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a custom binding model with an invalid base type for an association—i.e., one that doesn't implement the <see
-  ///   cref="IRelatedTopicBindingModel"/>. An <see cref="InvalidOperationException"/> should be thrown when it is mapped.
+  ///   cref="IAssociatedTopicBindingModel"/>. An <see cref="InvalidOperationException"/> should be thrown when it is mapped.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.

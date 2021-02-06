@@ -422,8 +422,8 @@ namespace OnTopic.Tests {
     | TEST: MAP: INVALID RELATIONSHIP BASE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Maps a content type that has a relationship whose type doesn't implement <see cref="IRelatedTopicBindingModel"/>. This
-    ///   is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    ///   Maps a content type that has a relationship whose type doesn't implement <see cref="IAssociatedTopicBindingModel"/>.
+    ///   This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(MappingModelValidationException))]
@@ -478,9 +478,9 @@ namespace OnTopic.Tests {
     | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see
-    ///   cref="TopicViewModel"/>, even though references are expected to return a type implementing <see
-    ///   cref="IRelatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    ///   Maps a content type that has a reference that implements an invalid type—i.e., it implements a <see cref="
+    ///   TopicViewModel"/>, even though references are expected to return a type implementing <see cref="
+    ///   IAssociatedTopicBindingModel"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(MappingModelValidationException))]

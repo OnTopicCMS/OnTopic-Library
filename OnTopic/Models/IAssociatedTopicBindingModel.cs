@@ -5,23 +5,21 @@
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
 using OnTopic.Mapping.Reverse;
-using OnTopic.Models;
 
-namespace OnTopic.ViewModels.BindingModels {
+namespace OnTopic.Models {
 
   /*============================================================================================================================
-  | CLASS: RELATED TOPIC BINDING MODEL
+  | INTERFACE: ASSOCIATED TOPIC BINDING MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for binding a relationship of a binding model to an existing <see cref="Topic"/>.
+  ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
-  ///   While implementors may choose to create a custom <see cref="IRelatedTopicBindingModel"/> implementation, the out-of-the-
-  ///   box <see cref="RelatedTopicBindingModel"/> implementation satisfies all of the requirements of the <see
-  ///   cref="ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
-  ///   metadata for separate validation or processing.
+  ///   It is strictly required that any binding models used as associations implement the <see cref="
+  ///   IAssociatedTopicBindingModel"/> interface for the default <see cref="ReverseTopicMappingService"/> to correctly identify
+  ///   and map an association back to a <see cref="Topic"/>.
   /// </remarks>
-  public record RelatedTopicBindingModel : IRelatedTopicBindingModel {
+  public interface IAssociatedTopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -33,7 +31,7 @@ namespace OnTopic.ViewModels.BindingModels {
     ///   value is not null
     /// </requires>
     [Required]
-    public string? UniqueKey { get; init; }
+    string? UniqueKey { get; init; }
 
   } //Class
-} //Namespaces
+} //Namespace

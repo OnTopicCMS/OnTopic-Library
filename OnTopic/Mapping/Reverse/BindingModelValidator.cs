@@ -260,13 +260,13 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         attributeDescriptor.ModelType is ModelType.Reference &&
-        !typeof(IRelatedTopicBindingModel).IsAssignableFrom(propertyType)
+        !typeof(IAssociatedTopicBindingModel).IsAssignableFrom(propertyType)
       ) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{ModelType.Reference}, but the generic type '{propertyType.Name}' does not implement the " +
-          $"{nameof(IRelatedTopicBindingModel)} interface. This is required for references. If this property is not intended " +
-          $"to be mapped as a {ModelType.Reference} then update the definition in the associated " +
+          $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for references. If this property is not " +
+          $"intended to be mapped as a {ModelType.Reference} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this property is not intended to be mapped at all, include the " +
           $"{nameof(DisableMappingAttribute)} to exclude it from mapping."
         );
@@ -336,11 +336,11 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate the correct base class for relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!typeof(IRelatedTopicBindingModel).IsAssignableFrom(listType)) {
+      if (!typeof(IAssociatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
           $"{configuration.CollectionType}, but the generic type '{listType?.Name}' does not implement the " +
-          $"{nameof(IRelatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
+          $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
           $"intended to be mapped as a {configuration.CollectionType} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
           $"{nameof(DisableMappingAttribute)} to exclude it from mapping."

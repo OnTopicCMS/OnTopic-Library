@@ -4,21 +4,24 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
+using OnTopic.Mapping.Reverse;
+using OnTopic.Models;
 
-namespace OnTopic.Models {
+namespace OnTopic.ViewModels.BindingModels {
 
   /*============================================================================================================================
-  | INTERFACE: RELATED TOPIC BINDING MODEL
+  | CLASS: ASSOCIATED TOPIC BINDING MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
-  ///   It is strictly required that any binding models used as associations implement the <seecref="IRelatedTopicBindingModel"
-  ///   /> interface for the default <see cref="ReverseTopicMappingService"/> to correctly identify and map an association back
-  ///   to a <see cref="Topic"/>.
+  ///   While implementors may choose to create a custom <see cref="IAssociatedTopicBindingModel"/> implementation, the out-of-
+  ///   the-box <see cref="AssociatedTopicBindingModel"/> implementation satisfies all of the requirements of the <see cref="
+  ///   ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
+  ///   metadata for separate validation or processing.
   /// </remarks>
-  public interface IRelatedTopicBindingModel {
+  public record AssociatedTopicBindingModel : IAssociatedTopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -30,7 +33,7 @@ namespace OnTopic.Models {
     ///   value is not null
     /// </requires>
     [Required]
-    string? UniqueKey { get; init; }
+    public string? UniqueKey { get; init; }
 
   } //Class
-} //Namespace
+} //Namespaces
