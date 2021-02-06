@@ -23,7 +23,7 @@ namespace OnTopic.Tests.ViewModels.Metadata {
     public Collection<AttributeDescriptorTopicViewModel> AttributeDescriptors { get; } = new();
 
     [Collection(CollectionType.MappedCollection)]
-    [Follow(Relationships.None)]
+    [Follow(AssociationTypes.None)]
     public Collection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes { get; } = new();
 
   } //Class

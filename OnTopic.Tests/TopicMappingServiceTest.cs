@@ -305,23 +305,23 @@ namespace OnTopic.Tests {
     | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING RELATIONSHIPS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="Relationships"/>, and then confirms that
-    ///   its <see cref="MappedTopicCacheEntry.GetMissingRelationships(Relationships)"/> correctly returns the missing
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.GetMissingRelationships(AssociationTypes)"/> correctly returns the missing
     ///   relationships.
     /// </summary>
     [TestMethod]
     public void MappedTopicCacheEntry_GetMissingRelationships_ReturnsDifference() {
 
       var cacheEntry            = new MappedTopicCacheEntry() {
-        Relationships           = Relationships.Children | Relationships.Parents
+        Relationships           = AssociationTypes.Children | AssociationTypes.Parents
       };
-      var relationships         = Relationships.Children | Relationships.References;
+      var relationships         = AssociationTypes.Children | AssociationTypes.References;
 
       var difference            = cacheEntry.GetMissingRelationships(relationships);
 
-      Assert.IsTrue(difference.HasFlag(Relationships.References));
-      Assert.IsFalse(difference.HasFlag(Relationships.Children));
-      Assert.IsFalse(difference.HasFlag(Relationships.Parents));
+      Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
 
     }
 

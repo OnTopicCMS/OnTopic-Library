@@ -36,7 +36,7 @@ namespace OnTopic.Mapping.Annotations {
     ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="relationships"/>.
     /// </summary>
     /// <param name="relationships">The specific relationships that should be crawled.</param>
-    public FollowAttribute(Relationships relationships) {
+    public FollowAttribute(AssociationTypes relationships) {
       Relationships = relationships;
     }
 
@@ -46,7 +46,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the type(s) of relationships that should be recursed over.
     /// </summary>
-    public Relationships Relationships { get; }
+    public AssociationTypes Relationships { get; }
 
   } //Class
 } //Namespace

@@ -86,12 +86,12 @@ namespace OnTopic.ViewModels {
     /// </summary>
     /// <remarks>
     ///   If the current <see cref="TopicViewModel"/> is being mapped as part of another <see cref="TopicViewModel"/>, then the
-    ///   <see cref="Parent"/> property will only be mapped if that relationship includes a <see cref="FollowAttribute"/>
-    ///   with a value including <see cref="Relationships.Parents"/>. If it does, all <see cref="Parent"/> topics will be mapped
-    ///   up to the root of the site. No other relationships on the <see cref="Parent"/> view models will be mapped, even if
-    ///   they are annotated with a <see cref="FollowAttribute"/>.
+    ///   <see cref="Parent"/> property will only be mapped if that association includes a <see cref="FollowAttribute"/> with a
+    ///   value including <see cref="AssociationTypes.Parents"/>. If it does, all <see cref="Parent"/> topics will be mapped up
+    ///   to the root of the site. No other associations on the <see cref="Parent"/> view models will be mapped, even if they
+    ///   are annotated with a <see cref="FollowAttribute"/>.
     /// </remarks>
-    [Follow(Relationships.Parents)]
+    [Follow(AssociationTypes.Parents)]
     public TopicViewModel? Parent { get; init; }
 
   } //Class

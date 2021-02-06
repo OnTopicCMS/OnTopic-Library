@@ -30,7 +30,8 @@ namespace OnTopic.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it's imperative that it be strongly typed, then prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
+    ///     upfront, and it's imperative that it be strongly typed, then prefer <see cref="MapAsync{T}(Topic, AssociationTypes)
+    ///     "/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -39,7 +40,7 @@ namespace OnTopic.Mapping {
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All);
+    Task<object?> MapAsync(Topic? topic, AssociationTypes relationships = AssociationTypes.All);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -58,7 +59,7 @@ namespace OnTopic.Mapping {
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new();
+    Task<T?> MapAsync<T>(Topic? topic, AssociationTypes relationships = AssociationTypes.All) where T : class, new();
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -73,7 +74,7 @@ namespace OnTopic.Mapping {
     /// <returns>
     ///   An instance of the requested View Model instance with properties appropriately mapped.
     /// </returns>
-    Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All);
+    Task<object?> MapAsync(Topic? topic, object target, AssociationTypes relationships = AssociationTypes.All);
 
   } //Interface
 } //Namespace

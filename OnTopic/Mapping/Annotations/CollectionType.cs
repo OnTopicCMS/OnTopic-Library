@@ -13,7 +13,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   Enum that allows a collection to be specified.
   /// </summary>
   /// <remarks>
-  ///   This differs from <see cref="Relationships"/>, which allows <i>multiple</i> collections to be specified, and also
+  ///   This differs from <see cref="AssociationTypes"/>, which allows <i>multiple</i> collections to be specified, and also
   ///   includes the <see cref="Topic.Parent"/> as a source.
   /// </remarks>
   public enum CollectionType {

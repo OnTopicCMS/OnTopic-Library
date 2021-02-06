@@ -25,7 +25,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class RelationWithChildrenTopicViewModel: RelationTopicViewModel {
 
-    [Follow(Relationships.Relationships)]
+    [Follow(AssociationTypes.Relationships)]
     public Collection<RelationWithChildrenTopicViewModel> Children { get; } = new();
 
   } //Class

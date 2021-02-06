@@ -69,7 +69,7 @@ namespace OnTopic.Mapping.Internal {
       InheritValue              = false;
       CollectionKey             = AttributeKey;
       CollectionType            = CollectionType.Any;
-      CrawlRelationships        = Relationships.None;
+      CrawlRelationships        = AssociationTypes.None;
       MetadataKey               = null;
       DisableMapping            = false;
       AttributeFilters          = new();
@@ -296,7 +296,7 @@ namespace OnTopic.Mapping.Internal {
     ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Follow(Relationships.Children)]</c>.
     ///   </para>
     /// </remarks>
-    public Relationships CrawlRelationships { get; set; }
+    public AssociationTypes CrawlRelationships { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: METADATA KEY
