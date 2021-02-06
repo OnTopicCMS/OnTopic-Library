@@ -68,7 +68,7 @@ namespace OnTopic.Mapping.Internal {
       InheritValue              = false;
       CollectionKey             = AttributeKey;
       CollectionType            = CollectionType.Any;
-      CrawlRelationships        = AssociationTypes.None;
+      IncludeAssociations       = AssociationTypes.None;
       MetadataKey               = null;
       DisableMapping            = false;
       AttributeFilters          = new();
@@ -82,7 +82,7 @@ namespace OnTopic.Mapping.Internal {
       GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
       GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
       GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
-      GetAttributeValue<IncludeAttribute>(property,             a => CrawlRelationships = a.Associations);
+      GetAttributeValue<IncludeAttribute>(property,             a => IncludeAssociations = a.Associations);
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
       GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
@@ -276,26 +276,26 @@ namespace OnTopic.Mapping.Internal {
     public CollectionType CollectionType { get; set; }
 
     /*==========================================================================================================================
-    | PROPERTY: CRAWL RELATIONSHIPS
+    | PROPERTY: INCLUDE ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines which relationships, if any, the <see cref="InterfaceMapping"/> service should crawl for the current
+    ///   Determines which associations, if any, the <see cref="InterfaceMapping"/> service should be included for the current
     ///   property.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     By default, the all relationships will be mapped on the target DTO, unless the caller specifies otherwise. On any
-    ///     related DTOs, however, only <see cref="CollectionType.NestedTopics"/> will be mapped. So, if a mapped DTO has a
-    ///     collection for children, relationships, or even a parent property then any relationships on <i>those</i> DTOs will
-    ///     not be mapped. This behavior can be changed by specifying the <see cref="CrawlRelationships"/> flag, which allows
-    ///     one or multiple relationships to be specified for a given property.
+    ///     By default, the all associations will be mapped on the target model, unless the caller specifies otherwise. On any
+    ///     associated models, however, only <see cref="CollectionType.NestedTopics"/> will be mapped. So, if a mapped model has
+    ///     a collection for children, relationships, or even a parent property then any associations on <i>those</i> models
+    ///     will not be mapped. This behavior can be changed by specifying the <see cref="IncludeAssociations"/> flag, which
+    ///     allows one or multiple relationships to be specified for a given property.
     ///   </para>
     ///   <para>
-    ///     The <see cref="CrawlRelationships"/> property corresponds to the <see cref="IncludeAttribute.Associations"/>
-    ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Follow(Relationships.Children)]</c>.
+    ///     The <see cref="IncludeAssociations"/> property corresponds to the <see cref="IncludeAttribute.Associations"/>
+    ///     property. It can be assigned by decorating a model property with e.g. <c>[Include(Relationships.Children)]</c>.
     ///   </para>
     /// </remarks>
-    public AssociationTypes CrawlRelationships { get; set; }
+    public AssociationTypes IncludeAssociations { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: METADATA KEY

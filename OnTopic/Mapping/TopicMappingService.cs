@@ -693,7 +693,7 @@ namespace OnTopic.Mapping {
         //Map child topic to target DTO
         var childDto = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
-          taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
+          taskQueue.Add(MapAsync(childTopic, configuration.IncludeAssociations, cache));
         }
         else {
           AddToList(childDto);
@@ -771,7 +771,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicDto = (object?)null;
       try {
-        topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
+        topicDto = await MapAsync(source, configuration.IncludeAssociations, cache).ConfigureAwait(false);
       }
       catch (InvalidTypeException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches
