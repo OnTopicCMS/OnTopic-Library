@@ -38,9 +38,9 @@ namespace OnTopic.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
-    Task<object?> MapAsync(Topic? topic, AssociationTypes relationships = AssociationTypes.All);
+    Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All);
 
     /*==========================================================================================================================
     | METHOD: MAP (GENERIC)
@@ -55,11 +55,11 @@ namespace OnTopic.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
-    Task<T?> MapAsync<T>(Topic? topic, AssociationTypes relationships = AssociationTypes.All) where T : class, new();
+    Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new();
 
     /*==========================================================================================================================
     | METHOD: MAP (INSTANCES)
@@ -70,11 +70,11 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The data transfer object to populate.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model instance with properties appropriately mapped.
     /// </returns>
-    Task<object?> MapAsync(Topic? topic, object target, AssociationTypes relationships = AssociationTypes.All);
+    Task<object?> MapAsync(Topic? topic, object target, AssociationTypes associations = AssociationTypes.All);
 
   } //Interface
 } //Namespace
