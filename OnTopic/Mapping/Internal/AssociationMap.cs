@@ -9,7 +9,7 @@ using OnTopic.Mapping.Annotations;
 namespace OnTopic.Mapping.Internal {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP MAP
+  | CLASS: ASSOCIATION MAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a mapping of the relationship between <see cref="CollectionType"/> and <see cref="AssociationTypes"/>.
@@ -19,12 +19,12 @@ namespace OnTopic.Mapping.Internal {
   ///   when a single <see cref="CollectionType"/> needs to be related to an item in the collection of <see cref="
   ///   AssociationTypes"/>. This mapping makes that feasible.
   /// </remarks>
-  static internal class RelationshipMap {
+  static internal class AssociationMap {
 
     /*==========================================================================================================================
     | CONSTRUCTOR (STATIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static RelationshipMap() {
+    static AssociationMap() {
 
       var mappings = new Dictionary<CollectionType, AssociationTypes> {
         { CollectionType.Any, AssociationTypes.None },

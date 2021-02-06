@@ -610,7 +610,7 @@ namespace OnTopic.Mapping {
       | Provide local function for evaluating current collection
       \-----------------------------------------------------------------------------------------------------------------------*/
       IList<Topic> getCollection(CollectionType collection, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetAssociations = RelationshipMap.Mappings[collection];
+        var targetAssociations = AssociationMap.Mappings[collection];
         var preconditionsMet    =
           listSource.Count == 0 &&
           (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
