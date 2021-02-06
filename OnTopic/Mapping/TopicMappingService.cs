@@ -521,13 +521,13 @@ namespace OnTopic.Mapping {
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
-      var                       relationshipKey                 = configuration.CollectionKey;
+      var                       collectionKey                   = configuration.CollectionKey;
       var                       collectionType                  = configuration.CollectionType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
+      listSource = getCollection(
         CollectionType.Children,
         s => true,
         () => source.Children.ToList()
@@ -536,35 +536,35 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
+      listSource = getCollection(
         CollectionType.Relationship,
         source.Relationships.Contains,
-        () => source.Relationships.GetTopics(relationshipKey)
+        () => source.Relationships.GetTopics(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
+      listSource = getCollection(
         CollectionType.NestedTopics,
         source.Children.Contains,
-        () => source.Children[relationshipKey].Children
+        () => source.Children[collectionKey].Children
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
+      listSource = getCollection(
         CollectionType.IncomingRelationship,
         source.IncomingRelationships.Contains,
-        () => source.IncomingRelationships.GetTopics(relationshipKey)
+        () => source.IncomingRelationships.GetTopics(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle other strongly typed source collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       //The following allows a target collection to be mapped to an IList<Topic> source collection. This is valuable for custom,
-      //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific relationship type.
+      //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific collection type.
       //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
@@ -575,7 +575,7 @@ namespace OnTopic.Mapping {
             sourcePropertyValue.Count > 0 &&
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
           ) {
-            listSource = GetRelationship(
+            listSource = getCollection(
               CollectionType.MappedCollection,
               s => true,
               () => sourcePropertyValue.Cast<Topic>().ToList()
@@ -607,15 +607,15 @@ namespace OnTopic.Mapping {
       return listSource;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Provide local function for evaluating current relationship
+      | Provide local function for evaluating current collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IList<Topic> GetRelationship(CollectionType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetRelationships = RelationshipMap.Mappings[relationship];
+      IList<Topic> getCollection(CollectionType collection, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
+        var targetAssociations = RelationshipMap.Mappings[collection];
         var preconditionsMet    =
           listSource.Count == 0 &&
-          (collectionType is CollectionType.Any || collectionType.Equals(relationship)) &&
-          (collectionType is CollectionType.Children || relationship is not CollectionType.Children) &&
-          (targetRelationships is AssociationTypes.None || associations.HasFlag(targetRelationships)) &&
+          (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
+          (collectionType is CollectionType.Children || collection is not CollectionType.Children) &&
+          (targetAssociations is AssociationTypes.None || associations.HasFlag(targetAssociations)) &&
           contains(configuration.CollectionKey);
         return preconditionsMet? getTopics() : listSource;
       }
