@@ -19,10 +19,10 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class CircularTopicViewModel {
 
-    [Follow(AssociationTypes.Parents)]
+    [Include(AssociationTypes.Parents)]
     public CircularTopicViewModel? Parent { get; set; }
 
-    [Follow(AssociationTypes.Children | AssociationTypes.Parents)]
+    [Include(AssociationTypes.Children | AssociationTypes.Parents)]
     public Collection<CircularTopicViewModel> Children { get; } = new();
 
   } //Class

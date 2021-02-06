@@ -7,44 +7,42 @@
 namespace OnTopic.Mapping.Annotations {
 
   /*============================================================================================================================
-  | ATTRIBUTE: FOLLOW
+  | ATTRIBUTE: INCLUDE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Instructs the <see cref="ITopicMappingService"/> to continue following relationships on that property. Optionally
-  ///   specifies which relationships should be followed.
+  ///   Instructs the <see cref="ITopicMappingService"/> to include the specified <see cref="Associations"/> on that property.
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     By default, <see cref="ITopicMappingService"/> will populate all relationships on the initial data transfer object,
-  ///     but won't continue to do so on related objects. So, for instance, a <c>Children</c> collection will cause all children
-  ///     to be loaded, but the mapper won't populate their <c>Children</c> (assuming that property is set).
+  ///     By default, <see cref="ITopicMappingService"/> will populate all associations on the initial data transfer object,
+  ///     but won't continue to do so on associated objects. So, for instance, a <c>Children</c> collection will cause all
+  ///     children to be loaded, but the mapper won't populate <i>their</i> <c>Children</c> (assuming that property is
+  ///     available).
   ///   </para>
   ///   <para>
-  ///     The <see cref="FollowAttribute"/> overrides this behavior. If set, the <see cref="ITopicMappingService"/> will
-  ///     populate the <see cref="Associations"/> specified on the related topics. By default, it will crawl <i>all</i>
-  ///     relationships, but the <see cref="Associations"/> flag can optionally be used to specify one or multiple
-  ///     relationship types, thus providing fine-tune control.
+  ///     The <see cref="IncludeAttribute"/> overrides this behavior. If set, the <see cref="ITopicMappingService"/> will
+  ///     populate the <see cref="Associations"/> specified on the associated topics.
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class FollowAttribute : System.Attribute {
+  public sealed class IncludeAttribute : System.Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="associations"/>.
+    ///   Annotates a property with the <see cref="IncludeAttribute"/> by providing an <paramref name="associations"/>.
     /// </summary>
     /// <param name="associations">The specific associations that should be crawled.</param>
-    public FollowAttribute(AssociationTypes associations) {
+    public IncludeAttribute(AssociationTypes associations) {
       Associations = associations;
     }
 
     /*==========================================================================================================================
-    | PROPERTY: RELATIONSHIPS
+    | PROPERTY: ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the type(s) of relationships that should be recursed over.
+    ///   Gets the type(s) of associations that should be recursed over.
     /// </summary>
     public AssociationTypes Associations { get; }
 

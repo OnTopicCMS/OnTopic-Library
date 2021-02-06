@@ -80,7 +80,7 @@ namespace OnTopic.Mapping {
     ///   <para>
     ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///     <see cref="FollowAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
+    ///     <see cref="IncludeAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
@@ -176,7 +176,7 @@ namespace OnTopic.Mapping {
     /// <remarks>
     ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with <see cref
-    ///   ="FollowAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
+    ///   ="IncludeAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
     /// </remarks>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.

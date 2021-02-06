@@ -24,7 +24,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class AscendentTopicViewModel: KeyOnlyTopicViewModel {
 
-    [Follow(AssociationTypes.Parents)]
+    [Include(AssociationTypes.Parents)]
     public AscendentTopicViewModel? Parent { get; set; }
 
   } //Class

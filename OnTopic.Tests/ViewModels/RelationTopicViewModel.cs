@@ -25,7 +25,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class RelationTopicViewModel: KeyOnlyTopicViewModel {
 
-    [Follow(AssociationTypes.Children)]
+    [Include(AssociationTypes.Children)]
     public Collection<RelationTopicViewModel> Cousins { get; } = new();
 
   } //Class

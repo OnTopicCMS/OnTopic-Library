@@ -26,7 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public record DescendentTopicViewModel: TopicViewModel {
 
-    [Follow(AssociationTypes.Children)]
+    [Include(AssociationTypes.Children)]
     public TopicViewModelCollection<DescendentTopicViewModel> Children { get; } = new();
 
   } //Class
