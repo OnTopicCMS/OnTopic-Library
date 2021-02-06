@@ -256,7 +256,7 @@ namespace OnTopic.Mapping {
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    /// <param name="mapRelationshipsOnly">Determines if properties not associated with properties should be mapped.</param>
+    /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
     private async Task SetPropertyAsync(
       Topic                     source,
       object                    target,
@@ -264,7 +264,7 @@ namespace OnTopic.Mapping {
       PropertyInfo              property,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null,
-      bool                      mapRelationshipsOnly            = false
+      bool                      mapAssociationsOnly             = false
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!mapRelationshipsOnly && configuration.DefaultValue is not null) {
+      if (!mapAssociationsOnly && configuration.DefaultValue is not null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
@@ -303,7 +303,7 @@ namespace OnTopic.Mapping {
       else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
-      else if (!mapRelationshipsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+      else if (!mapAssociationsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
