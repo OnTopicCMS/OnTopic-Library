@@ -302,22 +302,22 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING RELATIONSHIPS: RETURNS DIFFERENCE
+    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
-    ///   its <see cref="MappedTopicCacheEntry.GetMissingRelationships(AssociationTypes)"/> correctly returns the missing
-    ///   relationships.
+    ///   its <see cref="MappedTopicCacheEntry.GetMissingAssociations(AssociationTypes)"/> correctly returns the missing
+    ///   associations.
     /// </summary>
     [TestMethod]
-    public void MappedTopicCacheEntry_GetMissingRelationships_ReturnsDifference() {
+    public void MappedTopicCacheEntry_GetMissingAssociations_ReturnsDifference() {
 
       var cacheEntry            = new MappedTopicCacheEntry() {
-        Relationships           = AssociationTypes.Children | AssociationTypes.Parents
+        Associations            = AssociationTypes.Children | AssociationTypes.Parents
       };
-      var relationships         = AssociationTypes.Children | AssociationTypes.References;
+      var associations          = AssociationTypes.Children | AssociationTypes.References;
 
-      var difference            = cacheEntry.GetMissingRelationships(relationships);
+      var difference            = cacheEntry.GetMissingAssociations(associations);
 
       Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
       Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));

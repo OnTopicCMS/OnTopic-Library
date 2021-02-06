@@ -109,7 +109,7 @@ namespace OnTopic.Mapping {
 
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
         target                  = cacheEntry.MappedTopic;
-        if (cacheEntry.GetMissingRelationships(relationships) == AssociationTypes.None) {
+        if (cacheEntry.GetMissingAssociations(relationships) == AssociationTypes.None) {
           return target;
         }
       }
@@ -206,23 +206,23 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       >-------------------------------------------------------------------------------------------------------------------------
-      | If the cache contains an entry, check to make sure it includes all of the requested relationships. If it does, return
-      | it. If it doesn't, determine the missing relationships and request to have those  mapped.
+      | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
+      | If it doesn't, determine the missing associations and request to have those mapped.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
-        relationships           = cacheEntry.GetMissingRelationships(relationships);
+        relationships           = cacheEntry.GetMissingAssociations(relationships);
         target                  = cacheEntry.MappedTopic;
         if (relationships == AssociationTypes.None) {
           return cacheEntry.MappedTopic;
         }
-        cacheEntry.AddMissingRelationships(relationships);
+        cacheEntry.AddMissingAssociations(relationships);
       }
       else if (!topic.IsNew) {
         cache.GetOrAdd(
           topic.Id,
           new MappedTopicCacheEntry() {
             MappedTopic         = target,
-            Relationships       = relationships
+            Associations        = relationships
           }
         );
       }
