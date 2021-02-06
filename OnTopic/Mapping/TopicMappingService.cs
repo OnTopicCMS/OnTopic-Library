@@ -84,7 +84,7 @@ namespace OnTopic.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
@@ -170,7 +170,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <remarks>
@@ -252,7 +252,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
@@ -431,7 +431,7 @@ namespace OnTopic.Mapping {
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
@@ -504,7 +504,7 @@ namespace OnTopic.Mapping {
     ///   on the target DTO.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>

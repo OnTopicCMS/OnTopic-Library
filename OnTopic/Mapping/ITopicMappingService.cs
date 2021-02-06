@@ -38,7 +38,7 @@ namespace OnTopic.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All);
 
@@ -55,7 +55,7 @@ namespace OnTopic.Mapping {
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model <typeparamref name="T"/> with properties appropriately mapped.
     /// </returns>
@@ -70,7 +70,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The data transfer object to populate.</param>
-    /// <param name="associations">Determines what associations the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <returns>
     ///   An instance of the requested View Model instance with properties appropriately mapped.
     /// </returns>
