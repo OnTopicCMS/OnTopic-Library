@@ -101,7 +101,7 @@ namespace OnTopic.Mapping.Annotations {
     | ALL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Map all relationship types.
+    ///   Map all association types.
     /// </summary>
     All = Parents | Children | Relationships | IncomingRelationships | MappedCollections | References
 

@@ -207,10 +207,10 @@ namespace OnTopic.Data.Sql {
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Clear relationships, topic references
+      | Clear associations
       >-------------------------------------------------------------------------------------------------------------------------
       | Because we don't (currently) track version as part of the .NET data model for relationships or topic references, there's
-      | no easy way to determine if a relationship should be deleted when doing a rollback. As such, existing relationships
+      | no easy way to determine if an association should be deleted when doing a rollback. As such, existing associations
       | should be deleted, assuming a `referenceTopic` is passed, and it contains the `topicId`.
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topic                 = (Topic?)null;
@@ -375,7 +375,7 @@ namespace OnTopic.Data.Sql {
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect whether anything has changed
       >-------------------------------------------------------------------------------------------------------------------------
-      | If no relationships have changed, and no attributes values have changed, and there aren't any mismatched attributes in
+      | If no associations have changed, and no attributes values have changed, and there aren't any mismatched attributes in
       | their respective lists, then there isn't anything new to persist to the database, and thus no benefit to executing the
       | current command. A more aggressive version of this would wrap much of the below logic in this, but this is just meant
       | as a quick fix to reduce the overhead of recursive saves.

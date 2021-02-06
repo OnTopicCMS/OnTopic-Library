@@ -298,8 +298,8 @@ namespace OnTopic.Tests {
     | TEST: BASE TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a base topic to an unsaved topic entity, then saves the entity and reestablishes the relationship. Ensures
-    ///   that the base topic is correctly set as a <see cref="Topic.References"/> entry.
+    ///   Sets a base topic to an unsaved topic entity, then saves the entity and reestablishes the reference. Ensures that the
+    ///   base topic is correctly set as a <see cref="Topic.References"/> entry.
     /// </summary>
     [TestMethod]
     public void BaseTopic_ResavedValue_ReturnsExpectedValue() {

@@ -61,7 +61,7 @@ namespace OnTopic {
     public Topic(string key, string contentType, Topic? parent = null, int id = -1) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set relationships
+      | Set collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       Children                  = new();
       Attributes                = new(this);
@@ -136,7 +136,7 @@ namespace OnTopic {
     ///   The current <see cref="Topic"/>'s parent <see cref="Topic"/>.
     /// </value>
     /// <remarks>
-    ///   While topics may be represented as a network graph via relationships, they are physically stored and primarily
+    ///   While topics may be represented as a network graph via associations, they are physically stored and primarily
     ///   represented via a hierarchy. As such, each topic may have at most a single parent. Note that the root node will
     ///   have a null parent.
     /// </remarks>
@@ -631,7 +631,7 @@ namespace OnTopic {
     ///   <para>
     ///     The underlying value of the <see cref="BaseTopic"/> is stored as a topic reference with the <see cref="KeyValuesPair
     ///     {String, Topic}.Key"/> of <c>BaseTopic</c> in <see cref="Topic.References"/>. If the <see cref="Topic"/> hasn't been
-    ///     saved, then the relationship will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
+    ///     saved, then the reference will be established, but the <c>BaseTopic</c> won't be persisted to the underlying
     ///     repository upon <see cref="Repositories.ITopicRepository.Save"/>. That said, when <see cref="Repositories.
     ///     ITopicRepository.Save(Topic, Boolean)"/> is called, the <see cref="BaseTopic"/> will be reevaluated and, if it has
     ///     subsequently been saved, and the <c>BaseTopic</c> will be updated accordingly. This allows in-memory topic graphs to
@@ -697,7 +697,7 @@ namespace OnTopic {
     ///   The references property exposes a <see cref="Topic" /> with child topics representing named references (e.g.,
     ///   <c>BaseTopic</c> for a <see cref="Topic.BaseTopic"/>).
     /// </remarks>
-    /// <value>The current <see cref="Topic"/>'s relationships.</value>
+    /// <value>The current <see cref="Topic"/>'s references.</value>
     public TopicReferenceCollection References { get; }
 
     /*==========================================================================================================================

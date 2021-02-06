@@ -10,14 +10,15 @@ namespace OnTopic.Mapping.Annotations {
   | ATTRIBUTE: COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides the <see cref="ITopicMappingService"/> with instructions as to which key to follow for the relationship.
+  ///   Provides the <see cref="ITopicMappingService"/> with instructions as to which collection to map to.
   /// </summary>
   /// <remarks>
   ///   <para>
   ///     By default, <see cref="ITopicMappingService"/> implementations will attempt to map a collection property to the first
-  ///     relationship it finds with a key that matches the property name. For example, if a property is named "Categories" it
-  ///     will first look in <see cref="Topic.Relationships"/> for a relationship named "Categories", then it will search <see
-  ///     cref="Topic.Children"/> for a set of nested topics, and finally <see cref="Topic.IncomingRelationships"/>.
+  ///     collection it finds with a key that matches the property name. For example, if a property is named <c>Categories</c>
+  ///     it will first look in <see cref="Topic.Relationships"/> for a relationship named <c>Categories</c>, then it will
+  ///     search <see cref="Topic.References"/>, then <see cref="Topic.Children"/> for a set of nested topics, and finally <see
+  ///     cref="Topic.IncomingRelationships"/>.
   ///   </para>
   ///   <para>
   ///     This attribute instructs the <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the
@@ -36,7 +37,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing an <paramref name="key"/>.
     /// </summary>
-    /// <param name="key">The key value of the relationships associated with the current property.</param>
+    /// <param name="key">The key value of the collection associated with the current property.</param>
     public CollectionAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
       Key = key;
@@ -45,7 +46,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Annotates a property with the <see cref="CollectionAttribute"/> by providing the <see cref="CollectionType"/>.
     /// </summary>
-    /// <param name="type">Optional. The type of collection the relationship is associated with.</param>
+    /// <param name="type">Optional. The type of collection the collection is associated with.</param>
     public CollectionAttribute(CollectionType type = CollectionType.Any) {
       Type = type;
     }

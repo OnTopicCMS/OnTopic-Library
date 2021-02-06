@@ -39,12 +39,12 @@ namespace OnTopic.Data.Sql {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a <see cref="IDataReader"/> from a call to the <c>GetTopics</c> stored procedure, will extract a list of
-    ///   topics and populate their attributes, relationships, and children.
+    ///   topics and populate their attributes, associations, and children.
     /// </summary>
     /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
     /// <param name="referenceTopic">
-    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
-    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
     /// </param>
     /// <param name="markDirty">
     ///   Specified whether the target collection value should be marked as dirty, assuming the value changes. By default, it
@@ -394,7 +394,7 @@ namespace OnTopic.Data.Sql {
     ///   Adds topic references to their associated topics.
     /// </summary>
     /// <remarks>
-    ///   Topics can be cross-referenced with each other topics via a one-to-one relationships. Once the topics are populated in
+    ///   Topics can be cross-referenced with each other topics via a one-to-one associations. Once the topics are populated in
     ///   memory, loop through the data to create these associations.
     /// </remarks>
     /// <param name="reader">The <see cref="IDataReader"/> with output from the <c>GetTopics</c> stored procedure.</param>
@@ -411,7 +411,7 @@ namespace OnTopic.Data.Sql {
       | Identify attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       var sourceTopicId         = reader.GetTopicId("Source_TopicID");
-      var relationshipKey       = reader.GetString("ReferenceKey");
+      var referenceKey          = reader.GetString("ReferenceKey");
       var targetTopicId         = reader.GetNullableTopicId("Target_TopicID");
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -432,9 +432,9 @@ namespace OnTopic.Data.Sql {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set relationship on object
+      | Set reference on object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      current.References.SetValue(relationshipKey, referenced, markDirty);
+      current.References.SetValue(referenceKey, referenced, markDirty);
 
     }
 

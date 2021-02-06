@@ -272,7 +272,7 @@ namespace OnTopic.Repositories {
       Save(topic, isRecursive, unresolvedTopics, version);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to resolve outstanding relationships
+      | Attempt to resolve outstanding associations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var unresolvedTopic in unresolvedTopics.ToList()) {
         unresolvedTopics.Remove(unresolvedTopic);
@@ -307,7 +307,7 @@ namespace OnTopic.Repositories {
     ///   cref="Topic.Relationships"/> or <see cref="Topic.BaseTopic"/>—can't yet be persisted because the target <see
     ///   cref="Topic"/> hasn't yet been saved, and thus the <see cref="Topic.Id"/> is still set to <c>-1</c>. To mitigate
     ///   this, the <paramref name="unresolvedTopics"/> allows this private overload to keep track of unresolved
-    ///   relationships. The public <see cref="Save(Topic, Boolean)"/> overload uses this list to resave any topics
+    ///   associations. The public <see cref="Save(Topic, Boolean)"/> overload uses this list to resave any topics
     ///   that include such references. This adds some overhead due to the duplicate <see cref="Save(Topic, Boolean)"/>, but
     ///   helps avoid potential data loss when working with complex topic graphs.
     /// </remarks>
@@ -341,11 +341,10 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Handle unresolved references
+      | Handle unresolved associations
       >-------------------------------------------------------------------------------------------------------------------------
-      | If it's a recursive save and there are any unresolved relationships, come back to this after the topic graph has been
-      | saved; that ensures that any relationships within the topic graph have been saved and can be properly persisted. The
-      | same can be done for Base Topic references, which are effectively establish a 1:1 relationship.
+      | If it's a recursive save and there are any unresolved associations, come back to this after the topic graph has been
+      | saved; that ensures that any associations within the topic graph have been saved and can be properly persisted.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         topic.Relationships.Any(r => r.Values.Any(t => t.Id < 0)) ||
@@ -795,8 +794,8 @@ namespace OnTopic.Repositories {
           continue;
         };
 
-        // Ignore relationships and nested topics
         if (attribute.ModelType is ModelType.Relationship or ModelType.NestedTopic) {
+        // Ignore associations
           continue;
         }
 
