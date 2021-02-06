@@ -21,8 +21,8 @@ namespace OnTopic.Mapping.Annotations {
   ///   </para>
   ///   <para>
   ///     The <see cref="FollowAttribute"/> overrides this behavior. If set, the <see cref="ITopicMappingService"/> will
-  ///     populate the <see cref="Relationships"/> specified on the related topics. By default, it will crawl <i>all</i>
-  ///     relationships, but the <see cref="Relationships"/> flag can optionally be used to specify one or multiple
+  ///     populate the <see cref="Associations"/> specified on the related topics. By default, it will crawl <i>all</i>
+  ///     relationships, but the <see cref="Associations"/> flag can optionally be used to specify one or multiple
   ///     relationship types, thus providing fine-tune control.
   ///   </para>
   /// </remarks>
@@ -33,11 +33,11 @@ namespace OnTopic.Mapping.Annotations {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="relationships"/>.
+    ///   Annotates a property with the <see cref="FollowAttribute"/> by providing an <paramref name="associations"/>.
     /// </summary>
-    /// <param name="relationships">The specific relationships that should be crawled.</param>
-    public FollowAttribute(AssociationTypes relationships) {
-      Relationships = relationships;
+    /// <param name="associations">The specific associations that should be crawled.</param>
+    public FollowAttribute(AssociationTypes associations) {
+      Associations = associations;
     }
 
     /*==========================================================================================================================
@@ -46,7 +46,7 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the type(s) of relationships that should be recursed over.
     /// </summary>
-    public AssociationTypes Relationships { get; }
+    public AssociationTypes Associations { get; }
 
   } //Class
 } //Namespace

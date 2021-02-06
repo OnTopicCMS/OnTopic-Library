@@ -10,7 +10,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping.Annotations;
@@ -83,7 +82,7 @@ namespace OnTopic.Mapping.Internal {
       GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
       GetAttributeValue<MapToParentAttribute>(property,         a => MapToParent = true);
       GetAttributeValue<MapToParentAttribute>(property,         a => AttributePrefix += (a.AttributePrefix?? property.Name));
-      GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Relationships);
+      GetAttributeValue<FollowAttribute>(property,              a => CrawlRelationships = a.Associations);
       GetAttributeValue<FlattenAttribute>(property,             a => FlattenChildren = true);
       GetAttributeValue<MetadataAttribute>(property,            a => MetadataKey = a.Key);
       GetAttributeValue<DisableMappingAttribute>(property,      a => DisableMapping = true);
@@ -292,7 +291,7 @@ namespace OnTopic.Mapping.Internal {
     ///     one or multiple relationships to be specified for a given property.
     ///   </para>
     ///   <para>
-    ///     The <see cref="CrawlRelationships"/> property corresponds to the <see cref="FollowAttribute.Relationships"/>
+    ///     The <see cref="CrawlRelationships"/> property corresponds to the <see cref="FollowAttribute.Associations"/>
     ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Follow(Relationships.Children)]</c>.
     ///   </para>
     /// </remarks>
