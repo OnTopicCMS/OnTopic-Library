@@ -600,13 +600,29 @@ namespace OnTopic.Repositories {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Remove references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var descendantTopic in descendantTopics) {
+        foreach (var reference in descendantTopic.References) {
+          if (reference.Value is not null && !descendantTopics.Contains(reference.Value)) {
+            descendantTopic.References.Remove(reference.Key);
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Remove incoming relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var descendantTopic in descendantTopics) {
         foreach (var relationship in descendantTopic.IncomingRelationships) {
           foreach (var relatedTopic in relationship.Values.ToList()) {
             if (!descendantTopics.Contains(relatedTopic)) {
-              relatedTopic.Relationships.RemoveTopic(relationship.Key, descendantTopic);
+              if (relatedTopic.Relationships.Contains(relationship.Key, descendantTopic)) {
+                relatedTopic.Relationships.RemoveTopic(relationship.Key, descendantTopic);
+              }
+              else if (relatedTopic.References.Contains(relationship.Key)) {
+                relatedTopic.References.Remove(relationship.Key);
+              }
             }
           }
         }
