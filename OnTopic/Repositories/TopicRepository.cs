@@ -810,8 +810,8 @@ namespace OnTopic.Repositories {
           continue;
         };
 
-        if (attribute.ModelType is ModelType.Relationship or ModelType.NestedTopic) {
         // Ignore associations
+        if (attribute.ModelType is ModelType.Relationship or ModelType.NestedTopic or ModelType.Reference) {
           continue;
         }
 
