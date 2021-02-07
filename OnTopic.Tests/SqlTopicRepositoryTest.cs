@@ -9,7 +9,7 @@ using System.Linq;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Sql;
-using OnTopic.References;
+using OnTopic.Associations;
 using OnTopic.Tests.Schemas;
 
 namespace OnTopic.Tests {

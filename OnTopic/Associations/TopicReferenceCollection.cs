@@ -7,7 +7,7 @@ using System;
 using OnTopic.Collections.Specialized;
 using OnTopic.Repositories;
 
-namespace OnTopic.References {
+namespace OnTopic.Associations {
 
   /*============================================================================================================================
   | CLASS: TOPIC REFERENCE COLLECTION

@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
-using OnTopic.References;
+using OnTopic.Associations;
 
 namespace OnTopic.Internal.Reflection {
 

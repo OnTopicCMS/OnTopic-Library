@@ -10,7 +10,7 @@ using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
-using OnTopic.References;
+using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
