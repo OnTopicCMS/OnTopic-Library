@@ -22,8 +22,8 @@ namespace OnTopic.Tests.ViewModels.Metadata {
 
     public Collection<AttributeDescriptorTopicViewModel> AttributeDescriptors { get; } = new();
 
-    [Relationship(RelationshipType.MappedCollection)]
-    [Follow(Relationships.None)]
+    [Collection(CollectionType.MappedCollection)]
+    [Include(AssociationTypes.None)]
     public Collection<ContentTypeDescriptorTopicViewModel> PermittedContentTypes { get; } = new();
 
   } //Class

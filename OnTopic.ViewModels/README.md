@@ -42,6 +42,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
     - [`ContentItemTopicViewModel`](Items/ContentItemTopicViewModel.cs)
     - [`LookupListItemTopicViewModel`](Items/LookupListItemTopicViewModel.cs)
     - [`SlideTopicViewModel`](Items/SlideTopicViewModel.cs)
+- [`AssociatedTopicBindingModel`](BindingModels/AssociatedTopicBindingModel.cs)
 - [`TopicViewModelLookupService`](TopicViewModelLookupService.cs)
 - [`TopicViewModelCollection<>`](Collections/TopicViewModelCollection.cs)
 
@@ -54,7 +55,7 @@ For applications with a large number of view models, it may be preferable to use
 > *Note:* If a base class is overwritten then topics that derive from the original version will continue to do so unless they are _also_ overwritten. For example, if a `Theme` property is added to a customer-specific `PageTopicViewModel`, the `Theme` property won't be available on e.g. `SlideShowTopicViewModel` unless it is _also_ overwritten by the customer to inherit from their `PageTopicViewModel`.
 
 ## Design Considerations
-As view models, not all attributes and relationships are exposed. The properties chosen are optimized around values that are expected to be of common interest to most views.
+As view models, not all attributes and associations are exposed. The properties chosen are optimized around values that are expected to be of common interest to most views.
 
 ### Default Constructor
 All of the view models assume a default constructor (e.g., `new TopicViewModel()`). This is necessary to provide compatibility with the `TopicMappingService` which will attempt to create new instances of view models based on the default constructor.

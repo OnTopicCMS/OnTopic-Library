@@ -74,8 +74,8 @@ namespace OnTopic.Repositories {
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="referenceTopic">
-    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
-    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
     /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
@@ -87,8 +87,8 @@ namespace OnTopic.Repositories {
     /// </summary>
     /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
     /// <param name="referenceTopic">
-    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
-    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
     /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
@@ -105,8 +105,8 @@ namespace OnTopic.Repositories {
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
     /// <param name="referenceTopic">
-    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic references
-    ///   and relationships, including <see cref="Topic.Parent"/>, are integrated with existing entities.
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
     /// </param>
     /// <returns>A topic object.</returns>
     Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);

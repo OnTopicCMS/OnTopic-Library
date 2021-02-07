@@ -16,11 +16,10 @@ namespace OnTopic.Mapping.Annotations {
   /// <remarks>
   ///   <para>
   ///     By default, <see cref="ITopicMappingService"/> will populate all items in a collection—and, if the <see
-  ///     cref="FollowAttribute"/> is defined, then also include their specified relationships. The <see
-  ///     cref="FlattenAttribute"/> allows all subsequent children to not only be included, but to be elevated to a single
-  ///     list. This can be especially useful when combined with e.g. <see cref="FilterByAttributeAttribute"/> as well as
-  ///     strongly-typed collections (e.g., of a specific view model type), as it allows a list to provide, effectively, search
-  ///     results.
+  ///     cref="IncludeAttribute"/> is defined, then also include their specified associations. The <see cref="FlattenAttribute"
+  ///     /> allows all subsequent children to not only be included, but to be elevated to a single list. This can be especially
+  ///     useful when combined with e.g. <see cref="FilterByAttributeAttribute"/> as well as strongly-typed collections (e.g.,
+  ///     of a specific view model type), as it allows a list to provide, effectively, search results.
   ///   </para>
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property)]

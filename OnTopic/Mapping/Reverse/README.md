@@ -8,7 +8,7 @@ The [`IReverseTopicMappingService`](IReverseTopicMappingService.cs) and its conc
 - [Complex Models](#complex-models)
 
 ## Interfaces
-Unlike the `TopicMappingService`, the `ReverseTopicMappingService` will not map any plain-old C# object (POCO); binding models must implement the `ITopicBindingModel` interface, which requires a `Key` and `ContentType` property; without these, it can't create a new `Topic` instance. For relationships, it expects implementation of the `IReverseTopicMappingService`, which has a single `UniqueKey` property.
+Unlike the `TopicMappingService`, the `ReverseTopicMappingService` will not map any plain-old C# object (POCO); binding models must implement the `ITopicBindingModel` interface, which requires a `Key` and `ContentType` property; without these, it can't create a new `Topic` instance. For associations, it expects implementation of the `IAssociatedTopicBindingModel`, which has a single `UniqueKey` property.
 
 ## Model Validation
 The `ReverseTopicMappingService` is deliberately more conservative than the `TopicMappingService` since assumptions in mapping won't just impact a view, but will be committed to the database.  As a result, all properties are validated against the corresponding `ContentTypeDescriptor`'s `AttributeDescriptors` collection. If a property cannot be mapped back to an attribute, a `MappingModelValidationException` is thrown.

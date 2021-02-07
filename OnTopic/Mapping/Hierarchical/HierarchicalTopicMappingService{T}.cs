@@ -177,7 +177,7 @@ namespace OnTopic.Mapping.Hierarchical {
       /*------------------------------------------------------------------------------------------------------------------------
       | Map object
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, Relationships.None).ConfigureAwait(false);
+      viewModel = await _topicMappingService.MapAsync<T>(sourceTopic, AssociationTypes.None).ConfigureAwait(false);
 
       Contract.Assume(
         viewModel,

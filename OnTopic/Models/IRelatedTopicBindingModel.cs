@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.ComponentModel.DataAnnotations;
+using System;
 using OnTopic.Mapping.Reverse;
 
 namespace OnTopic.Models {
@@ -12,26 +12,18 @@ namespace OnTopic.Models {
   | INTERFACE: RELATED TOPIC BINDING MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for binding a relationship of a binding model to an existing <see cref="Topic"/>.
+  ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
-  ///   It is strictly required that any binding models used as relationships implement the <see
-  ///   cref="IRelatedTopicBindingModel"/> interface for the default <see cref="ReverseTopicMappingService"/> to correctly
-  ///   identify and map a relationship back to a <see cref="Topic"/>.
+  ///   It is strictly required that any binding models used as associations implement the <see cref="IRelatedTopicBindingModel"
+  ///   /> interface for the default <see cref="ReverseTopicMappingService"/> to correctly identify and map an association back
+  ///   to a <see cref="Topic"/>.
   /// </remarks>
-  public interface IRelatedTopicBindingModel {
-
-    /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
-    /// </summary>
-    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value is not null
-    /// </requires>
-    [Required]
-    string? UniqueKey { get; init; }
+  [Obsolete(
+    "The IRelatedTopicBindingModel has been replaced by the IAssociatedTopicBindingModel. Please update references.",
+    true
+  )]
+  public interface IRelatedTopicBindingModel: IAssociatedTopicBindingModel {
 
   } //Class
 } //Namespace

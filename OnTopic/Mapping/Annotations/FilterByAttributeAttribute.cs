@@ -13,10 +13,9 @@ namespace OnTopic.Mapping.Annotations {
   ///   Flags that a collection property should be filtered by a specified <c>attributeKey</c> and <c>attributeValue</c>.
   /// </summary>
   /// <remarks>
-  ///   By default, <see cref="ITopicMappingService"/> will add any corresponding relationships to a collection, assuming they
-  ///   are assignable to the collection's base type. With the <c>[FilterByAttribute(attributeKey, attributeValue)]</c>
-  ///   attribute, the collection will instead be filtered to only those topics that have the specified attribute value
-  ///   assigned.
+  ///   By default, <see cref="ITopicMappingService"/> will add any corresponding topics to a collection, assuming they are
+  ///   assignable to the collection's base type. With the <c>[FilterByAttribute(attributeKey, attributeValue)]</c> attribute,
+  ///   the collection will instead be filtered to only those topics that have the specified attribute value assigned.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple=true, Inherited=true)]
   public sealed class FilterByAttributeAttribute : System.Attribute {

@@ -7,15 +7,16 @@
 namespace OnTopic.Mapping.Annotations {
 
   /*============================================================================================================================
-  | ENUM: RELATIONSHIP TYPE
+  | ENUM: COLLECTION TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Enum that allows a relationship to be specified.
+  ///   Enum that allows a collection to be specified.
   /// </summary>
   /// <remarks>
-  ///   This differs from <see cref="Relationships"/>, which allows <i>multiple</i> relationships to be specified.
+  ///   This differs from <see cref="AssociationTypes"/>, which allows <i>multiple</i> collections to be specified, and also
+  ///   includes the <see cref="Topic.Parent"/> as a source.
   /// </remarks>
-  public enum RelationshipType {
+  public enum CollectionType {
 
     #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

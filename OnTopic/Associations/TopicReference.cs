@@ -8,7 +8,7 @@ using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 
-namespace OnTopic.References {
+namespace OnTopic.Associations {
 
   /*============================================================================================================================
   | CLASS: TOPIC REFERENCE

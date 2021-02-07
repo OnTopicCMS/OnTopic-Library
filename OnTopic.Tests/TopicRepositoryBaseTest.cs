@@ -10,7 +10,7 @@ using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
-using OnTopic.References;
+using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
@@ -392,7 +392,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void GetUnmatchedAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
 
       topic.Attributes.SetValue("Title", "Title");
 

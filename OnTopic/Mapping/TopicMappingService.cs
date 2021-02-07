@@ -60,8 +60,8 @@ namespace OnTopic.Mapping {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
-    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) =>
-      await MapAsync(topic, relationships, new()).ConfigureAwait(false);
+    public async Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All) =>
+      await MapAsync(topic, associations, new()).ConfigureAwait(false);
 
     /// <summary>
     ///   Given a topic, will identify any View Models named, by convention, "{ContentType}TopicViewModel" and populate them
@@ -72,7 +72,7 @@ namespace OnTopic.Mapping {
     ///     Because the class is using reflection to determine the target View Models, the return type is <see cref="Object"/>.
     ///     These results may need to be cast to a specific type, depending on the context. That said, strongly-typed views
     ///     should be able to cast the object to the appropriate View Model type. If the type of the View Model is known
-    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, Relationships)"/>.
+    ///     upfront, and it is imperative that it be strongly-typed, prefer <see cref="MapAsync{T}(Topic, AssociationTypes)"/>.
     ///   </para>
     ///   <para>
     ///     Because the target object is being dynamically constructed, it must implement a default constructor.
@@ -80,17 +80,17 @@ namespace OnTopic.Mapping {
     ///   <para>
     ///     This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
     ///     recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///     <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///     <see cref="IncludeAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
     ///   </para>
     /// </remarks>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <returns>An instance of the dynamically determined View Model with properties appropriately mapped.</returns>
     private async Task<object?> MapAsync(
       Topic?                    topic,
-      Relationships             relationships,
+      AssociationTypes          associations,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
@@ -109,7 +109,7 @@ namespace OnTopic.Mapping {
 
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
         target                  = cacheEntry.MappedTopic;
-        if (cacheEntry.GetMissingRelationships(relationships) == Relationships.None) {
+        if (cacheEntry.GetMissingAssociations(associations) == AssociationTypes.None) {
           return target;
         }
       }
@@ -141,7 +141,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide mapping
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return await MapAsync(topic, target, relationships, cache, attributePrefix).ConfigureAwait(false);
+      return await MapAsync(topic, target, associations, cache, attributePrefix).ConfigureAwait(false);
 
     }
 
@@ -149,20 +149,20 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new() {
       if (typeof(Topic).IsAssignableFrom(typeof(T))) {
         return topic as T;
       }
-      return (T?)await MapAsync(topic, new T(), relationships).ConfigureAwait(false);
+      return (T?)await MapAsync(topic, new T(), associations).ConfigureAwait(false);
     }
 
     /*==========================================================================================================================
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic? topic, object target, AssociationTypes associations = AssociationTypes.All) {
       Contract.Requires(target, nameof(target));
-      return await MapAsync(topic, target, relationships, new()).ConfigureAwait(false);
+      return await MapAsync(topic, target, associations, new()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -170,13 +170,13 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
     /// <remarks>
     ///   This internal version passes a private cache of mapped objects from this run. This helps prevent problems with
-    ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with
-    ///   <see cref="FollowAttribute"/> set to include <see cref="Relationships.Parents"/>).
+    ///   recursion in case <see cref="Topic"/> is referred to multiple times (e.g., a <c>Children</c> collection with <see cref
+    ///   ="IncludeAttribute"/> set to include <see cref="AssociationTypes.Parents"/>).
     /// </remarks>
     /// <returns>
     ///   The target view model with the properties appropriately mapped.
@@ -184,7 +184,7 @@ namespace OnTopic.Mapping {
     private async Task<object> MapAsync(
       Topic?                    topic,
       object                    target,
-      Relationships             relationships,
+      AssociationTypes          associations,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null
     ) {
@@ -206,23 +206,23 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle cached objects
       >-------------------------------------------------------------------------------------------------------------------------
-      | If the cache contains an entry, check to make sure it includes all of the requested relationships. If it does, return
-      | it. If it doesn't, determine the missing relationships and request to have those  mapped.
+      | If the cache contains an entry, check to make sure it includes all of the requested associations. If it does, return it.
+      | If it doesn't, determine the missing associations and request to have those mapped.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (cache.TryGetValue(topic.Id, out var cacheEntry)) {
-        relationships           = cacheEntry.GetMissingRelationships(relationships);
+        associations            = cacheEntry.GetMissingAssociations(associations);
         target                  = cacheEntry.MappedTopic;
-        if (relationships == Relationships.None) {
+        if (associations == AssociationTypes.None) {
           return cacheEntry.MappedTopic;
         }
-        cacheEntry.AddMissingRelationships(relationships);
+        cacheEntry.AddMissingAssociations(associations);
       }
       else if (!topic.IsNew) {
         cache.GetOrAdd(
           topic.Id,
           new MappedTopicCacheEntry() {
             MappedTopic         = target,
-            Relationships       = relationships
+            Associations        = associations
           }
         );
       }
@@ -232,7 +232,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var taskQueue = new List<Task>();
       foreach (var property in _typeCache.GetMembers<PropertyInfo>(target.GetType())) {
-        taskQueue.Add(SetPropertyAsync(topic, target, relationships, property, cache, attributePrefix, cacheEntry != null));
+        taskQueue.Add(SetPropertyAsync(topic, target, associations, property, cache, attributePrefix, cacheEntry != null));
       }
       await Task.WhenAll(taskQueue.ToArray()).ConfigureAwait(false);
 
@@ -252,19 +252,19 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity to derive the data from.</param>
     /// <param name="target">The target object to map the data to.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="cache">A cache to keep track of already-mapped object instances.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    /// <param name="mapRelationshipsOnly">Determines if properties not associated with properties should be mapped.</param>
+    /// <param name="mapAssociationsOnly">Determines if properties not associated with associations should be mapped.</param>
     private async Task SetPropertyAsync(
       Topic                     source,
       object                    target,
-      Relationships             relationships,
+      AssociationTypes          associations,
       PropertyInfo              property,
       MappedTopicCache          cache,
       string?                   attributePrefix                 = null,
-      bool                      mapRelationshipsOnly            = false
+      bool                      mapAssociationsOnly             = false
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -272,7 +272,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(source, nameof(source));
       Contract.Requires(target, nameof(target));
-      Contract.Requires(relationships, nameof(relationships));
+      Contract.Requires(associations, nameof(associations));
       Contract.Requires(property, nameof(property));
       Contract.Requires(cache, nameof(cache));
 
@@ -290,7 +290,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Assign default value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!mapRelationshipsOnly && configuration.DefaultValue is not null) {
+      if (!mapAssociationsOnly && configuration.DefaultValue is not null) {
         property.SetValue(target, configuration.DefaultValue);
       }
 
@@ -303,24 +303,24 @@ namespace OnTopic.Mapping {
       else if (SetCompatibleProperty(source, target, configuration)) {
         //Performed 1:1 mapping between source and target
       }
-      else if (!mapRelationshipsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
+      else if (!mapAssociationsOnly && _typeCache.HasSettableProperty(target.GetType(), property.Name)) {
         SetScalarValue(source, target, configuration);
       }
       else if (typeof(IList).IsAssignableFrom(property.PropertyType)) {
-        await SetCollectionValueAsync(source, target, relationships, configuration, cache).ConfigureAwait(false);
+        await SetCollectionValueAsync(source, target, associations, configuration, cache).ConfigureAwait(false);
       }
-      else if (configuration.AttributeKey is "Parent" && relationships.HasFlag(Relationships.Parents)) {
+      else if (configuration.AttributeKey is "Parent" && associations.HasFlag(AssociationTypes.Parents)) {
         if (source.Parent is not null) {
           await SetTopicReferenceAsync(source.Parent, target, configuration, cache).ConfigureAwait(false);
         }
       }
       else if (
         topicReference is not null &&
-        relationships.HasFlag(Relationships.References)
+        associations.HasFlag(AssociationTypes.References)
       ) {
         await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
       }
-      else if (topicReferenceId > 0 && relationships.HasFlag(Relationships.References)) {
+      else if (topicReferenceId > 0 && associations.HasFlag(AssociationTypes.References)) {
         topicReference = _topicRepository.Load(topicReferenceId, source);
         if (topicReference is not null) {
           await SetTopicReferenceAsync(topicReference, target, configuration, cache).ConfigureAwait(false);
@@ -332,7 +332,7 @@ namespace OnTopic.Mapping {
           await MapAsync(
             source,
             targetProperty,
-            relationships,
+            associations,
             cache,
             configuration.AttributePrefix
           ).ConfigureAwait(false);
@@ -431,7 +431,7 @@ namespace OnTopic.Mapping {
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
     /// <param name="target">The target DTO on which to set the property value.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
@@ -439,7 +439,7 @@ namespace OnTopic.Mapping {
     private async Task SetCollectionValueAsync(
       Topic                     source,
       object                    target,
-      Relationships             relationships,
+      AssociationTypes          associations,
       PropertyConfiguration     configuration,
       MappedTopicCache          cache
     ) {
@@ -448,7 +448,7 @@ namespace OnTopic.Mapping {
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(source, nameof(source));
-      Contract.Requires(relationships, nameof(relationships));
+      Contract.Requires(associations, nameof(associations));
       Contract.Requires(configuration, nameof(configuration));
       Contract.Requires(cache, nameof(cache));
 
@@ -475,7 +475,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = GetSourceCollection(source, relationships, configuration);
+      var sourceList = GetSourceCollection(source, associations, configuration);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate that source collection was identified
@@ -504,31 +504,31 @@ namespace OnTopic.Mapping {
     ///   on the target DTO.
     /// </remarks>
     /// <param name="source">The source <see cref="Topic"/> from which to pull the value.</param>
-    /// <param name="relationships">Determines what relationships the mapping should follow, if any.</param>
+    /// <param name="associations">Determines what associations the mapping should include, if any.</param>
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    private IList<Topic> GetSourceCollection(Topic source, Relationships relationships, PropertyConfiguration configuration) {
+    private IList<Topic> GetSourceCollection(Topic source, AssociationTypes associations, PropertyConfiguration configuration) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(source, nameof(source));
-      Contract.Requires(relationships, nameof(relationships));
+      Contract.Requires(associations, nameof(associations));
       Contract.Requires(configuration, nameof(configuration));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish source collection to store topics to be mapped
       \-----------------------------------------------------------------------------------------------------------------------*/
       var                       listSource                      = (IList<Topic>)Array.Empty<Topic>();
-      var                       relationshipKey                 = configuration.RelationshipKey;
-      var                       relationshipType                = configuration.RelationshipType;
+      var                       collectionKey                   = configuration.CollectionKey;
+      var                       collectionType                  = configuration.CollectionType;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.Children,
+      listSource = getCollection(
+        CollectionType.Children,
         s => true,
         () => source.Children.ToList()
       );
@@ -536,35 +536,35 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (outgoing) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.Relationship,
+      listSource = getCollection(
+        CollectionType.Relationship,
         source.Relationships.Contains,
-        () => source.Relationships.GetTopics(relationshipKey)
+        () => source.Relationships.GetTopics(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle nested topics, or children corresponding to the property name
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.NestedTopics,
+      listSource = getCollection(
+        CollectionType.NestedTopics,
         source.Children.Contains,
-        () => source.Children[relationshipKey].Children
+        () => source.Children[collectionKey].Children
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle (incoming) relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      listSource = GetRelationship(
-        RelationshipType.IncomingRelationship,
+      listSource = getCollection(
+        CollectionType.IncomingRelationship,
         source.IncomingRelationships.Contains,
-        () => source.IncomingRelationships.GetTopics(relationshipKey)
+        () => source.IncomingRelationships.GetTopics(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle other strongly typed source collections
       \-----------------------------------------------------------------------------------------------------------------------*/
       //The following allows a target collection to be mapped to an IList<Topic> source collection. This is valuable for custom,
-      //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific relationship type.
+      //curated collections defined on e.g. derivatives of Topic, but which don't otherwise map to a specific collection type.
       //For example, the ContentTypeDescriptor's AttributeDescriptors collection, which provides a rollup of
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
@@ -575,8 +575,8 @@ namespace OnTopic.Mapping {
             sourcePropertyValue.Count > 0 &&
             typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
           ) {
-            listSource = GetRelationship(
-              RelationshipType.MappedCollection,
+            listSource = getCollection(
+              CollectionType.MappedCollection,
               s => true,
               () => sourcePropertyValue.Cast<Topic>().ToList()
             );
@@ -607,16 +607,16 @@ namespace OnTopic.Mapping {
       return listSource;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Provide local function for evaluating current relationship
+      | Provide local function for evaluating current collection
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IList<Topic> GetRelationship(RelationshipType relationship, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
-        var targetRelationships = RelationshipMap.Mappings[relationship];
+      IList<Topic> getCollection(CollectionType collection, Func<string, bool> contains, Func<IList<Topic>> getTopics) {
+        var targetAssociations = AssociationMap.Mappings[collection];
         var preconditionsMet    =
           listSource.Count == 0 &&
-          (relationshipType is RelationshipType.Any || relationshipType.Equals(relationship)) &&
-          (relationshipType is RelationshipType.Children || relationship is not RelationshipType.Children) &&
-          (targetRelationships is Relationships.None || relationships.HasFlag(targetRelationships)) &&
-          contains(configuration.RelationshipKey);
+          (collectionType is CollectionType.Any || collectionType.Equals(collection)) &&
+          (collectionType is CollectionType.Children || collection is not CollectionType.Children) &&
+          (targetAssociations is AssociationTypes.None || associations.HasFlag(targetAssociations)) &&
+          contains(configuration.CollectionKey);
         return preconditionsMet? getTopics() : listSource;
       }
 
@@ -693,7 +693,7 @@ namespace OnTopic.Mapping {
         //Map child topic to target DTO
         var childDto = (object)childTopic;
         if (!typeof(Topic).IsAssignableFrom(listType)) {
-          taskQueue.Add(MapAsync(childTopic, configuration.CrawlRelationships, cache));
+          taskQueue.Add(MapAsync(childTopic, configuration.IncludeAssociations, cache));
         }
         else {
           AddToList(childDto);
@@ -771,7 +771,7 @@ namespace OnTopic.Mapping {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicDto = (object?)null;
       try {
-        topicDto = await MapAsync(source, configuration.CrawlRelationships, cache).ConfigureAwait(false);
+        topicDto = await MapAsync(source, configuration.IncludeAssociations, cache).ConfigureAwait(false);
       }
       catch (InvalidTypeException) {
         //Disregard errors caused by unmapped view models; those are functionally equivalent to IsAssignableFrom() mismatches

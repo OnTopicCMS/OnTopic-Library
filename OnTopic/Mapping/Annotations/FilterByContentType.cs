@@ -13,9 +13,9 @@ namespace OnTopic.Mapping.Annotations {
   ///   Flags that a collection property should be filtered by a specified <c>ContentType</c>.
   /// </summary>
   /// <remarks>
-  ///   By default, <see cref="ITopicMappingService"/> will add any corresponding relationships to a collection, assuming they
-  ///   are assignable to the collection's base type. With the <c>[FilterByContentType(contentType)]</c> attribute, the
-  ///   collection will instead be filtered to only those topics that have the specified content type.
+  ///   By default, <see cref="ITopicMappingService"/> will add any corresponding topic to a collection, assuming they are
+  ///   assignable to the collection's base type. With the <c>[FilterByContentType(contentType)]</c> attribute, the collection
+  ///   will instead be filtered to only those topics that have the specified content type.
   /// </remarks>
   [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple=true, Inherited=true)]
   public sealed class FilterByContentTypeAttribute : System.Attribute {

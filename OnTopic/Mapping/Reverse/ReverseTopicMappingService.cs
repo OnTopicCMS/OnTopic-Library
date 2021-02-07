@@ -422,7 +422,7 @@ namespace OnTopic.Mapping.Reverse {
       var sourceList = (IList?)configuration.Property.GetValue(source, null);
 
       if (sourceList is null) {
-        sourceList = new List<IRelatedTopicBindingModel>();
+        sourceList = new List<IAssociatedTopicBindingModel>();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -433,7 +433,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (IRelatedTopicBindingModel relationship in sourceList) {
+      foreach (IAssociatedTopicBindingModel relationship in sourceList) {
         var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
         if (targetTopic is null) {
           throw new MappingModelValidationException(
@@ -524,7 +524,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var modelReference = (IRelatedTopicBindingModel?)configuration.Property.GetValue(source);
+      var modelReference = (IAssociatedTopicBindingModel?)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)

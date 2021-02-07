@@ -28,15 +28,15 @@ namespace OnTopic.Mapping.Reverse {
   ///     from the binding model regarding what properties are intended for—especially in terms of e.g aliased relationships.
   ///   </para>
   ///   <para>
-  ///     The current design of <see cref="IReverseTopicMappingService"/> is not intended to support mapping relationships, as
+  ///     The current design of <see cref="IReverseTopicMappingService"/> is not intended to support mapping associations, as
   ///     this overlaps with a broader concern of merging topics with an existing <see cref="Topic"/> graph (e.g., as part of an
-  ///     <see cref="ITopicRepository"/>.
+  ///     <see cref="ITopicRepository"/>. It will map the associations to those topics, but not those topics themselves.
   ///   </para>
   ///   <para>
   ///     Despite the differences between the <see cref="ITopicMappingService"/> and <see cref="IReverseTopicMappingService"/>s,
   ///     many attributes are able to be reused between them. For instance, the <see cref="AttributeKeyAttribute"/> can still
   ///     map a property on a binding model to an attribute of a different name on a <see cref="Topic"/>, just as the <see
-  ///     cref="RelationshipAttribute"/> can with relationships. Other attributes, however, provde no benefit in the reverse
+  ///     cref="CollectionAttribute"/> can with collections. Other attributes, however, provde no benefit in the reverse
   ///     scenario, such as <see cref="FlattenAttribute"/> or <see cref="FilterByAttributeAttribute"/>, which really only make
   ///     sense in creating a "produced view" that is a subset of the original model. That is valuable when creating a view
   ///     model, but isn't a useful use case when working with binding models.

@@ -6,7 +6,7 @@
 using System;
 using OnTopic.Collections.Specialized;
 
-namespace OnTopic.References {
+namespace OnTopic.Associations {
 
   /*============================================================================================================================
   | CLASS: REFERENCE SETTER [ATTRIBUTE]

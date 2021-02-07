@@ -14,11 +14,11 @@ namespace OnTopic.Mapping.Internal {
   ///   Provides an entry to tracking an object mapped using the <see cref="TopicMappingService"/>.
   /// </summary>
   /// <remarks>
-  ///   In addition to the actual <see cref="MappedTopic"/>, this also includes a <see cref="Relationships"/> property for
-  ///   tracking what relationships were mapped to the <see cref="MappedTopic"/>. This allows the <see cref=
-  ///   "TopicMappingService"/> to be update the cached object with any missing relationships, which can be identified using the
-  ///   <see cref="GetMissingRelationships(Relationships)"/> method. In turn, the cache can then be updated to reflect those
-  ///   new relationships by using <see cref="AddMissingRelationships(Relationships)"/>. This ensures that even if a topic has
+  ///   In addition to the actual <see cref="MappedTopic"/>, this also includes a <see cref="Associations"/> property for
+  ///   tracking what associations were mapped to the <see cref="MappedTopic"/>. This allows the <see cref="TopicMappingService"
+  ///   /> to be update the cached object with any missing associations, which can be identified using the <see cref="
+  ///   GetMissingAssociations(AssociationTypes)"/> method. In turn, the cache can then be updated to reflect those new
+  ///   associations by using <see cref="AddMissingAssociations(AssociationTypes)"/>. This ensures that even if a topic has
   ///   already been mapped, its scope can be expanded without duplicating effort.
   /// </remarks>
   public class MappedTopicCacheEntry {
@@ -32,30 +32,30 @@ namespace OnTopic.Mapping.Internal {
     public object MappedTopic { get; set; } = null!;
 
     /*==========================================================================================================================
-    | PROPERTY: RELATIONSHIPS
+    | PROPERTY: ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the relationships that the <see cref="MappedTopic"/> was mapped with.
+    ///   Provides a reference to the associations that the <see cref="MappedTopic"/> was mapped with.
     /// </summary>
-    public Relationships Relationships { get; set; } = Relationships.None;
+    public AssociationTypes Associations { get; set; } = AssociationTypes.None;
 
     /*==========================================================================================================================
-    | METHOD: GET MISSING RELATIONSHIPS
+    | METHOD: GET MISSING ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a target <paramref name="relationships"/>, identifies any relationships not covered by <see cref="Relationships"
-    ///   /> and returns them as a new <see cref="OnTopic.Mapping.Annotations.Relationships"/> instance.
+    ///   Given a target <paramref name="associations"/>, identifies any associations not covered by <see cref="Associations"/>
+    ///   and returns them as a new <see cref="AssociationTypes"/> instance.
     /// </summary>
-    public Relationships GetMissingRelationships(Relationships relationships) => Relationships ^ (relationships | Relationships);
+    public AssociationTypes GetMissingAssociations(AssociationTypes associations) => Associations ^ (associations | Associations);
 
     /*==========================================================================================================================
-    | METHOD: ADD MISSING RELATIONSHIPS
+    | METHOD: ADD MISSING ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a target <paramref name="relationships"/>, adds any missing <see cref="OnTopic.Mapping.Annotations.
-    ///   Relationships"/> to the <see cref="Relationships"/> property.
+    ///   Given a target <paramref name="associations"/>, adds any missing <see cref="AssociationTypes"/> to the <see cref="
+    ///   Associations"/> property.
     /// </summary>
-    public void AddMissingRelationships(Relationships relationships) => Relationships = relationships | Relationships;
+    public void AddMissingAssociations(AssociationTypes associations) => Associations = associations | Associations;
 
   } //Class
 } //Namespace

@@ -3,17 +3,17 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
+using System.ComponentModel.DataAnnotations;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Models;
 
 namespace OnTopic.ViewModels.BindingModels {
 
   /*============================================================================================================================
-  | CLASS: RELATED TOPIC BINDING MODEL
+  | CLASS: ASSOCIATED TOPIC BINDING MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for binding a relationship of a binding model to an existing <see cref="Topic"/>.
+  ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
   ///   While implementors may choose to create a custom <see cref="IAssociatedTopicBindingModel"/> implementation, the out-of-
@@ -21,11 +21,19 @@ namespace OnTopic.ViewModels.BindingModels {
   ///   ReverseTopicMappingService"/>. The only reason to implement a custom definition is if the caller needs additional
   ///   metadata for separate validation or processing.
   /// </remarks>
-  [Obsolete(
-    "The RelatedTopicBindingModel has been replaced by the AssociatedTopicBindingModel. Please update references.",
-    true
-  )]
-  public record RelatedTopicBindingModel: AssociatedTopicBindingModel {
+  public record AssociatedTopicBindingModel : IAssociatedTopicBindingModel {
+
+    /*==========================================================================================================================
+    | PROPERTY: UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
+    /// </summary>
+    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
+    ///   value is not null
+    /// </requires>
+    [Required]
+    public string? UniqueKey { get; init; }
 
   } //Class
 } //Namespaces

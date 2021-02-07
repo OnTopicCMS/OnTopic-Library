@@ -5,7 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.References;
+using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
 

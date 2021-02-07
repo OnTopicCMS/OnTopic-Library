@@ -302,26 +302,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING RELATIONSHIPS: RETURNS DIFFERENCE
+    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="Relationships"/>, and then confirms that
-    ///   its <see cref="MappedTopicCacheEntry.GetMissingRelationships(Relationships)"/> correctly returns the missing
-    ///   relationships.
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.GetMissingAssociations(AssociationTypes)"/> correctly returns the missing
+    ///   associations.
     /// </summary>
     [TestMethod]
-    public void MappedTopicCacheEntry_GetMissingRelationships_ReturnsDifference() {
+    public void MappedTopicCacheEntry_GetMissingAssociations_ReturnsDifference() {
 
       var cacheEntry            = new MappedTopicCacheEntry() {
-        Relationships           = Relationships.Children | Relationships.Parents
+        Associations            = AssociationTypes.Children | AssociationTypes.Parents
       };
-      var relationships         = Relationships.Children | Relationships.References;
+      var associations          = AssociationTypes.Children | AssociationTypes.References;
 
-      var difference            = cacheEntry.GetMissingRelationships(relationships);
+      var difference            = cacheEntry.GetMissingAssociations(associations);
 
-      Assert.IsTrue(difference.HasFlag(Relationships.References));
-      Assert.IsFalse(difference.HasFlag(Relationships.Children));
-      Assert.IsFalse(difference.HasFlag(Relationships.Parents));
+      Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
 
     }
 
@@ -384,15 +384,14 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
-    ///   type specified by <see cref="Mapping.Annotations.RelationshipAttribute"/>.
+    ///   type specified by <see cref="Mapping.Annotations.CollectionAttribute"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see
-    ///   cref="Mapping.Annotations.RelationshipAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
-    ///   <see cref="RelationshipType"/> to <see cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c>
-    ///   refers to a relationship that is both outgoing and incoming. It should be smart enough to a) look for the
-    ///   <c>AmbigousRelationship</c> instead of the <c>RelationshipAlias</c>, and b) source from the <see
-    ///   cref="Topic.IncomingRelationships"/> collection.
+    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see cref="Mapping.Annotations.
+    ///   CollectionAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the <see cref="CollectionType"
+    ///   /> to <see cref="CollectionType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is
+    ///   both outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
+    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
     public async Task Map_AlternateRelationship_ReturnsCorrectRelationship() {

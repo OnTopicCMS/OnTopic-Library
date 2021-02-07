@@ -13,7 +13,7 @@ namespace OnTopic.Tests.ViewModels {
   | VIEW MODEL: DESCENDENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a simple view model with a single property (<see cref="Children"/>) for mapping descending relationships.
+  ///   Provides a simple view model with a single property (<see cref="Children"/>) for mapping descending associations.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -26,7 +26,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public record DescendentTopicViewModel: TopicViewModel {
 
-    [Follow(Relationships.Children)]
+    [Include(AssociationTypes.Children)]
     public TopicViewModelCollection<DescendentTopicViewModel> Children { get; } = new();
 
   } //Class

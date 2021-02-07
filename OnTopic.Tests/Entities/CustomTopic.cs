@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.References;
+using OnTopic.Associations;
 
 namespace OnTopic.Tests.Entities {
 

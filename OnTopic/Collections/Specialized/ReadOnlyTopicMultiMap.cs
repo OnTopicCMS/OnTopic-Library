@@ -135,7 +135,7 @@ namespace OnTopic.Collections.Specialized {
       new(Source.SelectMany(list => list.Values).Distinct().ToList());
 
     /// <summary>
-    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of relationship key, filtered by content
+    ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of key, filtered by content
     ///   type.
     /// </summary>
     /// <returns>

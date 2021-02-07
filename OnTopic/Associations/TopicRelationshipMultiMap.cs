@@ -8,7 +8,7 @@ using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
-namespace OnTopic.References {
+namespace OnTopic.Associations {
 
   /*============================================================================================================================
   | CLASS: TOPIC RELATIONSHIP MULTIMAP
