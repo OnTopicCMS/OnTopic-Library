@@ -187,7 +187,7 @@ namespace OnTopic.Associations {
       var wasDirty              = _dirtyKeys.IsDirty(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);
-        if (markDirty.HasValue && !markDirty.Value && !wasDirty) {
+        if (!_parent.IsNew && markDirty.HasValue && !markDirty.Value && !wasDirty) {
           MarkClean(relationshipKey);
         }
         else {
@@ -245,10 +245,20 @@ namespace OnTopic.Associations {
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public void MarkClean() => _dirtyKeys.MarkClean();
+    public void MarkClean() {
+      if (_parent.IsNew) {
+        return;
+      }
+      _dirtyKeys.MarkClean();
+    }
 
     /// <inheritdoc/>
-    public void MarkClean(string key) => _dirtyKeys.MarkClean(key);
+    public void MarkClean(string key) {
+      if (_parent.IsNew) {
+        return;
+      }
+      _dirtyKeys.MarkClean(key);
+    }
 
   } //Class
 } //Namespace

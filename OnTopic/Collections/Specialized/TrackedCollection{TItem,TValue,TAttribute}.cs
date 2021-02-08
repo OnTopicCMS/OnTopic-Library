@@ -146,6 +146,9 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(DateTime? version) {
+      if (AssociatedTopic.IsNew) {
+        return;
+      }
       foreach (var trackedItem in Items.Where(a => a.IsDirty).ToArray()) {
         SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
       }
@@ -169,7 +172,10 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(string key, DateTime? version) {
-      if (Contains(key)) {
+      if (AssociatedTopic.IsNew) {
+        return;
+      }
+      else if (Contains(key)) {
         var trackedItem         = this[key];
         if (trackedItem.IsDirty) {
           SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
@@ -444,7 +450,10 @@ namespace OnTopic.Collections.Specialized {
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (originalItem is not null) {
         var markAsDirty = originalItem.IsDirty;
-        if (markDirty.HasValue) {
+        if (AssociatedTopic.IsNew) {
+          markAsDirty = true;
+        }
+        else if (markDirty.HasValue) {
           markAsDirty = markDirty.Value;
         }
         else if (originalItem.Value != value) {
@@ -474,7 +483,7 @@ namespace OnTopic.Collections.Specialized {
         updatedItem = new TItem() {
           Key                   = key,
           Value                 = value,
-          IsDirty               = markDirty ?? true,
+          IsDirty               = AssociatedTopic.IsNew || (markDirty ?? true),
           LastModified          = version?? DateTime.UtcNow
         };
       }
@@ -534,6 +543,11 @@ namespace OnTopic.Collections.Specialized {
     /// </exception>
     protected override void InsertItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
+      if (AssociatedTopic.IsNew && !item.IsDirty) {
+        item                    = item with {
+          IsDirty               = true
+        };
+      }
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         if (!Contains(item.Key)) {
           base.InsertItem(index, item);
@@ -567,6 +581,11 @@ namespace OnTopic.Collections.Specialized {
     /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
     protected override void SetItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
+      if (AssociatedTopic.IsNew && !item.IsDirty) {
+        item                    = item with {
+          IsDirty               = true
+        };
+      }
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
         if (DeletedItems.Contains(item.Key)) {
@@ -588,7 +607,9 @@ namespace OnTopic.Collections.Specialized {
     /// </remarks>
     protected override void RemoveItem(int index) {
       var trackedItem = this[index];
-      DeletedItems.Add(trackedItem.Key);
+      if (!AssociatedTopic.IsNew) {
+        DeletedItems.Add(trackedItem.Key);
+      }
       base.RemoveItem(index);
     }
 
@@ -604,7 +625,9 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="TrackedItem{T}"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
     /// </remarks>
     protected override void ClearItems() {
-      DeletedItems.AddRange(Items.Select(a => a.Key));
+      if (!AssociatedTopic.IsNew) {
+        DeletedItems.AddRange(Items.Select(a => a.Key));
+      }
       base.ClearItems();
     }
 
