@@ -477,6 +477,31 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: ADD CLEAN ATTRIBUTE TO NEW TOPIC: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
+    ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedItem{T}.IsDirty"/> and then confirms that
+    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.Add(
+        new() {
+          Key                   = "Foo",
+          Value                 = "Bar",
+          IsDirty               = false
+        }
+      );
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INVALID VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
