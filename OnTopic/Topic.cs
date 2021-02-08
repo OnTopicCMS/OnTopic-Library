@@ -485,6 +485,7 @@ namespace OnTopic {
       }
       var insertAt = (sibling is not null)? parent.Children.IndexOf(sibling)+1 : 0;
       parent.Children.Insert(insertAt, this);
+      _dirtyKeys.MarkDirty("Parent");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set parent values
@@ -594,6 +595,7 @@ namespace OnTopic {
     /// <inheritdoc/>
     public bool IsDirty(string key) => IsDirty(key, false);
 
+
     /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
     public bool IsDirty(string key, bool checkCollections) {
       if (IsNew || _dirtyKeys.IsDirty(key)) {
@@ -620,8 +622,8 @@ namespace OnTopic {
     public void MarkClean() => MarkClean(false);
 
     /// <summary>
-    ///   Resets the <see cref="IsDirty"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using the
-    ///   <paramref name="includeCollections"/> parameter.
+    ///   Resets the <see cref="IsDirty()"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using
+    ///   the <paramref name="includeCollections"/> parameter.
     /// </summary>
     /// <param name="includeCollections">
     ///   Determines if <see cref="Attributes"/>, <see cref="Relationships"/>, and <see cref="References"/> should be included.
