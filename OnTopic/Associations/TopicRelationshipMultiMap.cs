@@ -6,6 +6,7 @@
 using System;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 
 namespace OnTopic.Associations {
@@ -249,7 +250,11 @@ namespace OnTopic.Associations {
       if (_parent.IsNew) {
         return;
       }
-      _dirtyKeys.MarkClean();
+      foreach (var relationship in _storage) {
+        if (!relationship.Values.AnyNew()) {
+          _dirtyKeys.MarkClean(relationship.Key);
+        }
+      }
     }
 
     /// <inheritdoc/>
@@ -257,7 +262,9 @@ namespace OnTopic.Associations {
       if (_parent.IsNew) {
         return;
       }
-      _dirtyKeys.MarkClean(key);
+      if (Contains(key) && !_storage[key].Values.AnyNew()) {
+        _dirtyKeys.MarkClean(key);
+      }
     }
 
   } //Class
