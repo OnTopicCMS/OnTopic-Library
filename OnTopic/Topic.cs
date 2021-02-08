@@ -575,36 +575,41 @@ namespace OnTopic {
     ///   modified.
     /// </returns>
     public bool IsDirty(bool checkCollections, bool excludeLastModified = false) {
-      var isDirty = _dirtyKeys.IsDirty();
-      if (isDirty && checkCollections) {
-        isDirty = Attributes.IsDirty(excludeLastModified);
+      if (_dirtyKeys.IsDirty()) {
+        return true;
       }
-      if (isDirty && checkCollections) {
-        isDirty = Relationships.IsDirty();
+      else if (!checkCollections) {
+        return false;
       }
-      if (!isDirty && checkCollections) {
-        isDirty = References.IsDirty();
+      else if (
+        Attributes.IsDirty(excludeLastModified) ||
+        Relationships.IsDirty() ||
+        References.IsDirty()
+      ) {
+        return true;
       }
-      return isDirty;
+      return false;
     }
 
     /// <inheritdoc/>
     public bool IsDirty(string key) => IsDirty(key, false);
 
-
     /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
     public bool IsDirty(string key, bool checkCollections) {
-      var isDirty = _dirtyKeys.IsDirty(key);
-      if (isDirty && checkCollections) {
-        isDirty = Attributes.IsDirty(key);
+      if (_dirtyKeys.IsDirty(key)) {
+        return true;
       }
-      if (isDirty && checkCollections) {
-        isDirty = Relationships.IsDirty(key);
+      else if (!checkCollections) {
+        return false;
       }
-      if (!isDirty && checkCollections) {
-        isDirty = References.IsDirty(key);
+      else if (
+        Attributes.IsDirty(key) ||
+        Relationships.IsDirty(key) ||
+        References.IsDirty(key)
+      ) {
+        return true;
       }
-      return isDirty;
+      return false;
     }
 
     /*==========================================================================================================================
