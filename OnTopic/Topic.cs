@@ -575,7 +575,7 @@ namespace OnTopic {
     ///   modified.
     /// </returns>
     public bool IsDirty(bool checkCollections, bool excludeLastModified = false) {
-      if (_dirtyKeys.IsDirty()) {
+      if (IsNew || _dirtyKeys.IsDirty()) {
         return true;
       }
       else if (!checkCollections) {
@@ -596,7 +596,7 @@ namespace OnTopic {
 
     /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
     public bool IsDirty(string key, bool checkCollections) {
-      if (_dirtyKeys.IsDirty(key)) {
+      if (IsNew || _dirtyKeys.IsDirty(key)) {
         return true;
       }
       else if (!checkCollections) {
@@ -631,6 +631,9 @@ namespace OnTopic {
     ///   VersionHistory"/>.
     /// </param>
     public void MarkClean(bool includeCollections, DateTime? version = null) {
+      if (IsNew) {
+        return;
+      }
       _dirtyKeys.MarkClean();
       if (includeCollections) {
         Attributes.MarkClean(version);
@@ -641,11 +644,17 @@ namespace OnTopic {
 
     /// <inheritdoc/>
     public void MarkClean(string key) {
+      if (IsNew) {
+        return;
+      }
       MarkClean(key, false);
     }
 
     /// <inheritdoc cref="MarkClean(Boolean, DateTime?)"/>
     public void MarkClean(string key, bool includeCollections) {
+      if (IsNew) {
+        return;
+      }
       _dirtyKeys.MarkClean(key);
       if (includeCollections) {
         Attributes.MarkClean(key);
