@@ -368,7 +368,7 @@ namespace OnTopic.Repositories {
       /*----------------------------------------------------------------------------------------------------------------------
       | Perform reordering and/or move
       \---------------------------------------------------------------------------------------------------------------------*/
-      if (topic.Parent is not null && topic.Attributes.IsDirty("ParentId") && !topic.IsNew) {
+      if (topic.Parent is not null && !topic.IsNew && topic.IsDirty("Parent")) {
         var topicIndex = topic.Parent.Children.IndexOf(topic);
         if (topicIndex > 0) {
           Move(topic, topic.Parent, topic.Parent.Children[topicIndex - 1]);
@@ -425,7 +425,7 @@ namespace OnTopic.Repositories {
       | Recurse over children
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (isRecursive) {
-        foreach (var childTopic in topic.Children) {
+        foreach (var childTopic in topic.Children.ToList()) {
           Save(childTopic, isRecursive, unresolvedTopics, version);
         }
       }
@@ -500,6 +500,13 @@ namespace OnTopic.Repositories {
       else {
         topic.SetParent(target, sibling);
       }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Mark clean
+      >-------------------------------------------------------------------------------------------------------------------------
+      | To prevent the move from being recommitted the next time the topic is saved, mark "Parent" as clean.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.MarkClean("Parent");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If a content type descriptor is being moved to a new parent, refresh cache
