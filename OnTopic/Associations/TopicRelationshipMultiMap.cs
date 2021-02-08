@@ -188,7 +188,7 @@ namespace OnTopic.Associations {
       var wasDirty              = _dirtyKeys.IsDirty(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);
-        if (!_parent.IsNew && markDirty.HasValue && !markDirty.Value && !wasDirty) {
+        if (!_parent.IsNew && !topic.IsNew && markDirty.HasValue && !markDirty.Value && !wasDirty) {
           MarkClean(relationshipKey);
         }
         else {
