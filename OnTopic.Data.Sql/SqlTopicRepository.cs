@@ -488,7 +488,7 @@ namespace OnTopic.Data.Sql {
         );
 
         if (persistRelationships && areRelationshipsDirty) {
-          PersistRelations(topic, version, connection);
+          PersistRelationships(topic, version, connection);
         }
 
         if (persistRelationships && areReferencesDirty) {
@@ -612,14 +612,14 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: PERSIST RELATIONS
+    | METHOD: PERSIST RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistRelations(Topic topic, DateTime version, SqlConnection connection) {
+    private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
