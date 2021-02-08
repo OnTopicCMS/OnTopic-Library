@@ -24,7 +24,7 @@ namespace OnTopic {
   ///   The Topic object is a simple container for a particular node in the topic hierarchy. It contains the metadata associated
   ///   with the particular node, a list of children, etc.
   /// </summary>
-  public class Topic {
+  public class Topic: ITrackDirtyKeys {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -555,6 +555,10 @@ namespace OnTopic {
     /*==========================================================================================================================
     | METHOD: IS DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <inheritdoc/>
+    public bool IsDirty() => IsDirty(false, false);
+
     /// <summary>
     ///   Determines if the topic is dirty, optionally checking <see cref="Relationships"/> and <see cref="Attributes"/>.
     /// </summary>
@@ -570,7 +574,7 @@ namespace OnTopic {
     ///   Returns <c>true</c> if the <see cref="Key"/>, <see cref="ContentType"/>, or, optionally, any collections have been
     ///   modified.
     /// </returns>
-    public bool IsDirty(bool checkCollections = false, bool excludeLastModified = false) {
+    public bool IsDirty(bool checkCollections, bool excludeLastModified = false) {
       var isDirty = _dirtyKeys.IsDirty();
       if (isDirty && checkCollections) {
         isDirty = Attributes.IsDirty(excludeLastModified);
@@ -584,9 +588,32 @@ namespace OnTopic {
       return isDirty;
     }
 
+    /// <inheritdoc/>
+    public bool IsDirty(string key) => IsDirty(key, false);
+
+
+    /// <inheritdoc cref="IsDirty(Boolean, Boolean)"/>
+    public bool IsDirty(string key, bool checkCollections) {
+      var isDirty = _dirtyKeys.IsDirty(key);
+      if (isDirty && checkCollections) {
+        isDirty = Attributes.IsDirty(key);
+      }
+      if (isDirty && checkCollections) {
+        isDirty = Relationships.IsDirty(key);
+      }
+      if (!isDirty && checkCollections) {
+        isDirty = References.IsDirty(key);
+      }
+      return isDirty;
+    }
+
     /*==========================================================================================================================
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
+
+    /// <inheritdoc/>
+    public void MarkClean() => MarkClean(false);
+
     /// <summary>
     ///   Resets the <see cref="IsDirty"/> status of the <see cref="Topic"/>—and, optionally, that of all collections, using the
     ///   <paramref name="includeCollections"/> parameter.
@@ -598,12 +625,27 @@ namespace OnTopic {
     ///   The <see cref="DateTime"/> value that the attributes were last saved. This corresponds to the <see cref="Topic.
     ///   VersionHistory"/>.
     /// </param>
-    public void MarkClean(bool includeCollections = false, DateTime? version = null) {
+    public void MarkClean(bool includeCollections, DateTime? version = null) {
       _dirtyKeys.MarkClean();
       if (includeCollections) {
         Attributes.MarkClean(version);
         Relationships.MarkClean();
         References.MarkClean();
+      }
+    }
+
+    /// <inheritdoc/>
+    public void MarkClean(string key) {
+      MarkClean(key, false);
+    }
+
+    /// <inheritdoc cref="MarkClean(Boolean, DateTime?)"/>
+    public void MarkClean(string key, bool includeCollections) {
+      _dirtyKeys.MarkClean(key);
+      if (includeCollections) {
+        Attributes.MarkClean(key);
+        Relationships.MarkClean(key);
+        References.MarkClean(key);
       }
     }
 
