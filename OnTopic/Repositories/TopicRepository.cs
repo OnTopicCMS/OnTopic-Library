@@ -359,6 +359,16 @@ namespace OnTopic.Repositories {
       SaveTopic(topic, version, !isRecursive || !unresolvedTopics.Contains(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Mark as clean
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Attributes.MarkClean(version);
+
+      if (!unresolvedTopics.Contains(topic)) {
+        topic.References.MarkClean();
+        topic.Relationships.MarkClean();
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Update version history
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!topic.VersionHistory.Contains(version)) {
