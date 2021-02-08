@@ -34,7 +34,7 @@ namespace OnTopic {
     private                     int                             _id                             = -1;
     private                     string?                         _originalKey;
     private                     Topic?                          _parent;
-    private                     bool                            _isDirty;
+    readonly                    DirtyKeyCollection              _dirtyKeys                      = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -189,7 +189,7 @@ namespace OnTopic {
           return;
         }
         else if (_contentType is not null || IsNew) {
-          _isDirty              = true;
+          _dirtyKeys.MarkDirty("ContentType");
         }
         _contentType            = value;
       }
@@ -221,7 +221,7 @@ namespace OnTopic {
           return;
         }
         else if (_key is not null || IsNew) {
-          _isDirty              = true;
+          _dirtyKeys.MarkDirty("Key");
         }
         if (_originalKey is null) {
           _originalKey = _key;
@@ -571,16 +571,17 @@ namespace OnTopic {
     ///   modified.
     /// </returns>
     public bool IsDirty(bool checkCollections = false, bool excludeLastModified = false) {
-      if (!_isDirty && checkCollections) {
-        _isDirty = Attributes.IsDirty(excludeLastModified);
+      var isDirty = _dirtyKeys.IsDirty();
+      if (isDirty && checkCollections) {
+        isDirty = Attributes.IsDirty(excludeLastModified);
       }
-      if (!_isDirty && checkCollections) {
-        _isDirty = Relationships.IsDirty();
+      if (isDirty && checkCollections) {
+        isDirty = Relationships.IsDirty();
       }
-      if (!_isDirty && checkCollections) {
-        _isDirty = References.IsDirty();
+      if (!isDirty && checkCollections) {
+        isDirty = References.IsDirty();
       }
-      return _isDirty;
+      return isDirty;
     }
 
     /*==========================================================================================================================
@@ -598,7 +599,7 @@ namespace OnTopic {
     ///   VersionHistory"/>.
     /// </param>
     public void MarkClean(bool includeCollections = false, DateTime? version = null) {
-      _isDirty = false;
+      _dirtyKeys.MarkClean();
       if (includeCollections) {
         Attributes.MarkClean(version);
         Relationships.MarkClean();
