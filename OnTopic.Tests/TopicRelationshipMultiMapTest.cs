@@ -192,9 +192,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetTopic_IsDuplicate_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = TopicFactory.Create("Topic", "Page", 2);
 
       relationships.SetTopic("Related", related);
       relationships.MarkClean();

@@ -55,8 +55,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetValue_NewReference_NotDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var reference             = TopicFactory.Create("Reference", "Page", 2);
 
       topic.References.SetValue("Reference", reference, false);
 

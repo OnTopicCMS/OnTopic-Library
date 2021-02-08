@@ -302,7 +302,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Clear_ExistingValues_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -323,7 +323,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Fah", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar");
@@ -361,7 +361,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_DeletedValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
@@ -421,7 +421,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
       var version = DateTime.Now.AddDays(5);
 
       topic.Attributes.SetValue("Baz", "Foo");
@@ -443,7 +443,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.SetValue("Baz", "Foo");
@@ -467,7 +467,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean("Foo");
