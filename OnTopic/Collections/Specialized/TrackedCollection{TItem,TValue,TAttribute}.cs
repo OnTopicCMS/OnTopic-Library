@@ -150,7 +150,9 @@ namespace OnTopic.Collections.Specialized {
         return;
       }
       foreach (var trackedItem in Items.Where(a => a.IsDirty).ToArray()) {
-        SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
+        if (AllowClean(trackedItem)) {
+          SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
+        }
       }
       DeletedItems.Clear();
     }
@@ -177,7 +179,7 @@ namespace OnTopic.Collections.Specialized {
       }
       else if (Contains(key)) {
         var trackedItem         = this[key];
-        if (trackedItem.IsDirty) {
+        if (trackedItem.IsDirty && AllowClean(trackedItem)) {
           SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
         }
       }
@@ -543,7 +545,7 @@ namespace OnTopic.Collections.Specialized {
     /// </exception>
     protected override void InsertItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
-      if (AssociatedTopic.IsNew && !item.IsDirty) {
+      if (!AllowClean(item)) {
         item                    = item with {
           IsDirty               = true
         };
@@ -581,7 +583,7 @@ namespace OnTopic.Collections.Specialized {
     /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
     protected override void SetItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
-      if (AssociatedTopic.IsNew && !item.IsDirty) {
+      if (!AllowClean(item)) {
         item                    = item with {
           IsDirty               = true
         };
@@ -629,6 +631,30 @@ namespace OnTopic.Collections.Specialized {
         DeletedItems.AddRange(Items.Select(a => a.Key));
       }
       base.ClearItems();
+    }
+
+    /*==========================================================================================================================
+    | METHOD: ALLOW CLEAN?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines if a <typeparamref name="TItem"/> is permitted to be marked as not <see cref="TrackedItem{T}.IsDirty"/>.
+    /// </summary>
+    /// <remarks>
+    ///   If the <see cref="AssociatedTopic"/> is <see cref="Topic.IsNew"/> or the <typeparamref name="TValue"/> is <see cref="
+    ///   Topic"/> and the <paramref name="item"/> is <see cref="Topic.IsNew"/>, then <see cref="TrackedItem{T}.IsDirty"/>
+    ///   should never be set to <c>false</c>.
+    /// </remarks>
+    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
+    protected bool AllowClean(TItem item) {
+      Contract.Requires(item, nameof(item));
+      var topic = item.Value as Topic;
+      if (topic is not null && topic.IsNew) {
+        return false;
+      }
+      if (AssociatedTopic.IsNew && !item.IsDirty) {
+        return false;
+      }
+      return true;
     }
 
     /*==========================================================================================================================
