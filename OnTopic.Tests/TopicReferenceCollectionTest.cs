@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace OnTopic.Tests {
 
@@ -55,8 +56,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetValue_NewReference_NotDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var reference             = TopicFactory.Create("Reference", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var reference             = TopicFactory.Create("Reference", "Page", 2);
 
       topic.References.SetValue("Reference", reference, false);
 
@@ -106,6 +107,27 @@ namespace OnTopic.Tests {
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.IsTrue(topic.References.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: NEW TOPIC: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicReferenceCollection"/> and adds a new <see cref="Topic"/> reference using <see cref="
+    ///   KeyedCollection{TKey, TItem}.InsertItem(Int32, TItem)"/> with <see cref="TrackedItem{T}.IsDirty"/> set to <c>false
+    ///   </c>, confirming that <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> remains <c>true</c> since
+    ///   the target <see cref="Topic"/> is unsaved.
+    /// </summary>
+    [TestMethod]
+    public void Add_NewTopic_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.References.SetValue("Reference", reference, false);
+
       Assert.IsTrue(topic.References.IsDirty());
 
     }

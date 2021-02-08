@@ -4,15 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlTypes;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.Data.SqlClient;
-using OnTopic.Collections;
 using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
@@ -491,14 +488,12 @@ namespace OnTopic.Data.Sql {
         );
 
         if (persistRelationships && areRelationshipsDirty) {
-          PersistRelations(topic, version, connection);
+          PersistRelationships(topic, version, connection);
         }
 
         if (persistRelationships && areReferencesDirty) {
           PersistReferences(topic, version, connection);
         }
-
-        topic.Attributes.MarkClean(version);
 
       }
 
@@ -617,14 +612,14 @@ namespace OnTopic.Data.Sql {
     }
 
     /*==========================================================================================================================
-    | METHOD: PERSIST RELATIONS
+    | METHOD: PERSIST RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
     /// <param name="connection">The SQL connection.</param>
-    private static void PersistRelations(Topic topic, DateTime version, SqlConnection connection) {
+    private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return blank if the topic has no relations.
@@ -641,32 +636,25 @@ namespace OnTopic.Data.Sql {
         \---------------------------------------------------------------------------------------------------------------------*/
         foreach (var key in topic.Relationships.Keys) {
 
-          var relatedTopics     = topic.Relationships.GetTopics(key);
-          var topicId           = topic.Id.ToString(CultureInfo.InvariantCulture);
-          var savedTopics       = relatedTopics.Where(t => !t.IsNew).Select<Topic, int>(m => m.Id);
-
           using var targetIds   = new TopicListDataTable();
           using var command     = new SqlCommand("UpdateRelationships", connection) {
             CommandType         = CommandType.StoredProcedure
           };
 
-          foreach (var targetTopicId in savedTopics) {
-            targetIds.AddRow(targetTopicId);
+          foreach (var targetTopic in topic.Relationships.GetTopics(key)) {
+            if (!targetTopic.IsNew) {
+              targetIds.AddRow(targetTopic.Id);
+            }
           }
 
           // Add Parameters
-          command.AddParameter("TopicID", topicId);
+          command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
           command.AddParameter("RelationshipKey", key);
           command.AddParameter("RelatedTopics", targetIds);
           command.AddParameter("Version", version);
           command.AddParameter("DeleteUnmatched", topic.Relationships.IsFullyLoaded);
 
           command.ExecuteNonQuery();
-
-          //Reset isDirty, assuming there aren't any unresolved references
-          if (savedTopics.Count() == relatedTopics.Count) {
-            topic.Relationships.MarkClean(key);
-          }
 
         }
 
@@ -704,28 +692,24 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       try {
 
-        var topicId             = topic.Id.ToString(CultureInfo.InvariantCulture);
         using var references    = new TopicReferencesDataTable();
         using var command       = new SqlCommand("UpdateReferences", connection) {
           CommandType           = CommandType.StoredProcedure
         };
 
-        foreach (var relatedTopic in topic.References.Where(t => !t.Value?.IsNew?? false)) {
-          references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
+        foreach (var relatedTopic in topic.References) {
+          if (!relatedTopic.Value?.IsNew?? false) {
+            references.AddRow(relatedTopic.Key, relatedTopic.Value!.Id);
+          }
         }
 
         // Add Parameters
-        command.AddParameter("TopicID", topicId);
+        command.AddParameter("TopicID", topic.Id.ToString(CultureInfo.InvariantCulture));
         command.AddParameter("ReferencedTopics", references);
         command.AddParameter("Version", version);
         command.AddParameter("DeleteUnmatched", topic.References.IsFullyLoaded);
 
         command.ExecuteNonQuery();
-
-        //Reset isDirty, assuming there aren't any unresolved references
-        if (references.Rows.Count == topic.References.Count) {
-          topic.References.MarkClean();
-        }
 
       }
 

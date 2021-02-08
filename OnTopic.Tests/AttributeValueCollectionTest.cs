@@ -302,7 +302,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Clear_ExistingValues_IsDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar", false);
 
@@ -323,7 +323,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Fah", "Bar", false);
       topic.Attributes.SetValue("Fah", "Bar");
@@ -361,7 +361,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_DeletedValues_ReturnsTrue() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.Remove("Foo");
@@ -421,7 +421,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
       var version = DateTime.Now.AddDays(5);
 
       topic.Attributes.SetValue("Baz", "Foo");
@@ -443,7 +443,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.SetValue("Baz", "Foo");
@@ -467,12 +467,58 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
 
-      var topic = TopicFactory.Create("Test", "Container");
+      var topic = TopicFactory.Create("Test", "Container", 1);
 
       topic.Attributes.SetValue("Foo", "Bar");
       topic.Attributes.MarkClean("Foo");
 
       Assert.IsFalse(topic.Attributes.IsDirty("Foo"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: ADD CLEAN ATTRIBUTE TO NEW TOPIC: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
+    ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedItem{T}.IsDirty"/> and then confirms that
+    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.Add(
+        new() {
+          Key                   = "Foo",
+          Value                 = "Bar",
+          IsDirty               = false
+        }
+      );
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK NEW TOPIC AS CLEAN: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
+    ///   with a <see cref="AttributeValue"/> and then confirms that <see cref="TrackedCollection{TItem, TValue, TAttribute}.
+    ///   IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedCollection{TItem, TValue,
+    ///   TAttribute}.MarkClean(String, DateTime?)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.MarkClean();
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
 
     }
 

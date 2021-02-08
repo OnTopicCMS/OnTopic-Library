@@ -192,9 +192,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SetTopic_IsDuplicate_IsNotDirty() {
 
-      var topic                 = TopicFactory.Create("Test", "Page");
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
-      var related               = TopicFactory.Create("Topic", "Page");
+      var related               = TopicFactory.Create("Topic", "Page", 2);
 
       relationships.SetTopic("Related", related);
       relationships.MarkClean();
@@ -333,6 +333,50 @@ namespace OnTopic.Tests {
       relationships.ClearTopics("Related");
 
       Assert.IsFalse(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: NEW PARENT: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic.
+    ///   IsNew"/> <see cref="Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>
+    ///   even if <see cref="TopicRelationshipMultiMap.SetTopic(String, Topic, Boolean?, Boolean)"/> is called with the <c>
+    ///   markDirty</c> parameter set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_NewParent_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new TopicRelationshipMultiMap(topic);
+      var related               = TopicFactory.Create("Topic", "Page", 1);
+
+      relationships.SetTopic("Related", related, false);
+
+      Assert.IsTrue(relationships.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET TOPIC: NEW TOPIC: IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds a new <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with an existing <see cref="
+    ///   Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even if <see cref="
+    ///   TopicRelationshipMultiMap.SetTopic(String, Topic, Boolean?, Boolean)"/> is called with the <c>markDirty</c> parameter
+    ///   set to <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetTopic_NewTopic_IsDirty() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var relationships         = new TopicRelationshipMultiMap(topic);
+      var related               = TopicFactory.Create("Topic", "Page");
+
+      relationships.SetTopic("Related", related, false);
+
+      Assert.IsTrue(relationships.IsDirty());
 
     }
 

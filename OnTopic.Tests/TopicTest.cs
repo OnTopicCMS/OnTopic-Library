@@ -397,8 +397,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void MarkClean_ChangeCollection_ResetIsDirty() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
-      var related               = TopicFactory.Create("Related", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var related               = TopicFactory.Create("Related", "Page", 2);
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);

@@ -6,6 +6,7 @@
 using System;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 
 namespace OnTopic.Associations {
@@ -187,7 +188,7 @@ namespace OnTopic.Associations {
       var wasDirty              = _dirtyKeys.IsDirty(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);
-        if (markDirty.HasValue && !markDirty.Value && !wasDirty) {
+        if (!_parent.IsNew && !topic.IsNew && markDirty.HasValue && !markDirty.Value && !wasDirty) {
           MarkClean(relationshipKey);
         }
         else {
@@ -245,10 +246,26 @@ namespace OnTopic.Associations {
     | METHOD: MARK CLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public void MarkClean() => _dirtyKeys.MarkClean();
+    public void MarkClean() {
+      if (_parent.IsNew) {
+        return;
+      }
+      foreach (var relationship in _storage) {
+        if (!relationship.Values.AnyNew()) {
+          _dirtyKeys.MarkClean(relationship.Key);
+        }
+      }
+    }
 
     /// <inheritdoc/>
-    public void MarkClean(string key) => _dirtyKeys.MarkClean(key);
+    public void MarkClean(string key) {
+      if (_parent.IsNew) {
+        return;
+      }
+      if (Contains(key) && !_storage[key].Values.AnyNew()) {
+        _dirtyKeys.MarkClean(key);
+      }
+    }
 
   } //Class
 } //Namespace
