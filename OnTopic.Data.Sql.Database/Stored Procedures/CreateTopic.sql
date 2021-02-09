@@ -60,10 +60,17 @@ SET	@RangeRight		= 0
 --------------------------------------------------------------------------------------------------------------------------------
 -- RESERVE SPACE FOR NEW CHILD.
 --------------------------------------------------------------------------------------------------------------------------------
+-- ### NOTE JJC20210218: We usually avoid broad hints like TABLOCK. That said, the create operation requires multiple operations
+-- against the topics table which will fail if the topic range shifts. Locking the table helps ensure that data integrity issues
+-- aren't introduced by concurrent modification of the nested set. Because this is being done within a SERIALIZABLE isolation
+-- level, this lock will be maintained for the duration of the transaction.
+--------------------------------------------------------------------------------------------------------------------------------
 IF (@ParentID IS NOT NULL)
   BEGIN
     SELECT	@RangeRight		= RangeRight
     FROM	Topics
+    WITH (	TABLOCK
+    )
     WHERE	TopicID		= @ParentID
 
     UPDATE	Topics
@@ -85,6 +92,8 @@ ELSE
   BEGIN
     SELECT	@RangeRight		= MAX(RangeRight) + 1
     FROM	Topics
+    WITH (	TABLOCK
+    )
   END
 
 --------------------------------------------------------------------------------------------------------------------------------
