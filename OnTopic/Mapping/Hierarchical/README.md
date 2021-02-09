@@ -7,7 +7,7 @@ The [`IHierarchicalTopicMappingService<T>`](IHierarchicalTopicMappingService{T}.
 - [Example](#example-2)
 
 ## Motivation
-While the [`TopicMappingService`](../README.md) is capable of populating trees on its own, it is exclusively bound to honoring the rules defined by the attributes (such as `[Follow(relationships)]` and `[Flatten]`). By contrast, the `IHierarchicalTopicMappingService<T>` offers three additional capabilities:
+While the [`TopicMappingService`](../README.md) is capable of populating trees on its own, it is exclusively bound to honoring the rules defined by the attributes (such as `[Include(associationTypes)]` and `[Flatten]`). By contrast, the `IHierarchicalTopicMappingService<T>` offers three additional capabilities:
 
 1. The number of tiers in the hierarchy can be restricted to a set number (via the `tiers` parameter on `GetRootViewModelAsync()` and `GetViewModelAsync()`).
 2. The topics included can be constrained by specifying a method or lamda expression that accepts a `Topic` as the parameter, and returns `true` (if the `Topic` should be mapped) or `false` (if it should be skipped).
