@@ -48,13 +48,20 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 - **[`Attributes`](Attributes/AttributeValueCollectionExtensions.cs)**: The `AttributeValueCollectionExtensions` class exposes optional extension methods for strongly typed access to the [`AttributeValueCollection`](Attributes/AttributeValueCollection.cs). This includes e.g., `GetBooleanValue()` and `SetBooleanValue()`, which takes care of the conversion to and from the underlying `string`value type.
 
 ## Collections
-In addition to the above key classes, the `OnTopic` assembly contains a number of specialized collections. These include:
-- **[`KeyedTopicCollection{T}`](Collections/KeyedTopicCollection{T}.cs)**: A `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
-  - **[`KeyedTopicCollection`](Collections/KeyedTopicCollection.cs)**: A `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
-- **[`ReadOnlyKeyedTopicCollection{T}`](Collections/ReadOnlyKeyedTopicCollection{T}.cs)**: A read-only `KeyedCollection` of a `Topic` (or derivative) keyed by `Id` and `Key`.
-  - **[`ReadOnlyKeyedTopicCollection`](Collections/ReadOnlyKeyedTopicCollection.cs)**: A read-only `KeyedCollection` of `Topic` keyed by `Id` and `Key`.
-- **[`TopicMultiMap`](Collections/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection name.
-  - **[`ReadOnlyTopicMultiMap`](Collections/ReadOnlyTopicMultiMap.cs)**: A read-only interface to the `TopicMultiMap`, thus allowing simple enumeration of the collection withouthout exposing any write access.
+The `OnTopic` assembly contains a number of generic, keyed, and/or read-only collections for working with topics. These include:
+
+|                               | Read-Write                            | Read-Only
+| ----------------------------- | ------------------------------------- | -------------------------------------
+| Unkeyed                       | [`TopicCollection`][1]                | [`ReadOnlyTopicCollection`][4]
+| Keyed                         | [`KeyedTopicCollection`][2]           | [`ReadOnlyKeyedTopicCollection`][5]
+| Keyed (Generic)               | [`KeyedTopicCollection<T>`][3]        | [`ReadOnlyKeyedTopicCollection`][6]
+
+[1]: Collections/TopicCollection.cs
+[2]: Collections/KeyedTopicCollection.cs
+[3]: Collections/KeyedTopicCollection{T}.cs
+[4]: Collections/ReadOnlyTopicCollection.cs
+[5]: Collections/ReadOnlyKeyedTopicCollection.cs
+[6]: Collections/ReadOnlyKeyedTopicCollection{T}.cs
 
 ### Specialty Collections
 - **[`AttributeValueCollection`](attributes/AttributeValueCollection.cs)**: A `KeyedCollection` of `AttributeValue` instances keyed by `AttributeValue.Key`.
