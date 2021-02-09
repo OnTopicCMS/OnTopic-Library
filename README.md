@@ -1,8 +1,9 @@
 # OnTopic Library
 The OnTopic library is a .NET-based content management system (CMS) designed around structured schemas ("Content Types") and optimized to simplify team-based workflows with distinct roles for content owners, backend developers, and graphic producers.
 
-[![OnTopic package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/fb67677f-2b83-4318-9007-0c46b4da55c1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=fb67677f-2b83-4318-9007-0c46b4da55c1&preferRelease=true)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
+![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
+[![OnTopic package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/fb67677f-2b83-4318-9007-0c46b4da55c1/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=fb67677f-2b83-4318-9007-0c46b4da55c1&preferRelease=true)
 
 ### Roles
 The OnTopic library acknowledges that the roles of developers, designers, and content owners are usually compartmentalized and, thus, optimizes for the needs of each.
