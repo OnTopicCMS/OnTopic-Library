@@ -20,7 +20,7 @@ The following is a summary of the most relevant tables.
 - **[`TopicReferences`](Tables/TopicReferences.sql)**: Represents (1:1) references between topics, segmented by a `ReferenceKey`.
 - **[`Relationships`](Tables/Relationships.sql)**: Represents (1:n) relationships between topics, segmented by a `RelationshipKey`.
 
-> *Note:* Neither `Topics` nor `Relationships` are subject to tracking versions. Changes to these records are permanent.
+> *Note:* The `Topics` table is not subject to tracking versions. Changes to core topic values, such as `TopicKey`, `ContentType`, and `ParentID`, are permanent.
 
 ## Stored Procedures
 The following is a summary of the most relevant stored procedures.
