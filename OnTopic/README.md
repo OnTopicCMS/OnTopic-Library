@@ -64,7 +64,13 @@ The `OnTopic` assembly contains a number of generic, keyed, and/or read-only col
 [6]: Collections/ReadOnlyKeyedTopicCollection{T}.cs
 
 ### Specialty Collections
-- **[`AttributeValueCollection`](attributes/AttributeValueCollection.cs)**: A `KeyedCollection` of `AttributeValue` instances keyed by `AttributeValue.Key`.
+The `OnTopic.Collections.Specialized` namespace includes a number of collections that are used by the OnTopic library, but won't generally be used directly by implementors, except as exposed by the core library. These include:
+- **[`TrackedCollection{TItem, TValue, TAttribute}`](Collections/Specialized/TrackedCollection{TItem,TValue,TAttribute}.cs)**: A `KeyedCollection<TItem, TValue>` of `TrackedItem<TValue>` instances which tracks the `IsDirty` status and `DeletedItems`, while also enforcing business logic against corresponding properties on the associated `Topic`.
+  - **[`AttributeValueCollection`](attributes/AttributeValueCollection.cs)**: A `TrackedCollection` of [`AttributeValue`](Attributes/AttributeValue.cs) instances keyed by `AttributeValue.Key`; exposed by `Topic.Attributes`.
+  - **[`TopicReferenceCollection`](associations/TopicReferenceCollection.cs)**: A `TrackedCollection` of [`TopicReference`](Associations/TopicReference.cs) instances keyed by `TopicReference.Key`; exposed by `Topic.References`.
+- **[`TopicMultiMap`](Collections/Specialized/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection key.
+  - **[`ReadOnlyTopicMultiMap`](Collections/Specialized/ReadOnlyTopicMultiMap.cs)**: A read-only interface to the `TopicMultiMap`, thus allowing simple enumeration of the collection withouthout exposing any write access.
+    - **[`TopicRelationshipMultiMap`](associations/TopicRelationshipMultiMap.cs)**: A `TopicMultiMap` of [`KeyValuesPair`](Collections/Specialized/KeyValuesPair.cs) instances keyed by `KeyValuesPair.Key`; exposed by `Topic.Relationships`.
 
 ### Editor
 The following are intended to provide support for the Editor domain objects, `ContentTypeDescriptor` and `AttributeDescriptor`.
