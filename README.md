@@ -1,5 +1,5 @@
 # OnTopic Library
-The OnTopic library is a .NET-based content management system (CMS) designed around structured schemas ("Content Types") and optimized to simplify team-based workflows with distinct roles for content owners, backend developers, and graphic producers.
+The OnTopic library is a .NET Core-based content management system (CMS) designed around structured schemas ("Content Types") and optimized to simplify team-based workflows with distinct roles for content owners, backend developers, and graphic producers.
 
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
 ![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
@@ -8,14 +8,14 @@ The OnTopic library is a .NET-based content management system (CMS) designed aro
 ### Roles
 The OnTopic library acknowledges that the roles of developers, designers, and content owners are usually compartmentalized and, thus, optimizes for the needs of each.
 
-- **Content owners** have access to an *[editor](https://github.com/OnTopicCMS/OnTopic-Editor-AspNetCore)* that focuses exclusively on exposing *structured data*; this includes support for custom content types (e.g., "Job Posting", "Blog Post", &c.)
+- **Content owners** have access to an [editor](https://github.com/OnTopicCMS/OnTopic-Editor-AspNetCore) that focuses _exclusively_ on exposing *structured data*; this includes support for custom content types (e.g., "Job Posting", "Blog Post", &c.)
 - **Backend developers** have access to *data repositories*, *services*, and a rich *entity* model in C# for consuming the structured data and implementing any *business logic* via code.
 - **Frontend developers** have access to light-weight *views* based on purpose-built *view models*, thus allowing them to focus exclusively on presentation concerns, without any platform-specific knowledge.
 
-This is contrasted to most traditional CMSs, which attempt to coordinate all of these via an editor by exposing design responsibilities (via themes, templates, and layouts) as well as development responsibilities (via plug-ins or components). This works well for a small project without distinct design or development resources, but introduces a lot of complexity for more mature teams with well-established roles.
+This is contrasted to most traditional CMSs, which attempt to coordinate all of these via an editor by exposing design responsibilities (via themes, templates, and layouts) as well as development responsibilities (via plugins or components). This works well for a small project without distinct design or development resources, but introduces a lot of complexity for more mature teams with well-established roles.
 
 ### Multi-Device Optimized
-In addition, OnTopic is optimized for multi-client/multi-device scenarios since the content editor focuses exclusively on structured data. This allows entirely distinct presentation layers to be established. For instance, the same content can be accessed by an iOS app, a website, and even a web-based API for third-party consumption. By contrast, most CMSs are designed for one client only: a website (which may be mobile-friendly via responsive templates.)
+In addition, OnTopic is optimized for multi-client/multi-device scenarios since the content editor focuses _exclusively_ on structured data. This allows entirely distinct presentation layers to be established without the CMS attempting attempting to influence or determing design decisions via e.g. per-page layout. For instance, the same content can be accessed by an iOS app, a website, and even a web-based API for third-party consumption. By contrast, most CMSs are designed for one client only: a website (which may be mobile-friendly via responsive templates.)
 
 ### Extensible
 Fundamentally, OnTopic is based on structured schemas ("Content Types") which can be modified via the editor itself. This allows new data structures to be introduced without needing to modify the database or creating extensive plugins. So, for example, if a site includes job postings, it might create a `JobPosting` content type that describes the structure of a job posting, such as _job title_, _job description_, _job requirements_, &c. By contrast, some CMSs�such as WordPress�try to fit all items into a single data model�such as a _blog post_�or require extensive customizations of database objects and intermediate queries in order to extend the data model. OnTopic is designed with extensibility in mind, so updates to the data model are comparatively trivial to implement.
