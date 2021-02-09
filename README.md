@@ -17,6 +17,9 @@ This is contrasted to most traditional CMSs, which attempt to coordinate all of 
 ### Multi-Device Optimized
 In addition, OnTopic is optimized for multi-client/multi-device scenarios since the content editor focuses exclusively on structured data. This allows entirely distinct presentation layers to be established. For instance, the same content can be accessed by an iOS app, a website, and even a web-based API for third-party consumption. By contrast, most CMSs are designed for one client only: a website (which may be mobile-friendly via responsive templates.)
 
+### Extensible
+Fundamentally, OnTopic is based on structured schemas ("Content Types") which can be modified via the editor itself. This allows new data structures to be introduced without needing to modify the database or creating extensive plugins. So, for example, if a site includes job postings, it might create a `JobPosting` content type that describes the structure of a job posting, such as _job title_, _job description_, _job requirements_, &c. By contrast, some CMSs�such as WordPress�try to fit all items into a single data model�such as a _blog post_�or require extensive customizations of database objects and intermediate queries in order to extend the data model. OnTopic is designed with extensibility in mind, so updates to the data model are comparatively trivial to implement.
+
 ## Library
 
 ### Domain Layer
