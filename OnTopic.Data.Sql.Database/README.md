@@ -26,7 +26,7 @@ The following is a summary of the most relevant tables.
 The following is a summary of the most relevant stored procedures.
 
 ### Querying
-- **[`GetTopics`](Stored%20Procedures/GetTopics.sql)**: Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `Attributes`, `ExtendedAttributes`, `Relationships`, and version history. Only retrieves the latest version data for each topic.
+- **[`GetTopics`](Stored%20Procedures/GetTopics.sql)**: Based on an optional `@TopicId` or `@TopicKey`, retrieves a hierarchy of topics, sorted by hierarchy, alongside separate data sets for corresponding records from `Attributes`, `ExtendedAttributes`, `Relationships`, `TopicReferences`, and version history. Only retrieves the latest version data for each topic.
 - **[`GetTopicVersion`](Stored%20Procedures/GetTopicVersion.sql)**: Retrieves a single instance of a topic based on a `@TopicId` and `@Version`. Not that the `@Version` must include miliseconds.
 
 ### Updating
