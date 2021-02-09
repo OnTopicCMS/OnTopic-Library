@@ -13,7 +13,7 @@ While the [`TopicMappingService`](../README.md) is capable of populating trees o
 2. The topics included can be constrained by specifying a method or lamda expression that accepts a `Topic` as the parameter, and returns `true` (if the `Topic` should be mapped) or `false` (if it should be skipped).
 3. The type that all _children_ will be mapped to can be specified, instead of letting the model type be determined exclusively by the `Topic.ContentType` property.
 
-In many cases, these are not needed. They do, however, provide additional flexibility for particular scenarios. For example, these are valuable for constructing the navigation used by e.g. the [`LayoutControllerBase<T>`](../../../Ignia.Topics.Web.Mvc/Controllers/LayoutControllerBase{T}.cs), which should be restricted to three tiers, should be mapped to a [`NavigationTopicViewModel`](../../../Ignia.Topics.ViewModels/NavigationTopicViewModel.cs), and, in the case of the many navigation, should exclude any topics of the content type `PageGroup`.
+In many cases, these are not needed. They do, however, provide additional flexibility for particular scenarios. For example, these are valuable for constructing the navigation used by e.g. the [`MenuViewComponentBase<T>`](../../../OnTopic.AspNetCore.Mvc/Components/MenuViewComponentBase{T}.cs), which should be restricted to three tiers, should be mapped to a [`NavigationTopicViewModel`](../../../OnTopic.ViewModels/NavigationTopicViewModel.cs), and, in the case of the many navigation, should exclude any topics of the content type `PageGroup`.
 
 
 ## `CachedHierarchicalTopicMappingService`
@@ -22,7 +22,7 @@ The [`CachedHierarchicalTopicMappingService<T>`](CachedHierarchicalTopicMappingS
 > *Note:* As with the `CachedTopicMappingService`, the `CachedHierarchicalTopicMapping` service should be used with caution. It will not be (immediately) updated if the underlying database or topic graph are updated. And since the topic graph is already cached, it effectively doubles the memory footprint of the graph by storing it both as topics as well as view models. That said, this is useful for large view model graphs that are frequently reused—such as those that show up in the navigation of a site.
 
 ## Example
-The first code block demonstrates how to construct a new instance of a `IHierarchicalTopicMappingService<T>`. In this case, it wraps the default `HierarchicalTopicMappingService<T>` in a `CachedHierarchicalTopicMappingService<T>` for caching, and maps children to the `NavigationTopicViewModel` class from the [`Ignia.Topics.ViewModels`](../../../Ignia.Topics.ViewModels/) project. Typically, this would be done in the _Composition Root_ of an application, with the service passed into e.g. a `Controller` as an `IHierarchicalTopicMappingService<T>` dependency.
+The first code block demonstrates how to construct a new instance of a `IHierarchicalTopicMappingService<T>`. In this case, it wraps the default `HierarchicalTopicMappingService<T>` in a `CachedHierarchicalTopicMappingService<T>` for caching, and maps children to the `NavigationTopicViewModel` class from the [`Ignia.Topics.ViewModels`](../../../OnTopic.ViewModels/) project. Typically, this would be done in the _Composition Root_ of an application, with the service passed into e.g. a `Controller` as an `IHierarchicalTopicMappingService<T>` dependency.
 ```csharp
 var hierarchicalTopicMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
   new HierarchicalTopicMappingService<NavigationTopicViewModel>(
