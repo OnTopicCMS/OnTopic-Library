@@ -1,8 +1,9 @@
-﻿# OnTopic for ASP.NET Core 3.x
-The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with the ASP.NET Core 3.x Framework. It is the recommended client for working with OnTopic.
+﻿# OnTopic for ASP.NET Core 3.x, 5.x
+The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for utilizing OnTopic with ASP.NET Core 3.x and ASP.NET Core 5.x. It is the recommended client for working with OnTopic.
 
 [![OnTopic.AspNetCore.Mvc package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/4db5e20c-69c6-4134-823a-c3de06d1176e/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=4db5e20c-69c6-4134-823a-c3de06d1176e&preferRelease=true)
 [![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=7&branchName=master)
+![NuGet Deployment Status](https://rmsprodscussu1.vsrm.visualstudio.com/A09668467-721c-4517-8d2e-aedbe2a7d67f/_apis/public/Release/badge/bd7f03e0-6fcf-4ec6-939d-4e995668d40f/2/2)
 
 ### Contents
 - [Components](#components)
@@ -20,20 +21,27 @@ The `OnTopic.AspNetCore.Mvc` assembly provides a default implementation for util
 ## Components
 There are five key components at the heart of the ASP.NET Core implementation.
 - **`TopicController`**: This is a default controller instance that can be used for _any_ topic path. It will automatically validate that the `Topic` exists, that it is not disabled (`!IsDisabled`), and will honor any redirects (e.g., if the `Url` attribute is filled out). Otherwise, it will return a `TopicViewResult` based on a view model, view name, and content type.
-- **`TopicViewLocationExpander`**: Assists the out-of-the-box Razor view engine in locating views associated with OnTopic, e.g. by looking in `~/Views/ContentTypes/ContentType.cshtml`, or `~/Views/ContentType/View.cshtml`. See [View Locations](#view-locations) below.
-- **`TopicViewResultExecutor`**: When the `TopicController` returns a `TopicViewResult`, the `TopicViewResultExecutor` takes over and attempts to identify the correct view based on the `accept` headers, `view` query string parameter, topic's default `View` attribute and, finally, the topic's `ContentType` attribute. See [View Matching](#view-matching) below.
+- **`TopicRouteValueTransformer`**: A `DynamicRouteValueTransformer` for use with the ASP.NET Core's `MapDynamicControllerRoute()` method, allowing for route parameters to be implicitly inferred; notably, it will use the `area` as the default `controller` and `rootTopic`, if those route parameters are not otherwise defined.
+- **`TopicViewLocationExpander`**: Assists the out-of-the-box Razor view engine in locating views associated with OnTopic, e.g. by looking in `~/Views/ContentTypes/{ContentType}.cshtml`, or `~/Views/{ContentType}/{View}.cshtml`. See [View Locations](#view-locations) below.
+- **`TopicViewResultExecutor`**: When the `TopicController` returns a `TopicViewResult`, the `TopicViewResultExecutor` takes over and attempts to identify the correct view based on the `accept` headers, `?view=` query string parameter, topic's default `View` attribute and, finally, the topic's `ContentType` attribute. See [View Matching](#view-matching) below.
 - **`ServiceCollectionExtensions`**: A set of extensions to be used in an ASP.NET Core website's `Startup` class that automatically handle registering services, controllers, and other extensions from `OnTopic.AspNetCore.Mvc`.
 - **`ITopicRepositoryExtensions`**: A set of extensions that allows loading topics based on an ASP.NET Core `RouteData` collection, including `OnTopic` route variables, such as `path` and `contenttype`.
 
-> **Note:** In [`OnTopic.Web.Mvc`](https://github.com/OnTopic/OnTopic-MVC/), the `TopicViewEngine` took on the responsibilities now handled by the `TopicViewLocationExpander`, `TopicViewResult` responsibilities for `TopicViewResultExecutor`, and the `MvcTopicRoutingService` responsibilities for `ITopicRepositoryExtensions`.
-
 ## Controllers and View Components
-There are six main controllers and view components that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary classes:
-- **`RedirectController`**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`.
-- **`SitemapController`**: Provides a single `Sitemap` action which recurses over the entire Topic graph, including all attributes, and returns an XML document with a sitemaps.org schema.
-- **`MenuViewComponentBase<T>`**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance.
+There are five main controllers and view components that ship with the ASP.NET Core implementation. In addition to the core **`TopicController`**, these include the following ancillary classes:
+- **[`RedirectController`](Controllers/RedirectController.cs)**: Provides a single `Redirect` action which can be bound to a route such as `/Topic/{ID}/`; this provides support for permanent URLs that are independent of the `GetWebPath()`.
+- **[`SitemapController`](Controllers/SitemapController.cs)**: Provides a single `Sitemap` action which recurses over the entire Topic graph, including all attributes, and returns an XML document with a sitemaps.org schema.
+- **[`MenuViewComponentBase<T>`](Components/MenuViewComponentBase{T}.cs)**: Provides support for a navigation menu by automatically mapping the top three tiers of the current namespace (e.g., `Web`, its children, and grandchildren). Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance.
+- **[`PageLevelNavigationViewComponentBase<T>`](Components/PageLevelNavigationViewComponentBase{T}.cs)**: Provides support for page-level navigation by automatically mapping the child topics from the nearest `PageGroup`. Can accept any `INavigationTopicViewModel` as a generic argument; that will be used as the view model for each mapped instance.
 
-> **Note:** There is not a practical way for ASP.NET Core to provide routing for generic controllers and view components. As such, these _must_ be subclassed by each implementation. The derived class needn't do anything outside of provide a specific type reference to the generic base.
+> **Note:** There is no practical way for ASP.NET Core to provide routing for generic controllers and view components. As such, these _must_ be subclassed by each implementation. The derived class needn't do anything outside of provide a specific type reference to the generic base. For example:
+> ```csharp
+> public class MenuViewComponent: MenuViewComponentBase<NavigationTopicViewModel> {
+>   public MenuViewComponent(
+>     ITopicRepository topicRepository,
+>     IHierarchicalTopicMappingService<NavigationTopicViewModel> hierarchicalTopicMappingService
+>   ): base(topicRepository, hierarchicalTopicMappingService) {}
+> }
 
 ## View Conventions
 By default, OnTopic matches views based on the current topic's `ContentType` and, if available, `View`.
@@ -46,6 +54,8 @@ There are multiple ways for a view to be set. The `TopicViewResultExecutor` will
 - **`View`** attribute (i.e., `topic.View`)
 - **`ContentType`** attribute (i.e., `topic.ContentType`)
 
+This allows multiple views to be available for any individual content type, thus allowing pages using the same content type to potentially be rendered with different layouts or, even, different content types (e.g., JSON vs. HTML).
+
 ### View Locations
 For each of the above [View Matching](#view-matching) rules, the `TopicViewLocationExpander` will search the following locations for a matching view:
 - `~/Views/{Controller}/{View}.cshtml`
@@ -57,7 +67,7 @@ For each of the above [View Matching](#view-matching) rules, the `TopicViewLocat
 - `~/Views/ContentTypes/{View}.cshtml`
 - `~/Views/Shared/{View}.cshtml`
 
-> *Note:* After searching each of these locations for each of the [View Matching](#view-matching) rules, control will be handed over to the [`RazorViewEngine`](https://msdn.microsoft.com/en-us/library/system.web.mvc.razorviewengine%28v=vs.118%29.aspx?f=255&MSPPError=-2147217396), which will search the out-of-the-box default locations for ASP.NET MVC.
+> *Note:* After searching each of these locations for each of the [View Matching](#view-matching) rules, control will be handed over to the [`RazorViewEngine`](https://msdn.microsoft.com/en-us/library/system.web.mvc.razorviewengine%28v=vs.118%29.aspx?f=255&MSPPError=-2147217396), which will search the out-of-the-box default locations for ASP.NET Core.
 
 ### Example
 If the `topic.ContentType` is `ContentList` and the `Accept` header is `application/json` then the `TopicViewResult` and `TopicViewEngine` would coordinate to search the following paths:
@@ -88,7 +98,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 <Project Sdk="Microsoft.NET.Sdk.Web">
   …
   <ItemGroup>
-    <PackageReference Include="OnTopic.AspNetCore.Mvc" Version="4.0.0" />
+    <PackageReference Include="OnTopic.AspNetCore.Mvc" Version="5.0.0" />
   </ItemGroup>
 </Project>
 ```
@@ -97,18 +107,18 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 
 ### Application
 In the `Startup` class, OnTopic's ASP.NET Core support can be registered by calling the `AddTopicSupport()` extension method:
-```c#
+```csharp
 public class Startup {
   public void ConfigureServices(IServiceCollection services) {
     services.AddMvc().AddTopicSupport();
   }
 }
 ```
-> *Note:* This will register the `TopicViewLocationExpander`, `TopicViewResultExecutor`, as well as all [Controllers](#controllers) that ship with `OnTopic.AspNetCore.Mvc`.
+> *Note:* This will register the `TopicViewLocationExpander`, `TopicViewResultExecutor`, `TopicRouteValueTransformer`, as well as all [Controllers](#controllers) that ship with `OnTopic.AspNetCore.Mvc`.
 
 In addition, within the same `ConfigureServices()` method, you will need to establish a class that implements `IControllerActivator` and `IViewComponentActivator`, and will represent the site's _Composition Root_ for dependency injection. This will typically look like:
-```c#
-var activator = new OrganizationNameControllerActivator(Configuration.GetConnectionString("OnTopic")
+```csharp
+var activator = new OrganizationNameActivator(Configuration.GetConnectionString("OnTopic"))
 services.AddSingleton<IControllerActivator>(activator);
 services.AddSingleton<IViewComponentActivator>(activator);
 ```
@@ -120,13 +130,20 @@ See [Composition Root](#composition-root) below for information on creating an i
 
 ### Route Configuration
 When registering routes via `Startup.Configure()` you may register any routes for OnTopic using the extension method:
-```c#
+```csharp
 public class Startup {
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
     app.UseEndpoints(endpoints => {
-      endpoints.MapTopicRoute("Web");
-      endpoints.MapTopicRedirect();
+
+      endpoints.MapTopicAreaRoute();                    // {area:exists}/{**path}
+      endpoints.MapImplicitAreaControllerRoute();       // {area:exists}/{action=Index}
+      endpoints.MapDefaultControllerRoute();            // {controller=Home}/{action=Index}/{id?}
+      endpoints.MapDefaultAreaControllerRoute();        // {area:exists}/{controller}/{action=Index}/{id?}
+
+      endpoints.MapTopicRoute("Web");                   // Web/{**path}
+      endpoints.MapTopicRedirect();                     // Topic/{topicId}
       endpoints.MapControllers();
+
     });
   }
 }
@@ -135,7 +152,7 @@ public class Startup {
 
 ### Composition Root
 As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator for controllers, and view component activator for view components. For controllers, the basic structure of this might look like:
-```c#
+```csharp
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
 var topicViewModelLookupService = new TopicViewModelLookupService();
