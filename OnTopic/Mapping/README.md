@@ -68,8 +68,8 @@ If a property is named `Parent`, then the `TopicMappingService` will pull the va
 
 ### Example
 The following is an example of a data transfer object (specifically, a view model) that `TopicMappingService` might consume:
-```
 public class CustomTopicViewModel {
+```csharp
   public TopicViewModel Parent { get; set; }
   public string CustomPropertyA { get; set; }
   public int CustomPropertyB { get; set; }
@@ -109,8 +109,8 @@ To support the mapping, a variety of `Attribute` classes are provided for decora
 
 ### Example
 The following is an example of a data transfer object that implements the above attributes:
-```
 public class CompanyTopicViewModel {
+```csharp
 
   [DefaultValue("Ignia")]
   [MaxLength(100)]
@@ -173,7 +173,7 @@ The [`CachedTopicMappingService`](CachedTopicMappingService.cs) Decorator, which
 - `topicMappingService.Map<PageTopicViewModel>(topic, AssociationTypes.Children)`
 
 To implement the caching decorator, use the following construction as a Singleton lifestyle in your composer:
-```
+```csharp
 var topicRepository = new SqlTopicRepository(…);
 var topicMappingService = new TopicMappingService(topicRepository);
 var cachedTopicMappingService = new CachedTopicMappingService(topicMappingService);

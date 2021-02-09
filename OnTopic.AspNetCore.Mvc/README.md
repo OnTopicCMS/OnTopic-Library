@@ -97,7 +97,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 
 ### Application
 In the `Startup` class, OnTopic's ASP.NET Core support can be registered by calling the `AddTopicSupport()` extension method:
-```c#
+```csharp
 public class Startup {
   public void ConfigureServices(IServiceCollection services) {
     services.AddMvc().AddTopicSupport();
@@ -107,7 +107,7 @@ public class Startup {
 > *Note:* This will register the `TopicViewLocationExpander`, `TopicViewResultExecutor`, as well as all [Controllers](#controllers) that ship with `OnTopic.AspNetCore.Mvc`.
 
 In addition, within the same `ConfigureServices()` method, you will need to establish a class that implements `IControllerActivator` and `IViewComponentActivator`, and will represent the site's _Composition Root_ for dependency injection. This will typically look like:
-```c#
+```csharp
 var activator = new OrganizationNameControllerActivator(Configuration.GetConnectionString("OnTopic")
 services.AddSingleton<IControllerActivator>(activator);
 services.AddSingleton<IViewComponentActivator>(activator);
@@ -120,7 +120,7 @@ See [Composition Root](#composition-root) below for information on creating an i
 
 ### Route Configuration
 When registering routes via `Startup.Configure()` you may register any routes for OnTopic using the extension method:
-```c#
+```csharp
 public class Startup {
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
     app.UseEndpoints(endpoints => {
@@ -135,7 +135,7 @@ public class Startup {
 
 ### Composition Root
 As OnTopic relies on constructor injection, the application must be configured in a **Composition Root**—in the case of ASP.NET Core, that means a custom controller activator for controllers, and view component activator for view components. For controllers, the basic structure of this might look like:
-```c#
+```csharp
 var sqlTopicRepository          = new SqlTopicRepository(connectionString);
 var cachedTopicRepository       = new CachedTopicRepository(sqlTopicRepository);
 var topicViewModelLookupService = new TopicViewModelLookupService();

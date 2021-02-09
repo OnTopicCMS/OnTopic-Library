@@ -23,7 +23,7 @@ Because the `ReverseTopicMappingService` doesn't map directly to the `ITopicRepo
 
 ## Complex Models
 The `ReverseTopicMappingService` allows complex models with nested objects to be mapped to a single `Topic` by using the `[MapToParent]` attribute. By default, any properties on a complex property will be prefixed with the property name. This prefix can be modified—or even removed—by passing an `AttributePrefix` argument to `[MapToParent]`. For example:
-```
+```csharp
 public class ContentBindingModel: ITopicBindingModel {
   public string Key { get; set; }
   public string ContentType { get; set; }

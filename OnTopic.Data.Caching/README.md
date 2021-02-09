@@ -26,7 +26,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 > *Note:* This package is currently only available on Ignia's private **NuGet** repository. For access, please contact [Ignia](http://www.ignia.com/).
 
 ## Usage
-```c#
+```csharp
 var sqlTopicRepository = new SqlTopicRepository(connectionString);
 var cachedTopicRepository = new CachedTopicRepository(sqlTopicRepository);
 

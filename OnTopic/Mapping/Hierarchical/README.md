@@ -23,7 +23,7 @@ The [`CachedHierarchicalTopicMappingService<T>`](CachedHierarchicalTopicMappingS
 
 ## Example
 The first code block demonstrates how to construct a new instance of a `IHierarchicalTopicMappingService<T>`. In this case, it wraps the default `HierarchicalTopicMappingService<T>` in a `CachedHierarchicalTopicMappingService<T>` for caching, and maps children to the `NavigationTopicViewModel` class from the [`Ignia.Topics.ViewModels`](../../../Ignia.Topics.ViewModels/) project. Typically, this would be done in the _Composition Root_ of an application, with the service passed into e.g. a `Controller` as an `IHierarchicalTopicMappingService<T>` dependency.
-```
+```csharp
 var hierarchicalTopicMappingService = new CachedHierarchicalTopicMappingService<NavigationTopicViewModel>(
   new HierarchicalTopicMappingService<NavigationTopicViewModel>(
     _topicRepository,
@@ -37,7 +37,7 @@ Once the `IHierarchicalTopicMappingService<T>` is constructed, it can by calling
 2. **`int tiers = 1`:** The number of tiers to crawl. While the `TopicMappingService` implementation will crawl indefinitely, given the right conditions, the `IHierarchicalTopicMappingService<T>` can be constrained to a particular depth by the caller.
 3. **`Func<Topic, bool> validationDelegate = null`:** A validation function that accepts a `Topic` as input and returns `true` if the `Topic` (and its descendants) should be included, and otherwise `false`.
 
-```
+```csharp
 await hierarchicalTopicMappingService.GetRootViewModelAsync(
   hierarchicalTopicMappingService.GetHierarchicalRoot(currentTopic, 2, "Web"),
   2,
