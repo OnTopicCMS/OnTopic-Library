@@ -33,11 +33,11 @@ The following is a summary of the most relevant stored procedures.
 - **[`CreateTopic`](Stored%20Procedures/CreateTopic.sql)**: Creates a new topic based on a `@ParentId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Returns a new `@TopicId`.
 - **[`DeleteTopic`](Stored%20Procedures/DeleteTopic.sql)**: Deletes an existing topic based on a `@TopicId`.
 - **[`MoveTopic`](Stored%20Procedures/MoveTopic.sql)**: Moves an existing topic based on a `@TopicId`, `@ParentId`, and `@SiblingId`.
-- **[`UpdateTopic`](Stored%20Procedures/UpdateTopic.sql)**: Updates an existing topic based on a `@TopicId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Optionally deletes all relationships; these will need to be re-added using `UpdateRelationships`. Old attributes are persisted as previous versions.
+- **[`UpdateTopic`](Stored%20Procedures/UpdateTopic.sql)**: Updates an existing topic based on a `@TopicId`, an `AttributeValues` list of `@Attributes`, and an XML `@ExtendedAttributes`. Old attributes are persisted as previous versions.
   - **[`UpdateAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the indexed attributes, optionally removing any whose values aren't matched in the provided `@Attributes` parameter.
   - **[`UpdateExtendedAttributes`](Stored%20Procedures/UpdateAttributes.sql)**: Updates the extended attributes, assuming the `@ExtendedAttributes` parameter doesn't match the previous value.
-- **[`UpdateReferences`](Stored%20Procedures/UpdateReferences.sql)**: Associates a reference with a topic based on a `@TopicId` and a `TopicReferences` array of `@ReferencKey`s and `@Target_TopicId`s.
-- **[`UpdateRelationships`](Stored%20Procedures/UpdateRelationships.sql)**: Associates a relationship with a topic based on a `@TopicId`, `TopicList` array of `@Target_TopicIds`, and a `@RelationshipKey` (which can be any string label).
+- **[`UpdateReferences`](Stored%20Procedures/UpdateReferences.sql)**: Associates a reference with a topic based on a `@TopicId` and a `TopicReferences` array of `@ReferencKey`s and `@Target_TopicId`s. Optionally deletes unmatched references.
+- **[`UpdateRelationships`](Stored%20Procedures/UpdateRelationships.sql)**: Associates a relationship with a topic based on a `@TopicId`, `TopicList` array of `@Target_TopicIds`, and a `@RelationshipKey` (which can be any string label). Optionally deletes unmatched relationships.
 
 ## Functions
 - **[`GetTopicID`](Functions/GetTopicID.sql)**: Retrieves a topic's `TopicId` based on a corresponding `@UniqueKey` (e.g., `Root:Configuration`).
