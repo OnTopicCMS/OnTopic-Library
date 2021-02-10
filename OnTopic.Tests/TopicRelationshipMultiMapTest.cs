@@ -119,13 +119,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: GET ALL TOPICS: RETURNS ALL TOPICS
+    | TEST: GET ALL VALUES: RETURNS ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets relationships in multiple namespaces, and ensures they are all returned via GetAllTopics().
+    ///   Sets relationships in multiple namespaces, and ensures they are all returned via <see cref="ReadOnlyTopicMultiMap.
+    ///   GetAllValues(String)"/>.
     /// </summary>
     [TestMethod]
-    public void GetAllTopics_ReturnsAllTopics() {
+    public void GetAllValues_ReturnsAllTopics() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
@@ -136,19 +137,19 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(5, relationships.Count);
       Assert.AreEqual<string>("Related3", relationships.GetValues("Relationship3").First().Key);
-      Assert.AreEqual<int>(5, relationships.GetAllTopics().Count);
+      Assert.AreEqual<int>(5, relationships.GetAllValues().Count);
 
     }
 
     /*==========================================================================================================================
-    | TEST: GET ALL TOPICS: CONTENT TYPES: RETURNS ALL CONTENT TYPES
+    | TEST: GET ALL VALUES: CONTENT TYPES: RETURNS ALL CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
-    ///   <see cref="ReadOnlyTopicMultiMap.GetAllTopics(String)"/> by content type.
+    ///   <see cref="ReadOnlyTopicMultiMap.GetAllValues(String)"/> by content type.
     /// </summary>
     [TestMethod]
-    public void GetAllTopics_ContentTypes_ReturnsAllContentTypes() {
+    public void GetAllValues_ContentTypes_ReturnsAllContentTypes() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
@@ -158,7 +159,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.AreEqual<int>(5, relationships.Keys.Count);
-      Assert.AreEqual<int>(1, relationships.GetAllTopics("ContentType3").Count);
+      Assert.AreEqual<int>(1, relationships.GetAllValues("ContentType3").Count);
 
     }
 
