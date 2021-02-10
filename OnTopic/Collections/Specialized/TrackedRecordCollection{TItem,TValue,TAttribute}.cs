@@ -149,9 +149,9 @@ namespace OnTopic.Collections.Specialized {
       if (AssociatedTopic.IsNew) {
         return;
       }
-      foreach (var trackedItem in Items.Where(a => a.IsDirty).ToArray()) {
-        if (AllowClean(trackedItem)) {
-          SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
+      foreach (var trackedRecord in Items.Where(a => a.IsDirty).ToArray()) {
+        if (AllowClean(trackedRecord)) {
+          SetValue(trackedRecord.Key, trackedRecord.Value, false, false, version?? DateTime.UtcNow);
         }
       }
       DeletedItems.Clear();
@@ -178,9 +178,9 @@ namespace OnTopic.Collections.Specialized {
         return;
       }
       else if (Contains(key)) {
-        var trackedItem         = this[key];
-        if (trackedItem.IsDirty && AllowClean(trackedItem)) {
-          SetValue(trackedItem.Key, trackedItem.Value, false, false, version?? DateTime.UtcNow);
+        var trackedRecord       = this[key];
+        if (trackedRecord.IsDirty && AllowClean(trackedRecord)) {
+          SetValue(trackedRecord.Key, trackedRecord.Value, false, false, version?? DateTime.UtcNow);
         }
       }
     }
@@ -448,7 +448,7 @@ namespace OnTopic.Collections.Specialized {
       /*------------------------------------------------------------------------------------------------------------------------
       | Update existing item
       >-----------------------------------------------------------------------------------------------------------------------—
-      | Because TrackedItem<T> is immutable, a new instance must be constructed to replace the previous version.
+      | Because TrackedRecord<T> is immutable, a new instance must be constructed to replace the previous version.
       \-----------------------------------------------------------------------------------------------------------------------*/
       else if (originalItem is not null) {
         var markAsDirty = originalItem.IsDirty;
@@ -608,9 +608,9 @@ namespace OnTopic.Collections.Specialized {
     ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
-      var trackedItem = this[index];
+      var trackedRecord = this[index];
       if (!AssociatedTopic.IsNew) {
-        DeletedItems.Add(trackedItem.Key);
+        DeletedItems.Add(trackedRecord.Key);
       }
       base.RemoveItem(index);
     }
