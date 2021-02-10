@@ -538,14 +538,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: ADD: VALID ATTRIBUTE VALUE: IS RETURNED
+    | TEST: ADD: VALID ATTRIBUTE RECORD: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeRecord"/> instance; ensures it can be
     ///   retrieved.
     /// </summary>
     [TestMethod]
-    public void Add_ValidAttributeValue_IsReturned() {
+    public void Add_ValidAttributeRecord_IsReturned() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -649,17 +649,18 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET VALUE: INSERT INVALID ATTRIBUTE VALUE: THROWS EXCEPTION
+    | TEST: SET VALUE: INSERT INVALID ATTRIBUTE RECORD: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Attempts to violate the business logic by bypassing SetValue() entirely; ensures that business logic is enforced.
+    ///   Attempts to violate the business logic by bypassing <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
+    ///   SetValue(String, TValue, Boolean?, DateTime?)"/> entirely; ensures that business logic is enforced.
     /// </summary>
     [TestMethod]
     [ExpectedException(
       typeof(InvalidKeyException),
       "The topic allowed a key to be set via a back door, without routing it through the View property."
     )]
-    public void Add_InvalidAttributeValue_ThrowsException() {
+    public void Add_InvalidAttributeRecord_ThrowsException() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.Add(new("View", "# ?"));
     }
@@ -694,7 +695,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET VALUE: EMPTY ATTRIBUTE VALUE: SKIPS
+    | TEST: SET VALUE: EMPTY ATTRIBUTE RECORD: SKIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new attribute with an empty value, and confirms that it is <i>not</i> added as a new <see cref="AttributeRecord
@@ -702,7 +703,7 @@ namespace OnTopic.Tests {
     ///   deleted</i> attributes, but should not be stored for <i>new</i> attributes.
     /// </summary>
     [TestMethod]
-    public void SetValue_EmptyAttributeValue_Skips() {
+    public void SetValue_EmptyAttributeRecord_Skips() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
@@ -713,7 +714,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET VALUE: UPDATE EMPTY ATTRIBUTE VALUE: REPLACES
+    | TEST: SET VALUE: UPDATE EMPTY ATTRIBUTE RECORD: REPLACES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new attribute with an empty value, and confirms that it is <i>is</i> added as a new <see cref="AttributeRecord
@@ -721,7 +722,7 @@ namespace OnTopic.Tests {
     ///   should be stored for the sake of tracking <i>deleted</i> attributes.
     /// </summary>
     [TestMethod]
-    public void SetValue_EmptyAttributeValue_Replaces() {
+    public void SetValue_EmptyAttributeRecord_Replaces() {
 
       var topic = TopicFactory.Create("Test", "Container");
 
