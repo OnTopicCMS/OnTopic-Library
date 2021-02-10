@@ -14,13 +14,13 @@ using OnTopic.Tests.Entities;
 namespace OnTopic.Tests {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION TEST
+  | CLASS: ATTRIBUTE COLLECTION TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
   [TestClass]
-  public class AttributeValueCollectionTest {
+  public class AttributeCollectionTest {
 
     /*==========================================================================================================================
     | TEST: GET VALUE: CORRECT VALUE: IS RETURNED
