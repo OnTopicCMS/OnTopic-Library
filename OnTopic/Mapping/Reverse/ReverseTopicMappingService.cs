@@ -430,7 +430,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Relationships.ClearTopics(configuration.AttributeKey);
+      target.Relationships.Clear(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each

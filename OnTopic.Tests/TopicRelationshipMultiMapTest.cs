@@ -297,14 +297,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: CLEAR TOPICS: EXISTING TOPICS: IS DIRTY
+    | TEST: CLEAR: EXISTING TOPICS: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Call <see cref="TopicRelationshipMultiMap.ClearTopics(String)"/> and confirms that value of <see
+    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> and confirms that value of <see
     ///   cref="TopicRelationshipMultiMap.IsDirty()"/> is <c>true</c>.
     /// </summary>
     [TestMethod]
-    public void ClearTopics_ExistingTopics_IsDirty() {
+    public void Clear_ExistingTopics_IsDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -312,26 +312,26 @@ namespace OnTopic.Tests {
 
       relationships.SetTopic("Related", related);
       relationships.MarkClean();
-      relationships.ClearTopics("Related");
+      relationships.Clear("Related");
 
       Assert.IsTrue(relationships.IsDirty());
 
     }
 
     /*==========================================================================================================================
-    | TEST: CLEAR TOPICS: NO TOPICS: IS NOT DIRTY
+    | TEST: CLEAR: NO TOPICS: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Call <see cref="TopicRelationshipMultiMap.ClearTopics(String)"/> with no existing <see cref="Topic"/>s and confirms that
+    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> with no existing <see cref="Topic"/>s and confirms that
     ///   the value of <see cref="TopicRelationshipMultiMap.IsDirty()"/> is set to <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void ClearTopics_NoTopics_IsNotDirty() {
+    public void Clear_NoTopics_IsNotDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
 
-      relationships.ClearTopics("Related");
+      relationships.Clear("Related");
 
       Assert.IsFalse(relationships.IsDirty());
 

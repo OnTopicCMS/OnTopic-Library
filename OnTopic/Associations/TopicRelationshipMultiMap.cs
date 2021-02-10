@@ -53,17 +53,17 @@ namespace OnTopic.Associations {
     }
 
     /*==========================================================================================================================
-    | METHOD: CLEAR TOPICS
+    | METHOD: CLEAR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes all <see cref="Topic"/> objects grouped by a specific relationship key.
+    ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="relationshipKey"/>.
     /// </summary>
     /// <remarks>
     ///   If there are any <see cref="Topic"/> objects in the specified <paramref name="relationshipKey"/>, then the <see cref="
     ///   TopicRelationshipMultiMap"/> will be marked as <see cref="TopicRelationshipMultiMap.IsDirty()"/>.
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship to be cleared.</param>
-    public void ClearTopics(string relationshipKey) {
+    public void Clear(string relationshipKey) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       if (_storage.Contains(relationshipKey)) {
         var relationship = _storage.GetValues(relationshipKey);
@@ -73,6 +73,10 @@ namespace OnTopic.Associations {
         _storage.Clear(relationshipKey);
       }
     }
+
+    /// <inheritdoc cref="Clear(String)"/>
+    [Obsolete("The ClearTopics(relationshipKey) method has been renamed to Clear(relationshipKey).", false)]
+    public void ClearTopics(string relationshipKey) => Clear(relationshipKey);
 
     /*==========================================================================================================================
     | METHOD: REMOVE TOPIC

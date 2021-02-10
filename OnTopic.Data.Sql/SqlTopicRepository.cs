@@ -221,7 +221,7 @@ namespace OnTopic.Data.Sql {
 
       if (topic is not null) {
         foreach (var relationship in topic.Relationships) {
-          topic.Relationships.ClearTopics(relationship.Key);
+          topic.Relationships.Clear(relationship.Key);
         }
         topic.References.Clear();
       }
