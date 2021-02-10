@@ -11,12 +11,14 @@ namespace OnTopic.Data.Sql.Database.Tests {
   public class SqlDatabaseSetup {
 
     [AssemblyInitialize()]
+    #pragma warning disable IDE0060 // Remove unused parameter
     public static void InitializeAssembly(TestContext ctx) {
       // Setup the test database based on setting in the
       // configuration file
       SqlDatabaseTestClass.TestService.DeployDatabaseProject();
       SqlDatabaseTestClass.TestService.GenerateData();
     }
+    #pragma warning restore IDE0060 // Remove unused parameter
 
   }
 }
