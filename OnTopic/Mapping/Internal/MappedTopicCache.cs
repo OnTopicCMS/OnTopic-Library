@@ -13,7 +13,7 @@ namespace OnTopic.Mapping.Internal {
   /// <summary>
   ///   Provides a collection intended to track local caching of objects mapped using the <see cref="TopicMappingService"/>.
   /// </summary>
-  public class MappedTopicCache: ConcurrentDictionary<int, MappedTopicCacheEntry> {
+  internal class MappedTopicCache: ConcurrentDictionary<int, MappedTopicCacheEntry> {
 
 
   } //Class
