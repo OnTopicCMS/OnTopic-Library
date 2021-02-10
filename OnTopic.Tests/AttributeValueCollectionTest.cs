@@ -416,7 +416,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
     ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
-    ///   TrackedCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
     [TestMethod]
     public void IsDirty_MarkClean_UpdatesLastModified() {
@@ -438,7 +438,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
-    ///   TrackedCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
+    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
     [TestMethod]
     public void IsDirty_MarkClean_ReturnsFalse() {
@@ -461,8 +461,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then confirms that <see
-    ///   cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute after
-    ///   calling <see cref="TrackedCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
+    ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute
+    ///   after calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
     [TestMethod]
     public void IsDirty_MarkAttributeClean_ReturnsFalse() {
@@ -482,7 +482,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
     ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms
-    ///   that <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
+    ///   that <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
@@ -506,9 +506,9 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
-    ///   with a <see cref="AttributeValue"/> and then confirms that <see cref="TrackedCollection{TItem, TValue, TAttribute}.
-    ///   IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedCollection{TItem, TValue,
-    ///   TAttribute}.MarkClean(String, DateTime?)"/>.
+    ///   with a <see cref="AttributeValue"/> and then confirms that <see cref="TrackedRecordCollection{TItem, TValue,
+    ///   TAttribute}.IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedRecordCollection
+    ///   {TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
     [TestMethod]
     public void IsDirty_MarkNewTopicAsClean_ReturnsTrue() {

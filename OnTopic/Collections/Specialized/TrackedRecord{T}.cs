@@ -13,7 +13,7 @@ using OnTopic.Repositories;
 namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
-  | CLASS: TRACKED ITEM
+  | CLASS: TRACKED RECORD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides a base class for tracking versioned records, such as <see cref="AttributeValue"/>.

@@ -34,12 +34,12 @@ namespace OnTopic.Attributes {
   ///   </para>
   ///   <para>
   ///     To ensure this logic, it is critical that implementers of <see cref="AttributeSetterAttribute"/> ensure that the
-  ///     property setters call <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue,
-  ///     Boolean?, Boolean, DateTime?)"/> overload with the final parameter set to false to disable the enforcement of business
-  ///     logic. Otherwise, an infinite loop will occur. Calling that overload tells <see cref="AttributeValueCollection"/> that
-  ///     the business logic has already been enforced by the caller. As this is an internal overload, implementers should use
-  ///     the local proxy at <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>, which ensures that final parameter
-  ///     is set to false.
+  ///     property setters call <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
+  ///     Boolean, DateTime?)"/> overload with the final parameter set to false to disable the enforcement of business logic.
+  ///     Otherwise, an infinite loop will occur. Calling that overload tells <see cref="AttributeValueCollection"/> that the
+  ///     business logic has already been enforced by the caller. As this is an internal overload, implementers should use the
+  ///     local proxy at <see cref="Topic.SetAttributeValue(String, String, Boolean?)"/>, which ensures that final parameter is
+  ///     set to <c>false</c>.
   ///   </para>
   /// </remarks>
   [AttributeUsage(AttributeTargets.Property)]

@@ -76,12 +76,12 @@ namespace OnTopic.Internal.Reflection {
   ///     from <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see
   ///     cref="Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called
   ///     twice, collection implementors are advised to offer an internal overload that allows an item to be added to the
-  ///     collection while bypassing the business logic. For instance, this can be done using <see cref="TrackedCollection{
-  ///     TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="TrackedCollection{
-  ///     TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; in each case, the internally
-  ///     accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this
-  ///     is done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(String, TItem?)"/> that
-  ///     the business logic has already occurred.
+  ///     collection while bypassing the business logic. For instance, this can be done using <see cref="TrackedRecordCollection
+  ///     {TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="
+  ///     TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; in each
+  ///     case, the internally accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business
+  ///     logic. Internally, this is done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(
+  ///     String, TItem?)"/> that the business logic has already occurred.
   ///   </para>
   /// </remarks>
   internal class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
@@ -165,9 +165,9 @@ namespace OnTopic.Internal.Reflection {
     ///     business logic, thus preventing them from being called twice. These methods should be marked internal to prevent
     ///     external actors from bypassing the business logic; the purpose is to confirm that the business logic has already
     ///     been enforced, not to make the business logic optional. Two examples of this are the internal <c>
-    ///     enforceBusinessLogic</c> parameters on <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String,
-    ///     TValue, Boolean?, Boolean, DateTime?)"/> and <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(
-    ///     String, TValue, Boolean?, Boolean, DateTime?)"/>.
+    ///     enforceBusinessLogic</c> parameters on <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(
+    ///     String, TValue, Boolean?, Boolean, DateTime?)"/> and <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}
+    ///     .SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>.
     ///   </para>
     ///   <para>
     ///     It's worth noting that any calls to <see cref="Register(String, TItem?)"/> are invalidated the next time <see cref="

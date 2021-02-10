@@ -220,9 +220,9 @@ namespace OnTopic.Mapping.Internal {
     /// <remarks>
     ///   <para>
     ///     The <see cref="InheritValue"/> configuration is only applicable if the value is pulled from the <see
-    ///     cref="Topic.Attributes"/> collection. This is the equivalent to calling the <see
-    ///     cref="TrackedCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> method with an <c>InheritFromParent
-    ///     </c> parameter set to <c>True</c>.
+    ///     cref="Topic.Attributes"/> collection. This is the equivalent to calling the <see cref="TrackedRecordCollection{
+    ///     TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> method with an <c>InheritFromParent</c> parameter set to
+    ///     <c>True</c>.
     ///   </para>
     ///   <para>
     ///     The <see cref="InheritValue"/> property corresponds to the <see cref="InheritAttribute"/> being set on a given

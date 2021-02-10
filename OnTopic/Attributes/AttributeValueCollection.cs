@@ -21,7 +21,7 @@ namespace OnTopic.Attributes {
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
   ///   the <see cref="AttributeValueCollection"/> class.
   /// </remarks>
-  public class AttributeValueCollection : TrackedCollection<AttributeValue, string, AttributeSetterAttribute> {
+  public class AttributeValueCollection : TrackedRecordCollection<AttributeValue, string, AttributeSetterAttribute> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -41,14 +41,14 @@ namespace OnTopic.Attributes {
     | PROPERTY: PARENT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<AttributeValue, string, AttributeSetterAttribute>? ParentCollection =>
+    protected override TrackedRecordCollection<AttributeValue, string, AttributeSetterAttribute>? ParentCollection =>
       AssociatedTopic.Parent?.Attributes;
 
     /*==========================================================================================================================
     | PROPERTY: BASE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<AttributeValue, string, AttributeSetterAttribute>? BaseCollection =>
+    protected override TrackedRecordCollection<AttributeValue, string, AttributeSetterAttribute>? BaseCollection =>
       AssociatedTopic.BaseTopic?.Attributes;
 
     /*==========================================================================================================================

@@ -15,7 +15,7 @@ namespace OnTopic.Associations {
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects associated with particular reference keys.
   /// </summary>
-  public class TopicReferenceCollection : TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute> {
+  public class TopicReferenceCollection : TrackedRecordCollection<TopicReference, Topic, ReferenceSetterAttribute> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -30,14 +30,14 @@ namespace OnTopic.Associations {
     | PROPERTY: PARENT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute>? ParentCollection =>
+    protected override TrackedRecordCollection<TopicReference, Topic, ReferenceSetterAttribute>? ParentCollection =>
       AssociatedTopic.Parent?.References;
 
     /*==========================================================================================================================
     | PROPERTY: BASE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute>? BaseCollection =>
+    protected override TrackedRecordCollection<TopicReference, Topic, ReferenceSetterAttribute>? BaseCollection =>
       AssociatedTopic.BaseTopic?.References;
 
     /*==========================================================================================================================

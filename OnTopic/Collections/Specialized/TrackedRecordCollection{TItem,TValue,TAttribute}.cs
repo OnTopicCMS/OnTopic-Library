@@ -15,7 +15,7 @@ using OnTopic.Repositories;
 namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
-  | CLASS: TRACKED COLLECTION
+  | CLASS: TRACKED RECORD COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents a collection of <see cref="TrackedRecord{T}"/> records, along with methods "updating" those records and
@@ -24,12 +24,12 @@ namespace OnTopic.Collections.Specialized {
   /// <remarks>
   ///   <see cref="TrackedRecord{T}"/> records represent individual instances of values associated with a particular <see cref="
   ///   Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
-  ///   cref="TrackedCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with these
-  ///   records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
+  ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with
+  ///   these records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
   ///   "SetValue(String, TValue?, Boolean?, DateTime?)"/> for creating or "updating" a record. (Records are
   ///   immutable, so updates actually involve cloning the record with updated values.)
   /// </remarks>
-  public abstract class TrackedCollection<TItem, TValue, TAttribute> :
+  public abstract class TrackedRecordCollection<TItem, TValue, TAttribute> :
     KeyedCollection<string, TItem>, ITrackDirtyKeys
     where TItem: TrackedRecord<TValue>, new()
     where TAttribute: Attribute
@@ -45,10 +45,10 @@ namespace OnTopic.Collections.Specialized {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> class.
+    ///   Initializes a new instance of the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> class.
     /// </summary>
     /// <param name="parentTopic">A reference to the topic that the current collection is bound to.</param>
-    internal TrackedCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
+    internal TrackedRecordCollection(Topic parentTopic) : base(StringComparer.OrdinalIgnoreCase) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -313,19 +313,19 @@ namespace OnTopic.Collections.Specialized {
     | METHOD: PARENT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the corresponding <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> on the <see cref=
-    ///   "Topic.Parent"/>, if available.
+    ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> on the <see
+    ///   cref="Topic.Parent"/>, if available.
     /// </summary>
-    protected abstract TrackedCollection<TItem, TValue, TAttribute>? ParentCollection { get; }
+    protected abstract TrackedRecordCollection<TItem, TValue, TAttribute>? ParentCollection { get; }
 
     /*==========================================================================================================================
     | METHOD: BASE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a reference to the corresponding <see cref="TrackedCollection{TItem, TValue, TAttribute}"/> on the <see cref=
-    ///   "Topic.BaseTopic"/>, if available.
+    ///   Provides a reference to the corresponding <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/> on the <see
+    ///   cref="Topic.BaseTopic"/>, if available.
     /// </summary>
-    protected abstract TrackedCollection<TItem, TValue, TAttribute>? BaseCollection { get; }
+    protected abstract TrackedRecordCollection<TItem, TValue, TAttribute>? BaseCollection { get; }
 
     /*==========================================================================================================================
     | METHOD: SET VALUE
@@ -619,8 +619,8 @@ namespace OnTopic.Collections.Specialized {
     | OVERRIDE: CLEAR ITEMS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to clear the <see cref="TrackedCollection{TItem, TValue, TAttribute}"/>, to ensure that it is
-    ///   appropriately marked as <see cref="IsDirty()"/>.
+    ///   Intercepts all attempts to clear the <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}"/>, to ensure that
+    ///   it is appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
     ///   When an <see cref="TrackedRecord{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
