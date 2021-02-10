@@ -443,7 +443,7 @@ namespace OnTopic.Mapping.Reverse {
             $"be located in the repository."
           );
         }
-        target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
+        target.Relationships.SetValue(configuration.AttributeKey, targetTopic);
       }
 
     }

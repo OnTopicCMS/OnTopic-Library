@@ -32,7 +32,7 @@ namespace OnTopic.Tests {
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
 
-      parent.Relationships.SetTopic("Friends", related);
+      parent.Relationships.SetValue("Friends", related);
 
       Assert.ReferenceEquals(parent.Relationships.GetValues("Friends").First(), related);
 
@@ -50,7 +50,7 @@ namespace OnTopic.Tests {
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
 
-      parent.Relationships.SetTopic("Friends", related);
+      parent.Relationships.SetValue("Friends", related);
       parent.Relationships.Remove("Friends", related);
 
       Assert.IsNull(parent.Relationships.GetValues("Friends").FirstOrDefault());
@@ -71,7 +71,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
-      relationships.SetTopic("Friends", related);
+      relationships.SetValue("Friends", related);
       relationships.Remove("Friends", related);
 
       Assert.IsNull(related.IncomingRelationships.GetValues("Friends").FirstOrDefault());
@@ -91,7 +91,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
 
-      relationships.SetTopic("Friends", related);
+      relationships.SetValue("Friends", related);
 
       Assert.ReferenceEquals(related.IncomingRelationships.GetValues("Friends").First(), parent);
 
@@ -110,7 +110,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
+        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
       Assert.AreEqual<int>(5, relationships.Keys.Count);
@@ -132,7 +132,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
+        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "Page"));
       }
 
       Assert.AreEqual<int>(5, relationships.Count);
@@ -155,7 +155,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       for (var i = 0; i < 5; i++) {
-        relationships.SetTopic("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
+        relationships.SetValue("Relationship" + i, TopicFactory.Create("Related" + i, "ContentType" + i));
       }
 
       Assert.AreEqual<int>(5, relationships.Keys.Count);
@@ -177,7 +177,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
 
       Assert.IsTrue(relationships.IsDirty());
 
@@ -197,10 +197,10 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page", 2);
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
       relationships.MarkClean();
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
 
       Assert.IsFalse(relationships.IsDirty());
 
@@ -221,8 +221,8 @@ namespace OnTopic.Tests {
       var related1              = TopicFactory.Create("Topic", "Page");
       var related2              = TopicFactory.Create("Topic", "Page");
 
-      relationships.SetTopic("Related", related1);
-      relationships.SetTopic("Related", related2);
+      relationships.SetValue("Related", related1);
+      relationships.SetValue("Related", related2);
 
       Assert.IsTrue(relationships.IsDirty());
 
@@ -243,7 +243,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
       relationships.MarkClean();
       relationships.Remove("Related", related);
 
@@ -287,7 +287,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Topic1", "Page");
       var missing               = TopicFactory.Create("Topic2", "Page");
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
 
       var isSuccessful          = relationships.Remove("Related", missing);
 
@@ -310,7 +310,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
-      relationships.SetTopic("Related", related);
+      relationships.SetValue("Related", related);
       relationships.MarkClean();
       relationships.Clear("Related");
 
@@ -343,7 +343,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic.
     ///   IsNew"/> <see cref="Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>
-    ///   even if <see cref="TopicRelationshipMultiMap.SetTopic(String, Topic, Boolean?, Boolean)"/> is called with the <c>
+    ///   even if <see cref="TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?, Boolean)"/> is called with the <c>
     ///   markDirty</c> parameter set to <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -353,7 +353,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page", 1);
 
-      relationships.SetTopic("Related", related, false);
+      relationships.SetValue("Related", related, false);
 
       Assert.IsTrue(relationships.IsDirty());
 
@@ -365,7 +365,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Adds a new <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with an existing <see cref="
     ///   Topic"/> and confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even if <see cref="
-    ///   TopicRelationshipMultiMap.SetTopic(String, Topic, Boolean?, Boolean)"/> is called with the <c>markDirty</c> parameter
+    ///   TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?, Boolean)"/> is called with the <c>markDirty</c> parameter
     ///   set to <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -375,7 +375,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
-      relationships.SetTopic("Related", related, false);
+      relationships.SetValue("Related", related, false);
 
       Assert.IsTrue(relationships.IsDirty());
 

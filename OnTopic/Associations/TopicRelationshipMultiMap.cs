@@ -44,7 +44,7 @@ namespace OnTopic.Associations {
     ///   with. This will be used when setting incoming relationships. In addition, a <see cref="TopicRelationshipMultiMap"/>
     ///   may be set as <paramref name="isIncoming"/> if it is specifically intended to track incoming relationships; if this is
     ///   not set, then it will not allow incoming relationships to be set via the internal <see cref=
-    ///   "SetTopic(String, Topic, Boolean?, Boolean)"/> overload.
+    ///   "SetValue(String, Topic, Boolean?, Boolean)"/> overload.
     /// </remarks>
     public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base() {
       _parent                   = parent;
@@ -151,31 +151,33 @@ namespace OnTopic.Associations {
 
     /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
     [Obsolete("The RemoveTopic() method has been renamed to Remove().", false)]
-    public bool RemoveTopic(string relationshipKey, Topic topic, Boolean isIncoming) =>
+    public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) =>
       Remove(relationshipKey, topic, isIncoming);
 
     /*==========================================================================================================================
-    | METHOD: SET TOPIC
+    | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that a <see cref="Topic"/> is associated with the specified relationship key.
+    ///   Ensures that a <see cref="Topic"/> is associated with the specified <paramref name="relationshipKey"/>.
     /// </summary>
     /// <remarks>
-    ///   If a relationship by a given key is not currently established, it will automatically be created.
+    ///   If a relationship by a given <paramref name="relationshipKey"/> is not currently established, it will automatically be
+    ///   created.
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
     /// <param name="markDirty">
     ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
     /// </param>
-    public void SetTopic(string relationshipKey, Topic topic, bool? markDirty = null)
-      => SetTopic(relationshipKey, topic, markDirty, false);
+    public void SetValue(string relationshipKey, Topic topic, bool? markDirty = null)
+      => SetValue(relationshipKey, topic, markDirty, false);
 
     /// <summary>
-    ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified relationship key.
+    ///   Ensures that an incoming <see cref="Topic"/> is associated with the specified <paramref name="relationshipKey"/>.
     /// </summary>
     /// <remarks>
-    ///   If a relationship by a given key is not currently established, it will automatically be c.
+    ///   If a relationship by a given <paramref name="relationshipKey"/> is not currently established, it will automatically be
+    ///   created.
     /// </remarks>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The topic to be added, if it doesn't already exist.</param>
@@ -185,7 +187,7 @@ namespace OnTopic.Associations {
     /// <param name="markDirty">
     ///   Optionally forces the collection to an <see cref="IsDirty()"/> state, assuming the topic was set.
     /// </param>
-    internal void SetTopic(string relationshipKey, Topic topic, bool? markDirty, bool isIncoming) {
+    internal void SetValue(string relationshipKey, Topic topic, bool? markDirty, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -219,10 +221,19 @@ namespace OnTopic.Associations {
             nameof(isIncoming)
           );
         }
-        topic.IncomingRelationships.SetTopic(relationshipKey, _parent, markDirty, true);
+        topic.IncomingRelationships.SetValue(relationshipKey, _parent, markDirty, true);
       }
 
     }
+
+    /// <inheritdoc cref="SetValue(String, Topic, Boolean?)"/>
+    [Obsolete("The SetTopic() method has been renamed to SetValue().", false)]
+    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty) => SetValue(relationshipKey, topic, isDirty);
+
+    /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
+    [Obsolete("The SetTopic() method has been renamed to SetValue().", false)]
+    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) =>
+      SetValue(relationshipKey, topic, isDirty, isIncoming);
 
     /*==========================================================================================================================
     | IS FULLY LOADED?

@@ -228,8 +228,8 @@ namespace OnTopic.TestDoubles {
       addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
       addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
 
       var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
 

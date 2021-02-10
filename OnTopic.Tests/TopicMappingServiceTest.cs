@@ -339,9 +339,9 @@ namespace OnTopic.Tests {
       var relatedTopic3         = TopicFactory.Create("Sibling", "Relation");
       var topic                 = TopicFactory.Create("Test", "Relation");
 
-      topic.Relationships.SetTopic("Cousins", relatedTopic1);
-      topic.Relationships.SetTopic("Cousins", relatedTopic2);
-      topic.Relationships.SetTopic("Siblings", relatedTopic3);
+      topic.Relationships.SetValue("Cousins", relatedTopic1);
+      topic.Relationships.SetValue("Cousins", relatedTopic2);
+      topic.Relationships.SetValue("Siblings", relatedTopic3);
 
       var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -365,8 +365,8 @@ namespace OnTopic.Tests {
       var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
       var topic                 = TopicFactory.Create("Test", "Relation");
 
-      topic.Relationships.SetTopic("Cousins", relatedTopic1);
-      topic.Relationships.SetTopic("Cousins", relatedTopic2);
+      topic.Relationships.SetValue("Cousins", relatedTopic1);
+      topic.Relationships.SetValue("Cousins", relatedTopic2);
 
       topic.IsDisabled          = true;
       relatedTopic2.IsDisabled  = true;
@@ -403,12 +403,12 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "AmbiguousRelation");
 
       //Set outgoing relationships
-      topic.Relationships.SetTopic("RelationshipAlias", ambiguousRelation);
-      topic.Relationships.SetTopic("AmbiguousRelationship", outgoingRelation);
+      topic.Relationships.SetValue("RelationshipAlias", ambiguousRelation);
+      topic.Relationships.SetValue("AmbiguousRelationship", outgoingRelation);
 
       //Set incoming relationships
-      ambiguousRelation.Relationships.SetTopic("RelationshipAlias", topic);
-      incomingRelation.Relationships.SetTopic("AmbiguousRelationship", topic);
+      ambiguousRelation.Relationships.SetValue("RelationshipAlias", topic);
+      incomingRelation.Relationships.SetValue("AmbiguousRelationship", topic);
 
       var target = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -653,12 +653,12 @@ namespace OnTopic.Tests {
       var cousinOnceRemoved     = TopicFactory.Create("CousinOnceRemoved", "Relation", childTopic3);
 
       //Set first cousins
-      topic.Relationships.SetTopic("Cousins", cousinTopic1);
-      topic.Relationships.SetTopic("Cousins", cousinTopic2);
-      topic.Relationships.SetTopic("Cousins", cousinTopic3);
+      topic.Relationships.SetValue("Cousins", cousinTopic1);
+      topic.Relationships.SetValue("Cousins", cousinTopic2);
+      topic.Relationships.SetValue("Cousins", cousinTopic3);
 
       //Set ancillary relationships
-      cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
+      cousinTopic3.Relationships.SetValue("Cousins", secondCousin);
 
       var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -719,9 +719,9 @@ namespace OnTopic.Tests {
       var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "KeyOnly");
       var topic                 = TopicFactory.Create("Test", "RelatedEntity");
 
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic1);
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic2);
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic1);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic2);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic3);
 
       var target                = await _mappingService.MapAsync<RelatedEntityTopicViewModel>(topic).ConfigureAwait(false);
       var relatedTopic3copy     = (getRelatedTopic(target, "RelatedTopic3"));

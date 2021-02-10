@@ -163,7 +163,7 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      child.Relationships.SetTopic("Related", related);
+      child.Relationships.SetValue("Related", related);
 
       _topicRepository.Delete(topic, true);
 
@@ -186,7 +186,7 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      related.Relationships.SetTopic("Related", child);
+      related.Relationships.SetValue("Related", child);
 
       _topicRepository.Delete(topic, true);
 
@@ -541,7 +541,7 @@ namespace OnTopic.Tests {
       var lookupContentType     = contentTypes.GetTopic("Lookup");
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
-      pageContentType.Relationships.SetTopic("ContentTypes", lookupContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
 
       _topicRepository.Save(contentTypesRoot, true);
 

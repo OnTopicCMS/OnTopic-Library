@@ -223,7 +223,7 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
 
-      topic.Relationships.SetTopic("ContentTypes", contentTypes[4]);
+      topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
       for (var i = 0; i < 3; i++) {
         bindingModel.ContentTypes.Add(

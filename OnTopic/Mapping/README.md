@@ -53,7 +53,7 @@ If a property implements `IList` (e.g., `List<>`, `Collection<>`, `TopicViewMode
 - It will pull the value from a collection with the same name as the property.
 - If the property is explicitly named `Children`, then it will load the `topic.Children`.
 - It will search, in order, `topic.Relationships`, `topic.IncomingRelationships`, and finally `topic.Children`.
-- E.g., If a `List<>` property is named `Cousins` then it might match `topic.Relationships.GetTopics("Cousins")`.
+- E.g., If a `List<>` property is named `Cousins` then it might match `topic.Relationships.GetValues("Cousins")`.
 
 #### References
 Topic references relate a single topic to another topic by key. If a property corresponds to the key of a topic reference, and that `Topic` maps to an object that is assignable to the original property, then the `Topic` will be loaded, mapped, and assigned to that property. For instance, the following property:

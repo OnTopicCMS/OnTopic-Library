@@ -380,7 +380,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);
-      topic.Relationships.SetTopic("Related", related);
+      topic.Relationships.SetValue("Related", related);
 
       Assert.IsTrue(topic.IsDirty(true));
 
@@ -402,7 +402,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Related", related.Key);
       topic.References.SetValue("Related", related);
-      topic.Relationships.SetTopic("Related", related);
+      topic.Relationships.SetValue("Related", related);
 
       topic.MarkClean(true);
 
