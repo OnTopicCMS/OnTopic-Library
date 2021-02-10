@@ -75,7 +75,7 @@ namespace OnTopic.Associations {
     }
 
     /// <inheritdoc cref="Clear(String)"/>
-    [Obsolete("The ClearTopics(relationshipKey) method has been renamed to Clear(relationshipKey).", false)]
+    [Obsolete("The ClearTopics(relationshipKey) method has been renamed to Clear(relationshipKey).", true)]
     public void ClearTopics(string relationshipKey) => Clear(relationshipKey);
 
     /*==========================================================================================================================
@@ -146,11 +146,11 @@ namespace OnTopic.Associations {
     }
 
     /// <inheritdoc cref="Remove(String, Topic)"/>
-    [Obsolete("The RemoveTopic() method has been renamed to Remove().", false)]
+    [Obsolete("The RemoveTopic() method has been renamed to Remove().", true)]
     public bool RemoveTopic(string relationshipKey, Topic topic) => Remove(relationshipKey, topic);
 
     /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
-    [Obsolete("The RemoveTopic() method has been renamed to Remove().", false)]
+    [Obsolete("The RemoveTopic() method has been renamed to Remove().", true)]
     public bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) =>
       Remove(relationshipKey, topic, isIncoming);
 
@@ -227,11 +227,11 @@ namespace OnTopic.Associations {
     }
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?)"/>
-    [Obsolete("The SetTopic() method has been renamed to SetValue().", false)]
+    [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
     public void SetTopic(string relationshipKey, Topic topic, bool? isDirty) => SetValue(relationshipKey, topic, isDirty);
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
-    [Obsolete("The SetTopic() method has been renamed to SetValue().", false)]
+    [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
     public void SetTopic(string relationshipKey, Topic topic, bool? isDirty, bool isIncoming) =>
       SetValue(relationshipKey, topic, isDirty, isIncoming);
 

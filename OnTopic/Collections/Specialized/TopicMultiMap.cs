@@ -59,7 +59,7 @@ namespace OnTopic.Collections.Specialized {
     }
 
     /// <inheritdoc cref="GetValues(String)"/>
-    [Obsolete("The GetTopics() method has been renamed to GetValues().", false)]
+    [Obsolete("The GetTopics() method has been renamed to GetValues().", true)]
     public TopicCollection GetTopics(string key) => GetValues(key);
 
     /*==========================================================================================================================
