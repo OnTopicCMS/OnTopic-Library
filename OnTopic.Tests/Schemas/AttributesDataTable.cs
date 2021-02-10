@@ -52,7 +52,7 @@ namespace OnTopic.Tests.Schemas {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Columns.Add(new DataColumn() {
         DataType                = typeof(string),
-        ColumnName              = "AttributeRecord",
+        ColumnName              = "AttributeValue",
         AllowDBNull             = true
       });
 
@@ -87,7 +87,7 @@ namespace OnTopic.Tests.Schemas {
 
       row["TopicId"]            = topicId;
       row["AttributeKey"]       = attributeKey;
-      row["AttributeRecord"]     = attributeValue is null? DBNull.Value : attributeValue;
+      row["AttributeValue"]     = attributeValue is null? DBNull.Value : attributeValue;
       row["Version"]            = version?? DateTime.UtcNow;
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -237,7 +237,7 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicId               = reader.GetTopicId();
       var attributeKey          = reader.GetString("AttributeKey");
-      var attributeValue        = reader.GetString("AttributeRecord");
+      var attributeValue        = reader.GetString("AttributeValue");
       var version               = reader.GetVersion();
 
       /*------------------------------------------------------------------------------------------------------------------------
