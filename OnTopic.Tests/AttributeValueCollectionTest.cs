@@ -318,7 +318,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
-    ///   <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
     [TestMethod]
     public void SetValue_ValueUnchanged_IsNotDirty() {
@@ -337,7 +337,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
-    ///   cref="TrackedItem{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>true</c>.
     /// </summary>
     [TestMethod]
@@ -375,7 +375,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
-    ///   <see cref="TrackedItem{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
+    ///   <see cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>false</c>/
     /// </summary>
     [TestMethod]
@@ -394,7 +394,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
-    ///   <see cref="TrackedItem{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
+    ///   <see cref="TrackedRecord{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -415,7 +415,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
-    ///   that the <see cref="TrackedItem{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
+    ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
     ///   TrackedCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
     [TestMethod]
@@ -481,8 +481,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
-    ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedItem{T}.IsDirty"/> and then confirms that
-    ///   <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
+    ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms
+    ///   that <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_AddCleanAttributeToNewTopic_ReturnsTrue() {
@@ -670,8 +670,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
-    ///   "AttributeValueCollection"/> and confirms that the original <see cref="TrackedItem{T}.IsDirty"/> is replaced if the
-    ///   <see cref="TrackedItem{T}.Value"/> changes.
+    ///   "AttributeValueCollection"/> and confirms that the original <see cref="TrackedRecord{T}.IsDirty"/> is replaced if the
+    ///   <see cref="TrackedRecord{T}.Value"/> changes.
     /// </summary>
     [TestMethod]
     public void Add_WithBusinessLogic_MaintainsIsDirty() {

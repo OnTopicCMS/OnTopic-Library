@@ -116,7 +116,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceCollection"/> and adds a new <see cref="Topic"/> reference using <see cref="
-    ///   KeyedCollection{TKey, TItem}.InsertItem(Int32, TItem)"/> with <see cref="TrackedItem{T}.IsDirty"/> set to <c>false
+    ///   KeyedCollection{TKey, TItem}.InsertItem(Int32, TItem)"/> with <see cref="TrackedRecord{T}.IsDirty"/> set to <c>false
     ///   </c>, confirming that <see cref="TrackedCollection{TItem, TValue, TAttribute}.IsDirty()"/> remains <c>true</c> since
     ///   the target <see cref="Topic"/> is unsaved.
     /// </summary>

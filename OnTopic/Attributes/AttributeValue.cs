@@ -18,9 +18,9 @@ namespace OnTopic.Attributes {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="TrackedItem{
-  ///     T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="TrackedItem{T}.
-  ///     LastModified"/> date.
+  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="
+  ///     TrackedRecord{T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="
+  ///     TrackedRecord{T}.LastModified"/> date.
   ///   </para>
   ///   <para>
   ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
@@ -39,7 +39,7 @@ namespace OnTopic.Attributes {
   ///     method.
   ///   </para>
   /// </remarks>
-  public record AttributeValue: TrackedItem<string> {
+  public record AttributeValue: TrackedRecord<string> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -101,10 +101,10 @@ namespace OnTopic.Attributes {
     ///   </para>
     ///   <para>
     ///     This is important because, otherwise, <see cref="ITopicRepository"/> implementations rely primarily on <see
-    ///     cref="TrackedItem{T}.IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed, but
-    ///     the location it should be stored has, that could potentially result in the attribute being deleted, as the attribute
-    ///     won't show up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to <c>true</c>
-    ///     and <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref="
+    ///     cref="TrackedRecord{T}.IsDirty"/> to determine if a value should be saved. If an attribute's value hasn't changed,
+    ///     but the location it should be stored has, that could potentially result in the attribute being deleted, as the
+    ///     attribute won't show up for when <see cref="TopicRepository.GetAttributes"/> is called with <c>isDirty</c> set to
+    ///     <c>true</c> and <c>isExtendedAttribute</c> is set to either <c>true</c> or <c>false</c>. By introducing <see cref="
     ///     IsExtendedAttribute"/>, the <see cref="TopicRepository"/> is able to detect conflicts between the configuration and
     ///     the underlying data store, and ensure data is stored appropriately.
     ///   </para>

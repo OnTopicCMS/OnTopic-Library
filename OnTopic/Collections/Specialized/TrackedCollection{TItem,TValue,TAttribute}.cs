@@ -18,11 +18,11 @@ namespace OnTopic.Collections.Specialized {
   | CLASS: TRACKED COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents a collection of <see cref="TrackedItem{T}"/> records, along with methods "updating" those records and working
-  ///   with their <see cref="TrackedItem{T}.IsDirty"/> state.
+  ///   Represents a collection of <see cref="TrackedRecord{T}"/> records, along with methods "updating" those records and
+  ///   working with their <see cref="TrackedRecord{T}.IsDirty"/> state.
   /// </summary>
   /// <remarks>
-  ///   <see cref="TrackedItem{T}"/> records represent individual instances of values associated with a particular <see cref="
+  ///   <see cref="TrackedRecord{T}"/> records represent individual instances of values associated with a particular <see cref="
   ///   Topic"/>. The <see cref="Topic"/> class tracks these through e.g. its <see cref="Topic.Attributes"/> property. The <see
   ///   cref="TrackedCollection{TItem, TValue, TAttribute}"/> class provides a base class with methods for working with these
   ///   records, such as <see cref="IsDirty(String)"/>, for determining if a given record has been modified, or <see cref=
@@ -31,7 +31,7 @@ namespace OnTopic.Collections.Specialized {
   /// </remarks>
   public abstract class TrackedCollection<TItem, TValue, TAttribute> :
     KeyedCollection<string, TItem>, ITrackDirtyKeys
-    where TItem: TrackedItem<TValue>, new()
+    where TItem: TrackedRecord<TValue>, new()
     where TAttribute: Attribute
     where TValue : class
   {
@@ -79,18 +79,18 @@ namespace OnTopic.Collections.Specialized {
     | PROPERTY: DELETED ITEMS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   When a <see cref="TrackedItem{T}"/> is deleted, keep track of it so that it can be marked for deletion when the <see
+    ///   When a <see cref="TrackedRecord{T}"/> is deleted, keep track of it so that it can be marked for deletion when the <see
     ///   cref="Topic"/> is saved.
     /// </summary>
     /// <remarks>
     ///   As a performance enhancement, <see cref="ITopicRepository"/> implementations will only save topics that are marked as
-    ///   <see cref="IsDirty()"/>. If a <see cref="TrackedItem{T}"/> is deleted, then it won't be marked as <see cref="
-    ///   TrackedItem{T}.IsDirty"/>. If no other <see cref="TrackedItem{T}"/> instances were modified, then the <see cref="Topic
-    ///   "/> won't get saved, and that <see cref="TrackedItem{T}.Value"/> won't be deleted. Further more, methods like the <see
-    ///   cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of arbitrary
-    ///   values—i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref="Metadata.
-    ///   ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedItem{T}"/> instances, we ensure both scenarios can
-    ///   be accounted for.
+    ///   <see cref="IsDirty()"/>. If a <see cref="TrackedRecord{T}"/> is deleted, then it won't be marked as <see cref="
+    ///   TrackedRecord{T}.IsDirty"/>. If no other <see cref="TrackedRecord{T}"/> instances were modified, then the <see cref="
+    ///   Topic"/> won't get saved, and that <see cref="TrackedRecord{T}.Value"/> won't be deleted. Further more, methods like
+    ///   the <seecref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of
+    ///   arbitrary values—i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref="
+    ///   Metadata.ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedRecord{T}"/> instances, we ensure both
+    ///   scenarios can be accounted for.
     /// </remarks>
     internal List<string> DeletedItems { get; } = new();
 
@@ -102,20 +102,20 @@ namespace OnTopic.Collections.Specialized {
     public virtual bool IsDirty() => DeletedItems.Count > 0 || Items.Any(a => a.IsDirty);
 
     /// <summary>
-    ///   Determine if a given <see cref="TrackedItem{T}"/> is marked as <see cref="TrackedItem{T}.IsDirty"/>. Will return <c>
-    ///   false</c> if the <see cref="TrackedItem{T}.Key"/> cannot be found in the collection.
+    ///   Determine if a given <see cref="TrackedRecord{T}"/> is marked as <see cref="TrackedRecord{T}.IsDirty"/>. Will return
+    ///   <c>false</c> if the <see cref="TrackedRecord{T}.Key"/> cannot be found in the collection.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
-    ///   to determine the <see cref="TrackedItem{T}.IsDirty"/> state of a <see cref="TrackedItem{T}"/> prior to saving it to
-    ///   the data storage medium. Because <see cref="TrackedItem{T}.IsDirty"/> is a state of the current <see cref="
-    ///   TrackedItem{T}"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromBase</c> (which otherwise default to
-    ///   <c>true</c>).
+    ///   to determine the <see cref="TrackedRecord{T}.IsDirty"/> state of a <see cref="TrackedRecord{T}"/> prior to saving it
+    ///   to the data storage medium. Because <see cref="TrackedRecord{T}.IsDirty"/> is a state of the current <see cref="
+    ///   TrackedRecord{T}"/>, it does not support <c>inheritFromParent</c> or <c>inheritFromBase</c> (which otherwise default
+    ///   to <c>true</c>).
     /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
     /// <returns>
-    ///   Returns <c>true</c> if the <see cref="TrackedItem{T}"/> is marked as <see cref="TrackedItem{T}.IsDirty"/>; otherwise
-    ///   <c>false</c>.
+    ///   Returns <c>true</c> if the <see cref="TrackedRecord{T}"/> is marked as <see cref="TrackedRecord{T}.IsDirty"/>;
+    ///   otherwise <c>false</c>.
     /// </returns>
     public bool IsDirty(string key) {
       if (!Contains(key)) {
@@ -132,17 +132,17 @@ namespace OnTopic.Collections.Specialized {
     public void MarkClean() => MarkClean((DateTime?)null);
 
     /// <summary>
-    ///   Marks the collection—including all <see cref="TrackedItem{T}"/> instances—as clean, meaning they have been persisted
+    ///   Marks the collection—including all <see cref="TrackedRecord{T}"/> instances—as clean, meaning they have been persisted
     ///   to the underlying <see cref="ITopicRepository"/>.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
-    ///   mark the collection, and all <see cref="TrackedItem{T}"/> instances it contains, as clean. After this, <see cref="
-    ///   IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedItem{T}"/> instances are added, modified, or
-    ///   removed.
+    ///   mark the collection, and all <see cref="TrackedRecord{T}"/> instances it contains, as clean. After this, <see cref="
+    ///   IsDirty()"/> method will return <c>false</c> until any <see cref="TrackedRecord{T}"/> instances are added, modified,
+    ///   or removed.
     /// </remarks>
     /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last saved. This corresponds to the <see
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last saved. This corresponds to the <see
     ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(DateTime? version) {
@@ -161,16 +161,16 @@ namespace OnTopic.Collections.Specialized {
     public void MarkClean(string key) => MarkClean(key, null);
 
     /// <summary>
-    ///   Marks an individual <see cref="TrackedItem{T}"/> as clean.
+    ///   Marks an individual <see cref="TrackedRecord{T}"/> as clean.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, so that they can
-    ///   mark an <see cref="TrackedItem{T}"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c> for
-    ///   that item until it is modified.
+    ///   mark an <see cref="TrackedRecord{T}"/> as clean. After this, <see cref="IsDirty(String)"/> will return <c>false</c>
+    ///   for that item until it is modified.
     /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last saved. This corresponds to the <see
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last saved. This corresponds to the <see
     ///   cref="Topic.VersionHistory"/>.
     /// </param>
     public void MarkClean(string key, DateTime? version) {
@@ -190,9 +190,9 @@ namespace OnTopic.Collections.Specialized {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/>.
+    ///   Gets a <see cref="TrackedRecord{T}"/> from the collection based on the <see cref="TrackedRecord{T}.Key"/>.
     /// </summary>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
     /// </param>
@@ -200,11 +200,11 @@ namespace OnTopic.Collections.Specialized {
     public TValue? GetValue(string key, bool inheritFromParent = false) => GetValue(key, null, inheritFromParent);
 
     /// <summary>
-    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/> with a specified
-    ///   <paramref name="defaultValue"/>, an optional setting to enable <paramref name="inheritFromParent"/>, and an optional
-    ///   setting for <paramref name="inheritFromBase"/>.
+    ///   Gets a <see cref="TrackedRecord{T}"/> from the collection based on the <see cref="TrackedRecord{T}.Key"/> with a
+    ///   specified <paramref name="defaultValue"/>, an optional setting to enable <paramref name="inheritFromParent"/>, and an
+    ///   optional setting for <paramref name="inheritFromBase"/>.
     /// </summary>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to recusrively search through <see cref="Topic.Parent"/>s in order to get the value.
@@ -213,7 +213,7 @@ namespace OnTopic.Collections.Specialized {
     ///   Boolean indicator nothing whether to search through any of the topic's <see cref="Topic.BaseTopic"/> topics in
     ///   order to get the value.
     /// </param>
-    /// <returns>The <typeparamref name="TValue"/> for the <see cref="TrackedItem{T}"/>.</returns>
+    /// <returns>The <typeparamref name="TValue"/> for the <see cref="TrackedRecord{T}"/>.</returns>
     [return: NotNullIfNotNull("defaultValue")]
     public TValue? GetValue(string key, TValue? defaultValue, bool inheritFromParent = false, bool inheritFromBase = true) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
@@ -221,11 +221,11 @@ namespace OnTopic.Collections.Specialized {
     }
 
     /// <summary>
-    ///   Gets a <see cref="TrackedItem{T}"/> from the collection based on the <see cref="TrackedItem{T}.Key"/> with a specified
-    ///   <paramref name="defaultValue"/> and an optional number of <see cref="Topic.BaseTopic"/>s through whom to crawl to
-    ///   retrieve an inherited value.
+    ///   Gets a <see cref="TrackedRecord{T}"/> from the collection based on the <see cref="TrackedRecord{T}.Key"/> with a
+    ///   specified paramref name="defaultValue"/> and an optional number of <see cref="Topic.BaseTopic"/>s through whom to
+    ///   crawl to retrieve an inherited value.
     /// </summary>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="defaultValue">
     ///   A <typeparamref name="TValue"/> to which to fall back in the case the value is not found.
     /// </param>
@@ -331,29 +331,29 @@ namespace OnTopic.Collections.Specialized {
     | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="TrackedItem{T}"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="TrackedRecord{T}"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
     /// <remarks>
     ///   Working with records can be a bit cumbersome, and especially in determining if a value should be marked as <see cref="
-    ///   TrackedItem{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(String,
-    ///   TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously allowing callers to
-    ///   explicitly set whether the <see cref="TrackedItem{T}"/> instances should be marked as dirty—via the <paramref name="
-    ///   markDirty"/> parameter—and, optionally, what the <paramref name="version"/> should be.
+    ///   TrackedRecord{T}.IsDirty"/>, since that's based on a comparison with the previous value. The <see cref="SetValue(
+    ///   String,TValue?, Boolean?, DateTime?)"/> method handles this logic for implementers, while simultaneously allowing
+    ///   callers to explicitly set whether the <see cref="TrackedRecord{T}"/> instances should be marked as dirty—via the
+    ///   <paramref name="markDirty"/> parameter—and, optionally, what the <paramref name="version"/> should be.
     /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
-    /// <param name="value">The text value for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
+    /// <param name="value">The text value for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <param name="version">
-    ///   The <see cref="DateTime"/> value that the <see cref="TrackedItem{T}"/> was last modified. This is intended exclusively
-    ///   for use when populating the topic graph from a persistent data store as a means of indicating the current version for
-    ///   each <see cref="TrackedItem{T}"/>. This is used when e.g. importing values to determine if the existing value is newer
-    ///   than the source value.
+    ///   The <see cref="DateTime"/> value that the <see cref="TrackedRecord{T}"/> was last modified. This is intended
+    ///   exclusively for use when populating the topic graph from a persistent data store as a means of indicating the current
+    ///   version for each <see cref="TrackedRecord{T}"/>. This is used when e.g. importing values to determine if the existing
+    ///   value is newer than the source value.
     /// </param>
     /// <requires
     ///   description="The key must be specified for the TrackedItem{T} key/value pair."
@@ -374,23 +374,23 @@ namespace OnTopic.Collections.Specialized {
       => SetValue(key, value, markDirty, true, version);
 
     /// <summary>
-    ///   Internal helper method that either adds a new <see cref="TrackedItem{T}"/> object or updates the value of an existing
-    ///   one, depending on whether that value already exists.
+    ///   Internal helper method that either adds a new <see cref="TrackedRecord{T}"/> object or updates the value of an
+    ///   existing one, depending on whether that value already exists.
     /// </summary>
     /// <remarks>
     ///   When the <paramref name="enforceBusinessLogic"/> parameter is called, no attempt will be made to route the call
     ///   through the corresponding properties, if available. As such, this is intended specifically to be called by internal
     ///   properties as a means of avoiding the property being called again when a caller uses the property's setter directly.
     /// </remarks>
-    /// <param name="key">The string identifier for the <see cref="TrackedItem{T}"/>.</param>
-    /// <param name="value">The text value for the <see cref="TrackedItem{T}"/>.</param>
+    /// <param name="key">The string identifier for the <see cref="TrackedRecord{T}"/>.</param>
+    /// <param name="value">The text value for the <see cref="TrackedRecord{T}"/>.</param>
     /// <param name="enforceBusinessLogic">
     ///   Instructs the underlying code to call corresponding properties, if available, to ensure business logic is enforced.
     ///   This should be set to <c>false</c> if setting items from internal properties in order to avoid an infinite loop.
     /// </param>
     /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   <c>true</c> if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as <c>true</c> if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
@@ -523,25 +523,25 @@ namespace OnTopic.Collections.Specialized {
     | OVERRIDE: INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to insert a new <see cref="TrackedItem{T}"/> into the collection, to ensure that local
+    ///   Intercepts all attempts to insert a new <see cref="TrackedRecord{T}"/> into the collection, to ensure that local
     ///   business logic is enforced.
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
-    ///     through that to ensure local business logic is enforced, if it hasn't already been enforced.
+    ///     If a settable property is available corresponding to the <see cref="TrackedRecord{T}.Key"/>, the call should be
+    ///     routed through that to ensure local business logic is enforced, if it hasn't already been enforced.
     ///   </para>
     ///   <para>
     ///     Compared to the base implementation, will throw a specific <see cref="ArgumentException"/> error if a duplicate key
-    ///     is inserted. This conveniently provides the name of the <see cref="TrackedItem{T}.Key"/> so it's clear what key is
+    ///     is inserted. This conveniently provides the name of the <see cref="TrackedRecord{T}.Key"/> so it's clear what key is
     ///     being duplicated.
     ///   </para>
     /// </remarks>
-    /// <param name="index">The location that the <see cref="TrackedItem{T}"/> should be set.</param>
-    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
+    /// <param name="index">The location that the <see cref="TrackedRecord{T}"/> should be set.</param>
+    /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>
     /// <exception cref="ArgumentException">
-    ///   An <see cref="ArgumentException"/> is thrown if an <see cref="TrackedItem{T}"/> with the same <see cref="TrackedItem{T
-    ///   }.Key"/> as the <paramref name="item"/> already exists.
+    ///   An <see cref="ArgumentException"/> is thrown if an <see cref="TrackedRecord{T}"/> with the same <see cref="
+    ///   TrackedRecord{T}.Key"/> as the <paramref name="item"/> already exists.
     /// </exception>
     protected override void InsertItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
@@ -572,15 +572,15 @@ namespace OnTopic.Collections.Specialized {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to update an <see cref="TrackedItem{T}"/> in the collection, to ensure that local business
+    ///   Intercepts all attempts to update an <see cref="TrackedRecord{T}"/> in the collection, to ensure that local business
     ///   logic is enforced.
     /// </summary>
     /// <remarks>
-    ///   If a settable property is available corresponding to the <see cref="TrackedItem{T}.Key"/>, the call should be routed
+    ///   If a settable property is available corresponding to the <see cref="TrackedRecord{T}.Key"/>, the call should be routed
     ///   through that to ensure local business logic is enforced, if it hasn't already been enforced.
     /// </remarks>
-    /// <param name="index">The location that the <see cref="TrackedItem{T}"/> should be set.</param>
-    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
+    /// <param name="index">The location that the <see cref="TrackedRecord{T}"/> should be set.</param>
+    /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>
     protected override void SetItem(int index, TItem item) {
       Contract.Requires(item, nameof(item));
       if (!AllowClean(item)) {
@@ -600,12 +600,12 @@ namespace OnTopic.Collections.Specialized {
     | OVERRIDE: REMOVE ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Intercepts all attempts to remove an <see cref="TrackedItem{T}"/> from the collection, to ensure that it is
+    ///   Intercepts all attempts to remove an <see cref="TrackedRecord{T}"/> from the collection, to ensure that it is
     ///   appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="TrackedItem{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
-    ///   cref="TrackedItem{T}"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   When an <see cref="TrackedRecord{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
+    ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </remarks>
     protected override void RemoveItem(int index) {
       var trackedItem = this[index];
@@ -623,8 +623,8 @@ namespace OnTopic.Collections.Specialized {
     ///   appropriately marked as <see cref="IsDirty()"/>.
     /// </summary>
     /// <remarks>
-    ///   When an <see cref="TrackedItem{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
-    ///   cref="TrackedItem{T}"/>s are marked as <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   When an <see cref="TrackedRecord{T}"/> is removed, <see cref="IsDirty()"/> will return true—even if no remaining <see
+    ///   cref="TrackedRecord{T}"/>s are marked as <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </remarks>
     protected override void ClearItems() {
       if (!AssociatedTopic.IsNew) {
@@ -637,14 +637,14 @@ namespace OnTopic.Collections.Specialized {
     | METHOD: ALLOW CLEAN?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines if a <typeparamref name="TItem"/> is permitted to be marked as not <see cref="TrackedItem{T}.IsDirty"/>.
+    ///   Determines if a <typeparamref name="TItem"/> is permitted to be marked as not <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
     /// <remarks>
     ///   If the <see cref="AssociatedTopic"/> is <see cref="Topic.IsNew"/> or the <typeparamref name="TValue"/> is <see cref="
-    ///   Topic"/> and the <paramref name="item"/> is <see cref="Topic.IsNew"/>, then <see cref="TrackedItem{T}.IsDirty"/>
+    ///   Topic"/> and the <paramref name="item"/> is <see cref="Topic.IsNew"/>, then <see cref="TrackedRecord{T}.IsDirty"/>
     ///   should never be set to <c>false</c>.
     /// </remarks>
-    /// <param name="item">The <see cref="TrackedItem{T}"/> object which is being inserted.</param>
+    /// <param name="item">The <see cref="TrackedRecord{T}"/> object which is being inserted.</param>
     protected bool AllowClean(TItem item) {
       Contract.Requires(item, nameof(item));
       var topic = item.Value as Topic;

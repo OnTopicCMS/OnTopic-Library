@@ -52,7 +52,7 @@ namespace OnTopic.Internal.Reflection {
   ///     optionally be retrieved via <see cref="IsRegistered(String, out TItem?)"/>. This is useful in case there is data from
   ///     the original request that might be lost when routed through the property setter. For example, the <see cref="Topic.
   ///     Attributes"/> collection works with <see cref="AttributeValue"/> instances, which contain metadata such as <see cref="
-  ///     TrackedItem{T}.IsDirty"/>, <see cref="AttributeValue.IsExtendedAttribute"/>, and <see cref="TrackedItem{T}.
+  ///     TrackedRecord{T}.IsDirty"/>, <see cref="AttributeValue.IsExtendedAttribute"/>, and <see cref="TrackedRecord{T}.
   ///     LastModified"/>, which are not passed to the corresponding property decorated with <see cref="AttributeSetterAttribute
   ///     "/>. As such, by saving a reference to those as part of the <see cref="Register(String, TItem?)"/> process, we allow
   ///     the source collection to retrieve the original request in order to ensure that data isn't lost. This isn't as critical
@@ -86,7 +86,7 @@ namespace OnTopic.Internal.Reflection {
   /// </remarks>
   internal class TopicPropertyDispatcher<TItem, TValue, TAttributeType>
     where TAttributeType: Attribute
-    where TItem: TrackedItem<TValue>
+    where TItem: TrackedRecord<TValue>
     where TValue: class
   {
 

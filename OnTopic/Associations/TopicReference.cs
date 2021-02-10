@@ -18,9 +18,9 @@ namespace OnTopic.Associations {
   /// </summary>
   /// <remarks>
   ///   <para>
-  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="TrackedItem{
-  ///     T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="TrackedItem{T}.
-  ///     LastModified"/> date.
+  ///     Provides values and metadata specific to individual attribute values, such as state (e.g., the <see cref="
+  ///     TrackedRecord{T}.IsDirty"/> property signifies whether the attribute value has changed) and its <see cref="
+  ///     TrackedRecord{T}.LastModified"/> date.
   ///   </para>
   ///   <para>
   ///     Typically, the <see cref="TopicReference"/> will be exposed as part of a <see cref="TopicReferenceCollection"/> via
@@ -37,7 +37,7 @@ namespace OnTopic.Associations {
   ///     />'s <see cref="TrackedCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/> method.
   ///   </para>
   /// </remarks>
-  public record TopicReference: TrackedItem<Topic> {
+  public record TopicReference: TrackedRecord<Topic> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
