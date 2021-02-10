@@ -211,7 +211,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
-      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
+      var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
 
       BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);
 
@@ -263,7 +263,7 @@ namespace OnTopic.Mapping.Reverse {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property, attributePrefix);
-      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
+      var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
       var compositeAttributeKey = configuration.AttributeKey;
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
@@ -290,7 +290,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve attribute descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeType = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
+      var attributeType = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
 
       if (attributeType is null) {
         throw new MappingModelValidationException(
@@ -483,7 +483,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var container = target.Children.GetTopic(configuration.AttributeKey);
+      var container = target.Children.GetValue(configuration.AttributeKey);
       if (container is null) {
         container = TopicFactory.Create(configuration.AttributeKey, "List", target);
         container.IsHidden = true;
@@ -590,7 +590,7 @@ namespace OnTopic.Mapping.Reverse {
       foreach (ITopicBindingModel childBindingModel in sourceList) {
         Contract.Assume(childBindingModel.Key);
         if (targetList.Contains(childBindingModel.Key)) {
-          taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)!));
+          taskQueue.Add(MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!));
         }
         else {
           taskQueue.Add(MapAsync(childBindingModel));

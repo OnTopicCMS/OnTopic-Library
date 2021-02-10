@@ -161,7 +161,7 @@ namespace OnTopic.Mapping.Reverse {
       var propertyType          = property.PropertyType;
       var configuration         = new PropertyConfiguration(property, attributePrefix);
       var compositeAttributeKey = configuration.AttributeKey;
-      var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
+      var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
       var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
       var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
       var listType              = (Type?)null;

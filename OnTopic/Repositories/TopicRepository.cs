@@ -72,7 +72,7 @@ namespace OnTopic.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var contentTypes        = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
+        var contentTypes        = configuration?.Children.GetValue("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection

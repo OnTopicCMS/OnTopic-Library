@@ -247,7 +247,7 @@ namespace OnTopic.TestDoubles {
         bool isExtended         = true,
         bool isRequired         = false
       ) {
-        var container = contentType.Children.GetTopic("Attributes");
+        var container = contentType.Children.GetValue("Attributes");
         if (container is null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);

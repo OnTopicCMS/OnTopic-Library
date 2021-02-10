@@ -444,9 +444,9 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
       Assert.AreEqual<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetTopic("Page"));
-      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
+      Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
+      Assert.IsNotNull(contentTypes.GetValue("Page"));
+      Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
 
     }
 
@@ -536,9 +536,9 @@ namespace OnTopic.Tests {
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var contentTypesRoot      = contentTypes.GetTopic("ContentTypes");
-      var pageContentType       = contentTypes.GetTopic("Page");
-      var lookupContentType     = contentTypes.GetTopic("Lookup");
+      var contentTypesRoot      = contentTypes.GetValue("ContentTypes");
+      var pageContentType       = contentTypes.GetValue("Page");
+      var lookupContentType     = contentTypes.GetValue("Lookup");
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
       pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);

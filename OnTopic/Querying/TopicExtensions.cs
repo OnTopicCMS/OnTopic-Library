@@ -254,7 +254,7 @@ namespace OnTopic.Querying {
       | Navigate to the specific path
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in keys) {
-        currentTopic = currentTopic?.Children?.GetTopic(key);
+        currentTopic = currentTopic?.Children?.GetValue(key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
