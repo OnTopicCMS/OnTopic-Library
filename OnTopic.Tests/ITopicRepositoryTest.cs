@@ -17,7 +17,7 @@ namespace OnTopic.Tests {
   | CLASS: TOPIC REPOSITORY TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="AttributeValueCollection"/> class.
+  ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
   /// <remarks>
   ///   These tests not only validate that the <see cref="StubTopicRepository"/> is functioning as expected, but also that the

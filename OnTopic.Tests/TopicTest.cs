@@ -255,7 +255,7 @@ namespace OnTopic.Tests {
     | TEST: LAST MODIFIED: UPDATE ATTRIBUTE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns the last modified date via <see cref="AttributeValueCollection"/>, and ensures it's returned correctly.
+    ///   Returns the last modified date via <see cref="AttributeCollection"/>, and ensures it's returned correctly.
     /// </summary>
     [TestMethod]
     public void LastModified_UpdateValue_ReturnsExpectedValue() {

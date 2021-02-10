@@ -23,20 +23,18 @@ namespace OnTopic.Attributes {
   ///     TrackedRecord{T}.LastModified"/> date.
   ///   </para>
   ///   <para>
-  ///     Typically, the <see cref="AttributeRecord"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
-  ///     the <see cref="Topic.Attributes"/> collection.
+  ///     Typically, the <see cref="AttributeRecord"/> will be exposed as part of a <see cref="AttributeCollection"/> via the
+  ///     <see cref="Topic.Attributes"/> collection.
   ///   </para>
   ///   <para>
   ///     Be aware that while <see cref="AttributeRecord"/> represents the value of a specific attribute, the metadata for
-  ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see
-  ///     cref="AttributeDescriptor"/> class.
+  ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see cref="
+  ///     AttributeDescriptor"/> class.
   ///   </para>
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
-  ///     create a new instance of the <see cref="AttributeRecord"/> class or, preferably, call the
-  ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?,
-  ///     Boolean?)"/>
-  ///     method.
+  ///     create a new instance of the <see cref="AttributeRecord"/> class or, preferably, call the <see cref="Topic.Attributes
+  ///     "/>'s <see cref="AttributeCollection.SetValue(String, String, Boolean?, DateTime?, Boolean?)"/> method.
   ///   </para>
   /// </remarks>
   public record AttributeRecord: TrackedRecord<string> {

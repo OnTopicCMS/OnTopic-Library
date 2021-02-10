@@ -51,8 +51,8 @@ namespace OnTopic.Internal.Reflection {
   ///     saved as part of either <see cref="Enforce(String, TItem?)"/> or <see cref="Register(String, TItem?)"/>, and can
   ///     optionally be retrieved via <see cref="IsRegistered(String, out TItem?)"/>. This is useful in case there is data from
   ///     the original request that might be lost when routed through the property setter. For example, the <see cref="Topic.
-  ///     Attributes"/> collection works with <see cref="AttributeRecord"/> instances, which contain metadata such as <see cref="
-  ///     TrackedRecord{T}.IsDirty"/>, <see cref="AttributeRecord.IsExtendedAttribute"/>, and <see cref="TrackedRecord{T}.
+  ///     Attributes"/> collection works with <see cref="AttributeRecord"/> instances, which contain metadata such as <see cref=
+  ///     "TrackedRecord{T}.IsDirty"/>, <see cref="AttributeRecord.IsExtendedAttribute"/>, and <see cref="TrackedRecord{T}.
   ///     LastModified"/>, which are not passed to the corresponding property decorated with <see cref="AttributeSetterAttribute
   ///     "/>. As such, by saving a reference to those as part of the <see cref="Register(String, TItem?)"/> process, we allow
   ///     the source collection to retrieve the original request in order to ensure that data isn't lost. This isn't as critical
@@ -72,16 +72,16 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     One caveat to this are cases where the caller attempts to set the value via the <see cref="Topic"/> property directly,
   ///     instead of adding the item directly to the corresponding collection—e.g., they call <see cref="Topic.View"/> instead
-  ///     of e.g. the <see cref="AttributeValueCollection.SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/> method
-  ///     from <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see
-  ///     cref="Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called
-  ///     twice, collection implementors are advised to offer an internal overload that allows an item to be added to the
-  ///     collection while bypassing the business logic. For instance, this can be done using <see cref="TrackedRecordCollection
-  ///     {TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="
-  ///     TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; in each
-  ///     case, the internally accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business
-  ///     logic. Internally, this is done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(
-  ///     String, TItem?)"/> that the business logic has already occurred.
+  ///     of e.g. the <see cref="AttributeCollection.SetValue(String, String?, Boolean?, DateTime?, Boolean?)"/> method from
+  ///     <see cref="Topic.Attributes"/>. In that case, the business logic will already have been enforced, but the <see cref="
+  ///     Register(String, TItem?)"/> method will not have been called. To mitigate the property setter getting called twice,
+  ///     collection implementors are advised to offer an internal overload that allows an item to be added to the collection
+  ///     while bypassing the business logic. For instance, this can be done using <see cref="TrackedRecordCollection{TItem,
+  ///     TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> or <see cref="TrackedRecordCollection{
+  ///     TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/>; in each case, the internally
+  ///     accessible <c>enforceBusinessLogic</c> parameter allows a property setter to disable business logic. Internally, this
+  ///     is done by calling <see cref="Register(String, TItem?)"/>, thus assuring <see cref="Enforce(String, TItem?)"/> that
+  ///     the business logic has already occurred.
   ///   </para>
   /// </remarks>
   internal class TopicPropertyDispatcher<TItem, TValue, TAttributeType>

@@ -781,8 +781,8 @@ namespace OnTopic.Repositories {
     | METHOD: GET UNMATCHED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see
-    ///   cref="ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeValueCollection"/>.
+    ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see cref="
+    ///   ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeCollection"/>.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
     protected IEnumerable<AttributeDescriptor> GetUnmatchedAttributes(Topic topic) {

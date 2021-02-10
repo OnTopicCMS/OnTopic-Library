@@ -11,7 +11,7 @@ using OnTopic.Repositories;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION
+  | CLASS: ATTRIBUTE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents a collection of <see cref="AttributeRecord"/> objects.
@@ -19,22 +19,22 @@ namespace OnTopic.Attributes {
   /// <remarks>
   ///   <see cref="AttributeRecord"/> objects represent individual instances of attributes associated with particular topics.
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
-  ///   the <see cref="AttributeValueCollection"/> class.
+  ///   the <see cref="AttributeCollection"/> class.
   /// </remarks>
-  public class AttributeValueCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
+  public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
+    ///   Initializes a new instance of the <see cref="AttributeCollection"/> class.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the
-    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
+    ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref="
+    ///   Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-    internal AttributeValueCollection(Topic parentTopic) : base(parentTopic) {
+    internal AttributeCollection(Topic parentTopic) : base(parentTopic) {
     }
 
     /*==========================================================================================================================
@@ -56,7 +56,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
+    ///   Determine if <i>any</i> attributes in the <see cref="AttributeCollection"/> are dirty.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need

@@ -730,7 +730,7 @@ namespace OnTopic {
     ///   property).
     /// </remarks>
     /// <value>The current <see cref="Topic"/>'s attributes.</value>
-    public AttributeValueCollection Attributes { get; }
+    public AttributeCollection Attributes { get; }
 
     /*==========================================================================================================================
     | PROPERTY: RELATIONSHIPS
@@ -800,12 +800,11 @@ namespace OnTopic {
     /// </summary>
     /// <remarks>
     ///   When an attribute value is set and a corresponding, writable property exists on the topic, that property will be
-    ///   called by the <see cref="AttributeValueCollection"/>. This is intended to enforce local business logic, and prevent
-    ///   callers from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the
-    ///   <see cref="AttributeValueCollection"/> that the business logic has already been enforced. To do that, they must either
-    ///   call <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean,
-    ///   DateTime?)"/> with the <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly,
-    ///   call this overload.
+    ///   called by the <see cref="AttributeCollection"/>. This is intended to enforce local business logic, and prevent callers
+    ///   from introducing invalid data.To prevent a redirect loop, however, local properties need to inform the <see cref="
+    ///   AttributeCollection"/> that the business logic has already been enforced. To do that, they must either call <see cref=
+    ///   "TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, Boolean, DateTime?)"/> with the
+    ///   <c>enforceBusinessLogic</c> flag set to <c>false</c>, or, if they're in a separate assembly, call this overload.
     /// </remarks>
     /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <param name="value">The text value for the <see cref="AttributeRecord"/>.</param>
