@@ -21,7 +21,7 @@ namespace OnTopic.Mapping.Internal {
   ///   associations by using <see cref="AddMissingAssociations(AssociationTypes)"/>. This ensures that even if a topic has
   ///   already been mapped, its scope can be expanded without duplicating effort.
   /// </remarks>
-  public class MappedTopicCacheEntry {
+  internal class MappedTopicCacheEntry {
 
     /*==========================================================================================================================
     | PROPERTY: MAPPED TOPIC
@@ -29,7 +29,7 @@ namespace OnTopic.Mapping.Internal {
     /// <summary>
     ///   Provides a reference to the mapped object.
     /// </summary>
-    public object MappedTopic { get; set; } = null!;
+    internal object MappedTopic { get; set; } = null!;
 
     /*==========================================================================================================================
     | PROPERTY: ASSOCIATIONS
@@ -37,7 +37,7 @@ namespace OnTopic.Mapping.Internal {
     /// <summary>
     ///   Provides a reference to the associations that the <see cref="MappedTopic"/> was mapped with.
     /// </summary>
-    public AssociationTypes Associations { get; set; } = AssociationTypes.None;
+    internal AssociationTypes Associations { get; set; } = AssociationTypes.None;
 
     /*==========================================================================================================================
     | METHOD: GET MISSING ASSOCIATIONS
@@ -46,7 +46,7 @@ namespace OnTopic.Mapping.Internal {
     ///   Given a target <paramref name="associations"/>, identifies any associations not covered by <see cref="Associations"/>
     ///   and returns them as a new <see cref="AssociationTypes"/> instance.
     /// </summary>
-    public AssociationTypes GetMissingAssociations(AssociationTypes associations) => Associations ^ (associations | Associations);
+    internal AssociationTypes GetMissingAssociations(AssociationTypes associations) => Associations ^ (associations | Associations);
 
     /*==========================================================================================================================
     | METHOD: ADD MISSING ASSOCIATIONS
@@ -55,7 +55,7 @@ namespace OnTopic.Mapping.Internal {
     ///   Given a target <paramref name="associations"/>, adds any missing <see cref="AssociationTypes"/> to the <see cref="
     ///   Associations"/> property.
     /// </summary>
-    public void AddMissingAssociations(AssociationTypes associations) => Associations = associations | Associations;
+    internal void AddMissingAssociations(AssociationTypes associations) => Associations = associations | Associations;
 
   } //Class
 } //Namespace
