@@ -167,7 +167,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.IncomingRelationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.IncomingRelationships.GetValues("Related").Count);
 
     }
 
@@ -190,7 +190,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.Relationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.Relationships.GetValues("Related").Count);
 
     }
 

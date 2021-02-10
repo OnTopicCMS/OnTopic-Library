@@ -105,7 +105,7 @@ namespace OnTopic.Collections.Specialized {
     public bool Contains(string key, Topic topic) => Source.Contains(key, topic);
 
     /*==========================================================================================================================
-    | METHOD: GET TOPICS
+    | METHOD: GET VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
@@ -114,13 +114,17 @@ namespace OnTopic.Collections.Specialized {
     ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
     /// </remarks>
     /// <param name="key">The key of the collection to be returned.</param>
-    public ReadOnlyTopicCollection GetTopics(string key) {
+    public ReadOnlyTopicCollection GetValues(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       if (Contains(key)) {
         return new(Source[key].Values);
       }
       return new(new List<Topic>());
     }
+
+    /// <inheritdoc cref="GetValues(String)"/>
+    [Obsolete("The GetTopics() method has been renamed to GetValues().", false)]
+    public ReadOnlyTopicCollection GetTopics(string key) => GetValues(key);
 
     /*==========================================================================================================================
     | METHOD: GET ALL TOPICS

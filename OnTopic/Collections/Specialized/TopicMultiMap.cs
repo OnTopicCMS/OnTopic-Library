@@ -41,7 +41,7 @@ namespace OnTopic.Collections.Specialized {
     public bool Contains(string key, Topic topic) => Contains(key) && this[key].Values.Contains(topic);
 
     /*==========================================================================================================================
-    | METHOD: GET TOPICS
+    | METHOD: GET VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
@@ -50,13 +50,17 @@ namespace OnTopic.Collections.Specialized {
     ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
     /// </remarks>
     /// <param name="key">The key of the collection to be returned.</param>
-    public TopicCollection GetTopics(string key) {
+    public TopicCollection GetValues(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       if (Contains(key)) {
         return this[key].Values;
       }
       return new();
     }
+
+    /// <inheritdoc cref="GetValues(String)"/>
+    [Obsolete("The GetTopics() method has been renamed to GetValues().", false)]
+    public TopicCollection GetTopics(string key) => GetValues(key);
 
     /*==========================================================================================================================
     | METHOD: ADD
@@ -112,7 +116,7 @@ namespace OnTopic.Collections.Specialized {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate key
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = GetTopics(key);
+      var topics                = GetValues(key);
 
       if (topics is null || !topics.Contains(topic)) {
         return false;
@@ -137,7 +141,7 @@ namespace OnTopic.Collections.Specialized {
     ///   Removes all <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
     /// </summary>
     /// <param name="key">The key of the collection to be cleared.</param>
-    public void Clear(string key) => GetTopics(key).Clear();
+    public void Clear(string key) => GetValues(key).Clear();
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM

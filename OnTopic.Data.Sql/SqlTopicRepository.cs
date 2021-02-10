@@ -641,7 +641,7 @@ namespace OnTopic.Data.Sql {
             CommandType         = CommandType.StoredProcedure
           };
 
-          foreach (var targetTopic in topic.Relationships.GetTopics(key)) {
+          foreach (var targetTopic in topic.Relationships.GetValues(key)) {
             if (!targetTopic.IsNew) {
               targetIds.AddRow(targetTopic.Id);
             }

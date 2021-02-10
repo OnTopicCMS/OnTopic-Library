@@ -34,7 +34,7 @@ namespace OnTopic.Tests {
 
       parent.Relationships.SetTopic("Friends", related);
 
-      Assert.ReferenceEquals(parent.Relationships.GetTopics("Friends").First(), related);
+      Assert.ReferenceEquals(parent.Relationships.GetValues("Friends").First(), related);
 
     }
 
@@ -53,7 +53,7 @@ namespace OnTopic.Tests {
       parent.Relationships.SetTopic("Friends", related);
       parent.Relationships.RemoveTopic("Friends", related);
 
-      Assert.IsNull(parent.Relationships.GetTopics("Friends").FirstOrDefault());
+      Assert.IsNull(parent.Relationships.GetValues("Friends").FirstOrDefault());
 
     }
 
@@ -74,7 +74,7 @@ namespace OnTopic.Tests {
       relationships.SetTopic("Friends", related);
       relationships.RemoveTopic("Friends", related);
 
-      Assert.IsNull(related.IncomingRelationships.GetTopics("Friends").FirstOrDefault());
+      Assert.IsNull(related.IncomingRelationships.GetValues("Friends").FirstOrDefault());
 
     }
 
@@ -93,7 +93,7 @@ namespace OnTopic.Tests {
 
       relationships.SetTopic("Friends", related);
 
-      Assert.ReferenceEquals(related.IncomingRelationships.GetTopics("Friends").First(), parent);
+      Assert.ReferenceEquals(related.IncomingRelationships.GetValues("Friends").First(), parent);
 
     }
 
@@ -135,7 +135,7 @@ namespace OnTopic.Tests {
       }
 
       Assert.AreEqual<int>(5, relationships.Count);
-      Assert.AreEqual<string>("Related3", relationships.GetTopics("Relationship3").First().Key);
+      Assert.AreEqual<string>("Related3", relationships.GetValues("Relationship3").First().Key);
       Assert.AreEqual<int>(5, relationships.GetAllTopics().Count);
 
     }

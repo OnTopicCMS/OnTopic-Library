@@ -138,7 +138,7 @@ namespace OnTopic.Metadata {
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes is null) {
           var permittedContentTypes = new KeyedTopicCollection<ContentTypeDescriptor>();
-          var contentTypes = Relationships.GetTopics("ContentTypes");
+          var contentTypes = Relationships.GetValues("ContentTypes");
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }

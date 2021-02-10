@@ -66,7 +66,7 @@ namespace OnTopic.Associations {
     public void ClearTopics(string relationshipKey) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(relationshipKey), nameof(relationshipKey));
       if (_storage.Contains(relationshipKey)) {
-        var relationship = _storage.GetTopics(relationshipKey);
+        var relationship = _storage.GetValues(relationshipKey);
         if (relationship.Count > 0) {
           _dirtyKeys.MarkAs(relationshipKey, markDirty: !_parent.IsNew);
         }
@@ -184,7 +184,7 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Add relationship
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topics                = _storage.GetTopics(relationshipKey);
+      var topics                = _storage.GetValues(relationshipKey);
       var wasDirty              = _dirtyKeys.IsDirty(relationshipKey);
       if (!topics.Contains(topic)) {
         _storage.Add(relationshipKey, topic);

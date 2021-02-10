@@ -539,7 +539,7 @@ namespace OnTopic.Mapping {
       listSource = getCollection(
         CollectionType.Relationship,
         source.Relationships.Contains,
-        () => source.Relationships.GetTopics(collectionKey)
+        () => source.Relationships.GetValues(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -557,7 +557,7 @@ namespace OnTopic.Mapping {
       listSource = getCollection(
         CollectionType.IncomingRelationship,
         source.IncomingRelationships.Contains,
-        () => source.IncomingRelationships.GetTopics(collectionKey)
+        () => source.IncomingRelationships.GetValues(collectionKey)
       );
 
       /*------------------------------------------------------------------------------------------------------------------------

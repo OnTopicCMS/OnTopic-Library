@@ -148,7 +148,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual<int>(1, reference.IncomingRelationships.GetTopics("Reference").Count);
+      Assert.AreEqual<int>(1, reference.IncomingRelationships.GetValues("Reference").Count);
 
     }
 
@@ -170,7 +170,7 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", reference);
       topic.References.Remove("Reference");
 
-      Assert.AreEqual<int>(0, reference.IncomingRelationships.GetTopics("Reference").Count);
+      Assert.AreEqual<int>(0, reference.IncomingRelationships.GetValues("Reference").Count);
 
     }
 
