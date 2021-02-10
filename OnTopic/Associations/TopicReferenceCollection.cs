@@ -76,7 +76,7 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      item?.Value?.IncomingRelationships.SetTopic(item.Key, AssociatedTopic, null, true);
+      item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
 
     }
 
@@ -99,8 +99,8 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      item?.Value?.IncomingRelationships.SetTopic(item.Key, AssociatedTopic, null, true);
-      existingItem?.Value?.IncomingRelationships.SetTopic(existingItem.Key, AssociatedTopic, null, true);
+      item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+      existingItem?.Value?.IncomingRelationships.SetValue(existingItem.Key, AssociatedTopic, null, true);
 
     }
 
@@ -115,7 +115,7 @@ namespace OnTopic.Associations {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var existing              = this[index];
 
-      existing.Value?.IncomingRelationships.RemoveTopic(existing.Key, AssociatedTopic, true);
+      existing.Value?.IncomingRelationships.Remove(existing.Key, AssociatedTopic, true);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide base logic
@@ -140,7 +140,7 @@ namespace OnTopic.Associations {
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var item in Items) {
-        item.Value?.IncomingRelationships.RemoveTopic(item.Key, AssociatedTopic, true);
+        item.Value?.IncomingRelationships.Remove(item.Key, AssociatedTopic, true);
       }
 
     }

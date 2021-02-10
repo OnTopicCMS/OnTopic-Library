@@ -105,7 +105,7 @@ namespace OnTopic.Collections.Specialized {
     public bool Contains(string key, Topic topic) => Source.Contains(key, topic);
 
     /*==========================================================================================================================
-    | METHOD: GET TOPICS
+    | METHOD: GET VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of <see cref="Topic"/> objects grouped by a specific <paramref name="key"/>.
@@ -114,7 +114,7 @@ namespace OnTopic.Collections.Specialized {
     ///   Returns a reference to the underlying <see cref="Collection{Topic}"/> collection.
     /// </remarks>
     /// <param name="key">The key of the collection to be returned.</param>
-    public ReadOnlyTopicCollection GetTopics(string key) {
+    public ReadOnlyTopicCollection GetValues(string key) {
       Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(key), nameof(key));
       if (Contains(key)) {
         return new(Source[key].Values);
@@ -122,8 +122,12 @@ namespace OnTopic.Collections.Specialized {
       return new(new List<Topic>());
     }
 
+    /// <inheritdoc cref="GetValues(String)"/>
+    [Obsolete("The GetTopics() method has been renamed to GetValues().", true)]
+    public ReadOnlyTopicCollection GetTopics(string key) => GetValues(key);
+
     /*==========================================================================================================================
-    | METHOD: GET ALL TOPICS
+    | METHOD: GET ALL VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of all related <see cref="Topic"/> objects, independent of collection key.
@@ -131,7 +135,7 @@ namespace OnTopic.Collections.Specialized {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics() =>
+    public ReadOnlyTopicCollection GetAllValues() =>
       new(Source.SelectMany(list => list.Values).Distinct().ToList());
 
     /// <summary>
@@ -141,8 +145,16 @@ namespace OnTopic.Collections.Specialized {
     /// <returns>
     ///   Returns an enumerable list of <see cref="Topic"/> objects.
     /// </returns>
-    public ReadOnlyTopicCollection GetAllTopics(string contentType) =>
-      new(GetAllTopics().Where(t => t.ContentType == contentType).ToList());
+    public ReadOnlyTopicCollection GetAllValues(string contentType) =>
+      new(GetAllValues().Where(t => t.ContentType == contentType).ToList());
+
+    /// <inheritdoc cref="GetAllValues(String)"/>
+    [Obsolete("The GetAllTopics() method has been renamed to GetAllValues().", true)]
+    public ReadOnlyTopicCollection GetAllTopics(string key) => GetAllValues(key);
+
+    /// <inheritdoc cref="GetAllValues(String)"/>
+    [Obsolete("The GetAllTopics() method has been renamed to GetAllValues().", true)]
+    public ReadOnlyTopicCollection GetAllTopics() => GetAllValues();
 
     /*==========================================================================================================================
     | GET ENUMERATOR

@@ -34,18 +34,22 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET TOPIC
+    | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a <typeparamref name="T"/> by key.
+    ///   Retrieves a <typeparamref name="T"/> by <paramref name="key"/>.
     /// </summary>
-    public T? GetTopic(string key) {
+    public T? GetValue(string key) {
       TopicFactory.ValidateKey(key);
       if (Contains(key)) {
         return this[key];
       }
       return null;
     }
+
+    /// <inheritdoc cref="GetValue(String)"/>
+    [Obsolete("The GetTopic() method has been renamed to GetValue().", true)]
+    public T? GetTopic(string key) => GetValue(key);
 
     /*==========================================================================================================================
     | METHOD: AS READ ONLY

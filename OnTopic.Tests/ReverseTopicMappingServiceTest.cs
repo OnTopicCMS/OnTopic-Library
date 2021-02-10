@@ -223,7 +223,7 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
 
-      topic.Relationships.SetTopic("ContentTypes", contentTypes[4]);
+      topic.Relationships.SetValue("ContentTypes", contentTypes[4]);
 
       for (var i = 0; i < 3; i++) {
         bindingModel.ContentTypes.Add(
@@ -270,11 +270,11 @@ namespace OnTopic.Tests {
       var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(3, target.AttributeDescriptors.Count);
-      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute1"));
-      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute2"));
-      Assert.IsNotNull(target.AttributeDescriptors.GetTopic("Attribute3"));
-      Assert.AreEqual<string>("New Value", target.AttributeDescriptors.GetTopic("Attribute3").DefaultValue);
-      Assert.IsNull(target.AttributeDescriptors.GetTopic("Attribute4"));
+      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute1"));
+      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute2"));
+      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute3"));
+      Assert.AreEqual<string>("New Value", target.AttributeDescriptors.GetValue("Attribute3").DefaultValue);
+      Assert.IsNull(target.AttributeDescriptors.GetValue("Attribute4"));
 
     }
 

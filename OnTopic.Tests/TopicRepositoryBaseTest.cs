@@ -163,11 +163,11 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      child.Relationships.SetTopic("Related", related);
+      child.Relationships.SetValue("Related", related);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.IncomingRelationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.IncomingRelationships.GetValues("Related").Count);
 
     }
 
@@ -186,11 +186,11 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      related.Relationships.SetTopic("Related", child);
+      related.Relationships.SetValue("Related", child);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.Relationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.Relationships.GetValues("Related").Count);
 
     }
 
@@ -444,9 +444,9 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
       Assert.AreEqual<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetTopic("Page"));
-      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
+      Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
+      Assert.IsNotNull(contentTypes.GetValue("Page"));
+      Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
 
     }
 
@@ -536,12 +536,12 @@ namespace OnTopic.Tests {
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var contentTypesRoot      = contentTypes.GetTopic("ContentTypes");
-      var pageContentType       = contentTypes.GetTopic("Page");
-      var lookupContentType     = contentTypes.GetTopic("Lookup");
+      var contentTypesRoot      = contentTypes.GetValue("ContentTypes");
+      var pageContentType       = contentTypes.GetValue("Page");
+      var lookupContentType     = contentTypes.GetValue("Lookup");
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
-      pageContentType.Relationships.SetTopic("ContentTypes", lookupContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
 
       _topicRepository.Save(contentTypesRoot, true);
 

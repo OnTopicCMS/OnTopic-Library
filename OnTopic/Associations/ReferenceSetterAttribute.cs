@@ -26,7 +26,7 @@ namespace OnTopic.Associations {
   ///   </para>
   ///   <para>
   ///     As an example, the <see cref="Topic.BaseTopic"/> property is adorned with the <see cref="ReferenceSetterAttribute"/>.
-  ///     As a result, if a client calls <code>topic.References.SetTopic("BaseTopic", topic)</code>, then that update will be
+  ///     As a result, if a client calls <code>topic.References.SetValue("BaseTopic", topic)</code>, then that update will be
   ///     routed through <see cref="Topic.BaseTopic"/>, thus enforcing any validation.
   ///   </para>
   ///   <para>

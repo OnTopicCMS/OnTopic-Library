@@ -72,7 +72,7 @@ namespace OnTopic.Repositories {
         /*----------------------------------------------------------------------------------------------------------------------
         | Load root content type
         \---------------------------------------------------------------------------------------------------------------------*/
-        var contentTypes        = configuration?.Children.GetTopic("ContentTypes") as ContentTypeDescriptor;
+        var contentTypes        = configuration?.Children.GetValue("ContentTypes") as ContentTypeDescriptor;
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Add available Content Types to the collection
@@ -610,7 +610,7 @@ namespace OnTopic.Repositories {
         foreach (var relationship in descendantTopic.Relationships) {
           foreach (var relatedTopic in relationship.Values.ToList()) {
             if (!descendantTopics.Contains(relatedTopic)) {
-              descendantTopic.Relationships.RemoveTopic(relationship.Key, relatedTopic);
+              descendantTopic.Relationships.Remove(relationship.Key, relatedTopic);
             }
           }
         }
@@ -635,7 +635,7 @@ namespace OnTopic.Repositories {
           foreach (var relatedTopic in relationship.Values.ToList()) {
             if (!descendantTopics.Contains(relatedTopic)) {
               if (relatedTopic.Relationships.Contains(relationship.Key, descendantTopic)) {
-                relatedTopic.Relationships.RemoveTopic(relationship.Key, descendantTopic);
+                relatedTopic.Relationships.Remove(relationship.Key, descendantTopic);
               }
               else if (relatedTopic.References.Contains(relationship.Key)) {
                 relatedTopic.References.Remove(relationship.Key);

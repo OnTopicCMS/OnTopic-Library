@@ -379,10 +379,10 @@ namespace OnTopic.Data.Sql {
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isDeleted) {
-        current.Relationships.SetTopic(relationshipKey, related, isDirty);
+        current.Relationships.SetValue(relationshipKey, related, isDirty);
       }
       else if (current.Relationships.Contains(relationshipKey, related)) {
-        current.Relationships.RemoveTopic(relationshipKey, related);
+        current.Relationships.Remove(relationshipKey, related);
       }
 
     }

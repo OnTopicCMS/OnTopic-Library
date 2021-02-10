@@ -228,8 +228,8 @@ namespace OnTopic.TestDoubles {
       addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
       addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
 
       var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
 
@@ -247,7 +247,7 @@ namespace OnTopic.TestDoubles {
         bool isExtended         = true,
         bool isRequired         = false
       ) {
-        var container = contentType.Children.GetTopic("Attributes");
+        var container = contentType.Children.GetValue("Attributes");
         if (container is null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);

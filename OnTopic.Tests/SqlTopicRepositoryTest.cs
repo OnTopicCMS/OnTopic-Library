@@ -96,7 +96,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(topic);
       Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<int?>(2, topic.Relationships.GetTopics("Test").FirstOrDefault()?.Id);
+      Assert.AreEqual<int?>(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
 
     }
 
@@ -203,7 +203,7 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Container", topic, 2);
       var related               = TopicFactory.Create("Related", "Container", topic, 3);
 
-      child.Relationships.SetTopic("Test", related);
+      child.Relationships.SetValue("Test", related);
 
       using var empty           = new AttributesDataTable();
       using var relationships   = new RelationshipsDataTable();
@@ -214,7 +214,7 @@ namespace OnTopic.Tests {
 
       tableReader.LoadTopicGraph(related);
 
-      Assert.AreEqual<int>(0, topic.Relationships.GetTopics("Test").Count);
+      Assert.AreEqual<int>(0, topic.Relationships.GetValues("Test").Count);
 
     }
 
