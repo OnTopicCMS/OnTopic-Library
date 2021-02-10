@@ -51,7 +51,7 @@ namespace OnTopic.Tests {
       var related               = TopicFactory.Create("Related", "Page");
 
       parent.Relationships.SetTopic("Friends", related);
-      parent.Relationships.RemoveTopic("Friends", related);
+      parent.Relationships.Remove("Friends", related);
 
       Assert.IsNull(parent.Relationships.GetValues("Friends").FirstOrDefault());
 
@@ -72,7 +72,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(parent);
 
       relationships.SetTopic("Friends", related);
-      relationships.RemoveTopic("Friends", related);
+      relationships.Remove("Friends", related);
 
       Assert.IsNull(related.IncomingRelationships.GetValues("Friends").FirstOrDefault());
 
@@ -245,7 +245,7 @@ namespace OnTopic.Tests {
 
       relationships.SetTopic("Related", related);
       relationships.MarkClean();
-      relationships.RemoveTopic("Related", related);
+      relationships.Remove("Related", related);
 
       Assert.IsTrue(relationships.IsDirty());
 
@@ -265,7 +265,7 @@ namespace OnTopic.Tests {
       var relationships         = new TopicRelationshipMultiMap(topic);
       var related               = TopicFactory.Create("Topic", "Page");
 
-      var isSuccessful          = relationships.RemoveTopic("Related", related);
+      var isSuccessful          = relationships.Remove("Related", related);
 
       Assert.IsFalse(isSuccessful);
       Assert.IsFalse(relationships.IsDirty());
@@ -289,7 +289,7 @@ namespace OnTopic.Tests {
 
       relationships.SetTopic("Related", related);
 
-      var isSuccessful          = relationships.RemoveTopic("Related", missing);
+      var isSuccessful          = relationships.Remove("Related", missing);
 
       Assert.IsFalse(isSuccessful);
       Assert.IsTrue(relationships.IsDirty());

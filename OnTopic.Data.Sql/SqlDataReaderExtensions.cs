@@ -382,7 +382,7 @@ namespace OnTopic.Data.Sql {
         current.Relationships.SetTopic(relationshipKey, related, isDirty);
       }
       else if (current.Relationships.Contains(relationshipKey, related)) {
-        current.Relationships.RemoveTopic(relationshipKey, related);
+        current.Relationships.Remove(relationshipKey, related);
       }
 
     }

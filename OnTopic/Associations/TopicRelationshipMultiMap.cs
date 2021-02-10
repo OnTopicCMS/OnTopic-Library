@@ -79,18 +79,18 @@ namespace OnTopic.Associations {
     public void ClearTopics(string relationshipKey) => Clear(relationshipKey);
 
     /*==========================================================================================================================
-    | METHOD: REMOVE TOPIC
+    | METHOD: REMOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
+    ///   Removes a specific <see cref="Topic"/> object associated with a specific <paramref name="relationshipKey"/>.
     /// </summary>
     /// <param name="relationshipKey">The key of the relationship.</param>
     /// <param name="topic">The <see cref="Topic"/> to be removed.</param>
     /// <returns>
-    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
-    ///   <see cref="Topic"/> cannot be found.
+    ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the specified <paramref name="
+    ///   relationshipKey"/> or the <paramref name="topic"/> cannot be found.
     /// </returns>
-    public bool RemoveTopic(string relationshipKey, Topic topic) => RemoveTopic(relationshipKey, topic, false);
+    public bool Remove(string relationshipKey, Topic topic) => Remove(relationshipKey, topic, false);
 
     /// <summary>
     ///   Removes a specific <see cref="Topic"/> object associated with a specific relationship key.
@@ -104,7 +104,7 @@ namespace OnTopic.Associations {
     ///   Returns true if the <see cref="Topic"/> is removed; returns false if either the relationship key or the
     ///   <see cref="Topic"/> cannot be found.
     /// </returns>
-    internal bool RemoveTopic(string relationshipKey, Topic topic, bool isIncoming) {
+    internal bool Remove(string relationshipKey, Topic topic, bool isIncoming) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -122,7 +122,7 @@ namespace OnTopic.Associations {
             nameof(isIncoming)
           );
         }
-        topic.IncomingRelationships.RemoveTopic(relationshipKey, _parent, true);
+        topic.IncomingRelationships.Remove(relationshipKey, _parent, true);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +144,15 @@ namespace OnTopic.Associations {
       return true;
 
     }
+
+    /// <inheritdoc cref="Remove(String, Topic)"/>
+    [Obsolete("The RemoveTopic() method has been renamed to Remove().", false)]
+    public bool RemoveTopic(string relationshipKey, Topic topic) => Remove(relationshipKey, topic);
+
+    /// <inheritdoc cref="Remove(String, Topic, Boolean)"/>
+    [Obsolete("The RemoveTopic() method has been renamed to Remove().", false)]
+    public bool RemoveTopic(string relationshipKey, Topic topic, Boolean isIncoming) =>
+      Remove(relationshipKey, topic, isIncoming);
 
     /*==========================================================================================================================
     | METHOD: SET TOPIC
