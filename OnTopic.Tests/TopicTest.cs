@@ -255,7 +255,7 @@ namespace OnTopic.Tests {
     | TEST: LAST MODIFIED: UPDATE ATTRIBUTE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns the last modified date via <see cref="AttributeValueCollection"/>, and ensures it's returned correctly.
+    ///   Returns the last modified date via <see cref="AttributeCollection"/>, and ensures it's returned correctly.
     /// </summary>
     [TestMethod]
     public void LastModified_UpdateValue_ReturnsExpectedValue() {
@@ -275,7 +275,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a base topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
-    ///   base topic as well as the underlying <see cref="AttributeValue"/> correctly reference the new value.
+    ///   base topic as well as the underlying <see cref="AttributeRecord"/> correctly reference the new value.
     /// </summary>
     [TestMethod]
     public void BaseTopic_UpdateValue_ReturnsExpectedValue() {

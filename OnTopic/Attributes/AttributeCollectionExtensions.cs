@@ -12,13 +12,13 @@ using OnTopic.Repositories;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION (EXTENSIONS)
+  | CLASS: ATTRIBUTE COLLECTION (EXTENSIONS)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides extensions for setting and retrieving values from the <see cref="AttributeValueCollection"/> using strongly
-  ///   typed values.
+  ///   Provides extensions for setting and retrieving values from the <see cref="AttributeCollection"/> using strongly typed
+  ///   values.
   /// </summary>
-  public static class AttributeValueCollectionExtensions {
+  public static class AttributeCollectionExtensions {
 
     /*==========================================================================================================================
     | METHOD: GET BOOLEAN VALUE
@@ -27,8 +27,8 @@ namespace OnTopic.Attributes {
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
     ///   of inheritance, and an optional setting for searching through base topics for values. Return as a boolean.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
@@ -39,7 +39,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <returns>The value for the attribute as a boolean.</returns>
     public static bool GetBoolean(
-      this                      AttributeValueCollection attributes,
+      this AttributeCollection  attributes,
       string                    name,
       bool                      defaultValue                    = default,
       bool                      inheritFromParent               = false,
@@ -65,8 +65,8 @@ namespace OnTopic.Attributes {
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
     ///   of inheritance, and an optional setting for searching through base topics for values. Return as a integer.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
@@ -77,7 +77,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <returns>The value for the attribute as an integer.</returns>
     public static int GetInteger(
-      this                      AttributeValueCollection attributes,
+      this AttributeCollection  attributes,
       string                    name,
       int                       defaultValue                    = default,
       bool                      inheritFromParent               = false,
@@ -103,8 +103,8 @@ namespace OnTopic.Attributes {
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
     ///   of inheritance, and an optional setting for searching through base topics for values. Return as a double.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
@@ -115,7 +115,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <returns>The value for the attribute as a double.</returns>
     public static double GetDouble(
-      this                      AttributeValueCollection attributes,
+      this AttributeCollection  attributes,
       string                    name,
       double                    defaultValue                    = default,
       bool                      inheritFromParent               = false,
@@ -141,8 +141,8 @@ namespace OnTopic.Attributes {
     ///   Gets a named attribute from the Attributes dictionary with a specified default value, an optional setting for enabling
     ///   of inheritance, and an optional setting for searching through base topics for values. Return as a DateTime.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="name">The string identifier for the <see cref="AttributeRecord"/>.</param>
     /// <param name="defaultValue">A string value to which to fall back in the case the value is not found.</param>
     /// <param name="inheritFromParent">
     ///   Boolean indicator nothing whether to search through the topic's parents in order to get the value.
@@ -153,7 +153,7 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <returns>The value for the attribute as a DateTime object.</returns>
     public static DateTime GetDateTime(
-      this                      AttributeValueCollection        attributes,
+      this AttributeCollection  attributes,
       string                    name,
       DateTime                  defaultValue                    = default,
       bool                      inheritFromParent               = false,
@@ -176,25 +176,25 @@ namespace OnTopic.Attributes {
     | METHOD: SET BOOLEAN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The boolean value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The boolean value for the <see cref="AttributeRecord"/>.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -204,7 +204,7 @@ namespace OnTopic.Attributes {
     ///   !value.Contains(" ")
     /// </requires>
     public static void SetBoolean(
-      this                      AttributeValueCollection        attributes,
+      this AttributeCollection  attributes,
       string                    key,
       bool                      value,
       bool?                     isDirty                         = null
@@ -214,25 +214,25 @@ namespace OnTopic.Attributes {
     | METHOD: SET INTEGER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The integer value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The integer value for the <see cref="AttributeRecord"/>.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -242,7 +242,7 @@ namespace OnTopic.Attributes {
     ///   !value.Contains(" ")
     /// </requires>
     public static void SetInteger(
-      this                      AttributeValueCollection        attributes,
+      this AttributeCollection  attributes,
       string                    key,
       int                       value,
       bool?                     isDirty                         = null
@@ -256,25 +256,25 @@ namespace OnTopic.Attributes {
     | METHOD: SET DOUBLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The double value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The double value for the <see cref="AttributeRecord"/>.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -284,7 +284,7 @@ namespace OnTopic.Attributes {
     ///   !value.Contains(" ")
     /// </requires>
     public static void SetDouble(
-      this                      AttributeValueCollection        attributes,
+      this AttributeCollection  attributes,
       string                    key,
       double                    value,
       bool?                     isDirty                         = null
@@ -298,25 +298,25 @@ namespace OnTopic.Attributes {
     | METHOD: SET DATETIME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
-    /// <param name="attributes">The instance of the <see cref="AttributeValueCollection"/> this extension is bound to.</param>
-    /// <param name="key">The string identifier for the <see cref="AttributeValue"/>.</param>
-    /// <param name="value">The <see cref="DateTime"/> value for the <see cref="AttributeValue"/>.</param>
+    /// <param name="attributes">The instance of the <see cref="AttributeCollection"/> this extension is bound to.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The <see cref="DateTime"/> value for the <see cref="AttributeRecord"/>.</param>
     /// <param name="isDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
@@ -326,7 +326,7 @@ namespace OnTopic.Attributes {
     ///   !value.Contains(" ")
     /// </requires>
     public static void SetDateTime(
-      this                      AttributeValueCollection        attributes,
+      this AttributeCollection  attributes,
       string                    key,
       DateTime                  value,
       bool?                     isDirty                         = null

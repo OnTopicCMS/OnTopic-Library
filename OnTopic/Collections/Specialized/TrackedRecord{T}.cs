@@ -13,39 +13,41 @@ using OnTopic.Repositories;
 namespace OnTopic.Collections.Specialized {
 
   /*============================================================================================================================
-  | CLASS: TRACKED ITEM
+  | CLASS: TRACKED RECORD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a base class for tracking versioned records, such as <see cref="AttributeValue"/>.
+  ///   Provides a base class for tracking versioned records, such as <see cref="AttributeRecord"/>.
   /// </summary>
   /// <remarks>
-  ///   The <see cref="TrackedItem{T}"/> class is comparable to the <see cref="KeyValuePair"/>, in that it tracks the <see cref=
-  ///   "Key"/> and <see cref="Value"/> for an item, but it additionally provides metadata related to the record, including the
-  ///   <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref="
+  ///   The <see cref="TrackedRecord{T}"/> class is comparable to the <see cref="KeyValuePair"/>, in that it tracks the <see
+  ///   cref="Key"/> and <see cref="Value"/> for an item, but it additionally provides metadata related to the record, including
+  ///   the <see cref="LastModified"/> and whether or not it <see cref="IsDirty"/>. This makes it easier for e.g. <see cref="
   ///   ITopicRepository"/> implementations to make more informed decisions about whether a record needs to be saved or
   ///   overwritten during a <see cref="ITopicRepository.Refresh"/> or <see cref="ITopicRepository.Rollback"/>.
   /// </remarks>
-  public abstract record TrackedItem<T> {
+  public abstract record TrackedRecord<T> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Constructs a new instance of a <see cref="TrackedItem{T}"/> class.
+    ///   Constructs a new instance of a <see cref="TrackedRecord{T}"/> class.
     /// </summary>
-    protected TrackedItem() {
+    protected TrackedRecord() {
       LastModified              = DateTime.UtcNow;
     }
 
     /// <summary>
-    ///   Constructs a new instance of a <see cref="TrackedItem{T}"/> class.
+    ///   Constructs a new instance of a <see cref="TrackedRecord{T}"/> class.
     /// </summary>
-    /// <param name="key">The <see cref="Key"/> for the <see cref="TrackedItem{T}"/> instance.</param>
-    /// <param name="value">The <see cref="Value"/> for the <see cref="TrackedItem{T}"/> instance.</param>
-    /// <param name="isDirty">The optional <see cref="IsDirty"/> state for the <see cref="TrackedItem{T}"/> instance.</param>
-    /// <param name="lastModified">The optional <see cref="LastModified"/> for the <see cref="TrackedItem{T}"/> instance.</param>
-    protected TrackedItem(string key, T value, bool isDirty = true, DateTime? lastModified = null) {
+    /// <param name="key">The <see cref="Key"/> for the <see cref="TrackedRecord{T}"/> instance.</param>
+    /// <param name="value">The <see cref="Value"/> for the <see cref="TrackedRecord{T}"/> instance.</param>
+    /// <param name="isDirty">The optional <see cref="IsDirty"/> state for the <see cref="TrackedRecord{T}"/> instance.</param>
+    /// <param name="lastModified">
+    ///   The optional <see cref="LastModified"/> for the <see cref="TrackedRecord{T}"/> instance.
+    /// </param>
+    protected TrackedRecord(string key, T value, bool isDirty = true, DateTime? lastModified = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters

@@ -11,44 +11,44 @@ using OnTopic.Repositories;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION
+  | CLASS: ATTRIBUTE COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Represents a collection of <see cref="AttributeValue"/> objects.
+  ///   Represents a collection of <see cref="AttributeRecord"/> objects.
   /// </summary>
   /// <remarks>
-  ///   <see cref="AttributeValue"/> objects represent individual instances of attributes associated with particular topics.
+  ///   <see cref="AttributeRecord"/> objects represent individual instances of attributes associated with particular topics.
   ///   The <see cref="Topic"/> class tracks these through its <see cref="Topic.Attributes"/> property, which is an instance of
-  ///   the <see cref="AttributeValueCollection"/> class.
+  ///   the <see cref="AttributeCollection"/> class.
   /// </remarks>
-  public class AttributeValueCollection : TrackedCollection<AttributeValue, string, AttributeSetterAttribute> {
+  public class AttributeCollection : TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValueCollection"/> class.
+    ///   Initializes a new instance of the <see cref="AttributeCollection"/> class.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AttributeValueCollection"/> is intended exclusively for providing access to attributes via the
-    ///   <see cref="Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
+    ///   The <see cref="AttributeCollection"/> is intended exclusively for providing access to attributes via the <see cref="
+    ///   Topic.Attributes"/> property. For this reason, the constructor is marked as internal.
     /// </remarks>
     /// <param name="parentTopic">A reference to the topic that the current attribute collection is bound to.</param>
-    internal AttributeValueCollection(Topic parentTopic) : base(parentTopic) {
+    internal AttributeCollection(Topic parentTopic) : base(parentTopic) {
     }
 
     /*==========================================================================================================================
     | PROPERTY: PARENT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<AttributeValue, string, AttributeSetterAttribute>? ParentCollection =>
+    protected override TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute>? ParentCollection =>
       AssociatedTopic.Parent?.Attributes;
 
     /*==========================================================================================================================
     | PROPERTY: BASE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<AttributeValue, string, AttributeSetterAttribute>? BaseCollection =>
+    protected override TrackedRecordCollection<AttributeRecord, string, AttributeSetterAttribute>? BaseCollection =>
       AssociatedTopic.BaseTopic?.Attributes;
 
     /*==========================================================================================================================
@@ -56,7 +56,7 @@ namespace OnTopic.Attributes {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Determine if <i>any</i> attributes in the <see cref="AttributeValueCollection"/> are dirty.
+    ///   Determine if <i>any</i> attributes in the <see cref="AttributeCollection"/> are dirty.
     /// </summary>
     /// <remarks>
     ///   This method is intended primarily for data storage providers, such as <see cref="ITopicRepository"/>, which may need
@@ -65,7 +65,7 @@ namespace OnTopic.Attributes {
     ///   to persist changes to the storage medium.
     /// </remarks>
     /// <param name="excludeLastModified">
-    ///   Optionally excludes <see cref="AttributeValue"/>s whose keys start with <c>LastModified</c>. This is useful for
+    ///   Optionally excludes <see cref="AttributeRecord"/>s whose keys start with <c>LastModified</c>. This is useful for
     ///   excluding the byline (<c>LastModifiedBy</c>) and dateline (<c>LastModified</c>) since these values are automatically
     ///   generated by e.g. the OnTopic Editor and, thus, may be irrelevant updates if no other attribute values have changed.
     /// </param>
@@ -80,17 +80,17 @@ namespace OnTopic.Attributes {
     | METHOD: SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Helper method that either adds a new <see cref="AttributeValue"/> object or updates the value of an existing one,
+    ///   Helper method that either adds a new <see cref="AttributeRecord"/> object or updates the value of an existing one,
     ///   depending on whether that value already exists.
     /// </summary>
     /// <remarks>
     ///   Minimizes the need for defensive conditions throughout the library.
     /// </remarks>
-    /// <param name="key">The string identifier for the AttributeValue.</param>
-    /// <param name="value">The text value for the AttributeValue.</param>
+    /// <param name="key">The string identifier for the <see cref="AttributeRecord"/>.</param>
+    /// <param name="value">The text value for the <see cref="AttributeRecord"/>.</param>
     /// <param name="markDirty">
-    ///   Specified whether the value should be marked as <see cref="TrackedItem{T}.IsDirty"/>. By default, it will be marked as
-    ///   dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
+    ///   Specified whether the value should be marked as <see cref="TrackedRecord{T}.IsDirty"/>. By default, it will be marked
+    ///   as dirty if the value is new or has changed from a previous value. By setting this parameter, that behavior is
     ///   overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update from being
     ///   persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
@@ -101,12 +101,12 @@ namespace OnTopic.Attributes {
     /// </param>
     /// <param name="isExtendedAttribute">Determines if the attribute originated from an extended attributes data store.</param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
     /// <requires
-    ///   description="The value must be specified for the AttributeValue key/value pair."
+    ///   description="The value must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>

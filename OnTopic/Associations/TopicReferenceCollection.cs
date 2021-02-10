@@ -15,7 +15,7 @@ namespace OnTopic.Associations {
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects associated with particular reference keys.
   /// </summary>
-  public class TopicReferenceCollection : TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute> {
+  public class TopicReferenceCollection : TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -30,14 +30,14 @@ namespace OnTopic.Associations {
     | PROPERTY: PARENT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute>? ParentCollection =>
+    protected override TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute>? ParentCollection =>
       AssociatedTopic.Parent?.References;
 
     /*==========================================================================================================================
     | PROPERTY: BASE COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override TrackedCollection<TopicReference, Topic, ReferenceSetterAttribute>? BaseCollection =>
+    protected override TrackedRecordCollection<TopicReferenceRecord, Topic, ReferenceSetterAttribute>? BaseCollection =>
       AssociatedTopic.BaseTopic?.References;
 
     /*==========================================================================================================================
@@ -55,9 +55,9 @@ namespace OnTopic.Associations {
     ///     ITopicRepository"/> should not deleted unmatched topic references.
     ///   </para>
     ///   <para>
-    ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see cref="
-    ///     ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped back to
-    ///     a valid <see cref="Topic"/> reference in memory.
+    ///     The <see cref="IsFullyLoaded"/> property defaults to <c>true</c>. It should be set to <c>false</c> during the <see
+    ///     cref="ITopicRepository.Load(String?, Topic?, Boolean)"/> method if any members of the collection cannot be mapped
+    ///     back to a valid <see cref="Topic"/> reference in memory.
     ///   </para>
     /// </remarks>
     public bool IsFullyLoaded { get; set; } = true;
@@ -66,7 +66,7 @@ namespace OnTopic.Associations {
     | INSERT ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override void InsertItem(int index, TopicReference item) {
+    protected override void InsertItem(int index, TopicReferenceRecord item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide base logic
@@ -84,7 +84,7 @@ namespace OnTopic.Associations {
     | OVERRIDE: SET ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    protected override void SetItem(int index, TopicReference item) {
+    protected override void SetItem(int index, TopicReferenceRecord item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get existing reference

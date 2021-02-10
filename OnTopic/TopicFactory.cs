@@ -39,7 +39,7 @@ namespace OnTopic {
     ///   by the <paramref name="id"/> parameter.
     /// </summary>
     /// <remarks>
-    ///   When the <paramref name="id"/> parameter is set the <see cref="TrackedItem{T}.IsDirty"/> property is set to
+    ///   When the <paramref name="id"/> parameter is set the <see cref="TrackedRecord{T}.IsDirty"/> property is set to
     ///   <c>false</c> on <see cref="Topic.Key"/> as well as on <see cref="Topic.ContentType"/>, since it is assumed these are
     ///   being set to the same values currently used in the persistence store.
     /// </remarks>

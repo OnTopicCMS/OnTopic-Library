@@ -49,7 +49,7 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 
 ## Extension Methods
 - **[`Querying`](Querying/TopicExtensions.cs)**: The [`TopicExtensions`](Querying/TopicExtensions.cs) class exposes optional extension methods for querying a topic (and its descendants) based on attribute values. This includes the useful `Topic.FindAll(Func<Topic, bool>)` method for querying an entire topic graph and returning topics validated by a predicate. There are also specialty extensions for querying [`IEnumerable<Topic>`](Querying/TopicCollectionExtensions.cs).
-- **[`Attributes`](Attributes/AttributeValueCollectionExtensions.cs)**: The `AttributeValueCollectionExtensions` class exposes optional extension methods for strongly typed access to the [`AttributeValueCollection`](Attributes/AttributeValueCollection.cs). This includes e.g., `GetBooleanValue()` and `SetBooleanValue()`, which takes care of the conversion to and from the underlying `string`value type.
+- **[`Attributes`](Attributes/AttributeCollectionExtensions.cs)**: The `AttributeCollectionExtensions` class exposes optional extension methods for strongly typed access to the [`AttributeCollection`](Attributes/AttributeCollection.cs). This includes e.g., `GetBooleanValue()` and `SetBooleanValue()`, which takes care of the conversion to and from the underlying `string` value type.
 
 ## Collections
 The `OnTopic` assembly contains a number of generic, keyed, and/or read-only collections for working with topics. These include:
@@ -69,9 +69,9 @@ The `OnTopic` assembly contains a number of generic, keyed, and/or read-only col
 
 ### Specialty Collections
 The `OnTopic.Collections.Specialized` namespace includes a number of collections that are used by the OnTopic library, but won't generally be used directly by implementors, except as exposed by the core library. These include:
-- **[`TrackedCollection{TItem, TValue, TAttribute}`](Collections/Specialized/TrackedCollection{TItem,TValue,TAttribute}.cs)**: A `KeyedCollection<TItem, TValue>` of `TrackedItem<TValue>` instances which tracks the `IsDirty` status and `DeletedItems`, while also enforcing business logic against corresponding properties on the associated `Topic`.
-  - **[`AttributeValueCollection`](attributes/AttributeValueCollection.cs)**: A `TrackedCollection` of [`AttributeValue`](Attributes/AttributeValue.cs) instances keyed by `AttributeValue.Key`; exposed by `Topic.Attributes`.
-  - **[`TopicReferenceCollection`](associations/TopicReferenceCollection.cs)**: A `TrackedCollection` of [`TopicReference`](Associations/TopicReference.cs) instances keyed by `TopicReference.Key`; exposed by `Topic.References`.
+- **[`TrackedRecordCollection{TItem, TValue, TAttribute}`](Collections/Specialized/TrackedRecordCollection{TItem,TValue,TAttribute}.cs)**: A `KeyedCollection<TItem, TValue>` of `TrackedRecord<TValue>` instances which tracks the `IsDirty` status and `DeletedItems`, while also enforcing business logic against corresponding properties on the associated `Topic`.
+  - **[`AttributeCollection`](attributes/AttributeCollection.cs)**: A `TrackedRecordCollection` of [`AttributeRecord`](Attributes/AttributeRecord.cs) instances keyed by `AttributeRecord.Key`; exposed by `Topic.Attributes`.
+  - **[`TopicReferenceCollection`](associations/TopicReferenceCollection.cs)**: A `TrackedRecordCollection` of [`TopicReferenceRecord`](Associations/TopicReferenceRecord.cs) instances keyed by `TopicReference.Key`; exposed by `Topic.References`.
 - **[`TopicMultiMap`](Collections/Specialized/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection key.
   - **[`ReadOnlyTopicMultiMap`](Collections/Specialized/ReadOnlyTopicMultiMap.cs)**: A read-only interface to the `TopicMultiMap`, thus allowing simple enumeration of the collection withouthout exposing any write access.
     - **[`TopicRelationshipMultiMap`](associations/TopicRelationshipMultiMap.cs)**: A `TopicMultiMap` of [`KeyValuesPair`](Collections/Specialized/KeyValuesPair.cs) instances keyed by `KeyValuesPair.Key`; exposed by `Topic.Relationships`.

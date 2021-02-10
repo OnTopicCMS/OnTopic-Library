@@ -358,7 +358,7 @@ namespace OnTopic.Mapping {
     ///   cref="String"/>, <see cref="Boolean"/>, <see cref="Int32"/>, or <see cref="DateTime"/>, the <see
     ///   cref="SetScalarValue(Topic,Object, PropertyConfiguration)"/> method will attempt to set the property on the <paramref
     ///   name="target"/> based on, in order, the <paramref name="source"/>'s <c>Get{Property}()</c> method, <c>{Property}</c>
-    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="TrackedCollection{TItem,
+    ///   property, and, finally, its <see cref="Topic.Attributes"/> collection (using <see cref="TrackedRecordCollection{TItem,
     ///   TValue, TAttribute}.GetValue(String, Boolean)"/>). If the property is not of a settable type, or the source value
     ///   cannot be identified on the <paramref name="source"/>, then the property is not set.
     /// </remarks>

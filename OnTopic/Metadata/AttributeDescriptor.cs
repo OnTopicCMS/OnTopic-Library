@@ -28,9 +28,9 @@ namespace OnTopic.Metadata {
   ///   </para>
   ///   <para>
   ///     The purpose of the <see cref="AttributeDescriptor"/> class is only to describe the schema of an attribute. For each
-  ///     individual <see cref="Topic"/>, the actual values of attributes are stored in <see cref="AttributeValue"/> objects via
+  ///     individual <see cref="Topic"/>, the actual values of attributes are stored in <see cref="AttributeRecord"/> objects via
   ///     the <see cref="Topic.Attributes"/> property. By contrast to <see cref="AttributeDescriptor"/>, the
-  ///     <see cref="AttributeValue"/> class is focused exclusively on representing the attribute's value; it is not aware of
+  ///     <see cref="AttributeRecord"/> class is focused exclusively on representing the attribute's value; it is not aware of
   ///     whether that attribute is required, what data type it represents, or how it should be displayed in the editor.
   ///   </para>
   ///   <para>
@@ -48,10 +48,10 @@ namespace OnTopic.Metadata {
     ///   cref="Topic.ContentType"/>, and, optionally, <see cref="Topic.Parent"/>, <see cref="Topic.Id"/>.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedItem{T}.IsDirty"/>, which is required in order to
+    ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Topic.Key"/> and <see
+    ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="TrackedItem{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
+    ///   cref="TrackedRecord{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
     ///   persistence store.
     /// </remarks>
