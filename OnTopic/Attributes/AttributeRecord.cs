@@ -11,7 +11,7 @@ using OnTopic.Repositories;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE
+  | CLASS: ATTRIBUTE RECORD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Represents the immutable value of a particular attribute on a <see cref="Topic"/>.
@@ -23,41 +23,41 @@ namespace OnTopic.Attributes {
   ///     TrackedRecord{T}.LastModified"/> date.
   ///   </para>
   ///   <para>
-  ///     Typically, the <see cref="AttributeValue"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
+  ///     Typically, the <see cref="AttributeRecord"/> will be exposed as part of a <see cref="AttributeValueCollection"/> via
   ///     the <see cref="Topic.Attributes"/> collection.
   ///   </para>
   ///   <para>
-  ///     Be aware that while <see cref="AttributeValue"/> represents the value of a specific attribute, the metadata for
+  ///     Be aware that while <see cref="AttributeRecord"/> represents the value of a specific attribute, the metadata for
   ///     describing the purpose, constraints, and usage of that particular attribute is described by the <see
   ///     cref="AttributeDescriptor"/> class.
   ///   </para>
   ///   <para>
   ///     This class is immutable: once it is constructed, the values cannot be changed. To change a value, callers must either
-  ///     create a new instance of the <see cref="AttributeValue"/> class or, preferably, call the
+  ///     create a new instance of the <see cref="AttributeRecord"/> class or, preferably, call the
   ///     <see cref="Topic.Attributes"/>'s <see cref="AttributeValueCollection.SetValue(String, String, Boolean?, DateTime?,
   ///     Boolean?)"/>
   ///     method.
   ///   </para>
   /// </remarks>
-  public record AttributeValue: TrackedRecord<string> {
+  public record AttributeRecord: TrackedRecord<string> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public AttributeValue(): base() { }
+    public AttributeRecord(): base() { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AttributeValue"/> class, using the specified key/value pair.
+    ///   Initializes a new instance of the <see cref="AttributeRecord"/> class, using the specified key/value pair.
     /// </summary>
     /// <param name="key">
-    ///   The string identifier for the <see cref="AttributeValue"/> collection item key/value pair.
+    ///   The string identifier for the <see cref="AttributeRecord"/> collection item key/value pair.
     /// </param>
     /// <param name="value">
-    ///   The string value text for the <see cref="AttributeValue"/> collection item key/value pair.
+    ///   The string value text for the <see cref="AttributeRecord"/> collection item key/value pair.
     /// </param>
     /// <param name="isDirty">
-    ///   An optional boolean indicator noting whether the <see cref="AttributeValue"/> collection item is a new value, and
+    ///   An optional boolean indicator noting whether the <see cref="AttributeRecord"/> collection item is a new value, and
     ///   should thus be saved to the database when <see cref="ITopicRepository.Save(Topic, Boolean)"/> is next called.
     /// </param>
     /// <param name="lastModified">
@@ -70,7 +70,7 @@ namespace OnTopic.Attributes {
     ///   description="The key must be specified for the key/value pair." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>
-    public AttributeValue(
+    public AttributeRecord(
       string key,
       string value,
       bool isDirty              = true,

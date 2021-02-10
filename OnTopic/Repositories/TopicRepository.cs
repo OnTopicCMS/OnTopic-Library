@@ -685,20 +685,20 @@ namespace OnTopic.Repositories {
     | METHOD: GET ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="Topic"/>, returns a list of <see cref="AttributeValue"/>, optionally filtering based on <see
+    ///   Given a <see cref="Topic"/>, returns a list of <see cref="AttributeRecord"/>, optionally filtering based on <see
     ///   cref="AttributeDescriptor.IsExtendedAttribute"/> and <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
     /// <param name="isExtendedAttribute">
     ///   Whether or not to filter by <see cref="AttributeDescriptor.IsExtendedAttribute"/>. If <c>null</c>, all <see
-    ///   cref="AttributeValue"/>s are returned.
+    ///   cref="AttributeRecord"/>s are returned.
     /// </param>
     /// <param name="isDirty">
-    ///   Whether or not to filter by <see cref="TrackedRecord{T}.IsDirty"/>. If <c>null</c>, all <see cref="AttributeValue"/>s
+    ///   Whether or not to filter by <see cref="TrackedRecord{T}.IsDirty"/>. If <c>null</c>, all <see cref="AttributeRecord"/>s
     ///   are returned.
     /// </param>
     /// <param name="excludeLastModified">Exclude any attributes that start with <c>LastModified</c>.</param>
-    protected IEnumerable<AttributeValue> GetAttributes(
+    protected IEnumerable<AttributeRecord> GetAttributes(
       Topic topic,
       bool? isExtendedAttribute,
       bool? isDirty = null,
@@ -723,7 +723,7 @@ namespace OnTopic.Repositories {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get indexed attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributes            = new List<AttributeValue>();
+      var attributes            = new List<AttributeRecord>();
 
       foreach (var attributeValue in topic.Attributes) {
 
@@ -781,7 +781,7 @@ namespace OnTopic.Repositories {
     | METHOD: GET UNMATCHED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeValue"/>s that are defined based on the <see
+    ///   Given a <see cref="Topic"/>, identifies <see cref="AttributeRecord"/>s that are defined based on the <see
     ///   cref="ContentTypeDescriptor"/>, but aren't defined in the <see cref="AttributeValueCollection"/>.
     /// </summary>
     /// <param name="topic">The <see cref="Topic"/> from which to pull the attributes.</param>
@@ -878,27 +878,27 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determines whether or not there's a mismatch between the <see cref="AttributeDescriptor.IsExtendedAttribute"/> and the
-    ///   <see cref="AttributeValue.IsExtendedAttribute"/>.
+    ///   <see cref="AttributeRecord.IsExtendedAttribute"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
     ///     The <see cref="AttributeDescriptor.IsExtendedAttribute"/> determines where an attribute <i>should</i> be stored; the
-    ///     <see cref="AttributeValue.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
+    ///     <see cref="AttributeRecord.IsExtendedAttribute"/> determines where an attribute <i>was</i> stored. If these two
     ///     values are in conflict, that suggests the coniguration for <see cref="AttributeDescriptor.IsExtendedAttribute"/> has
     ///     changed since the attribute value was last saved. In that case, it should be treated as <see cref="TrackedRecord{T}.
     ///     IsDirty"/> <i>even though</i> its value hasn't changed to ensure that its storage location is updated.
     ///   </para>
     ///   <para>
-    ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeValue"/> is arbitrary attribute
+    ///     If <see cref="AttributeDescriptor"/> cannot be found then the <see cref="AttributeRecord"/> is arbitrary attribute
     ///     not mapped to the schema. In that case, its storage location is dynamically determined based on its length, and thus
     ///     it should only change locations when it <see cref="TrackedRecord{T}.IsDirty"/>. Otherwise, its length will remain
     ///     the same, and thus the storage location should remain unchanged.
     ///   </para>
     /// </remarks>
     /// <param name="attributeDescriptor">The source <see cref="AttributeDescriptor"/>, if available.</param>
-    /// <param name="attributeValue">The target <see cref="AttributeValue"/>.</param>
+    /// <param name="attributeValue">The target <see cref="AttributeRecord"/>.</param>
     /// <returns></returns>
-    private static bool IsExtendedAttributeMismatch(AttributeDescriptor? attributeDescriptor, AttributeValue attributeValue) =>
+    private static bool IsExtendedAttributeMismatch(AttributeDescriptor? attributeDescriptor, AttributeRecord attributeValue) =>
       attributeDescriptor is not null &&
       attributeValue.IsExtendedAttribute is not null &&
       attributeDescriptor.IsExtendedAttribute != attributeValue.IsExtendedAttribute;

@@ -16,7 +16,7 @@ namespace OnTopic.Collections.Specialized {
   | CLASS: TRACKED RECORD
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a base class for tracking versioned records, such as <see cref="AttributeValue"/>.
+  ///   Provides a base class for tracking versioned records, such as <see cref="AttributeRecord"/>.
   /// </summary>
   /// <remarks>
   ///   The <see cref="TrackedRecord{T}"/> class is comparable to the <see cref="KeyValuePair"/>, in that it tracks the <see

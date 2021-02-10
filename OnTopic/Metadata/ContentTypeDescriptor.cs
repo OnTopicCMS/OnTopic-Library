@@ -50,7 +50,7 @@ namespace OnTopic.Metadata {
     ///   cref="Topic.ContentType"/>, and, optionally, <see cref="Topic.Parent"/>, <see cref="Topic.Id"/>.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
+    ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Topic.Key"/> and <see
     ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
     ///   cref="TrackedRecord{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see

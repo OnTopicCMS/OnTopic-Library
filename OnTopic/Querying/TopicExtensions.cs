@@ -162,8 +162,8 @@ namespace OnTopic.Querying {
     ///   Retrieves a collection of topics based on an attribute name and value.
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
-    /// <param name="attributeKey">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="attributeValue">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/> against which to be searched.</param>
+    /// <param name="attributeValue">The text value for the <see cref="AttributeRecord"/> against which to be searched.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(name)

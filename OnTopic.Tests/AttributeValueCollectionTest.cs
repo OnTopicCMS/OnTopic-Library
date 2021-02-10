@@ -317,7 +317,7 @@ namespace OnTopic.Tests {
     | TEST: SET VALUE: VALUE UNCHANGED: IS NOT DIRTY?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets the value of a custom <see cref="AttributeValue"/> to the existing value and ensures it is <i>not</i> marked as
+    ///   Sets the value of a custom <see cref="AttributeRecord"/> to the existing value and ensures it is <i>not</i> marked as
     ///   <see cref="TrackedRecord{T}.IsDirty"/>.
     /// </summary>
     [TestMethod]
@@ -336,7 +336,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: DIRTY VALUES: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is marked as <see
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> that is marked as <see
     ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>true</c>.
     /// </summary>
@@ -355,7 +355,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: DELETED VALUES: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
@@ -374,7 +374,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: NO DIRTY VALUES: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as
     ///   <see cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns
     ///   <c>false</c>/
     /// </summary>
@@ -393,8 +393,8 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: EXCLUDE LAST MODIFIED: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> that is <i>not</i> marked as
-    ///   <see cref="TrackedRecord{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeValue"/> that is. Confirms
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as
+    ///   <see cref="TrackedRecord{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeRecord"/> that is. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -414,7 +414,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: MARK CLEAN: UPDATES LAST MODIFIED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that the <see cref="TrackedRecord{T}.LastModified"/> returns the new <c>version</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
@@ -436,7 +436,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then deletes it. Confirms
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
     ///   that <see cref="AttributeValueCollection.IsDirty(Boolean)"/> returns <c>false</c> after calling <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(DateTime?)"/>.
     /// </summary>
@@ -460,7 +460,7 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: MARK ATTRIBUTE CLEAN: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeValue"/> and then confirms that <see
+    ///   Populates the <see cref="AttributeValueCollection"/> with a <see cref="AttributeRecord"/> and then confirms that <see
     ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> returns <c>false</c> for that attribute
     ///   after calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
@@ -481,7 +481,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
-    ///   with a <see cref="AttributeValue"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms
+    ///   with a <see cref="AttributeRecord"/> that is not marked as <see cref="TrackedRecord{T}.IsDirty"/> and then confirms
     ///   that <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
@@ -506,7 +506,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates a <see cref="AttributeValueCollection"/> associated with an <see cref="Topic.IsNew"/> <see cref="Topic"/>
-    ///   with a <see cref="AttributeValue"/> and then confirms that <see cref="TrackedRecordCollection{TItem, TValue,
+    ///   with a <see cref="AttributeRecord"/> and then confirms that <see cref="TrackedRecordCollection{TItem, TValue,
     ///   TAttribute}.IsDirty(String)"/> returns <c>true</c> for that attribute after calling <see cref="TrackedRecordCollection
     ///   {TItem, TValue, TAttribute}.MarkClean(String, DateTime?)"/>.
     /// </summary>
@@ -542,7 +542,7 @@ namespace OnTopic.Tests {
     | TEST: ADD: VALID ATTRIBUTE VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeValue"/> instance; ensures it can be
+    ///   Sets a custom attribute on a topic by directly adding an <see cref="AttributeRecord"/> instance; ensures it can be
     ///   retrieved.
     /// </summary>
     [TestMethod]
@@ -669,7 +669,7 @@ namespace OnTopic.Tests {
     | TEST: REPLACE VALUE: WITH BUSINESS LOGIC: MAINTAINS ISDIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds a new <see cref="AttributeValue"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
+    ///   Adds a new <see cref="AttributeRecord"/> which maps to <see cref="Topic.Key"/> directly to a <see cref=
     ///   "AttributeValueCollection"/> and confirms that the original <see cref="TrackedRecord{T}.IsDirty"/> is replaced if the
     ///   <see cref="TrackedRecord{T}.Value"/> changes.
     /// </summary>
@@ -683,7 +683,7 @@ namespace OnTopic.Tests {
 
       var index = topic.Attributes.IndexOf(originalValue);
 
-      topic.Attributes[index] = new AttributeValue("View", "NewValue", false);
+      topic.Attributes[index] = new AttributeRecord("View", "NewValue", false);
       topic.Attributes.TryGetValue("View", out var newAttribute);
 
       topic.Attributes.SetValue("View", "NewerValue", false);
@@ -699,7 +699,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new attribute with an empty value, and confirms that it is <i>not</i> added as a new <see
-    ///   cref="AttributeValue"/>. Empty values are treated as the same as non-existent attributes. They are stored for the sake
+    ///   cref="AttributeRecord"/>. Empty values are treated as the same as non-existent attributes. They are stored for the sake
     ///   of tracking <i>deleted</i> attributes, but should not be stored for <i>new</i> attributes.
     /// </summary>
     [TestMethod]
@@ -718,7 +718,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new attribute with an empty value, and confirms that it is <i>is</i> added as a new <see
-    ///   cref="AttributeValue"/> assuming the value previously existed. Empty values are treated as the same as non-existent
+    ///   cref="AttributeRecord"/> assuming the value previously existed. Empty values are treated as the same as non-existent
     ///   attributes, but they should be stored for the sake of tracking <i>deleted</i> attributes.
     /// </summary>
     [TestMethod]

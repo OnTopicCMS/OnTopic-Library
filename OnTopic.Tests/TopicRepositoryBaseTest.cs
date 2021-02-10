@@ -219,7 +219,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeValue"/>s with a null or empty value should
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
     ///   be skipped.
     /// </summary>
     [TestMethod]
@@ -280,8 +280,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedRecord{T}.IsDirty"/>. Expects an <see
-    ///   cref="AttributeValue"/> to be returned even if it's <i>not</i> <see cref="TrackedRecord{T}.IsDirty"/> <i>but</i> its
-    ///   <see cref="AttributeValue.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    ///   cref="AttributeRecord"/> to be returned even if it's <i>not</i> <see cref="TrackedRecord{T}.IsDirty"/> <i>but</i> its
+    ///   <see cref="AttributeRecord.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
@@ -302,7 +302,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedRecord{T}.IsDirty"/>. Expects the <see
-    ///   cref="AttributeValue"/> to <i>not</i> be returned even though its <see cref="AttributeValue.IsExtendedAttribute"/>
+    ///   cref="AttributeRecord"/> to <i>not</i> be returned even though its <see cref="AttributeRecord.IsExtendedAttribute"/>
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
     /// </summary>
@@ -324,7 +324,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <c>excludeLastModified</c>. Confirms that <see
-    ///   cref="AttributeValue"/>s are not returned which start with <c>LastModified</c>.
+    ///   cref="AttributeRecord"/>s are not returned which start with <c>LastModified</c>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
@@ -345,7 +345,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
-    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
+    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
     ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]

@@ -400,7 +400,7 @@ namespace OnTopic.Collections.Specialized {
     ///   attribute. This is used when e.g. importing values to determine if the existing value is newer than the source value.
     /// </param>
     /// <requires
-    ///   description="The key must be specified for the AttributeValue key/value pair."
+    ///   description="The key must be specified for the AttributeRecord key/value pair."
     ///   exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(key)
     /// </requires>

@@ -38,7 +38,7 @@ namespace OnTopic.Data.Sql.Models {
       | COLUMN: Attribute Value
       \-----------------------------------------------------------------------------------------------------------------------*/
       Columns.Add(
-        new DataColumn("AttributeValue") {
+        new DataColumn("AttributeRecord") {
           MaxLength             = 255
         }
       );
@@ -51,8 +51,8 @@ namespace OnTopic.Data.Sql.Models {
     /// <summary>
     ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
     /// </summary>
-    /// <param name="attributeKey">The <see cref="AttributeValue.Key"/>.</param>
-    /// <param name="attributeValue">The <see cref="AttributeValue.Value"/>.</param>
+    /// <param name="attributeKey">The <see cref="AttributeRecord.Key"/>.</param>
+    /// <param name="attributeValue">The <see cref="AttributeRecord.Value"/>.</param>
     internal DataRow AddRow(string attributeKey, string? attributeValue = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ namespace OnTopic.Data.Sql.Models {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var record                = NewRow();
       record["AttributeKey"]    = attributeKey;
-      record["AttributeValue"]  = attributeValue;
+      record["AttributeRecord"]  = attributeValue;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add record
