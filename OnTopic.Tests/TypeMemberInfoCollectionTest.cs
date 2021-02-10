@@ -78,8 +78,8 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBERS: PROPERTY INFO: RETURNS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see
-    ///   cref="MemberDispatcher.GetMembers{T}(Type)"/> functions.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMembers{T}(Type)"/>
+    ///   functions.
     /// </summary>
     [TestMethod]
     public void GetMembers_PropertyInfo_ReturnsProperties() {
@@ -99,8 +99,8 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBER: PROPERTY INFO BY KEY: RETURNS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see
-    ///   cref="MemberDispatcher.GetMember{T}(Type, String)"/> correctly returns the expected properties.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)"
+    ///   /> correctly returns the expected properties.
     /// </summary>
     [TestMethod]
     public void GetMember_PropertyInfoByKey_ReturnsValue() {
@@ -134,8 +134,8 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBER: GENERIC TYPE MISMATCH: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see
-    ///   cref="MemberDispatcher.GetMember{T}(Type, String)"/> does not return values if the
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)
+    ///   "/> does not return values if the types mismatch.
     /// </summary>
     [TestMethod]
     public void GetMember_GenericTypeMismatch_ReturnsNull() {
@@ -151,8 +151,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: KEY: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a key value can be properly set using the
-    ///   <see cref="MemberDispatcher.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a key value can be properly set using the <see cref="
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_Key_SetsValue() {
@@ -175,8 +175,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a boolean value can be properly set using the
-    ///   <see cref="MemberDispatcher.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a boolean value can be properly set using the <see cref
+    ///   ="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_Boolean_SetsValue() {
@@ -194,8 +194,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: DATE/TIME: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a date/time value can be properly set using the
-    ///   <see cref="MemberDispatcher.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a date/time value can be properly set using the <see
+    ///   cref="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_DateTime_SetsValue() {
@@ -223,8 +223,8 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that an invalid property being set via the
-    ///   <see cref="MemberDispatcher.SetPropertyValue(Object, String, String)"/> method returns false.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that an invalid property being set via the <see cref="
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
@@ -242,8 +242,8 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: VALID VALUE: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the
-    ///   <see cref="MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void SetMethod_ValidValue_SetsValue() {
@@ -264,8 +264,8 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: INVALID VALUE: DOESN'T SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the
-    ///   <see cref="MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
     /// </summary>
     [TestMethod]
     public void SetMethod_InvalidValue_DoesNotSetValue() {
@@ -287,8 +287,8 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the
-    ///   <see cref="MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns false.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetMethod_Integer_SetsValue() {
