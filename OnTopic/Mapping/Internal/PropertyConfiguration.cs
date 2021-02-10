@@ -36,7 +36,7 @@ namespace OnTopic.Mapping.Internal {
   ///     property on the DTO to be aliased to a different property or attribute name on the source <see cref="Topic"/>.
   ///   </para>
   /// </remarks>
-  public class PropertyConfiguration {
+  internal class PropertyConfiguration {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -47,7 +47,7 @@ namespace OnTopic.Mapping.Internal {
     /// </summary>
     /// <param name="property">The <see cref="PropertyInfo"/> instance to check for <see cref="Attribute"/> values.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    public PropertyConfiguration(PropertyInfo property, string? attributePrefix = "") {
+    internal PropertyConfiguration(PropertyInfo property, string? attributePrefix = "") {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -121,7 +121,7 @@ namespace OnTopic.Mapping.Internal {
     /// <summary>
     ///   The <see cref="PropertyInfo"/> that the current <see cref="PropertyConfiguration"/> is associated with.
     /// </summary>
-    public PropertyInfo Property { get; }
+    internal PropertyInfo Property { get; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE KEY
@@ -142,7 +142,7 @@ namespace OnTopic.Mapping.Internal {
     ///     can be assigned by decorating a DTO property with e.g. <c>[AttributeKey("AlternateAttributeKey")]</c>.
     ///   </para>
     /// </remarks>
-    public string AttributeKey { get; set; }
+    internal string AttributeKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: MAP TO PARENT?
@@ -162,7 +162,7 @@ namespace OnTopic.Mapping.Internal {
     ///     provided; see <see cref="AttributePrefix"/> for details.
     ///   </para>
     /// </remarks>
-    public bool MapToParent { get; set; }
+    internal bool MapToParent { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE PREFIX
@@ -196,7 +196,7 @@ namespace OnTopic.Mapping.Internal {
     ///     those two prefixes. This allows potentially very deep object models.
     ///   </para>
     /// </remarks>
-    public string? AttributePrefix { get; set; }
+    internal string? AttributePrefix { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: DEFAULT VALUE
@@ -208,7 +208,7 @@ namespace OnTopic.Mapping.Internal {
     ///   The <see cref="DefaultValue"/> property corresponds to the <see cref="DefaultValueAttribute.Value"/> property. It can
     ///   be assigned by decorating a DTO property with e.g. <c>[DefaultValue("DefaultValue")]</c>.
     /// </remarks>
-    public object? DefaultValue { get; set; }
+    internal object? DefaultValue { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: INHERIT VALUE
@@ -229,7 +229,7 @@ namespace OnTopic.Mapping.Internal {
     ///     property. It can be assigned by decorating a model property with e.g. <c>[Inherit]</c>.
     ///   </para>
     /// </remarks>
-    public bool InheritValue { get; set; }
+    internal bool InheritValue { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: COLLECTION KEY
@@ -251,7 +251,7 @@ namespace OnTopic.Mapping.Internal {
     ///     can be assigned by decorating a model property with e.g. <c>[Collection("AlternateCollectionKey")]</c>.
     ///   </para>
     /// </remarks>
-    public string CollectionKey { get; set; }
+    internal string CollectionKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: COLLECTION TYPE
@@ -273,7 +273,7 @@ namespace OnTopic.Mapping.Internal {
     ///     Children)]</c>.
     ///   </para>
     /// </remarks>
-    public CollectionType CollectionType { get; set; }
+    internal CollectionType CollectionType { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: INCLUDE ASSOCIATIONS
@@ -295,7 +295,7 @@ namespace OnTopic.Mapping.Internal {
     ///     property. It can be assigned by decorating a model property with e.g. <c>[Include(Relationships.Children)]</c>.
     ///   </para>
     /// </remarks>
-    public AssociationTypes IncludeAssociations { get; set; }
+    internal AssociationTypes IncludeAssociations { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: METADATA KEY
@@ -317,7 +317,7 @@ namespace OnTopic.Mapping.Internal {
     ///     assigned by decorating a DTO property with e.g. <c>[Metadata("States")]</c>.
     ///   </para>
     /// </remarks>
-    public string? MetadataKey { get; set; }
+    internal string? MetadataKey { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: FLATTEN CHILDREN
@@ -348,7 +348,7 @@ namespace OnTopic.Mapping.Internal {
     ///     property. It can be assigned by decorating a DTO property with e.g. <c>[Flatten]</c>.
     ///   </para>
     /// </remarks>
-    public bool FlattenChildren { get; set; }
+    internal bool FlattenChildren { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: DISABLE MAPPING
@@ -362,7 +362,7 @@ namespace OnTopic.Mapping.Internal {
     ///     given property. It can be assigned by decorating a DTO property with e.g. <c>[DisableMapping]</c>.
     ///   </para>
     /// </remarks>
-    public bool DisableMapping { get; set; }
+    internal bool DisableMapping { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE FILTER
@@ -383,7 +383,7 @@ namespace OnTopic.Mapping.Internal {
     ///     </c>.
     ///   </para>
     /// </remarks>
-    public string? ContentTypeFilter { get; set; }
+    internal string? ContentTypeFilter { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTE FILTERS
@@ -406,7 +406,7 @@ namespace OnTopic.Mapping.Internal {
     ///     to a single property, thus allowing each item in a collection to be filtered by multiple values.
     ///   </para>
     /// </remarks>
-    public Dictionary<string, string> AttributeFilters { get; }
+    internal Dictionary<string, string> AttributeFilters { get; }
 
     /*==========================================================================================================================
     | METHOD: SATISFIES ATTRIBUTE FILTERS
@@ -417,7 +417,7 @@ namespace OnTopic.Mapping.Internal {
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public bool SatisfiesAttributeFilters(Topic source) =>
+    internal bool SatisfiesAttributeFilters(Topic source) =>
       AttributeFilters.All(f =>
         source?.Attributes?.GetValue(f.Key, "")?.Equals(f.Value, StringComparison.OrdinalIgnoreCase)?? false
       );
@@ -430,7 +430,7 @@ namespace OnTopic.Mapping.Internal {
     ///   ensure that their conditions are satisfied.
     /// </summary>
     /// <param name="target">The target DTO to validate the current property on.</param>
-    public void Validate(object target) {
+    internal void Validate(object target) {
       foreach (ValidationAttribute validator in Property.GetCustomAttributes(typeof(ValidationAttribute))) {
         validator.Validate(Property.GetValue(target), Property.Name);
       }
