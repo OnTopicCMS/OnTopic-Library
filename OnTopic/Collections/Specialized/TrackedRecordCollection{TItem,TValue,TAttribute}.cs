@@ -87,7 +87,7 @@ namespace OnTopic.Collections.Specialized {
     ///   <see cref="IsDirty()"/>. If a <see cref="TrackedRecord{T}"/> is deleted, then it won't be marked as <see cref="
     ///   TrackedRecord{T}.IsDirty"/>. If no other <see cref="TrackedRecord{T}"/> instances were modified, then the <see cref="
     ///   Topic"/> won't get saved, and that <see cref="TrackedRecord{T}.Value"/> won't be deleted. Further more, methods like
-    ///   the <seecref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of
+    ///   the <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/> method have no way of detecting the deletion of
     ///   arbitrary values—i.e., attributes that were deleted which don't correspond to attributes configured on the <see cref="
     ///   Metadata.ContentTypeDescriptor"/>. By tracking any deleted <see cref="TrackedRecord{T}"/> instances, we ensure both
     ///   scenarios can be accounted for.

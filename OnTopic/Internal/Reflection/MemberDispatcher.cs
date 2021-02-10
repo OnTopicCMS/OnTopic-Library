@@ -472,7 +472,7 @@ namespace OnTopic.Internal.Reflection {
     | PROPERTY: SETTABLE TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, String)"/>.
+    ///   A list of types that are allowed to be set using <see cref="SetPropertyValue(Object, String, Object?)"/>.
     /// </summary>
     internal static Collection<Type> SettableTypes { get; }
 
