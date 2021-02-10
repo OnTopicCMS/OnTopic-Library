@@ -49,7 +49,7 @@ Out of the box, the OnTopic library contains two specially derived topics for su
 
 ## Extension Methods
 - **[`Querying`](Querying/TopicExtensions.cs)**: The [`TopicExtensions`](Querying/TopicExtensions.cs) class exposes optional extension methods for querying a topic (and its descendants) based on attribute values. This includes the useful `Topic.FindAll(Func<Topic, bool>)` method for querying an entire topic graph and returning topics validated by a predicate. There are also specialty extensions for querying [`IEnumerable<Topic>`](Querying/TopicCollectionExtensions.cs).
-- **[`Attributes`](Attributes/AttributeValueCollectionExtensions.cs)**: The `AttributeValueCollectionExtensions` class exposes optional extension methods for strongly typed access to the [`AttributeCollection`](Attributes/AttributeCollection.cs). This includes e.g., `GetBooleanValue()` and `SetBooleanValue()`, which takes care of the conversion to and from the underlying `string`value type.
+- **[`Attributes`](Attributes/AttributeCollectionExtensions.cs)**: The `AttributeCollectionExtensions` class exposes optional extension methods for strongly typed access to the [`AttributeCollection`](Attributes/AttributeCollection.cs). This includes e.g., `GetBooleanValue()` and `SetBooleanValue()`, which takes care of the conversion to and from the underlying `string` value type.
 
 ## Collections
 The `OnTopic` assembly contains a number of generic, keyed, and/or read-only collections for working with topics. These include:

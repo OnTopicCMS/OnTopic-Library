@@ -12,13 +12,13 @@ using OnTopic.Repositories;
 namespace OnTopic.Attributes {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE VALUE COLLECTION (EXTENSIONS)
+  | CLASS: ATTRIBUTE COLLECTION (EXTENSIONS)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides extensions for setting and retrieving values from the <see cref="AttributeCollection"/> using strongly typed
   ///   values.
   /// </summary>
-  public static class AttributeValueCollectionExtensions {
+  public static class AttributeCollectionExtensions {
 
     /*==========================================================================================================================
     | METHOD: GET BOOLEAN VALUE
