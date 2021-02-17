@@ -87,15 +87,6 @@ namespace OnTopic {
         Parent                  = parent;
       }
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Initialize key fields
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      //###HACK JJC20190924: The local backing fields _key and _contentType are always initialized at this point. But Roslyn's
-      //flow analysis isn't smart enough to detect this. As such, the following effectively sets _key and _contentType to
-      //themselves.
-      _key                      = Key;
-      _contentType              = ContentType;
-
     }
 
     #region Core Properties
@@ -183,6 +174,7 @@ namespace OnTopic {
     /// </value>
     public string ContentType {
       get => _contentType;
+      [MemberNotNull(nameof(_contentType))]
       set {
         TopicFactory.ValidateKey(value);
         if (_contentType == value) {
@@ -215,6 +207,7 @@ namespace OnTopic {
     /// </requires>
     public string Key {
       get => _key;
+      [MemberNotNull(nameof(_key))]
       set {
         TopicFactory.ValidateKey(value);
         if (_key == value) {
