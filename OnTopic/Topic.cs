@@ -716,6 +716,13 @@ namespace OnTopic {
       }
     }
 
+    /// <inheritdoc cref="BaseTopic"/>
+    [Obsolete("The DerivedTopic property has been renamed to BaseTopic. Please update references.", true)]
+    public Topic? DerivedTopic {
+      get => BaseTopic;
+      set => BaseTopic = value;
+    }
+
     /*==========================================================================================================================
     | PROPERTY: ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
