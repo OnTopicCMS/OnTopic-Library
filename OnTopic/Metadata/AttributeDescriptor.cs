@@ -74,6 +74,7 @@ namespace OnTopic.Metadata {
       parent,
       id
     ) {
+
     }
 
     /*==========================================================================================================================
@@ -89,7 +90,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public virtual ModelType ModelType => ModelType.ScalarValue;
+    public ModelType ModelType { get; protected init; } = ModelType.ScalarValue;
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
@@ -109,8 +110,7 @@ namespace OnTopic.Metadata {
     /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
-    [AttributeSetter]
-    public virtual string EditorType => GetType().Name.Replace("AttributeDescriptor", "", StringComparison.OrdinalIgnoreCase);
+    public string EditorType => GetType().Name.Replace("AttributeDescriptor", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
@@ -193,7 +193,7 @@ namespace OnTopic.Metadata {
     ///   </para>
     /// </remarks>
     [AttributeSetter]
-    public virtual bool IsExtendedAttribute {
+    public bool IsExtendedAttribute {
       get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob"));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
     }
