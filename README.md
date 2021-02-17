@@ -20,7 +20,11 @@ In addition, OnTopic is optimized for multi-client/multi-device scenarios since 
 ### Extensible
 Fundamentally, OnTopic is based on structured schemas ("Content Types") which can be modified via the editor itself. This allows new data structures to be introduced without needing to modify the database or creating extensive plugins. So, for example, if a site includes job postings, it might create a `JobPosting` content type that describes the structure of a job posting, such as _job title_, _job description_, _job requirements_, &c. By contrast, some CMSs—such as WordPress—try to fit all items into a single data model—such as a _blog post_—or require extensive customizations of database objects and intermediate queries in order to extend the data model. OnTopic is designed with extensibility in mind, so updates to the data model are comparatively trivial to implement.
 
+
 ## Library
+
+### Metapackage
+- **[`OnTopic.All`](OnTopic.All/README.md)** The metapackage includes a reference to all of the core libraries discussed below under [Domain Layer](#domain-layer), [Data Access Layer](#data-access-layer), and [Presentation Layer](#presentation-layer). It is recommended that most implementations rely on this, instead of including package references for individual libraries. 
 
 ### Domain Layer
 - **[`OnTopic.Topics`](OnTopic/README.md)**: Core domain model including the `Topic` entity and service abstractions such as `ITopicRepository`.
