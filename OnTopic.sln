@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.TestDoubles", "OnTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.Data.Sql.Database.Tests", "OnTopic.Data.Sql.Database.Tests\OnTopic.Data.Sql.Database.Tests.csproj", "{D7FE876D-A75F-4493-8283-B316271FD5AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.All", "OnTopic.All\OnTopic.All.csproj", "{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{D7FE876D-A75F-4493-8283-B316271FD5AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D7FE876D-A75F-4493-8283-B316271FD5AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7FE876D-A75F-4493-8283-B316271FD5AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
