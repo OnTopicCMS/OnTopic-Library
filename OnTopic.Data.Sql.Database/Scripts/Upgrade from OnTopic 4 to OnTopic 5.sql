@@ -133,8 +133,8 @@ WHERE	ReferenceKey		= 'Topic'
 
 UPDATE	Topics
 SET	TopicKey		= 'BaseTopic'
-WHERE	TopicKey		= 'DerivedTopic'
-AND	ContentType		= 'TopicReferenceAttributeDescriptor'
+WHERE	TopicKey		= 'InheritedTopic'
+AND	ContentType		= 'TopicReferenceAttribute'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE ATTRIBUTE KEYS
