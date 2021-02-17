@@ -127,7 +127,6 @@ namespace OnTopic.Metadata {
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
-    [AttributeSetter]
     public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
@@ -146,7 +145,6 @@ namespace OnTopic.Metadata {
     ///   This is used to establish a required field validator in the editor interface. This should be used by the form
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
-    [AttributeSetter]
     public bool IsRequired {
       get => Attributes.GetBoolean("IsRequired");
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
@@ -192,7 +190,6 @@ namespace OnTopic.Metadata {
     ///     This property and its corresponding attribute was named <c>StoreInBlob</c> in versions of OnTopic prior to 4.0.
     ///   </para>
     /// </remarks>
-    [AttributeSetter]
     public bool IsExtendedAttribute {
       get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob"));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
