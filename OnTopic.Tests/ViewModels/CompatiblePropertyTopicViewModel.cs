@@ -20,12 +20,11 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  [SuppressMessage("Usage", "CA2227", Justification = "This is intended to be initialized by the mapping service.")]
   public class CompatiblePropertyTopicViewModel {
 
     public ModelType ModelType { get; set; }
 
-    public Collection<DateTime>? VersionHistory { get; set; }
+    public Collection<DateTime>? VersionHistory { get; init; }
 
   } //Class
 } //Namespace
