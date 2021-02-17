@@ -228,7 +228,7 @@ namespace OnTopic.Associations {
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?)"/>
     [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
-    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty) => SetValue(relationshipKey, topic, isDirty);
+    public void SetTopic(string relationshipKey, Topic topic, bool? isDirty = null) => SetValue(relationshipKey, topic, isDirty);
 
     /// <inheritdoc cref="SetValue(String, Topic, Boolean?, Boolean)"/>
     [Obsolete("The SetTopic() method has been renamed to SetValue().", true)]
