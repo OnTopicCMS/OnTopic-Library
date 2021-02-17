@@ -98,7 +98,6 @@ namespace OnTopic.Metadata {
     ///     cref="ContentTypeDescriptor"/> is set to <see cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
-    [AttributeSetter]
     public bool DisableChildTopics {
       get => Attributes.GetBoolean("DisableChildTopics");
       set => SetAttributeValue("DisableChildTopics", value ? "1" : "0");
