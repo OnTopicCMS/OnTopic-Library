@@ -90,7 +90,7 @@ IF (@ParentID IS NOT NULL)
   END
 ELSE
   BEGIN
-    SELECT	@RangeRight		= MAX(RangeRight) + 1
+    SELECT	@RangeRight		= ISNULL(MAX(RangeRight), 0) + 1
     FROM	Topics
     WITH (	TABLOCK
     )
