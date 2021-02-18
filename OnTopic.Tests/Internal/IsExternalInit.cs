@@ -3,25 +3,17 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.ViewModels.BindingModels;
 
-namespace OnTopic.Tests.BindingModels {
+namespace System.Runtime.CompilerServices {
 
   /*============================================================================================================================
-  | VIEW MODEL: REFERENCE TOPIC
+  | CLASS: IS EXTERNAL INIT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a property associated with a topic pointer—i.e. a reference
-  ///   to another topic.
+  ///   The <see cref="IsExternalInit"/> class is made available as part of the .NET 5.0 CLR in order to enable init accessors.
+  ///   As this is not available in .NET Standard, however, we must maintain this separate copy until we migrate to .NET 5.0.
   /// </summary>
-  /// <remarks>
-  ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
-  /// </remarks>
-  public class ReferenceTopicBindingModel : BasicTopicBindingModel {
-
-    public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttributeDescriptor") { }
-
-    public AssociatedTopicBindingModel? BaseTopic { get; set; }
+  internal static class IsExternalInit {
 
   } //Class
 } //Namespace

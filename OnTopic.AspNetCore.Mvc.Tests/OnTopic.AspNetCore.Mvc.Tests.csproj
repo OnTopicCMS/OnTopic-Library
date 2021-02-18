@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -18,11 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic.AspNetCore.Mvc.Host\OnTopic.AspNetCore.Mvc.Host.csproj" />
-    <ProjectReference Include="..\OnTopic.AspNetCore.Mvc\OnTopic.AspNetCore.Mvc.csproj" />
-    <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
     <ProjectReference Include="..\OnTopic.TestDoubles\OnTopic.TestDoubles.csproj" />
-    <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
-    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
 
 </Project>

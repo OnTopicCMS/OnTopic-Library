@@ -6,7 +6,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Lookup;
-using OnTopic.Metadata;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;

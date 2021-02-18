@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using Microsoft.Data.SqlClient;
-using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
