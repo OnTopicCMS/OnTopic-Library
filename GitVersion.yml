@@ -3,5 +3,7 @@ mode: ContinuousDeployment
 branches:
   master:
     mode: ContinuousDelivery
+  release:
+    mode: ContinuousDelivery
 ignore:
   sha: []
