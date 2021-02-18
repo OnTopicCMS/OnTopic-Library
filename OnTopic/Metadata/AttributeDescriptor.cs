@@ -90,7 +90,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public ModelType ModelType { get; protected init; } = ModelType.ScalarValue;
+    public virtual ModelType ModelType { get; protected init; } = ModelType.ScalarValue;
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
