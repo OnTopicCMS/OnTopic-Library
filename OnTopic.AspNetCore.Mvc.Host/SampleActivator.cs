@@ -31,15 +31,15 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /*==========================================================================================================================
     | PRIVATE INSTANCES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITypeLookupService              _typeLookupService              = null;
-    private readonly            ITopicMappingService            _topicMappingService            = null;
-    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            ITypeLookupService              _typeLookupService;
+    private readonly            ITopicMappingService            _topicMappingService;
+    private readonly            ITopicRepository                _topicRepository;
     private                     DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService = null;
+    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

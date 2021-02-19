@@ -41,7 +41,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService = null;
+    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR

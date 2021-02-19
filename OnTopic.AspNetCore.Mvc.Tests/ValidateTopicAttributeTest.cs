@@ -76,7 +76,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    public static TopicController GetTopicController(Topic topic) =>
+    public static TopicController GetTopicController(Topic? topic) =>
       new(
           new DummyTopicRepository(),
           new DummyTopicMappingService()
