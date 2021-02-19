@@ -11,6 +11,7 @@ using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Host.Components;
 using OnTopic.Data.Caching;
 using OnTopic.Data.Sql;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
@@ -31,15 +32,15 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /*==========================================================================================================================
     | PRIVATE INSTANCES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITypeLookupService              _typeLookupService              = null;
-    private readonly            ITopicMappingService            _topicMappingService            = null;
-    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            ITypeLookupService              _typeLookupService;
+    private readonly            ITopicMappingService            _topicMappingService;
+    private readonly            ITopicRepository                _topicRepository;
     private                     DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService = null;
+    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -91,6 +92,11 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     public object Create(ControllerContext context) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(context, nameof(context));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Determine controller type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
@@ -100,7 +106,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
         var currentUpdate = DateTime.UtcNow;
-        _topicRepository.Refresh(_topicRepository.Load(), _cacheLastUpdated);
+        _topicRepository.Refresh(_topicRepository.Load()!, _cacheLastUpdated);
         _cacheLastUpdated = currentUpdate;
       }
 
@@ -124,6 +130,11 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /// </summary>
     /// <returns>A concrete instance of an <see cref="IController"/>.</returns>
     public object Create(ViewComponentContext context) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine view component type

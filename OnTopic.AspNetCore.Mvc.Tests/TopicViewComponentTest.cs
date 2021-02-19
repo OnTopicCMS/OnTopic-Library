@@ -41,7 +41,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService = null;
+    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -110,13 +110,13 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
-      Assert.AreEqual<string>("Root:Web", model.NavigationRoot.UniqueKey);
-      Assert.AreEqual<int>(3, model.NavigationRoot.Children.Count);
-      Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
+      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentKey);
+      Assert.AreEqual<string?>("Root:Web", model?.NavigationRoot?.UniqueKey);
+      Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
+      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetUniqueKey())?? false);
 
     }
 
@@ -135,13 +135,13 @@ namespace OnTopic.Tests {
 
       var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
       var concreteResult        = result as ViewViewComponentResult;
-      var model                 = concreteResult.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string>(_topic.GetUniqueKey(), model.CurrentKey);
-      Assert.AreEqual<string>("Root:Web:Web_3", model.NavigationRoot.UniqueKey);
-      Assert.AreEqual<int>(2, model.NavigationRoot.Children.Count);
-      Assert.IsTrue(model.NavigationRoot.IsSelected(_topic.GetUniqueKey()));
+      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentKey);
+      Assert.AreEqual<string?>("Root:Web:Web_3", model?.NavigationRoot?.UniqueKey);
+      Assert.AreEqual<int?>(2, model?.NavigationRoot?.Children.Count);
+      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetUniqueKey())?? false);
 
     }
 
