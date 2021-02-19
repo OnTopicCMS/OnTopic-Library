@@ -127,7 +127,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(NotFoundObjectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(NotFoundObjectResult), context.Result?.GetType());
 
     }
 
@@ -151,7 +151,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(UnauthorizedResult), context.Result.GetType());
+      Assert.AreEqual(typeof(UnauthorizedResult), context.Result?.GetType());
 
     }
 
@@ -176,7 +176,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
 
     }
 
@@ -202,7 +202,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.IsNotNull(result);
-      Assert.AreEqual(403, result.StatusCode);
+      Assert.AreEqual(403, result?.StatusCode);
 
     }
 
@@ -227,7 +227,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
 
     }
 

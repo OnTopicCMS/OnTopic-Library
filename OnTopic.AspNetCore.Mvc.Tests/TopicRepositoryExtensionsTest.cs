@@ -61,7 +61,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(currentTopic);
       Assert.ReferenceEquals(topic, currentTopic);
-      Assert.AreEqual<string>("Web_0_1_1", currentTopic.Key);
+      Assert.AreEqual<string?>("Web_0_1_1", currentTopic?.Key);
 
     }
 
@@ -83,7 +83,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(currentTopic);
       Assert.ReferenceEquals(topic, currentTopic);
-      Assert.AreEqual<string>("Root", currentTopic.Key);
+      Assert.AreEqual<string?>("Root", currentTopic?.Key);
 
     }
 
