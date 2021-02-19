@@ -143,8 +143,8 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
+      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -182,15 +182,15 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<DataObject type=\"Attributes\">"));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"List\">"));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"Container\">"));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"PageGroup\">"));
-      Assert.IsTrue(model!.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>"));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>"));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>"));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>"));
-      Assert.IsFalse(model!.Contains("/Web/Web_0/Web_0_0/</loc>"));
+      Assert.IsTrue(model!.Contains("<DataObject type=\"Attributes\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<DataObject type=\"List\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<DataObject type=\"Container\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<DataObject type=\"PageGroup\">", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("/Web/Web_0/Web_0_0/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -225,10 +225,10 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">"));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"LastModified\">"));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">"));
-      Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">"));
+      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<Attribute name=\"LastModified\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
 
     }
 
