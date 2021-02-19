@@ -48,9 +48,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Mapping\README.md" />
-    <None Include="README.md" />
-  </ItemGroup>
-
 </Project>

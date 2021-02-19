@@ -38,12 +38,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
-    <None Include="README.md" />
+    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
 
 </Project>
