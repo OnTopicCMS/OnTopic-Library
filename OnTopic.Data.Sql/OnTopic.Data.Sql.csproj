@@ -2,37 +2,15 @@
 
   <PropertyGroup>
     <ProjectGuid>{1DE1F923-C7C2-435B-B49A-975ACBCB5FF0}</ProjectGuid>
-    <RootNamespace>OnTopic.Data.Sql</RootNamespace>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RootNamespace>OnTopic.Data.Sql</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic SQL Server Repository</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Provides Microsoft SQL Server support for persisting the OnTopic graph to a database.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS SQL Data Repository</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,10 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="README.md" />
   </ItemGroup>
 
 </Project>

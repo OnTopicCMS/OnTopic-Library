@@ -2,26 +2,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic Test Doubles</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Test doubles, such as dummies and stubs, useful in setting up unit and integration tests for OnTopic.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET AspDotNet Unit-Tests CMS Test-Doubles</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>

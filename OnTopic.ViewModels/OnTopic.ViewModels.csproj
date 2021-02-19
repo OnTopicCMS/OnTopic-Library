@@ -2,39 +2,15 @@
 
   <PropertyGroup>
     <ProjectGuid>{E52FC633-B4C5-4A2B-8CAF-30E756D7A6A7}</ProjectGuid>
-    <RootNamespace>OnTopic.ViewModels</RootNamespace>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <ShouldCreateLogs>True</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RootNamespace>OnTopic.ViewModels</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic View Models</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Provides view models that map to the factory default content type schemas.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation View Models POCO</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,12 +23,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
-    <None Include="README.md" />
+    <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,15 +6,11 @@
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic Library Metapackage</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>
       Includes all core packages associated with the OnTopic Library, excluding the OnTopic Editor. Reference this package as a
       shorthand for establishing a reference to each of the individual packages.
     </Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
   </PropertyGroup>
 
   <ItemGroup>
