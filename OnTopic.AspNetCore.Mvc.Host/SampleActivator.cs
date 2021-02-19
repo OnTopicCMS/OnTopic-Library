@@ -100,7 +100,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
         var currentUpdate = DateTime.UtcNow;
-        _topicRepository.Refresh(_topicRepository.Load(), _cacheLastUpdated);
+        _topicRepository.Refresh(_topicRepository.Load()!, _cacheLastUpdated);
         _cacheLastUpdated = currentUpdate;
       }
 

@@ -96,7 +96,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string>("Web_0_1_1", model.Title);
+      Assert.AreEqual<string?>("Web_0_1_1", model?.Title);
 
     }
 
