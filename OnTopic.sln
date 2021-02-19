@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
 		GitVersion.yml = GitVersion.yml
 		README.md = README.md
 	EndProjectSection
@@ -32,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.TestDoubles", "OnTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.Data.Sql.Database.Tests", "OnTopic.Data.Sql.Database.Tests\OnTopic.Data.Sql.Database.Tests.csproj", "{D7FE876D-A75F-4493-8283-B316271FD5AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.All", "OnTopic.All\OnTopic.All.csproj", "{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.All", "OnTopic.All\OnTopic.All.csproj", "{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

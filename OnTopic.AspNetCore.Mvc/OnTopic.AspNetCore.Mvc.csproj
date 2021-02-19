@@ -2,30 +2,15 @@
 
   <PropertyGroup>
     <ProjectGuid>{B7F136A1-C86D-4A74-AC4F-3693CD1358A4}</ProjectGuid>
-    <RootNamespace>OnTopic.AspNetCore.Mvc</RootNamespace>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <ShouldCreateLogs>True</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RootNamespace>OnTopic.AspNetCore.Mvc</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic ASP.NET Core Library</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Provides presentation-layer support for the ASP.NET Core Framework.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Presentation Web MVC ASP.NET Core Controller</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>

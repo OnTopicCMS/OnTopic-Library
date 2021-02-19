@@ -2,30 +2,15 @@
 
   <PropertyGroup>
     <ProjectGuid>{B8D5B290-4451-4C3B-AE9E-0FF075958A74}</ProjectGuid>
-    <RootNamespace>OnTopic</RootNamespace>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <ShouldCreateLogs>True</ShouldCreateLogs>
-    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RootNamespace>OnTopic</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic Library</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Libraries for supporting Ignia Topics, a content management system (CMS) based on structured, hierarchical data.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <PackageTags>C# .NET CMS Domain</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
