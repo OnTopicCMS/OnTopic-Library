@@ -16,6 +16,7 @@
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NeutralLanguage>en</NeutralLanguage>
     <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
 </Project>
