@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -34,6 +35,20 @@ namespace OnTopic.Collections {
     ///   Retrieves a read-only version of this <see cref="TopicCollection"/>.
     /// </summary>
     public ReadOnlyTopicCollection AsReadOnly() => new(this);
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="KeyedTopicCollection{T}.GetTopic(String)"/>
+    [Obsolete("The GetTopic() method is not implemented on TopicCollection. Use KeyedTopicCollection instead.", true)]
+    public Topic? GetValue(string key) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
+    | INDEXER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="KeyedTopicCollection{T}"/>
+    [Obsolete("Indexing by key is not implemented on the TopicCollection. Use the KeyedTopicCollection instead.",true)]
+    public Topic this[string key] => throw new ArgumentOutOfRangeException(nameof(key));
 
   } //Class
 } //Namespace
