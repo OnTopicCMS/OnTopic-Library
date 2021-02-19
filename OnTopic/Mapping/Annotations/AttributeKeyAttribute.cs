@@ -37,12 +37,21 @@ namespace OnTopic.Mapping.Annotations {
     }
 
     /*==========================================================================================================================
-    | PROPERTY: Key
+    | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets the value of the attribute key.
     /// </summary>
     public string Key { get; }
+
+    /*==========================================================================================================================
+    | PROPERTY: VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the attribute key.
+    /// </summary>
+    [Obsolete("The Value property has been renamed to Key for consistency", true)]
+    public string? Value { get; }
 
   } //Class
 } //Namespace
