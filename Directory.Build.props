@@ -15,6 +15,7 @@
     <PackageProjectUrl>https://github.com/Ignia/Topics-Library</PackageProjectUrl>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NeutralLanguage>en</NeutralLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
 </Project>
