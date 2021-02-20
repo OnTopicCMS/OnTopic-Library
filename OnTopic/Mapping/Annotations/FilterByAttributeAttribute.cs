@@ -4,6 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
+using System;
+using OnTopic.Internal.Diagnostics;
+
 namespace OnTopic.Mapping.Annotations {
 
   /*============================================================================================================================
@@ -30,9 +33,22 @@ namespace OnTopic.Mapping.Annotations {
     /// <param name="key">The key of the attribute to filter by.</param>
     /// <param name="value">The value of the attribute to filter by.</param>
     public FilterByAttributeAttribute(string key, string value) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate input
+      \-----------------------------------------------------------------------------------------------------------------------*/
       TopicFactory.ValidateKey(key, false);
+      Contract.Requires<ArgumentException>(
+        !key.Equals("ContentType", StringComparison.OrdinalIgnoreCase),
+        "The ContentType is not stored as an attribute. To filter by ContentType, use [FilterByContentType] instead."
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set properties
+      \-----------------------------------------------------------------------------------------------------------------------*/
       Key = key;
       Value = value;
+
     }
 
     /*==========================================================================================================================
