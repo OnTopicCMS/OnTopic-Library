@@ -968,6 +968,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: FILTER BY INVALID ATTRIBUTE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to map a view model that has an invalid <see cref="FilterByAttributeAttribute.Key"/> value of <c>ContentType
+    ///   </c>; throws an <see cref="ArgumentException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task Map_FilterByInvalidAttribute_ThrowsExceptions() {
+
+      var topic                 = TopicFactory.Create("Test", "FilteredInvalid");
+
+      var target = await _mappingService.MapAsync<FilteredInvalidTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
