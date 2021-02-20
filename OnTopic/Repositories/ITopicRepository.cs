@@ -56,6 +56,18 @@ namespace OnTopic.Repositories {
     /// </summary>
     event EventHandler<TopicRenameEventArgs> TopicRenamed;
 
+    /// <inheritdoc cref="TopicDeleted"/>
+    [Obsolete("The DeleteEvent has been renamed to TopicDeleted")]
+    event EventHandler<DeleteEventArgs> DeleteEvent;
+
+    /// <inheritdoc cref="TopicMoved"/>
+    [Obsolete("The MoveEvent has been renamed to TopicMoved")]
+    event EventHandler<DeleteEventArgs> MoveEvent;
+
+    /// <inheritdoc cref="TopicRenamed"/>
+    [Obsolete("The RenameEvent has been renamed to TopicRenamed")]
+    event EventHandler<RenameEventArgs> RenameEvent;
+
     /*==========================================================================================================================
     | GET CONTENT TYPE DESCRIPTORS
     \-------------------------------------------------------------------------------------------------------------------------*/
