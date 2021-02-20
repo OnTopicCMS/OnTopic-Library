@@ -53,6 +53,33 @@ namespace OnTopic.Lookup {
 
     }
 
+    /// <summary>
+    ///   Establishes a new instance of a <see cref="StaticTypeLookupService"/>. Optionally accepts a list of <see cref="Type"/>
+    ///   instances and a default <see cref="Type"/> value.
+    /// </summary>
+    /// <remarks>
+    ///   Any <see cref="Type"/> instances submitted via <paramref name="types"/> should be unique by <see
+    ///   cref="MemberInfo.Name"/>; if they are not, they will be removed.
+    /// </remarks>
+    /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
+    /// <param name="defaultType">The default type to return if no match can be found. Defaults to object.</param>
+    [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
+    public StaticTypeLookupService(
+      IEnumerable<Type>? types,
+      Type? defaultType
+    ) {
+      throw new NotImplementedException();
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: DEFAULT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The default type to return in case <see cref="Lookup(String[])"/> cannot find a match.
+    /// </summary>
+    [Obsolete("The DefaultType property has been removed. Fallbacks types can now be added to Lookup() directly.", true)]
+    public Type? DefaultType { get; }
+
     /*==========================================================================================================================
     | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
