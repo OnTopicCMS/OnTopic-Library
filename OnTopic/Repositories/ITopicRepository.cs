@@ -106,6 +106,10 @@ namespace OnTopic.Repositories {
     /// <returns>A topic object.</returns>
     Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
+    /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
+    Topic? Load(string? uniqueKey, bool isRecursive);
+
     /// <summary>
     ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version
     ///   "/>.

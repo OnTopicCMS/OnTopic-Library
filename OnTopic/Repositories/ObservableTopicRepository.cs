@@ -208,6 +208,10 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
+    /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
+    public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
+
     /// <inheritdoc />
     public abstract Topic? Load(Topic topic, DateTime version);
 
