@@ -4,54 +4,54 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Mapping.Annotations {
 
   /*============================================================================================================================
-  | ATTRIBUTE: ATTRIBUTE KEY
+  | ATTRIBUTE: RELATIONSHIP
   \---------------------------------------------------------------------------------------------------------------------------*/
-  /// <summary>
-  ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see cref="
-  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>.
-  /// </summary>
-  /// <remarks>
-  ///   By default, <see cref="ITopicMappingService"/> implementations will attempt to map the property of the target data
-  ///   transfer object to a corresponding attribute of the same name on the source topic. This attribute instructs the
-  ///   <see cref="ITopicMappingService"/> to instead look for a specified key. This allows the target property name to be
-  ///   decoupled from the source attribute key.
-  /// </remarks>
-  [System.AttributeUsage(System.AttributeTargets.Property)]
-  public sealed class AttributeKeyAttribute : System.Attribute {
+  /// <inheritdoc cref="CollectionAttribute"/>
+  [AttributeUsage(System.AttributeTargets.Property)]
+  [Obsolete("The [Relationship] attribute has been renamed to [Collection].", true)]
+  public sealed class RelationshipAttribute : Attribute {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Annotates a property with the <see cref="AttributeKeyAttribute"/> class by providing a (required) attribute key.
+    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing an <paramref name="key"/>.
     /// </summary>
-    /// <param name="key">The key value of the attribute associated with the current property.</param>
-    public AttributeKeyAttribute(string key) {
+    /// <param name="key">The key value of the collection associated with the current property.</param>
+    public RelationshipAttribute(string key) {
       TopicFactory.ValidateKey(key, false);
       Key = key;
+    }
+
+    /// <summary>
+    ///   Annotates a property with the <see cref="RelationshipAttribute"/> by providing the <see cref="RelationshipType"/>.
+    /// </summary>
+    /// <param name="type">Optional. The type of collection the collection is associated with.</param>
+    public RelationshipAttribute(RelationshipType type = RelationshipType.Any) {
+      Type = type;
     }
 
     /*==========================================================================================================================
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the value of the attribute key.
+    ///   Gets the value of the collection key.
     /// </summary>
-    public string Key { get; }
+    public string? Key { get; }
 
     /*==========================================================================================================================
-    | PROPERTY: VALUE
+    | PROPERTY: TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the value of the attribute key.
+    ///   Gets the value of the <see cref="CollectionType"/>.
     /// </summary>
-    [Obsolete("The Value property has been renamed to Key for consistency", true)]
-    public string? Value { get; }
+    #pragma warning disable CA1019 // Define accessors for attribute arguments
+    public RelationshipType Type { get; set; }
+    #pragma warning restore CA1019 // Define accessors for attribute arguments
 
   } //Class
 } //Namespace

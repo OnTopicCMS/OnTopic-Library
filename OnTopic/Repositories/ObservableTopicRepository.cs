@@ -65,6 +65,18 @@ namespace OnTopic.Repositories {
       remove => _topicRenamed -= value;
     }
 
+    /// <inheritdoc cref="TopicDeleted"/>
+    [Obsolete("The DeleteEvent has been renamed to TopicDeleted")]
+    public event EventHandler<DeleteEventArgs>? DeleteEvent;
+
+    /// <inheritdoc cref="TopicMoved"/>
+    [Obsolete("The MoveEvent has been renamed to TopicMoved")]
+    public event EventHandler<DeleteEventArgs>? MoveEvent;
+
+    /// <inheritdoc cref="TopicRenamed"/>
+    [Obsolete("The RenameEvent has been renamed to TopicRenamed")]
+    public event EventHandler<RenameEventArgs>? RenameEvent;
+
     /*==========================================================================================================================
     | ON TOPIC LOADED
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -196,6 +208,10 @@ namespace OnTopic.Repositories {
     /// <inheritdoc />
     public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
+    /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
+    public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
+
     /// <inheritdoc />
     public abstract Topic? Load(Topic topic, DateTime version);
 
@@ -219,6 +235,10 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     public abstract void Save(Topic topic, bool isRecursive = false);
+
+    /// <inheritdoc cref="Save(Topic, Boolean)"/>
+    [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
+    public int Save(Topic topic, bool isRecursive, bool isDraft) => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MOVE

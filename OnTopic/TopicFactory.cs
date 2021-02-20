@@ -84,6 +84,11 @@ namespace OnTopic {
     }
 
     /// <inheritdoc cref="Create(String, String, Topic?, Int32)"/>
+    [Obsolete("The 'id' parameter has been moved to the end of the parameter list.", true)]
+    public static Topic Create(string key, string contentType, int id, Topic? parent) =>
+      throw new NotImplementedException();
+
+    /// <inheritdoc cref="Create(String, String, Topic?, Int32)"/>
     public static Topic Create(string key, string contentType, int id) =>
       Create(key, contentType, null, id);
 
