@@ -28,6 +28,19 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
+    | FACTORY METHOD: FROM LIST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="List{Topic}"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="ReadOnlyTopicCollection"/>.
+    /// </remarks>
+    /// <param name="innerCollection">The underlying <see cref="List{Topic}"/>.</param>
+    [Obsolete("This is effectively satisfied by the related overload, and has been removed.", true)]
+    public ReadOnlyTopicCollection FromList(IList<Topic> innerCollection) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="ReadOnlyKeyedTopicCollection{T}.GetTopic(String)"/>

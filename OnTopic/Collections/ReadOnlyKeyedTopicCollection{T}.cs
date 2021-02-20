@@ -36,6 +36,19 @@ namespace OnTopic.Collections {
     }
 
     /*==========================================================================================================================
+    | FACTORY METHOD: FROM LIST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new <see cref="ReadOnlyTopicCollection{T}"/> based on an existing <see cref="List{T}"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <paramref name="innerCollection"/> will be converted to a <see cref="TopicCollection{T}"/>.
+    /// </remarks>
+    /// <param name="innerCollection">The underlying <see cref="TopicCollection{T}"/>.</param>
+    [Obsolete("This is effectively satisfied by the related overload, and has been removed.", true)]
+    public ReadOnlyTopicCollection<T> FromList(IList<T> innerCollection) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
     | METHOD: GET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
