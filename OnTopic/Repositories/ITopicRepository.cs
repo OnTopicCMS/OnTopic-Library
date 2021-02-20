@@ -176,6 +176,10 @@ namespace OnTopic.Repositories {
     /// <exception cref="ArgumentNullException">topic</exception>
     void Save(Topic topic, bool isRecursive = false);
 
+    /// <inheritdoc cref="Save(Topic, Boolean)"/>
+    [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
+    int Save(Topic topic, bool isRecursive, bool isDraft);
+
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/

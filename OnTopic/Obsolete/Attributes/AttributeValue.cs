@@ -194,9 +194,9 @@ namespace OnTopic.Attributes {
     ///   <para>
     ///     How an attribute is stored in the underlying repository doesn't impact how the attribute is treated as part of the
     ///     object model. By tracking this, however, OnTopic is able to evaluate configuration mismatches during <see
-    ///     cref="ITopicRepository.Save"/>. This allows the <see cref="ITopicRepository"/> to effective handle scenarios where
-    ///     the configuration for an <see cref="AttributeDescriptor"/> has changed prior to the last time a <see cref="Topic"/>
-    ///     was saved, and thus change the location where it is stored.
+    ///     cref="ITopicRepository.Save(Topic, Boolean)"/>. This allows the <see cref="ITopicRepository"/> to effective handle
+    ///     scenarios where the configuration for an <see cref="AttributeDescriptor"/> has changed prior to the last time a <see
+    ///     cref="Topic"/> was saved, and thus change the location where it is stored.
     ///   </para>
     ///   <para>
     ///     This is important because, otherwise, <see cref="ITopicRepository"/> implementations rely primarily on <see
