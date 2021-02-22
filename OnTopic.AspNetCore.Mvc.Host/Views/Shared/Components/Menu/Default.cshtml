@@ -17,7 +17,7 @@
   IHtmlContent WriteMenu(NavigationTopicViewModel topic, int indentLevel = 1) => Body(
 
     @<li>
-      <a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title?? topic.Key)</a>
+      <a href="@topic.WebPath">@(topic.ShortTitle?? topic.Title)</a>
       <ul>
         @foreach (var childTopic in topic.Children) {
           @WriteMenu(childTopic, indentLevel+1);
