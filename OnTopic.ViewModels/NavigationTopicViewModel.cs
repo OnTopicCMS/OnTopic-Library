@@ -66,7 +66,7 @@ namespace OnTopic.ViewModels {
     ///   typically meaning the user is on the page this object is pointing to.
     /// </summary>
     public bool IsSelected(string webPath) =>
-      $"{webPath}:".StartsWith($"{WebPath}:", StringComparison.OrdinalIgnoreCase);
+      $"{webPath}/".StartsWith($"{WebPath}", StringComparison.OrdinalIgnoreCase);
 
   } //Class
 } //Namespace
