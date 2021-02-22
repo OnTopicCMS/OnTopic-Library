@@ -11,7 +11,7 @@ namespace OnTopic.ViewModels {
   | VIEW MODEL: VIDEO TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about a video topic.
+  ///   Provides a strongly-typed model for feeding views with information about a <c>Video</c> topic.
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains

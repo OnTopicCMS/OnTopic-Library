@@ -10,10 +10,10 @@ using OnTopic.Models;
 namespace OnTopic.ViewModels.BindingModels {
 
   /*============================================================================================================================
-  | CLASS: RELATED TOPIC BINDING MODEL
+  | BINDING MODEL: RELATED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for binding a relationship of a binding model to an existing <see cref="Topic"/>.
+  ///   Provides a model for binding a relationship of a <see cref="ITopicBindingModel"/> to an existing <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
   ///   While implementors may choose to create a custom <see cref="IAssociatedTopicBindingModel"/> implementation, the out-of-

@@ -11,7 +11,8 @@ namespace OnTopic.ViewModels.Items {
   | VIEW MODEL: CONTENT ITEM TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about a content item topic.
+  ///   Provides a strongly-typed model for feeding views with information about a <c>ContentItem</c> topic, as used in the <see
+  ///   cref="ContentListTopicViewModel"/> model, and its derivatives.
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains

@@ -10,7 +10,8 @@ namespace OnTopic.ViewModels.Items {
   | VIEW MODEL: SLIDE TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about a slide topic.
+  ///   Provides a strongly-typed model for feeding views with information about a <c>Slide</c> topic, as used in e.g. <see cref
+  ///   ="SlideshowTopicViewModel"/>.
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains
