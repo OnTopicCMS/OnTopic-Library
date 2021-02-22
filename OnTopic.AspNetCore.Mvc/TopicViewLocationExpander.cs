@@ -88,10 +88,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /*==========================================================================================================================
     | METHOD: EXPAND VIEW LOCATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Introduces additional routes
-    /// </summary>
-    /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
+    /// <inheritdoc/>
     public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations) {
 
       /*------------------------------------------------------------------------------------------------------------------------

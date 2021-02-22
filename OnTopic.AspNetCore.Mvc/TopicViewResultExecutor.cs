@@ -35,7 +35,6 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <param name="viewEngine">The <see cref="ICompositeViewEngine"/>.</param>
     /// <param name="tempDataFactory">The <see cref="ITempDataDictionaryFactory"/>.</param>
     /// <param name="diagnosticListener">The <see cref="DiagnosticListener"/>.</param>
-    /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
     /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
     public TopicViewResultExecutor(
       IOptions<MvcViewOptions> viewOptions,

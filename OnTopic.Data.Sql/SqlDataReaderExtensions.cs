@@ -347,7 +347,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? isDirty = false) {
+    private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? markDirty = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -378,7 +378,7 @@ namespace OnTopic.Data.Sql {
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isDeleted) {
-        current.Relationships.SetValue(relationshipKey, related, isDirty);
+        current.Relationships.SetValue(relationshipKey, related, markDirty);
       }
       else if (current.Relationships.Contains(relationshipKey, related)) {
         current.Relationships.Remove(relationshipKey, related);

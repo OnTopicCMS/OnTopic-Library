@@ -618,6 +618,7 @@ namespace OnTopic.Data.Sql {
     ///   Internal method that saves topic relationships to the n:n mapping table in SQL.
     /// </summary>
     /// <param name="topic">The topic object whose relationships should be persisted.</param>
+    /// <param name="version">The version that should be associated with the updated value.</param>
     /// <param name="connection">The SQL connection.</param>
     private static void PersistRelationships(Topic topic, DateTime version, SqlConnection connection) {
 
@@ -684,6 +685,7 @@ namespace OnTopic.Data.Sql {
     ///   Internal method that saves topic references to the 1:n mapping table in SQL.
     /// </summary>
     /// <param name="topic">The topic object whose references should be persisted.</param>
+    /// <param name="version">The version that should be associated with the updated value.</param>
     /// <param name="connection">The SQL connection.</param>
     private static void PersistReferences(Topic topic, DateTime version, SqlConnection connection) {
 

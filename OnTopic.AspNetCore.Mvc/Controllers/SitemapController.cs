@@ -168,7 +168,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Given a root topic, generates an XML-formatted sitemap.
     /// </summary>
-    /// <param name="topic">The topic to add to the sitemap.</param>
+    /// <param name="rootTopic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
     private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
