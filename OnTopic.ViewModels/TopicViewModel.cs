@@ -13,7 +13,7 @@ namespace OnTopic.ViewModels {
   | VIEW MODEL: TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for feeding views.
+  ///   Provides a model for feeding views general information about a <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains

@@ -10,7 +10,7 @@ namespace OnTopic.ViewModels.Items {
   | VIEW MODEL: LOOKUP LIST ITEM TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about lookup list item topic.
+  ///   Provides a strongly-typed model for feeding views with information about <c>LookupListItem</c> topic.
   /// </summary>
   /// <remarks>
   ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains

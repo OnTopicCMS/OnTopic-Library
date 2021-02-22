@@ -13,7 +13,7 @@ namespace OnTopic.ViewModels {
   | VIEW MODEL: NAVIGATION TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about the navigation.
+  ///   Provides a strongly-typed model for feeding views with information about a node in the navigation.
   /// </summary>
   /// <remarks>
   ///   <para>

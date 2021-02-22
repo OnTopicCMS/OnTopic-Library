@@ -10,10 +10,10 @@ using OnTopic.Models;
 namespace OnTopic.ViewModels.BindingModels {
 
   /*============================================================================================================================
-  | CLASS: ASSOCIATED TOPIC BINDING MODEL
+  | BINDING MODEL: ASSOCIATED TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for binding an association of a binding model to an existing <see cref="Topic"/>.
+  ///   Provides a model for binding an association of a <see cref="ITopicBindingModel"/> to another <see cref="Topic"/>.
   /// </summary>
   /// <remarks>
   ///   While implementors may choose to create a custom <see cref="IAssociatedTopicBindingModel"/> implementation, the out-of-
@@ -27,7 +27,7 @@ namespace OnTopic.ViewModels.BindingModels {
     | PROPERTY: UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
+    ///   Gets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
     /// </summary>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value is not null

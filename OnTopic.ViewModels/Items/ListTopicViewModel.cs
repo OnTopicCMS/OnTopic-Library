@@ -11,7 +11,7 @@ namespace OnTopic.ViewModels.Items {
   | VIEW MODEL: LIST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for modeling a nested topic list.
+  ///   Provides a strongly-typed model for modeling a <c>List</c> topic, as used for nested topics.
   /// </summary>
   /// <remarks>
   ///   <para>
