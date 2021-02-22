@@ -13,6 +13,8 @@
 -- migrations.
 --------------------------------------------------------------------------------------------------------------------------------
 
+PRINT('Dropping legacy columns...');
+
 ALTER
 TABLE	Topics
 DROP
@@ -38,6 +40,8 @@ TABLE	ExtendedAttributes
 DROP
 COLUMN	DateModified;
 
+PRINT('Dropped legacy columns');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE CORE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
@@ -46,10 +50,12 @@ COLUMN	DateModified;
 -- in a way that's inconsistent with other attributes. By moving them to Topic, we better acknowledge their unique status.
 --------------------------------------------------------------------------------------------------------------------------------
 
-ALTER TABLE [dbo].[Topics]
-    ADD [TopicKey]    VARCHAR (128) NULL,
-        [ContentType] VARCHAR (128) NULL,
-        [ParentID]    INT           NULL;
+PRINT('Migrating core attributes...');
+
+ALTER TABLE	[dbo].[Topics]
+ADD	[TopicKey]		VARCHAR(128)	NULL,
+	[ContentType]		VARCHAR(128)	NULL,
+	[ParentID]		INT	NULL;
 
 WITH KeyAttributes AS (
   SELECT	TopicID,
@@ -82,6 +88,12 @@ PIVOT (	MIN(AttributeValue)
 WHERE	RowNumber		= 1
 AND	Topics.TopicID		= Pvt.TopicID
 
+ALTER TABLE	[dbo].[Topics]
+ALTER COLUMN	TopicKey		VARCHAR(128)	NOT NULL;
+
+ALTER TABLE	[dbo].[Topics]
+ALTER COLUMN	ContentType		VARCHAR(128)	NOT NULL;
+
 DELETE
 FROM	Attributes
 WHERE	AttributeKey
@@ -89,6 +101,8 @@ IN (	'Key',
 	'ContentType',
 	'ParentID'
 )
+
+PRINT('Migrated core attributes');
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE TOPIC REFERENCES
@@ -98,6 +112,8 @@ IN (	'Key',
 -- foreign key constraints, and formalizes the relationship so we don't need to rely on hacks in e.g. the Topic Data Transer
 -- service to infer which attributes represent relationships in order to translate their values from `TopicID` to `UniqueKey`.
 --------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating topic references...');
 
 CREATE
 TABLE	[dbo].[TopicReferences] (
@@ -118,6 +134,8 @@ WHERE	AttributeKey		LIKE '%ID'
   AND	ISNUMERIC(AttributeValue)	= 1
   AND	Topics.TopicID		IS NOT NULL
 
+PRINT('Migrated core attributes');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE DERIVED TOPICS
 --------------------------------------------------------------------------------------------------------------------------------
@@ -127,14 +145,18 @@ WHERE	AttributeKey		LIKE '%ID'
 -- and how its 'ReferenceKey'.
 --------------------------------------------------------------------------------------------------------------------------------
 
+PRINT('Migrating base topics...');
+
 UPDATE	TopicReferences
 SET	ReferenceKey		= 'BaseTopic'
 WHERE	ReferenceKey		= 'Topic'
 
 UPDATE	Topics
 SET	TopicKey		= 'BaseTopic'
-WHERE	TopicKey		= 'InheritedTopic'
+WHERE	TopicKey		IN ('TopicID', 'InheritedTopic', 'DerivedTopic')
 AND	ContentType		= 'TopicReferenceAttribute'
+
+PRINT('Migrated base topics');
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE ATTRIBUTE KEYS
@@ -144,6 +166,8 @@ AND	ContentType		= 'TopicReferenceAttribute'
 -- conflict with .NET's own "*Attribute" convention (which is usually reserved for actual attributes).
 --------------------------------------------------------------------------------------------------------------------------------
 
+PRINT('Migrating attribute descriptors...');
+
 UPDATE	Topics
 SET	TopicKey		= TopicKey + 'Descriptor'
 WHERE	TopicKey		LIKE '%Attribute'
@@ -152,3 +176,5 @@ AND	ContentType		= 'ContentTypeDescriptor'
 UPDATE	Topics
 SET	ContentType		= ContentType + 'Descriptor'
 WHERE	ContentType		LIKE '%Attribute'
+
+PRINT('Migrated attribute descriptors');
