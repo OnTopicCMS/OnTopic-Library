@@ -27,7 +27,7 @@ namespace OnTopic.ViewModels.BindingModels {
     | PROPERTY: UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
+    ///   Gets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
     /// </summary>
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value is not null
