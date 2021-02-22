@@ -119,7 +119,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel = new NavigationViewModel<T>() {
         NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
-        CurrentKey = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
+        CurrentWebPath = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

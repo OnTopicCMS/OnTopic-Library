@@ -45,16 +45,16 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     public T? NavigationRoot { get; set; }
 
     /*==========================================================================================================================
-    | CURRENT KEY
+    | CURRENT WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   The <see cref="Topic.GetUniqueKey()"/> representing the path to the current <see cref="Topic"/>.
+    ///   The <see cref="Topic.GetWebPath()"/> representing the path to the current <see cref="Topic"/>.
     /// </summary>
     /// <remarks>
     ///   <para>
     ///     In order to determine whether any given <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/>, the views
-    ///     will need to know where in the hierarchy the user currently is. By storing this on the <see
-    ///     cref="NavigationViewModel{T}"/> used as the root view model for every navigation component, we ensure that the views
+    ///     will need to know where in the hierarchy the user currently is. By storing this on the <see cref="
+    ///     NavigationViewModel{T}"/> used as the root view model for every navigation component, we ensure that the views
     ///     always have access to this information.
     ///   </para>
     ///   <para>
@@ -63,6 +63,7 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     ///     and maintaining state exclusively in the <see cref="NavigationViewModel{T}"/> itself.
     ///   </para>
     /// </remarks>
+    public string CurrentWebPath { get; set; } = default!;
     public string CurrentKey { get; set; } = default!;
 
   } //Class
