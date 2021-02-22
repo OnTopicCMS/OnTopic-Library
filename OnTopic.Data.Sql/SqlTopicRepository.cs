@@ -24,7 +24,7 @@ namespace OnTopic.Data.Sql {
   ///   Provides data access to topics stored in Microsoft SQL Server.
   /// </summary>
   /// <remarks>
-  ///   Concrete implementation of the <see cref="OnTopic.Repositories.IDataRepository"/> class.
+  ///   Concrete implementation of the <see cref="ITopicRepository"/> class.
   /// </remarks>
   public class SqlTopicRepository : TopicRepository, ITopicRepository {
 

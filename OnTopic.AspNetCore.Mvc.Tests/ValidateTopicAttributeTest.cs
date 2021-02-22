@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
+using OnTopic.Metadata;
 using OnTopic.TestDoubles;
 
 namespace OnTopic.Tests {

@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Data;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Data.Sql.Models {
 
@@ -51,8 +52,8 @@ namespace OnTopic.Data.Sql.Models {
     /// <summary>
     ///   Provides a convenience method for adding a new <see cref="DataRow"/> based on the expected column values.
     /// </summary>
-    /// <param name="attributeKey">The <see cref="AttributeRecord.Key"/>.</param>
-    /// <param name="attributeValue">The <see cref="AttributeRecord.Value"/>.</param>
+    /// <param name="attributeKey">The <see cref="TrackedRecord{T}.Key"/>.</param>
+    /// <param name="attributeValue">The <see cref="TrackedRecord{T}.Value"/>.</param>
     internal DataRow AddRow(string attributeKey, string? attributeValue = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------

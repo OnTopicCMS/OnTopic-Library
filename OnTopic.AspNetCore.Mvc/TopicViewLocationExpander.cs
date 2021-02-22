@@ -74,9 +74,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpander"/> class.
     /// </summary>
-    /// <remarks>
-    /// </remarks>
-    /// <seealso cref="https://stackoverflow.com/questions/36802661/what-is-iviewlocationexpander-populatevalues-for-in-asp-net-core-mvc"/>
+    /// <seealso href="https://stackoverflow.com/questions/36802661/what-is-iviewlocationexpander-populatevalues-for-in-asp-net-core-mvc"/>
     /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
     public void PopulateValues(ViewLocationExpanderContext context) {
       Contract.Requires(context, nameof(context));

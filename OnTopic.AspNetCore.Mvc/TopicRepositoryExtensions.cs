@@ -31,7 +31,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   of the box routes, such as <c>controller</c> and <c>action</c>, the <see cref="ServiceCollectionExtensions"/> defines
     ///   additional topic-specific routes, such as <c>rootTopic</c> and <c>path</c>. These can be combined to identify a topic
     ///   in the repository. By using the extension method, callers needn't assemble their own <see cref="Topic.GetUniqueKey"/>
-    ///   prior to calling <see cref="ITopicRepository.Load(String uniqueKey)"/>, assuming they are using the standard routing
+    ///   prior to calling <see cref="ITopicRepository.Load(String?, Boolean)"/>, assuming they are using the standard routing
     ///   variables.
     /// </remarks>
     public static Topic? Load(

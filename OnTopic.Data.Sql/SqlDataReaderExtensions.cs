@@ -28,7 +28,7 @@ namespace OnTopic.Data.Sql {
   ///   main entry point is <see cref="LoadTopicGraph"/>. It is supported by a number of <c>private</c> extensions which allow
   ///   it to handle individual records from particular data sets (e.g., the <see cref="SetExtendedAttributes"/> method maps to
   ///   data returned from the <c>ExtendedAttributeIndex</c> view). That said, the <c>Get</c> extensions (e.g., <see
-  ///   cref="GetString(SqlDataReader, String)"/>) are not specific to this format, and remain useful for a variety of database
+  ///   cref="GetString(IDataReader, String)"/>) are not specific to this format, and remain useful for a variety of database
   ///   queries, should they be needed, and thus are marked as <c>internal</c>.
   /// </remarks>
   internal static class SqlDataReaderExtensions {

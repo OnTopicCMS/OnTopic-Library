@@ -138,7 +138,7 @@ namespace OnTopic.TestDoubles {
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?)" />
+    /// <inheritdoc cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)" />
     public IEnumerable<AttributeRecord> GetAttributesProxy(
       Topic topic,
       bool? isExtendedAttribute,

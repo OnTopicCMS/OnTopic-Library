@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Collections;
 
 namespace OnTopic.ViewModels.Items {
 

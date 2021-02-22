@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.AspNetCore.Mvc.Components;
 using OnTopic.AspNetCore.Mvc.Host.Components;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Data.Caching;

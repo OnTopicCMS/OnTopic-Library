@@ -25,7 +25,7 @@ namespace OnTopic.Tests {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicController"/>, and other <see cref="Controller"/> classes that are part of
-  ///   the <see cref="OnTopic.Web.Mvc"/> namespace.
+  ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
   [TestClass]
   public class TopicControllerTest {
@@ -104,7 +104,7 @@ namespace OnTopic.Tests {
     | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS REDIRECT RESULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the <see cref="FallbackController.Index()" /> action.
+    ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action.
     /// </summary>
     [TestMethod]
     public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
@@ -124,7 +124,7 @@ namespace OnTopic.Tests {
     | TEST: SITEMAP CONTROLLER: INDEX: RETURNS SITEMAP XML
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action.
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action.
     /// </summary>
     [TestMethod]
     public void SitemapController_Index_ReturnsSitemapXml() {
@@ -152,8 +152,8 @@ namespace OnTopic.Tests {
     | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action and verifies that it properly
-    ///   excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
+    ///   properly excludes <c>List</c> content types, and skips over <c>Container</c> and <c>PageGroup</c>.
     /// </summary>
     [TestMethod]
     public void SitemapController_Index_ExcludesContentTypes() {
@@ -198,8 +198,8 @@ namespace OnTopic.Tests {
     | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="SitemapController.Index()" /> action and verifies that it properly
-    ///   excludes the <c>Body</c> and <c>IsHidden</c> attributes.
+    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
+    ///   properly excludes the <c>Body</c> and <c>IsHidden</c> attributes.
     /// </summary>
     [TestMethod]
     public void SitemapController_Index_ExcludesAttributes() {

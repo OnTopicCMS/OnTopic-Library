@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;
@@ -16,8 +17,8 @@ namespace OnTopic.AspNetCore.Mvc.Components {
   | CLASS: PAGE-LEVEL NAVIGATION VIEW COMPONENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a <see cref="ViewComponent"/> which provides access to a menu of <typeparamref name="NavigationTopicViewModel"/>
-  ///   instances representing the nearest page-level navigation.
+  ///   Defines a <see cref="ViewComponent"/> which provides access to a menu of <typeparamref name="T"/> instances representing
+  ///   the nearest page-level navigation.
   /// </summary>
   /// <remarks>
   ///   <para>
