@@ -114,10 +114,10 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentKey);
-      Assert.AreEqual<string?>("Root:Web", model?.NavigationRoot?.UniqueKey);
+      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentWebPath);
+      Assert.AreEqual<string?>("/Web/", model?.NavigationRoot?.WebPath);
       Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetUniqueKey())?? false);
+      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }
 
@@ -139,10 +139,10 @@ namespace OnTopic.Tests {
       var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentKey);
-      Assert.AreEqual<string?>("Root:Web:Web_3", model?.NavigationRoot?.UniqueKey);
+      Assert.AreEqual<string?>(_topic.GetUniqueKey(), model?.CurrentWebPath);
+      Assert.AreEqual<string?>("/Web/Web_3/", model?.NavigationRoot?.WebPath);
       Assert.AreEqual<int?>(2, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetUniqueKey())?? false);
+      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
 
     }
 
