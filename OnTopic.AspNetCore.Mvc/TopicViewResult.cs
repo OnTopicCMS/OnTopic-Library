@@ -78,7 +78,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </summary>
     /// <remarks>
     ///   The associated <see cref="TopicViewResultExecutor"/> will fall back to the <see cref="TopicView"/> if the view isn't
-    ///   set via other sources, such as the HTTP <c>accepts</c> header, the query string, &c.
+    ///   set via other sources, such as the HTTP <c>accepts</c> header, the query string, etc.
     /// </remarks>
     public string TopicView { get; }
 
