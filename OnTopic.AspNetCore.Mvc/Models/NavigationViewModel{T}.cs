@@ -13,7 +13,8 @@ namespace OnTopic.AspNetCore.Mvc.Models {
   | VIEW MODEL: NAVIGATION TOPIC
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for feeding views with information about a tier of navigation.
+  ///   Provides a strongly-typed view model for feeding views with information expected to be required for each node in of
+  ///   navigation.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -21,13 +22,15 @@ namespace OnTopic.AspNetCore.Mvc.Models {
   ///     constructed by the <see cref="NavigationTopicViewComponentBase{T}"/>.
   ///   </para>
   ///   <para>
-  ///     The <see cref="NavigationRoot"/> can be any view model that implements <see cref="INavigationTopicViewModel{T}"/>,
-  ///     which provides a base level of support for properties associated with the typical <c>Page</c> content type as well as
-  ///     a method for determining if a given <see cref="INavigationTopicViewModel{T}"/> instance is the currently-selected
-  ///     topic. Implementations may support additional properties, as appropriate.
+  ///     The <see cref="NavigationRoot"/> can be any view model that implements <see cref="IHierarchicalTopicViewModel{T}"/>,
+  ///     which ensures support for hierarchical coverage. In practice, we expect most implementers will choose to implement
+  ///     <see cref="INavigationTopicViewModel{T}"/> instead, which addresses not only <see cref="IHierarchicalTopicViewModel{T}
+  ///     "/>, but also provides a base level of support for properties that most navigation views will need, as well as a
+  ///     method for determining if a given <see cref="IHierarchicalTopicViewModel{T}"/> instance is the currently-selected
+  ///     topic. Derived implementations may introduce additional properties, as appropriate.
   ///   </para>
   /// </remarks>
-  public class NavigationViewModel<T> where T : class, INavigationTopicViewModel<T> {
+  public class NavigationViewModel<T> where T : class, IHierarchicalTopicViewModel<T> {
 
     /*==========================================================================================================================
     | NAVIGATION ROOT
@@ -37,9 +40,9 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     /// </summary>
     /// <remarks>
     ///   Since this implements <see cref="IHierarchicalTopicViewModel{T}"/>, it  may include multiple levels of children. By
-    ///   implementing it as a generic, each site or application can provide its own <see cref="INavigationTopicViewModel{T}"/>
-    ///   implementation, thus potentially extending the schema with properties relevant to that site's navigation. For example,
-    ///   a site may optionally add an <c>IconUrl</c> property if it wishes to assign unique icons to each link in the
+    ///   implementing it as a generic, each site or application can provide its own <see cref="IHierarchicalTopicViewModel{T}"
+    ///   /> implementation, thus potentially extending the schema with properties relevant to that site's navigation. For
+    ///   example, a site may optionally add an <c>IconUrl</c> property if it wishes to assign unique icons to each link in the
     ///   navigation.
     /// </remarks>
     public T? NavigationRoot { get; set; }
@@ -58,7 +61,7 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     ///     always have access to this information.
     ///   </para>
     ///   <para>
-    ///     It's worth noting that while this <i>could</i> be stored on the <see cref="INavigationTopicViewModel{T}"/> itself,
+    ///     It's worth noting that while this <i>could</i> be stored on the <see cref="IHierarchicalTopicViewModel{T}"/> itself,
     ///     that would prevent those values from being cached. As such, it's preferrable to keep the navigation nodes stateless,
     ///     and maintaining state exclusively in the <see cref="NavigationViewModel{T}"/> itself.
     ///   </para>

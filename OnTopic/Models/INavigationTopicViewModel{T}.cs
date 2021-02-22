@@ -10,7 +10,7 @@ namespace OnTopic.Models {
   | INTERFACE: NAVIGATION TOPIC VIEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a generic data transfer topic for feeding views information about a navigation entry.
+  ///   Provides a generic model for feeding views information about a navigation entry.
   /// </summary>
   /// <remarks>
   ///   No topics are expected to have a <c>Navigation</c> content type. Instead, implementers of this view model are expected

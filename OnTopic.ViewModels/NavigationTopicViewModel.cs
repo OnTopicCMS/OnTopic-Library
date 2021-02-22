@@ -18,13 +18,13 @@ namespace OnTopic.ViewModels {
   /// <remarks>
   ///   <para>
   ///     No topics are expected to have a <c>Navigation</c> content type. Instead, this view model is expected to be manually
-  ///     constructed by e.g. a <c>LayoutController</c>.
+  ///     constructed by e.g. a <c>MenuViewComponent</c>.
   ///   </para>
   ///   <para>
-  ///     Since C# doesn't support return-type covariance, this class can't be derived in a meaningful way (i.e., if it were to
-  ///     be, the <see cref="NavigationTopicViewModel.Children"/> property would still return a <see cref="Collection{T}"/> of
-  ///     <see cref="NavigationTopicViewModel"/> instances). Instead, the preferred way to extend the functionality is to create
-  ///     a new implementation of <see cref="INavigationTopicViewModel{T}"/>. To help communicate this, the <see
+  ///     Since .NET Standard doesn't support return-type covariance, this class can't be derived in a meaningful way (i.e., if
+  ///     it were to be, the <see cref="NavigationTopicViewModel.Children"/> property would still return a <see cref="Collection
+  ///     {T}"/> of <see cref="NavigationTopicViewModel"/> instances). Instead, the preferred way to extend the functionality is
+  ///     to create a new implementation of <see cref="INavigationTopicViewModel{T}"/>. To help communicate this, the <see
   ///     cref="NavigationTopicViewModel"/> class is marked as <c>sealed</c>.
   ///   </para>
   /// </remarks>

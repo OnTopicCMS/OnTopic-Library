@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
@@ -30,14 +31,22 @@ namespace OnTopic.AspNetCore.Mvc.Components {
   ///   <para>
   ///     In order to remain view model agnostic, the <see cref="PageLevelNavigationViewComponentBase{T}"/> does not assume that
   ///     a particular view model will be used, and instead accepts a generic argument for any view model that implements the
-  ///     interface <see cref="INavigationTopicViewModel{T}"/>. Since generic view components cannot be effectively routed to,
+  ///     interface <see cref="IHierarchicalTopicViewModel{T}"/>. Since generic view components cannot be effectively routed to,
   ///     however, that means implementors must, at minimum, provide a local instance of <see
   ///     cref="PageLevelNavigationViewComponentBase{T}"/> which sets the generic value to the desired view model. To help
   ///     enforce this, while avoiding ambiguity, this class is marked as <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
+  ///   <para>
+  ///     While the <see cref="PageLevelNavigationViewComponentBase{T}"/> only requires that the <typeparamref name="T"/>
+  ///     implement <see cref="IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be
+  ///     determined on a per-case basis, as required by the implementation. Implementaters, however, should consider
+  ///     implementing the <see cref="INavigationTopicViewModel{T}"/> interface, which provides the standard properties that
+  ///     most views will likely need, as well as a <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/> method for
+  ///     determining if the navigation item is currently selected.
+  ///   </para>
   /// </remarks>
   public abstract class PageLevelNavigationViewComponentBase<T> :
-    NavigationTopicViewComponentBase<T> where T : class, INavigationTopicViewModel<T>, new()
+    NavigationTopicViewComponentBase<T> where T : class, IHierarchicalTopicViewModel<T>, new()
   {
 
     /*==========================================================================================================================
