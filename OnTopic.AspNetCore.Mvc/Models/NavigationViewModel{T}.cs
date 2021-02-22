@@ -64,6 +64,15 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     ///   </para>
     /// </remarks>
     public string CurrentWebPath { get; set; } = default!;
+
+    /*==========================================================================================================================
+    | CURRENT KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The <see cref="Topic.GetWebPath()"/> representing the path to the current <see cref="Topic"/>.
+    /// </summary>
+    /// <inheritdoc cref="CurrentWebPath"/>
+    [Obsolete("The CurrentKey property has been replaced in favor of CurrentWebPath.", true)]
     public string CurrentKey { get; set; } = default!;
 
   } //Class
