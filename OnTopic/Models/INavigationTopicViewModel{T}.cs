@@ -16,10 +16,13 @@ namespace OnTopic.Models {
   ///   No topics are expected to have a <c>Navigation</c> content type. Instead, implementers of this view model are expected
   ///   to manually construct instances.
   /// </remarks>
-  public interface INavigationTopicViewModel<T> :
-    ITopicViewModel, IHierarchicalTopicViewModel<T>
-    where T: INavigationTopicViewModel<T>
-  {
+  public interface INavigationTopicViewModel<T> : IHierarchicalTopicViewModel<T> where T: INavigationTopicViewModel<T> {
+
+    /*==========================================================================================================================
+    | PROPERTY: TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="ITopicViewModel.Title"/>
+    string? Title { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: SHORT TITLE
@@ -31,15 +34,21 @@ namespace OnTopic.Models {
     string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
-    | METHOD: ISSELECTED
+    | PROPERTY: WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="ITopicViewModel.WebPath"/>
+    string? WebPath { get; init; }
+
+    /*==========================================================================================================================
+    | METHOD: IS SELECTED?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines if the current item is selected based on the provided <paramref name="uniqueKey"/>.
+    ///   Determines if the current item is selected based on the provided <paramref name="webPath"/>.
     /// </summary>
-    /// <param name="uniqueKey">
-    ///   The unique key to compare against the current <see cref="INavigationTopicViewModel{T}"/>
+    /// <param name="webPath">
+    ///   The path to compare against the current <see cref="INavigationTopicViewModel{T}"/>
     /// </param>
-    bool IsSelected(string uniqueKey);
+    bool IsSelected(string webPath);
 
   } //Class
 } //Namespace
