@@ -13,6 +13,8 @@
 -- migrations.
 --------------------------------------------------------------------------------------------------------------------------------
 
+PRINT('Dropping legacy columns...');
+
 ALTER
 TABLE	Topics
 DROP
@@ -38,6 +40,8 @@ TABLE	ExtendedAttributes
 DROP
 COLUMN	DateModified;
 
+PRINT('Dropped legacy columns');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE CORE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
@@ -45,6 +49,8 @@ COLUMN	DateModified;
 -- This includes Key, ContentType, and ParentID. Previously, these required a lot of workaround since they frequently utilized
 -- in a way that's inconsistent with other attributes. By moving them to Topic, we better acknowledge their unique status.
 --------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating core attributes...');
 
 ALTER TABLE	[dbo].[Topics]
 ADD	[TopicKey]		VARCHAR(128)	NULL,
@@ -96,6 +102,8 @@ IN (	'Key',
 	'ParentID'
 )
 
+PRINT('Migrated core attributes');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE TOPIC REFERENCES
 --------------------------------------------------------------------------------------------------------------------------------
@@ -104,6 +112,8 @@ IN (	'Key',
 -- foreign key constraints, and formalizes the relationship so we don't need to rely on hacks in e.g. the Topic Data Transer
 -- service to infer which attributes represent relationships in order to translate their values from `TopicID` to `UniqueKey`.
 --------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating topic references...');
 
 CREATE
 TABLE	[dbo].[TopicReferences] (
@@ -124,6 +134,8 @@ WHERE	AttributeKey		LIKE '%ID'
   AND	ISNUMERIC(AttributeValue)	= 1
   AND	Topics.TopicID		IS NOT NULL
 
+PRINT('Migrated core attributes');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE DERIVED TOPICS
 --------------------------------------------------------------------------------------------------------------------------------
@@ -132,6 +144,8 @@ WHERE	AttributeKey		LIKE '%ID'
 -- to 'BaseTopic'. This is not only a more accurate identifier, but also unifies the label between the attribute descriptor
 -- and how its 'ReferenceKey'.
 --------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating base topics...');
 
 UPDATE	TopicReferences
 SET	ReferenceKey		= 'BaseTopic'
@@ -142,6 +156,8 @@ SET	TopicKey		= 'BaseTopic'
 WHERE	TopicKey		IN ('TopicID', 'InheritedTopic', 'DerivedTopic')
 AND	ContentType		= 'TopicReferenceAttribute'
 
+PRINT('Migrated base topics');
+
 --------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATE ATTRIBUTE KEYS
 --------------------------------------------------------------------------------------------------------------------------------
@@ -149,6 +165,8 @@ AND	ContentType		= 'TopicReferenceAttribute'
 -- This has a number of benefits, including consistency with the base "AttributeDescriptor" content type, and avoiding a naming
 -- conflict with .NET's own "*Attribute" convention (which is usually reserved for actual attributes).
 --------------------------------------------------------------------------------------------------------------------------------
+
+PRINT('Migrating attribute descriptors...');
 
 UPDATE	Topics
 SET	TopicKey		= TopicKey + 'Descriptor'
@@ -158,3 +176,5 @@ AND	ContentType		= 'ContentTypeDescriptor'
 UPDATE	Topics
 SET	ContentType		= ContentType + 'Descriptor'
 WHERE	ContentType		LIKE '%Attribute'
+
+PRINT('Migrated attribute descriptors');
