@@ -28,7 +28,13 @@ namespace OnTopic.ViewModels {
   ///     cref="NavigationTopicViewModel"/> class is marked as <c>sealed</c>.
   ///   </para>
   /// </remarks>
-  public sealed record NavigationTopicViewModel : TopicViewModel, INavigationTopicViewModel<NavigationTopicViewModel> {
+  public sealed record NavigationTopicViewModel : INavigationTopicViewModel<NavigationTopicViewModel> {
+
+    /*==========================================================================================================================
+    | TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="TopicViewModel"/>
+    public string? Title { get; init; }
 
     /*==========================================================================================================================
     | SHORT TITLE
@@ -47,14 +53,20 @@ namespace OnTopic.ViewModels {
     public Collection<NavigationTopicViewModel> Children { get; } = new();
 
     /*==========================================================================================================================
+    | WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="WebPath"/>
+    public string? WebPath { get; init; }
+
+    /*==========================================================================================================================
     | IS SELECTED?
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Determines whether or not the node represented by this <see cref="NavigationTopicViewModel"/> is currently selected,
     ///   typically meaning the user is on the page this object is pointing to.
     /// </summary>
-    public bool IsSelected(string uniqueKey) =>
-      $"{uniqueKey}:".StartsWith($"{UniqueKey}:", StringComparison.OrdinalIgnoreCase);
+    public bool IsSelected(string webPath) =>
+      $"{webPath}:".StartsWith($"{WebPath}:", StringComparison.OrdinalIgnoreCase);
 
   } //Class
 } //Namespace
