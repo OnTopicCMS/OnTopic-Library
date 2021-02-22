@@ -52,7 +52,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     ///   on the route data.
     /// </summary>
     /// <returns>
-    ///   The <see cref="ITopicRepository"/> associated with the <see cref="TopicViewComponentBase{T}"/>.
+    ///   The <see cref="ITopicRepository"/> associated with the <see cref="NavigationTopicViewComponentBase{T}"/>.
     /// </returns>
     protected ITopicRepository TopicRepository { get; }
 
@@ -64,7 +64,8 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     ///   be mapped.
     /// </summary>
     /// <returns>
-    ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="TopicViewComponentBase{T}"/>.
+    ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="
+    ///   NavigationTopicViewComponentBase{T}"/>.
     /// </returns>
     protected IHierarchicalTopicMappingService<T> HierarchicalTopicMappingService { get; }
 

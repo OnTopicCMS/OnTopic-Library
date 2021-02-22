@@ -28,7 +28,7 @@ namespace OnTopic.Data.Sql {
   ///   main entry point is <see cref="LoadTopicGraph"/>. It is supported by a number of <c>private</c> extensions which allow
   ///   it to handle individual records from particular data sets (e.g., the <see cref="SetExtendedAttributes"/> method maps to
   ///   data returned from the <c>ExtendedAttributeIndex</c> view). That said, the <c>Get</c> extensions (e.g., <see
-  ///   cref="GetString(SqlDataReader, String)"/>) are not specific to this format, and remain useful for a variety of database
+  ///   cref="GetString(IDataReader, String)"/>) are not specific to this format, and remain useful for a variety of database
   ///   queries, should they be needed, and thus are marked as <c>internal</c>.
   /// </remarks>
   internal static class SqlDataReaderExtensions {
@@ -347,7 +347,7 @@ namespace OnTopic.Data.Sql {
     ///   behavior is overwritten to accept whatever value is submitted. This can be used, for instance, to prevent an update
     ///   from being persisted to the data store on <see cref="Repositories.ITopicRepository.Save(Topic, Boolean)"/>.
     /// </param>
-    private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? isDirty = false) {
+    private static void SetRelationships(this IDataReader reader, TopicIndex topics, bool? markDirty = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify attributes
@@ -378,7 +378,7 @@ namespace OnTopic.Data.Sql {
       | Set relationship on object
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!isDeleted) {
-        current.Relationships.SetValue(relationshipKey, related, isDirty);
+        current.Relationships.SetValue(relationshipKey, related, markDirty);
       }
       else if (current.Relationships.Contains(relationshipKey, related)) {
         current.Relationships.Remove(relationshipKey, related);

@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
@@ -35,7 +37,6 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <param name="viewEngine">The <see cref="ICompositeViewEngine"/>.</param>
     /// <param name="tempDataFactory">The <see cref="ITempDataDictionaryFactory"/>.</param>
     /// <param name="diagnosticListener">The <see cref="DiagnosticListener"/>.</param>
-    /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
     /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
     public TopicViewResultExecutor(
       IOptions<MvcViewOptions> viewOptions,

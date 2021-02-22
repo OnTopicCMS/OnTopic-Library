@@ -105,7 +105,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="command">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, string? fieldValue)
       => AddParameter(command, sqlParameter, String.IsNullOrEmpty(fieldValue)? null : fieldValue, SqlDbType.VarChar);
 
@@ -117,7 +116,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlLength">Length limit for the SQL field.</param>
     /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
     ///   command is not null
     /// </requires>

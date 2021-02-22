@@ -26,7 +26,7 @@ namespace OnTopic.TestDoubles {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="DummmyTopicMappingService"/> with required dependencies.
+    ///   Establishes a new instance of a <see cref="DummyTopicMappingService"/> with required dependencies.
     /// </summary>
     public DummyTopicMappingService() {
     }

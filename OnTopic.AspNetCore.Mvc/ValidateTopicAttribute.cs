@@ -23,7 +23,8 @@ namespace OnTopic.AspNetCore.Mvc {
   ///   Not all topics are appropriate to display in a view. If the topic isn't in the repository, the action should return a
   ///   <see cref="NotFoundResult"/>. If the topic is marked as <see cref="Topic.IsDisabled"/>, then the action should return a
   ///   <see cref="UnauthorizedResult"/>. If the topic contains a <c>Url</c> attribute, then the action should return a <see
-  ///   cref="RedirectResult"/>. All of this logic can be enforced by adding the <see cref="ValidateTopicFilter"/> to an action.
+  ///   cref="RedirectResult"/>. All of this logic can be enforced by adding the <see cref="ValidateTopicAttribute"/> to an
+  ///   action.
   /// </remarks>
   [AttributeUsage(AttributeTargets.Method)]
   public sealed class ValidateTopicAttribute : ActionFilterAttribute {
@@ -48,10 +49,10 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </summary>
     /// <remarks>
     ///   While the <see cref="OnActionExecuting(ActionExecutingContext)"/> event can be used to provide a wide variety of
-    ///   filters, this specific implementation is focused on validating the state of the <see cref="CurrentTopic"/>. Namely,
-    ///   it will provide error handling (if the <see cref="CurrentTopic"/> is null), a redirect (if the <see
-    ///   cref="CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized response (if the <see cref="CurrentTopic"/>'s
-    ///   <see cref="Topic.IsDisabled"/> flag is set.
+    ///   filters, this specific implementation is focused on validating the state of the <see cref="TopicController.
+    ///   CurrentTopic"/>. Namely, it will provide error handling (if the <see cref="TopicController.CurrentTopic"/> is null), a
+    ///   redirect (if the <see cref="TopicController.CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized
+    ///   response (if the <see cref="TopicController.CurrentTopic"/>'s <see cref="Topic.IsDisabled"/> flag is set.
     /// </remarks>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]

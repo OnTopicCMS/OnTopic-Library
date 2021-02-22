@@ -31,7 +31,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///     their content types; in this case, the <see cref="Topic"/> is excluded, but its descendents are not. What content
   ///     types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes
   ///     "/> and <see cref="SkippedContentTypes"/> collections.
-  ///     </i>.
   ///   </para>
   ///   <para>
   ///     The <see cref="Extended(Boolean)"/> action enables an extended sitemap with Google's custom <c>PageMap</c> schema for
@@ -168,7 +167,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Given a root topic, generates an XML-formatted sitemap.
     /// </summary>
-    /// <param name="topic">The topic to add to the sitemap.</param>
+    /// <param name="rootTopic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
     private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>

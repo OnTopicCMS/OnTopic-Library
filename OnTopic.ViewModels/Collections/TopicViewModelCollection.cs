@@ -16,7 +16,7 @@ namespace OnTopic.ViewModels.Collections {
   | VIEW MODEL: TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a basic collection interface for use with data transfer objects implementing <see cref="ITopicViewModelCore"/>,
+  ///   Provides a basic collection interface for use with data transfer objects implementing <see cref="ITopicViewModel"/>,
   ///   including <see cref="TopicViewModel"/> and derivatives.
   /// </summary>
   /// <remarks>
