@@ -46,10 +46,10 @@ COLUMN	DateModified;
 -- in a way that's inconsistent with other attributes. By moving them to Topic, we better acknowledge their unique status.
 --------------------------------------------------------------------------------------------------------------------------------
 
-ALTER TABLE [dbo].[Topics]
-    ADD [TopicKey]    VARCHAR (128) NULL,
-        [ContentType] VARCHAR (128) NULL,
-        [ParentID]    INT           NULL;
+ALTER TABLE	[dbo].[Topics]
+ADD	[TopicKey]		VARCHAR(128)	NULL,
+	[ContentType]		VARCHAR(128)	NULL,
+	[ParentID]		INT	NULL;
 
 WITH KeyAttributes AS (
   SELECT	TopicID,
@@ -81,6 +81,12 @@ PIVOT (	MIN(AttributeValue)
 )	AS Pvt
 WHERE	RowNumber		= 1
 AND	Topics.TopicID		= Pvt.TopicID
+
+ALTER TABLE	[dbo].[Topics]
+ALTER COLUMN	TopicKey		VARCHAR(128)	NOT NULL;
+
+ALTER TABLE	[dbo].[Topics]
+ALTER COLUMN	ContentType		VARCHAR(128)	NOT NULL;
 
 DELETE
 FROM	Attributes
