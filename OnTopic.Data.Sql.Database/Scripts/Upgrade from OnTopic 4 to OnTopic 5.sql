@@ -133,7 +133,7 @@ WHERE	ReferenceKey		= 'Topic'
 
 UPDATE	Topics
 SET	TopicKey		= 'BaseTopic'
-WHERE	TopicKey		= 'InheritedTopic'
+WHERE	TopicKey		IN ('TopicID', 'InheritedTopic', 'DerivedTopic')
 AND	ContentType		= 'TopicReferenceAttribute'
 
 --------------------------------------------------------------------------------------------------------------------------------
