@@ -156,6 +156,31 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: RECORD: RETURNS NEW TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests mapping a binding model that's based on a C# 9.0
+    ///   record type.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Record_ReturnsNewTopic() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+
+      var bindingModel          = new RecordTopicBindingModel() {
+        Key                     = "Test",
+        ContentType             = "TextAttributeDescriptor"
+      };
+
+      var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
+
+      Assert.IsNotNull(target);
+      Assert.AreEqual<string>("Test", target.Key);
+      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: COMPLEX OBJECT: RETURNS FLATTENED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
