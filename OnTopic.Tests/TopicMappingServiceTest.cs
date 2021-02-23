@@ -23,7 +23,6 @@ using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
 using OnTopic.ViewModels;
-using OnTopic.ViewModels.Items;
 
 namespace OnTopic.Tests {
 

@@ -10,7 +10,7 @@ using System.Linq;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Models;
 
-namespace OnTopic.ViewModels.Collections {
+namespace OnTopic.ViewModels {
 
   /*============================================================================================================================
   | VIEW MODEL: TOPIC COLLECTION
