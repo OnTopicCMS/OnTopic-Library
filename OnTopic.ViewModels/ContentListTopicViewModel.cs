@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.ViewModels.Collections;
-using OnTopic.ViewModels.Items;
 
 namespace OnTopic.ViewModels {
 

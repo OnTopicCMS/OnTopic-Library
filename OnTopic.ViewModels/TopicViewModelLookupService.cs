@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using OnTopic.Lookup;
-using OnTopic.ViewModels.Items;
 
 namespace OnTopic.ViewModels {
 
