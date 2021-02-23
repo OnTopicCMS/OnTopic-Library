@@ -31,21 +31,21 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 
 ## Inventory
 - [`TopicViewModel`](TopicViewModel.cs)
-  - [`PageTopicViewModel`](PageTopicViewModel.cs)
-    - [`ContentListTopicViewModel`](ContentListTopicViewModel.cs) ([`ContentItemTopicViewModel`](Items/ContentItemTopicViewModel.cs))
-    - [`IndexTopicViewModel`](IndexTopicViewModel.cs)
-    - [`SlideshowTopicViewModel`](SlideshowTopicViewModel.cs) ([`SlideTopicViewModel`](Items/SlideTopicViewModel.cs))
-    - [`VideoTopicViewModel`](VideoTopicViewModel.cs)
-  - [`SectionTopicViewModel`](SectionTopicViewModel.cs)
-    - [`PageGroupTopicViewModel`](PageGroupTopicViewModel.cs)
+  - [`PageTopicViewModel`](_contentTypes/PageTopicViewModel.cs)
+    - [`ContentListTopicViewModel`](_contentTypes/ContentListTopicViewModel.cs) ([`ContentItemTopicViewModel`](_items/ContentItemTopicViewModel.cs))
+    - [`IndexTopicViewModel`](_contentTypes/IndexTopicViewModel.cs)
+    - [`SlideshowTopicViewModel`](_contentTypes/SlideshowTopicViewModel.cs) ([`SlideTopicViewModel`](_items/SlideTopicViewModel.cs))
+    - [`VideoTopicViewModel`](_contentTypes/VideoTopicViewModel.cs)
+  - [`SectionTopicViewModel`](_contentTypes/SectionTopicViewModel.cs)
+    - [`PageGroupTopicViewModel`](_contentTypes/PageGroupTopicViewModel.cs)
   - [`NavigationTopicViewModel`](NavigationTopicViewModel.cs) 
-  - [`ItemTopicViewModel`](Items/ItemTopicViewModel.cs)
-    - [`ContentItemTopicViewModel`](Items/ContentItemTopicViewModel.cs)
-    - [`LookupListItemTopicViewModel`](Items/LookupListItemTopicViewModel.cs)
-    - [`SlideTopicViewModel`](Items/SlideTopicViewModel.cs)
+  - [`ItemTopicViewModel`](_items/ItemTopicViewModel.cs)
+    - [`ContentItemTopicViewModel`](_items/ContentItemTopicViewModel.cs)
+    - [`LookupListItemTopicViewModel`](_items/LookupListItemTopicViewModel.cs)
+    - [`SlideTopicViewModel`](_items/SlideTopicViewModel.cs)
 - [`AssociatedTopicBindingModel`](BindingModels/AssociatedTopicBindingModel.cs)
 - [`TopicViewModelLookupService`](TopicViewModelLookupService.cs)
-- [`TopicViewModelCollection<>`](Collections/TopicViewModelCollection.cs)
+- [`TopicViewModelCollection<>`](_collections/TopicViewModelCollection.cs)
 
 ## Usage
 By default, the [`OnTopic.AspNetCore.Mvc`](../OnTopic.AspNetCore.Mvc/README.md)'s [`TopicController`](../OnTopic.AspNetCore.Mvc/Controllers/TopicController.cs) uses the out-of-the-box [`TopicMappingService`](../OnTopic/Mapping) to map topics to view models. For applications primarily relying on the out-of-the-box view models, it is recommended that the [`TopicViewModelLookupService`](TopicViewModelLookupService.cs) be used; this includes all of the out-of-the-box view models, and can be derived to add application-specific view models.
@@ -62,6 +62,6 @@ As view models, not all attributes and associations are exposed. The properties 
 All of the view models assume a parameterless constructor (e.g., `new TopicViewModel()`), which can optionally be the default constructor if no other constructors are required. This is necessary to provide compatibility with the `TopicMappingService`, which will attempt to create new instances of view models based on the the topic's `ContentType`, using the view models parameterless constructor.
 
 ### Inheritance
-The view models map to the hierarchy of the content types in OnTopic, with each view model only including properties that are _specific_ to that content type. So, for example, [`PageTopicViewModel`](PageTopicViewModel.cs) includes a `Body` property, which is introduced by the `Page` content type, but doesn't include e.g. `Key`, `ContentType`, or `Title`; these are all inherited from the base [`TopicViewModel`](TopicViewModel.cs).
+The view models map to the hierarchy of the content types in OnTopic, with each view model only including properties that are _specific_ to that content type. So, for example, [`PageTopicViewModel`](_contentTypes/PageTopicViewModel.cs) includes a `Body` property, which is introduced by the `Page` content type, but doesn't include e.g. `Key`, `ContentType`, or `Title`; these are all inherited from the base [`TopicViewModel`](TopicViewModel.cs).
 
 This is advantageous not only because it effectively models the familiar content type hierarchy, but also because it allows for polymorphism in the mapping library. So, for example, if a property accepts a `Collection<PageTopicViewModel>`, then this can also contain any view models that derive from the `PageTopicViewModel` (e.g., `SlideshowTopicViewModel`, `VideoTopicViewModel`, &c.).
