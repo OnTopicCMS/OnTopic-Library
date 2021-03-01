@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Reverse;
 
 namespace OnTopic.Models {
@@ -30,7 +31,7 @@ namespace OnTopic.Models {
     /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
     ///   value is not null
     /// </requires>
-    [Required]
+    [Required, NotNull, DisallowNull]
     string? UniqueKey { get; init; }
 
   } //Class

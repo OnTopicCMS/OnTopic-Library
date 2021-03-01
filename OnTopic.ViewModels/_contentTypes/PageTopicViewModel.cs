@@ -18,7 +18,15 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public record PageTopicViewModel: TopicViewModel, IPageTopicViewModel {
+  public record PageTopicViewModel: TopicViewModel, INavigableTopicViewModel {
+
+    /*==========================================================================================================================
+    | SHORT TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
+    /// </summary>
+    public string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | SUBTITLE
@@ -55,14 +63,6 @@ namespace OnTopic.ViewModels {
     ///   Determines whether or not search engines are expected to index the page.
     /// </summary>
     public bool? NoIndex { get; init; }
-
-    /*==========================================================================================================================
-    | SHORT TITLE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
-    /// </summary>
-    public string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | BODY

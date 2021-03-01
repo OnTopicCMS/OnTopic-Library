@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Models;
 
@@ -20,7 +22,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public record TopicViewModel: ITopicViewModel {
+  public record TopicViewModel: ITopicViewModel, ICoreTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
 
     /*==========================================================================================================================
     | ID
@@ -32,24 +34,28 @@ namespace OnTopic.ViewModels {
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    [Required, NotNull, DisallowNull]
     public string? Key { get; init; }
 
     /*==========================================================================================================================
     | CONTENT TYPE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    [Required, NotNull, DisallowNull]
     public string? ContentType { get; init; }
 
     /*==========================================================================================================================
     | UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    [Required, NotNull, DisallowNull]
     public string? UniqueKey { get; init; }
 
     /*==========================================================================================================================
     | WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    [Required, NotNull, DisallowNull]
     public string? WebPath { get; init; }
 
     /*==========================================================================================================================
@@ -62,12 +68,15 @@ namespace OnTopic.ViewModels {
     | TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
+    [Required, NotNull, DisallowNull]
     public string? Title { get; init; }
 
     /*==========================================================================================================================
     | IS HIDDEN?
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
+    /// <inheritdoc/>
+    [Obsolete("The IsHidden property is no longer supported by TopicViewModel.", true)]
+    [DisableMapping]
     public bool IsHidden { get; init; }
 
     /*==========================================================================================================================

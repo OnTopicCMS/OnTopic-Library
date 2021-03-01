@@ -1,43 +1,47 @@
 ﻿/*==============================================================================================================================
 | Author        Ignia, LLC
-| Client        Ignia, LLC
-| Project       Topics Library
+| Client        Ignia
+| Project       Website
 \=============================================================================================================================*/
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OnTopic.ViewModels {
+namespace OnTopic.Models {
 
   /*============================================================================================================================
-  | VIEW MODEL: VIDEO TOPIC
+  | INTERFACE: NAVIGABLE TOPIC VIEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed model for feeding views with information about a <c>Video</c> topic.
+  ///   Ensures basic properties needed to treat a view model as a navigable entry.
   /// </summary>
   /// <remarks>
-  ///   Typically, view models should be created as part of the presentation layer. The <see cref="Models"/> namespace contains
-  ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
-  ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
+  ///   No topics are expected to have a <c>Navigable</c> content type. Instead, implementers of this view model are expected
+  ///   to manually construct instances.
   /// </remarks>
-  public record VideoTopicViewModel: PageTopicViewModel {
+  public interface INavigableTopicViewModel {
 
     /*==========================================================================================================================
-    | VIDEO URL
+    | PROPERTY: TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a URL reference to a video to display on the page.
-    /// </summary>
+    /// <inheritdoc cref="ITopicViewModel.Title"/>
     [Required, NotNull, DisallowNull]
-    public Uri? VideoUrl { get; init; }
+    string? Title { get; init; }
 
     /*==========================================================================================================================
-    | POSTER URL
+    | PROPERTY: SHORT TITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a URL reference to an image to display prior to playing the video.
+    ///   In addition to the Title, a site may opt to define a Short Title used exclusively in the navigation. If present, this
+    ///   value should be used instead of Title.
     /// </summary>
-    public Uri? PosterUrl { get; init; }
+    string? ShortTitle { get; init; }
+
+    /*==========================================================================================================================
+    | PROPERTY: WEB PATH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="ITopicViewModel.WebPath"/>
+    [Required, NotNull, DisallowNull]
+    string? WebPath { get; init; }
 
   } //Class
 } //Namespace

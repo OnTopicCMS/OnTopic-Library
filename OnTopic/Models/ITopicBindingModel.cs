@@ -3,9 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.ComponentModel.DataAnnotations;
 using OnTopic.Mapping.Reverse;
-using OnTopic.Metadata;
 
 namespace OnTopic.Models {
 
@@ -19,37 +17,8 @@ namespace OnTopic.Models {
   ///   It is strictly required that topic binding models implement the <see cref="ITopicBindingModel"/> interface for the
   ///   default <see cref="ReverseTopicMappingService"/> to correctly identify and map a binding model to a <see cref="Topic"/>.
   /// </remarks>
-  public interface ITopicBindingModel {
+  public interface ITopicBindingModel: ICoreTopicViewModel {
 
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
-    /// </summary>
-    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value is not null
-    /// </requires>
-    /// <requires
-    ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
-    [Required]
-    string? Key { get; init; }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONTENT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the key name of the content type that the current topic represents.
-    /// </summary>
-    /// <remarks>
-    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
-    /// </remarks>
-    [Required]
-    string? ContentType { get; init; }
 
   } //Class
 } //Namespace

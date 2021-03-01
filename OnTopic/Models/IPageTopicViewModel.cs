@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using OnTopic.Mapping;
 
 namespace OnTopic.Models {
@@ -21,7 +22,8 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   /// </remarks>
-  public interface IPageTopicViewModel : ITopicViewModel {
+  [Obsolete("The IPageTopicViewModel is no longer utilized.", true)]
+  public interface IPageTopicViewModel : ITopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: META KEYWORDS

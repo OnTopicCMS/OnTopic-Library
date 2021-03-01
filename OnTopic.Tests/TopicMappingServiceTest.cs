@@ -85,13 +85,11 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
-      topic.Attributes.SetValue("IsHidden", "1");
 
       var target                = await _mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
-      Assert.AreEqual<bool>(true, target.IsHidden);
 
     }
 
@@ -127,13 +125,11 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
-      topic.Attributes.SetValue("IsHidden", "1");
 
       var target                = (PageTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
-      Assert.AreEqual<bool>(true, target.IsHidden);
 
     }
 
