@@ -3,8 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping;
-using OnTopic.Metadata;
 
 namespace OnTopic.Models {
 
@@ -45,6 +47,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="IAssociatedTopicBindingModel
     ///   .UniqueKey"/> in its URL format.
     /// </summary>
+    [Required, NotNull, DisallowNull]
     string? WebPath { get; init; }
 
     /*==========================================================================================================================
@@ -82,6 +85,7 @@ namespace OnTopic.Models {
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>
+    [Required, NotNull, DisallowNull]
     string? Title { get; init; }
 
   } //Class

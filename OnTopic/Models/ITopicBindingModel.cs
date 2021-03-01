@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping.Reverse;
 using OnTopic.Metadata;
 
@@ -31,7 +32,7 @@ namespace OnTopic.Models {
     ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
     ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
     /// </remarks>
-    [Required]
+    [Required, NotNull, DisallowNull]
     string? ContentType { get; init; }
 
   } //Class
