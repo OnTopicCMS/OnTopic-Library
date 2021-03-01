@@ -16,6 +16,7 @@ The `OnTopic` assembly represents the core domain layer of the OnTopic library. 
   - [Specialty Collections](#specialty-collections)
   - [Editor](#editor-1)
 - [View Models](#view-models) 
+  - [Binding Models](#binding-models)
 
 ## Entities
 - **[`Topic`](Topic.cs)**: This is the core entity in OnTopic, and models all attributes, relationships, and references associated with a topic record.
@@ -74,7 +75,7 @@ The `OnTopic.Collections.Specialized` namespace includes a number of collections
   - **[`TopicReferenceCollection`](associations/TopicReferenceCollection.cs)**: A `TrackedRecordCollection` of [`TopicReferenceRecord`](Associations/TopicReferenceRecord.cs) instances keyed by `TopicReference.Key`; exposed by `Topic.References`.
 - **[`TopicMultiMap`](Collections/Specialized/TopicMultiMap.cs)**: Provides a multi-map (or collection-of-collections) for topics organized by a collection key.
   - **[`ReadOnlyTopicMultiMap`](Collections/Specialized/ReadOnlyTopicMultiMap.cs)**: A read-only interface to the `TopicMultiMap`, thus allowing simple enumeration of the collection withouthout exposing any write access.
-    - **[`TopicRelationshipMultiMap`](associations/TopicRelationshipMultiMap.cs)**: A `TopicMultiMap` of [`KeyValuesPair`](Collections/Specialized/KeyValuesPair.cs) instances keyed by `KeyValuesPair.Key`; exposed by `Topic.Relationships`.
+    - **[`TopicRelationshipMultiMap`](associations/TopicRelationshipMultiMap.cs)**: A `TopicMultiMap` of [`KeyValuesPair`](Collections/Specialized/KeyValuesPair{TKey,TValue}.cs) instances keyed by `KeyValuesPair.Key`; exposed by `Topic.Relationships`.
 
 ### Editor
 The following are intended to provide support for the Editor domain objects, `ContentTypeDescriptor` and `AttributeDescriptor`.
@@ -83,10 +84,14 @@ The following are intended to provide support for the Editor domain objects, `Co
 
 ## View Models
 The core Topic library has been designed to be view model agnostic; i.e., view models should be defined for the specific presentation framework (e.g., ASP.NET Core) and customer. That said, to facilitate reusability of features that work with view models, several interfaces are defined which can be applied as appropriate. These include:
-- **[`ITopicViewModel`](Models/ITopicViewModel.cs)**: Includes universal properties such as `Key`, `UniqueKey`, `Id`, `ContentType`, and `Title`.
-  - **[`IPageTopicViewModel`](Models/IPageTopicViewModel.cs)**: Includes page-specific properties such as `MetaKeywords` and `MetaDescription`.
-- **[`INavigationTopicViewModel<T>`](Models/INavigationTopicViewModel{T}.cs)**: Includes `IPageTopicViewModel`, `Children`, and an `IsSelected()` view logic handler, for use with navigation menus.
+- **[`ICoreTopicViewModel`](Models/ICoreTopicViewModel.cs)**: Includes core properties `Key` and `ContentType` necessary for every `Topic`.
+  - **[`ITopicViewModel`](Models/ITopicViewModel.cs)**: Includes universal properties such as `UniqueKey`, `WebPath`, `Id`, and `Title`.
+- **[`IHierarchicalTopicViewModel<T>`](Models/IHierarchicalTopicViewModel{T}.cs)**: Includes a generic `Children` property necessary to model a hierarchical graph.
+- **[`INavigableTopicViewModel`](Models/INavigableTopicViewModel.cs)**: Includes core properties `Title`, `ShortTitle`, and `WebPath`, necessary treating a topic as a navigable link.
+  - **[`INavigationTopicViewModel<T>`](Models/INavigationTopicViewModel{T}.cs)**: Includes `IHierarchicalTopicViewModel<T>` and the `IsSelected()` view logic method, for use with navigation menus.
+
+### Binding Models
 - **[`ITopicBindingModel`](Models/ITopicBindingModel.cs)**: Includes the bare minimum properties—namely `Key` and `ContentType`—needed to support a binding model that will be consumed by the `IReverseTopicMappingService`.
-- **[`IRelatedTopicBindingModel`](Models/IRelatedTopicBindingModel.cs)**: Includes the bare minimum properties—namely `UniqueKey`—needed to reference another topic on a binding model that will be consumed by the `IReverseTopicMappingService`.
+- **[`IAssociatedTopicBindingModel`](Models/IAssociatedTopicBindingModel.cs)**: Includes the bare minimum properties—namely `UniqueKey`—needed to associate another topic on a binding model that will be consumed by the `IReverseTopicMappingService`.
 
 In addition to these interfaces, a set of concrete implementations of view models corresponding to the default schemas for the out-of-the-box content types can be found in the [`OnTopic.ViewModels`](../OnTopic.ViewModels/README.md) package.
