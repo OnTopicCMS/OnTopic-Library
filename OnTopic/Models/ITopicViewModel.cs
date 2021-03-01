@@ -22,13 +22,13 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   ///   <para>
-  ///     For instance, in the default MVC library, the <c>TopicViewResult</c> class requires that the <see
-  ///     cref="Topic.ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a
-  ///     <see cref="ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the
-  ///     presentation layer and any supporting libraries.
+  ///     For instance, in the default MVC library, the <c>TopicViewResult</c> class requires that the <see cref="Topic.
+  ///     ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a <see cref="
+  ///     ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the presentation
+  ///     layer and any supporting libraries.
   ///   </para>
   /// </remarks>
-  public interface ITopicViewModel: IKeyedTopicViewModel, IAssociatedTopicBindingModel {
+  public interface ITopicViewModel: IKeyedTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -48,18 +48,6 @@ namespace OnTopic.Models {
     string? WebPath { get; init; }
 
     /*==========================================================================================================================
-    | PROPERTY: CONTENT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the key name of the content type that the current topic represents.
-    /// </summary>
-    /// <remarks>
-    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
-    /// </remarks>
-    string? ContentType { get; init; }
-
-    /*==========================================================================================================================
     | PROPERTY: VIEW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -67,10 +55,10 @@ namespace OnTopic.Models {
     /// </summary>
     /// <remarks>
     ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
-    ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the
-    ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
-    ///   Content Type is "Page", then the view will be "Page". This will cause the <c>TopicViewResultExecutor</c> to look
-    ///   for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
+    ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref="
+    ///   ITopicBindingModel.ContentType"/>. By default, it will be set to the name of the <see cref="ITopicBindingModel.
+    ///   ContentType"/>; e.g., if the Content Type is <c>Page</c>, then the view will be <c>Page</c>. This will cause the <c>
+    ///   TopicViewResultExecutor</c> to look for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
     string? View { get; init; }
 
