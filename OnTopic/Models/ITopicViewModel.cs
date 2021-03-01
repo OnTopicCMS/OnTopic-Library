@@ -28,7 +28,7 @@ namespace OnTopic.Models {
   ///     presentation layer and any supporting libraries.
   ///   </para>
   /// </remarks>
-  public interface ITopicViewModel {
+  public interface ITopicViewModel: IKeyedTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -37,14 +37,6 @@ namespace OnTopic.Models {
     ///   Gets or sets the topic's ID attribute, the primary unique identifier for the topic.
     /// </summary>
     int Id { get; init; }
-
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
-    /// </summary>
-    string? Key { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: UNIQUE KEY
@@ -105,7 +97,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="ITopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
+    ///   While the <see cref="IKeyedTopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>
