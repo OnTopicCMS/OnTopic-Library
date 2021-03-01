@@ -21,7 +21,7 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   /// </remarks>
-  public interface IPageTopicViewModel : ITopicViewModel {
+  public interface IPageTopicViewModel : ITopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: META KEYWORDS
