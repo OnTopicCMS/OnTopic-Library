@@ -21,6 +21,14 @@ namespace OnTopic.ViewModels {
   public record PageTopicViewModel: TopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================
+    | SHORT TITLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
+    /// </summary>
+    public string? ShortTitle { get; init; }
+
+    /*==========================================================================================================================
     | SUBTITLE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -55,14 +63,6 @@ namespace OnTopic.ViewModels {
     ///   Determines whether or not search engines are expected to index the page.
     /// </summary>
     public bool? NoIndex { get; init; }
-
-    /*==========================================================================================================================
-    | SHORT TITLE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Provides a short title to be used in the navigation, for cases where the normal title is too long.
-    /// </summary>
-    public string? ShortTitle { get; init; }
 
     /*==========================================================================================================================
     | BODY
