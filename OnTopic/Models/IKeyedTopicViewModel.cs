@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping;
+using OnTopic.Metadata;
 
 namespace OnTopic.Models {
 
@@ -35,6 +36,19 @@ namespace OnTopic.Models {
     /// </requires>
     [Required, NotNull, DisallowNull]
     string? Key { get; init; }
+
+    /*==========================================================================================================================
+    | PROPERTY: CONTENT TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the key name of the content type that the current topic represents.
+    /// </summary>
+    /// <remarks>
+    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
+    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property).
+    /// </remarks>
+    [Required, NotNull, DisallowNull]
+    string? ContentType { get; init; }
 
   } //Class
 } //Namespace

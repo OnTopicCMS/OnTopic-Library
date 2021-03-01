@@ -59,7 +59,7 @@ namespace OnTopic.Models {
     /// <remarks>
     ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
     ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref="
-    ///   ITopicBindingModel.ContentType"/>. By default, it will be set to the name of the <see cref="ITopicBindingModel.
+    ///   IKeyedTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="IKeyedTopicViewModel.
     ///   ContentType"/>; e.g., if the Content Type is <c>Page</c>, then the view will be <c>Page</c>. This will cause the <c>
     ///   TopicViewResultExecutor</c> to look for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
