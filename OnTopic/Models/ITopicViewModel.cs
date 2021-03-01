@@ -28,7 +28,7 @@ namespace OnTopic.Models {
   ///     presentation layer and any supporting libraries.
   ///   </para>
   /// </remarks>
-  public interface ITopicViewModel: IKeyedTopicViewModel {
+  public interface ITopicViewModel: IKeyedTopicViewModel, IAssociatedTopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -39,19 +39,11 @@ namespace OnTopic.Models {
     int Id { get; init; }
 
     /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
-    /// </summary>
-    string? UniqueKey { get; init; }
-
-    /*==========================================================================================================================
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="UniqueKey"/> in its URL
-    ///   format.
+    ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="IAssociatedTopicBindingModel
+    ///   .UniqueKey"/> in its URL format.
     /// </summary>
     string? WebPath { get; init; }
 
