@@ -19,24 +19,7 @@ namespace OnTopic.Models {
   ///   It is strictly required that topic binding models implement the <see cref="ITopicBindingModel"/> interface for the
   ///   default <see cref="ReverseTopicMappingService"/> to correctly identify and map a binding model to a <see cref="Topic"/>.
   /// </remarks>
-  public interface ITopicBindingModel {
-
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
-    /// </summary>
-    /// <requires description="The value from the getter must not be null." exception="T:System.ArgumentNullException">
-    ///   value is not null
-    /// </requires>
-    /// <requires
-    ///   description="The Key should be an alphanumeric sequence; it should not contain spaces or symbols."
-    ///   exception="T:System.ArgumentException">
-    ///   !value.Contains(" ")
-    /// </requires>
-    [Required]
-    string? Key { get; init; }
+  public interface ITopicBindingModel: IKeyedTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: CONTENT TYPE
