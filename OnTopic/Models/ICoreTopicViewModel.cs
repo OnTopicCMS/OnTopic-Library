@@ -12,18 +12,24 @@ using OnTopic.Metadata;
 namespace OnTopic.Models {
 
   /*============================================================================================================================
-  | INTERFACE: KEYED TOPIC VIEW MODEL
+  | INTERFACE: CORE TOPIC VIEW MODEL
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Ensures that a model maintains, at minimum, a <see cref="Key"/> property, necessary to support e.g. a <see cref="
-  ///   KeyedCollection{TKey, TValue}"/>.
+  ///   Ensures that a model maintains, at minimum, a <see cref="Key"/> and <see cref="ContentType"/> property, which are
+  ///   expected of all <see cref="Topic"/>s.
   /// </summary>
   /// <remarks>
-  ///   It is not required that topic view models implement the <see cref="IKeyedTopicViewModel"/> interface for the <see cref="
-  ///   TopicMappingService"/> to correctly identify and map <see cref="Topic"/>s to topic view models. That said, the interface
-  ///   does ensure that those view models can be keyed, which is useful for, especially, child collections.
+  ///   <para>
+  ///     This is necessary to support e.g. a <see cref="KeyedCollection{TKey, TValue}"/>, while also allowing it to filter by
+  ///     <see cref="ContentType"/>—a common requirement for topic (view model) collections.
+  ///   </para>
+  ///   <para>
+  ///     It is not required that topic view models implement the <see cref="ICoreTopicViewModel"/> interface for the <see cref=
+  ///     "TopicMappingService"/> to correctly identify and map <see cref="Topic"/>s to topic view models. That said, the
+  ///     interface does ensure that those view models can be keyed, which is useful for, especially, child collections.
+  ///   </para>
   /// </remarks>
-  public interface IKeyedTopicViewModel {
+  public interface ICoreTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: KEY

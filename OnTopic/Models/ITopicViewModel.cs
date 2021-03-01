@@ -30,7 +30,7 @@ namespace OnTopic.Models {
   ///     layer and any supporting libraries.
   ///   </para>
   /// </remarks>
-  public interface ITopicViewModel: IKeyedTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
+  public interface ITopicViewModel: ICoreTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -59,7 +59,7 @@ namespace OnTopic.Models {
     /// <remarks>
     ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
     ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref="
-    ///   IKeyedTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="IKeyedTopicViewModel.
+    ///   ICoreTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="ICoreTopicViewModel.
     ///   ContentType"/>; e.g., if the Content Type is <c>Page</c>, then the view will be <c>Page</c>. This will cause the <c>
     ///   TopicViewResultExecutor</c> to look for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
@@ -81,7 +81,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="IKeyedTopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
+    ///   While the <see cref="ICoreTopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>

@@ -17,7 +17,7 @@ namespace OnTopic.Models {
   ///   It is strictly required that topic binding models implement the <see cref="ITopicBindingModel"/> interface for the
   ///   default <see cref="ReverseTopicMappingService"/> to correctly identify and map a binding model to a <see cref="Topic"/>.
   /// </remarks>
-  public interface ITopicBindingModel: IKeyedTopicViewModel {
+  public interface ITopicBindingModel: ICoreTopicViewModel {
 
 
   } //Class
