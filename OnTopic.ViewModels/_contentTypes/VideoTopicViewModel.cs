@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.ViewModels {
 
@@ -26,6 +28,7 @@ namespace OnTopic.ViewModels {
     /// <summary>
     ///   Provides a URL reference to a video to display on the page.
     /// </summary>
+    [Required, NotNull, DisallowNull]
     public Uri? VideoUrl { get; init; }
 
     /*==========================================================================================================================
