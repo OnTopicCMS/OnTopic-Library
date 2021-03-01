@@ -16,7 +16,7 @@ namespace OnTopic.ViewModels {
   | VIEW MODEL: TOPIC COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a basic collection interface for use with models implementing <see cref="ITopicViewModel"/>, including <see
+  ///   Provides a basic collection interface for use with models implementing <see cref="ICoreTopicViewModel"/>, including <see
   ///   cref="TopicViewModel"/> and derivatives.
   /// </summary>
   /// <remarks>
@@ -24,7 +24,7 @@ namespace OnTopic.ViewModels {
   ///   default implementations that can be used directly, used as base classes, or overwritten at the presentation level. They
   ///   are supplied for convenience to model factory default settings for out-of-the-box content types.
   /// </remarks>
-  public class TopicViewModelCollection<TItem>: KeyedCollection<string, TItem> where TItem: ITopicViewModel {
+  public class TopicViewModelCollection<TItem>: KeyedCollection<string, TItem> where TItem: ICoreTopicViewModel {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
