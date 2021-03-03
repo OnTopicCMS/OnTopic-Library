@@ -8,10 +8,13 @@ TABLE	[dbo].[Relationships] (
 	  [Target_TopicID]	INT	NOT NULL,
 	  [Source_TopicID]	INT	NOT NULL,
 	  [RelationshipKey]	VARCHAR(255)	NOT NULL,
+	  [IsDeleted]		BIT	NOT NULL	DEFAULT 0,
+	  [Version]		DATETIME2(7)	NOT NULL	DEFAULT SYSUTCDATETIME()
   CONSTRAINT	  [PK_Relationships]	PRIMARY KEY
   CLUSTERED (	    [Source_TopicID]	ASC,
 	    [RelationshipKey]	ASC,
-	    [Target_TopicID]	ASC
+	    [Target_TopicID]	ASC,
+	    [Version]		DESC
   ),
   CONSTRAINT	  [FK_Relationships_Source]
   FOREIGN KEY (	    [Source_TopicID]

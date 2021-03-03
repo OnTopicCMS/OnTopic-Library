@@ -29,7 +29,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="command">The SQL command object.</param>
     /// <param name="sqlParameter">The name of the SQL parameter to retrieve as the return code.</param>
     internal static int GetReturnCode(this SqlCommand command, string sqlParameter = "ReturnCode") {
-      Contract.Assume<InvalidOperationException>(
+      Contract.Assume(
         command.Parameters.Contains($"@{sqlParameter}"),
         $"The call to the {command.CommandText} stored procedure did not return the expected 'ReturnCode' parameter."
       );
@@ -79,7 +79,7 @@ namespace OnTopic.Data.Sql {
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, DateTime fieldValue)
-      => AddParameter(command, sqlParameter, fieldValue, SqlDbType.DateTime);
+      => AddParameter(command, sqlParameter, fieldValue, SqlDbType.DateTime2);
 
     /// <summary>
     ///   Wrapper function that adds a SQL parameter to a command object.
@@ -105,7 +105,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="command">The SQL command object.</param>
     /// <param name="sqlParameter">The SQL parameter.</param>
     /// <param name="fieldValue">The SQL field value.</param>
-    /// <param name="sqlDbType">The SQL field data type.</param>
     internal static void AddParameter(this SqlCommand command, string sqlParameter, string? fieldValue)
       => AddParameter(command, sqlParameter, String.IsNullOrEmpty(fieldValue)? null : fieldValue, SqlDbType.VarChar);
 
@@ -117,7 +116,6 @@ namespace OnTopic.Data.Sql {
     /// <param name="fieldValue">The SQL field value.</param>
     /// <param name="sqlDbType">The SQL field data type.</param>
     /// <param name="paramDirection">The SQL parameter's directional setting (input-only, output-only, etc.).</param>
-    /// <param name="sqlLength">Length limit for the SQL field.</param>
     /// <requires description="The SQL command object must be specified." exception="T:System.ArgumentNullException">
     ///   command is not null
     /// </requires>
@@ -152,6 +150,7 @@ namespace OnTopic.Data.Sql {
         parameter.Value         = sqlDbType switch {
           SqlDbType.Bit         => (bool)fieldValue,
           SqlDbType.DateTime    => (DateTime)fieldValue,
+          SqlDbType.DateTime2   => (DateTime)fieldValue,
           SqlDbType.Int         => (int)fieldValue,
           SqlDbType.Xml         => (string)fieldValue,
           SqlDbType.Structured  => (DataTable)fieldValue,

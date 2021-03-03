@@ -1,50 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <NoWarn>CS1591,1701,1702,CA1707,CA1062,CS8602,CS8604;CA1303;IDE0059</NoWarn>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AssemblyTitle>Ignia OnTopic Unit Tests</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>Ignia OnTopic Library</Product>
-    <Description>Provides unit tests for the OnTopic library.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <DocumentationFile>bin\$(Configuration)\OnTopic.Tests.XML</DocumentationFile>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OnTopic.Data.Caching\OnTopic.Data.Caching.csproj" />
+    <ProjectReference Include="..\OnTopic.Data.Sql\OnTopic.Data.Sql.csproj" />
     <ProjectReference Include="..\OnTopic.TestDoubles\OnTopic.TestDoubles.csproj" />
     <ProjectReference Include="..\OnTopic.ViewModels\OnTopic.ViewModels.csproj" />
     <ProjectReference Include="..\OnTopic\OnTopic.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ViewModels\Metadata\" />
   </ItemGroup>
 
 </Project>

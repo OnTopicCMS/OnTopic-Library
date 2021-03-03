@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Metadata {
@@ -27,9 +28,9 @@ namespace OnTopic.Metadata {
   ///   </para>
   ///   <para>
   ///     The purpose of the <see cref="AttributeDescriptor"/> class is only to describe the schema of an attribute. For each
-  ///     individual <see cref="Topic"/>, the actual values of attributes are stored in <see cref="AttributeValue"/> objects via
+  ///     individual <see cref="Topic"/>, the actual values of attributes are stored in <see cref="AttributeRecord"/> objects via
   ///     the <see cref="Topic.Attributes"/> property. By contrast to <see cref="AttributeDescriptor"/>, the
-  ///     <see cref="AttributeValue"/> class is focused exclusively on representing the attribute's value; it is not aware of
+  ///     <see cref="AttributeRecord"/> class is focused exclusively on representing the attribute's value; it is not aware of
   ///     whether that attribute is required, what data type it represents, or how it should be displayed in the editor.
   ///   </para>
   ///   <para>
@@ -37,7 +38,7 @@ namespace OnTopic.Metadata {
   ///     the CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   ///   </para>
   /// </remarks>
-  public abstract class AttributeDescriptor : Topic {
+  public class AttributeDescriptor : Topic {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -47,10 +48,10 @@ namespace OnTopic.Metadata {
     ///   cref="Topic.ContentType"/>, and, optionally, <see cref="Topic.Parent"/>, <see cref="Topic.Id"/>.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
+    ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Topic.Key"/> and <see
+    ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
+    ///   cref="TrackedRecord{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
     ///   persistence store.
     /// </remarks>
@@ -62,10 +63,10 @@ namespace OnTopic.Metadata {
     ///   Thrown when the class representing the content type is found, but doesn't derive from <see cref="Topic"/>.
     /// </exception>
     /// <returns>A strongly-typed instance of the <see cref="Topic"/> class based on the target content type.</returns>
-    protected AttributeDescriptor(
+    public AttributeDescriptor(
       string key,
       string contentType,
-      Topic parent,
+      Topic? parent = null,
       int id = -1
     ) : base(
       key,
@@ -73,6 +74,7 @@ namespace OnTopic.Metadata {
       parent,
       id
     ) {
+
     }
 
     /*==========================================================================================================================
@@ -88,7 +90,7 @@ namespace OnTopic.Metadata {
     ///   reduces these down into a single type based on how they're exposed in the Topic Library, not based on how they're
     ///   exposed in the editor.
     /// </remarks>
-    public abstract ModelType ModelType { get; }
+    public virtual ModelType ModelType { get; protected init; } = ModelType.ScalarValue;
 
     /*==========================================================================================================================
     | PROPERTY: EDITOR TYPE
@@ -108,8 +110,7 @@ namespace OnTopic.Metadata {
     /// <requires description="Type values should not contain spaces, slashes." exception="T:System.ArgumentException">
     ///   !value.Contains(" ") &amp;&amp; !value.Contains("/")
     /// </requires>
-    [AttributeSetter]
-    public abstract string? EditorType { get; }
+    public string EditorType => GetType().Name.Replace("AttributeDescriptor", "", StringComparison.OrdinalIgnoreCase);
 
     /*==========================================================================================================================
     | PROPERTY: DISPLAY GROUP
@@ -126,11 +127,10 @@ namespace OnTopic.Metadata {
     /// <requires description="The value from the getter must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(value)
     /// </requires>
-    [AttributeSetter]
     public string? DisplayGroup {
       get => Attributes.GetValue("DisplayGroup", "");
       set {
-        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value));
+        Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), nameof(value));
         SetAttributeValue("DisplayGroup", value);
       }
     }
@@ -145,9 +145,8 @@ namespace OnTopic.Metadata {
     ///   This is used to establish a required field validator in the editor interface. This should be used by the form
     ///   validation in the editor to ensure the field contains a value.
     /// </remarks>
-    [AttributeSetter]
     public bool IsRequired {
-      get => Attributes.GetBoolean("IsRequired", false);
+      get => Attributes.GetBoolean("IsRequired");
       set => SetAttributeValue("IsRequired", value ? "1" : "0");
     }
 
@@ -191,9 +190,8 @@ namespace OnTopic.Metadata {
     ///     This property and its corresponding attribute was named <c>StoreInBlob</c> in versions of OnTopic prior to 4.0.
     ///   </para>
     /// </remarks>
-    [AttributeSetter]
-    public virtual bool IsExtendedAttribute {
-      get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob", false));
+    public bool IsExtendedAttribute {
+      get => Attributes.GetBoolean("IsExtendedAttribute", Attributes.GetBoolean("StoreInBlob"));
       set => SetAttributeValue("IsExtendedAttribute", value ? "1" : "0");
     }
 

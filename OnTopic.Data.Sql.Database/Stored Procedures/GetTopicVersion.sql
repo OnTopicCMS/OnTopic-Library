@@ -5,8 +5,8 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[GetTopicVersion]
-	@TopicID		int	= -1,
-	@Version		datetime	= null
+	@TopicID		INT	= -1,
+	@Version		DATETIME2(7)	= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -16,39 +16,13 @@ AS
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-;WITH	KeyAttributes
-AS (
-  SELECT	TopicID,
-                AttributeKey,
-                AttributeValue,
-                RowNumber		= ROW_NUMBER() OVER (
-                  PARTITION BY		TopicID,
-			AttributeKey
-                  ORDER BY		Version		DESC
-                )
-  FROM	Attributes
-  WHERE	TopicID		= @TopicID
-    AND	Version		<= @Version
-    AND	AttributeKey
-    IN (	'Key',
-	'ParentID',
-	'ContentType'
-    )
-)
 SELECT	TopicID,
-	ContentType,
-	ParentID,
-	[Key]		AS 'TopicKey',
-	1		AS 'SortOrder'
-FROM	KeyAttributes
-PIVOT (	MIN(AttributeValue)
-  FOR	AttributeKey
-  IN (	[ContentType],
-	[ParentID],
-	[Key]
-  )
-)	AS Pvt
-WHERE	RowNumber		= 1
+  	ContentType,
+  	ParentID,
+  	TopicKey,
+  	0 AS SortOrder
+FROM	Topics
+WHERE	TopicID		= @TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES
@@ -58,6 +32,7 @@ AS (
   SELECT	TopicID,
 	AttributeKey,
 	AttributeValue,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID,
 			AttributeKey
@@ -66,15 +41,11 @@ AS (
   FROM	Attributes
   WHERE	TopicID		= @TopicID
     AND	Version		<= @Version
-    AND 	AttributeKey
-    NOT IN (	'Key',
-	'ParentID',
-	'ContentType'
-    )
 )
 SELECT	TopicID,
 	AttributeKey,
-	AttributeValue
+	AttributeValue,
+	Version
 FROM	TopicAttributes
 WHERE	RowNumber		= 1
 
@@ -85,6 +56,7 @@ WHERE	RowNumber		= 1
 AS (
   SELECT	TopicID,
 	AttributesXml,
+	Version,
 	RowNumber		= ROW_NUMBER() OVER (
 	  PARTITION BY		TopicID
 	  ORDER BY		Version		DESC
@@ -94,18 +66,60 @@ AS (
     AND	Version		<= @Version
 )
 SELECT	TopicID,
-	AttributesXml
+	AttributesXml,
+	Version
 FROM	TopicExtendedAttributes
 WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-;SELECT	Source_TopicID,
+;WITH Relationships AS (
+  SELECT	Source_TopicID,
 	RelationshipKey,
-	Target_TopicID
+	Target_TopicID,
+	IsDeleted,
+	Version,
+	RowNumber = ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID,
+			RelationshipKey
+	  ORDER BY		Version	DESC
+	)
+  FROM	[dbo].[Relationships]
+  WHERE	Source_TopicID		= @TopicID
+    AND	Version		<= @Version
+)
+SELECT	Relationships.Source_TopicID,
+	Relationships.RelationshipKey,
+	Relationships.Target_TopicID,
+	Relationships.IsDeleted,
+	Relationships.Version
 FROM	Relationships
-WHERE	Source_TopicID		= @TopicID
+WHERE	RowNumber		= 1
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SELECT REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+;WITH TopicReferences AS (
+  SELECT	Source_TopicID,
+	ReferenceKey,
+	Target_TopicID,
+	Version,
+	RowNumber = ROW_NUMBER() OVER (
+	  PARTITION BY		Source_TopicID,
+			ReferenceKey
+	  ORDER BY		Version	DESC
+	)
+  FROM	[dbo].[TopicReferences]
+  WHERE	Source_TopicID		= @TopicID
+    AND	Version		<= @Version
+)
+SELECT	TopicReferences.Source_TopicID,
+	TopicReferences.ReferenceKey,
+	TopicReferences.Target_TopicID,
+	TopicReferences.Version
+FROM	TopicReferences
+WHERE	RowNumber		= 1
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY

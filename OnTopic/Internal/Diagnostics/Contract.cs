@@ -40,20 +40,26 @@ namespace OnTopic.Internal.Diagnostics {
   ///     <see href="https://stackoverflow.com/questions/40767941/does-vs2017-work-with-codecontracts/46412917#46412917"/>
   ///   </para>
   /// </remarks>
+  [SuppressMessage(
+    "Usage",
+    "CA2201:Do not raise reserved exception types",
+    Justification = "This is an unexpected usage scenario, but permitted due to limitations on generic constraints."
+  )]
   public static class Contract {
 
     /*==========================================================================================================================
     | METHOD: REQUIRES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Will throw a <see cref="Exception"/> if the supplied expression evaluates to false.
+    ///   Will throw a <see cref="InvalidOperationException"/> if the supplied expression evaluates to false.
     /// </summary>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="Exception">
+    /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
-    public static void Requires(bool isValid, string? errorMessage = null) => Requires<Exception>(isValid, errorMessage);
+    public static void Requires(bool isValid, string? errorMessage = null) =>
+      Requires<InvalidOperationException>(isValid, errorMessage);
 
     /// <summary>
     ///   Will throw an <see cref="ArgumentNullException"/> if the supplied object is <see langword="null"/>.
@@ -87,11 +93,11 @@ namespace OnTopic.Internal.Diagnostics {
     /// </exception>
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
-      if (errorMessage is null || String.IsNullOrEmpty(errorMessage)) {
+      if (errorMessage is null || errorMessage.Length == 0) {
         throw new();
       }
       try {
-        throw (T)Activator.CreateInstance(typeof(T), new object[] { errorMessage });
+        throw (T?)Activator.CreateInstance(typeof(T), new object[] { errorMessage })!;
       }
       catch (Exception ex) when (
         ex is MissingMethodException
@@ -113,7 +119,7 @@ namespace OnTopic.Internal.Diagnostics {
     | METHOD: ASSUME
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that a condition is met. If not, an <see cref="Exception"/> is thrown.
+    ///   Ensures that a condition is met. If not, an <see cref="InvalidOperationException"/> is thrown.
     /// </summary>
     /// <remarks>
     ///   This is virtually identical to <see cref="Requires(Boolean, String)"/> except that, syntactically, it is expected to
@@ -123,11 +129,11 @@ namespace OnTopic.Internal.Diagnostics {
     /// </remarks>
     /// <param name="isValid">An expression resulting in a boolean value indicating if an exception should be thrown.</param>
     /// <param name="errorMessage">Optionally provides an error message in case an exception is thrown.</param>
-    /// <exception cref="Exception">
+    /// <exception cref="InvalidOperationException">
     ///   Thrown when <paramref name="isValid"/> returns <see langword="true"/>.
     /// </exception>
     public static void Assume(bool isValid, string? errorMessage = null) =>
-      Requires<Exception>(isValid, errorMessage);
+      Requires<InvalidOperationException>(isValid, errorMessage);
 
     /// <summary>
     ///   Ensures that a condition is met. If not, the provided exception is thrown.

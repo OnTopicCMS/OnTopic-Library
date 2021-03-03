@@ -32,15 +32,15 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "Page");
       Assert.IsNotNull(topic);
       Assert.AreEqual<string>(topic.Key, "Test");
-      Assert.AreEqual<string>(topic.Attributes.GetValue("ContentType"), "Page");
+      Assert.AreEqual<string>(topic.ContentType, "Page");
     }
 
     /*==========================================================================================================================
     | TEST: CREATE: CONTENT TYPE: RETURNS DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a topic of a content type which has been derived, and ensures the derived version of <see cref="Topic"/> is
-    ///   returned.
+    ///   Creates a topic of a content type which maps to a class derived from <see cref="Topic"/>, and ensures the derived
+    ///   version of the <see cref="Topic"/> class is returned.
     /// </summary>
     [TestMethod]
     public void Create_ContentType_ReturnsDerivedTopic() {
@@ -56,14 +56,11 @@ namespace OnTopic.Tests {
     ///   Creates a topic using the factory method, and ensures that the ID cannot be modified.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException), "Topic permitted the ID to be reset; this should never happen.")]
+    [ExpectedException(typeof(InvalidOperationException), "Topic permitted the ID to be reset; this should never happen.")]
     public void Id_ChangeValue_ThrowsArgumentException() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
-
-      Assert.AreEqual<int>(123, topic.Id);
-      Assert.AreNotEqual<int>(124, topic.Id);
 
     }
 
@@ -123,10 +120,7 @@ namespace OnTopic.Tests {
       childTopic.Parent         = parentTopic;
 
       Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
-      Assert.AreEqual<int>(
-        5,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(5, childTopic.Parent.Id);
 
     }
 
@@ -150,10 +144,7 @@ namespace OnTopic.Tests {
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
-      Assert.AreEqual<int>(
-        10,
-        Int32.Parse(childTopic.Attributes.GetValue("ParentId", "0"), NumberStyles.Integer, CultureInfo.InvariantCulture)
-      );
+      Assert.AreEqual<int>(10, childTopic.Parent.Id);
 
     }
 
@@ -264,7 +255,7 @@ namespace OnTopic.Tests {
     | TEST: LAST MODIFIED: UPDATE ATTRIBUTE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Returns the last modified date via <see cref="AttributeValueCollection"/>, and ensures it's returned correctly.
+    ///   Returns the last modified date via <see cref="AttributeCollection"/>, and ensures it's returned correctly.
     /// </summary>
     [TestMethod]
     public void LastModified_UpdateValue_ReturnsExpectedValue() {
@@ -280,69 +271,142 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
+    | TEST: BASE TOPIC: UPDATE VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
-    ///   derived topic as well as the underlying <see cref="AttributeValue"/> correctly reference the new value.
+    ///   Sets a base topic to a topic entity, then replaces the references with a new topic entity. Ensures that both the
+    ///   base topic as well as the underlying <see cref="AttributeRecord"/> correctly reference the new value.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic_UpdateValue_ReturnsExpectedValue() {
+    public void BaseTopic_UpdateValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var firstDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page");
-      var secondDerivedTopic    = TopicFactory.Create("DerivedTopic", "Page", 1);
-      var finalDerivedTopic     = TopicFactory.Create("DerivedTopic", "Page", 2);
+      var firstBaseTopic        = TopicFactory.Create("BaseTopic", "Page");
+      var secondBaseTopic       = TopicFactory.Create("BaseTopic", "Page", 1);
+      var finalBaseTopic        = TopicFactory.Create("BaseTopic", "Page", 2);
 
-      topic.DerivedTopic        = firstDerivedTopic;
-      topic.DerivedTopic        = secondDerivedTopic;
-      topic.DerivedTopic        = finalDerivedTopic;
+      topic.BaseTopic           = firstBaseTopic;
+      topic.BaseTopic           = secondBaseTopic;
+      topic.BaseTopic           = finalBaseTopic;
 
-      Assert.ReferenceEquals(topic.DerivedTopic, finalDerivedTopic);
-      Assert.AreEqual<int>(2, topic.Attributes.GetInteger("TopicID", 0));
+      Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
+      Assert.AreEqual<int>(2, topic.References.GetValue("BaseTopic").Id);
 
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: UNSAVED VALUE: RETURNS EXPECTED VALUE
+    | TEST: BASE TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic to an unsaved topic entity. Ensures that the derived topic is correctly set, but that the <see
-    ///   cref="Topic.Id"/> is not persisted as an underlying <see cref="AttributeValue"/>.
+    ///   Sets a base topic to an unsaved topic entity, then saves the entity and reestablishes the reference. Ensures that the
+    ///   base topic is correctly set as a <see cref="Topic.References"/> entry.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic_UnsavedValue_ReturnsExpectedValue() {
+    public void BaseTopic_ResavedValue_ReturnsExpectedValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
+      var baseTopic             = TopicFactory.Create("BaseTopic", "Page");
 
-      topic.DerivedTopic        = derivedTopic;
+      topic.BaseTopic           = baseTopic;
+      baseTopic.Id              = 5;
+      topic.BaseTopic           = baseTopic;
 
-      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
-      Assert.AreEqual<int>(-2, topic.Attributes.GetInteger("TopicID", -2));
+      Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
+      Assert.AreEqual<int>(5, topic.References.GetValue("BaseTopic").Id);
 
     }
 
     /*==========================================================================================================================
-    | TEST: DERIVED TOPIC: RESAVED VALUE: RETURNS EXPECTED VALUE
+    | IS DIRTY: NEW TOPIC: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets a derived topic to an unsaved topic entity, then saves the entity and reestablishes the relationship. Ensures
-    ///   that the derived topic is correctly set, including the <see cref="Topic.Id"/> as an underlying <see
-    ///   cref="AttributeValue"/>.
+    ///   Creates a new topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
-    public void DerivedTopic_ResavedValue_ReturnsExpectedValue() {
+    public void IsDirty_NewTopic_ReturnsTrue() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var derivedTopic          = TopicFactory.Create("DerivedTopic", "Page");
 
-      topic.DerivedTopic        = derivedTopic;
-      derivedTopic.Id           = 5;
-      topic.DerivedTopic        = derivedTopic;
+      Assert.IsTrue(topic.IsDirty());
 
-      Assert.ReferenceEquals(topic.DerivedTopic, derivedTopic);
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("TopicID", -2));
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: EXISTING TOPIC: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExistingTopic_ReturnsFalse() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      Assert.IsFalse(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: CHANGE KEY: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Key"/>, and confirms that <see cref="Topic.IsDirty(Boolean,
+    ///   Boolean)"/> returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ChangeKey_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+
+      topic.Key                 = "NewTopic";
+
+      Assert.IsTrue(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | IS DIRTY: CHANGE COLLECTIONS: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
+    ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.IsDirty(Boolean, Boolean)"/> returns
+    ///   <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ChangeCollections_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var related               = TopicFactory.Create("Related", "Page", 2);
+
+      topic.Attributes.SetValue("Related", related.Key);
+      topic.References.SetValue("Related", related);
+      topic.Relationships.SetValue("Related", related);
+
+      Assert.IsTrue(topic.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
+    | MARK CLEAN: CHANGE COLLECTION: RESETS IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
+    ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(Boolean, DateTime?)"/> resets the
+    ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_ChangeCollection_ResetIsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var related               = TopicFactory.Create("Related", "Page", 2);
+
+      topic.Attributes.SetValue("Related", related.Key);
+      topic.References.SetValue("Related", related);
+      topic.Relationships.SetValue("Related", related);
+
+      topic.MarkClean(true);
+
+      Assert.IsFalse(topic.IsDirty(true));
 
     }
 

@@ -13,7 +13,7 @@ namespace OnTopic.Metadata {
   /// <summary>
   ///   Represents a collection of <see cref="AttributeDescriptor"/> objects.
   /// </summary>
-  public class AttributeDescriptorCollection : TopicCollection<AttributeDescriptor> {
+  public class AttributeDescriptorCollection : KeyedTopicCollection<AttributeDescriptor> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR

@@ -74,24 +74,19 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <summary>
     ///   Initializes a new instance of the <see cref="TopicViewLocationExpander"/> class.
     /// </summary>
-    /// <remarks>
-    /// </remarks>
-    /// <seealso cref="https://stackoverflow.com/questions/36802661/what-is-iviewlocationexpander-populatevalues-for-in-asp-net-core-mvc"/>
+    /// <seealso href="https://stackoverflow.com/questions/36802661/what-is-iviewlocationexpander-populatevalues-for-in-asp-net-core-mvc"/>
     /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
     public void PopulateValues(ViewLocationExpanderContext context) {
       Contract.Requires(context, nameof(context));
       context.Values["action_displayname"] = context.ActionContext.ActionDescriptor.DisplayName;
       context.ActionContext.RouteData.Values.TryGetValue("contenttype", out var contentType);
-      context.Values["content_type"] = (string)contentType;
+      context.Values["content_type"] = (string?)contentType;
     }
 
     /*==========================================================================================================================
     | METHOD: EXPAND VIEW LOCATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Introduces additional routes
-    /// </summary>
-    /// <param name="context">The <see cref="ViewLocationExpanderContext"/> that the request is operating within.</param>
+    /// <inheritdoc/>
     public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -109,14 +104,14 @@ namespace OnTopic.AspNetCore.Mvc {
       | Yield view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in ViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
+        yield return location.Replace(@"{3}", (string?)contentType, StringComparison.Ordinal);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Yield area view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var location in AreaViewLocations) {
-        yield return location.Replace(@"{3}", (string)contentType, StringComparison.InvariantCulture);
+        yield return location.Replace(@"{3}", (string?)contentType, StringComparison.Ordinal);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

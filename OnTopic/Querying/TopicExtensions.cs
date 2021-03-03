@@ -4,8 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 
@@ -109,7 +111,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>A collection of topics descending from the current topic.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic) => topic.FindAll(t => true);
+    public static ReadOnlyTopicCollection FindAll(this Topic topic) => topic.FindAll(t => true);
 
     /// <summary>
     ///   Retrieves a collection of topics based on a supplied function.
@@ -117,7 +119,7 @@ namespace OnTopic.Querying {
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <param name="predicate">The function to validate whether a <see cref="Topic"/> should be included in the output.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
-    public static ReadOnlyTopicCollection<Topic> FindAll(this Topic topic, Func<Topic, bool> predicate) {
+    public static ReadOnlyTopicCollection FindAll(this Topic topic, Func<Topic, bool> predicate) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
@@ -140,7 +142,7 @@ namespace OnTopic.Querying {
       foreach (var child in topic.Children) {
         var nestedResults = child.FindAll(predicate);
         foreach (var matchedTopic in nestedResults) {
-          if (!results.Contains(matchedTopic.Key)) {
+          if (!results.Contains(matchedTopic)) {
             results.Add(matchedTopic);
           }
         }
@@ -149,7 +151,7 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return results.AsReadOnly();
+      return new(results);
 
     }
 
@@ -160,8 +162,8 @@ namespace OnTopic.Querying {
     ///   Retrieves a collection of topics based on an attribute name and value.
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
-    /// <param name="name">The string identifier for the <see cref="AttributeValue"/> against which to be searched.</param>
-    /// <param name="value">The text value for the <see cref="AttributeValue"/> against which to be searched.</param>
+    /// <param name="attributeKey">The string identifier for the <see cref="AttributeRecord"/> against which to be searched.</param>
+    /// <param name="attributeValue">The text value for the <see cref="AttributeRecord"/> against which to be searched.</param>
     /// <returns>A collection of topics matching the input parameters.</returns>
     /// <requires description="The attribute name must be specified." exception="T:System.ArgumentNullException">
     ///   !String.IsNullOrWhiteSpace(name)
@@ -171,25 +173,35 @@ namespace OnTopic.Querying {
     ///   exception="T:System.ArgumentException">
     ///   !name.Contains(" ")
     /// </requires>
-    public static ReadOnlyTopicCollection<Topic> FindAllByAttribute(this Topic topic, string name, string value) {
+    public static ReadOnlyTopicCollection FindAllByAttribute(this Topic topic, string attributeKey, string attributeValue) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(name), "The attribute name must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(value), "The attribute value must be specified.");
-      TopicFactory.ValidateKey(name);
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(attributeKey), nameof(attributeKey));
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(attributeValue), nameof(attributeValue));
+      TopicFactory.ValidateKey(attributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topic.FindAll(t =>
-        !String.IsNullOrEmpty(t.Attributes.GetValue(name)) &&
-        t.Attributes.GetValue(name).IndexOf(value, StringComparison.InvariantCultureIgnoreCase) >= 0
+        !String.IsNullOrEmpty(t.Attributes.GetValue(attributeKey)) &&
+        t.Attributes.GetValue(attributeKey, "").Contains(attributeValue, StringComparison.OrdinalIgnoreCase)
       );
 
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC INDEX
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves all topics from the topic cache, and places them in an dictionary indexed by <see cref="Topic.Id"/>.
+    /// </summary>
+    /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
+    /// <returns>A dictionary of topics indexed by <see cref="Topic.Id"/>.</returns>
+    public static TopicIndex GetTopicIndex(this Topic topic) => new TopicIndex(topic.FindAll());
 
     /*==========================================================================================================================
     | METHOD: GET ROOT TOPIC
@@ -216,7 +228,7 @@ namespace OnTopic.Querying {
       | Validate contracts
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, "The topic parameter must be specified.");
-      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), "The unique key must be specified.");
+      Contract.Requires<ArgumentNullException>(!String.IsNullOrWhiteSpace(uniqueKey), nameof(uniqueKey));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
@@ -226,15 +238,15 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.InvariantCultureIgnoreCase)) {
+      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
         return currentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.InvariantCultureIgnoreCase)) {
-        uniqueKey = uniqueKey.Substring(currentTopic!.Key.Length + 1);
+      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
+        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -242,7 +254,7 @@ namespace OnTopic.Querying {
       | Navigate to the specific path
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in keys) {
-        currentTopic = currentTopic?.Children?.GetTopic(key);
+        currentTopic = currentTopic?.Children?.GetValue(key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

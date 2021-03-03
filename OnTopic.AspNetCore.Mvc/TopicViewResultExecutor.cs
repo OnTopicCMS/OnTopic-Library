@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
@@ -35,7 +37,6 @@ namespace OnTopic.AspNetCore.Mvc {
     /// <param name="viewEngine">The <see cref="ICompositeViewEngine"/>.</param>
     /// <param name="tempDataFactory">The <see cref="ITempDataDictionaryFactory"/>.</param>
     /// <param name="diagnosticListener">The <see cref="DiagnosticListener"/>.</param>
-    /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
     /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
     public TopicViewResultExecutor(
       IOptions<MvcViewOptions> viewOptions,
@@ -101,7 +102,7 @@ namespace OnTopic.AspNetCore.Mvc {
       >-------------------------------------------------------------------------------------------------------------------------
       | Determines if the view is defined in the querystring.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!(view?.Success ?? false) && requestContext.Query.ContainsKey("View")) {
+      if (requestContext.Query.ContainsKey("View")) {
         var queryStringValue = requestContext.Query["View"].First<string>();
         if (queryStringValue is not null) {
           view = viewEngine.FindView(actionContext, queryStringValue, isMainPage: true);
@@ -118,12 +119,12 @@ namespace OnTopic.AspNetCore.Mvc {
         var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
         // Validate the content-type after the slash, then validate it against available views
         for (var i = 0; i < splitHeaders.Length; i++) {
-          if (splitHeaders[i].Contains("/", StringComparison.InvariantCultureIgnoreCase)) {
+          if (splitHeaders[i].Contains("/", StringComparison.Ordinal)) {
             // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding
             // purposes
             var acceptHeader = splitHeaders[i]
-              [(splitHeaders[i].IndexOf("/", StringComparison.InvariantCulture) + 1)..]
-              .Replace("+", "-", StringComparison.InvariantCulture);
+              [(splitHeaders[i].IndexOf("/", StringComparison.Ordinal) + 1)..]
+              .Replace("+", "-", StringComparison.Ordinal);
             // Validate against available views; if content-type represents a valid view, stop validation
             if (acceptHeader is not null) {
               view = viewEngine.FindView(actionContext, acceptHeader, isMainPage: true);
@@ -146,7 +147,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!view?.Success ?? false) {
         if (routeData.Values.TryGetValue("action", out var action)) {
-          var actionName = action?.ToString()?.Replace("Async", "", StringComparison.InvariantCultureIgnoreCase);
+          var actionName = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
           view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
           searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
         }

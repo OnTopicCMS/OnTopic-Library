@@ -7,11 +7,13 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
+using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.TestDoubles.Metadata;
 
 namespace OnTopic.Tests {
 
@@ -19,10 +21,10 @@ namespace OnTopic.Tests {
   | CLASS: TOPIC REPOSITORY BASE TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicRepositoryBase"/> class.
+  ///   Provides unit tests for the <see cref="TopicRepository"/> class.
   /// </summary>
   /// <remarks>
-  ///   These tests evaluate features that are specific to the <see cref="TopicRepositoryBase"/> class.
+  ///   These tests evaluate features that are specific to the <see cref="TopicRepository"/> class.
   /// </remarks>
   [TestClass]
   public class TopicRepositoryBaseTest {
@@ -49,21 +51,21 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: DERIVED TOPIC: THROWS EXCEPTION
+    | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Deletes a topic which other topics, outside of the graph, derive from. Expects exception.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ReferentialIntegrityException))]
-    public void Delete_DerivedTopic_ThrowsException() {
+    public void Delete_BaseTopic_ThrowsException() {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var derived               = TopicFactory.Create("Derived", "Page", root);
+      var derivedTopic          = TopicFactory.Create("Derived", "Page", root);
 
-      derived.DerivedTopic      = child;
+      derivedTopic.BaseTopic    = child;
 
       _topicRepository.Delete(topic, true);
 
@@ -83,7 +85,7 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var derived               = TopicFactory.Create("Derived", "Page", topic);
 
-      derived.DerivedTopic      = child;
+      derived.BaseTopic         = child;
 
       _topicRepository.Delete(topic, true);
 
@@ -161,11 +163,11 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      child.Relationships.SetTopic("Related", related);
+      child.Relationships.SetValue("Related", related);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.IncomingRelationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.IncomingRelationships.GetValues("Related").Count);
 
     }
 
@@ -184,11 +186,11 @@ namespace OnTopic.Tests {
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
 
-      related.Relationships.SetTopic("Related", child);
+      related.Relationships.SetValue("Related", child);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.Relationships.GetTopics("Related").Count);
+      Assert.AreEqual<int>(0, related.Relationships.GetValues("Related").Count);
 
     }
 
@@ -208,7 +210,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null);
 
-      Assert.AreEqual<int>(3, attributes.Count());
+      Assert.AreEqual<int>(1, attributes.Count());
 
     }
 
@@ -217,7 +219,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, without any filtering by whether or not the attribute is an <see
-    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeValue"/>s with a null or empty value should
+    ///   cref="AttributeDescriptor.IsExtendedAttribute"/>. Any <see cref="AttributeRecord"/>s with a null or empty value should
     ///   be skipped.
     /// </summary>
     [TestMethod]
@@ -250,7 +252,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false);
 
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -277,16 +279,16 @@ namespace OnTopic.Tests {
     | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS EXTENDED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects an <see
-    ///   cref="AttributeValue"/> to be returned even if it's <i>not</i> <see cref="AttributeValue.IsDirty"/> <i>but</i> its
-    ///   <see cref="AttributeValue.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedRecord{T}.IsDirty"/>. Expects an <see
+    ///   cref="AttributeRecord"/> to be returned even if it's <i>not</i> <see cref="TrackedRecord{T}.IsDirty"/> <i>but</i> its
+    ///   <see cref="AttributeRecord.IsExtendedAttribute"/> disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
 
-      topic.Attributes.SetValue("Title", "Title", isDirty:false, isExtendedAttribute:false);
+      topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, true, true);
 
@@ -299,22 +301,21 @@ namespace OnTopic.Tests {
     | TEST: GET ATTRIBUTES: EXTENDED ATTRIBUTE MISMATCH: RETURNS NOTHING
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Retrieves a list of attributes from a topic, filtering by <see cref="AttributeValue.IsDirty"/>. Expects the <see
-    ///   cref="AttributeValue"/> to <i>not</i> be returned even though its <see cref="AttributeValue.IsExtendedAttribute"/>
+    ///   Retrieves a list of attributes from a topic, filtering by <see cref="TrackedRecord{T}.IsDirty"/>. Expects the <see
+    ///   cref="AttributeRecord"/> to <i>not</i> be returned even though its <see cref="AttributeRecord.IsExtendedAttribute"/>
     ///   disagrees with <see cref="AttributeDescriptor.IsExtendedAttribute"/>, since it won't match the <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>'s <c>isExtendedAttribute</c> call.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsNothing() {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypes");
 
-      topic.Attributes.SetValue("Title", "Title", isDirty: false, isExtendedAttribute: false);
+      topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, false, true);
 
-      //Expect Key and ContentType, but not Title
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -323,7 +324,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of attributes from a topic, filtering by <c>excludeLastModified</c>. Confirms that <see
-    ///   cref="AttributeValue"/>s are not returned which start with <c>LastModified</c>.
+    ///   cref="AttributeRecord"/>s are not returned which start with <c>LastModified</c>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ExcludeLastModified_ReturnsOtherAttributes() {
@@ -335,8 +336,7 @@ namespace OnTopic.Tests {
 
       var attributes            = _topicRepository.GetAttributesProxy(topic, null, excludeLastModified: true);
 
-      //Expected to return Key and ContentType, butnot LastModified or LastModifiedBy
-      Assert.AreEqual<int>(2, attributes.Count());
+      Assert.AreEqual<int>(0, attributes.Count());
 
     }
 
@@ -345,8 +345,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value shorter than 255 characters, then
-    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeValue"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
+    ///   ensures that it is returned as an an <i>indexed</i> <see cref="AttributeRecord"/> when calling <see
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithShortValue_ReturnsAsIndexedAttributes() {
@@ -367,7 +367,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Sets an arbitrary (unmatched) attribute on a <see cref="Topic"/> with a value longer than 255 characters, then
     ///   ensures that it is returned as an an <see cref="AttributeDescriptor.IsExtendedAttribute"/> when calling <see
-    ///   cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
+    ///   cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>.
     /// </summary>
     [TestMethod]
     public void GetAttributes_ArbitraryAttributeWithLongValue_ReturnsAsExtendedAttributes() {
@@ -386,13 +386,13 @@ namespace OnTopic.Tests {
     | TEST: GET UNMATCHED ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="ContentTypeDescriptor"/> but not the <see cref="Topic"/> are returned.
     /// </summary>
     [TestMethod]
     public void GetUnmatchedAttributes_ReturnsAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
 
       topic.Attributes.SetValue("Title", "Title");
 
@@ -407,7 +407,7 @@ namespace OnTopic.Tests {
     | TEST: GET UNMATCHED ATTRIBUTES: EMPTY ARBITRARY ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Using <see cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
+    ///   Using <see cref="TopicRepository.GetUnmatchedAttributes(Topic)"/>, ensures that any attributes that exist on the
     ///   <see cref="Topic"/> but not the <see cref="ContentTypeDescriptor"/> <i>and</i> are either <c>null</c> or empty are
     ///   returned. This ensures that arbitrary attributes can be deleted programmatically, instead of lingering as orphans in
     ///   the database.
@@ -444,9 +444,9 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
 
       Assert.AreEqual<int>(15, contentTypes.Count);
-      Assert.IsNotNull(contentTypes.GetTopic("ContentTypeDescriptor"));
-      Assert.IsNotNull(contentTypes.GetTopic("Page"));
-      Assert.IsNotNull(contentTypes.GetTopic("LookupListItem"));
+      Assert.IsNotNull(contentTypes.GetValue("ContentTypeDescriptor"));
+      Assert.IsNotNull(contentTypes.GetValue("Page"));
+      Assert.IsNotNull(contentTypes.GetValue("LookupListItem"));
 
     }
 
@@ -508,9 +508,9 @@ namespace OnTopic.Tests {
     | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
-    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
-    ///   it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then saves a new <see
+    ///   cref="ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that it is
+    ///   immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Save_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -528,23 +528,108 @@ namespace OnTopic.Tests {
     | TEST: SAVE: CONTENT TYPE DESCRIPTOR: UPDATES PERMITTED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
-    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepositoryBase.Save(Topic, Boolean, Boolean)"/>, and ensures that
+    ///   Loads the <see cref="TopicRepository.GetContentTypeDescriptors()"/>, then saves an existing <see cref=
+    ///   "ContentTypeDescriptor"/> via <see cref="TopicRepository.Save(Topic, Boolean)"/>, and ensures that
     ///   it the <see cref="ContentTypeDescriptor.PermittedContentTypes"/> cache is updated.
     /// </summary>
     [TestMethod]
     public void Save_ContentTypeDescriptor_UpdatesPermittedContentTypes() {
 
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
-      var pageContentType       = contentTypes.GetTopic("Page");
-      var lookupContentType     = contentTypes.GetTopic("Lookup");
+      var contentTypesRoot      = contentTypes.GetValue("ContentTypes");
+      var pageContentType       = contentTypes.GetValue("Page");
+      var lookupContentType     = contentTypes.GetValue("Lookup");
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
-      pageContentType.Relationships.SetTopic("ContentTypes", lookupContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
 
-      _topicRepository.Save(pageContentType);
+      _topicRepository.Save(contentTypesRoot, true);
 
       Assert.AreNotEqual<int>(initialCount, pageContentType.PermittedContentTypes.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: NEW TOPIC: UPDATES VERSION HISTORY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> and confirms that the <see cref="Topic.VersionHistory"/> is correctly updated with a
+    ///   new version.
+    /// </summary>
+    [TestMethod]
+    public void Save_NewTopic_UpdatesVersionHistory() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(topic.VersionHistory.Count > 0);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: IS RECURSIVE: SAVES CHILD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with a child <see cref="Topic"/> and confirms that the <see cref="Topic.Id"/> of the
+    ///   child <see cref="Topic"/> is correctly updated.
+    /// </summary>
+    [TestMethod]
+    public void Save_IsRecursive_SavesChild() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var child                 = TopicFactory.Create("Child", "Page", topic);
+
+      _topicRepository.Save(topic, true);
+
+      Assert.IsFalse(child.IsNew);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: UNRESOLVED REFERENCE: RESOLVES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it successfully
+    ///   resolves it by marking the <see cref="Topic.References"/> collection as <see cref="TrackedRecordCollection{TItem,
+    ///   TValue, TAttribute}.IsDirty()"/> as <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void Save_UnresolvedReference_Resolves() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var reference             = TopicFactory.Create("Reference", "Page", topic);
+
+      topic.References.SetValue("Test", reference);
+
+      _topicRepository.Save(topic, true);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: UNRESOLVED REFERENCE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws an
+    ///   exception if that reference cannot be resolved.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ReferentialIntegrityException),
+      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
+    )]
+    public void Save_UnresolvedReference_ThrowsException() {
+
+      var parent                = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+      var topic                 = TopicFactory.Create("Test", "Page", parent);
+      var reference             = TopicFactory.Create("Reference", "Page", parent);
+
+      topic.References.SetValue("Test", reference);
+
+      _topicRepository.Save(topic, true);
 
     }
 
@@ -552,9 +637,9 @@ namespace OnTopic.Tests {
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then deletes one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/>, and ensures that it
-    ///   is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see cref="ContentTypeDescriptor"/>s.
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then deletes one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Delete(Topic, Boolean)"/>, and ensures that it
+    ///   is immediately reflected in the <see cref="TopicRepository"/> cache of <see cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
     public void Delete_ContentTypeDescriptor_UpdatesContentTypeCache() {
@@ -572,9 +657,9 @@ namespace OnTopic.Tests {
     | TEST: MOVE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads the <see cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
-    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepositoryBase.Move(Topic, Topic, Topic?)"/>, and ensures
-    ///   that it is immediately reflected in the <see cref="TopicRepositoryBase"/> cache of <see
+    ///   Loads the <see cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)"/>, then moves one of the
+    ///   <see cref="ContentTypeDescriptor"/>s via <see cref="TopicRepository.Move(Topic, Topic, Topic?)"/>, and ensures
+    ///   that it is immediately reflected in the <see cref="TopicRepository"/> cache of <see
     ///   cref="ContentTypeDescriptor"/>s.
     /// </summary>
     [TestMethod]
@@ -607,7 +692,7 @@ namespace OnTopic.Tests {
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
 
       _topicRepository.Save(newAttribute);
 
@@ -628,13 +713,36 @@ namespace OnTopic.Tests {
 
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
-      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttribute", attributeList) as BooleanAttribute;
+      var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
       _topicRepository.Delete(newAttribute);
 
       Assert.IsTrue(childContentType.AttributeDescriptors.Count < attributeCount);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: DELETE EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
+    ///   TopicDeleted"/> is fired.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DeleteEvent_IsFired() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var hasFired              = false;
+
+      _topicRepository.Save(topic);
+      _topicRepository.TopicDeleted += eventHandler;
+      _topicRepository.Delete(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
 
     }
 

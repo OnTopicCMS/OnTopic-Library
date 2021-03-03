@@ -8,15 +8,8 @@
 CREATE
 TABLE	[dbo].[ExtendedAttributes] (
 	  [TopicID]		INT	NOT NULL,
-	  [AttributesXml]		XML	NOT NULL,
-	  [DateModified]	DATETIME
-  CONSTRAINT	  [DF_ExtendedAttributes_DateModified]	DEFAULT (
-			  GetDate()
-			)	NOT NULL,
-	  [Version]		DATETIME
-  CONSTRAINT	  [DF_ExtendedAttributes_Version]	DEFAULT (
-			  GetDate()
-			)	NOT NULL,
+	  [AttributesXml]	XML	NOT NULL,
+	  [Version]		DATETIME2(7)	NOT NULL	DEFAULT SYSUTCDATETIME(),
   CONSTRAINT	  [PK_ExtendedAttributes]		PRIMARY KEY	CLUSTERED (
 	    [TopicID]		ASC,
 	    [Version]		DESC

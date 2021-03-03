@@ -23,7 +23,8 @@ namespace OnTopic.AspNetCore.Mvc {
   ///   Not all topics are appropriate to display in a view. If the topic isn't in the repository, the action should return a
   ///   <see cref="NotFoundResult"/>. If the topic is marked as <see cref="Topic.IsDisabled"/>, then the action should return a
   ///   <see cref="UnauthorizedResult"/>. If the topic contains a <c>Url</c> attribute, then the action should return a <see
-  ///   cref="RedirectResult"/>. All of this logic can be enforced by adding the <see cref="ValidateTopicFilter"/> to an action.
+  ///   cref="RedirectResult"/>. All of this logic can be enforced by adding the <see cref="ValidateTopicAttribute"/> to an
+  ///   action.
   /// </remarks>
   [AttributeUsage(AttributeTargets.Method)]
   public sealed class ValidateTopicAttribute : ActionFilterAttribute {
@@ -48,24 +49,24 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </summary>
     /// <remarks>
     ///   While the <see cref="OnActionExecuting(ActionExecutingContext)"/> event can be used to provide a wide variety of
-    ///   filters, this specific implementation is focused on validating the state of the <see cref="CurrentTopic"/>. Namely,
-    ///   it will provide error handling (if the <see cref="CurrentTopic"/> is null), a redirect (if the <see
-    ///   cref="CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized response (if the <see cref="CurrentTopic"/>'s
-    ///   <see cref="Topic.IsDisabled"/> flag is set.
+    ///   filters, this specific implementation is focused on validating the state of the <see cref="TopicController.
+    ///   CurrentTopic"/>. Namely, it will provide error handling (if the <see cref="TopicController.CurrentTopic"/> is null), a
+    ///   redirect (if the <see cref="TopicController.CurrentTopic"/>'s <c>Url</c> attribute is set, and an unauthorized
+    ///   response (if the <see cref="TopicController.CurrentTopic"/>'s <see cref="Topic.IsDisabled"/> flag is set.
     /// </remarks>
     /// <returns>A view associated with the requested topic's Content Type and view.</returns>
     [NonAction]
-    public override void OnActionExecuting(ActionExecutingContext filterContext) {
+    public override void OnActionExecuting(ActionExecutingContext context) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(filterContext, nameof(filterContext));
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var controller            = filterContext.Controller as TopicController;
+      var controller            = context.Controller as TopicController;
       var currentTopic          = controller?.CurrentTopic;
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ namespace OnTopic.AspNetCore.Mvc {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic is null) {
         if (!AllowNull) {
-          filterContext.Result = controller.NotFound("There is no topic associated with this path.");
+          context.Result = controller.NotFound("There is no topic associated with this path.");
         }
         return;
       }
@@ -93,7 +94,7 @@ namespace OnTopic.AspNetCore.Mvc {
       //### TODO JJC082817: Should allow this to be bypassed for administrators; requires introduction of Role dependency
       //### e.g., if (!Roles.IsUserInRole(Page?.User?.Identity?.Name ?? "", "Administrators")) {...}
       if (currentTopic.IsDisabled) {
-        filterContext.Result = new UnauthorizedResult();
+        context.Result = new UnauthorizedResult();
         return;
       }
 
@@ -101,7 +102,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | Handle redirect
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!String.IsNullOrEmpty(currentTopic.Attributes.GetValue("URL"))) {
-        filterContext.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
+        context.Result = controller.RedirectPermanent(currentTopic.Attributes.GetValue("URL"));
         return;
       }
 
@@ -112,7 +113,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | the request is valid, but forbidden.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic is { ContentType: "List"} or { Parent: {ContentType: "List" } }) {
-        filterContext.Result = new StatusCodeResult(403);
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -123,7 +124,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | indicate that the request is valid, but forbidden. Unlike nested topics, children of containers are potentially valid.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "Container") {
-        filterContext.Result = new StatusCodeResult(403);
+        context.Result = new StatusCodeResult(403);
         return;
       }
 
@@ -134,8 +135,8 @@ namespace OnTopic.AspNetCore.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "PageGroup") {
-        filterContext.Result = controller.Redirect(
-          currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault().GetWebPath()
+        context.Result = controller.Redirect(
+          currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath()
         );
         return;
       }
@@ -147,15 +148,15 @@ namespace OnTopic.AspNetCore.Mvc {
       | mismatches between the requested URL and the canonical URL, and to help ensure that references to topics maintain the
       | same case as assigned in the topic graph, URLs that vary only by case will be redirected to the expected case.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!currentTopic.GetWebPath().Equals(filterContext.HttpContext.Request.Path, StringComparison.Ordinal)) {
-        filterContext.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
+      if (!currentTopic.GetWebPath().Equals(context.HttpContext.Request.Path, StringComparison.Ordinal)) {
+        context.Result = controller.RedirectPermanent(currentTopic.GetWebPath());
         return;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Base processing
       \-----------------------------------------------------------------------------------------------------------------------*/
-      base.OnActionExecuting(filterContext);
+      base.OnActionExecuting(context);
 
     }
 

@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnTopic.Mapping.Annotations;
 
 namespace OnTopic.Tests.ViewModels {
@@ -25,8 +25,8 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class RelationTopicViewModel: KeyOnlyTopicViewModel {
 
-    [Follow(Relationships.Children)]
-    public List<RelationTopicViewModel> Cousins { get; } = new();
+    [Include(AssociationTypes.Children)]
+    public Collection<RelationTopicViewModel> Cousins { get; } = new();
 
   } //Class
 } //Namespace

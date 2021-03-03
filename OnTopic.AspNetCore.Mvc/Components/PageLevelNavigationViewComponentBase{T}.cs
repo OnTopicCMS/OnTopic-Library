@@ -6,6 +6,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Models;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;
@@ -17,8 +18,8 @@ namespace OnTopic.AspNetCore.Mvc.Components {
   | CLASS: PAGE-LEVEL NAVIGATION VIEW COMPONENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Defines a <see cref="ViewComponent"/> which provides access to a menu of <typeparamref name="NavigationTopicViewModel"/>
-  ///   instances representing the nearest page-level navigation.
+  ///   Defines a <see cref="ViewComponent"/> which provides access to a menu of <typeparamref name="T"/> instances representing
+  ///   the nearest page-level navigation.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -30,14 +31,22 @@ namespace OnTopic.AspNetCore.Mvc.Components {
   ///   <para>
   ///     In order to remain view model agnostic, the <see cref="PageLevelNavigationViewComponentBase{T}"/> does not assume that
   ///     a particular view model will be used, and instead accepts a generic argument for any view model that implements the
-  ///     interface <see cref="INavigationTopicViewModel{T}"/>. Since generic view components cannot be effectively routed to,
+  ///     interface <see cref="IHierarchicalTopicViewModel{T}"/>. Since generic view components cannot be effectively routed to,
   ///     however, that means implementors must, at minimum, provide a local instance of <see
   ///     cref="PageLevelNavigationViewComponentBase{T}"/> which sets the generic value to the desired view model. To help
   ///     enforce this, while avoiding ambiguity, this class is marked as <c>abstract</c> and suffixed with <c>Base</c>.
   ///   </para>
+  ///   <para>
+  ///     While the <see cref="PageLevelNavigationViewComponentBase{T}"/> only requires that the <typeparamref name="T"/>
+  ///     implement <see cref="IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be
+  ///     determined on a per-case basis, as required by the implementation. Implementaters, however, should consider
+  ///     implementing the <see cref="INavigationTopicViewModel{T}"/> interface, which provides the standard properties that
+  ///     most views will likely need, as well as a <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/> method for
+  ///     determining if the navigation item is currently selected.
+  ///   </para>
   /// </remarks>
   public abstract class PageLevelNavigationViewComponentBase<T> :
-    NavigationTopicViewComponentBase<T> where T : class, INavigationTopicViewModel<T>, new()
+    NavigationTopicViewComponentBase<T> where T : class, IHierarchicalTopicViewModel<T>, new()
   {
 
     /*==========================================================================================================================
@@ -63,6 +72,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     /// <remarks>
     ///   The navigation root in the case of the page-level navigation any parent of content type <c>PageGroup</c>.
     /// </remarks>
+    #pragma warning disable CA1024 // Use properties where appropriate
     protected Topic? GetNavigationRoot() {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -88,6 +98,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       return navigationRootTopic?.Parent is null? null : navigationRootTopic;
 
     }
+    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: MAP NAVIGATION TOPIC VIEW MODELS
@@ -117,7 +128,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var navigationViewModel = new NavigationViewModel<T>() {
         NavigationRoot = await MapNavigationTopicViewModels(navigationRootTopic).ConfigureAwait(true),
-        CurrentKey = CurrentTopic?.GetUniqueKey()?? HttpContext.Request.Path
+        CurrentWebPath = CurrentTopic?.GetWebPath()?? HttpContext.Request.Path
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -26,7 +26,7 @@ namespace OnTopic.TestDoubles {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of a <see cref="DummmyTopicMappingService"/> with required dependencies.
+    ///   Establishes a new instance of a <see cref="DummyTopicMappingService"/> with required dependencies.
     /// </summary>
     public DummyTopicMappingService() {
     }
@@ -36,21 +36,21 @@ namespace OnTopic.TestDoubles {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
     [return: NotNullIfNotNull("topic")]
-    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All)
+    public async Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All)
       => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new()
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new()
       => throw new NotImplementedException();
 
     /*==========================================================================================================================
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All)
+    public async Task<object?> MapAsync(Topic? topic, object target, AssociationTypes associations = AssociationTypes.All)
       => throw new NotImplementedException();
 
   } //Class

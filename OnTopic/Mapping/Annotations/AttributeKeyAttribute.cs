@@ -4,7 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -12,8 +12,8 @@ namespace OnTopic.Mapping.Annotations {
   | ATTRIBUTE: ATTRIBUTE KEY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see
-  ///   cref="AttributeValueCollection.GetValue(String, Boolean)"/>.
+  ///   Flags that a property should be mapped to a specific <c>attributeKey</c> in when calling <see cref="
+  ///   TrackedRecordCollection{TItem, TValue, TAttribute}.GetValue(String, Boolean)"/>.
   /// </summary>
   /// <remarks>
   ///   By default, <see cref="ITopicMappingService"/> implementations will attempt to map the property of the target data
@@ -30,11 +30,19 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Annotates a property with the <see cref="AttributeKeyAttribute"/> class by providing a (required) attribute key.
     /// </summary>
-    /// <param name="attributeKey">The key value of the attribute associated with the current property.</param>
-    public AttributeKeyAttribute(string attributeKey) {
-      TopicFactory.ValidateKey(attributeKey, false);
-      Value = attributeKey;
+    /// <param name="key">The key value of the attribute associated with the current property.</param>
+    public AttributeKeyAttribute(string key) {
+      TopicFactory.ValidateKey(key, false);
+      Key = key;
     }
+
+    /*==========================================================================================================================
+    | PROPERTY: KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the value of the attribute key.
+    /// </summary>
+    public string Key { get; }
 
     /*==========================================================================================================================
     | PROPERTY: VALUE
@@ -42,7 +50,8 @@ namespace OnTopic.Mapping.Annotations {
     /// <summary>
     ///   Gets the value of the attribute key.
     /// </summary>
-    public string Value { get; }
+    [Obsolete("The Value property has been renamed to Key for consistency", true)]
+    public string? Value { get; }
 
   } //Class
 } //Namespace

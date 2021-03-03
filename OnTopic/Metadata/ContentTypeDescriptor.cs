@@ -7,7 +7,9 @@ using System;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Collections;
+using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Associations;
 
 namespace OnTopic.Metadata {
 
@@ -20,8 +22,7 @@ namespace OnTopic.Metadata {
   /// <remarks>
   ///   <para>
   ///     Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-  ///     Editor (via the <see cref="AttributeDescriptors"/> property). The content type also determines, by default, which view
-  ///     is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten down the pipe).
+  ///     Editor (via the <see cref="AttributeDescriptors"/> property).
   ///   </para>
   ///   <para>
   ///     Each content type associated with a <see cref="Topic"/> is itself a <see cref="Topic"/> with a Content Type of
@@ -39,7 +40,7 @@ namespace OnTopic.Metadata {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private   AttributeDescriptorCollection?                    _attributeDescriptors;
-    private   ReadOnlyTopicCollection<ContentTypeDescriptor>?   _permittedContentTypes;
+    private   ReadOnlyKeyedTopicCollection<ContentTypeDescriptor>? _permittedContentTypes;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -49,10 +50,10 @@ namespace OnTopic.Metadata {
     ///   cref="Topic.ContentType"/>, and, optionally, <see cref="Topic.Parent"/>, <see cref="Topic.Id"/>.
     /// </summary>
     /// <remarks>
-    ///   By default, when creating new attributes, the <see cref="AttributeValue"/>s for both <see cref="Topic.Key"/> and <see
-    ///   cref="Topic.ContentType"/> will be set to <see cref="AttributeValue.IsDirty"/>, which is required in order to
+    ///   By default, when creating new attributes, the <see cref="AttributeRecord"/>s for both <see cref="Topic.Key"/> and <see
+    ///   cref="Topic.ContentType"/> will be set to <see cref="TrackedRecord{T}.IsDirty"/>, which is required in order to
     ///   correctly save new topics to the database. When the <paramref name="id"/> parameter is set, however, the <see
-    ///   cref="AttributeValue.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
+    ///   cref="TrackedRecord{T}.IsDirty"/> property is set to <c>false</c> on <see cref="Topic.Key"/> as well as on <see
     ///   cref="Topic.ContentType"/>, since it is assumed these are being set to the same values currently used in the
     ///   persistence store.
     /// </remarks>
@@ -67,7 +68,7 @@ namespace OnTopic.Metadata {
     public ContentTypeDescriptor(
       string key,
       string contentType,
-      Topic parent,
+      Topic? parent = null,
       int id = -1
     ) : base(
       key,
@@ -97,9 +98,8 @@ namespace OnTopic.Metadata {
     ///     cref="ContentTypeDescriptor"/> is set to <see cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
-    [AttributeSetter]
     public bool DisableChildTopics {
-      get => Attributes.GetBoolean("DisableChildTopics", false);
+      get => Attributes.GetBoolean("DisableChildTopics");
       set => SetAttributeValue("DisableChildTopics", value ? "1" : "0");
     }
 
@@ -126,18 +126,18 @@ namespace OnTopic.Metadata {
     ///   </para>
     ///   <para>
     ///     To add content types to the <see cref="PermittedContentTypes"/> collection, use <see
-    ///     cref="RelatedTopicCollection.SetTopic(String, Topic, Boolean, Boolean?)"/>.
+    ///     cref="TopicRelationshipMultiMap.SetValue(String, Topic, Boolean?)"/>.
     ///   </para>
     /// </remarks>
-    public ReadOnlyTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
+    public ReadOnlyKeyedTopicCollection<ContentTypeDescriptor> PermittedContentTypes {
       get {
 
         /*----------------------------------------------------------------------------------------------------------------------
         | Populate values from relationships
         \---------------------------------------------------------------------------------------------------------------------*/
         if (_permittedContentTypes is null) {
-          var permittedContentTypes = new TopicCollection<ContentTypeDescriptor>();
-          var contentTypes = Relationships.GetTopics("ContentTypes");
+          var permittedContentTypes = new KeyedTopicCollection<ContentTypeDescriptor>();
+          var contentTypes = Relationships.GetValues("ContentTypes");
           foreach (ContentTypeDescriptor contentType in contentTypes) {
             permittedContentTypes.Add(contentType);
           }
@@ -176,14 +176,7 @@ namespace OnTopic.Metadata {
           _attributeDescriptors = new();
 
           /*--------------------------------------------------------------------------------------------------------------------
-          | Get values from self
-          >---------------------------------------------------------------------------------------------------------------------
-          | ### NOTE KLT052015: The (ContentType)Topic.Attributes property is an AttributeValue collection, not an Attribute
-          | collection.
-          >---------------------------------------------------------------------------------------------------------------------
-          | ### NOTE KLT052015: The only place this is really used (and where the strongly-typed Attribute is needed) is in
-          | SqlTopicDataProvider.cs (lines 408 - 422), where it is used to add Attributes to the null Attributes collection; the
-          | Type property is used for determining whether the Attribute Topic is a Relationships definition or Nested Topic.
+          | Get values from nested topics
           \-------------------------------------------------------------------------------------------------------------------*/
           if (Children.Contains("Attributes")) {
             foreach (AttributeDescriptor attribute in Children["Attributes"].Children) {
@@ -277,7 +270,7 @@ namespace OnTopic.Metadata {
       var contentType = (ContentTypeDescriptor?)this;
 
       while (contentType is not null) {
-        if (contentType.Key.Equals(contentTypeName, StringComparison.CurrentCultureIgnoreCase)) {
+        if (contentType.Key.Equals(contentTypeName, StringComparison.OrdinalIgnoreCase)) {
           return true;
         }
         contentType = contentType.Parent as ContentTypeDescriptor;

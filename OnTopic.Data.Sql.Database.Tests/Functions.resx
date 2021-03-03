@@ -1,0 +1,701 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="dbo_GetExtendedAttributeTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@AttributeKey		AS VARCHAR(128),
+	@AttributeValue		AS NVARCHAR(2000);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'Topic_1_1',
+	@AttributeKey		= 'GetExtendedAttributeTest2';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeValue		= [dbo].[GetExtendedAttribute](
+	  @TopicID,
+	  @AttributeKey
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VALIDATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeValue		AS RC;</value>
+  </data>
+  <data name="dbo_GetParentIDTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@ExpectedParentID	AS INT,
+	@ParentID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedParentID	= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_1';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ParentID		= [dbo].[GetParentID](
+	  @TopicID
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EVALUATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedParentID - @ParentID	AS RC;
+</value>
+  </data>
+  <data name="dbo_GetTopicIDTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@ExpectedTopicID	AS INT,
+	@UniqueKey		AS NVARCHAR(2500);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= 'Root:FunctionTests:Topic_1:Topic_1_1:Topic_1_1_1:Topic_1_1_1_2';
+
+SELECT	@ExpectedTopicID	= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_2';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= [dbo].[GetTopicID](
+	  @UniqueKey
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EVALUATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@ExpectedTopicID - @TopicID	AS RC;</value>
+  </data>
+  <data name="dbo_GetUniqueKeyTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@UniqueKey		AS NVARCHAR(2500);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_2';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		= [dbo].[GetUniqueKey](
+	  @TopicID
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EVALUATE RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@UniqueKey		AS RC;</value>
+  </data>
+  <data name="dbo_FindTopicIDsTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT,
+	@AttributeKey		AS VARCHAR (255),
+	@AttributeValue		AS NVARCHAR (255),
+	@IsExtendedAttribute	AS BIT,
+	@UsePartialMatch	AS BIT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@AttributeKey		= 'FindTopicIDsTest',
+	@AttributeValue		= 'Test',
+	@IsExtendedAttribute	= NULL,
+	@UsePartialMatch	= 0;
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1'
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	[dbo].[FindTopicIDs](
+	  @TopicID,
+	  @AttributeKey,
+	  @AttributeValue,
+	  @IsExtendedAttribute,
+	  @UsePartialMatch
+	);</value>
+  </data>
+  <data name="dbo_GetAttributesTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest'
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	[dbo].[GetAttributes](
+	  @TopicID
+	);</value>
+  </data>
+  <data name="dbo_GetChildTopicIDsTest_TestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- EXECUTE FUNCTION
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	[dbo].[GetChildTopicIDs](
+	  @TopicID
+	);</value>
+  </data>
+  <data name="dbo_GetAttributesTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@RootTopicID		AS INT,
+	@Key		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@AttributesXml		AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest',
+	@AttributesXml		= '&lt;attributes&gt;&lt;attribute key=''GetAttributesTest4''&gt;New&lt;/attribute&gt;&lt;/attributes&gt;';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'FunctionTests';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	Attributes
+WHERE	TopicID		= @TopicID;
+
+DELETE
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;
+
+DELETE
+FROM	Topics
+WHERE	TopicID		= @TopicID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@TopicID		= [dbo].[CreateTopic]
+	@Key,
+	'Test',
+	@RootTopicID;
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID,
+	  'GetAttributesTest1',
+	  'Value'
+	),
+	( @TopicID,
+	  'GetAttributesTest2',
+	  'Value'
+	),
+	( @TopicID,
+	  'GetAttributesTest3',
+	  'Value'
+	);
+
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID,
+	  @AttributesXml
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetAttributesTest%';</value>
+  </data>
+  <data name="dbo_GetAttributesTest_PosttestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'GetAttributesTest'
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+EXEC	[dbo].[DeleteTopic]	@TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		LIKE 'GetAttributesTest%'</value>
+  </data>
+  <data name="testInitializeAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@RootTopicID		AS INT,
+	@RootTopicKey		AS VARCHAR(128),
+	@ContentType		AS VARCHAR(128),
+	@TopicID1		AS INT,
+	@TopicID2		AS INT,
+	@TopicID3		AS INT;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RootTopicKey		= 'FunctionTests',
+	@ContentType		= 'Test';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @RootTopicKey;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+IF @RootTopicID IS NOT NULL
+  BEGIN
+    EXECUTE	[dbo].[DeleteTopic]	@RootTopicID;
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ENSURE GLOBAL ROOT
+--------------------------------------------------------------------------------------------------------------------------------
+IF NOT EXISTS (SELECT * FROM Topics WHERE TopicID = 1)
+  BEGIN
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		ON;
+
+    INSERT
+    INTO	Topics (
+	  TopicID,
+	  TopicKey,
+	  ContentType,
+	  ParentID,
+	  RangeLeft,
+	  RangeRight
+	)
+    VALUES	(
+	  1,
+	  'Root',
+	  'Test',
+	  NULL,
+	  1,
+	  2
+	)
+
+    SET	IDENTITY_INSERT		[dbo].[Topics]		OFF;
+
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	@RootTopicID		= [dbo].[CreateTopic]
+	@RootTopicKey, 
+	@ContentType,
+	1;
+
+EXECUTE	@TopicID1		= [dbo].[CreateTopic]
+	'Topic_1', 
+	@ContentType,
+	@RootTopicID;
+
+EXECUTE	@TopicID2		= [dbo].[CreateTopic]
+	'Topic_1_1', 
+	@ContentType,
+	@TopicID1;
+
+EXECUTE	@TopicID3		= [dbo].[CreateTopic]
+	'Topic_1_1_1', 
+	@ContentType,
+	@TopicID2;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_1', 
+	@ContentType,
+	@TopicID3;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_2', 
+	@ContentType,
+	@TopicID3;
+
+EXECUTE	[dbo].[CreateTopic]
+	'Topic_1_1_1_3', 
+	@ContentType,
+	@TopicID3;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics</value>
+  </data>
+  <data name="testCleanupAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@RootTopicID		AS INT,
+	@RootTopicKey		AS VARCHAR(128);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@RootTopicKey		= 'FunctionTests';
+
+SELECT	@RootTopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @RootTopicKey;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+IF @RootTopicID IS NOT NULL
+  BEGIN
+    EXECUTE	[dbo].[DeleteTopic]	@RootTopicID;
+  END
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- COMPRESS HIERARCHY
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTE	[Utilities].[CompressHierarchy]
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Topics</value>
+  </data>
+  <data name="dbo_FindTopicIDsTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@Value		AS VARCHAR(128),
+	@TopicID1		AS INT,
+	@TopicID2		AS INT,
+	@TopicID3		AS INT,
+	@TopicID4		AS INT,
+	@Attributes		AS AttributeValues,
+	@ExtendedAttributes	AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'FindTopicIDsTest',
+	@Value		= 'Test',
+	@ExtendedAttributes	= '&lt;attributes&gt;&lt;attribute key=''' + @Key + '''&gt;' + @Value + '&lt;/attribute&gt;&lt;/attributes&gt;';
+
+SELECT	@TopicID1		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_1';
+
+SELECT	@TopicID2		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_2';
+
+SELECT	@TopicID3		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1_1_1_3';
+
+SELECT	@TopicID4		= TopicID
+FROM	Topics
+WHERE	TopicKey		= 'Topic_1';
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID1,
+	  @ExtendedAttributes
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID2,
+	  @Key,
+	  @Value
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID3,
+	  @Key,
+	  'Invalid'
+	);
+
+INSERT
+INTO	Attributes (
+	  TopicID,
+	  AttributeKey,
+	  AttributeValue
+	)
+VALUES	( @TopicID4,
+	  @Key,
+	  @Value
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	Attributes
+WHERE	AttributeKey		= @Key</value>
+  </data>
+  <data name="dbo_GetExtendedAttributeTest_PretestAction.SqlScript" xml:space="preserve">
+    <value>--------------------------------------------------------------------------------------------------------------------------------
+-- DECLARE VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+DECLARE	@Key		AS VARCHAR(128),
+	@TopicID		AS INT,
+	@AttributesXml		AS XML;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- SET VARIABLES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	@Key		= 'Topic_1_1',
+	@AttributesXml		= '&lt;attributes&gt;' +
+			  '  &lt;attribute key=''GetExtendedAttributeTest1''&gt;Value1&lt;/attribute&gt;' +
+			  '  &lt;attribute key=''GetExtendedAttributeTest2''&gt;Value2&lt;/attribute&gt;' +
+			  '&lt;/attributes&gt;';
+
+SELECT	@TopicID		= TopicID
+FROM	Topics
+WHERE	TopicKey		= @Key;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- DELETE TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+DELETE
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- ESTABLISH TEST DATA
+--------------------------------------------------------------------------------------------------------------------------------
+INSERT
+INTO	ExtendedAttributes (
+	  TopicID,
+	  AttributesXML
+	)
+VALUES	( @TopicID,
+	  @AttributesXml
+	);
+
+--------------------------------------------------------------------------------------------------------------------------------
+-- VERIFY RESULTS
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	*
+FROM	ExtendedAttributes
+WHERE	TopicID		= @TopicID;</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+</root>

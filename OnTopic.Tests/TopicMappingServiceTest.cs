@@ -11,12 +11,14 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
+using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
+using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
-using OnTopic.Metadata.AttributeTypes;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
+using OnTopic.TestDoubles.Metadata;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
@@ -36,6 +38,7 @@ namespace OnTopic.Tests {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
+    readonly                    ITypeLookupService              _typeLookupService;
     readonly                    ITopicRepository                _topicRepository;
     readonly                    ITopicMappingService            _mappingService;
 
@@ -52,8 +55,21 @@ namespace OnTopic.Tests {
     ///   crawling the object graph.
     /// </remarks>
     public TopicMappingServiceTest() {
-      _topicRepository = new CachedTopicRepository(new StubTopicRepository());
-      _mappingService = new TopicMappingService(new DummyTopicRepository(), new FakeViewModelLookupService());
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Create composite topic lookup service
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _typeLookupService        = new CompositeTypeLookupService(
+        new TopicViewModelLookupService(),
+        new FakeViewModelLookupService()
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Assemble dependencies
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
+      _mappingService           = new TopicMappingService(new DummyTopicRepository(), _typeLookupService);
+
     }
 
     /*==========================================================================================================================
@@ -69,13 +85,29 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
-      topic.Attributes.SetValue("IsHidden", "1");
 
       var target                = await _mappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
-      Assert.AreEqual<bool>(true, target.IsHidden);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: GENERIC: RETURNS NEW RECORD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and confirms that a basic <c>record</c> type can be mapped by
+    ///   explicitly setting defining the target type.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Generic_ReturnsNewRecord() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      var target                = await _mappingService.MapAsync<RecordTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<string>(topic.Key, target.Key);
 
     }
 
@@ -93,13 +125,11 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("MetaTitle", "ValueA");
       topic.Attributes.SetValue("Title", "Value1");
-      topic.Attributes.SetValue("IsHidden", "1");
 
       var target                = (PageTopicViewModel?)await _mappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<string>("ValueA", target.MetaTitle);
       Assert.AreEqual<string>("Value1", target.Title);
-      Assert.AreEqual<bool>(true, target.IsHidden);
 
     }
 
@@ -267,6 +297,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE ENTRY: GET MISSING ASSOCIATIONS: RETURNS DIFFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.GetMissingAssociations(AssociationTypes)"/> correctly returns the missing
+    ///   associations.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCacheEntry_GetMissingAssociations_ReturnsDifference() {
+
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        Associations            = AssociationTypes.Children | AssociationTypes.Parents
+      };
+      var associations          = AssociationTypes.Children | AssociationTypes.References;
+
+      var difference            = cacheEntry.GetMissingAssociations(associations);
+
+      Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
+      Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: RELATIONSHIPS: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -280,9 +334,9 @@ namespace OnTopic.Tests {
       var relatedTopic3         = TopicFactory.Create("Sibling", "Relation");
       var topic                 = TopicFactory.Create("Test", "Relation");
 
-      topic.Relationships.SetTopic("Cousins", relatedTopic1);
-      topic.Relationships.SetTopic("Cousins", relatedTopic2);
-      topic.Relationships.SetTopic("Siblings", relatedTopic3);
+      topic.Relationships.SetValue("Cousins", relatedTopic1);
+      topic.Relationships.SetValue("Cousins", relatedTopic2);
+      topic.Relationships.SetValue("Siblings", relatedTopic3);
 
       var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -294,19 +348,45 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: RELATIONSHIPS: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully skips disabled.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Relationships_SkipsDisabled() {
+
+      var relatedTopic1         = TopicFactory.Create("Cousin1", "Relation");
+      var relatedTopic2         = TopicFactory.Create("Cousin2", "Relation");
+      var topic                 = TopicFactory.Create("Test", "Relation");
+
+      topic.Relationships.SetValue("Cousins", relatedTopic1);
+      topic.Relationships.SetValue("Cousins", relatedTopic2);
+
+      topic.IsDisabled          = true;
+      relatedTopic2.IsDisabled  = true;
+
+      var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(1, target.Cousins.Count);
+      Assert.IsNotNull(GetChildTopic(target.Cousins, "Cousin1"));
+      Assert.IsNull(GetChildTopic(target.Cousins, "Cousin2"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: ALTERNATE RELATIONSHIP: RETURNS CORRECT RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully derives values from the key and
-    ///   type specified by <see cref="Mapping.Annotations.RelationshipAttribute"/>.
+    ///   type specified by <see cref="Mapping.Annotations.CollectionAttribute"/>.
     /// </summary>
     /// <remarks>
-    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see
-    ///   cref="Mapping.Annotations.RelationshipAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the
-    ///   <see cref="RelationshipType"/> to <see cref="RelationshipType.IncomingRelationship"/>. <c>AmbiguousRelationship</c>
-    ///   refers to a relationship that is both outgoing and incoming. It should be smart enough to a) look for the
-    ///   <c>AmbigousRelationship</c> instead of the <c>RelationshipAlias</c>, and b) source from the <see
-    ///   cref="Topic.IncomingRelationships"/> collection.
+    ///   The <see cref="AmbiguousRelationTopicViewModel.RelationshipAlias"/> uses <see cref="Mapping.Annotations.
+    ///   CollectionAttribute"/> to set the relationship key to <c>AmbiguousRelationship</c> and the <see cref="CollectionType"
+    ///   /> to <see cref="CollectionType.IncomingRelationship"/>. <c>AmbiguousRelationship</c> refers to a relationship that is
+    ///   both outgoing and incoming. It should be smart enough to a) look for the <c>AmbigousRelationship</c> instead of the
+    ///   <c>RelationshipAlias</c>, and b) source from the <see cref="Topic.IncomingRelationships"/> collection.
     /// </remarks>
     [TestMethod]
     public async Task Map_AlternateRelationship_ReturnsCorrectRelationship() {
@@ -318,12 +398,12 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "AmbiguousRelation");
 
       //Set outgoing relationships
-      topic.Relationships.SetTopic("RelationshipAlias", ambiguousRelation);
-      topic.Relationships.SetTopic("AmbiguousRelationship", outgoingRelation);
+      topic.Relationships.SetValue("RelationshipAlias", ambiguousRelation);
+      topic.Relationships.SetValue("AmbiguousRelationship", outgoingRelation);
 
       //Set incoming relationships
-      ambiguousRelation.Relationships.SetTopic("RelationshipAlias", topic);
-      incomingRelation.Relationships.SetTopic("AmbiguousRelationship", topic);
+      ambiguousRelation.Relationships.SetValue("RelationshipAlias", topic);
+      incomingRelation.Relationships.SetValue("AmbiguousRelationship", topic);
 
       var target = await _mappingService.MapAsync<AmbiguousRelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -407,13 +487,40 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic2"));
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic3"));
       Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic4"));
-      Assert.IsTrue(((DescendentSpecializedTopicViewModel)GetChildTopic(target.Children, "ChildTopic4")).IsLeaf);
+      Assert.IsTrue(((DescendentSpecializedTopicViewModel?)GetChildTopic(target.Children, "ChildTopic4")).IsLeaf);
       Assert.IsNull(GetChildTopic(target.Children, "invalidChildTopic"));
       Assert.IsNull(GetChildTopic(target.Children, "GrandchildTopic"));
       Assert.IsNotNull(GetChildTopic(
-        ((DescendentTopicViewModel)GetChildTopic(target.Children, "ChildTopic3")).Children,
+        ((DescendentTopicViewModel?)GetChildTopic(target.Children, "ChildTopic3")).Children,
         "GrandchildTopic"
       ));
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: WITH DISABLED: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> with children and tests whether it successfully skips disabled child
+    ///   topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Children_SkipsDisabled() {
+
+      var topic                 = TopicFactory.Create("Test", "Descendent");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Descendent", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Descendent", topic);
+
+      topic.IsDisabled          = true;
+      childTopic3.IsDisabled    = true;
+
+      var target                = await _mappingService.MapAsync<DescendentTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic1"));
+      Assert.IsNotNull(GetChildTopic(target.Children, "ChildTopic2"));
+      Assert.IsNull(GetChildTopic(target.Children, "ChildTopic3"));
+
     }
 
     /*==========================================================================================================================
@@ -443,15 +550,16 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED MODEL
+    | TEST: MAP: TOPIC REFERENCES AS ATTRIBUTE: RETURNS MAPPED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics stored in
+    ///   <see cref="Topic.Attributes"/>.
     /// </summary>
     [TestMethod]
-    public async Task Map_TopicReferences_ReturnsMappedModel() {
+    public async Task Map_TopicReferencesAsAttribute_ReturnsMappedModel() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topicReference        = _topicRepository.Load(11111);
 
       var topic                 = TopicFactory.Create("Test", "TopicReference");
@@ -462,6 +570,53 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(target.TopicReference);
       Assert.AreEqual<string>(topicReference.Key, target.TopicReference.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: RETURNS MAPPED MODEL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully maps referenced topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferences_ReturnsMappedModel() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+      var topicReference        = _topicRepository.Load(11111);
+
+      var topic                 = TopicFactory.Create("Test", "TopicReference");
+
+      topic.References.SetValue("TopicReference", topicReference);
+
+      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target.TopicReference);
+      Assert.AreEqual<string>(topicReference.Key, target.TopicReference.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: SKIPS DISABLED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether it successfully skips disabled topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferences_SkipsDisabled() {
+
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
+
+      var topic                 = TopicFactory.Create("Test", "TopicReference");
+      var topicReference        = TopicFactory.Create("Reference", "Page");
+
+      topicReference.IsDisabled = true;
+
+      topic.References.SetValue("TopicReference", topicReference);
+
+      var target                = (TopicReferenceTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
+
+      Assert.IsNull(target.TopicReference);
 
     }
 
@@ -493,12 +648,12 @@ namespace OnTopic.Tests {
       var cousinOnceRemoved     = TopicFactory.Create("CousinOnceRemoved", "Relation", childTopic3);
 
       //Set first cousins
-      topic.Relationships.SetTopic("Cousins", cousinTopic1);
-      topic.Relationships.SetTopic("Cousins", cousinTopic2);
-      topic.Relationships.SetTopic("Cousins", cousinTopic3);
+      topic.Relationships.SetValue("Cousins", cousinTopic1);
+      topic.Relationships.SetValue("Cousins", cousinTopic2);
+      topic.Relationships.SetValue("Cousins", cousinTopic3);
 
       //Set ancillary relationships
-      cousinTopic3.Relationships.SetTopic("Cousins", secondCousin);
+      cousinTopic3.Relationships.SetValue("Cousins", secondCousin);
 
       var target                = await _mappingService.MapAsync<RelationTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -559,9 +714,9 @@ namespace OnTopic.Tests {
       var relatedTopic3         = TopicFactory.Create("RelatedTopic3", "KeyOnly");
       var topic                 = TopicFactory.Create("Test", "RelatedEntity");
 
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic1);
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic2);
-      topic.Relationships.SetTopic("RelatedTopics", relatedTopic3);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic1);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic2);
+      topic.Relationships.SetValue("RelatedTopics", relatedTopic3);
 
       var target                = await _mappingService.MapAsync<RelatedEntityTopicViewModel>(topic).ConfigureAwait(false);
       var relatedTopic3copy     = (getRelatedTopic(target, "RelatedTopic3"));
@@ -574,8 +729,8 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual(relatedTopic3.Key, relatedTopic3copy.Key);
 
-      Topic getRelatedTopic(RelatedEntityTopicViewModel topic, string key)
-        => topic.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+      Topic? getRelatedTopic(RelatedEntityTopicViewModel topic, string key)
+        => topic.RelatedTopics.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
     }
 
@@ -589,7 +744,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_MetadataLookup_ReturnsLookupItems() {
 
-      var mappingService        = new TopicMappingService(_topicRepository, new FakeViewModelLookupService());
+      var mappingService        = new TopicMappingService(_topicRepository, _typeLookupService);
       var topic                 = TopicFactory.Create("Test", "MetadataLookup");
 
       var target                = (MetadataLookupTopicViewModel?)await mappingService.MapAsync(topic).ConfigureAwait(false);
@@ -609,7 +764,7 @@ namespace OnTopic.Tests {
     public async Task Map_CircularReference_ReturnsCachedParent() {
 
       var topic                 = TopicFactory.Create("Test", "Circular", 1);
-      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", 2, topic);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Circular", topic, 2);
 
       var mappedTopic           = await _mappingService.MapAsync<CircularTopicViewModel>(topic).ConfigureAwait(false);
 
@@ -618,14 +773,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    | TEST: MAP: FILTER BY COLLECTION TYPE: RETURNS FILTERED COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
     ///   cref="DescendentTopicViewModel.Children"/> property can be filtered by <see cref="TopicViewModel.ContentType"/>.
     /// </summary>
     [TestMethod]
-    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+    public async Task Map_FilterByCollectionType_ReturnsFilteredCollection() {
 
       var topic                 = TopicFactory.Create("Test", "Descendent");
       var childTopic1           = TopicFactory.Create("ChildTopic1", "Descendent", topic);
@@ -674,7 +829,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_CompatibleProperties_MapObjectReference() {
 
-      var topic                 = (TextAttribute)TopicFactory.Create("Attribute", "TextAttribute");
+      var topic                 = (TextAttributeDescriptor)TopicFactory.Create("Attribute", "TextAttributeDescriptor");
 
       topic.VersionHistory.Add(new(1976, 10, 15, 9, 30, 00));
 
@@ -793,9 +948,57 @@ namespace OnTopic.Tests {
       childTopic1.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic2.Attributes.SetValue("SomeAttribute", "ValueA");
       childTopic3.Attributes.SetValue("SomeAttribute", "ValueA");
-      childTopic4.Attributes.SetValue("SomeAttribute", "ValueB");
+      childTopic4.Attributes.SetValue("SomeAttribute", "ValueA");
+
+      childTopic1.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic2.Attributes.SetValue("SomeOtherAttribute", "ValueB");
+      childTopic3.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+      childTopic4.Attributes.SetValue("SomeOtherAttribute", "ValueA");
+
 
       var target = await _mappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: FILTER BY INVALID ATTRIBUTE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to map a view model that has an invalid <see cref="FilterByAttributeAttribute.Key"/> value of <c>ContentType
+    ///   </c>; throws an <see cref="ArgumentException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task Map_FilterByInvalidAttribute_ThrowsExceptions() {
+
+      var topic                 = TopicFactory.Create("Test", "FilteredInvalid");
+
+      var target = await _mappingService.MapAsync<FilteredInvalidTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int>(2, target.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: FILTER BY CONTENT TYPE: RETURNS FILTERED COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
+    ///   cref="FilteredTopicViewModel.Children"/> property can be filtered using a <see cref="FilterByContentTypeAttribute"/>
+    ///   instances.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_FilterByContentType_ReturnsFilteredCollection() {
+
+      var topic                 = TopicFactory.Create("Test", "Filtered");
+      var childTopic1           = TopicFactory.Create("ChildTopic1", "Page", topic);
+      var childTopic2           = TopicFactory.Create("ChildTopic2", "Index", topic);
+      var childTopic3           = TopicFactory.Create("ChildTopic3", "Page", topic);
+      var childTopic4           = TopicFactory.Create("ChildTopic4", "Page", childTopic3);
+
+      var target = await _mappingService.MapAsync<FilteredContentTypeTopicViewModel>(topic).ConfigureAwait(false);
 
       Assert.AreEqual<int>(2, target.Children.Count);
 
@@ -853,11 +1056,11 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   A helper function which retrieves a child topic based on the key.
     /// </summary>
-    public static KeyOnlyTopicViewModel GetChildTopic(IEnumerable<KeyOnlyTopicViewModel> topicCollection, string key)
-      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+    public static KeyOnlyTopicViewModel? GetChildTopic(IEnumerable<KeyOnlyTopicViewModel> topicCollection, string key)
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
-    public static TopicViewModel GetChildTopic(IEnumerable<TopicViewModel> topicCollection, string key)
-      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.InvariantCulture));
+    public static TopicViewModel? GetChildTopic(IEnumerable<TopicViewModel> topicCollection, string key)
+      => topicCollection.FirstOrDefault((t) => t.Key.StartsWith(key, StringComparison.Ordinal));
 
   } //Class
 } //Namespace

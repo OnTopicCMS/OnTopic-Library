@@ -13,7 +13,7 @@ RETURNS	@Attributes		TABLE
 	AttributeKey		NVARCHAR(255)	NOT NULL,
 	AttributeValue		NVARCHAR(MAX)	NOT NULL,
 	IsExtendedAttribute	BIT,
-	Version		DATETIME
+	Version		DATETIME2(7)
 )
 AS
 

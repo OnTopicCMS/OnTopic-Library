@@ -6,17 +6,17 @@
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[GetTopics]
-	@TopicID		int	= -1,
-	@DeepLoad		bit	= 1,
-	@TopicKey		nvarchar(255)	= null
+	@TopicID		INT	= -1,
+	@DeepLoad		BIT	= 1,
+	@UniqueKey		NVARCHAR(255)	= NULL
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- GET TOPIC ID IF UNKNOWN.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicKey IS NOT NULL
+IF @UniqueKey IS NOT NULL
   BEGIN
-    SET	@TopicID		= dbo.GetTopicID(@TopicKey)
+    SET	@TopicID		= dbo.GetTopicID(@UniqueKey)
   END
 
 IF @TopicID < 0
@@ -87,24 +87,24 @@ ELSE
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	TopicIndex.TopicID,
-  	TopicIndex.ContentType,
-  	TopicIndex.ParentID,
-  	TopicIndex.TopicKey,
-  	Storage.SortOrder
-FROM	TopicIndex		AS TopicIndex
+SELECT	Topics.TopicID,
+  	ContentType,
+  	ParentID,
+  	TopicKey,
+  	SortOrder
+FROM	Topics		AS Topics
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= TopicIndex.TopicID
+  ON	Storage.TopicID		= Topics.TopicID
 ORDER BY	SortOrder
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT TOPIC ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
-	Attributes.AttributeKey,
-	Attributes.AttributeValue,
-	Attributes.Version
-FROM	AttributeIndex		Attributes
+	AttributeKey,
+	AttributeValue,
+	Version
+FROM	AttributeIndex		AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
 
@@ -112,8 +112,8 @@ JOIN	#Topics		AS Storage
 -- SELECT EXTENDED ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
 SELECT	Attributes.TopicID,
-	Attributes.AttributesXml,
-	Attributes.Version
+	AttributesXml,
+	Version
 FROM	ExtendedAttributeIndex	AS Attributes
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Attributes.TopicID
@@ -121,18 +121,29 @@ JOIN	#Topics		AS Storage
 --------------------------------------------------------------------------------------------------------------------------------
 -- SELECT RELATIONSHIPS
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	Relationships.Source_TopicID,
-	Relationships.RelationshipKey,
-	Relationships.Target_TopicID
-FROM	Relationships		Relationships
+SELECT	Source_TopicID,
+	RelationshipKey,
+	Target_TopicID,
+	IsDeleted
+FROM	RelationshipIndex	AS Relationships
 JOIN	#Topics		AS Storage
   ON	Storage.TopicID		= Relationships.Source_TopicID
 
 --------------------------------------------------------------------------------------------------------------------------------
+-- SELECT REFERENCES
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT	Source_TopicID,
+	ReferenceKey,
+	Target_TopicID
+FROM	ReferenceIndex		AS TopicReferences
+JOIN	#Topics		AS Storage
+  ON	Storage.TopicID		= TopicReferences.Source_TopicID
+
+--------------------------------------------------------------------------------------------------------------------------------
 -- SELECT HISTORY
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	VersionHistory.TopicID,
-	VersionHistory.Version
-FROM	VersionHistoryIndex	VersionHistory
+SELECT	History.TopicID,
+	Version
+FROM	VersionHistoryIndex	AS History
 JOIN	#Topics		AS Storage
-  ON	Storage.TopicID		= VersionHistory.TopicID;
+  ON	Storage.TopicID		= History.TopicID;

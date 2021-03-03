@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Metadata;
 
 namespace OnTopic.AspNetCore.Mvc {
 
@@ -65,8 +66,8 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </summary>
     /// <remarks>
     ///   The preferred nomenclature for the name of a <see cref="ContentTypeDescriptor"/> is simply <c>ContentType</c>. The
-    ///   base <see cref="ViewResult"/> class has an existing <see cref="ContentType"/> property representing the HTTP response
-    ///   value, however. As such, <see cref="TopicContentType"/> is used to disambiguate the terms.
+    ///   base <see cref="ViewResult"/> class has an existing <see cref="ViewResult.ContentType"/> property representing the
+    ///   HTTP response value, however. As such, <see cref="TopicContentType"/> is used to disambiguate the terms.
     /// </remarks>
     public string TopicContentType { get; } = "Page";
 
@@ -78,7 +79,7 @@ namespace OnTopic.AspNetCore.Mvc {
     /// </summary>
     /// <remarks>
     ///   The associated <see cref="TopicViewResultExecutor"/> will fall back to the <see cref="TopicView"/> if the view isn't
-    ///   set via other sources, such as the HTTP <c>accepts</c> header, the query string, &c.
+    ///   set via other sources, such as the HTTP <c>accepts</c> header, the query string, etc.
     /// </remarks>
     public string TopicView { get; }
 

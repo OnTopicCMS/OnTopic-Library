@@ -3,7 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OnTopic.Collections {
 
@@ -13,17 +16,39 @@ namespace OnTopic.Collections {
   /// <summary>
   ///   Represents a collection of <see cref="Topic"/> objects.
   /// </summary>
-  public class TopicCollection : TopicCollection<Topic> {
+  public class TopicCollection : Collection<Topic> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the <see cref="TopicCollection{T}"/>.
+    ///   Initializes a new instance of the <see cref="TopicCollection"/>.
     /// </summary>
     /// <param name="topics">Seeds the collection with an optional list of topic references.</param>
-    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics) {
+    public TopicCollection(IEnumerable<Topic>? topics = null) : base(topics?.ToList()?? new()) {
     }
+
+    /*==========================================================================================================================
+    | METHOD: AS READ ONLY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a read-only version of this <see cref="TopicCollection"/>.
+    /// </summary>
+    public ReadOnlyTopicCollection AsReadOnly() => new(this);
+
+    /*==========================================================================================================================
+    | METHOD: GET TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="KeyedTopicCollection{T}.GetTopic(String)"/>
+    [Obsolete("The GetTopic() method is not implemented on TopicCollection. Use KeyedTopicCollection instead.", true)]
+    public Topic? GetValue(string key) => throw new NotImplementedException();
+
+    /*==========================================================================================================================
+    | INDEXER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc cref="KeyedTopicCollection{T}"/>
+    [Obsolete("Indexing by key is not implemented on the TopicCollection. Use the KeyedTopicCollection instead.",true)]
+    public Topic this[string key] => throw new ArgumentOutOfRangeException(nameof(key));
 
   } //Class
 } //Namespace

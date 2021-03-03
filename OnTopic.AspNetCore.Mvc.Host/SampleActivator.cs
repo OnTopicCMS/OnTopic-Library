@@ -11,9 +11,10 @@ using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.AspNetCore.Mvc.Host.Components;
 using OnTopic.Data.Caching;
 using OnTopic.Data.Sql;
+using OnTopic.Internal.Diagnostics;
+using OnTopic.Lookup;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
-using OnTopic.Reflection;
 using OnTopic.Repositories;
 using OnTopic.ViewModels;
 
@@ -31,21 +32,22 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /*==========================================================================================================================
     | PRIVATE INSTANCES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITypeLookupService              _typeLookupService              = null;
-    private readonly            ITopicMappingService            _topicMappingService            = null;
-    private readonly            ITopicRepository                _topicRepository                = null;
+    private readonly            ITypeLookupService              _typeLookupService;
+    private readonly            ITopicMappingService            _topicMappingService;
+    private readonly            ITopicRepository                _topicRepository;
+    private                     DateTime                        _cacheLastUpdated               = DateTime.UtcNow;
 
     /*==========================================================================================================================
     | HIERARCHICAL TOPIC MAPPING SERVICE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService = null;
+    private readonly IHierarchicalTopicMappingService<NavigationTopicViewModel> _hierarchicalMappingService;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a new instance of the <see cref="SampleControllerFactory"/>, including any shared dependencies to be used
-    ///   across instances of controllers.
+    ///   Establishes a new instance of the <see cref="SampleActivator"/>, including any shared dependencies to be used across
+    ///   instances of controllers.
     /// </summary>
     /// <remarks>
     ///   The constructor is responsible for establishing dependencies with the singleton lifestyle so that they are available
@@ -86,13 +88,27 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /// <summary>
     ///   Registers dependencies, and injects them into new instances of controllers in response to each request.
     /// </summary>
-    /// <returns>A concrete instance of an <see cref="IController"/>.</returns>
+    /// <returns>A concrete instance of an <see cref="Controller"/>.</returns>
     public object Create(ControllerContext context) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine controller type
       \-----------------------------------------------------------------------------------------------------------------------*/
       var type = context.ActionDescriptor.ControllerTypeInfo.AsType();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Periodically update cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (DateTime.UtcNow > _cacheLastUpdated.AddMinutes(1)) {
+        var currentUpdate = DateTime.UtcNow;
+        _topicRepository.Refresh(_topicRepository.Load()!, _cacheLastUpdated);
+        _cacheLastUpdated = currentUpdate;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure and return appropriate controller
@@ -104,7 +120,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new SitemapController(_topicRepository),
         nameof(RedirectController) =>
           new RedirectController(_topicRepository),
-        _ => throw new Exception($"Unknown controller {type.Name}")
+        _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
       };
 
     }
@@ -112,8 +128,13 @@ namespace OnTopic.AspNetCore.Mvc.Host {
     /// <summary>
     ///   Registers dependencies, and injects them into new instances of view components in response to each request.
     /// </summary>
-    /// <returns>A concrete instance of an <see cref="IController"/>.</returns>
+    /// <returns>A concrete instance of an <see cref="ViewComponent"/>.</returns>
     public object Create(ViewComponentContext context) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(context, nameof(context));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Determine view component type
@@ -128,7 +149,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
           new MenuViewComponent(_topicRepository, _hierarchicalMappingService),
         nameof(PageLevelNavigationViewComponent) =>
           new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService),
-        _ => throw new Exception($"Unknown view component {type.Name}")
+        _ => throw new InvalidOperationException($"Unknown view component {type.Name}")
       };
 
     }

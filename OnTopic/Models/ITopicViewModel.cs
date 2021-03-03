@@ -3,8 +3,10 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Mapping;
-using OnTopic.Metadata;
 
 namespace OnTopic.Models {
 
@@ -22,13 +24,13 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   ///   <para>
-  ///     For instance, in the default MVC library, the <c>TopicViewResult</c> class requires that the <see
-  ///     cref="Topic.ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a
-  ///     <see cref="ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the
-  ///     presentation layer and any supporting libraries.
+  ///     For instance, in the default MVC library, the <c>TopicViewResult</c> class requires that the <see cref="Topic.
+  ///     ContentType"/> and <see cref="Topic.View"/> be supplied separately if they're not provided as part of a <see cref="
+  ///     ITopicViewModel"/>. The exact details of this will obviously vary based on the implementation of the presentation
+  ///     layer and any supporting libraries.
   ///   </para>
   /// </remarks>
-  public interface ITopicViewModel {
+  public interface ITopicViewModel: ICoreTopicViewModel, IAssociatedTopicBindingModel, ITopicBindingModel {
 
     /*==========================================================================================================================
     | PROPERTY: ID
@@ -36,46 +38,17 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets the topic's ID attribute, the primary unique identifier for the topic.
     /// </summary>
-    int Id { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's Key attribute, the primary text identifier for the topic.
-    /// </summary>
-    string? Key { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the topic's <see cref="UniqueKey"/> attribute, the unique text identifier for the topic.
-    /// </summary>
-    string? UniqueKey { get; set; }
+    int Id { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: WEB PATH
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="UniqueKey"/> in its URL
-    ///   format.
+    ///   Gets or sets the topic's <see cref="WebPath"/> attribute, which represents the <see cref="IAssociatedTopicBindingModel
+    ///   .UniqueKey"/> in its URL format.
     /// </summary>
-    string? WebPath { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: CONTENT TYPE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the key name of the content type that the current topic represents.
-    /// </summary>
-    /// <remarks>
-    ///   Each topic is associated with a content type. The content type determines which attributes are displayed in the Topics
-    ///   Editor (via the <see cref="ContentTypeDescriptor.AttributeDescriptors"/> property). The content type also determines,
-    ///   by default, which view is rendered by the <see cref="ITopicRoutingService"/> (assuming the value isn't overwritten
-    ///   down the pipe).
-    /// </remarks>
-    string? ContentType { get; set; }
+    [Required, NotNull, DisallowNull]
+    string? WebPath { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: VIEW
@@ -84,13 +57,13 @@ namespace OnTopic.Models {
     ///   Gets or sets the View attribute, representing the default view to be used for the topic.
     /// </summary>
     /// <remarks>
-    ///   This value can be set via the query string (via the <see cref="ITopicRoutingService"/> class), via the Accepts header
-    ///   (also via the <see cref="ITopicRoutingService"/> class), on the topic itself (via this property), or via the
-    ///   <see cref="ContentType"/>. By default, it will be set to the name of the <see cref="ContentType"/>; e.g., if the
-    ///   Content Type is "Page", then the view will be "Page". This will cause the <see cref="ITopicRoutingService"/> to look
-    ///   for a view at, for instance, /Common/Templates/Page/Page.aspx.
+    ///   This value can be set via the query string (via the <c>TopicViewResultExecutor</c> class), via the Accepts header
+    ///   (also via the <c>TopicViewResultExecutor</c> class), on the topic itself (via this property), or via the <see cref="
+    ///   ICoreTopicViewModel.ContentType"/>. By default, it will be set to the name of the <see cref="ICoreTopicViewModel.
+    ///   ContentType"/>; e.g., if the Content Type is <c>Page</c>, then the view will be <c>Page</c>. This will cause the <c>
+    ///   TopicViewResultExecutor</c> to look for a view at, for instance, <c>/Views/Page/Page.cshtml</c>.
     /// </remarks>
-    string? View { get; set; }
+    string? View { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: IS HIDDEN
@@ -98,7 +71,8 @@ namespace OnTopic.Models {
     /// <summary>
     ///   Gets or sets whether the current topic is hidden.
     /// </summary>
-    bool IsHidden { get; set; }
+    [Obsolete("The IsHidden property is no longer supported by ITopicViewModel.", true)]
+    bool IsHidden { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: TITLE
@@ -107,11 +81,12 @@ namespace OnTopic.Models {
     ///   Gets or sets the Title attribute, which represents the friendly name of the topic.
     /// </summary>
     /// <remarks>
-    ///   While the <see cref="ITopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
+    ///   While the <see cref="ICoreTopicViewModel.Key"/> may not contain, for instance, spaces or symbols, there are no
     ///   restrictions on what characters can be used in the title. For this reason, it provides the default public value for
     ///   referencing topics.
     /// </remarks>
-    string? Title { get; set; }
+    [Required, NotNull, DisallowNull]
+    string? Title { get; init; }
 
   } //Class
 } //Namespace

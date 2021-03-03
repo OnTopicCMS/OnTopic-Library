@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using OnTopic.Mapping;
 
 namespace OnTopic.Models {
@@ -21,7 +22,8 @@ namespace OnTopic.Models {
   ///     provided via the public interface then it will instead need to be defined in some other way.
   ///   </para>
   /// </remarks>
-  public interface IPageTopicViewModel : ITopicViewModel {
+  [Obsolete("The IPageTopicViewModel is no longer utilized.", true)]
+  public interface IPageTopicViewModel : ITopicViewModel, INavigableTopicViewModel {
 
     /*==========================================================================================================================
     | PROPERTY: META KEYWORDS
@@ -30,7 +32,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Meta Keywords attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string? MetaKeywords { get; set; }
+    string? MetaKeywords { get; init; }
 
     /*==========================================================================================================================
     | PROPERTY: META DESCRIPTION
@@ -39,7 +41,7 @@ namespace OnTopic.Models {
     ///   Gets or sets the Meta Description attribute, which represents the HTML metadata that will be presented alongside the
     ///   page.
     /// </summary>
-    string? MetaDescription { get; set; }
+    string? MetaDescription { get; init; }
 
   } //Class
 } //Namespace

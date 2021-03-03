@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Metadata;
 using OnTopic.Querying;
 using OnTopic.Repositories;
 
@@ -22,39 +21,30 @@ namespace OnTopic.Data.Caching {
   ///   for an actual data access class.
   /// </remarks>
 
-  public class CachedTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class CachedTopicRepository : TopicRepositoryDecorator {
 
     /*==========================================================================================================================
     | VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly            ITopicRepository                _dataProvider;
     private readonly            Topic                           _cache;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the CachedTopicRepository with a dependency on an underlying ITopicRepository in order
-    ///   to provide necessary data access.
+    ///   Instantiates a new instance of the <see cref="CachedTopicRepository"/> with a dependency on an underlying <see cref="
+    ///   ITopicRepository"/> in order to provide necessary data access.
     /// </summary>
-    /// <param name="dataProvider">A concrete instance of an ITopicRepository, which will be used for data access.</param>
-    /// <returns>A new instance of the CachedTopicRepository.</returns>
-    public CachedTopicRepository(ITopicRepository dataProvider) : base() {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate input
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(dataProvider, "A concrete implementation of an ITopicRepository is required.");
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set values locally
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      _dataProvider = dataProvider;
+    /// <param name="topicRepository">
+    ///   A concrete instance of an <see cref="ITopicRepository"/>, which will be used for data access.
+    /// </param>
+    /// <returns>A new instance of a <see cref="CachedTopicRepository"/>.</returns>
+    public CachedTopicRepository(ITopicRepository topicRepository) : base(topicRepository) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = _dataProvider.Load();
+      var rootTopic = TopicRepository.Load();
 
       Contract.Assume(
         rootTopic,
@@ -70,16 +60,10 @@ namespace OnTopic.Data.Caching {
     }
 
     /*==========================================================================================================================
-    | GET CONTENT TYPE DESCRIPTORS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => _dataProvider.GetContentTypeDescriptors();
-
-    /*==========================================================================================================================
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, bool isRecursive = true) {
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for entire tree
@@ -96,13 +80,13 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is not null && topicKey.Length is not 0) {
-        return _cache.GetByUniqueKey(topicKey);
+      if (uniqueKey is not null && uniqueKey.Length is not 0) {
+        return _cache.GetByUniqueKey(uniqueKey);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +97,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -127,28 +111,9 @@ namespace OnTopic.Data.Caching {
       /*------------------------------------------------------------------------------------------------------------------------
       | Return appropriate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _dataProvider.Load(topicId, version);
+      return TopicRepository.Load(topicId, version, referenceTopic?? _cache);
 
     }
-
-    /*==========================================================================================================================
-    | METHOD: SAVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) =>
-      _dataProvider.Save(topic, isRecursive, isDraft);
-
-    /*==========================================================================================================================
-    | METHOD: MOVE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling) => _dataProvider.Move(topic, target, sibling);
-
-    /*==========================================================================================================================
-    | METHOD: DELETE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) => _dataProvider.Delete(topic, isRecursive);
 
   } //Class
 } //Namespace

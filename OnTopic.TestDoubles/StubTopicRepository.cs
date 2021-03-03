@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
@@ -25,7 +26,7 @@ namespace OnTopic.TestDoubles {
   ///   database, or working against actual data. This is faster and safer for test methods since it doesn't maintain a
   ///   dependency on a live database or persistent data.
   /// </remarks>
-  public class StubTopicRepository : TopicRepositoryBase, ITopicRepository {
+  public class StubTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================
     | VARIABLES
@@ -49,18 +50,18 @@ namespace OnTopic.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, bool isRecursive = true) =>
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
       (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
 
     /// <inheritdoc />
-    public override Topic? Load(string? topicKey = null, bool isRecursive = true) {
+    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicKey is not null && topicKey.Length > 0) {
-        topicKey = topicKey.Contains(":") ? topicKey : "Root:" + topicKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(topicKey, StringComparison.InvariantCultureIgnoreCase));
+      if (uniqueKey is not null && uniqueKey.Length > 0) {
+        uniqueKey = uniqueKey.Contains(":", StringComparison.Ordinal) ? uniqueKey : "Root:" + uniqueKey;
+        return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ namespace OnTopic.TestDoubles {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version) {
+    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -85,7 +86,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = Load(topicId);
+      var topic = Load(topicId, referenceTopic, false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Reset version
@@ -102,36 +103,23 @@ namespace OnTopic.TestDoubles {
     }
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public override void Refresh(Topic referenceTopic, DateTime since) { }
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override int Save(Topic topic, bool isRecursive = false, bool isDraft = false) {
+    protected override void SaveTopic([NotNull]Topic topic, DateTime version, bool persistRelationships) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Call base method - will trigger any events associated with the save
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Save(topic, isRecursive, isDraft);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
+      | Assign faux identity
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.IsNew) {
         topic.Id = _identity++;
       }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Recurse through children
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isRecursive) {
-        foreach (var childTopic in topic.Children) {
-          Save(childTopic, isRecursive, isDraft);
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Return identity
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      return topic.Id;
 
     }
 
@@ -139,31 +127,19 @@ namespace OnTopic.TestDoubles {
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Delete from memory
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      base.Move(topic, target, sibling);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Reset dirty status
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Attributes.SetValue("ParentId", target.Id.ToString(CultureInfo.InvariantCulture), false);
-
-    }
+    protected override void MoveTopic(Topic topic, Topic target, Topic? sibling = null) { }
 
     /*==========================================================================================================================
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = true) => base.Delete(topic, isRecursive);
+    protected override void DeleteTopic(Topic topic) { }
 
     /*==========================================================================================================================
     | METHOD: GET ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetAttributes(Topic, Boolean?, Boolean?)" />
-    public IEnumerable<AttributeValue> GetAttributesProxy(
+    /// <inheritdoc cref="TopicRepository.GetAttributes(Topic, Boolean?, Boolean?, Boolean)" />
+    public IEnumerable<AttributeRecord> GetAttributesProxy(
       Topic topic,
       bool? isExtendedAttribute,
       bool? isDirty = null,
@@ -173,28 +149,28 @@ namespace OnTopic.TestDoubles {
     /*==========================================================================================================================
     | METHOD: GET UNMATCHED ATTRIBUTES (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetUnmatchedAttributes(Topic)" />
+    /// <inheritdoc cref="TopicRepository.GetUnmatchedAttributes(Topic)" />
     public IEnumerable<AttributeDescriptor> GetUnmatchedAttributesProxy(Topic topic) => base.GetUnmatchedAttributes(topic);
 
     /*==========================================================================================================================
     | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptors(ContentTypeDescriptor)" />
-    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", false)]
+    /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", true)]
     public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
 
     /*==========================================================================================================================
     | METHOD: SET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.SetContentTypeDescriptors(ContentTypeDescriptor)" />
+    /// <inheritdoc cref="TopicRepository.SetContentTypeDescriptors(ContentTypeDescriptor)" />
     public ContentTypeDescriptorCollection SetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);
 
     /*==========================================================================================================================
     | METHOD: GET CONTENT TYPE DESCRIPTOR (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc cref="TopicRepositoryBase.GetContentTypeDescriptor(Topic)" />
+    /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptor(Topic)" />
     public ContentTypeDescriptor? GetContentTypeDescriptorProxy(Topic sourceTopic) =>
       base.GetContentTypeDescriptor(sourceTopic);
 
@@ -218,15 +194,15 @@ namespace OnTopic.TestDoubles {
       var configuration = TopicFactory.Create("Configuration", "Container", rootTopic);
       var contentTypes = TopicFactory.Create("ContentTypes", "ContentTypeDescriptor", configuration);
 
-      addAttribute(contentTypes, "Key", "TextAttribute", false, true);
-      addAttribute(contentTypes, "ContentType", "TextAttribute", false, true);
-      addAttribute(contentTypes, "Title", "TextAttribute", true, true);
-      addAttribute(contentTypes, "TopicId", "TopicReferenceAttribute", false);
+      addAttribute(contentTypes, "Key", "TextAttributeDescriptor", false, true);
+      addAttribute(contentTypes, "ContentType", "TextAttributeDescriptor", false, true);
+      addAttribute(contentTypes, "Title", "TextAttributeDescriptor", true, true);
+      addAttribute(contentTypes, "BaseTopic", "TopicReferenceAttributeDescriptor", false);
 
       var contentTypeDescriptor = TopicFactory.Create("ContentTypeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttribute");
-      addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttribute");
+      addAttribute(contentTypeDescriptor, "ContentTypes", "RelationshipAttributeDescriptor");
+      addAttribute(contentTypeDescriptor, "Attributes", "NestedTopicListAttributeDescriptor");
 
       TopicFactory.Create("Container", "ContentTypeDescriptor", contentTypes);
       TopicFactory.Create("Lookup", "ContentTypeDescriptor", contentTypes);
@@ -235,25 +211,25 @@ namespace OnTopic.TestDoubles {
 
       var attributeDescriptor = (ContentTypeDescriptor)TopicFactory.Create("AttributeDescriptor", "ContentTypeDescriptor", contentTypes);
 
-      addAttribute(attributeDescriptor, "DefaultValue", "TextAttribute", false, true);
-      addAttribute(attributeDescriptor, "IsRequired", "TextAttribute", false, true);
+      addAttribute(attributeDescriptor, "DefaultValue", "TextAttributeDescriptor", false, true);
+      addAttribute(attributeDescriptor, "IsRequired", "TextAttributeDescriptor", false, true);
 
-      TopicFactory.Create("BooleanAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("NestedTopicListAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("NumberAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("RelationshipAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("TextAttribute", "ContentTypeDescriptor", attributeDescriptor);
-      TopicFactory.Create("TopicReferenceAttribute", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("BooleanAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NestedTopicListAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("NumberAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("RelationshipAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TextAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
+      TopicFactory.Create("TopicReferenceAttributeDescriptor", "ContentTypeDescriptor", attributeDescriptor);
 
       var pageContentType = TopicFactory.Create("Page", "ContentTypeDescriptor", contentTypes);
 
       addAttribute(pageContentType, "MetaTitle");
       addAttribute(pageContentType, "MetaDescription");
-      addAttribute(pageContentType, "IsHidden", "TextAttribute", false);
-      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttribute", false);
+      addAttribute(pageContentType, "IsHidden", "TextAttributeDescriptor", false);
+      addAttribute(pageContentType, "TopicReference", "TopicReferenceAttributeDescriptor", false);
 
-      pageContentType.Relationships.SetTopic("ContentTypes", pageContentType);
-      pageContentType.Relationships.SetTopic("ContentTypes", contentTypeDescriptor);
+      pageContentType.Relationships.SetValue("ContentTypes", pageContentType);
+      pageContentType.Relationships.SetValue("ContentTypes", contentTypeDescriptor);
 
       var contactContentType = TopicFactory.Create("Contact", "ContentTypeDescriptor", contentTypes);
 
@@ -267,16 +243,16 @@ namespace OnTopic.TestDoubles {
       AttributeDescriptor addAttribute(
         Topic contentType,
         string attributeKey,
-        string editorType       = "TextAttribute",
+        string editorType       = "TextAttributeDescriptor",
         bool isExtended         = true,
         bool isRequired         = false
       ) {
-        var container = contentType.Children.GetTopic("Attributes");
+        var container = contentType.Children.GetValue("Attributes");
         if (container is null) {
           container = TopicFactory.Create("Attributes", "List", contentType);
           container.Attributes.SetBoolean("IsHidden", true);
         }
-        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, currentAttributeId++, container);
+        var attribute = (AttributeDescriptor)TopicFactory.Create(attributeKey, editorType, container, currentAttributeId++);
         attribute.IsRequired = isRequired;
         attribute.IsExtendedAttribute = isExtended;
         return attribute;
@@ -296,7 +272,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish content
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var web = TopicFactory.Create("Web", "Page", 10000, rootTopic);
+      var web = TopicFactory.Create("Web", "Page", rootTopic, 10000);
 
       CreateFakeData(web, 2, 3);
 
@@ -320,7 +296,7 @@ namespace OnTopic.TestDoubles {
     /// </summary>
     private void CreateFakeData(Topic parent, int count = 3, int depth = 3) {
       for (var i = 0; i < count; i++) {
-        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent.Id + (int)Math.Pow(10, depth) * i, parent);
+        var topic = TopicFactory.Create(parent.Key + "_" + i, "Page", parent, parent.Id + (int)Math.Pow(10, depth) * i);
         topic.Attributes.SetValue("ParentKey", parent.Key);
         topic.Attributes.SetValue("DepthCount", (depth+i).ToString(CultureInfo.InvariantCulture));
         if (depth > 0) {

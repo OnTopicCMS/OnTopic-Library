@@ -6,7 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections;
+using OnTopic.Attributes;
 using OnTopic.Data.Caching;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
@@ -17,11 +17,11 @@ namespace OnTopic.Tests {
   | CLASS: TOPIC REPOSITORY TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="AttributeValueCollection"/> class.
+  ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
   /// <remarks>
   ///   These tests not only validate that the <see cref="StubTopicRepository"/> is functioning as expected, but also that the
-  ///   underlying <see cref="TopicRepositoryBase"/> functions are also operating correctly.
+  ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
   [TestClass]
   public class ITopicRepositoryTest {
@@ -74,7 +74,7 @@ namespace OnTopic.Tests {
     public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var child                 = TopicFactory.Create("Child", "ContentType", Int32.MaxValue, topic);
+      var child                 = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
       Assert.AreEqual<string>("Page", topic.Key);
 
@@ -223,6 +223,31 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int>(1, parent.Children.Count);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: DELETE EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
+    ///   TopicDeleted"/> is fired, even though the original event is fired from the underlying <see cref="StubTopicRepository"/>
+    ///   and not the immediate <see cref="CachedTopicRepository"/>.
+    /// </summary>
+    [TestMethod]
+    public void Delete_DeleteEvent_IsFired() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var hasFired              = false;
+
+      _topicRepository.Save(topic);
+      _topicRepository.TopicDeleted += eventHandler;
+      _topicRepository.Delete(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
+
+    }
+
 
   } //Class
 } //Namespace

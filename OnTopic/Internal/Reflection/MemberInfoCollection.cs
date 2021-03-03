@@ -15,7 +15,7 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
   /// </summary>
-  public class MemberInfoCollection : MemberInfoCollection<MemberInfo> {
+  internal class MemberInfoCollection : MemberInfoCollection<MemberInfo> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -25,7 +25,7 @@ namespace OnTopic.Internal.Reflection {
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
-    public MemberInfoCollection(Type type) : base(type) {
+    internal MemberInfoCollection(Type type) : base(type) {
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{MemberInfo}"/> of <see cref="MemberInfo"/> instances to populate the collection.
     /// </param>
-    public MemberInfoCollection(Type type, IEnumerable<MemberInfo> members) : base(type, members) {
+    internal MemberInfoCollection(Type type, IEnumerable<MemberInfo> members) : base(type, members) {
     }
 
   } //Class

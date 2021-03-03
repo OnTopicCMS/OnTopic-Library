@@ -6,7 +6,7 @@
 
 CREATE PROCEDURE [dbo].[MoveTopic]
 	@TopicID		INT		,
-	@ParentID		INT		,
+	@ParentID		INT	= NULL	,
 	@SiblingID		INT	= -1
 AS
 
@@ -74,16 +74,20 @@ WHERE	TopicID		= @TopicID
 -- EXAMPLE: If a sibling (@SiblingID) lives between 12 and 24, then the insertion point (@InsertionPoint) will be 25; if there
 -- is no sibling, but a parent lives between 6 and 26, then the insertion point (@InsertionPoint) will be 7.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @SiblingID < 0
+IF @SiblingID >= 0
+  -- Place immediately to the right of a sibling, if specified
+  SELECT	@InsertionPoint		= RangeRight + 1
+  FROM	Topics
+  WHERE	TopicID		= @SiblingID
+ELSE IF ISNULL(@ParentID, -1) >= 0
   -- Place as the first sibling if a sibling isn't specified
   SELECT	@InsertionPoint		= RangeLeft + 1
   FROM	Topics
   WHERE	TopicID		= @ParentID
 ELSE
-  -- Place immediately to the right of a sibling, if specified
-  SELECT	@InsertionPoint		= RangeRight + 1
+  -- Place after the last node
+  SELECT	@InsertionPoint		= MAX(RangeRight) + 1
   FROM	Topics
-  WHERE	TopicID		= @SiblingID
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- VALIDATE REQUEST
@@ -92,37 +96,40 @@ ELSE
 -- target location (@InsertionPoint) is not within the scope of the source tree (@TargetID); a tree cannot be moved to a child
 -- of itself.
 --------------------------------------------------------------------------------------------------------------------------------
-IF @TopicID is null or @OriginalLeft is null or @OriginalRight is null
+IF @TopicID IS NULL OR @OriginalLeft IS NULL OR @OriginalRight IS NULL
   BEGIN
     RAISERROR (
-      N'The topic ("%n") could not be found.',
+      N'The topic ("%d") could not be found.',
       15, -- Severity,
       1, -- State,
       @TopicID
     );
+    COMMIT
     RETURN
   END
 
-IF @ParentID is null or @InsertionPoint is null
+IF @InsertionPoint IS NULL
   BEGIN
     RAISERROR (
-      N'The parent ("%n") could not be found.',
+      N'The parent ("%d") could not be found.',
       15, -- Severity,
       1, -- State,
       @ParentID
     );
+    COMMIT
     RETURN
   END
 
 IF @InsertionPoint >= @OriginalLeft AND @InsertionPoint <= @OriginalRight
   BEGIN
     RAISERROR (
-      N'A topic ("%n") cannot be moved within a child of itself ("%n").',
+      N'A topic ("%d") cannot be moved within a child of itself ("%d").',
       10, -- Severity,
       1, -- State,
       @TopicID,
       @ParentID
     );
+    COMMIT
     RETURN
   END
 
@@ -299,10 +306,9 @@ END
 --------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE PARENT ID
 --------------------------------------------------------------------------------------------------------------------------------
-UPDATE	Attributes
-SET	AttributeValue		= CONVERT(NVarChar(255), @ParentID)
+UPDATE	Topics
+SET	ParentID		= @ParentID
 WHERE	TopicID		= @TopicID
-  AND	AttributeKey		= 'ParentID'
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- DEBUGGING DATA

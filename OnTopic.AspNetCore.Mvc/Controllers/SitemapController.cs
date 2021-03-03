@@ -5,15 +5,15 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
-
-#pragma warning disable CS0618 // Type or member is obsolete; supresses known issue with helper methods being moved to private
 
 namespace OnTopic.AspNetCore.Mvc.Controllers {
 
@@ -24,6 +24,21 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
   ///   Responds to requests for a sitemap according to sitemap.org's schema. The view is expected to recursively loop over
   ///   child topics to generate the appropriate markup.
   /// </summary>
+  /// <remarks>
+  ///   <para>
+  ///     By default, some <see cref="Topic"/>s are <i>excluded</i> based on their content types—which includes not only the
+  ///     <see cref="Topic"/>, but also all of its descendents. Other <see cref="Topic"/>s are <i>skipped</i>, also based on
+  ///     their content types; in this case, the <see cref="Topic"/> is excluded, but its descendents are not. What content
+  ///     types are excluded or skipped can be configured, respectively, by modifying the static <see cref="ExcludedContentTypes
+  ///     "/> and <see cref="SkippedContentTypes"/> collections.
+  ///   </para>
+  ///   <para>
+  ///     The <see cref="Extended(Boolean)"/> action enables an extended sitemap with Google's custom <c>PageMap</c> schema for
+  ///     exposing <see cref="Topic.Attributes"/>, <see cref="Topic.Relationships"/>, and <see cref="Topic.References"/>. By
+  ///     default, some content attributes, such as <c>Body</c>, <c>IsDisabled</c>, and <c>NoIndex</c>, are hidden. This list
+  ///     can be modified by updating the static <see cref="ExcludedAttributes"/> collection.
+  ///   </para>
+  /// </remarks>
   public class SitemapController : Controller {
 
     /*==========================================================================================================================
@@ -38,28 +53,39 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     private static readonly XNamespace _pagemapNamespace = "http://www.google.com/schemas/sitemap-pagemap/1.0";
 
     /*==========================================================================================================================
-    | EXCLUDE CONTENT TYPES
+    | EXCLUDED CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Specifies what content types should not be listed in the sitemap.
+    ///   Specifies what content types should not be listed in the sitemap, including any descendents.
     /// </summary>
-    private static string[] ExcludeContentTypes { get; } = { "List" };
+    public static Collection<string> ExcludedContentTypes { get; } = new() {
+      "List"
+    };
 
     /*==========================================================================================================================
-    | EXCLUDE ATTRIBUTES
+    | SKIPPED CONTENT TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Specifies what content types should not be listed in the sitemap—but whose descendents should still be evaluated.
+    /// </summary>
+    public static Collection<string> SkippedContentTypes { get; } = new() {
+      "PageGroup",
+      "Container"
+    };
+
+    /*==========================================================================================================================
+    | EXCLUDED ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Specifies what attributes should not be listed in the sitemap.
     /// </summary>
-    private static string[] ExcludeAttributes { get; } = {
+    public static Collection<string> ExcludedAttributes { get; } = new() {
       "Body",
-      "IsActive",
       "IsDisabled",
-      "ParentID",
-      "TopicID",
+      "ParentID",               //Legacy, but exposed for avoid leacking legacy data
+      "TopicID",                //Legacy, but exposed for avoid leacking legacy data
       "IsHidden",
       "NoIndex",
-      "URL",
       "SortOrder"
     };
 
@@ -93,7 +119,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    public virtual ActionResult Index(bool indent = false, bool includeMetadata = false) {
+    public ActionResult Index(bool indent = false, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure topics are loaded
@@ -133,7 +159,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </remarks>
     /// <param name="indent">Optionally enables indentation of XML elements in output for human readability.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    public virtual ActionResult Extended(bool indent = false) => Index(indent, true);
+    public ActionResult Extended(bool indent = false) => Index(indent, true);
 
     /*==========================================================================================================================
     | METHOD: GENERATE SITEMAP
@@ -141,11 +167,10 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// <summary>
     ///   Given a root topic, generates an XML-formatted sitemap.
     /// </summary>
-    /// <param name="topic">The topic to add to the sitemap.</param>
+    /// <param name="rootTopic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
     /// <returns>A Sitemap.org sitemap.</returns>
-    [Obsolete("The GenerateSitemap() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public virtual XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
+    private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new(
         new XElement(_sitemapNamespace + "urlset",
           from topic in rootTopic?.Children
@@ -161,8 +186,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     /// </summary>
     /// <param name="topic">The topic to add to the sitemap.</param>
     /// <param name="includeMetadata">Optionally enables extended metadata associated with each topic.</param>
-    [Obsolete("The AddTopic() method should not be public. It will be marked private in OnTopic Library 5.0.")]
-    public IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
+    private IEnumerable<XElement> AddTopic(Topic topic, bool includeMetadata = false) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish return collection
@@ -173,9 +197,9 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is null) return topics;
-      if (topic.Attributes.GetValue("NoIndex") is "1") return topics;
-      if (topic.Attributes.GetValue("IsDisabled") is "1") return topics;
-      if (ExcludeContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.InvariantCultureIgnoreCase))) return topics;
+      if (topic.Attributes.GetBoolean("NoIndex")) return topics;
+      if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
+      if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
@@ -192,14 +216,15 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
         new XElement(_sitemapNamespace + "lastmod", lastModified.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
         new XElement(_sitemapNamespace + "priority", 1),
         includeMetadata? new XElement(_pagemapNamespace + "PageMap",
-          new XElement(_pagemapNamespace + "DataObject",
-            new XAttribute("type", topic.ContentType?? "Page"),
-            getAttributes()
-          ),
-          getRelationships()
+          getAttributes(),
+          getRelationships(),
+          getReferences()
         ) : null
       );
-      if (!topic.ContentType!.Equals("Container", StringComparison.InvariantCultureIgnoreCase)) {
+      if (
+        !SkippedContentTypes.Any(c => topic.ContentType?.Equals(c, StringComparison.OrdinalIgnoreCase)?? false) &&
+        String.IsNullOrWhiteSpace(topic.Attributes.GetValue("Url"))
+      ) {
         topics.Add(topicElement);
       }
 
@@ -215,14 +240,21 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      IEnumerable<XElement> getAttributes() =>
-        from attribute in topic.Attributes
-        where !ExcludeAttributes.Contains(attribute.Key, StringComparer.InvariantCultureIgnoreCase)
-        where topic.Attributes.GetValue(attribute.Key)?.Length < 256
-        select new XElement(_pagemapNamespace + "Attribute",
-          new XAttribute("name", attribute.Key),
-          new XText(topic.Attributes.GetValue(attribute.Key))
-        );
+      XElement getAttributes() =>
+        new XElement(_pagemapNamespace + "DataObject",
+          new XAttribute("type", "Attributes"),
+            new XElement(_pagemapNamespace + "Attribute",
+              new XAttribute("name", "ContentType"),
+              new XText(topic.ContentType?? "Page")
+            ),
+            from attribute in topic.Attributes
+            where !ExcludedAttributes.Contains(attribute.Key, StringComparer.OrdinalIgnoreCase)
+            where topic.Attributes.GetValue(attribute.Key)?.Length < 256
+            select new XElement(_pagemapNamespace + "Attribute",
+              new XAttribute("name", attribute.Key),
+              new XText(topic.Attributes.GetValue(attribute.Key))
+            )
+          );
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get relationships
@@ -230,17 +262,30 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       IEnumerable<XElement> getRelationships() =>
         from relationship in topic.Relationships
         select new XElement(_pagemapNamespace + "DataObject",
-          new XAttribute("type", relationship.Name),
-          from relatedTopic in topic.Relationships[relationship.Name]
+          new XAttribute("type", relationship.Key),
+          from relatedTopic in relationship.Values
           select new XElement(_pagemapNamespace + "Attribute",
             new XAttribute("name", "TopicKey"),
-            new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.InvariantCultureIgnoreCase))
+            new XText(relatedTopic.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
           )
         );
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      XElement? getReferences() =>
+        topic.References.Count is 0?
+          null :
+          new XElement(_pagemapNamespace + "DataObject",
+            new XAttribute("type", "References"),
+              from reference in topic.References
+              select new XElement(_pagemapNamespace + "Attribute",
+                new XAttribute("name", reference.Key),
+                new XText(reference.Value?.GetUniqueKey().Replace("Root:", "", StringComparison.OrdinalIgnoreCase))
+              )
+            );
 
     }
 
   } //Class
 } //Namespace
-
-#pragma warning restore CS0618 // Type or member is obsolete

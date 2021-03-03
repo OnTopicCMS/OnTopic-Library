@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
 using OnTopic.Attributes;
+using OnTopic.Metadata;
 using OnTopic.TestDoubles;
 
 namespace OnTopic.Tests {
@@ -62,6 +62,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
+    #pragma warning disable CA1024 // Use properties where appropriate
     public static ControllerContext GetControllerContext() =>
       new(
         new() {
@@ -70,6 +71,7 @@ namespace OnTopic.Tests {
           ActionDescriptor          = new ControllerActionDescriptor()
         }
       );
+    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC CONTROLLER
@@ -77,7 +79,7 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    public static TopicController GetTopicController(Topic topic) =>
+    public static TopicController GetTopicController(Topic? topic) =>
       new(
           new DummyTopicRepository(),
           new DummyTopicMappingService()
@@ -128,7 +130,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(NotFoundObjectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(NotFoundObjectResult), context.Result?.GetType());
 
     }
 
@@ -152,7 +154,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(UnauthorizedResult), context.Result.GetType());
+      Assert.AreEqual(typeof(UnauthorizedResult), context.Result?.GetType());
 
     }
 
@@ -177,7 +179,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
 
     }
 
@@ -203,7 +205,7 @@ namespace OnTopic.Tests {
       var result                = context.Result as StatusCodeResult;
 
       Assert.IsNotNull(result);
-      Assert.AreEqual(403, result.StatusCode);
+      Assert.AreEqual(403, result?.StatusCode);
 
     }
 
@@ -228,7 +230,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result.GetType());
+      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
 
     }
 

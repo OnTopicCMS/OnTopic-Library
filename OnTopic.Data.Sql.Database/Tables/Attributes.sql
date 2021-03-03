@@ -9,12 +9,9 @@
 CREATE
 TABLE	[dbo].[Attributes] (
 	  [TopicID]		INT	NOT NULL,
-	  [AttributeKey]	VARCHAR (128)	NOT NULL,
-	  [AttributeValue]	NVARCHAR (255)	NOT NULL,
-	  [DateModified]	DATETIME
-  CONSTRAINT	  [DF_Attributes_DateModified]	DEFAULT	(GetDate())	NOT NULL,
-	  [Version]		DATETIME
-  CONSTRAINT	  [DF_Attributes_Version]	DEFAULT	(GetDate())	NOT NULL,
+	  [AttributeKey]	VARCHAR(128)	NOT NULL,
+	  [AttributeValue]	NVARCHAR(255)	NOT NULL,
+	  [Version]		DATETIME2(7)	NOT NULL	DEFAULT SYSUTCDATETIME()
   CONSTRAINT	  [PK_Attributes]	PRIMARY KEY
   CLUSTERED (	    [TopicID]		ASC,
 	    [AttributeKey]	ASC,

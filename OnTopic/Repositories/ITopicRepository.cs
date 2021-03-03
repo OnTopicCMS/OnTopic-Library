@@ -19,22 +19,53 @@ namespace OnTopic.Repositories {
     /*==========================================================================================================================
     | EVENT HANDLERS
     \-------------------------------------------------------------------------------------------------------------------------*/
+
     /// <summary>
-    ///   Instantiates the <see cref="DeleteEventArgs"/> event handler.
+    ///   Raised after a <see cref="Topic"/> is loaded from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Load(String?, Topic?, Boolean)"/> operation, or one of its overloads.
     /// </summary>
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
+    /// <remarks>
+    ///   The <see cref="TopicLoaded"/> event should only be raised when a new <see cref="Topic"/> is loaded from the underlying
+    ///   persistence store. It should not be loaded, for example, if a value is loaded from the cache, or a <c>topicId</c> is
+    ///   queried from the database. Given this, this event will need to be raised in actual implementations, since it is
+    ///   specific to the business logic of each <see cref="ITopicRepository"/>.
+    /// </remarks>
+    event EventHandler<TopicLoadEventArgs> TopicLoaded;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is saved in the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Save(Topic, Boolean)"/> operation.
+    /// </summary>
+    event EventHandler<TopicSaveEventArgs> TopicSaved;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is deleted from the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Delete(Topic, Boolean)"/> operation.
+    /// </summary>
+    event EventHandler<TopicEventArgs> TopicDeleted;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is moved within the <see cref="ITopicRepository"/> as part of a <see cref="
+    ///   ITopicRepository.Move(Topic, Topic, Topic?)"/> operation.
+    /// </summary>
+    event EventHandler<TopicMoveEventArgs> TopicMoved;
+
+    /// <summary>
+    ///   Raised after a <see cref="Topic"/> is renamed as ppart of a <see cref="ITopicRepository.Save(Topic, Boolean)"/>
+    ///   operation.
+    /// </summary>
+    event EventHandler<TopicRenameEventArgs> TopicRenamed;
+
+    /// <inheritdoc cref="TopicDeleted"/>
+    [Obsolete("The DeleteEvent has been renamed to TopicDeleted")]
     event EventHandler<DeleteEventArgs> DeleteEvent;
 
-    /// <summary>
-    ///   Instantiates the <see cref="MoveEventArgs"/> event handler.
-    /// </summary>
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
-    event EventHandler<MoveEventArgs> MoveEvent;
+    /// <inheritdoc cref="TopicMoved"/>
+    [Obsolete("The MoveEvent has been renamed to TopicMoved")]
+    event EventHandler<DeleteEventArgs> MoveEvent;
 
-    /// <summary>
-    ///   Instantiates the <see cref="RenameEventArgs"/> event handler.
-    /// </summary>
-    [Obsolete("The TopicRepository events will be removed in OnTopic Library 5.0.", false)]
+    /// <inheritdoc cref="TopicRenamed"/>
+    [Obsolete("The RenameEvent has been renamed to TopicRenamed")]
     event EventHandler<RenameEventArgs> RenameEvent;
 
     /*==========================================================================================================================
@@ -50,23 +81,38 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendants) based on the specified unique identifier.
+    ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
+    ///   />.
     /// </summary>
     /// <param name="topicId">The topic identifier.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
+    /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(int topicId, bool isRecursive = true);
+    Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <summary>
-    ///   Loads a topic (and, optionally, all of its descendants) based on the specified key name.
+    ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="uniqueKey
+    ///   "/>.
     /// </summary>
-    /// <param name="topicKey">The topic key.</param>
+    /// <param name="uniqueKey">The fully-qualified unique topic key.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
+    /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(string? topicKey = null, bool isRecursive = true);
+    Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
+
+    /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
+    Topic? Load(string? uniqueKey, bool isRecursive);
 
     /// <summary>
-    ///   Loads a specific version of a topic based on its version.
+    ///   Loads a specific version of a <see cref="Topic"/> based on its <paramref name="topicId"/> and <paramref name="version
+    ///   "/>.
     /// </summary>
     /// <remarks>
     ///   This overload does not accept an argument for recursion; it will only load a single instance of a version. Further,
@@ -74,17 +120,24 @@ namespace OnTopic.Repositories {
     /// </remarks>
     /// <param name="topicId">The topic identifier.</param>
     /// <param name="version">The version.</param>
+    /// <param name="referenceTopic">
+    ///   When loading a single topic or branch, offers a reference topic graph that can be used to ensure that topic
+    ///   associations—such as references, relationships, and <see cref="Topic.Parent"/>—are integrated with existing entities.
+    /// </param>
     /// <returns>A topic object.</returns>
-    Topic? Load(int topicId, DateTime version);
+    Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null);
+
+    /// <inheritdoc cref="Load(Int32, DateTime, Topic)"/>
+    Topic? Load(Topic topic, DateTime version);
 
     /*==========================================================================================================================
     | METHOD: ROLLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Rolls back the current topic to a particular point in its version history by reloading legacy attributes and then
-    ///   saving the new version.
+    ///   Rolls back the supplied <paramref name="topic"/> to a particular point in its version history by reloading legacy
+    ///   attributes and then saving the new version.
     /// </summary>
-    /// <param name="topic">The current version of the topic to rollback.</param>
+    /// <param name="topic">The current version of the <see cref="Topic"/> to rollback.</param>
     /// <param name="version">The selected Date/Time for the version to which to roll back.</param>
     /// <requires
     ///   description="The version requested for rollback does not exist in the version history."
@@ -94,36 +147,56 @@ namespace OnTopic.Repositories {
     void Rollback(Topic topic, DateTime version);
 
     /*==========================================================================================================================
+    | METHOD: REFRESH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Updates the topic graph represented by the <paramref name="referenceTopic"/> by loading any changes <paramref name="
+    ///   since"/> the specified <see cref="DateTime"/>.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="Refresh(Topic, DateTime)"/> method is intended to provide basic synchronization of core attributes,
+    ///   indexed attributes, extended attributes, relationships, and topic references. It is not expected to handle deletes
+    ///   or reordering of topics.
+    /// </remarks>
+    void Refresh(Topic referenceTopic, DateTime since);
+
+    /*==========================================================================================================================
     | METHOD: SAVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that saves topic attributes; also used for renaming a topic since name is stored as an attribute.
+    ///   Saves the <paramref name="topic"/> (and, optionally, its descendants) to the persistence store.
     /// </summary>
-    /// <param name="topic">The topic object.</param>
+    /// <param name="topic">The <see cref="Topic"/> object.</param>
     /// <param name="isRecursive">
     ///   Boolean indicator nothing whether to recurse through the topic's descendants and save them as well.
     /// </param>
-    /// <param name="isDraft">Boolean indicator as to the topic's publishing status.</param>
-    /// <returns>The integer return value from the execution of the <c>topics_UpdateTopic</c> stored procedure.</returns>
     /// <requires description="The topic to save must be specified." exception="T:System.ArgumentNullException">
     ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    int Save(Topic topic, bool isRecursive = false, bool isDraft = false);
+    void Save(Topic topic, bool isRecursive = false);
+
+    /// <inheritdoc cref="Save(Topic, Boolean)"/>
+    [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
+    int Save(Topic topic, bool isRecursive, bool isDraft);
 
     /*==========================================================================================================================
     | METHOD: MOVE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that supports moving a topic from one position to another.
+    ///   Moves the <paramref name="topic"/> from its existing parent to a <paramref name="target"/> parent, optionally placing
+    ///   it after a supplied <paramref name="sibling"/> topic.
     /// </summary>
     /// <remarks>
-    ///   May optionally specify a sibling. If specified, it is expected that the topic will be placed immediately after the
-    ///   topic.
+    ///   May optionally specify a <paramref name="sibling"/> topic. If specified, it is expected that the <see cref="Topic"/>
+    ///   will be placed immediately after the <paramref name="sibling"/>.
     /// </remarks>
-    /// <param name="topic">The topic object to be moved.</param>
-    /// <param name="target">A topic object under which to move the source topic.</param>
-    /// <param name="sibling">A topic object representing a sibling adjacent to which the topic should be moved.</param>
+    /// <param name="topic">The <see cref="Topic"/> object to be moved.</param>
+    /// <param name="target">The target <see cref="Topic"/> object under which to move the source <see cref="Topic"/>.</param>
+    /// <param name="sibling">
+    ///   An optional <see cref="Topic"/> object representing a sibling adjacent to which the source <see cref="Topic"/> should
+    ///   be moved.
+    /// </param>
     /// <returns>Boolean value representing whether the operation completed successfully.</returns>
     /// <requires
     ///   description="The target under which to move the topic must be provided."
@@ -136,25 +209,18 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Interface method that deletes the provided topic from the tree
+    ///   Deletes the provided <paramref name="topic"/> from the topic tree.
     /// </summary>
-    /// <remarks>
-    ///   Prior to OnTopic 4.5.0, the <paramref name="isRecursive"/> defaulted to <c>false</c>. Unfortunately, a bug in the
-    ///   implementation of <see cref="TopicRepositoryBase.Delete(Topic, Boolean)"/> resulted in this not being validated, and
-    ///   thus it operated <i>as though</i> it were <c>true</c>. This was fixed in OnTopic 4.5.0. As this bug fix potentially
-    ///   breaks prior implementations, however, the default for <paramref name="isRecursive"/> was changed to <c>true</c> in
-    ///   order to maintain backward compatibility. In OnTopic 5.0.0, this will be changed back to <c>false</c>.
-    /// </remarks>
-    /// <param name="topic">The topic object to delete.</param>
+    /// <param name="topic">The <see cref="Topic"/> object to delete.</param>
     /// <param name="isRecursive">
-    ///   Boolean indicator nothing whether to recurse through the topic's descendants and delete them as well. If set to false
-    ///   and the topic has children, including any nested topics, an exception will be thrown.
+    ///   Boolean indicator nothing whether to recurse through the <see cref="Topic"/>'s descendants and delete them as well. If set to false
+    ///   and the topic has children, including any nested topics, an exception will be thrown. The default is false.
     /// </param>
     /// <requires description="The topic to delete must be provided." exception="T:System.ArgumentNullException">
     ///   topic is not null
     /// </requires>
     /// <exception cref="ArgumentNullException">topic</exception>
-    void Delete(Topic topic, bool isRecursive = true);
+    void Delete(Topic topic, bool isRecursive = false);
 
   } //Interface
 } //Namespace

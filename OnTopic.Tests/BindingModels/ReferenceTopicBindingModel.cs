@@ -3,8 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.Mapping.Annotations;
-using OnTopic.Models;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests.BindingModels {
 
@@ -20,10 +19,9 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class ReferenceTopicBindingModel : BasicTopicBindingModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttribute") { }
+    public ReferenceTopicBindingModel(string key) : base(key, "TopicReferenceAttributeDescriptor") { }
 
-    [AttributeKey("TopicId")]
-    public RelatedTopicBindingModel? DerivedTopic { get; set; }
+    public AssociatedTopicBindingModel? BaseTopic { get; set; }
 
   } //Class
 } //Namespace

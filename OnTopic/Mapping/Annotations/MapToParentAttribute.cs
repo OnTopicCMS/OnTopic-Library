@@ -16,7 +16,7 @@ namespace OnTopic.Mapping.Annotations {
   ///   the provided key.
   /// </summary>
   /// <remarks>
-  ///   By default, complex property objects that don't map to known attributes (e.g., a compatible property) or relationships
+  ///   By default, complex property objects that don't map to known attributes (e.g., a compatible property) or associations
   ///   are bypassed. The <see cref="MapToParentAttribute"/> informs the <see cref="IReverseTopicMappingService"/> to treat the
   ///   properties of such complex objects as members of the parent <see cref="Topic"/>. By default, these will be prefixed by
   ///   the name of the property that the complex object is assigned to. Optionally, however, this may be overwritten—including

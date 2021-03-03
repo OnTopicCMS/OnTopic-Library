@@ -17,13 +17,13 @@ namespace OnTopic.Tests {
   | CLASS: TYPE COLLECTION TESTS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TypeMemberInfoCollection"/> and <see cref="MemberInfoCollection"/> classes.
+  ///   Provides unit tests for the <see cref="MemberDispatcher"/> and <see cref="MemberInfoCollection"/> classes.
   /// </summary>
   /// <remarks>
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
   [TestClass]
-  public class TypeMemberInfoCollectionTest {
+  public class MemberDispatcherTest {
 
     /*==========================================================================================================================
     | TEST: CONSTRUCTOR: VALID TYPE: IDENTIFIES PROPERTY
@@ -78,13 +78,13 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBERS: PROPERTY INFO: RETURNS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMembers{T}(Type)"/> functions.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMembers{T}(Type)"/>
+    ///   functions.
     /// </summary>
     [TestMethod]
     public void GetMembers_PropertyInfo_ReturnsProperties() {
 
-      var types = new TypeMemberInfoCollection();
+      var types = new MemberDispatcher();
 
       var properties = types.GetMembers<PropertyInfo>(typeof(ContentTypeDescriptor));
 
@@ -99,13 +99,13 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBER: PROPERTY INFO BY KEY: RETURNS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> correctly returns the expected properties.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)"
+    ///   /> correctly returns the expected properties.
     /// </summary>
     [TestMethod]
     public void GetMember_PropertyInfoByKey_ReturnsValue() {
 
-      var types = new TypeMemberInfoCollection();
+      var types = new MemberDispatcher();
 
       Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "Key"));
       Assert.IsNotNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
@@ -117,13 +117,13 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBER: METHOD INFO BY KEY: RETURNS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> correctly returns the expected methods.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see
+    ///   cref="MemberDispatcher.GetMember{T}(Type, String)"/> correctly returns the expected methods.
     /// </summary>
     [TestMethod]
     public void GetMember_MethodInfoByKey_ReturnsValue() {
 
-      var types = new TypeMemberInfoCollection();
+      var types = new MemberDispatcher();
 
       Assert.IsNotNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "GetWebPath"));
       Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
@@ -134,13 +134,13 @@ namespace OnTopic.Tests {
     | TEST: GET MEMBER: GENERIC TYPE MISMATCH: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see
-    ///   cref="TypeMemberInfoCollection.GetMember{T}(Type, String)"/> does not return values if the
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.GetMember{T}(Type, String)
+    ///   "/> does not return values if the types mismatch.
     /// </summary>
     [TestMethod]
     public void GetMember_GenericTypeMismatch_ReturnsNull() {
 
-      var types = new TypeMemberInfoCollection();
+      var types = new MemberDispatcher();
 
       Assert.IsNull(types.GetMember<PropertyInfo>(typeof(ContentTypeDescriptor), "IsTypeOf"));
       Assert.IsNull(types.GetMember<MethodInfo>(typeof(ContentTypeDescriptor), "AttributeDescriptors"));
@@ -151,13 +151,13 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: KEY: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a key value can be properly set using the
-    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a key value can be properly set using the <see cref="
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_Key_SetsValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
@@ -175,13 +175,13 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a boolean value can be properly set using the
-    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a boolean value can be properly set using the <see cref
+    ///   ="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_Boolean_SetsValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       types.SetPropertyValue(topic, "IsHidden", "1");
@@ -194,13 +194,13 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: DATE/TIME: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a date/time value can be properly set using the
-    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a date/time value can be properly set using the <see
+    ///   cref="MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_DateTime_SetsValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       var isDateSet             = types.SetPropertyValue(topic, "LastModified", "June 3, 2008");
@@ -223,13 +223,13 @@ namespace OnTopic.Tests {
     | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that an invalid property being set via the
-    ///   <see cref="TypeMemberInfoCollection.SetPropertyValue(Object, String, String)"/> method returns false.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that an invalid property being set via the <see cref="
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
       var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
@@ -242,13 +242,13 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: VALID VALUE: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value can be properly set using the
-    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
     public void SetMethod_ValidValue_SetsValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
@@ -264,13 +264,13 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: INVALID VALUE: DOESN'T SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that a value set with an invalid value using the
-    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method returns an exception.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
     /// </summary>
     [TestMethod]
     public void SetMethod_InvalidValue_DoesNotSetValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
@@ -287,13 +287,13 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that setting an invalid property name using the
-    ///   <see cref="TypeMemberInfoCollection.SetMethodValue(Object, String, String)"/> method returns false.
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetMethod_Integer_SetsValue() {
 
-      var types                 = new TypeMemberInfoCollection();
+      var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
       var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
@@ -318,7 +318,7 @@ namespace OnTopic.Tests {
     public void SetPropertyValue_ReflectionPerformance() {
 
       var totalIterations = 1;
-      var types = new TypeMemberInfoCollection();
+      var types = new MemberDispatcher();
       var topic = TopicFactory.Create("Test", "ContentType");
 
       int i;

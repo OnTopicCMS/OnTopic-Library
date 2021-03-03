@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 /*==============================================================================================================================
@@ -13,4 +14,5 @@ using System.Runtime.InteropServices;
 \-----------------------------------------------------------------------------------------------------------------------------*/
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
+[assembly: InternalsVisibleTo("OnTopic.Tests")]
 [assembly: Guid("1de1f923-c7c2-435b-b49a-975acbcb5ff0")]

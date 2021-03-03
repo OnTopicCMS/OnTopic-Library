@@ -28,7 +28,7 @@ namespace OnTopic.Mapping {
     /*==========================================================================================================================
     | ESTABLISH CACHE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private readonly ConcurrentDictionary<(int, Type?, Relationships), object> _cache = new();
+    private readonly ConcurrentDictionary<(int, Type?, AssociationTypes), object> _cache = new();
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -45,7 +45,7 @@ namespace OnTopic.Mapping {
     | METHOD: MAP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<object?> MapAsync(Topic? topic, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic? topic, AssociationTypes associations = AssociationTypes.All) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -55,7 +55,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = (topic.Id, (Type?)null, relationships);
+      var cacheKey = (topic.Id, (Type?)null, associations);
       if(_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -63,7 +63,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Process result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel = await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false);
+      viewModel = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
@@ -83,7 +83,7 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (T)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<T?> MapAsync<T>(Topic? topic, Relationships relationships = Relationships.All) where T : class, new() {
+    public async Task<T?> MapAsync<T>(Topic? topic, AssociationTypes associations = AssociationTypes.All) where T : class, new() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -93,7 +93,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = (topic.Id, typeof(T), relationships);
+      var cacheKey = (topic.Id, typeof(T), associations);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return (T)viewModel;
       }
@@ -101,7 +101,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Process result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel = await _topicMappingService.MapAsync<T>(topic, relationships).ConfigureAwait(false);
+      viewModel = await _topicMappingService.MapAsync<T>(topic, associations).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
@@ -121,7 +121,7 @@ namespace OnTopic.Mapping {
     | METHOD: MAP (OBJECTS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public async Task<object?> MapAsync(Topic? topic, object target, Relationships relationships = Relationships.All) {
+    public async Task<object?> MapAsync(Topic? topic, object target, AssociationTypes associations = AssociationTypes.All) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -136,7 +136,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Ensure cache is populated
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var cacheKey = (topic.Id, target.GetType(), relationships);
+      var cacheKey = (topic.Id, target.GetType(), associations);
       if (_cache.TryGetValue(cacheKey, out var viewModel)) {
         return viewModel;
       }
@@ -144,7 +144,7 @@ namespace OnTopic.Mapping {
       /*------------------------------------------------------------------------------------------------------------------------
       | Process result
       \-----------------------------------------------------------------------------------------------------------------------*/
-      viewModel = await _topicMappingService.MapAsync(topic, relationships).ConfigureAwait(false);
+      viewModel = await _topicMappingService.MapAsync(topic, associations).ConfigureAwait(false);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return (cached) result
@@ -171,8 +171,8 @@ namespace OnTopic.Mapping {
     ///   The internal will potentially add two entries to the cache for every view model.
     ///   <list type="number">
     ///     <item>
-    ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see
-    ///       cref="Relationships"/> mapped.
+    ///       The first will be bound to the <see cref="Topic.Id"/>, view model <see cref="Type"/>, and the <see cref="
+    ///       AssociationTypes"/> mapped.
     ///     </item>
     ///     <item>
     ///       The second will assume a null <see cref="Type"/>, and can be used for scenarios where the <see cref="Type"/> is
@@ -198,7 +198,7 @@ namespace OnTopic.Mapping {
     /// <param name="viewModel">The view model object to cache; can be any POCO object.</param>
     /// <param name="cacheKey">A Tuple{T1, T2, T3} representing the cache key.</param>
     /// <returns>The <paramref name="viewModel"/>.</returns>
-    private object? CacheViewModel(string contentType, object viewModel, (int, Type?, Relationships) cacheKey) {
+    private object? CacheViewModel(string contentType, object viewModel, (int, Type?, AssociationTypes) cacheKey) {
       if (cacheKey.Item1 > 0 && cacheKey.Item2 is not null && !viewModel.GetType().Equals(typeof(object))) {
         _cache.TryAdd(cacheKey, viewModel);
       }

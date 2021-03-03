@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using OnTopic.Lookup;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
 using OnTopic.ViewModels;
@@ -27,7 +28,7 @@ namespace OnTopic.Tests.TestDoubles {
     ///   Instantiates a new instance of the <see cref="FakeViewModelLookupService"/>.
     /// </summary>
     /// <returns>A new instance of the <see cref="FakeViewModelLookupService"/>.</returns>
-    public FakeViewModelLookupService() : base(null, typeof(object)) {
+    public FakeViewModelLookupService() : base() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add test specific view models
@@ -40,6 +41,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(DescendentSpecializedTopicViewModel));
       Add(typeof(DescendentTopicViewModel));
       Add(typeof(DisableMappingTopicViewModel));
+      Add(typeof(FallbackViewModel));
       Add(typeof(FilteredTopicViewModel));
       Add(typeof(FlattenChildrenTopicViewModel));
       Add(typeof(InheritedPropertyTopicViewModel));
@@ -49,12 +51,13 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(MinimumLengthPropertyTopicViewModel));
       Add(typeof(NestedTopicViewModel));
       Add(typeof(PropertyAliasTopicViewModel));
+      Add(typeof(RecordTopicViewModel));
       Add(typeof(RelatedEntityTopicViewModel));
       Add(typeof(RelationTopicViewModel));
       Add(typeof(RelationWithChildrenTopicViewModel));
       Add(typeof(RequiredObjectTopicViewModel));
       Add(typeof(RequiredTopicViewModel));
-      Add(typeof(TopicReferenceAttributeTopicViewModel));
+      Add(typeof(TopicReferenceAttributeDescriptorTopicViewModel));
       Add(typeof(TopicReferenceTopicViewModel));
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -63,7 +66,7 @@ namespace OnTopic.Tests.TestDoubles {
       Add(typeof(AttributeDescriptorTopicViewModel));
       Add(typeof(ContentTypeDescriptorTopicViewModel));
       Add(typeof(MetadataLookupTopicViewModel));
-      Add(typeof(TextAttributeTopicViewModel));
+      Add(typeof(TextAttributeDescriptorTopicViewModel));
 
     }
 

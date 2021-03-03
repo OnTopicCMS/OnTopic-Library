@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Internal.Mapping;
 using OnTopic.Internal.Reflection;
+using OnTopic.Mapping.Internal;
 using OnTopic.Metadata;
 using OnTopic.Models;
 using OnTopic.Repositories;
@@ -30,7 +30,7 @@ namespace OnTopic.Mapping.Reverse {
     /*==========================================================================================================================
     | STATIC VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    static readonly             TypeMemberInfoCollection        _typeCache                      = new();
+    static readonly             MemberDispatcher                _typeCache                      = new();
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -145,19 +145,19 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the content type is valid
       if (!_contentTypeDescriptors.Contains(source.ContentType)) {
-        throw new InvalidEnumArgumentException(
+        throw new MappingModelValidationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}'. There " +
-          $"no matching content type in the ITopicRepository provided. This suggests that the binding model is invalid. If " +
-          $"this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
+          $"are no matching content types in the ITopicRepository provided. This suggests that the binding model is invalid. " +
+          $"If this is expected—e.g., if the content type is being added as part of this operation—then it needs to be added " +
           $"to the same ITopicRepository instance prior to creating any instances of it."
         );
       }
 
       //Ensure the content types match
       if (source.ContentType != target.ContentType) {
-        throw new InvalidEnumArgumentException(
+        throw new MappingModelValidationException(
           $"The {nameof(source)} object (with the key '{source.Key}') has a content type of '{source.ContentType}', while " +
-          $"the {nameof(target)} object (with the key '{source.Key}') has a content type of '{target.ContentType}'. It is not" +
+          $"the {nameof(target)} object (with the key '{target.Key}') has a content type of '{target.ContentType}'. It is not" +
           $"permitted to change the topic's content type during a mapping operation, as this interferes with the validation. " +
           $"If this is by design, change the content type on the target topic prior to invoking MapAsync()."
         );
@@ -165,9 +165,9 @@ namespace OnTopic.Mapping.Reverse {
 
       //Ensure the keys match
       if (source.Key != target.Key && !String.IsNullOrEmpty(source.Key)) {
-        throw new InvalidEnumArgumentException(
+        throw new MappingModelValidationException(
           $"The {nameof(source)} object has a key of '{source.Key}', while the {nameof(target)} object has a key of " +
-          $"'{target.Key}'. It is not permitted to change the topic'key during a mapping operation, as this suggests in " +
+          $"'{target.Key}'. It is not permitted to change the topic's key during a mapping operation, as this suggests an " +
           $"invalid target. If this is by design, change the key on the target topic prior to invoking MapAsync()."
         );
       }
@@ -180,7 +180,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: MAP (TOPIC)
+    | PRIVATE: MAP (TOPIC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a binding model and an existing <see cref="Topic"/>, will map the properties of the binding model to attributes
@@ -194,7 +194,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <returns>
     ///   An instance of provided <see cref="Topic"/> with attributes appropriately mapped.
     /// </returns>
-    protected async Task<Topic?> MapAsync(object? source, Topic target, string? attributePrefix) {
+    private async Task<Topic?> MapAsync(object? source, Topic target, string? attributePrefix) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle null source
@@ -211,7 +211,7 @@ namespace OnTopic.Mapping.Reverse {
       | Validate model
       \-----------------------------------------------------------------------------------------------------------------------*/
       var properties = _typeCache.GetMembers<PropertyInfo>(source.GetType());
-      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
+      var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
 
       BindingModelValidator.ValidateModel(source.GetType(), properties, contentTypeDescriptor, attributePrefix);
 
@@ -232,7 +232,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET PROPERTY (ASYNC)
+    | PRIVATE: SET PROPERTY (ASYNC)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Helper function that evaluates each property on the source <see cref="ITopicBindingModel"/> and then attempts to
@@ -245,7 +245,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
     /// <param name="property">Information related to the current property.</param>
     /// <param name="attributePrefix">The prefix to apply to the attributes.</param>
-    protected async Task SetPropertyAsync(
+    private async Task SetPropertyAsync(
       object                    source,
       Topic                     target,
       PropertyInfo              property,
@@ -263,7 +263,7 @@ namespace OnTopic.Mapping.Reverse {
       | Establish per-property variables
       \-----------------------------------------------------------------------------------------------------------------------*/
       var configuration         = new PropertyConfiguration(property, attributePrefix);
-      var contentTypeDescriptor = _contentTypeDescriptors.GetTopic(target.ContentType);
+      var contentTypeDescriptor = _contentTypeDescriptors.GetValue(target.ContentType);
       var compositeAttributeKey = configuration.AttributeKey;
 
       Contract.Assume(contentTypeDescriptor, nameof(contentTypeDescriptor));
@@ -272,6 +272,13 @@ namespace OnTopic.Mapping.Reverse {
       | Skip properties decorated with [DisableMapping]
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.DisableMapping) {
+        return;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Skip properties injected by the compiler for record types
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (configuration.Property.Name is "EqualityContract") {
         return;
       }
 
@@ -290,10 +297,10 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve attribute descriptor
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var attributeType = contentTypeDescriptor.AttributeDescriptors.GetTopic(compositeAttributeKey);
+      var attributeType = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
 
       if (attributeType is null) {
-        throw new InvalidOperationException(
+        throw new MappingModelValidationException(
           $"The attribute '{configuration.AttributeKey}' mapped by the {source.GetType()} could not be found on the " +
           $"'{contentTypeDescriptor.Key}' content type.");
       }
@@ -324,7 +331,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET SCALAR VALUE
+    | PRIVATE: SET SCALAR VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets an attribute on the target <see cref="Topic"/> with a scalar value from the source binding model.
@@ -336,15 +343,17 @@ namespace OnTopic.Mapping.Reverse {
     ///   <paramref name="target"/>. If the value is not set on the <paramref name="source"/> then the <see
     ///   cref="DefaultValueAttribute"/> will be evaluated as a fallback. If the property is not of a settable type then the
     ///   property is not set. If the value is empty, then it will be treated as <c>null</c> in the <paramref name="target"/>'s
-    ///   <see cref="AttributeValueCollection"/>.
+    ///   <see cref="AttributeCollection"/>.
     /// </remarks>
     /// <param name="source">
     ///   The binding model from which to derive the data. Must inherit from <see cref="ITopicBindingModel"/>.
     /// </param>
     /// <param name="target">The <see cref="Topic"/> entity to map the data to.</param>
-    /// <param name="configuration">The <see cref="PropertyConfiguration"/> with details about the property's attributes.</param>
+    /// <param name="configuration">
+    ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
+    /// </param>
     /// <autogeneratedoc />
-    protected static void SetScalarValue(
+    private static void SetScalarValue(
       object                    source,
       Topic                     target,
       PropertyConfiguration     configuration
@@ -389,7 +398,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET RELATIONSHIPS
+    | PRIVATE: SET RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a relationship property, identifies the target <see cref="Topic"/> for each related item, and sets it on the
@@ -402,7 +411,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected void SetRelationships(
+    private void SetRelationships(
       object                    source,
       Topic                     target,
       PropertyConfiguration     configuration
@@ -419,36 +428,35 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList)configuration.Property.GetValue(source, null);
+      var sourceList = (IList?)configuration.Property.GetValue(source, null);
 
       if (sourceList is null) {
-        sourceList = new List<IRelatedTopicBindingModel>();
+        sourceList = new List<IAssociatedTopicBindingModel>();
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Clear existing relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Relationships.ClearTopics(configuration.AttributeKey);
+      target.Relationships.Clear(configuration.AttributeKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships for each
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (IRelatedTopicBindingModel relationship in sourceList) {
-        var targetTopic = _topicRepository.Load(relationship.UniqueKey);
+      foreach (IAssociatedTopicBindingModel relationship in sourceList) {
+        var targetTopic = _topicRepository.Load(relationship.UniqueKey, target);
         if (targetTopic is null) {
-          throw new ArgumentOutOfRangeException(
-            configuration.Property.Name,
+          throw new MappingModelValidationException(
             $"The relationship '{relationship.UniqueKey}' mapped in the '{configuration.Property.Name}' property could not " +
             $"be located in the repository."
           );
         }
-        target.Relationships.SetTopic(configuration.AttributeKey, targetTopic);
+        target.Relationships.SetValue(configuration.AttributeKey, targetTopic);
       }
 
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET NESTED TOPICS
+    | PRIVATE: SET NESTED TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a nested topic property, serializes a topic for each property, and sets it on the target <see cref="Topic"/>'s
@@ -461,7 +469,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected async Task SetNestedTopicsAsync(
+    private async Task SetNestedTopicsAsync(
       object                    source,
       Topic                     target,
       PropertyConfiguration     configuration
@@ -477,12 +485,12 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source list
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var sourceList = (IList)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
+      var sourceList = (IList?)configuration.Property.GetValue(source, null) ?? new List<ITopicBindingModel>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish target collection to store mapped topics
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var container = target.Children.GetTopic(configuration.AttributeKey);
+      var container = target.Children.GetValue(configuration.AttributeKey);
       if (container is null) {
         container = TopicFactory.Create(configuration.AttributeKey, "List", target);
         container.IsHidden = true;
@@ -496,7 +504,7 @@ namespace OnTopic.Mapping.Reverse {
     }
 
     /*==========================================================================================================================
-    | PROTECTED: SET REFERENCE
+    | PRIVATE: SET REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a reference property, lookup the associated topic and set its <see cref="Topic.Id"/> on the <paramref
@@ -509,7 +517,7 @@ namespace OnTopic.Mapping.Reverse {
     /// <param name="configuration">
     ///   The <see cref="PropertyConfiguration"/> with details about the property's attributes.
     /// </param>
-    protected void SetReference(
+    private void SetReference(
       object                    source,
       Topic                     target,
       PropertyConfiguration     configuration
@@ -525,7 +533,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve source value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var modelReference = (IRelatedTopicBindingModel)configuration.Property.GetValue(source);
+      var modelReference = (IAssociatedTopicBindingModel?)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Bypass if reference (or value) is null (or empty)
@@ -537,13 +545,13 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify target value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topicReference = _topicRepository.Load(modelReference.UniqueKey);
+      var topicReference = _topicRepository.Load(modelReference.UniqueKey, target);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topicReference is null) {
-        throw new InvalidOperationException(
+        throw new MappingModelValidationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
           $"'{configuration.Property.Name}' property could not be found."
         );
@@ -552,21 +560,26 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+      if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
+        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+      }
+      else {
+        target.References.SetValue(configuration.AttributeKey, topicReference);
+      }
 
     }
 
     /*==========================================================================================================================
-    | PROTECTED: POPULATE TARGET COLLECTION
+    | PRIVATE: POPULATE TARGET COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Given a source list, will populate a target list based on the configured behavior of the source property.
     /// </summary>
     /// <param name="sourceList">The <see cref="IList{ITopicBindingModel}"/> to pull the binding models from.</param>
     /// <param name="targetList">The target <see cref="IList{Topic}"/> to add the mapped <see cref="Topic"/> objects to.</param>
-    protected async Task PopulateTargetCollectionAsync(
+    private async Task PopulateTargetCollectionAsync(
       IList                     sourceList,
-      TopicCollection           targetList
+      KeyedTopicCollection      targetList
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -584,7 +597,7 @@ namespace OnTopic.Mapping.Reverse {
       foreach (ITopicBindingModel childBindingModel in sourceList) {
         Contract.Assume(childBindingModel.Key);
         if (targetList.Contains(childBindingModel.Key)) {
-          taskQueue.Add(MapAsync(childBindingModel, targetList.GetTopic(childBindingModel.Key)!));
+          taskQueue.Add(MapAsync(childBindingModel, targetList.GetValue(childBindingModel.Key)!));
         }
         else {
           taskQueue.Add(MapAsync(childBindingModel));

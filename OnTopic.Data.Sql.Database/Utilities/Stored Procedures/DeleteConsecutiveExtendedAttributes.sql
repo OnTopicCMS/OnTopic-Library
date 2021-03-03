@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 --------------------------------------------------------------------------------------------------------------------------------
 DECLARE	@Count	INT
 
-SELECT	@Count	= Count(TopicID)
+SELECT	@Count	= COUNT(TopicID)
 FROM	ExtendedAttributes
 
 Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Extended Attributes in the database.');
@@ -33,7 +33,6 @@ Print('Initial Count: ' + CAST(@Count AS VARCHAR) + ' Extended Attributes in the
 WITH GroupedValues AS (
   SELECT	TopicID,
 	AttributesXml,
-	DateModified,
 	Version,
 	ValueGroup = ROW_NUMBER() OVER(PARTITION BY TopicID ORDER BY TopicID, Version)
 	- ROW_NUMBER() OVER(PARTITION BY TopicID, CAST(AttributesXml AS NVARCHAR(MAX)) ORDER BY TopicID, Version)
@@ -46,7 +45,6 @@ WITH GroupedValues AS (
 RankedValues AS (
   SELECT	TopicID,
 	AttributesXml,
-	DateModified,
 	Version,
 	ValueGroup,
 	ValueRank = ROW_NUMBER() OVER(PARTITION BY ValueGroup, TopicID, CAST(AttributesXml AS NVARCHAR(MAX)) ORDER BY TopicID, Version)
@@ -65,7 +63,7 @@ PRINT('Concurrent duplicates have been deleted.')
 --------------------------------------------------------------------------------------------------------------------------------
 -- CHECK FINAL VALUES
 --------------------------------------------------------------------------------------------------------------------------------
-SELECT	@Count	= @Count - Count(TopicID)
+SELECT	@Count	= @Count - COUNT(TopicID)
 FROM	ExtendedAttributes
 
 Print('Final Count: ' + CAST(@Count AS VARCHAR) + ' duplicate Extended Attributes were identified and deleted.')

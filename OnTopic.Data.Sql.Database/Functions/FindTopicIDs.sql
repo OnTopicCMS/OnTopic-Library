@@ -33,6 +33,14 @@ BEGIN
   WHERE	TopicID		= @TopicID
 
   ------------------------------------------------------------------------------------------------------------------------------
+  -- SET DEFAULTS
+  ------------------------------------------------------------------------------------------------------------------------------
+  IF (@AttributeValue IS NULL)
+    BEGIN
+      SET	@AttributeValue		= ''
+    END
+
+  ------------------------------------------------------------------------------------------------------------------------------
   -- RETRIEVE KEY ATTRIBUTES
   ------------------------------------------------------------------------------------------------------------------------------
   IF (@AttributeKey IN ('Key', 'ContentType', 'ParentID'))
@@ -40,13 +48,13 @@ BEGIN
       INSERT
       INTO	@Topics
       SELECT	TopicID
-      FROM	TopicIndex
+      FROM	Topics
       WHERE (	@AttributeKey		= 'Key'
         AND	TopicKey		= @AttributeValue
         OR	@AttributeKey		= 'ContentType'
         AND	ContentType		= @AttributeValue
         OR	@AttributeKey		= 'ParentID'
-        AND	ParentID		= @AttributeValue
+        AND	ISNULL(ParentID, '')	= @AttributeValue
       )
       RETURN
     END

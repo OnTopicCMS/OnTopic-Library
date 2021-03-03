@@ -18,7 +18,7 @@ namespace OnTopic.Internal.Reflection {
   /// <summary>
   ///   Provides keyed access to a collection of <see cref="MemberInfoCollection"/> instances.
   /// </summary>
-  public class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
+  internal class MemberInfoCollection<T> : KeyedCollection<string, T> where T : MemberInfo {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -28,7 +28,7 @@ namespace OnTopic.Internal.Reflection {
     ///   name.
     /// </summary>
     /// <param name="type">The <see cref="Type"/> associated with the collection.</param>
-    public MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
+    internal MemberInfoCollection(Type type) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type);
       Type = type;
       foreach (
@@ -40,7 +40,9 @@ namespace OnTopic.Internal.Reflection {
           BindingFlags.Public
         ).Where(m => typeof(T).IsAssignableFrom(m.GetType()))
       ) {
-        Add((T)member);
+        if (!Contains(member.Name)) {
+          Add((T)member);
+        }
       }
     }
 
@@ -52,7 +54,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{T}"/> of <typeparamref name="T"/> instances to populate the collection.
     /// </param>
-    public MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
+    internal MemberInfoCollection(Type type, IEnumerable<T> members) : base(StringComparer.OrdinalIgnoreCase) {
       Contract.Requires(type);
       Contract.Requires(members);
       Type = type;
@@ -73,7 +75,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
     /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
-    protected override void InsertItem(int index, T item) {
+    protected override sealed void InsertItem(int index, T item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -87,7 +89,7 @@ namespace OnTopic.Internal.Reflection {
         base.InsertItem(index, item);
       }
       else {
-        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'");
+        throw new ArgumentException($"The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'", nameof(item));
       }
     }
 
@@ -97,7 +99,7 @@ namespace OnTopic.Internal.Reflection {
     /// <summary>
     ///   Returns the type associated with this collection.
     /// </summary>
-    public Type Type { get; }
+    internal Type Type { get; }
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
@@ -107,7 +109,7 @@ namespace OnTopic.Internal.Reflection {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(T item) {
+    protected override sealed string GetKeyForItem(T item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Name;
     }

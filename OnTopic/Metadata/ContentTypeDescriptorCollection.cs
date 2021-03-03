@@ -25,7 +25,7 @@ namespace OnTopic.Metadata {
   ///   constructor for handling a flattened list of <see cref="ContentTypeDescriptor"/>s used for the <see cref=
   ///   "ITopicRepository.GetContentTypeDescriptors()"/> method.
   /// </remarks>
-  public class ContentTypeDescriptorCollection : TopicCollection<ContentTypeDescriptor> {
+  public class ContentTypeDescriptorCollection : KeyedTopicCollection<ContentTypeDescriptor> {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -58,9 +58,11 @@ namespace OnTopic.Metadata {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (rootContentType is null or { Children: { Count: 0 } }) {
+      #pragma warning disable IDE0078 // Use pattern matching
+      if (rootContentType is null || rootContentType is { Children: { Count: 0 } }) {
         return;
       }
+      #pragma warning restore IDE0078 // Use pattern matching
 
       Contract.Requires(
         rootContentType.Key.Equals("ContentTypes", StringComparison.OrdinalIgnoreCase),

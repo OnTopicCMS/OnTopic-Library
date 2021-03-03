@@ -11,7 +11,7 @@ namespace OnTopic.Tests.ViewModels {
   | VIEW MODEL: ASCENDENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a simple view model with a single property (<see cref="Parent"/>) for mapping ascendent relationships.
+  ///   Provides a simple view model with a single property (<see cref="Parent"/>) for mapping ascendent associations.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -24,7 +24,7 @@ namespace OnTopic.Tests.ViewModels {
   /// </remarks>
   public class AscendentTopicViewModel: KeyOnlyTopicViewModel {
 
-    [Follow(Relationships.Parents)]
+    [Include(AssociationTypes.Parents)]
     public AscendentTopicViewModel? Parent { get; set; }
 
   } //Class

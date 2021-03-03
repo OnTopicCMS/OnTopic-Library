@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Models;
@@ -19,10 +20,20 @@ namespace OnTopic.AspNetCore.Mvc.Components {
   ///   model.
   /// </summary>
   /// <remarks>
+  ///   <para>
   ///   This class is intended to provide a foundation for concrete implementations. It is not a fully formed implementation
   ///   itself. As a result, it is marked as <c>abstract</c>.
+  ///   </para>
+  ///   <para>
+  ///     While the <see cref="NavigationTopicViewComponentBase{T}"/> only requires that the <typeparamref name="T"/> implement
+  ///     <see cref="IHierarchicalTopicViewModel{T}"/>, views will require additional properties. These can be determined on a
+  ///     per-case basis, as required by the implementation. Implementaters, however, should consider implementing the <see cref
+  ///     ="INavigationTopicViewModel{T}"/> interface, which provides the standard properties that most views will likely need,
+  ///     as well as a <see cref="INavigationTopicViewModel{T}.IsSelected(String)"/> method for determining if the navigation
+  ///     item is currently selected.
+  ///   </para>
   /// </remarks>
-  public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where T : class, INavigationTopicViewModel<T>, new() {
+  public abstract class NavigationTopicViewComponentBase<T> : ViewComponent where T : class, IHierarchicalTopicViewModel<T>, new() {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -52,7 +63,7 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     ///   on the route data.
     /// </summary>
     /// <returns>
-    ///   The <see cref="ITopicRepository"/> associated with the <see cref="TopicViewComponentBase{T}"/>.
+    ///   The <see cref="ITopicRepository"/> associated with the <see cref="NavigationTopicViewComponentBase{T}"/>.
     /// </returns>
     protected ITopicRepository TopicRepository { get; }
 
@@ -64,7 +75,8 @@ namespace OnTopic.AspNetCore.Mvc.Components {
     ///   be mapped.
     /// </summary>
     /// <returns>
-    ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="TopicViewComponentBase{T}"/>.
+    ///   The <see cref="IHierarchicalTopicMappingService{T}"/> associated with the <see cref="
+    ///   NavigationTopicViewComponentBase{T}"/>.
     /// </returns>
     protected IHierarchicalTopicMappingService<T> HierarchicalTopicMappingService { get; }
 

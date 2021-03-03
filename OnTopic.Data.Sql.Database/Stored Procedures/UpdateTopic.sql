@@ -1,103 +1,67 @@
 ﻿--------------------------------------------------------------------------------------------------------------------------------
 -- UPDATE TOPIC
 --------------------------------------------------------------------------------------------------------------------------------
--- Used to update the attributes of a provided node
+-- Used to update the attributes of a provided topic, including core, indexed, and extended attributes.
 --------------------------------------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE [dbo].[UpdateTopic]
-	@TopicID		INT		= -1		,
+	@TopicID		INT				,
+	@Key		VARCHAR(128)		= NULL		,
+	@ContentType		VARCHAR(128)		= NULL		,
 	@Attributes		AttributeValues		READONLY		,
-	@ExtendedAttributes	XML		= null		,
-	@Version		DATETIME		= null		,
-	@DeleteRelationships	BIT		= 0
+	@ExtendedAttributes	XML		= NULL		,
+	@Version		DATETIME2(7)		= NULL		,
+	@DeleteUnmatched	BIT		= 0
 AS
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- SET DEFAULT VERSION DATETIME
 --------------------------------------------------------------------------------------------------------------------------------
 IF	@Version		IS NULL
-SET	@Version		= GetDate()
+SET	@Version		= SYSUTCDATETIME()
 
 --------------------------------------------------------------------------------------------------------------------------------
--- INSERT NEW ATTRIBUTES
+-- UPDATE KEY ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-INSERT
-INTO	Attributes (
-	  TopicID		,
-	  AttributeKey		,
-	  AttributeValue	,
-	  Version
-	)
-SELECT	@TopicID,
-	AttributeKey,
-	AttributeValue,
-	@Version
-FROM	@Attributes		New
-OUTER APPLY (
-    SELECT	TOP 1
-	AttributeValue		AS ExistingValue
-    FROM	Attributes
+IF @Key IS NOT NULL OR @ContentType IS NOT NULL
+  BEGIN
+    UPDATE	Topics
+    SET	TopicKey		=
+      CASE
+        WHEN	@Key		IS NULL
+        THEN	TopicKey
+        ELSE	@Key
+      END,
+	ContentType		=
+      CASE
+        WHEN	@ContentType		IS NULL
+        THEN	TopicKey
+        ELSE	@ContentType
+      END,
+      LastModified		= @Version
     WHERE	TopicID		= @TopicID
-      AND	AttributeKey		= New.AttributeKey
-    ORDER BY	Version		DESC
-  )			Existing
-WHERE	AttributeKey		!= 'ParentId'
-  AND	ISNULL(AttributeValue, '')	!= ''
-  AND 	ISNULL(ExistingValue, '')	!= ISNULL(AttributeValue, '')
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
--- PULL PREVIOUS EXTENDED ATTRIBUTES
+-- UPDATE ATTRIBUTES
 --------------------------------------------------------------------------------------------------------------------------------
-DECLARE	@PreviousExtendedAttributes	XML
-
-SELECT	TOP 1
-	@PreviousExtendedAttributes	= AttributesXml
-FROM	ExtendedAttributes
-WHERE	TopicID		= @TopicID
-ORDER BY	Version		DESC
+IF EXISTS (SELECT TOP 1 NULL FROM @Attributes)
+  BEGIN
+    EXEC	UpdateAttributes	@TopicID,
+			@Attributes,
+			@Version,
+			@DeleteUnmatched
+  END
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- ADD EXTENDED ATTRIBUTES, IF CHANGED
 --------------------------------------------------------------------------------------------------------------------------------
-IF CAST(@ExtendedAttributes AS NVARCHAR(MAX)) != CAST(@PreviousExtendedAttributes AS NVARCHAR(MAX))
+IF @ExtendedAttributes IS NOT NULL
   BEGIN
-    INSERT
-    INTO	ExtendedAttributes (
-	  TopicID		,
-	  AttributesXml		,
-	  Version
-	)
-    VALUES (
-	@TopicID		,
-	@ExtendedAttributes	,
-	@Version
-    )
+    EXEC	UpdateExtendedAttributes	@TopicID,
+			@ExtendedAttributes,
+			@Version
   END
-
---------------------------------------------------------------------------------------------------------------------------------
--- INSERT NULL ATTRIBUTES
---------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO	Attributes (
-	  TopicID		,
-	  AttributeKey		,
-	  AttributeValue	,
-	  Version
-	)
-SELECT	@TopicID,
-	AttributeKey,
-	'',
-	@Version
-FROM	@Attributes		New
-CROSS APPLY (
-  SELECT	TOP 1
-	AttributeValue		AS ExistingValue
-  FROM	Attributes
-  WHERE	TopicID		= @TopicID
-    AND	AttributeKey		= New.AttributeKey
-  ORDER BY	Version DESC
-)			Existing
-WHERE	IsNull(AttributeValue, '')	= ''
-  AND	ExistingValue		!= ''
 
 --------------------------------------------------------------------------------------------------------------------------------
 -- RETURN TOPIC ID

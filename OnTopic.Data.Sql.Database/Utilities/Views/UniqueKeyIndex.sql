@@ -9,10 +9,10 @@ WITH	SCHEMABINDING
 AS
 
 SELECT          Tree.TopicID,
-                Path = Replace(Path, '&gt;', ':')
+                Path = REPLACE(Path, '&gt;', ':')
 FROM            [dbo].[Topics] Tree
 CROSS APPLY (
-  SELECT        Path = Stuff((
+  SELECT        Path = STUFF((
     SELECT      '>' + AttributeValue
     FROM (
       SELECT    RangeLeft,
