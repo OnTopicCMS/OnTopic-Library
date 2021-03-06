@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
@@ -22,6 +23,7 @@ namespace OnTopic.Mapping {
   ///   based on derived classes, if we discover the need for more specific exceptions.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class TopicMappingException : Exception {
 
     /*==========================================================================================================================

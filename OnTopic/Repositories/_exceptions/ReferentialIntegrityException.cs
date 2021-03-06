@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
@@ -22,6 +23,7 @@ namespace OnTopic.Repositories {
   ///   In that case, deleting the topic will violate the referential integrity of the target topic.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class ReferentialIntegrityException: TopicRepositoryException {
 
     /*==========================================================================================================================
