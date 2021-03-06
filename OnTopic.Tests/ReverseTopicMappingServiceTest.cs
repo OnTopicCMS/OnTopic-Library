@@ -68,8 +68,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel() {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
@@ -98,8 +97,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
@@ -109,11 +107,11 @@ namespace OnTopic.Tests {
       var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
-      Assert.AreEqual<string>("Test Attribute", target.Title);
-      Assert.AreEqual<string>("Hello", target.DefaultValue);
-      Assert.AreEqual<bool>(true, target.IsRequired);
+      Assert.AreEqual<string?>("Test", target?.Key);
+      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
+      Assert.AreEqual<string?>("Test Attribute", target?.Title);
+      Assert.AreEqual<string?>("Hello", target?.DefaultValue);
+      Assert.AreEqual<bool?>(true, target?.IsRequired);
 
     }
 
@@ -129,8 +127,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel() {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = null,
         DefaultValue            = "World",
@@ -208,9 +205,9 @@ namespace OnTopic.Tests {
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.AreEqual<string>("Jeremy", target.Attributes.GetValue("Name"));
-      Assert.AreEqual<string>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
-      Assert.AreEqual<string>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+      Assert.AreEqual<string?>("Jeremy", target.Attributes.GetValue("Name"));
+      Assert.AreEqual<string?>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
+      Assert.AreEqual<string?>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
 
     }
 
@@ -226,8 +223,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new PageTopicBindingModel {
-        Key                     = "Test",
+      var bindingModel          = new PageTopicBindingModel("Test") {
         ContentType             = "Page",
         Title                   = "Test Page",
         BrowserTitle            = "Browser Title"

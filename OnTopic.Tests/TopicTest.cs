@@ -292,7 +292,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = finalBaseTopic;
 
       Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
-      Assert.AreEqual<int>(2, topic.References.GetValue("BaseTopic").Id);
+      Assert.AreEqual<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 
@@ -314,7 +314,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
 
       Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
-      Assert.AreEqual<int>(5, topic.References.GetValue("BaseTopic").Id);
+      Assert.AreEqual<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
 
     }
 

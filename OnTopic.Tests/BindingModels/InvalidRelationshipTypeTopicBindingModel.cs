@@ -23,7 +23,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class InvalidRelationshipTypeTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidRelationshipTypeTopicBindingModel(string? key = null) : base(key, "ContentTypeDescriptor") { }
+    public InvalidRelationshipTypeTopicBindingModel(string key) : base(key, "ContentTypeDescriptor") { }
 
     [Collection(CollectionType.NestedTopics)]
     public Collection<AssociatedTopicBindingModel> ContentTypes { get; } = new();

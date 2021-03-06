@@ -21,7 +21,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class InvalidReferenceTypeTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidReferenceTypeTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public InvalidReferenceTypeTopicBindingModel(string key) : base(key, "Page") { }
 
     public EmptyViewModel BaseTopic { get; } = new();
 

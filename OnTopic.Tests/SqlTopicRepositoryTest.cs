@@ -70,7 +70,7 @@ namespace OnTopic.Tests {
 
       Assert.IsNotNull(topic);
       Assert.AreEqual<int>(1, topic.Id);
-      Assert.AreEqual<string>("Value", topic.Attributes.GetValue("Test"));
+      Assert.AreEqual<string?>("Value", topic.Attributes.GetValue("Test"));
 
     }
 

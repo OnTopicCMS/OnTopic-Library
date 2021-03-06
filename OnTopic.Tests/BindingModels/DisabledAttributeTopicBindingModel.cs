@@ -21,7 +21,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class DisabledAttributeTopicBindingModel : BasicTopicBindingModel {
 
-    public DisabledAttributeTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public DisabledAttributeTopicBindingModel(string key) : base(key, "Page") { }
 
     [DisableMapping]
     public string? UnmappedAttribute { get; set; }

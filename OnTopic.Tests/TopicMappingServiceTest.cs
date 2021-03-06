@@ -177,9 +177,9 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(viewModel);
       Assert.IsNotNull(parentViewModel);
       Assert.IsNotNull(grandParentViewModel);
-      Assert.AreEqual<string>("Test", viewModel.Key);
-      Assert.AreEqual<string>("Parent", parentViewModel.Key);
-      Assert.AreEqual<string>("Grandparent", grandParentViewModel.Key);
+      Assert.AreEqual<string?>("Test", viewModel.Key);
+      Assert.AreEqual<string?>("Parent", parentViewModel.Key);
+      Assert.AreEqual<string?>("Grandparent", grandParentViewModel.Key);
       Assert.IsTrue(grandParentViewModel.IsRoot);
       Assert.IsNull(grandParentViewModel.Parent);
 

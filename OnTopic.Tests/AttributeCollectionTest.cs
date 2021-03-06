@@ -10,6 +10,7 @@ using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Tests.Entities;
 
 namespace OnTopic.Tests {
@@ -34,7 +35,7 @@ namespace OnTopic.Tests {
     public void GetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.View = "Test";
-      Assert.AreEqual<string>("Test", topic.Attributes.GetValue("View"));
+      Assert.AreEqual<string?>("Test", topic.Attributes.GetValue("View"));
     }
 
     /*==========================================================================================================================
@@ -274,7 +275,7 @@ namespace OnTopic.Tests {
     public void SetValue_CorrectValue_IsReturned() {
       var topic = TopicFactory.Create("Test", "Container");
       topic.Attributes.SetValue("Foo", "Bar");
-      Assert.AreEqual<string>("Bar", topic.Attributes.GetValue("Foo"));
+      Assert.AreEqual<string?>("Bar", topic.Attributes.GetValue("Foo"));
     }
 
     /*==========================================================================================================================
@@ -553,7 +554,7 @@ namespace OnTopic.Tests {
 
       topic.Attributes.Add(new("View", "NewKey", false));
 
-      Assert.AreEqual<string>("NewKey", topic.View);
+      Assert.AreEqual<string?>("NewKey", topic.View);
 
     }
 
@@ -683,6 +684,8 @@ namespace OnTopic.Tests {
       topic.View = "Test";
       topic.Attributes.TryGetValue("View", out var originalValue);
 
+      Contract.Assume(originalValue);
+
       var index = topic.Attributes.IndexOf(originalValue);
 
       topic.Attributes[index] = new AttributeRecord("View", "NewValue", false);
@@ -755,8 +758,8 @@ namespace OnTopic.Tests {
       topics[0].Attributes.SetValue("Foo", "Bar");
 
       Assert.IsNull(topics[4].Attributes.GetValue("Foo", null));
-      Assert.AreEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", true));
-      Assert.AreNotEqual<string>("Bar", topics[7].Attributes.GetValue("Foo", false));
+      Assert.AreEqual<string?>("Bar", topics[7].Attributes.GetValue("Foo", true));
+      Assert.AreNotEqual<string?>("Bar", topics[7].Attributes.GetValue("Foo", false));
 
     }
 
@@ -779,7 +782,7 @@ namespace OnTopic.Tests {
 
       topics[4].Attributes.SetValue("Foo", "Bar");
 
-      Assert.AreEqual<string>("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
+      Assert.AreEqual<string?>("Bar", topics[0].Attributes.GetValue("Foo", null, true, true));
 
     }
 

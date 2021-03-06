@@ -365,7 +365,7 @@ namespace OnTopic.Tests {
 
       topic.References.SetValue("TopicReference", reference);
 
-      Assert.AreEqual<Topic>(reference, topic.TopicReference);
+      Assert.AreEqual<Topic?>(reference, topic.TopicReference);
 
     }
 

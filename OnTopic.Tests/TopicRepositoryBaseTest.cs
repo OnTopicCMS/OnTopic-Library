@@ -655,6 +655,8 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var contentType           = contentTypes.Contains("Page")? contentTypes["Page"] : null;
 
+      Contract.Assume(contentType);
+
       _topicRepository.Delete(contentType);
 
       Assert.IsFalse(contentTypes.Contains(contentType));
@@ -677,6 +679,9 @@ namespace OnTopic.Tests {
       var pageContentType       = contentTypes.Contains("Page")? contentTypes["Page"] : null;
       var contactContentType    = contentTypes.Contains("Contact")? contentTypes["Contact"] : null;
       var contactAttributeCount = contactContentType?.AttributeDescriptors.Count;
+
+      Contract.Assume(contactContentType);
+      Contract.Assume(pageContentType);
 
       _topicRepository.Move(contactContentType, pageContentType);
 

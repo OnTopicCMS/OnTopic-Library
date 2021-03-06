@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class AttributeDescriptorTopicBindingModel : BasicTopicBindingModel {
 
-    public AttributeDescriptorTopicBindingModel(string? key = null, string? attributeType = null) : base(key, attributeType) { }
+    public AttributeDescriptorTopicBindingModel(string key, string attributeType) : base(key, attributeType) { }
 
     public string? Title { get; set; }
 
