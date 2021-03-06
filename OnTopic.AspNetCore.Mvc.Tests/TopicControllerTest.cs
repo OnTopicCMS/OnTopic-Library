@@ -199,6 +199,38 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SITEMAP CONTROLLER: EXTENDED: INCLUDES ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the extended action of the <see cref="SitemapController.Extended(Boolean)" /> action and ensures that the
+    ///   results include the expected attributes.
+    /// </summary>
+    [TestMethod]
+    public void SitemapController_Extended_IncludesAttributes() {
+
+      var controller            = new SitemapController(_topicRepository) {
+        ControllerContext       = new(_context)
+      };
+      var result                = controller.Extended(true) as ContentResult;
+      var model                 = result?.Content as string;
+
+      controller.Dispose();
+
+      Assert.IsNotNull(model);
+
+      Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
+
+      Assert.IsTrue(model!.Contains("<Attribute name=\"Attribute\">Value</Attribute>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">Title</Attribute>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<DataObject type=\"Relationships\">", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<Attribute name=\"TopicKey\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<DataObject type=\"References\">", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("<Attribute name=\"Reference\">Web:Redirect</Attribute>", StringComparison.Ordinal));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SITEMAP CONTROLLER: EXTENDED: EXCLUDES ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
