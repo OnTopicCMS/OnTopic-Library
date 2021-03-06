@@ -4,6 +4,7 @@
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -27,6 +28,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
   ///   Responsible for creating instances of factories in response to web requests. Represents the Composition Root for
   ///   Dependency Injection.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class SampleActivator : IControllerActivator, IViewComponentActivator {
 
     /*==========================================================================================================================
