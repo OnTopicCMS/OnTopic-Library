@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Repositories {
 
@@ -13,6 +14,7 @@ namespace OnTopic.Repositories {
   /// <summary>
   ///   The RenameEventArgs object defines an event argument type specific to rename events.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The RenameEventArgs have been renamed to TopicEventArgs.", true)]
   public class RenameEventArgs : EventArgs {
 

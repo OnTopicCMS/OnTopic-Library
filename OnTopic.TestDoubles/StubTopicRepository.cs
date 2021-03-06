@@ -156,6 +156,7 @@ namespace OnTopic.TestDoubles {
     | METHOD: GET CONTENT TYPE DESCRIPTORS (PROXY)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="TopicRepository.GetContentTypeDescriptors(ContentTypeDescriptor)" />
+    [ExcludeFromCodeCoverage]
     [Obsolete("Deprecated. Instead, use the new SetContentTypeDescriptorsProxy(), which provides the same function.", true)]
     public ContentTypeDescriptorCollection GetContentTypeDescriptorsProxy(ContentTypeDescriptor topicGraph) =>
       base.SetContentTypeDescriptors(topicGraph);

@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 
 namespace OnTopic.Repositories {
@@ -66,14 +67,17 @@ namespace OnTopic.Repositories {
     }
 
     /// <inheritdoc cref="TopicDeleted"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DeleteEvent has been renamed to TopicDeleted", true)]
     public event EventHandler<DeleteEventArgs>? DeleteEvent;
 
     /// <inheritdoc cref="TopicMoved"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The MoveEvent has been renamed to TopicMoved", true)]
     public event EventHandler<DeleteEventArgs>? MoveEvent;
 
     /// <inheritdoc cref="TopicRenamed"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The RenameEvent has been renamed to TopicRenamed", true)]
     public event EventHandler<RenameEventArgs>? RenameEvent;
 
@@ -209,6 +213,7 @@ namespace OnTopic.Repositories {
     public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("This overload has been removed in preference for Load(string, Topic, Boolean).")]
     public Topic? Load(string? uniqueKey, bool isRecursive) => throw new NotImplementedException();
 
@@ -237,6 +242,7 @@ namespace OnTopic.Repositories {
     public abstract void Save(Topic topic, bool isRecursive = false);
 
     /// <inheritdoc cref="Save(Topic, Boolean)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The 'isDraft' argument of the Save() method has been removed.")]
     public int Save(Topic topic, bool isRecursive, bool isDraft) => throw new NotImplementedException();
 

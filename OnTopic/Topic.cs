@@ -373,7 +373,7 @@ namespace OnTopic {
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
     public string Title {
-      get => Attributes.GetValue("Title", Key)?? Key;
+      get => Attributes.GetValue("Title", Key);
       set => SetAttributeValue("Title", value);
     }
 
@@ -393,6 +393,7 @@ namespace OnTopic {
     /// <requires description="The value from the getter must be provided." exception="T:System.ArgumentNullException">
     ///   !string.IsNullOrWhiteSpace(value)
     /// </requires>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The Description convenience property will be removed in OnTopic Library 5.0. Use Attributes.SetValue() instead.", true)]
     public string? Description {
       get => Attributes.GetValue("Description");
@@ -710,6 +711,7 @@ namespace OnTopic {
     }
 
     /// <inheritdoc cref="BaseTopic"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The DerivedTopic property has been renamed to BaseTopic. Please update references.", true)]
     public Topic? DerivedTopic {
       get => BaseTopic;

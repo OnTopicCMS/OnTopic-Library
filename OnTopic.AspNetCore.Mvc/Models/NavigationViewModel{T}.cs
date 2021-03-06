@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.AspNetCore.Mvc.Components;
 using OnTopic.Models;
 
@@ -75,6 +76,7 @@ namespace OnTopic.AspNetCore.Mvc.Models {
     ///   The <see cref="Topic.GetWebPath()"/> representing the path to the current <see cref="Topic"/>.
     /// </summary>
     /// <inheritdoc cref="CurrentWebPath"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The CurrentKey property has been replaced in favor of CurrentWebPath.", true)]
     public string CurrentKey { get; set; } = default!;
 

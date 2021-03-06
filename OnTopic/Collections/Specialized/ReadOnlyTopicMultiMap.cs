@@ -123,6 +123,7 @@ namespace OnTopic.Collections.Specialized {
     }
 
     /// <inheritdoc cref="GetValues(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetTopics() method has been renamed to GetValues().", true)]
     public ReadOnlyTopicCollection GetTopics(string key) => GetValues(key);
 
@@ -149,10 +150,12 @@ namespace OnTopic.Collections.Specialized {
       new(GetAllValues().Where(t => t.ContentType == contentType).ToList());
 
     /// <inheritdoc cref="GetAllValues(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetAllTopics() method has been renamed to GetAllValues().", true)]
     public ReadOnlyTopicCollection GetAllTopics(string key) => GetAllValues(key);
 
     /// <inheritdoc cref="GetAllValues(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetAllTopics() method has been renamed to GetAllValues().", true)]
     public ReadOnlyTopicCollection GetAllTopics() => GetAllValues();
 

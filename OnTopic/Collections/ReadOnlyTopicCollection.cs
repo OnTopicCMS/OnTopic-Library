@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Collections {
 
@@ -37,6 +38,7 @@ namespace OnTopic.Collections {
     ///   The <paramref name="innerCollection"/> will be converted to a <see cref="ReadOnlyTopicCollection"/>.
     /// </remarks>
     /// <param name="innerCollection">The underlying <see cref="List{Topic}"/>.</param>
+    [ExcludeFromCodeCoverage]
     [Obsolete("This is effectively satisfied by the related overload, and has been removed.", true)]
     public ReadOnlyTopicCollection FromList(IList<Topic> innerCollection) => throw new NotImplementedException();
 
@@ -44,6 +46,7 @@ namespace OnTopic.Collections {
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="ReadOnlyKeyedTopicCollection{T}.GetTopic(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete(
       "The GetTopic() method is not implemented on ReadOnlyTopicCollection. Use ReadOnlyKeyedTopicCollection instead.",
       true
@@ -54,6 +57,7 @@ namespace OnTopic.Collections {
     | INDEXER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="ReadOnlyKeyedTopicCollection{T}"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete(
       "Indexing by key is not implemented on ReadOnlyTopicCollection. Use ReadOnlyKeyedTopicCollection instead.",
       true

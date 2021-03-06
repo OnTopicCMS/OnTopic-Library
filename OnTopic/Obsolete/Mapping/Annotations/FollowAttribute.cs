@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Mapping.Annotations {
 
@@ -11,7 +12,8 @@ namespace OnTopic.Mapping.Annotations {
   | ATTRIBUTE: FOLLOW
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <inheritdoc cref="IncludeAttribute"/>
-  [AttributeUsage(System.AttributeTargets.Property)]
+  [ExcludeFromCodeCoverage]
+  [AttributeUsage(AttributeTargets.Property)]
   [Obsolete("The [Follow] attribute has been renamed to [Include].", true)]
   public sealed class FollowAttribute : Attribute {
 
