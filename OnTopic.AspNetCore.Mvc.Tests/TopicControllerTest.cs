@@ -152,13 +152,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SitemapController_Index_ReturnsSitemapXml() {
 
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
       var result                = controller.Index() as ContentResult;
       var model                 = result?.Content as string;
@@ -182,13 +177,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SitemapController_Index_ExcludesContentTypes() {
 
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
       var result                = controller.Extended(true) as ContentResult;
       var model                 = result?.Content as string;
@@ -218,13 +208,8 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SitemapController_Index_ExcludesAttributes() {
 
-      var actionContext         = new ActionContext {
-        HttpContext             = new DefaultHttpContext(),
-        RouteData               = new(),
-        ActionDescriptor        = new ControllerActionDescriptor()
-      };
       var controller            = new SitemapController(_topicRepository) {
-        ControllerContext       = new(actionContext)
+        ControllerContext       = new(_context)
       };
       var result                = controller.Index(false, true) as ContentResult;
       var model                 = result?.Content as string;
