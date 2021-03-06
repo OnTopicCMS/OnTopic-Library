@@ -64,7 +64,6 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    #pragma warning disable CA1024 // Use properties where appropriate
     public static ControllerContext GetControllerContext() =>
       new(
         new() {
@@ -73,7 +72,6 @@ namespace OnTopic.Tests {
           ActionDescriptor          = new ControllerActionDescriptor()
         }
       );
-    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC CONTROLLER
