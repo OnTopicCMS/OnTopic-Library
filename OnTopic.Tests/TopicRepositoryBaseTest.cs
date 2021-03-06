@@ -15,6 +15,7 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using System.Diagnostics.CodeAnalysis;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests {
 
@@ -541,6 +542,11 @@ namespace OnTopic.Tests {
       var contentTypesRoot      = contentTypes.GetValue("ContentTypes");
       var pageContentType       = contentTypes.GetValue("Page");
       var lookupContentType     = contentTypes.GetValue("Lookup");
+
+      Contract.Assume(pageContentType);
+      Contract.Assume(lookupContentType);
+      Contract.Assume(contentTypesRoot);
+
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
       pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
@@ -692,9 +698,14 @@ namespace OnTopic.Tests {
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(childContentType);
+
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
       var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
+
+      Contract.Assume(newAttribute);
 
       _topicRepository.Save(newAttribute);
 
@@ -717,6 +728,10 @@ namespace OnTopic.Tests {
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
       var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(childContentType);
+      Contract.Assume(newAttribute);
+
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
       _topicRepository.Delete(newAttribute);

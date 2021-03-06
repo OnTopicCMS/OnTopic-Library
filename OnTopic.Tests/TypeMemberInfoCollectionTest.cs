@@ -164,11 +164,11 @@ namespace OnTopic.Tests {
 
       var isKeySet              = types.SetPropertyValue(topic, "Key", "NewKey");
 
-      var key                   = types.GetPropertyValue(topic, "Key", typeof(string)).ToString();
+      var key                   = types.GetPropertyValue(topic, "Key", typeof(string))?.ToString();
 
       Assert.IsTrue(isKeySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
-      Assert.AreEqual<string>("NewKey", key);
+      Assert.AreEqual<string?>("NewKey", key);
 
     }
 
@@ -210,7 +210,7 @@ namespace OnTopic.Tests {
           isDateSet             = types.SetPropertyValue(topic, "LastModified", "06/03/2008") && isDateSet;
 
       var lastModified          = DateTime.Parse(
-        types.GetPropertyValue(topic, "LastModified", typeof(DateTime)).ToString(),
+        types.GetPropertyValue(topic, "LastModified", typeof(DateTime))?.ToString()?? "",
         CultureInfo.InvariantCulture
       );
 

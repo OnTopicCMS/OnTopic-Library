@@ -429,7 +429,7 @@ namespace OnTopic.Tests {
       topic.Attributes.MarkClean(version);
       topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
 
-      Assert.AreEqual<DateTime>(version, cleanedAttribute.LastModified);
+      Assert.AreEqual<DateTime?>(version, cleanedAttribute?.LastModified);
 
     }
 
@@ -691,8 +691,8 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("View", "NewerValue", false);
       topic.Attributes.TryGetValue("View", out var newerAttribute);
 
-      Assert.IsFalse(newAttribute.IsDirty);
-      Assert.IsFalse(newerAttribute.IsDirty);
+      Assert.IsFalse(newAttribute?.IsDirty);
+      Assert.IsFalse(newerAttribute?.IsDirty);
 
     }
 
