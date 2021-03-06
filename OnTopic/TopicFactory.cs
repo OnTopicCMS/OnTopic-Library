@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
@@ -111,7 +110,7 @@ namespace OnTopic {
       Contract.Requires<InvalidKeyException>(isOptional || !String.IsNullOrEmpty(topicKey));
       Contract.Requires<InvalidKeyException>(
         String.IsNullOrEmpty(topicKey) || Regex.IsMatch(topicKey, @"^[a-zA-Z0-9\.\-_]+$"),
-        "Key names should only contain letters, numbers, hyphens, and/or underscores."
+        "Key names should only contain letters, numbers, hyphens, periods, and/or underscores."
       );
     }
 
