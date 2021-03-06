@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Controllers;
+using OnTopic.AspNetCore.Mvc.Tests.TestDoubles;
 using OnTopic.Data.Caching;
 using OnTopic.Mapping;
 using OnTopic.Repositories;
@@ -58,8 +59,8 @@ namespace OnTopic.Tests {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish dependencies
       \-----------------------------------------------------------------------------------------------------------------------*/
-      _topicRepository          = new CachedTopicRepository(new StubTopicRepository());
-      _topic                    = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
+      _topicRepository          = new CachedTopicRepository(new TestTopicRepository());
+      _topic                    = _topicRepository.Load("Root:Web:Valid:Child")!;
       _topicMappingService      = new TopicMappingService(_topicRepository, new TopicViewModelLookupService());
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ namespace OnTopic.Tests {
       var routes                = new RouteData();
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_0/Web_0_1/Web_0_1_1");
+      routes.Values.Add("path", "Web/Valid/Child/");
 
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
@@ -98,7 +99,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.AreEqual<string?>("Web_0_1_1", model?.Title);
+      Assert.AreEqual<string?>("Child", model?.Title);
 
     }
 
@@ -112,13 +113,13 @@ namespace OnTopic.Tests {
     public void RedirectController_TopicRedirect_ReturnsRedirectResult() {
 
       var controller            = new RedirectController(_topicRepository);
-      var result                = controller.Redirect(11110) as RedirectResult;
+      var result                = controller.Redirect(_topic.Id) as RedirectResult;
 
       controller.Dispose();
 
       Assert.IsNotNull(result);
       Assert.IsTrue(result?.Permanent?? false);
-      Assert.AreEqual<string?>("/Web/Web_1/Web_1_1/Web_1_1_1/", result?.Url);
+      Assert.AreEqual<string?>(_topic.GetWebPath(), result?.Url);
 
     }
 
@@ -133,7 +134,7 @@ namespace OnTopic.Tests {
     public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
 
       var controller            = new RedirectController(_topicRepository);
-      var result                = controller.Redirect(11113);
+      var result                = controller.Redirect(12345);
 
       controller.Dispose();
 
@@ -165,8 +166,9 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
+
       Assert.IsTrue(model!.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
+      Assert.IsTrue(model!.Contains("/Web/Valid/Child/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -180,16 +182,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SitemapController_Index_ExcludesContentTypes() {
 
-      var hiddenTopic1          = _topicRepository.Load("Root:Web:Web_1:Web_1_0")!;
-      var hiddenTopic2          = _topicRepository.Load("Root:Web:Web_1:Web_1_1")!;
-      var hiddenTopic3          = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_1")!;
-      var hiddenTopic4          = _topicRepository.Load("Root:Web:Web_0:Web_0_0")!;
-
-      hiddenTopic1.ContentType  = "List";
-      hiddenTopic2.ContentType  = "Container";
-      hiddenTopic3.ContentType  = "PageGroup";
-      hiddenTopic4.Attributes.SetValue("Url", "https://www.microsoft.com/");
-
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
         RouteData               = new(),
@@ -198,21 +190,21 @@ namespace OnTopic.Tests {
       var controller            = new SitemapController(_topicRepository) {
         ControllerContext       = new(actionContext)
       };
-      var result                = controller.Index(false, true) as ContentResult;
+      var result                = controller.Extended(true) as ContentResult;
       var model                 = result?.Content as string;
 
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<DataObject type=\"Attributes\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"List\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"Container\">", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("<DataObject type=\"PageGroup\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_0/Web_0_0/Web_0_0_1/</loc>", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_0/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_0/Web_1_0_0/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_1/Web_1_1/Web_1_1_1/</loc>", StringComparison.Ordinal));
-      Assert.IsFalse(model!.Contains("/Web/Web_0/Web_0_0/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("NestedTopics/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("NestedTopic/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("Redirect/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("NoIndex/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("NoIndexChild/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("Disabled/</loc>", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("PageGroup/</loc>", StringComparison.Ordinal));
+
+      Assert.IsTrue(model!.Contains("PageGroupChild/</loc>", StringComparison.Ordinal));
 
     }
 
@@ -226,13 +218,6 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void SitemapController_Index_ExcludesAttributes() {
 
-      var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1:Web_0_1_1")!;
-
-      topic.Attributes.SetValue("Title", "Title");
-      topic.Attributes.SetValue("LastModified", "December 23, 1918");
-      topic.Attributes.SetValue("Body", "Body");
-      topic.Attributes.SetValue("IsHidden", "0");
-
       var actionContext         = new ActionContext {
         HttpContext             = new DefaultHttpContext(),
         RouteData               = new(),
@@ -247,10 +232,11 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(model);
-      Assert.IsTrue(model!.Contains("<Attribute name=\"Title\">", StringComparison.Ordinal));
-      Assert.IsTrue(model!.Contains("<Attribute name=\"LastModified\">", StringComparison.Ordinal));
+
       Assert.IsFalse(model!.Contains("<Attribute name=\"Body\">", StringComparison.Ordinal));
       Assert.IsFalse(model!.Contains("<Attribute name=\"IsHidden\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<Attribute name=\"SortOrder\">", StringComparison.Ordinal));
+      Assert.IsFalse(model!.Contains("<Attribute name=\"ContentType\">List</Attribute>", StringComparison.Ordinal));
 
     }
 
