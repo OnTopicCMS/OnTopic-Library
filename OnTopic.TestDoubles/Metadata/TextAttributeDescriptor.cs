@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Metadata;
 
 namespace OnTopic.TestDoubles.Metadata {
@@ -18,6 +19,7 @@ namespace OnTopic.TestDoubles.Metadata {
   ///   This class is primarily used by the Topic Editor interface to determine how attributes are displayed as part of the
   ///   CMS; except in very specific scenarios, it is not typically used elsewhere in the Topic Library itself.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class TextAttributeDescriptor : AttributeDescriptor {
 
     /*==========================================================================================================================

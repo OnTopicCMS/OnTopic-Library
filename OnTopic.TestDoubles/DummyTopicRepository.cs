@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -17,6 +18,7 @@ namespace OnTopic.TestDoubles {
   ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
   ///   but is not intended to be called.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class DummyTopicRepository : ObservableTopicRepository {
 
     /*==========================================================================================================================

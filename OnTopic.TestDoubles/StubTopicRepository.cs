@@ -26,6 +26,7 @@ namespace OnTopic.TestDoubles {
   ///   database, or working against actual data. This is faster and safer for test methods since it doesn't maintain a
   ///   dependency on a live database or persistent data.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class StubTopicRepository : TopicRepository, ITopicRepository {
 
     /*==========================================================================================================================

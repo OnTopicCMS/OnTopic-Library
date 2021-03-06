@@ -20,6 +20,7 @@ namespace OnTopic.TestDoubles {
   ///   The <see cref="ITopicMappingService"/> interface provides an abstraction for mapping <see cref="Topic"/> instances to
   ///   Data Transfer Objects, such as View Models.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class DummyTopicMappingService : ITopicMappingService {
 
     /*==========================================================================================================================
