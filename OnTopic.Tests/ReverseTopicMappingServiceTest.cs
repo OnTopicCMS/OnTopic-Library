@@ -289,7 +289,7 @@ namespace OnTopic.Tests {
       var attributes            = TopicFactory.Create("Attributes", "List", topic);
 
       var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttributeDescriptor", attributes);
-      var attribute4            = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
+      _                         = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 
@@ -345,7 +345,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
-      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -386,7 +386,7 @@ namespace OnTopic.Tests {
         Title                   = "Hello World"
       };
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -404,7 +404,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -425,7 +425,7 @@ namespace OnTopic.Tests {
         Parent                  = new("Test", "Page")
       };
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -443,7 +443,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -461,7 +461,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -480,7 +480,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -499,7 +499,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -518,7 +518,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 

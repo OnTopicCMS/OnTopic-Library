@@ -107,7 +107,7 @@ namespace OnTopic.Tests {
     public void Delete_Descendants_ThrowsException() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      _                         = TopicFactory.Create("Child", "Page", topic);
 
       _topicRepository.Delete(topic, false);
 
@@ -124,7 +124,7 @@ namespace OnTopic.Tests {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      _                         = TopicFactory.Create("Child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
@@ -143,7 +143,7 @@ namespace OnTopic.Tests {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "List", topic);
+      _                         = TopicFactory.Create("Child", "List", topic);
 
       _topicRepository.Delete(topic, false);
 

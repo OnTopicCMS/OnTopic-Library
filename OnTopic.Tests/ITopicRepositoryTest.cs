@@ -77,7 +77,7 @@ namespace OnTopic.Tests {
     public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var child                 = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
+      _                         = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
       Assert.AreEqual<string?>("Page", topic?.Key);
 
