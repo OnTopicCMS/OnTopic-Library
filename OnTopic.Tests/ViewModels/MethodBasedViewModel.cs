@@ -20,9 +20,7 @@ namespace OnTopic.Tests.ViewModels {
     private int _methodValue;
 
     public void SetMethod(int methodValue) => _methodValue = methodValue;
-    #pragma warning disable CA1024 // Use properties where appropriate
     public int GetMethod() => _methodValue;
-    #pragma warning restore CA1024 // Use properties where appropriate
 
   } //Class
 } //Namespace
