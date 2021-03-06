@@ -281,10 +281,12 @@ namespace OnTopic.TestDoubles {
 
       CreateFakeData(web, 2, 3);
 
-      var pageGroup = TopicFactory.Create("Web_3", "PageGroup", web);
+      var pageGroup             = TopicFactory.Create("Web_3", "PageGroup", web);
+      _                         = TopicFactory.Create("Web_3_0", "Page", pageGroup);
+      var childPage             = TopicFactory.Create("Web_3_1", "Page", pageGroup);
+      var leafPage              = TopicFactory.Create("Web_3_1_0", "Page", childPage);
 
-      TopicFactory.Create("Web_3_0", "Page", pageGroup);
-      TopicFactory.Create("Web_3_1", "Page", pageGroup);
+      leafPage.Attributes.SetValue("NavigationRoot", "Configuration");
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache

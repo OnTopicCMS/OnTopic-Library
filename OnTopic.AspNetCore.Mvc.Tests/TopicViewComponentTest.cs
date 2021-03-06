@@ -136,6 +136,31 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MENU: INVOKE: RETURNS CONFIGURED NAVIGATION ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="MenuViewComponent"/> with a context defining an alternate <c>NavigationRoot</c>, and confirms
+    ///   that is returned as the <see cref="NavigationTopicViewModel"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Menu_Invoke_ReturnsConfiguredNavigationRoot() {
+
+      var webPath               = "/Web/Web_3/Web_3_1/Web_3_1_0/";
+      var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
+      Assert.AreEqual<string?>("/Configuration/", model?.NavigationRoot?.WebPath);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
