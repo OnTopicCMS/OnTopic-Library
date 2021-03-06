@@ -93,6 +93,9 @@ namespace OnTopic.TestDoubles {
       | Reset version
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic is not null) {
+        if (!topic.VersionHistory.Contains(version)) {
+          topic.VersionHistory.Add(version);
+        }
         topic.LastModified = version;
       }
 
