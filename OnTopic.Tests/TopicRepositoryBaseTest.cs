@@ -101,6 +101,49 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD: VALID DATE: RETURNS TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid data and ensures that topic
+    ///   with that date is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_ValidDate_ReturnsTopic() {
+
+      var version               = DateTime.UtcNow.AddDays(-1);
+      var topic                 = _topicRepository.Load(11111, version);
+
+      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: FUTURE DATE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
+    ///   confirms that an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Load_FutureDate_ThrowsException() =>
+      _topicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
+
+    /*==========================================================================================================================
+    | TEST: LOAD: OLD DATE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
+    ///   introduced and ensures that an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Load_OldDate_ThrowsException() =>
+      _topicRepository.Load(1111, new DateTime(2010, 10, 15));
+
+
+    /*==========================================================================================================================
     | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
