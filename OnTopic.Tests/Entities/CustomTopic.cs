@@ -8,6 +8,7 @@ using System.Globalization;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Associations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests.Entities {
 
@@ -18,6 +19,7 @@ namespace OnTopic.Tests.Entities {
   ///   Provides a derived version of <see cref="Topic"/> with additional properties for evaluating the enforcement of business
   ///   logic.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class CustomTopic: Topic {
 
     /*==========================================================================================================================
