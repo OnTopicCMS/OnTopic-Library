@@ -82,10 +82,22 @@ namespace OnTopic.Tests {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish view model context
       \-----------------------------------------------------------------------------------------------------------------------*/
+      _context                  = GetViewComponentContext(_topic.GetWebPath());
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET VIEW COMPONENT CONTEXT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new <see cref="ViewComponentContext"/> based on a given <paramref name="webPath"/>.
+    /// </summary>
+    private static ViewComponentContext GetViewComponentContext(string webPath) {
+
       var routes                = new RouteData();
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_3/Web_3_0");
+      routes.Values.Add("path", webPath);
 
       var viewContext           = new ViewContext() {
         HttpContext             = new DefaultHttpContext(),
@@ -95,7 +107,7 @@ namespace OnTopic.Tests {
         ViewContext             = viewContext
       };
 
-      _context                  = viewComponentContext;
+      return viewComponentContext;
 
     }
 
