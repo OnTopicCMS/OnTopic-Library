@@ -199,11 +199,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SITEMAP CONTROLLER: INDEX: EXCLUDES ATTRIBUTES
+    | TEST: SITEMAP CONTROLLER: EXTENDED: EXCLUDES ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Triggers the index action of the <see cref="SitemapController.Index(Boolean, Boolean)" /> action and verifies that it
-    ///   properly excludes the <c>Body</c> and <c>IsHidden</c> attributes.
+    ///   Triggers the index action of the <see cref="SitemapController.Extended(Boolean)" /> action and verifies that it
+    ///   properly excludes e.g. the <c>Body</c> and <c>IsHidden</c> attributes.
     /// </summary>
     [TestMethod]
     public void SitemapController_Index_ExcludesAttributes() {
@@ -211,7 +211,7 @@ namespace OnTopic.Tests {
       var controller            = new SitemapController(_topicRepository) {
         ControllerContext       = new(_context)
       };
-      var result                = controller.Index(false, true) as ContentResult;
+      var result                = controller.Extended(true) as ContentResult;
       var model                 = result?.Content as string;
 
       controller.Dispose();
