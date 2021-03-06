@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using OnTopic.Data.Sql;
 using OnTopic.Internal.Diagnostics;
@@ -20,6 +21,7 @@ namespace OnTopic.Tests.Schemas {
   /// <remarks>
   ///   This allows testing of the <see cref="SqlTopicRepository"/> via its <see cref="SqlDataReaderExtensions"/> methods.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class ExtendedAttributesDataTable: DataTable {
 
     /*==========================================================================================================================

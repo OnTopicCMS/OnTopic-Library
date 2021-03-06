@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections.Specialized;
 using OnTopic.Associations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests {
 
@@ -18,6 +19,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicRelationshipMultiMap"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicRelationshipMultiMapTest {
 
     /*==========================================================================================================================

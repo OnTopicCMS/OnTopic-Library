@@ -4,6 +4,7 @@
 | Project       Sample OnTopic Site
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -16,6 +17,7 @@ namespace OnTopic.AspNetCore.Mvc.Host {
   ///   The <see cref="Program"/> class—and it's <see cref="Program.Main(String[])"/> method—represent the entry point into the
   ///   ASP.NET Core web application.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public static class Program {
 
     /*==========================================================================================================================

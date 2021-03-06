@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace OnTopic.Collections {
@@ -17,6 +18,7 @@ namespace OnTopic.Collections {
   ///   Provides a named version of the <see cref="TopicCollection"/>, suitable for use in
   ///   <see cref="RelatedTopicCollection"/>, or other derivatives of <see cref="KeyedCollection{TKey, TItem}"/>.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   [Obsolete("Migrated to KeyValuesPair<T> as part of new TopicRelationshipsMultiMap type.", true)]
   public class NamedTopicCollection: KeyedTopicCollection {
 

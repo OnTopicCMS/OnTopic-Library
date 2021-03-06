@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
@@ -84,6 +85,7 @@ namespace OnTopic {
     }
 
     /// <inheritdoc cref="Create(String, String, Topic?, Int32)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The 'id' parameter has been moved to the end of the parameter list.", true)]
     public static Topic Create(string key, string contentType, int id, Topic? parent) =>
       throw new NotImplementedException();

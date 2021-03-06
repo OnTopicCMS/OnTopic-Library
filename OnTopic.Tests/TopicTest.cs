@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -19,6 +20,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="Topic"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicTest {
 
     /*==========================================================================================================================

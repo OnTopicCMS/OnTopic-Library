@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using OnTopic.AspNetCore.Mvc.Components;
 using OnTopic.AspNetCore.Mvc.Controllers;
@@ -28,6 +29,7 @@ namespace OnTopic.AspNetCore.Mvc.Host.Components {
   ///     cref="TopicController"/>.
   ///   </para>
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class MenuViewComponent : MenuViewComponentBase<NavigationTopicViewModel> {
 
     /*==========================================================================================================================

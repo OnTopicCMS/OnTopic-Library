@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -24,6 +25,7 @@ namespace OnTopic.Tests {
   ///   underlying <see cref="TopicRepository"/> functions are also operating correctly.
   /// </remarks>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class ITopicRepositoryTest {
 
     /*==========================================================================================================================

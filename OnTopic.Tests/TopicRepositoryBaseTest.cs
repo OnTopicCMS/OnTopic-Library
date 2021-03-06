@@ -14,6 +14,7 @@ using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests {
 
@@ -27,6 +28,7 @@ namespace OnTopic.Tests {
   ///   These tests evaluate features that are specific to the <see cref="TopicRepository"/> class.
   /// </remarks>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicRepositoryBaseTest {
 
     /*==========================================================================================================================

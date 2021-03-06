@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
@@ -17,6 +18,7 @@ namespace OnTopic.Collections {
   /// <summary>
   ///   Provides a read-only collection of topics.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The ReadOnlyTopicCollection<T> has been renamed to ReadOnlyKeyedTopicCollection<T>", true)]
   public class ReadOnlyTopicCollection<T> : ReadOnlyCollection<T> where T : Topic {
 

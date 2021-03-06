@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Collections.Specialized {
@@ -59,6 +60,7 @@ namespace OnTopic.Collections.Specialized {
     }
 
     /// <inheritdoc cref="GetValues(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetTopics() method has been renamed to GetValues().", true)]
     public TopicCollection GetTopics(string key) => GetValues(key);
 
@@ -151,6 +153,7 @@ namespace OnTopic.Collections.Specialized {
     /// </summary>
     /// <param name="item">The <see cref="KeyValuesPair{TKey, TValue}"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
+    [ExcludeFromCodeCoverage]
     protected override sealed string GetKeyForItem(KeyValuesPair<string, TopicCollection> item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;

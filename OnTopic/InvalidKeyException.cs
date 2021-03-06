@@ -4,6 +4,7 @@
 | Project Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
@@ -20,6 +21,7 @@ namespace OnTopic {
   ///   spaces, slashes, or colons, are not permitted and will throw an exception.
   /// </remarks>
   [Serializable]
+  [ExcludeFromCodeCoverage]
   public class InvalidKeyException: ArgumentException {
 
     /*==========================================================================================================================

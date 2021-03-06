@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -40,6 +41,7 @@ namespace OnTopic.Attributes {
   ///     method.
   ///   </para>
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   [Obsolete("The AttributeValue type has been renamed to AttributeRecord.", true)]
   public class AttributeValue {
 

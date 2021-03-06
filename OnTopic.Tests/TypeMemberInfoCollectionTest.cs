@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,6 +24,7 @@ namespace OnTopic.Tests {
   ///   These are internal collections and not accessible publicly.
   /// </remarks>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class MemberDispatcherTest {
 
     /*==========================================================================================================================

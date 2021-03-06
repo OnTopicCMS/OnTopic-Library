@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace OnTopic.Collections {
@@ -40,6 +41,7 @@ namespace OnTopic.Collections {
     | METHOD: GET TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="KeyedTopicCollection{T}.GetTopic(String)"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("The GetTopic() method is not implemented on TopicCollection. Use KeyedTopicCollection instead.", true)]
     public Topic? GetValue(string key) => throw new NotImplementedException();
 
@@ -47,6 +49,7 @@ namespace OnTopic.Collections {
     | INDEXER
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc cref="KeyedTopicCollection{T}"/>
+    [ExcludeFromCodeCoverage]
     [Obsolete("Indexing by key is not implemented on the TopicCollection. Use the KeyedTopicCollection instead.",true)]
     public Topic this[string key] => throw new ArgumentOutOfRangeException(nameof(key));
 
