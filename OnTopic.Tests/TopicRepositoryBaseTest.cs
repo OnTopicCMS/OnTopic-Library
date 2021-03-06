@@ -4,18 +4,17 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
-using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests {
 
@@ -51,6 +50,54 @@ namespace OnTopic.Tests {
     /// </remarks>
     public TopicRepositoryBaseTest() {
       _topicRepository = new StubTopicRepository();
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: VALID TOPIC ID: RETURNS EXPECTED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with a valid <see cref="Topic.Id"/> and confirms
+    ///   that the expected topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_ValidTopicId_ReturnsExpectedTopic() {
+
+      var topic                 = _topicRepository.Load(11111);
+
+      Assert.AreEqual<int?>(11111, topic?.Id);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: INVALID TOPIC ID: RETURNS EXPECTED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with an invalid <see cref="Topic.Id"/> and confirms
+    ///   that no topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_InvalidTopicId_ReturnsExpectedTopic() {
+
+      var topic                 = _topicRepository.Load(11113);
+
+      Assert.IsNull(topic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with a negative <see cref="Topic.Id"/> and confirms
+    ///   that the root topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_NegativeTopicId_ReturnsRootTopic() {
+
+      var topic                 = _topicRepository.Load(-2);
+
+      Assert.AreEqual<string?>("Root", topic?.GetUniqueKey());
+
     }
 
     /*==========================================================================================================================
