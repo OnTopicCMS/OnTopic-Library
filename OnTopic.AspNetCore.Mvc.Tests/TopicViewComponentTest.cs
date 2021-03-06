@@ -184,5 +184,31 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a root that does not derive from a <c>PageGroup</c>
+    ///   and confirms the resulting <see cref="NavigationTopicViewModel"/> is <c>null</c>.
+    /// </summary>
+    [TestMethod]
+    public async Task PageLevelNavigation_Invoke_ReturnsNull() {
+
+      var webPath               = "/Web/Web_1/Web_1_0/";
+
+      var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
+      Assert.IsNull(model?.NavigationRoot);
+
+    }
+
   } //Class
 } //Namespace
