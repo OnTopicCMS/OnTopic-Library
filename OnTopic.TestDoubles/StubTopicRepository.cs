@@ -78,7 +78,7 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(version.Date < DateTime.Now, "The version requested must be a valid historical date.");
+      Contract.Requires(version.Date < DateTime.UtcNow, "The version requested must be a valid historical date.");
       Contract.Requires(
         version.Date > new DateTime(2014, 12, 9),
         "The version is expected to have been created since version support was introduced into the topic library."
