@@ -123,6 +123,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REDIRECT CONTROLLER: REDIRECT: RETURNS NOT FOUND OBJECT RESULT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Triggers the <see cref="RedirectController.Redirect(Int32)" /> action with an invalid <see cref="Topic.Id"/> and
+    ///   confirms that a <see cref="NotFoundResult"/> is returned.
+    /// </summary>
+    [TestMethod]
+    public void RedirectController_TopicRedirect_ReturnsNotFoundObjectResult() {
+
+      var controller            = new RedirectController(_topicRepository);
+      var result                = controller.Redirect(11113);
+
+      controller.Dispose();
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual<Type>(typeof(NotFoundObjectResult), result.GetType());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SITEMAP CONTROLLER: INDEX: RETURNS SITEMAP XML
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
