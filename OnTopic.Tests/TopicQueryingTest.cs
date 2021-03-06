@@ -182,7 +182,7 @@ namespace OnTopic.Tests {
     public void GetContentType_ValidContentType_ReturnsContentType() {
 
       var topic                 = _topicRepository.Load(11111);
-      var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+      var contentTypeDescriptor = topic?.GetContentTypeDescriptor();
 
       Assert.IsNotNull(contentTypeDescriptor);
       Assert.AreEqual<string>("Page", contentTypeDescriptor.Key);

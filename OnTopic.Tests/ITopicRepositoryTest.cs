@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 
@@ -60,9 +61,9 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load();
 
-      Assert.AreEqual<int>(2, rootTopic.Children.Count);
-      Assert.AreEqual<string>("Configuration", rootTopic.Children.First().Key);
-      Assert.AreEqual<string>("Web", rootTopic.Children.Last().Key);
+      Assert.AreEqual<int?>(2, rootTopic?.Children.Count);
+      Assert.AreEqual<string?>("Configuration", rootTopic?.Children.First().Key);
+      Assert.AreEqual<string?>("Web", rootTopic?.Children.Last().Key);
 
     }
 
@@ -76,9 +77,9 @@ namespace OnTopic.Tests {
     public void Load_ValidUniqueKey_ReturnsCorrectTopic() {
 
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Page");
-      var child                 = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
+      _                         = TopicFactory.Create("Child", "ContentType", topic, Int32.MaxValue);
 
-      Assert.AreEqual<string>("Page", topic.Key);
+      Assert.AreEqual<string?>("Page", topic?.Key);
 
     }
 
@@ -140,6 +141,9 @@ namespace OnTopic.Tests {
       var web                   = _topicRepository.Load("Root:Web");
       var configuration         = _topicRepository.Load("Root:Configuration");
 
+      Contract.Assume(web);
+      Contract.Assume(configuration);
+
       Assert.AreEqual<int>(10000, web.Id);
       Assert.AreEqual<int>(-1, configuration.Id);
 
@@ -167,6 +171,10 @@ namespace OnTopic.Tests {
       var destination           = _topicRepository.Load("Root:Web:Web_1");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
 
+      Contract.Assume(source);
+      Contract.Assume(destination);
+      Contract.Assume(topic);
+
       Assert.ReferenceEquals(topic.Parent, source);
       Assert.AreEqual<int>(2, destination.Children.Count);
       Assert.AreEqual<int>(2, source.Children.Count);
@@ -191,6 +199,10 @@ namespace OnTopic.Tests {
       var parent                = _topicRepository.Load("Root:Web:Web_0");
       var topic                 = _topicRepository.Load("Root:Web:Web_0:Web_0_0");
       var sibling               = _topicRepository.Load("Root:Web:Web_0:Web_0_1");
+
+      Contract.Assume(parent);
+      Contract.Assume(topic);
+      Contract.Assume(sibling);
 
       Assert.ReferenceEquals(topic.Parent, parent);
       Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
@@ -217,6 +229,10 @@ namespace OnTopic.Tests {
       var parent                = _topicRepository.Load("Root:Web:Web_1");
       var topic                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1");
       var child                 = _topicRepository.Load("Root:Web:Web_1:Web_1_1:Web_1_1_0");
+
+      Contract.Assume(parent);
+      Contract.Assume(topic);
+      Contract.Assume(child);
 
       Assert.AreEqual<int>(2, parent.Children.Count);
 

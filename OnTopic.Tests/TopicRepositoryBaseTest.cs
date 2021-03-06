@@ -15,6 +15,7 @@ using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
 using System.Diagnostics.CodeAnalysis;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests {
 
@@ -106,7 +107,7 @@ namespace OnTopic.Tests {
     public void Delete_Descendants_ThrowsException() {
 
       var topic                 = TopicFactory.Create("Topic", "Page");
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      _                         = TopicFactory.Create("Child", "Page", topic);
 
       _topicRepository.Delete(topic, false);
 
@@ -123,7 +124,7 @@ namespace OnTopic.Tests {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "Page", topic);
+      _                         = TopicFactory.Create("Child", "Page", topic);
 
       _topicRepository.Delete(topic, true);
 
@@ -142,7 +143,7 @@ namespace OnTopic.Tests {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
-      var child                 = TopicFactory.Create("Child", "List", topic);
+      _                         = TopicFactory.Create("Child", "List", topic);
 
       _topicRepository.Delete(topic, false);
 
@@ -541,6 +542,11 @@ namespace OnTopic.Tests {
       var contentTypesRoot      = contentTypes.GetValue("ContentTypes");
       var pageContentType       = contentTypes.GetValue("Page");
       var lookupContentType     = contentTypes.GetValue("Lookup");
+
+      Contract.Assume(pageContentType);
+      Contract.Assume(lookupContentType);
+      Contract.Assume(contentTypesRoot);
+
       var initialCount          = pageContentType.PermittedContentTypes.Count;
 
       pageContentType.Relationships.SetValue("ContentTypes", lookupContentType);
@@ -649,6 +655,8 @@ namespace OnTopic.Tests {
       var contentTypes          = _topicRepository.GetContentTypeDescriptors();
       var contentType           = contentTypes.Contains("Page")? contentTypes["Page"] : null;
 
+      Contract.Assume(contentType);
+
       _topicRepository.Delete(contentType);
 
       Assert.IsFalse(contentTypes.Contains(contentType));
@@ -672,6 +680,9 @@ namespace OnTopic.Tests {
       var contactContentType    = contentTypes.Contains("Contact")? contentTypes["Contact"] : null;
       var contactAttributeCount = contactContentType?.AttributeDescriptors.Count;
 
+      Contract.Assume(contactContentType);
+      Contract.Assume(pageContentType);
+
       _topicRepository.Move(contactContentType, pageContentType);
 
       Assert.AreNotEqual<int?>(contactContentType?.AttributeDescriptors.Count, contactAttributeCount);
@@ -692,9 +703,14 @@ namespace OnTopic.Tests {
       var contentType           = TopicFactory.Create("Parent", "ContentTypeDescriptor") as ContentTypeDescriptor;
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(childContentType);
+
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
       var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
+
+      Contract.Assume(newAttribute);
 
       _topicRepository.Save(newAttribute);
 
@@ -717,6 +733,10 @@ namespace OnTopic.Tests {
       var attributeList         = TopicFactory.Create("Attributes", "List", contentType);
       var newAttribute          = TopicFactory.Create("NewAttribute", "BooleanAttributeDescriptor", attributeList) as BooleanAttributeDescriptor;
       var childContentType      = TopicFactory.Create("Child", "ContentTypeDescriptor", contentType) as ContentTypeDescriptor;
+
+      Contract.Assume(childContentType);
+      Contract.Assume(newAttribute);
+
       var attributeCount        = childContentType.AttributeDescriptors.Count;
 
       _topicRepository.Delete(newAttribute);

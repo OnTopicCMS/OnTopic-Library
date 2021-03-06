@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Hierarchical;
 using OnTopic.Repositories;
@@ -142,6 +143,8 @@ namespace OnTopic.Tests {
 
       var rootTopic             = _topicRepository.Load("Root:Web:Web_3")!;
       var disabledTopic         = _topicRepository.Load("Root:Web:Web_3:Web_3_0");
+
+      Contract.Assume(disabledTopic);
 
       rootTopic.IsDisabled      = true;
       disabledTopic.IsDisabled  = true;

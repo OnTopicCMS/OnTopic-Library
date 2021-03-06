@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -26,6 +27,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="ValidateTopicAttribute"/>.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class ValidateTopicAttributeTest {
 
     /*==========================================================================================================================
@@ -62,7 +64,6 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Generates a barebones <see cref="ControllerContext"/> for testing a controller.
     /// </summary>
-    #pragma warning disable CA1024 // Use properties where appropriate
     public static ControllerContext GetControllerContext() =>
       new(
         new() {
@@ -71,7 +72,6 @@ namespace OnTopic.Tests {
           ActionDescriptor          = new ControllerActionDescriptor()
         }
       );
-    #pragma warning restore CA1024 // Use properties where appropriate
 
     /*==========================================================================================================================
     | METHOD: GET TOPIC CONTROLLER

@@ -20,7 +20,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class InvalidChildrenTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidChildrenTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public InvalidChildrenTopicBindingModel(string key) : base(key, "Page") { }
 
     public Collection<BasicTopicBindingModel> Children { get; } = new();
 

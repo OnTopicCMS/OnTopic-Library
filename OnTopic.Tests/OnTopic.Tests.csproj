@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
-    <NoWarn>CS1591,1701,1702,CA1707,CA1062,CS8602,CS8604;CA1303;IDE0059</NoWarn>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

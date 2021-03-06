@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Mapping;
 using OnTopic.Mapping.Annotations;
 using OnTopic.Mapping.Reverse;
@@ -67,8 +68,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel() {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
@@ -77,11 +77,11 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync<TextAttributeDescriptor>(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
-      Assert.AreEqual<string>("Test Attribute", target.Title);
-      Assert.AreEqual<string>("Hello", target.DefaultValue);
-      Assert.AreEqual<bool>(true, target.IsRequired);
+      Assert.AreEqual<string?>("Test", target?.Key);
+      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
+      Assert.AreEqual<string?>("Test Attribute", target?.Title);
+      Assert.AreEqual<string?>("Hello", target?.DefaultValue);
+      Assert.AreEqual<bool?>(true, target?.IsRequired);
 
     }
 
@@ -97,8 +97,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = "Test Attribute",
         DefaultValue            = "Hello",
@@ -108,11 +107,11 @@ namespace OnTopic.Tests {
       var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
-      Assert.AreEqual<string>("Test Attribute", target.Title);
-      Assert.AreEqual<string>("Hello", target.DefaultValue);
-      Assert.AreEqual<bool>(true, target.IsRequired);
+      Assert.AreEqual<string?>("Test", target?.Key);
+      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
+      Assert.AreEqual<string?>("Test Attribute", target?.Title);
+      Assert.AreEqual<string?>("Hello", target?.DefaultValue);
+      Assert.AreEqual<bool?>(true, target?.IsRequired);
 
     }
 
@@ -128,8 +127,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new TextAttributeTopicBindingModel() {
-        Key                     = "Test",
+      var bindingModel          = new TextAttributeTopicBindingModel("Test") {
         ContentType             = "TextAttributeDescriptor",
         Title                   = null,
         DefaultValue            = "World",
@@ -137,6 +135,8 @@ namespace OnTopic.Tests {
       };
 
       var target                = (TextAttributeDescriptor?)TopicFactory.Create("Test", "TextAttributeDescriptor");
+
+      Contract.Assume(target);
 
       target.Title              = "Original Attribute";
       target.DefaultValue       = "Hello";
@@ -147,13 +147,13 @@ namespace OnTopic.Tests {
 
       target                    = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, target).ConfigureAwait(false);
 
-      Assert.AreEqual<string>("Test", target.Key);
-      Assert.AreEqual<string>("TextAttributeDescriptor", target.ContentType);
-      Assert.AreEqual<string>("Test", target.Title); //Should inherit from "Key" since it will be null
-      Assert.AreEqual<string>("World", target.DefaultValue);
-      Assert.AreEqual<bool>(false, target.IsRequired);
-      Assert.AreEqual<bool>(false, target.IsExtendedAttribute);
-      Assert.AreEqual<string>("Original Description", target.Attributes.GetValue("Description"));
+      Assert.AreEqual<string?>("Test", target?.Key);
+      Assert.AreEqual<string?>("TextAttributeDescriptor", target?.ContentType);
+      Assert.AreEqual<string?>("Test", target?.Title); //Should inherit from "Key" since it will be null
+      Assert.AreEqual<string?>("World", target?.DefaultValue);
+      Assert.AreEqual<bool?>(false, target?.IsRequired);
+      Assert.AreEqual<bool?>(false, target?.IsExtendedAttribute);
+      Assert.AreEqual<string?>("Original Description", target?.Attributes.GetValue("Description"));
 
     }
 
@@ -205,9 +205,9 @@ namespace OnTopic.Tests {
       var target                = (Topic?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target);
-      Assert.AreEqual<string>("Jeremy", target.Attributes.GetValue("Name"));
-      Assert.AreEqual<string>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
-      Assert.AreEqual<string>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
+      Assert.AreEqual<string?>("Jeremy", target.Attributes.GetValue("Name"));
+      Assert.AreEqual<string?>("AlternateContact@Ignia.com", target.Attributes.GetValue("AlternateEmail"));
+      Assert.AreEqual<string?>("BillingContact@Ignia.com", target.Attributes.GetValue("BillingContactEmail"));
 
     }
 
@@ -223,8 +223,7 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
 
-      var bindingModel          = new PageTopicBindingModel {
-        Key                     = "Test",
+      var bindingModel          = new PageTopicBindingModel("Test") {
         ContentType             = "Page",
         Title                   = "Test Page",
         BrowserTitle            = "Browser Title"
@@ -232,7 +231,7 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string>("Browser Title", target.Attributes.GetValue("MetaTitle"));
+      Assert.AreEqual<string?>("Browser Title", target?.Attributes.GetValue("MetaTitle"));
 
     }
 
@@ -262,11 +261,11 @@ namespace OnTopic.Tests {
 
       var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int>(3, target.PermittedContentTypes.Count);
-      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[0]));
-      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[1]));
-      Assert.IsTrue(target.PermittedContentTypes.Contains(contentTypes[2]));
-      Assert.IsFalse(target.PermittedContentTypes.Contains(contentTypes[3]));
+      Assert.AreEqual<int?>(3, target?.PermittedContentTypes.Count);
+      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[0]));
+      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[1]));
+      Assert.IsTrue(target?.PermittedContentTypes.Contains(contentTypes[2]));
+      Assert.IsFalse(target?.PermittedContentTypes.Contains(contentTypes[3]));
 
     }
 
@@ -290,18 +289,18 @@ namespace OnTopic.Tests {
       var attributes            = TopicFactory.Create("Attributes", "List", topic);
 
       var attribute3            = (AttributeDescriptor)TopicFactory.Create("Attribute3", "TextAttributeDescriptor", attributes);
-      var attribute4            = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
+      _                         = TopicFactory.Create("Attribute4", "TextAttributeDescriptor", attributes);
 
       attribute3.DefaultValue   = "Original Value";
 
       var target                = (ContentTypeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.AreEqual<int>(3, target.AttributeDescriptors.Count);
-      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute1"));
-      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute2"));
-      Assert.IsNotNull(target.AttributeDescriptors.GetValue("Attribute3"));
-      Assert.AreEqual<string>("New Value", target.AttributeDescriptors.GetValue("Attribute3").DefaultValue);
-      Assert.IsNull(target.AttributeDescriptors.GetValue("Attribute4"));
+      Assert.AreEqual<int?>(3, target?.AttributeDescriptors.Count);
+      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute1"));
+      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute2"));
+      Assert.IsNotNull(target?.AttributeDescriptors.GetValue("Attribute3"));
+      Assert.AreEqual<string?>("New Value", target?.AttributeDescriptors.GetValue("Attribute3")?.DefaultValue);
+      Assert.IsNull(target?.AttributeDescriptors.GetValue("Attribute4"));
 
     }
 
@@ -315,18 +314,21 @@ namespace OnTopic.Tests {
     public async Task Map_TopicReferences_ReturnsMappedTopic() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+
+      Contract.Assume(topic);
 
       var bindingModel          = new ReferenceTopicBindingModel("Test") {
         BaseTopic               = new() {
-          UniqueKey             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title").GetUniqueKey()
+          UniqueKey             = topic.GetUniqueKey()
         }
       };
 
       var target                = (TopicReferenceAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNotNull(target.BaseTopic);
-      Assert.AreEqual<string>("Title", target.BaseTopic.Key);
-      Assert.AreEqual<string>("TopicReference", target.EditorType);
+      Assert.IsNotNull(target?.BaseTopic);
+      Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
+      Assert.AreEqual<string?>("TopicReference", target?.EditorType);
 
     }
 
@@ -343,7 +345,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new PageTopicBindingModel("Test");
 
-      var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -364,7 +366,7 @@ namespace OnTopic.Tests {
 
       var target                = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.AreEqual<string>("Default page description", target.Attributes.GetValue("MetaDescription"));
+      Assert.AreEqual<string?>("Default page description", target?.Attributes.GetValue("MetaDescription"));
 
     }
 
@@ -384,7 +386,7 @@ namespace OnTopic.Tests {
         Title                   = "Hello World"
       };
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -402,7 +404,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidChildrenTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -423,7 +425,7 @@ namespace OnTopic.Tests {
         Parent                  = new("Test", "Page")
       };
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -441,7 +443,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidAttributeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -459,7 +461,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipBaseTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -478,7 +480,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -497,7 +499,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -516,7 +518,7 @@ namespace OnTopic.Tests {
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidReferenceTypeTopicBindingModel("Test");
 
-      var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -539,7 +541,7 @@ namespace OnTopic.Tests {
 
       var target = await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
-      Assert.IsNull(target.Attributes.GetValue("UnmappedAttribute", null));
+      Assert.IsNull(target?.Attributes.GetValue("UnmappedAttribute", null));
 
     }
 

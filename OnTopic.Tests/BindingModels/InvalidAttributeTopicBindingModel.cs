@@ -19,7 +19,7 @@ namespace OnTopic.Tests.BindingModels {
   /// </remarks>
   public class InvalidAttributeTopicBindingModel : BasicTopicBindingModel {
 
-    public InvalidAttributeTopicBindingModel(string? key = null) : base(key, "Page") { }
+    public InvalidAttributeTopicBindingModel(string key) : base(key, "Page") { }
 
     public string? UnmappedAttribute { get; set; }
 
