@@ -3,11 +3,13 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
 using OnTopic.Data.Caching;
+using OnTopic.Querying;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 
@@ -86,6 +88,26 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(currentTopic);
       Assert.ReferenceEquals(topic, currentTopic);
       Assert.AreEqual<string?>("Root", currentTopic?.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: BY ROUTE: SWALLOWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes route data with an invalid key and ensures that no result is returned, but no exception is thrown.
+    /// </summary>
+    [TestMethod]
+    public void Load_ByRoute_SwallowsException() {
+
+      var routes                = new RouteData();
+
+      routes.Values.Add("rootTopic", "Web");
+      routes.Values.Add("path", "Web/~* &$#@");
+
+      var currentTopic          = _topicRepository.Load(routes);
+
+      Assert.IsNull(currentTopic);
 
     }
 
