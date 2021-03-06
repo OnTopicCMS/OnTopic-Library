@@ -665,6 +665,7 @@ namespace OnTopic.Collections.Specialized {
     /// </summary>
     /// <param name="item">The <see cref="Topic"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
+    [ExcludeFromCodeCoverage]
     protected override sealed string GetKeyForItem(TItem item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key;
