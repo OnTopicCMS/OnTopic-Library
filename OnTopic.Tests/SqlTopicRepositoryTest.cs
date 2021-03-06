@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Sql;
 using OnTopic.Associations;
 using OnTopic.Tests.Schemas;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests {
 
@@ -21,6 +22,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="SqlTopicRepository"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class SqlTopicRepositoryTest {
 
     /*==========================================================================================================================

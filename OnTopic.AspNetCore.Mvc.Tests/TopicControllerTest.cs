@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace OnTopic.Tests {
   ///   the <see cref="OnTopic.AspNetCore.Mvc"/> namespace.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicControllerTest {
 
     /*==========================================================================================================================

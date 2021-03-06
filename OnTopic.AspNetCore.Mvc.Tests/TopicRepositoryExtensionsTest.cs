@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="TopicRepositoryExtensions"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicRepositoryExtensionsTest {
 
     /*==========================================================================================================================

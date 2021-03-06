@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Internal.Diagnostics;
 
@@ -16,6 +17,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="Contract"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class ContractTest {
 
     /*==========================================================================================================================

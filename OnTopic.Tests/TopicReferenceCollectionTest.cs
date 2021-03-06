@@ -9,6 +9,7 @@ using OnTopic.Associations;
 using OnTopic.Tests.Entities;
 using OnTopic.Collections.Specialized;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Tests {
 
@@ -23,6 +24,7 @@ namespace OnTopic.Tests {
   ///   Topic.IncomingRelationships"/> property.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class TopicReferenceCollectionTest {
 
     /*==========================================================================================================================

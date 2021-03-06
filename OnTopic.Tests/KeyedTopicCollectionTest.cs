@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections;
@@ -17,6 +18,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="KeyedTopicCollection"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class KeyedTopicCollectionTest {
 
     /*==========================================================================================================================

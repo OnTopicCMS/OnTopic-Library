@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -20,6 +21,7 @@ namespace OnTopic.Tests {
   ///   Provides unit tests for the <see cref="AttributeCollection"/> class.
   /// </summary>
   [TestClass]
+  [ExcludeFromCodeCoverage]
   public class AttributeCollectionTest {
 
     /*==========================================================================================================================
