@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -119,7 +120,30 @@ namespace OnTopic.Tests {
       Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.AreEqual<string?>("/Web/", model?.NavigationRoot?.WebPath);
       Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
+    ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
+    /// </summary>
+    [TestMethod]
+    public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {
+
+      var parent                = new NavigationTopicViewModel() {
+        WebPath                 = "/Web/"
+      };
+      var child                 = new NavigationTopicViewModel() {
+        WebPath                 = parent.WebPath + "Path/"
+      };
+      parent.Children.Add(child);
+
+      Assert.IsTrue(child.IsSelected(child.WebPath));
+      Assert.IsTrue(parent.IsSelected(child.WebPath));
+      Assert.IsFalse(child.IsSelected(parent.WebPath));
 
     }
 
