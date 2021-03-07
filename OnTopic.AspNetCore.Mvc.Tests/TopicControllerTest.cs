@@ -139,7 +139,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.IsNotNull(result);
-      Assert.AreEqual<Type>(typeof(NotFoundObjectResult), result.GetType());
+      Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
 
     }
 
