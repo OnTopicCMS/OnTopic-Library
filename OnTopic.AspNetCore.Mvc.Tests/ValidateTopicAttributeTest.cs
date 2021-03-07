@@ -184,17 +184,44 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: NESTED TOPIC: RETURNS 403
+    | TEST: NESTED TOPIC: LIST: RETURNS 403
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
     [TestMethod]
-    public void NestedTopic_Returns403() {
+    public void NestedTopic_List_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "List");
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      var result                = context.Result as StatusCodeResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual(403, result?.StatusCode);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NESTED TOPIC: ITEM: RETURNS 403
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
+    /// </summary>
+    [TestMethod]
+    public void NestedTopic_Item_Returns403() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var list                  = TopicFactory.Create("Key", "List");
+      var topic                 = TopicFactory.Create("Item", "Page", list);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
