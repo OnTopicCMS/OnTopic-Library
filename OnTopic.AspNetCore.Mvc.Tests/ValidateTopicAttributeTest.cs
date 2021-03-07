@@ -287,5 +287,35 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CANONICAL URL: RETURNS REDIRECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   <see cref="Topic.GetWebPath()"/> which doesn't match the current URL, even just by case.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="GetActionExecutingContext(Controller)"/> defines a <see cref="DefaultHttpContext"/>, which doesn't
+    ///   define a <see cref="HttpRequest.Path"/>. As a result, if no other condition is met, the canonical condition should
+    ///   always be tripped as part of these unit tests.
+    /// </remarks>
+    [TestMethod]
+    public void CanonicalUrl_ReturnsRedirect() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var topic                 = TopicFactory.Create("Key", "Page");
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      TopicFactory.Create("Home", "Page", topic);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
+
+    }
+
   } //Class
 } //Namespace
