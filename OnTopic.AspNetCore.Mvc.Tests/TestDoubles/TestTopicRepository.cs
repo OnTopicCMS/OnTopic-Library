@@ -52,7 +52,7 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
     /// <summary>
     ///   Creates a collection of fake data that loosely mimics a bare bones database.
     /// </summary>
-    private Topic CreateFakeData() {
+    private static Topic CreateFakeData() {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Define topics
