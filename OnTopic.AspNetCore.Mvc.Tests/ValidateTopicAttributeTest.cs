@@ -237,6 +237,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: NESTED TOPIC: ITEM: RETURNS 403
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
+    /// </summary>
+    [TestMethod]
+    public void Container_Returns403() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var topic                 = TopicFactory.Create("Item", "Container");
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      var result                = context.Result as StatusCodeResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual(403, result?.StatusCode);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: PAGE GROUP TOPIC: RETURNS REDIRECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
