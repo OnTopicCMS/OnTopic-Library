@@ -274,6 +274,7 @@ namespace OnTopic.Tests {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "PageGroup");
+      var child                 = TopicFactory.Create("Child", "Page", topic);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -284,6 +285,7 @@ namespace OnTopic.Tests {
       controller.Dispose();
 
       Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
+      Assert.AreEqual<string?>(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
 
     }
 
