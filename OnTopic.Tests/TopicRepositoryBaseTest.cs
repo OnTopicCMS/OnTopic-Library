@@ -56,8 +56,8 @@ namespace OnTopic.Tests {
     | TEST: LOAD: VALID TOPIC ID: RETURNS EXPECTED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with a valid <see cref="Topic.Id"/> and confirms
-    ///   that the expected topic is returned.
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a valid <see cref="Topic.Id"/> and
+    ///   confirms that the expected topic is returned.
     /// </summary>
     [TestMethod]
     public void Load_ValidTopicId_ReturnsExpectedTopic() {
@@ -72,8 +72,8 @@ namespace OnTopic.Tests {
     | TEST: LOAD: INVALID TOPIC ID: RETURNS EXPECTED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with an invalid <see cref="Topic.Id"/> and confirms
-    ///   that no topic is returned.
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with an invalid <see cref="Topic.Id"/> and
+    ///   confirms that no topic is returned.
     /// </summary>
     [TestMethod]
     public void Load_InvalidTopicId_ReturnsExpectedTopic() {
@@ -88,8 +88,8 @@ namespace OnTopic.Tests {
     | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Calls <see cref="CachedTopicRepository.Load(int, Topic?, bool)"/> with a negative <see cref="Topic.Id"/> and confirms
-    ///   that the root topic is returned.
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a negative <see cref="Topic.Id"/> and
+    ///   confirms that the root topic is returned.
     /// </summary>
     [TestMethod]
     public void Load_NegativeTopicId_ReturnsRootTopic() {
