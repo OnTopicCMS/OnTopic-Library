@@ -398,6 +398,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: UNDELETED VALUES: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> and then deletes it. Confirms
+    ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c> after recreating the value.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_UndeletedValues_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container", 1);
+
+      topic.Attributes.SetValue("Foo", "Bar");
+      topic.Attributes.Remove("Foo");
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.IsFalse(topic.Attributes.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: NO DIRTY VALUES: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
