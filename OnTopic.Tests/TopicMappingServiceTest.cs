@@ -808,6 +808,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS PROGRESSIVE REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and binds two properties to the same association, each with a
+    ///   different <c>[Include()]</c> attribute. Ensures that the result of each property contains both assocations.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsProgressiveReference() {
+
+      var topic                 = TopicFactory.Create("Test", "Progressive", 1);
+      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+
+      child.References.SetValue("Reference", topic);
+
+      var mappedTopic           = await _mappingService.MapAsync<ProgressiveTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<RedundantItemTopicViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Reference);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
