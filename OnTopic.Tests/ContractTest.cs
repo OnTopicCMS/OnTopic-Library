@@ -86,6 +86,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REQUIRES: INVALID CONSTRUCTOR: THROW ARGUMENT EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref="
+    ///   NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
+    ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void Requires_InvalidConstructor_ThrowArgumentException() {
+
+      var errorMessage = "The argument cannot be null";
+
+      Contract.Requires<NoMessageException>(false, errorMessage);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: ASSUME: CONDITION IS TRUE: THROW NO EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
