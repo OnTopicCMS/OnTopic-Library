@@ -360,7 +360,7 @@ namespace OnTopic.Tests {
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
     ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
     ///   <c>true</c> if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
-    ///   MarkClean(string)"/> was called.
+    ///   MarkClean(String)"/> was called.
     /// </summary>
     [TestMethod]
     public void IsDirty_IsNew_ReturnsTrue() {
@@ -442,8 +442,9 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
-    ///   cref="TrackedRecord{T}.IsDirty"/> as well as a <c>LastModified</c> <see cref="AttributeRecord"/> that is. Confirms
-    ///   that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns <c>false</c>.
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Updates the <c>LastModified</c> attributes, thus marking the collection as <see
+    ///   cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/>. Confirms that <see cref="AttributeCollection.
+    ///   IsDirty(Boolean)"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void IsDirty_ExcludeLastModified_ReturnsFalse() {
@@ -454,6 +455,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.InvariantCulture));
       topic.Attributes.SetValue("LastModifiedBy", "System");
 
+      Assert.IsTrue(topic.Attributes.IsDirty());
       Assert.IsFalse(topic.Attributes.IsDirty(true));
 
     }
