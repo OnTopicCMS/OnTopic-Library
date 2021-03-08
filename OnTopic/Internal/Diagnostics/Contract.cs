@@ -40,11 +40,6 @@ namespace OnTopic.Internal.Diagnostics {
   ///     <see href="https://stackoverflow.com/questions/40767941/does-vs2017-work-with-codecontracts/46412917#46412917"/>
   ///   </para>
   /// </remarks>
-  [SuppressMessage(
-    "Usage",
-    "CA2201:Do not raise reserved exception types",
-    Justification = "This is an unexpected usage scenario, but permitted due to limitations on generic constraints."
-  )]
   public static class Contract {
 
     /*==========================================================================================================================
@@ -94,7 +89,7 @@ namespace OnTopic.Internal.Diagnostics {
     public static void Requires<T>(bool isValid, string? errorMessage = null) where T : Exception, new() {
       if (isValid) return;
       if (errorMessage is null || errorMessage.Length == 0) {
-        throw new();
+        throw new T();
       }
       try {
         throw (T?)Activator.CreateInstance(typeof(T), new object[] { errorMessage })!;
@@ -109,7 +104,7 @@ namespace OnTopic.Internal.Diagnostics {
           "The exception provided as the generic type argument does not have a constructor that accepts an error message as" +
           " its sole argument",
           nameof(errorMessage),
-          new()
+          new T()
         );
       }
 
