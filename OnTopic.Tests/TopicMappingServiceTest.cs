@@ -800,7 +800,7 @@ namespace OnTopic.Tests {
 
       var mappedTopic           = await _mappingService.MapAsync<RedundantTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.AreEqual<RedundantItemTopicViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicAssociationsViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
       Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Parent);
       Assert.IsNull(mappedTopic?.FirstItem?.Reference);
       Assert.IsNull(mappedTopic?.SecondItem?.Reference);
@@ -824,7 +824,7 @@ namespace OnTopic.Tests {
 
       var mappedTopic           = await _mappingService.MapAsync<ProgressiveTopicViewModel>(topic).ConfigureAwait(false);
 
-      Assert.AreEqual<RedundantItemTopicViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicAssociationsViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
       Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Reference);
 
     }

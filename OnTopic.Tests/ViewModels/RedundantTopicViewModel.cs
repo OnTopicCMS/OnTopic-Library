@@ -21,10 +21,10 @@ namespace OnTopic.Tests.ViewModels {
   public class RedundantTopicViewModel {
 
     [Include(AssociationTypes.Parents)]
-    public RedundantItemTopicViewModel? FirstItem { get; set; }
+    public TopicAssociationsViewModel? FirstItem { get; set; }
 
     [Include(AssociationTypes.References)]
-    public RedundantItemTopicViewModel? SecondItem { get; set; }
+    public TopicAssociationsViewModel? SecondItem { get; set; }
 
   } //Class
 } //Namespace

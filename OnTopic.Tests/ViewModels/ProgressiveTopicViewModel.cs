@@ -20,10 +20,10 @@ namespace OnTopic.Tests.ViewModels {
   public class ProgressiveTopicViewModel {
 
     [Include(AssociationTypes.Parents)]
-    public RedundantItemTopicViewModel? FirstItem { get; set; }
+    public TopicAssociationsViewModel? FirstItem { get; set; }
 
     [Include(AssociationTypes.Parents)]
-    public RedundantItemTopicViewModel? SecondItem { get; set; }
+    public TopicAssociationsViewModel? SecondItem { get; set; }
 
   } //Class
 } //Namespace
