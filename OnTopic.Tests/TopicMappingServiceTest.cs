@@ -783,6 +783,31 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS SAME REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and binds two properties to the same association, each with the same
+    ///   <c>[Include()]</c> attribute. Ensures that the result of each property are the same, and only map the specified
+    ///   association.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsSameReference() {
+
+      var topic                 = TopicFactory.Create("Test", "Redundant", 1);
+      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+
+      child.References.SetValue("Reference", topic);
+
+      var mappedTopic           = await _mappingService.MapAsync<RedundantTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<RedundantItemTopicViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Parent);
+      Assert.IsNull(mappedTopic?.FirstItem?.Reference);
+      Assert.IsNull(mappedTopic?.SecondItem?.Reference);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
