@@ -133,7 +133,7 @@ namespace OnTopic.Tests {
     ///   <see cref="IndexOutOfRangeException"/>.
     /// </summary>
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [ExpectedException(typeof(IndexOutOfRangeException))]
     public void Assume_ConditionIsFalse_ThrowCustomExpection()
       => Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range");
 
