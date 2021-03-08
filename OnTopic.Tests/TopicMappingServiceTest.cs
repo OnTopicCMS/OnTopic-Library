@@ -317,9 +317,33 @@ namespace OnTopic.Tests {
 
       var difference            = cacheEntry.GetMissingAssociations(associations);
 
+      cacheEntry.AddMissingAssociations(difference);
+
       Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
       Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
       Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: SETS UNION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> correctly extends the missing
+    ///   associations.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCacheEntry_AddMissingAssociations_SetsUnion() {
+
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        Associations            = AssociationTypes.Children
+      };
+      var associations          = AssociationTypes.Children | AssociationTypes.Parents;
+
+      cacheEntry.AddMissingAssociations(associations);
+
+      Assert.AreEqual<AssociationTypes>(AssociationTypes.Children | AssociationTypes.Parents, cacheEntry.Associations);
 
     }
 
