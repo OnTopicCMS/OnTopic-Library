@@ -108,6 +108,18 @@ namespace OnTopic.Tests {
       => Contract.Assume(false, "The argument cannot be null");
 
     /*==========================================================================================================================
+    | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
+    ///   <see cref="IndexOutOfRangeException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Assume_ConditionIsFalse_ThrowCustomExpection()
+      => Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range");
+
+    /*==========================================================================================================================
     | TEST: ASSUME: OBJECT IS NULL: THROW INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
