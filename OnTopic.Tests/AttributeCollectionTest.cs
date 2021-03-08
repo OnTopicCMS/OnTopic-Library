@@ -354,6 +354,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: IS NEW: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> returns
+    ///   <c>true</c> if <see cref="Topic.IsNew"/>, even if <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.
+    ///   MarkClean(string)"/> was called.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_IsNew_ReturnsTrue() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      topic.Attributes.MarkClean("Foo");
+      topic.Attributes.MarkClean();
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.IsTrue(topic.Attributes.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: DELETED VALUES: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -369,6 +393,7 @@ namespace OnTopic.Tests {
       topic.Attributes.Remove("Foo");
 
       Assert.IsTrue(topic.Attributes.IsDirty());
+      Assert.IsTrue(topic.Attributes.IsDirty(true));
 
     }
 
