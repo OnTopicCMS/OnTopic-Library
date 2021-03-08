@@ -33,9 +33,32 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     public void GetValue_CorrectValue_IsReturned() {
-      var topic = TopicFactory.Create("Test", "Container");
-      topic.View = "Test";
+      var topic                 = TopicFactory.Create("Test", "Container");
+      topic.View                = "Test";
       Assert.AreEqual<string?>("Test", topic.Attributes.GetValue("View"));
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET VALUE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/> and <see
+    ///   cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetValue_InheritedValue_IsReturned() {
+
+      var baseTopic             = TopicFactory.Create("Base", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.View            = "Test";
+
+      Assert.AreEqual<string?>("Test", topic.Attributes.GetValue("View"));
+      Assert.AreEqual<string>("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
+
     }
 
     /*==========================================================================================================================
@@ -64,6 +87,29 @@ namespace OnTopic.Tests {
       topic.Attributes.SetInteger("Number1", 1);
 
       Assert.AreEqual<int>(1, topic.Attributes.GetInteger("Number1", 5));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DOUBLE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that integer values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetInteger_InheritedValue_IsReturned() {
+
+      var baseTopic             = TopicFactory.Create("Base", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetInteger("Number1", 1);
+
+      Assert.AreEqual<int>(1, topic.Attributes.GetInteger("Number1", 5));
+      Assert.AreEqual<int>(1, childTopic.Attributes.GetInteger("Number1", 5, true));
 
     }
 
@@ -119,6 +165,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET DOUBLE: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that double values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetDouble_InheritedValue_IsReturned() {
+
+      var baseTopic             = TopicFactory.Create("Base", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetDouble("Number1", 1);
+
+      Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
+      Assert.AreEqual<double>(1.0, childTopic.Attributes.GetDouble("Number1", 5.0, true));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET DOUBLE: INCORRECT VALUE: RETURNS DEFAULT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -156,7 +225,7 @@ namespace OnTopic.Tests {
     | TEST: GET DATETIME: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Ensures that integer values can be set and retrieved as expected.
+    ///   Ensures that Date/Time values can be set and retrieved as expected.
     /// </summary>
     [TestMethod]
     public void GetDateTime_CorrectValue_IsReturned() {
@@ -167,6 +236,30 @@ namespace OnTopic.Tests {
       topic.Attributes.SetDateTime("DateTime1", dateTime1);
 
       Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.MinValue));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET DATETIME: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that Date/Time values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetDateTime_InheritedValue_IsReturned() {
+
+      var baseTopic             = TopicFactory.Create("Base", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+      var dateTime1             = new DateTime(1976, 10, 15);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetDateTime("DateTime1", dateTime1);
+
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.Now));
+      Assert.AreEqual<DateTime>(dateTime1, childTopic.Attributes.GetDateTime("DateTime1", DateTime.Now, true));
 
     }
 
@@ -226,6 +319,29 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1", false));
       Assert.IsFalse(topic.Attributes.GetBoolean("IsValue2", true));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET BOOLEAN: INHERITED VALUE: IS RETURNED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that boolean values can be set and retrieved as expected via inheritance, both via <see cref="Topic.Parent"/>
+    ///   and <see cref="Topic.BaseTopic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetBoolean_InheritedValue_IsReturned() {
+
+      var baseTopic             = TopicFactory.Create("Base", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var childTopic            = TopicFactory.Create("Child", "Container", topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      baseTopic.Attributes.SetBoolean("IsValue1", true);
+
+      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1"));
+      Assert.IsTrue(childTopic.Attributes.GetBoolean("IsValue1", false, true));
 
     }
 
