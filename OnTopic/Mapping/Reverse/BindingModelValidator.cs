@@ -164,7 +164,7 @@ namespace OnTopic.Mapping.Reverse {
       var attributeDescriptor   = contentTypeDescriptor.AttributeDescriptors.GetValue(compositeAttributeKey);
       var childCollections      = new[] { CollectionType.Children, CollectionType.NestedTopics };
       var relationships         = new[] { CollectionType.Relationship, CollectionType.IncomingRelationship };
-      var listType              = (Type?)null;
+      var listType              = typeof(object);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Skip properties decorated as [DisableMapping]
@@ -195,10 +195,13 @@ namespace OnTopic.Mapping.Reverse {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Define list type (if it's a list and it's generic)
+      | Define list type (if it's a list)
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (typeof(IList).IsAssignableFrom(propertyType) && propertyType.IsGenericType) {
-        listType = propertyType.GetGenericArguments().Last();
+      foreach (var type in configuration.Property.PropertyType.GetInterfaces()) {
+        if (type.IsGenericType && typeof(IList<>) == type.GetGenericTypeDefinition()) {
+          //Uses last argument in case it's a KeyedCollection; in that case, we want the TItem type
+          listType = type.GetGenericArguments().Last();
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -302,7 +305,7 @@ namespace OnTopic.Mapping.Reverse {
       [AllowNull]Type                      sourceType,
       [AllowNull]PropertyConfiguration     configuration,
       [AllowNull]AttributeDescriptor       attributeDescriptor,
-      [AllowNull]Type                      listType
+      [DisallowNull]Type                   listType
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -346,7 +349,7 @@ namespace OnTopic.Mapping.Reverse {
       if (!typeof(IAssociatedTopicBindingModel).IsAssignableFrom(listType)) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
-          $"{configuration.CollectionType}, but the generic type '{listType?.Name}' does not implement the " +
+          $"{configuration.CollectionType}, but the generic type '{listType.Name}' does not implement the " +
           $"{nameof(IAssociatedTopicBindingModel)} interface. This is required for binding models. If this collection is not " +
           $"intended to be mapped as a {configuration.CollectionType} then update the definition in the associated " +
           $"{nameof(ContentTypeDescriptor)}. If this collection is not intended to be mapped at all, include the " +
