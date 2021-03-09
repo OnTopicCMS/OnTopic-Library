@@ -150,7 +150,7 @@ namespace OnTopic {
       set {
         if (_parent != value) {
           Contract.Requires(value, "Parent cannot be explicitly set to null.");
-          SetParent(value, value?.Children?.LastOrDefault());
+          SetParent(value, value?.Children.LastOrDefault());
         }
       }
     }
