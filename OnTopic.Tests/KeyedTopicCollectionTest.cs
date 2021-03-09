@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -69,11 +70,49 @@ namespace OnTopic.Tests {
     ///   and confirms that it successfully initialized with zero items.
     /// </summary>
     [TestMethod]
-    public void ReadOnlyTopicCollection_EmptyCollection() {
+    public void ReadOnlyKeyedTopicCollection_EmptyCollection() {
 
       var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
 
       Assert.AreEqual<int>(0, readOnlyCollection.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: READ ONLY KEYED TOPIC COLLECTION: GET VALUE: RETURNS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection{T}"/> with a backing <see cref="KeyedTopicCollection"/> and
+    ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using <see cref="
+    ///   ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/>.
+    /// </summary>
+    [TestMethod]
+    public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsValue() {
+
+      var collection            = new KeyedTopicCollection();
+      var readOnlyCollection    = new ReadOnlyKeyedTopicCollection(collection);
+      var topic                 = new Topic("Topic", "Page");
+
+      collection.Add(topic);
+
+      Assert.AreEqual<Topic?>(topic, readOnlyCollection.GetValue(topic.Key));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: READ ONLY KEYED TOPIC COLLECTION: GET VALUE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection{T}"/> with a backing <see cref="KeyedTopicCollection"/> and
+    ///   confirms that it returns null if when calling <see cref="ReadOnlyKeyedTopicCollection{T}.GetValue(String)"/> with an
+    ///   invalid <see cref="Topic.Key"/>.
+    /// </summary>
+    [TestMethod]
+    public void ReadOnlyKeyedTopicCollection_GetValue_ReturnsNull() {
+
+      var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
+
+      Assert.IsNull(readOnlyCollection.GetValue("InvalidKey"));
 
     }
 
