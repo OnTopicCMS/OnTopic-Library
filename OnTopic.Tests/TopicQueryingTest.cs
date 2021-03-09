@@ -92,6 +92,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: FIND FIRST PARENT: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Correctly returns null if the delegate cannot be satisfied.
+    /// </summary>
+    [TestMethod]
+    public void FindFirstParent_ReturnsNull() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
+
+      var foundTopic            = childTopic.FindFirstParent(t => t.Id is 10);
+
+      Assert.IsNull(foundTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ROOT TOPIC: RETURNS ROOT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
