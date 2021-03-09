@@ -180,7 +180,7 @@ namespace OnTopic.Tests {
         contentType             = childContentType;
       }
 
-      Assert.IsTrue(contentType.IsTypeOf("DifferentRoot"));
+      Assert.IsFalse(contentType.IsTypeOf("DifferentRoot"));
 
     }
 
