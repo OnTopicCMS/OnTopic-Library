@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
@@ -233,20 +232,20 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var currentTopic          = (Topic?)topic.GetRootTopic();
+      var currentTopic          = topic.GetRootTopic();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
+      if (currentTopic.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
         return currentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
-        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
+      if (uniqueKey.StartsWith(currentTopic.Key + ":", StringComparison.OrdinalIgnoreCase)) {
+        uniqueKey = uniqueKey[(currentTopic.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -254,7 +253,7 @@ namespace OnTopic.Querying {
       | Navigate to the specific path
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in keys) {
-        currentTopic = currentTopic?.Children?.GetValue(key);
+        currentTopic = currentTopic?.Children.GetValue(key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
