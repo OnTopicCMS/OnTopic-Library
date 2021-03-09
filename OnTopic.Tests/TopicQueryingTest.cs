@@ -112,6 +112,23 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ROOT TOPIC: RETURNS CURRENT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a root <see cref="Topic"/>, returns the current <see cref="Topic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetRootTopic_ReturnsCurrentTopic() {
+
+      var topic                 = TopicFactory.Create("ParentTopic", "Page", 1);
+
+      var rootTopic             = topic.GetRootTopic();
+
+      Assert.ReferenceEquals(topic, rootTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET BY UNIQUE KEY: ROOT KEY: RETURNS ROOT TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
