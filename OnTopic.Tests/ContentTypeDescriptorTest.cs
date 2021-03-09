@@ -144,5 +144,25 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CONTENT TYPE DESCRIPTOR COLLECTION: CONSTRUCT WITH VALUES: RETURNS VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
+    ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
+    /// </summary>
+    [TestMethod]
+    public void ContentTypeDescriptorCollection_ConstructWithValues_ReturnsValues() {
+
+      var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
+      var pageContentType       = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
+      _                         = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
+
+      var contentTypeCollection = new ContentTypeDescriptorCollection(rootContentType);
+
+      Assert.AreEqual<int>(3, contentTypeCollection.Count);
+
+    }
+
   } //Class
 } //Namespace
