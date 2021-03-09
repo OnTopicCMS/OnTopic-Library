@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Metadata;
+using OnTopic.Repositories;
 
 namespace OnTopic.Tests {
 
@@ -47,6 +48,26 @@ namespace OnTopic.Tests {
       var topic = TopicFactory.Create("Test", "ContentTypeDescriptor");
       Assert.IsNotNull(topic);
       Assert.IsInstanceOfType(topic, typeof(ContentTypeDescriptor));
+    }
+
+    /*==========================================================================================================================
+    | TEST: CREATE: ATTRIBUTE DESCRIPTOR: RETURNS FALLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a topic with a <see cref="Topic.ContentType"/> ending with <c>AttributeDescriptor</c> and ensures that, by
+    ///   convention, a <see cref="AttributeDescriptor"/> is returned.
+    /// </summary>
+    /// <remarks>
+    ///   This is a special use case to address the fact that we expect concrete types of <see cref="AttributeDescriptor"/> to
+    ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref="
+    ///   AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
+    ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
+    /// </remarks>
+    [TestMethod]
+    public void Create_AttributeDescriptor_ReturnsFallback() {
+      var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
+      Assert.IsNotNull(topic);
+      Assert.IsInstanceOfType(topic, typeof(AttributeDescriptor));
     }
 
     /*==========================================================================================================================
