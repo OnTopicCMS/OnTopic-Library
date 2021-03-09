@@ -25,6 +25,7 @@ namespace OnTopic.Collections {
     ///   Establishes a new <see cref="ReadOnlyTopicCollection"/> based on an existing <see cref="TopicCollection"/>.
     /// </summary>
     /// <param name="innerCollection">The underlying <see cref="KeyedTopicCollection"/>.</param>
+    [ExcludeFromCodeCoverage]
     public ReadOnlyTopicCollection(IList<Topic>? innerCollection = null) : base(innerCollection?? new List<Topic>()) {
     }
 
