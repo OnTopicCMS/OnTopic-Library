@@ -351,11 +351,14 @@ namespace OnTopic.Tests {
         }
       };
 
-      var target                = (TopicReferenceAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target?.BaseTopic);
       Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
-      Assert.AreEqual<string?>("TopicReference", target?.EditorType);
+      Assert.AreEqual<string?>("Text", target?.EditorType);
+
+    }
+
     /*==========================================================================================================================
     | TEST: MAP: TOPIC REFERENCES: BYPASS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
