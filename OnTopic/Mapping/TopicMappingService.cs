@@ -789,8 +789,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
-    /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
+    private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -802,7 +801,7 @@ namespace OnTopic.Mapping {
       | Validate source properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (source.IsDisabled) return targetList;
-      if (source.ContentType is "List" && !includeNestedTopics) return targetList;
+      if (source.ContentType is "List") return targetList;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Merge source list into target list
