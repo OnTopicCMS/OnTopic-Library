@@ -1084,8 +1084,8 @@ namespace OnTopic.Tests {
     | TEST: MAP: FLATTEN ATTRIBUTE: RETURNS FLAT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
-    ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
+    ///   FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
     /// </summary>
     [TestMethod]
     public async Task Map_FlattenAttribute_ReturnsFlatCollection() {
@@ -1105,6 +1105,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP: FLATTEN ATTRIBUTE: EXCLUDE TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
+    ///   FlattenChildrenTopicViewModel.Children"/> property excludes any <see cref="Topic.IsDisabled"/> or nested topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_FlattenAttribute_ExcludeTopics() {
+
+      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+      var childTopic            = TopicFactory.Create("Child", "FlattenChildren", topic);
+      var grandChildTopic       = TopicFactory.Create("Grandchild", "FlattenChildren", childTopic);
+      var listTopic             = TopicFactory.Create("List", "List", childTopic);
+      _                         = TopicFactory.Create("Nested", "FlattenChildren", listTopic);
+
+      grandChildTopic.IsDisabled = true;
+
+      var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int?>(1, target?.Children.Count);
+
+    }
     /*==========================================================================================================================
     | TEST: MAP: CACHED TOPIC: RETURNS CACHED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
