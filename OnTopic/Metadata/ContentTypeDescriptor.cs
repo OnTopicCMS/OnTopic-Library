@@ -276,7 +276,7 @@ namespace OnTopic.Metadata {
         contentType = contentType.Parent as ContentTypeDescriptor;
       }
 
-      return true;
+      return false;
 
     }
 
