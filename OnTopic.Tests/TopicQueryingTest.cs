@@ -207,5 +207,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE: INVALID TYPE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given an invalid <see cref="ContentTypeDescriptor"/>, the <see cref="TopicExtensions.GetContentTypeDescriptor(Topic)"
+    ///   /> returns <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref="
+    ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
+    /// </remarks>
+    [TestMethod]
+    public void GetContentType_InvalidType_ReturnsNull() {
+
+      var parentTopic           = _topicRepository.Load(11111);
+      var topic                 = TopicFactory.Create("Test", "Title", parentTopic);
+      var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+
+      Assert.IsNull(contentTypeDescriptor);
+
+    }
+
   } //Class
 } //Namespace
