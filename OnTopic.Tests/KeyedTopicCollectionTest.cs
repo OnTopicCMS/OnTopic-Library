@@ -63,6 +63,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: INSERT ITEM: DUPLICATE KEY: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to add two <see cref="Topic"/> instances with the same <see cref="Topic.Key"/> to a <see cref="
+    ///   KeyedTopicCollection{T}"/> and confirms that a <see cref="ArgumentException"/> is correctly thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void InsertItem_DuplicateKey_ThrowsException() {
+
+      var topic                 = new KeyedTopicCollection();
+
+      topic.Add(new Topic("Key", "Page"));
+      topic.Add(new Topic("Key", "Page"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: READ ONLY KEYED TOPIC COLLECTION: EMPTY COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
