@@ -86,13 +86,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PARENT: SET VALUE: UPDATES PARENT TOPIC
+    | TEST: PARENT: SET VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Parent_SetValue_UpdatesParentTopic() {
+    public void Parent_SetValue_UpdatesParent() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
       var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
@@ -106,13 +106,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: PARENT: CHANGE VALUE: UPDATES PARENT TOPIC
+    | TEST: PARENT: CHANGE VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Parent_ChangeValue_UpdatesParentTopic() {
+    public void Parent_ChangeValue_UpdatesParent() {
 
       var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor", 5);
       var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor", 10);
