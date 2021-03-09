@@ -391,5 +391,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new <see cref="Topic"/> and confirms that <see cref="Topic.MarkClean()"/> does <i>not</i> reset the value of
+    ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_NewTopic_RemainsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+
+      topic.Attributes.SetValue("Attribute", "Test");
+
+      topic.MarkClean("Attribute", true);
+      topic.MarkClean(true);
+
+      Assert.IsTrue(topic.IsDirty());
+      Assert.IsTrue(topic.IsDirty("Attribute", true));
+
+    }
+
   } //Class
 } //Namespace
