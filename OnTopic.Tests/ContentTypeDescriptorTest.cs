@@ -145,6 +145,46 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS TYPE OF: DERIVED CONTENT TYPE: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
+    ///   types.
+    /// </summary>
+    [TestMethod]
+    public void IsTypeOf_DerivedContentType_ReturnsTrue() {
+
+      var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
+      for (var i = 0; i < 5; i++) {
+        var childContentType = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
+        contentType             = childContentType;
+      }
+
+      Assert.IsTrue(contentType.IsTypeOf("Root"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IS TYPE OF: INVALID CONTENT TYPE: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Associates a new topic with several content types, and confirms that the topic is not reported as a type of a content
+    ///   type that is not in that chain.
+    /// </summary>
+    [TestMethod]
+    public void IsTypeOf_InvalidContentType_ReturnsFalse() {
+
+      var contentType = new ContentTypeDescriptor("Root", "ContentTypeDescriptor");
+      for (var i = 0; i < 5; i++) {
+        var childContentType = new ContentTypeDescriptor("ContentType" + i, "ContentTypeDescriptor", contentType);
+        contentType             = childContentType;
+      }
+
+      Assert.IsTrue(contentType.IsTypeOf("DifferentRoot"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: CONTENT TYPE DESCRIPTOR COLLECTION: CONSTRUCT WITH VALUES: RETURNS VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
