@@ -287,7 +287,7 @@ namespace OnTopic.Tests {
     | TEST: ANY DIRTY: CLEAN COLLECTION: RETURN FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a <see cref="TopicCollection"/> with not <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
+    ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
     ///   returns <c>false</c>.
     /// </summary>
     [TestMethod]
@@ -301,6 +301,41 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: ANY NEW: CONTAINS NEW: RETURN TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsNew"/>, returns
+    ///   <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyNew_ContainsNew_ReturnTrue() {
+
+      var topics                = new TopicCollection();
+
+      topics.Add(new Topic("Test", "Page"));
+
+      Assert.IsTrue(topics.AnyNew());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY NEW: CONTAINS EXISTING: RETURN FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsNew"/>, returns <c>
+    ///   false</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyNew_ContainsExisting_ReturnFalse() {
+
+      var topics                = new TopicCollection();
+
+      topics.Add(new Topic("Test", "Page", null, 1));
+
+      Assert.IsFalse(topics.AnyNew());
+
+    }
 
   } //Class
 } //Namespace
