@@ -269,6 +269,33 @@ namespace OnTopic.Tests {
 
     }
 
+
+    /*==========================================================================================================================
+    | TEST: MAP: RELATIONSHIPS: THROW EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the
+    ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be located in the repository.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_Relationships_ThrowException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
+      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+
+      bindingModel.ContentTypes.Add(
+        new() {
+          UniqueKey = "Root:Configuration:InvalidKey"
+        }
+      );
+
+      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+
+    }
+
+
     /*==========================================================================================================================
     | TEST: MAP: NESTED TOPICS: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -329,6 +356,30 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(target?.BaseTopic);
       Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
       Assert.AreEqual<string?>("TopicReference", target?.EditorType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: THOWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the
+    ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be resolved in the supplied <see cref="ITopicRepository"
+    ///   />.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_TopicReferences_ThrowException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+
+      var bindingModel          = new ReferenceTopicBindingModel("Test") {
+        BaseTopic               = new() {
+          UniqueKey             = "Root:InvalidKey"
+        }
+      };
+
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
