@@ -8,6 +8,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using OnTopic.Internal.Diagnostics;
 
+#pragma warning disable CA1032 // Implement standard exception constructors
+
 namespace OnTopic {
 
   /*============================================================================================================================
@@ -47,3 +49,5 @@ namespace OnTopic {
 
   } //Class
 } //Namespace
+
+#pragma warning restore CA1032 // Implement standard exception constructors
