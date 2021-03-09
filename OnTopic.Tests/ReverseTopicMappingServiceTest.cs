@@ -356,6 +356,32 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(target?.BaseTopic);
       Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
       Assert.AreEqual<string?>("TopicReference", target?.EditorType);
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: BYPASS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly bypasses any <see cref="
+    ///   IAssociatedTopicBindingModel"/> instances with a null <see cref="IAssociatedTopicBindingModel.UniqueKey"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferences_BypassNull() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+      var baseTopic             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
+
+      Contract.Assume(topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      var bindingModel          = new ReferenceTopicBindingModel(topic.Key) {
+        ContentType             = topic.ContentType,
+        BaseTopic               = new()
+      };
+
+      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target?.BaseTopic);
 
     }
 
