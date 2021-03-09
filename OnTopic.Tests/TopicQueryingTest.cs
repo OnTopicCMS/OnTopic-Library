@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Collections;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
 using OnTopic.Querying;
@@ -263,6 +264,43 @@ namespace OnTopic.Tests {
       Assert.IsNull(contentTypeDescriptor);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: ANY DIRTY: DIRTY COLLECTION: RETURN TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsDirty(String)"/>,
+    ///   returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyDirty_DirtyCollection_ReturnTrue() {
+
+      var topics                = new TopicCollection();
+
+      topics.Add(new Topic("Test", "Page"));
+
+      Assert.IsTrue(topics.AnyDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY DIRTY: CLEAN COLLECTION: RETURN FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with not <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
+    ///   returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyDirty_CleanCollection_ReturnFalse() {
+
+      var topics                = new TopicCollection();
+
+      topics.Add(new Topic("Test", "Page", null, 1));
+
+      Assert.IsFalse(topics.AnyDirty());
+
+    }
+
 
   } //Class
 } //Namespace
