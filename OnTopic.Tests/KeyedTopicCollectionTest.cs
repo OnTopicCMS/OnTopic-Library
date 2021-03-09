@@ -83,5 +83,27 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: AS READ ONLY: RETURNS READ ONLY TOPIC COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a number of topics, converts the collection to read only, and ensures they are still present.
+    /// </summary>
+    [TestMethod]
+    public void AsReadOnly_ReturnsReadOnlyTopicCollection() {
+
+      var topics = new TopicCollection();
+
+      for (var i = 0; i < 10; i++) {
+        topics.Add(TopicFactory.Create("Topic" + i, "Page"));
+      }
+
+      var readOnlyCollection = topics.AsReadOnly();
+
+      Assert.AreEqual<int>(10, readOnlyCollection.Count);
+      Assert.AreEqual<string>("Topic0", readOnlyCollection.First().Key);
+
+    }
+
   } //Class
 } //Namespace
