@@ -62,6 +62,22 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: READ ONLY KEYED TOPIC COLLECTION: EMPTY COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection"/> without a backing <see cref="KeyedTopicCollection"/>
+    ///   and confirms that it successfully initialized with zero items.
+    /// </summary>
+    [TestMethod]
+    public void ReadOnlyTopicCollection_EmptyCollection() {
+
+      var readOnlyCollection    = new ReadOnlyKeyedTopicCollection();
+
+      Assert.AreEqual<int>(0, readOnlyCollection.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: AS READ ONLY: RETURNS READ ONLY KEYED TOPIC COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
