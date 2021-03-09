@@ -164,5 +164,33 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CONTENT TYPE DESCRIPTOR COLLECTION: REFRESH: RETURNS UPDATED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
+    ///   that all child <see cref="ContentTypeDescriptor"/>s within the topic graph are added.
+    /// </summary>
+    [TestMethod]
+    public void ContentTypeDescriptorCollection_Refresh_ReturnsUpdated() {
+
+      var rootContentType       = new ContentTypeDescriptor("ContentTypes", "ContentTypeDescriptor");
+      var pageContentType       = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
+      var videoContentType      = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
+      var slideshowContentType  = new ContentTypeDescriptor("Slideshow", "ContentTypeDescriptor");
+
+      var contentTypeCollection = new ContentTypeDescriptorCollection(rootContentType);
+
+      pageContentType.Children.Remove(videoContentType);
+      pageContentType.Children.Add(slideshowContentType);
+
+      contentTypeCollection.Refresh(rootContentType);
+
+      Assert.AreEqual<int>(3, contentTypeCollection.Count);
+      Assert.IsTrue(contentTypeCollection.Contains(slideshowContentType));
+      Assert.IsFalse(contentTypeCollection.Contains(videoContentType));
+
+    }
+
   } //Class
 } //Namespace
