@@ -81,5 +81,31 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CONTENT TYPE DESCRIPTOR: ATTRIBUTE DESCRIPTORS: RETURNS INHERITED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a hierarchy of <see cref="ContentTypeDescriptor"/>s, and ensures that <see cref="ContentTypeDescriptor.
+    ///   AttributeDescriptors"/> returns all <see cref="AttributeDescriptor"/> instances from the associated <c>Attributes</c>
+    ///   collection in <see cref="Topic.Relationships"/>, as well as those from each <see cref="Topic.Parent"/>.
+    /// </summary>
+    [TestMethod]
+    public void ContentTypeDescriptor_AttributeDescriptors_ReturnsInherited() {
+
+      var page                  = new ContentTypeDescriptor("Page", "ContentTypeDescriptor");
+      var pageAttributes        = new ContentTypeDescriptor("Attributes", "List", page);
+      var titleAttribute        = new AttributeDescriptor("Title", "AttributeDescriptor", pageAttributes);
+
+      var video                 = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", page);
+      var videoAttributes       = new ContentTypeDescriptor("Attributes", "List", video);
+      var urlAttribute          = new AttributeDescriptor("Url", "AttributeDescriptor", videoAttributes);
+
+      Assert.AreEqual<int>(1, page.AttributeDescriptors.Count);
+      Assert.AreEqual<int>(2, video.AttributeDescriptors.Count);
+      Assert.IsTrue(video.AttributeDescriptors.Contains(titleAttribute));
+      Assert.IsTrue(video.AttributeDescriptors.Contains(urlAttribute));
+
+    }
+
   } //Class
 } //Namespace
