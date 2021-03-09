@@ -1133,7 +1133,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
-    ///   the same instance of a mapped object is turned after two calls.
+    ///   the same instance of a mapped object is returned after two calls.
     /// </summary>
     [TestMethod]
     public async Task Map_CachedTopic_ReturnsCachedModel() {
@@ -1146,6 +1146,29 @@ namespace OnTopic.Tests {
       var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<FilteredTopicViewModel?>(target1, target2);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS UNIQUE REFERENCE PER TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
+    ///   a different instance of a mapped object is returned after two calls, assuming the types are different.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsUniqueReferencePerType() {
+
+      var cachedMappingService = new CachedTopicMappingService(_mappingService);
+
+      var topic = TopicFactory.Create("Test", "Filtered", 5);
+
+      var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target3 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<FilteredTopicViewModel?>(target1, target2);
+      Assert.AreNotEqual(target1, target3);
 
     }
 
