@@ -346,6 +346,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref="
+    ///   Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExistingValue_RemainsClean() {
+
+      var parent                = TopicFactory.Create("Parent", "Page", 1);
+      var topic                 = TopicFactory.Create("Topic", "Page", parent, 2);
+
+      topic.Key                 = topic.Key;
+      topic.ContentType         = topic.ContentType;
+      topic.Parent              = parent;
+
+      Assert.IsFalse(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
     | IS DIRTY: CHANGE COLLECTIONS: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
