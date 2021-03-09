@@ -114,13 +114,10 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Parent_ChangeValue_UpdatesParentTopic() {
 
-      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
-      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor");
-      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor");
+      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor", 5);
+      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor", 10);
+      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor", sourceParent);
 
-      sourceParent.Id           = 5;
-      targetParent.Id           = 10;
-      childTopic.Parent         = sourceParent;
       childTopic.Parent         = targetParent;
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
