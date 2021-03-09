@@ -341,6 +341,7 @@ namespace OnTopic {
     ///   <c>true</c> if this instance is disabled; otherwise, <c>false</c>.
     /// </value>
     [AttributeSetter]
+    [ExcludeFromCodeCoverage]
     public bool IsDisabled {
       get => Attributes.GetBoolean("IsDisabled");
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
