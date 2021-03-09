@@ -100,6 +100,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: READ ONLY KEYED TOPIC COLLECTION: INDEXER: RETURNS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReadOnlyKeyedTopicCollection{T}"/> with a backing <see cref="KeyedTopicCollection"/> and
+    ///   confirms that it successfully returns a <see cref="Topic"/> by <see cref="Topic.Key"/> using the indexer on <see cref=
+    ///   "ReadOnlyKeyedTopicCollection{T}"/>.
+    /// </summary>
+    [TestMethod]
+    public void ReadOnlyKeyedTopicCollection_Indexer_ReturnsValue() {
+
+      var collection            = new KeyedTopicCollection();
+      var readOnlyCollection    = new ReadOnlyKeyedTopicCollection(collection);
+      var topic                 = new Topic("Topic", "Page");
+
+      collection.Add(topic);
+
+      Assert.AreEqual<Topic?>(topic, readOnlyCollection[topic.Key]);
+
+    }
+
+
+    /*==========================================================================================================================
     | TEST: READ ONLY KEYED TOPIC COLLECTION: GET VALUE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
