@@ -5,10 +5,8 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
-using OnTopic.Collections;
 using OnTopic.Metadata;
 
 namespace OnTopic.Tests {
