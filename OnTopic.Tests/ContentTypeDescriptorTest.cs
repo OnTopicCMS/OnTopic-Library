@@ -192,5 +192,24 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CONTENT TYPE DESCRIPTOR COLLECTION: CONSTRUCT WITH VALUES: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a new <see cref="ContentTypeDescriptorCollection"/> with a <see cref="ContentTypeDescriptor"/> and confirms
+    ///   that an exception is thrown if the <see cref="Topic.Key"/> is not set to the expected value of <c>ContentTypes</c>,
+    ///   which represents the root content type.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void ContentTypeDescriptorCollection_ConstructWithValues_ThrowsException() {
+
+      var rootContentType       = new ContentTypeDescriptor("ContentType", "ContentTypeDescriptor");
+      var pageContentType       = new ContentTypeDescriptor("Page", "ContentTypeDescriptor", rootContentType);
+      _                         = new ContentTypeDescriptor("Video", "ContentTypeDescriptor", pageContentType);
+      _                         = new ContentTypeDescriptorCollection(pageContentType);
+
+    }
+
   } //Class
 } //Namespace
