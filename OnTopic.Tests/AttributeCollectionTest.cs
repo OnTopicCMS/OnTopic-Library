@@ -87,7 +87,7 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      topic.Attributes.SetValue("EmptyValue", "");
+      topic.Attributes.Add(new("EmptyValue", ""));
 
       Assert.IsNull(topic.Attributes.GetValue("EmptyValue"));
 
