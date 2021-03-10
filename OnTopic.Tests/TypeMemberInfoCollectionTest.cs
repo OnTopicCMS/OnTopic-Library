@@ -15,6 +15,7 @@ using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
+using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests {
 
@@ -116,6 +117,26 @@ namespace OnTopic.Tests {
       Assert.IsTrue(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
       Assert.IsFalse(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
       Assert.IsFalse(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasGettableProperty(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableProperty_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
 
     }
 
