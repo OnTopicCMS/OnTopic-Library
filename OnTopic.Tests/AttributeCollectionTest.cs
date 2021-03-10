@@ -58,6 +58,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<string?>("Test", topic.Attributes.GetValue("View"));
       Assert.AreEqual<string>("Test", childTopic.Attributes.GetValue("View", "Invalid", true));
+      Assert.IsNull(topic.Attributes.GetValue("View", null, inheritFromBase: false));
 
     }
 
@@ -128,6 +129,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(1, topic.Attributes.GetInteger("Number1", 5));
       Assert.AreEqual<int>(1, childTopic.Attributes.GetInteger("Number1", 5, true));
+      Assert.AreEqual<int>(0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -202,6 +204,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<double>(1.0, topic.Attributes.GetDouble("Number1", 5.0));
       Assert.AreEqual<double>(1.0, childTopic.Attributes.GetDouble("Number1", 5.0, true));
+      Assert.AreEqual<double>(0.0, topic.Attributes.GetInteger("Number1", inheritFromBase: false));
 
     }
 
@@ -278,6 +281,7 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime1", DateTime.Now));
       Assert.AreEqual<DateTime>(dateTime1, childTopic.Attributes.GetDateTime("DateTime1", DateTime.Now, true));
+      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime1", inheritFromBase: false));
 
     }
 
@@ -360,6 +364,7 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1"));
       Assert.IsTrue(childTopic.Attributes.GetBoolean("IsValue1", false, true));
+      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue1", inheritFromBase: false));
 
     }
 
