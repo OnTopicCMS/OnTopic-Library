@@ -133,6 +133,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: PARENT: SET TO DESCENDANT: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref="
+    ///   ArgumentOutOfRangeException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentOutOfRangeException))]
+    public void Parent_SetToDescendant_ThrowsException() {
+
+      var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
+      var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor", parentTopic);
+
+      parentTopic.Parent        = childTopic;
+
+    }
+
+    /*==========================================================================================================================
     | TEST: PARENT: CHANGE VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
