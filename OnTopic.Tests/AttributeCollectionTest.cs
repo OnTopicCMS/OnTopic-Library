@@ -816,6 +816,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: ATTRIBUTE RECORD: LAST MODIFIED: DEFAULT VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new <see cref="AttributeRecord"/> and ensures that the <see cref="TrackedRecord{T}.LastModified"/> is set to
+    ///   <see cref="DateTime.UtcNow"/>.
+    /// </summary>
+    [TestMethod]
+    public void AttributeRecord_LastModified_DefaultValue() {
+
+      var beforeDate            = DateTime.UtcNow;
+      var attribute             = new AttributeRecord("Test", "Value");
+      var afterDate             = DateTime.UtcNow;
+
+      Assert.IsTrue(attribute.LastModified > beforeDate);
+      Assert.IsTrue(attribute.LastModified < afterDate);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: INSERT INVALID ATTRIBUTE RECORD: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
