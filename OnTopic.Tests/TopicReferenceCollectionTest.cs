@@ -371,7 +371,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.IsNull(topic.References.GetValue("MissingReference"));
+      Assert.IsNull(topic.References.GetValue("MissingReference", true));
 
     }
 
