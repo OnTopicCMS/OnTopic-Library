@@ -99,8 +99,8 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
+      existingItem?.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic, true);
       item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
-      existingItem?.Value?.IncomingRelationships.SetValue(existingItem.Key, AssociatedTopic, null, true);
 
     }
 
