@@ -151,6 +151,23 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: PARENT: DUPLICATE KEY: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> whose <see cref="Topic.Key"/> already exists in the new
+    ///   <see cref="Topic.Parent"/> and ensures that an <see cref="InvalidKeyException"/> is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidKeyException))]
+    public void Parent_DuplicateKey_ThrowsException() {
+
+      var parentTopic           = new Topic("Parent", "ContentTypeDescriptor");
+      var childTopic            = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+      _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: PARENT: CHANGE VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
