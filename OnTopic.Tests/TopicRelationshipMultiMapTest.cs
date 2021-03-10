@@ -41,6 +41,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REMOVE TOPIC: INVALID RELATIONSHIP KEY: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to remove a <see cref="Topic"/> from a <see cref="Topic.Relationships"/> where the <see cref="KeyValuesPair{
+    ///   TKey, TValue}.Key"/> is invalid. In this case, <see cref="TopicRelationshipMultiMap.Remove(String, Topic)"/> should
+    ///   return <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void RemoveTopic_InvalidRelationshipKey_DoesNothing() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var unrelated             = TopicFactory.Create("Unrelated", "Page");
+
+      Assert.IsFalse(parent.Relationships.Remove("Unrelated", unrelated));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: REMOVE TOPIC: REMOVES RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -81,7 +99,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
+    | TEST: SET TOPIC: CREATES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
