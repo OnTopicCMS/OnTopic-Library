@@ -100,20 +100,14 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set. Also confirms that items are correctly removed
     ///   from recipricol <see cref="Topic.IncomingRelationships"/>.
     /// </summary>
-    /// <remarks>
-    ///   This calls <see cref="TopicReferenceCollection.ClearItems()"/> twice. The first to confirm that the <see cref="Topic.
-    ///   IncomingRelationships"/> are cleared, the second to ensure that the attempt to call <see cref="Topic.
-    ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/>s  will now be <c>
-    ///   null</c>.
-    /// </remarks>
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetValue("Reference", reference, false);
-      topic.References.Clear();
+      topic.References.SetValue("Reference1", reference, false);
+      topic.References.SetValue("Reference2", null, false);
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -175,8 +169,7 @@ namespace OnTopic.Tests {
     /// <remarks>
     ///   This calls <see cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/> twice. The first to confirm that the <see cref="
     ///   Topic.IncomingRelationships"/> is removed, the second to ensure that the attempt to call <see cref="Topic.
-    ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/> will now be <c>null
-    ///   </c>.
+    ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/> is <c>null</c>.
     /// </remarks>
     [TestMethod]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
@@ -184,9 +177,11 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetValue("Reference", reference);
-      topic.References.Remove("Reference");
-      topic.References.Remove("Reference");
+      topic.References.SetValue("Reference1", reference);
+      topic.References.SetValue("Reference2", null);
+
+      topic.References.Remove("Reference1");
+      topic.References.Remove("Reference2");
 
       Assert.AreEqual<int>(0, reference.IncomingRelationships.GetValues("Reference").Count);
 
