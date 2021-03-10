@@ -590,9 +590,6 @@ namespace OnTopic.Collections.Specialized {
       }
       if (_topicPropertyDispatcher.Enforce(item.Key, item)) {
         base.SetItem(index, item);
-        if (DeletedItems.Contains(item.Key)) {
-          DeletedItems.Remove(item.Key);
-        }
       }
     }
 
