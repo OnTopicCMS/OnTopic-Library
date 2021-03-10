@@ -648,14 +648,25 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void IsDirty_MarkClean_UpdatesLastModified() {
 
-      var topic = TopicFactory.Create("Test", "Container", 1);
-      var version = DateTime.Now.AddDays(5);
+      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var firstVersion          = DateTime.Now.AddDays(5);
+      var secondVersion         = DateTime.Now.AddDays(10);
+      var thirdVersion          = DateTime.Now.AddDays(15);
 
-      topic.Attributes.SetValue("Baz", "Foo");
-      topic.Attributes.MarkClean(version);
-      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute);
+      topic.Attributes.SetValue("Foo", "Qux", false, firstVersion);
+      topic.Attributes.SetValue("Bar", "Quux");
+      topic.Attributes.SetValue("Baz", "Quuz");
 
-      Assert.AreEqual<DateTime?>(version, cleanedAttribute?.LastModified);
+      topic.Attributes.MarkClean("Bar", secondVersion);
+      topic.Attributes.MarkClean(thirdVersion);
+
+      topic.Attributes.TryGetValue("Foo", out var cleanedAttribute1);
+      topic.Attributes.TryGetValue("Bar", out var cleanedAttribute2);
+      topic.Attributes.TryGetValue("Baz", out var cleanedAttribute3);
+
+      Assert.AreEqual<DateTime?>(firstVersion, cleanedAttribute1?.LastModified);
+      Assert.AreEqual<DateTime?>(secondVersion, cleanedAttribute2?.LastModified);
+      Assert.AreEqual<DateTime?>(thirdVersion, cleanedAttribute3?.LastModified);
 
     }
 
@@ -680,6 +691,7 @@ namespace OnTopic.Tests {
       topic.Attributes.MarkClean();
 
       Assert.IsFalse(topic.Attributes.IsDirty());
+      Assert.AreEqual<int>(0, topic.Attributes.DeletedItems.Count);
 
     }
 
