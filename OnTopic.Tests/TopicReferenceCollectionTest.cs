@@ -202,6 +202,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SET VALUE: NULL REFERENCE: TOPIC UPDATED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
+    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, updates the
+    ///   reference using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
+    ///   DateTime?)"/> with a <c>null</c> value, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.
+    ///   IncomingRelationships"/> are correctly updated.
+    /// </summary>
+    [TestMethod]
+    public void SetValue_ExistingReference_IncomingRelationshipsUpdates() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var reference             = TopicFactory.Create("Reference", "Page");
+
+      topic.References.SetValue("Reference", reference);
+      topic.References.SetValue("Reference", null);
+
+      Assert.IsTrue(topic.References.Contains("Reference"));
+      Assert.IsNull(topic.References.GetValue("Reference"));
+      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
+
     }
 
     /*==========================================================================================================================
