@@ -110,6 +110,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DYNAMIC TYPE LOOKUP SERVICE: PREDICATE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
+    ///   StaticTypeLookupService.Lookup(string[])"/> to ensure it correctly adds the expected items.
+    /// </summary>
+    [TestMethod]
+    public void DynamicTypeLookupService_Predicate_ReturnsExpected() {
+
+      var lookupService         = new DynamicTypeLookupService(t =>
+        t.Namespace ==  typeof(KeyOnlyTopicViewModel).Namespace &&
+        typeof(KeyOnlyTopicViewModel).IsAssignableFrom(t)
+      );
+
+      Assert.IsNotNull(lookupService.Lookup(nameof(KeyOnlyTopicViewModel)));
+      Assert.IsNotNull(lookupService.Lookup(nameof(AmbiguousRelationTopicViewModel)));
+      Assert.IsNull(lookupService.Lookup(nameof(EmptyViewModel)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: COMPOSITE TYPE LOOKUP SERVICE: LOOKUP: RETURNS FALLBACK
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
