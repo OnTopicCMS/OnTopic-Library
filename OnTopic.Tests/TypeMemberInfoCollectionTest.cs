@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
+using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
 
@@ -74,6 +75,25 @@ namespace OnTopic.Tests {
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
       Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS MEMBER: PROPERTY INFO: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.HasMember{T
+    ///   }(Type, string)"/> returns <c>true</c> when appropriate.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasMember_PropertyInfo_ReturnsExpected() {
+
+      var typeCollection        = new TypeMemberInfoCollection();
+
+      Assert.IsTrue(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsFalse(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
 
     }
 
