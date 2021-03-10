@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
     public void Parent_DuplicateKey_ThrowsException() {
 
       var parentTopic           = new Topic("Parent", "ContentTypeDescriptor");
-      var childTopic            = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+      _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
       _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
 
     }
