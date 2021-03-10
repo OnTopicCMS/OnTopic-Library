@@ -4,13 +4,12 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Collections.Specialized;
 using OnTopic.Associations;
-using System.Diagnostics.CodeAnalysis;
 using OnTopic.Collections;
-using System.Collections.Generic;
+using OnTopic.Collections.Specialized;
 
 namespace OnTopic.Tests {
 
@@ -219,8 +218,8 @@ namespace OnTopic.Tests {
     | TEST: GET ALL VALUES: CONTENT TYPES: RETURNS ALL CONTENT TYPES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of
-    ///   <see cref="ReadOnlyTopicMultiMap.GetAllValues(String)"/> by content type.
+    ///   Sets relationships in multiple namespaces, with different ContentTypes, then filters the results of <see cref="
+    ///   ReadOnlyTopicMultiMap.GetAllValues(String)"/> by content type.
     /// </summary>
     [TestMethod]
     public void GetAllValues_ContentTypes_ReturnsAllContentTypes() {
@@ -261,8 +260,8 @@ namespace OnTopic.Tests {
     | TEST: SET TOPIC: IS DUPLICATE: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see
-    ///   cref="TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
+    ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
+    ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetTopic_IsDuplicate_IsNotDirty() {
@@ -284,8 +283,8 @@ namespace OnTopic.Tests {
     | TEST: SET TOPIC: IS DUPLICATE: STAYS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see
-    ///   cref="TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
+    ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
+    ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetTopic_IsDuplicate_StaysDirty() {
@@ -302,13 +301,12 @@ namespace OnTopic.Tests {
 
     }
 
-
     /*==========================================================================================================================
     | TEST: REMOVE TOPIC: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes an existing <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value for <see
-    ///   cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>.
+    ///   Removes an existing <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value for
+    ///   <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
     public void RemoveTopic_IsDirty() {
@@ -329,8 +327,8 @@ namespace OnTopic.Tests {
     | TEST: REMOVE TOPIC: MISSING TOPIC: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value for
-    ///   <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c>.
+    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value
+    ///   for <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void RemoveTopic_MissingTopic_IsNotDirty() {
@@ -350,8 +348,8 @@ namespace OnTopic.Tests {
     | TEST: REMOVE TOPIC: MISSING TOPIC: STAYS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value for
-    ///   <see cref="TopicRelationshipMultiMap.IsDirty()"/> stays <c>true</c>.
+    ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value
+    ///   for <see cref="TopicRelationshipMultiMap.IsDirty()"/> stays <c>true</c>.
     /// </summary>
     [TestMethod]
     public void RemoveTopic_MissingTopic_StaysDirty() {
@@ -374,8 +372,8 @@ namespace OnTopic.Tests {
     | TEST: CLEAR: EXISTING TOPICS: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> and confirms that value of <see
-    ///   cref="TopicRelationshipMultiMap.IsDirty()"/> is <c>true</c>.
+    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> and confirms that value of <see cref="
+    ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>true</c>.
     /// </summary>
     [TestMethod]
     public void Clear_ExistingTopics_IsDirty() {
@@ -396,8 +394,8 @@ namespace OnTopic.Tests {
     | TEST: CLEAR: NO TOPICS: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> with no existing <see cref="Topic"/>s and confirms that
-    ///   the value of <see cref="TopicRelationshipMultiMap.IsDirty()"/> is set to <c>false</c>.
+    ///   Call <see cref="TopicRelationshipMultiMap.Clear(String)"/> with no existing <see cref="Topic"/>s and confirms that the
+    ///   value of <see cref="TopicRelationshipMultiMap.IsDirty()"/> is set to <c>false</c>.
     /// </summary>
     [TestMethod]
     public void Clear_NoTopics_IsNotDirty() {
@@ -483,9 +481,9 @@ namespace OnTopic.Tests {
     | TEST: IS DIRTY: MARK CLEAN: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/>
-    ///   that is <see cref="Topic.IsNew"/>. Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>
-    ///   even after calling <see cref="TopicRelationshipMultiMap.MarkClean(String)"/> since new topics cannot be clean.
+    ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/> that is
+    ///   <see cref="Topic.IsNew"/>. Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c> even
+    ///   after calling <see cref="TopicRelationshipMultiMap.MarkClean(String)"/> since new topics cannot be clean.
     /// </summary>
     [TestMethod]
     public void IsDirty_MarkClean_ReturnsTrue() {
