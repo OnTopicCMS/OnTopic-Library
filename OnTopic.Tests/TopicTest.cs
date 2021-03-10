@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
+using OnTopic.Collections;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
 
@@ -82,6 +83,32 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "ContentTypeDescriptor", 123);
       topic.Id                  = 124;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: KEY: CHANGE VALUE: UPDATES PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Changes a <see cref="Topic.Key"/>, and confirms that the <see cref="Topic.Parent"/>'s <see cref="Topic.Children"/>
+    ///   collection is updated to reflect the new <see cref="Topic.Key"/>.
+    /// </summary>
+    /// <remarks>
+    ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref="
+    ///   Topic.Key"/> changed. We have code that will handle that, however.
+    /// </remarks>
+    [TestMethod]
+    public void Key_ChangeValue_UpdatesParent() {
+
+      var parent                = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = TopicFactory.Create("Original", "ContentTypeDescriptor", parent, 2);
+
+      topic.Key                 = "New";
+
+      Assert.AreEqual<string>("New", topic.Key);
+      Assert.IsTrue(topic.IsDirty("Key"));
+      Assert.IsTrue(parent.Children.Contains("New"));
+      Assert.IsFalse(parent.Children.Contains("Original"));
 
     }
 
