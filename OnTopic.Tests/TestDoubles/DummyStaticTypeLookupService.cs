@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Lookup {
 
@@ -16,6 +17,7 @@ namespace OnTopic.Lookup {
   ///   order to relay access to protected members for the purpose of testing. The <see cref="DummyStaticTypeLookupService"/>
   ///   doesn't implement any functionality of its own; it's just a pass-through wrapper.
   /// </summary>
+  [ExcludeFromCodeCoverage]
   public class DummyStaticTypeLookupService: StaticTypeLookupService {
 
     /*==========================================================================================================================
