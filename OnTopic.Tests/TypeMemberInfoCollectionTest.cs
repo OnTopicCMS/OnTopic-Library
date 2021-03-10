@@ -407,14 +407,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD: VALID VALUE: SETS VALUE
+    | TEST: SET METHOD VALUE: VALID VALUE: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void SetMethod_ValidValue_SetsValue() {
+    public void SetMethodValue_ValidValue_SetsValue() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
@@ -429,14 +429,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD: INVALID VALUE: DOESN'T SET VALUE
+    | TEST: SET METHOD VALUE: INVALID VALUE: DOESN'T SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
     /// </summary>
     [TestMethod]
-    public void SetMethod_InvalidValue_DoesNotSetValue() {
+    public void SetMethodValue_InvalidValue_DoesNotSetValue() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
@@ -451,14 +451,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID MEMBER: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethod_Integer_SetsValue() {
+    public void SetMethodValue_Integer_SetsValue() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
