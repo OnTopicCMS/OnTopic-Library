@@ -316,19 +316,21 @@ namespace OnTopic.Tests {
     /// <summary>
     ///   Assembles a new <see cref="TopicReferenceCollection"/> with a <see cref="Topic.BaseTopic"/>, adds a new <see cref="
     ///   Topic"/> reference to the <see cref="Topic.BaseTopic"/>, and confirms that <see cref="TrackedRecordCollection{TItem,
-    ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the related topic reference.
+    ///   TValue, TAttribute}.GetValue(String, Boolean)"/> correctly returns the related topic reference, inheriting from both
+    ///   <see cref="Topic.Parent"/> and <see cref="Topic.BaseTopic"/>.
     /// </summary>
     [TestMethod]
     public void GetTopic_InheritedReference_ReturnsTopic() {
 
-      var topic                 = TopicFactory.Create("Topic", "Page");
+      var parentTopic           = TopicFactory.Create("Parent", "Page");
+      var topic                 = TopicFactory.Create("Topic", "Page", parentTopic);
       var baseTopic             = TopicFactory.Create("Base", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.BaseTopic           = baseTopic;
+      parentTopic.BaseTopic     = baseTopic;
       baseTopic.References.SetValue("Reference", reference);
 
-      Assert.AreEqual(reference, topic.References.GetValue("Reference"));
+      Assert.AreEqual(reference, topic.References.GetValue("Reference", true));
 
     }
 
