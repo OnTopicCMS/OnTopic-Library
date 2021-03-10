@@ -455,5 +455,28 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/>.
+    ///   Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c> after calling <see cref="
+    ///   TopicRelationshipMultiMap.MarkClean(String)"/>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_ReturnsFalse() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var relationships         = new TopicRelationshipMultiMap(topic);
+      var related               = TopicFactory.Create("Topic", "Page", 2);
+
+      relationships.SetValue("Related", related);
+
+      relationships.MarkClean("Related");
+
+      Assert.IsFalse(relationships.IsDirty());
+      Assert.IsFalse(relationships.IsDirty("Related"));
+
+    }
   } //Class
 } //Namespace
