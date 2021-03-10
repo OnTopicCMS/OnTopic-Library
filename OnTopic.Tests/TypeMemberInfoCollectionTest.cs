@@ -14,6 +14,7 @@ using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
+using OnTopic.ViewModels;
 
 namespace OnTopic.Tests {
 
@@ -211,6 +212,29 @@ namespace OnTopic.Tests {
       Assert.IsTrue(isKeySet);
       Assert.AreEqual<string>("NewKey", topic.Key);
       Assert.AreEqual<string?>("NewKey", key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: IGNORES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> method ignores <see cref="String.Empty"/> values, assuming the target property isn't a
+    ///   <see cref="String"/>.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_EmptyValue_Ignores() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NullablePropertyTopicViewModel() {
+        NullableInteger         = 5
+      };
+
+      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", "");
+
+      Assert.IsFalse(isValueSet);
+      Assert.AreEqual<int?>(5, model.NullableInteger);
 
     }
 
