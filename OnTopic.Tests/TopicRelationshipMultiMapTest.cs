@@ -480,6 +480,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MARK CLEAN: RETURNS TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Adds an <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic"/>
+    ///   that is <see cref="Topic.IsNew"/>. Confirms that <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>
+    ///   even after calling <see cref="TopicRelationshipMultiMap.MarkClean(String)"/> since new topics cannot be clean.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MarkClean_ReturnsTrue() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var relationships         = new TopicRelationshipMultiMap(topic);
+      var related               = TopicFactory.Create("Topic", "Page", 2);
+
+      relationships.SetValue("Related", related, false);
+
+      relationships.MarkClean("Related");
+
+      Assert.IsTrue(relationships.IsDirty());
+      Assert.IsTrue(relationships.IsDirty("Related"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: MARK CLEAN WITH NEW TOPIC: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
