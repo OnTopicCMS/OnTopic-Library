@@ -119,6 +119,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET VALUE: INCOMING RELATIONSHIPS: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to set a relationship on a <see cref="TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c>
+    ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.SetValue(string, Topic,
+    ///   Boolean?, Boolean)"/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void SetValue_IncomingRelationships_ThrowsException() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+      var relationships         = new TopicRelationshipMultiMap(parent, true);
+
+      relationships.SetValue("Friends", related);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: UPDATES KEY COUNT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
