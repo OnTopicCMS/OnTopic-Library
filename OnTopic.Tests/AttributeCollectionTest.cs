@@ -74,6 +74,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET VALUE: EMPTY VALUE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   If the <see cref="TrackedRecord{T}.Value"/> is <see cref="String.Empty"/>, then <see cref="TrackedRecordCollection{
+    ///   TItem, TValue, TAttribute}.GetValue(String, Boolean)"/> should return <c>null</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetValue_EmptyValue_ReturnsNull() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("EmptyValue", "");
+
+      Assert.IsNull(topic.Attributes.GetValue("EmptyValue"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET INTEGER: CORRECT VALUE: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
