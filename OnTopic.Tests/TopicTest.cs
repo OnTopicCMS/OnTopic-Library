@@ -121,6 +121,7 @@ namespace OnTopic.Tests {
       childTopic.Parent         = targetParent;
 
       Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
+      Assert.IsTrue(targetParent.Children.Contains("ChildTopic"));
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
       Assert.AreEqual<int>(10, childTopic.Parent.Id);
 
