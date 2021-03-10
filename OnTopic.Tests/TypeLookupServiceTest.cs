@@ -70,6 +70,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: STATIC TYPE LOOKUP SERVICE: ADD OR REPLACE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.AddOrReplace(Type)"/>
+    ///   to ensure it correctly adds new items, but and replaces duplicate items.
+    /// </summary>
+    [TestMethod]
+    public void StaticLookupService_AddOrReplace_ReturnsExpected() {
+
+      var lookupService         = new DummyStaticTypeLookupService();
+
+      lookupService.AddOrReplace(typeof(System.Diagnostics.Contracts.Contract));
+      lookupService.AddOrReplace(typeof(Internal.Diagnostics.Contract));
+
+      Assert.AreEqual<Type?>(typeof(Internal.Diagnostics.Contract), lookupService.Lookup(nameof(Internal.Diagnostics.Contract)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DEFAULT TOPIC LOOKUP SERVICE: LOOKUP: RETURNS EXPECTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
