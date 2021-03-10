@@ -110,6 +110,40 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: COMPOSITE TYPE LOOKUP SERVICE: LOOKUP: RETURNS FALLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="CompositeTypeLookupService"/> and calls <see cref="CompositeTypeLookupService.Lookup(String[]
+    ///   )"/> to ensure it correctly falls back to each <see cref="ITypeLookupService"/> implementation.
+    /// </summary>
+    [TestMethod]
+    public void CompositeTypeLookupService_Lookup_ReturnsFallback() {
+
+      var lookupService1        = new StaticTypeLookupService(
+        new List<Type> {
+          typeof(EmptyViewModel),
+          typeof(FallbackViewModel),
+          typeof(Internal.Diagnostics.Contract)
+        }
+      );
+
+      var lookupService2        = new StaticTypeLookupService(
+        new List<Type> {
+          typeof(AscendentTopicViewModel),
+          typeof(FallbackViewModel),
+          typeof(System.Diagnostics.Contracts.Contract)
+        }
+      );
+
+      var lookupService         = new CompositeTypeLookupService(lookupService1, lookupService2);
+
+      Assert.AreEqual<Type?>(typeof(System.Diagnostics.Contracts.Contract), lookupService.Lookup("Contract"));
+      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing", "FallbackViewModel"));
+      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup("Missing")?? typeof(FallbackViewModel));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DEFAULT TOPIC LOOKUP SERVICE: LOOKUP: RETURNS EXPECTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
