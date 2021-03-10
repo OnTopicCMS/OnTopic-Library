@@ -71,6 +71,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void GetValue_MissingValue_ReturnsDefault() {
       var topic = TopicFactory.Create("Test", "Container");
+      Assert.AreEqual<string?>(null, topic.Attributes.GetValue("InvalidAttribute"));
       Assert.AreEqual<string>("Foo", topic.Attributes.GetValue("InvalidAttribute", "Foo"));
     }
 
@@ -146,8 +147,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("Number3", 5));
       Assert.AreEqual<int>(0, topic.Attributes.GetInteger("Number3"));
+      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("Number3", 5));
 
     }
 
@@ -162,8 +163,8 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
       Assert.AreEqual<int>(0, topic.Attributes.GetInteger("InvalidKey"));
+      Assert.AreEqual<int>(5, topic.Attributes.GetInteger("InvalidKey", 5));
 
     }
 
@@ -221,8 +222,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Number3", "Invalid");
 
-      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
       Assert.AreEqual<double>(0, topic.Attributes.GetDouble("Number3"));
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("Number3", 5.0));
 
     }
 
@@ -237,8 +238,8 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
-      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
       Assert.AreEqual<double>(0, topic.Attributes.GetDouble("InvalidKey"));
+      Assert.AreEqual<double>(5.0, topic.Attributes.GetDouble("InvalidKey", 5.0));
 
     }
 
@@ -300,8 +301,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
       Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
 
     }
 
@@ -320,8 +321,8 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetDateTime("DateTime2", dateTime2);
 
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
       Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
 
     }
 
@@ -339,6 +340,7 @@ namespace OnTopic.Tests {
       topic.Attributes.SetBoolean("IsValue1", true);
       topic.Attributes.SetBoolean("IsValue2", false);
 
+      Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1"));
       Assert.IsTrue(topic.Attributes.GetBoolean("IsValue1", false));
       Assert.IsFalse(topic.Attributes.GetBoolean("IsValue2", true));
 
@@ -381,9 +383,9 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("IsValue", "Invalid");
 
+      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue"));
       Assert.IsTrue(topic.Attributes.GetBoolean("IsValue", true));
       Assert.IsFalse(topic.Attributes.GetBoolean("IsValue", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("IsValue"));
 
     }
 
@@ -398,9 +400,9 @@ namespace OnTopic.Tests {
 
       var topic = TopicFactory.Create("Test", "Container");
 
+      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey"));
       Assert.IsTrue(topic.Attributes.GetBoolean("InvalidKey", true));
       Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey", false));
-      Assert.IsFalse(topic.Attributes.GetBoolean("InvalidKey"));
 
     }
 
