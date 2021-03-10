@@ -11,6 +11,7 @@ using OnTopic.Lookup;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.Entities;
+using OnTopic.Tests.ViewModels;
 
 namespace OnTopic.Tests {
 
@@ -66,6 +67,26 @@ namespace OnTopic.Tests {
 
       Assert.IsFalse(lookupService.TryAdd(typeof(CustomTopic)));
       Assert.IsTrue(lookupService.TryAdd(typeof(Topic)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: STATIC TYPE LOOKUP SERVICE: LOOKUP: RETURNS FALLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.Lookup(String[])"/>
+    ///   to ensure it correctly falls back to subsequent items.
+    /// </summary>
+    [TestMethod]
+    public void StaticLookupService_Lookup_ReturnsFallback() {
+
+      var topics = new List<Type> {
+        typeof(AscendentTopicViewModel),
+        typeof(FallbackViewModel)
+      };
+      var lookupService         = new StaticTypeLookupService(topics);
+
+      Assert.AreEqual<Type?>(typeof(FallbackViewModel), lookupService.Lookup(nameof(EmptyViewModel), nameof(FallbackViewModel)));
 
     }
 
