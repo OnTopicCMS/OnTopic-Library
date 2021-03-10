@@ -275,9 +275,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AnyDirty_DirtyCollection_ReturnTrue() {
 
-      var topics                = new TopicCollection();
-
-      topics.Add(new Topic("Test", "Page"));
+      var topics = new TopicCollection {
+        new Topic("Test", "Page")
+      };
 
       Assert.IsTrue(topics.AnyDirty());
 
@@ -293,9 +293,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AnyDirty_CleanCollection_ReturnFalse() {
 
-      var topics                = new TopicCollection();
-
-      topics.Add(new Topic("Test", "Page", null, 1));
+      var topics = new TopicCollection {
+        new Topic("Test", "Page", null, 1)
+      };
 
       Assert.IsFalse(topics.AnyDirty());
 
@@ -311,9 +311,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AnyNew_ContainsNew_ReturnTrue() {
 
-      var topics                = new TopicCollection();
-
-      topics.Add(new Topic("Test", "Page"));
+      var topics = new TopicCollection {
+        new Topic("Test", "Page")
+      };
 
       Assert.IsTrue(topics.AnyNew());
 
@@ -329,9 +329,9 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void AnyNew_ContainsExisting_ReturnFalse() {
 
-      var topics                = new TopicCollection();
-
-      topics.Add(new Topic("Test", "Page", null, 1));
+      var topics = new TopicCollection {
+        new Topic("Test", "Page", null, 1)
+      };
 
       Assert.IsFalse(topics.AnyNew());
 

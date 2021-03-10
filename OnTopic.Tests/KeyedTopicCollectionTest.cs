@@ -71,14 +71,11 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void InsertItem_DuplicateKey_ThrowsException() {
-
-      var topic                 = new KeyedTopicCollection();
-
-      topic.Add(new Topic("Key", "Page"));
-      topic.Add(new Topic("Key", "Page"));
-
-    }
+    public void InsertItem_DuplicateKey_ThrowsException() =>
+      new KeyedTopicCollection {
+        new Topic("Key", "Page"),
+        new Topic("Key", "Page")
+      };
 
     /*==========================================================================================================================
     | TEST: READ ONLY KEYED TOPIC COLLECTION: EMPTY COLLECTION
