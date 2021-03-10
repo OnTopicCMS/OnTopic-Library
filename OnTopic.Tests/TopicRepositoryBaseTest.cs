@@ -35,6 +35,7 @@ namespace OnTopic.Tests {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    StubTopicRepository             _topicRepository;
+    readonly                    CachedTopicRepository           _cachedTopicRepository;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -49,7 +50,8 @@ namespace OnTopic.Tests {
     ///   crawling the object graph.
     /// </remarks>
     public TopicRepositoryBaseTest() {
-      _topicRepository = new StubTopicRepository();
+      _topicRepository          = new StubTopicRepository();
+      _cachedTopicRepository    = new CachedTopicRepository(_topicRepository);
     }
 
     /*==========================================================================================================================
@@ -94,7 +96,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void Load_NegativeTopicId_ReturnsRootTopic() {
 
-      var topic                 = _topicRepository.Load(-2);
+      var topic                 = _cachedTopicRepository.Load(-2);
 
       Assert.AreEqual<string?>("Root", topic?.GetUniqueKey());
 
@@ -128,7 +130,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void Load_FutureDate_ThrowsException() =>
-      _topicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
+      _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
 
     /*==========================================================================================================================
     | TEST: LOAD: OLD DATE: THROWS EXCEPTION
@@ -140,8 +142,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void Load_OldDate_ThrowsException() =>
-      _topicRepository.Load(1111, new DateTime(2010, 10, 15));
-
+      _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15));
 
     /*==========================================================================================================================
     | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
