@@ -765,6 +765,21 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET VALUE: DUPLICATE VALUE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to insert a <see cref="TrackedRecord{T}"/> with the same <see cref="TrackedRecord{T}.Key"/> as an existing
+    ///   value, and confirms that the expected <see cref="ArgumentException"/> is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SetValue_DuplicateValue_ThrowsException() {
+      var topic = TopicFactory.Create("Test", "Container");
+      topic.Attributes.Add(new("Test", "Original"));
+      topic.Attributes.Add(new("Test", "New"));
+    }
+
+    /*==========================================================================================================================
     | TEST: ADD: VALID ATTRIBUTE RECORD: IS RETURNED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
