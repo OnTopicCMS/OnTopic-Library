@@ -24,13 +24,13 @@ namespace OnTopic.Tests {
   public class TopicRelationshipMultiMapTest {
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: CREATES RELATIONSHIP
+    | TEST: SET VALUE: CREATES RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible.
     /// </summary>
     [TestMethod]
-    public void SetTopic_CreatesRelationship() {
+    public void SetValue_CreatesRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -42,7 +42,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: INVALID RELATIONSHIP KEY: RETURNS FALSE
+    | TEST: REMOVE: INVALID RELATIONSHIP KEY: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Attempts to remove a <see cref="Topic"/> from a <see cref="Topic.Relationships"/> where the <see cref="KeyValuesPair{
@@ -50,7 +50,7 @@ namespace OnTopic.Tests {
     ///   return <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_InvalidRelationshipKey_DoesNothing() {
+    public void Remove_InvalidRelationshipKey_DoesNothing() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var unrelated             = TopicFactory.Create("Unrelated", "Page");
@@ -60,13 +60,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: REMOVES RELATIONSHIP
+    | TEST: REMOVE: REMOVES RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and then removes it by key, and confirms that it is removed.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_RemovesRelationship() {
+    public void Remove_RemovesRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -79,14 +79,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: REMOVES INCOMING RELATIONSHIP
+    | TEST: REMOVE: REMOVES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and then removes it by key, and confirms that it is removed from the incoming relationships
     ///   property.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_RemovesIncomingRelationship() {
+    public void Remove_RemovesIncomingRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -100,13 +100,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: CREATES INCOMING RELATIONSHIP
+    | TEST: SET VALUE: CREATES INCOMING RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets a relationship and confirms that it is accessible on incoming relationships property.
     /// </summary>
     [TestMethod]
-    public void SetTopic_CreatesIncomingRelationship() {
+    public void SetValue_CreatesIncomingRelationship() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var related               = TopicFactory.Create("Related", "Page");
@@ -119,13 +119,13 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: UPDATES KEY COUNT
+    | TEST: SET VALUE: UPDATES KEY COUNT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets relationships in multiple namespaces, and the correct number of keys are returned.
     /// </summary>
     [TestMethod]
-    public void SetTopic_UpdatesKeyCount() {
+    public void SetValue_UpdatesKeyCount() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var relationships         = new TopicRelationshipMultiMap(parent);
@@ -257,14 +257,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: IS DUPLICATE: IS NOT DIRTY
+    | TEST: SET VALUE: IS DUPLICATE: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
     ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetTopic_IsDuplicate_IsNotDirty() {
+    public void SetValue_IsDuplicate_IsNotDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -280,14 +280,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: IS DUPLICATE: STAYS DIRTY
+    | TEST: SET VALUE: IS DUPLICATE: STAYS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a duplicate topic to a <see cref="TopicRelationshipMultiMap"/> and confirms that value of <see cref="
     ///   TopicRelationshipMultiMap.IsDirty()"/> is <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetTopic_IsDuplicate_StaysDirty() {
+    public void SetSetValue_IsDuplicate_StaysDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -302,14 +302,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: IS DIRTY
+    | TEST: REMOVE: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Removes an existing <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value for
     ///   <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>true</c>.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_IsDirty() {
+    public void Remove_IsDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -324,14 +324,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: MISSING TOPIC: IS NOT DIRTY
+    | TEST: REMOVE: MISSING TOPIC: IS NOT DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value
     ///   for <see cref="TopicRelationshipMultiMap.IsDirty()"/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_MissingTopic_IsNotDirty() {
+    public void Remove_MissingTopic_IsNotDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -345,14 +345,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: REMOVE TOPIC: MISSING TOPIC: STAYS DIRTY
+    | TEST: REMOVE: MISSING TOPIC: STAYS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Removes a non-existent <see cref="Topic"/> from a <see cref="TopicRelationshipMultiMap"/> and conirms that the value
     ///   for <see cref="TopicRelationshipMultiMap.IsDirty()"/> stays <c>true</c>.
     /// </summary>
     [TestMethod]
-    public void RemoveTopic_MissingTopic_StaysDirty() {
+    public void Remove_MissingTopic_StaysDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -410,7 +410,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: NEW PARENT: IS DIRTY
+    | TEST: SET VALUE: NEW PARENT: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds an existing <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with a <see cref="Topic.
@@ -419,7 +419,7 @@ namespace OnTopic.Tests {
     ///   markDirty</c> parameter set to <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetTopic_NewParent_IsDirty() {
+    public void SetValue_NewParent_IsDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var relationships         = new TopicRelationshipMultiMap(topic);
@@ -432,7 +432,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET TOPIC: NEW TOPIC: IS DIRTY
+    | TEST: SET VALUE: NEW TOPIC: IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Adds a new <see cref="Topic"/> to a <see cref="TopicRelationshipMultiMap"/> associated with an existing <see cref="
@@ -441,7 +441,7 @@ namespace OnTopic.Tests {
     ///   set to <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetTopic_NewTopic_IsDirty() {
+    public void SetValue_NewTopic_IsDirty() {
 
       var topic                 = TopicFactory.Create("Test", "Page", 1);
       var relationships         = new TopicRelationshipMultiMap(topic);
