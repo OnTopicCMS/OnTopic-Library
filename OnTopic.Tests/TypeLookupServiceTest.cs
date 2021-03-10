@@ -24,5 +24,22 @@ namespace OnTopic.Tests {
   [ExcludeFromCodeCoverage]
   public class TypeLookupServiceTest {
 
+    /*==========================================================================================================================
+    | TEST: DYNAMIC TOPIC BINDING MODEL LOOKUP SERVICE: LOOKUP: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests the <see cref="DynamicTopicBindingModelLookupService"/> to ensure it correctly identifies binding models that
+    ///   are defined as part of the test project.
+    /// </summary>
+    [TestMethod]
+    public void DynamicTopicBindingModelLookupService_Lookup_ReturnsExpected() {
+
+      var lookupService         = new DynamicTopicBindingModelLookupService();
+
+      Assert.AreEqual<Type?>(typeof(PageTopicBindingModel), lookupService.Lookup(nameof(PageTopicBindingModel)));
+      Assert.IsNull(lookupService.Lookup("MissingTopicBindingModel"));
+
+    }
+
   } //Class
 } //Namespace
