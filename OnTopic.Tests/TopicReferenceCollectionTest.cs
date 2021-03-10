@@ -100,6 +100,12 @@ namespace OnTopic.Tests {
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set. Also confirms that items are correctly removed
     ///   from recipricol <see cref="Topic.IncomingRelationships"/>.
     /// </summary>
+    /// <remarks>
+    ///   This calls <see cref="TopicReferenceCollection.ClearItems()"/> twice. The first to confirm that the <see cref="Topic.
+    ///   IncomingRelationships"/> are cleared, the second to ensure that the attempt to call <see cref="Topic.
+    ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/>s  will now be <c>
+    ///   null</c>.
+    /// </remarks>
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
 
@@ -107,6 +113,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetValue("Reference", reference, false);
+      topic.References.Clear();
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -165,6 +172,12 @@ namespace OnTopic.Tests {
     ///   reference using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.RemoveItem(Int32)"/>, and confirms that
     ///   the <see cref="Topic.IncomingRelationships"/> reference is correctly removed as well.
     /// </summary>
+    /// <remarks>
+    ///   This calls <see cref="KeyedCollection{TKey, TItem}.Remove(TKey)"/> twice. The first to confirm that the <see cref="
+    ///   Topic.IncomingRelationships"/> is removed, the second to ensure that the attempt to call <see cref="Topic.
+    ///   IncomingRelationships"/> isn't disrupted by the fact that the <see cref="TrackedRecord{T}.Value"/> will now be <c>null
+    ///   </c>.
+    /// </remarks>
     [TestMethod]
     public void Remove_ExistingReference_IncomingRelationshipRemoved() {
 
@@ -172,6 +185,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
+      topic.References.Remove("Reference");
       topic.References.Remove("Reference");
 
       Assert.AreEqual<int>(0, reference.IncomingRelationships.GetValues("Reference").Count);
@@ -214,6 +228,12 @@ namespace OnTopic.Tests {
     ///   DateTime?)"/> with a <c>null</c> value, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.
     ///   IncomingRelationships"/> are correctly updated.
     /// </summary>
+    /// <remarks>
+    ///   This calls <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)
+    ///   "/> twice. The first to confirm that the <see cref="Topic.IncomingRelationships"/> is set, the second to ensure that
+    ///   the attempt to call <see cref="Topic.IncomingRelationships"/> isn't disrupted by the fact that the <see cref="
+    ///   TrackedRecord{T}.Value"/> will now be <c>null</c>.
+    /// </remarks>
     [TestMethod]
     public void SetValue_ExistingReference_IncomingRelationshipsUpdates() {
 
@@ -221,6 +241,7 @@ namespace OnTopic.Tests {
       var reference             = TopicFactory.Create("Reference", "Page");
 
       topic.References.SetValue("Reference", reference);
+      topic.References.SetValue("Reference", null);
       topic.References.SetValue("Reference", null);
 
       Assert.IsTrue(topic.References.Contains("Reference"));
