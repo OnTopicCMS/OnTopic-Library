@@ -584,6 +584,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: INVALID NESTED TOPIC LIST TYPE: THROWS INVALID OPERATION EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a nested topic that implements an invalid collection type—i.e., it implements a <see
+    ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref="
+    ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var bindingModel          = new InvalidNestedTopicListTypeTopicBindingModel("Test");
+
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: INVALID TOPIC REFERENCE TYPE: THROWS INVALID OPERATION EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
