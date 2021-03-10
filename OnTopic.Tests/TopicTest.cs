@@ -449,7 +449,7 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | MARK CLEAN: CHANGE COLLECTION: RESETS IS DIRTY
+    | MARK CLEAN: CHANGE COLLECTIONS: RESETS IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
@@ -457,7 +457,7 @@ namespace OnTopic.Tests {
     ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
     /// </summary>
     [TestMethod]
-    public void MarkClean_ChangeCollection_ResetIsDirty() {
+    public void MarkClean_ChangeCollections_ResetIsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var related               = TopicFactory.Create("Related", "Page", 2);
@@ -471,6 +471,32 @@ namespace OnTopic.Tests {
       Assert.IsFalse(topic.IsDirty(true));
 
     }
+
+    /*==========================================================================================================================
+    | MARK CLEAN: INCLUDE COLLECTIONS: RESETS IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
+    ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(String, Boolean)"/> resets the value
+    ///   of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_IncludeCollections_ResetsIsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var related               = TopicFactory.Create("Related", "Page", 2);
+
+      topic.Attributes.SetValue("Related", related.Key);
+      topic.References.SetValue("Related", related);
+      topic.Relationships.SetValue("Related", related);
+
+      topic.MarkClean("Related", true);
+
+      Assert.IsFalse(topic.IsDirty("Related", true));
+      Assert.IsFalse(topic.IsDirty(true));
+
+    }
+
 
     /*==========================================================================================================================
     | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
