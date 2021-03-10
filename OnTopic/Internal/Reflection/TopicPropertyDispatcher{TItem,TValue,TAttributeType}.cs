@@ -207,6 +207,7 @@ namespace OnTopic.Internal.Reflection {
     ///   The key of the <typeparamref name="TItem"/>, which potentially corresponds to a <see cref="Topic"/> property.
     /// </param>
     /// <returns>Returns <c>true</c> if the <paramref name="itemKey"/> has been registered, otherwise <c>false</c>.</returns>
+    [ExcludeFromCodeCoverage]
     internal bool IsRegistered(string itemKey) => IsRegistered(itemKey, out var _);
 
     /// <summary>
