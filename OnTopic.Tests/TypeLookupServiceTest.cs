@@ -28,6 +28,29 @@ namespace OnTopic.Tests {
   public class TypeLookupServiceTest {
 
     /*==========================================================================================================================
+    | TEST: TYPE COLLECTION: CONSTRUCTOR: CONTAINS UNIQUE TYPES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Initializes a new <see cref="TypeCollection"/> with a list of <see cref="Type"/> objects, including a duplicate.
+    ///   Confirms that only the unique values are provided.
+    /// </summary>
+    [TestMethod]
+    public void TypeCollection_Constructor_ContainsUniqueTypes() {
+
+      var topics = new List<Type> {
+        typeof(BasicTopicBindingModel),
+        typeof(CustomTopic),
+        typeof(CustomTopic)
+      };
+      var typeCollection        = new TypeCollection(topics);
+
+      Assert.AreEqual<int>(2, typeCollection.Count);
+      Assert.IsTrue(typeCollection.Contains(typeof(CustomTopic)));
+      Assert.IsFalse(typeCollection.Contains(typeof(Topic)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DEFAULT TOPIC LOOKUP SERVICE: LOOKUP: RETURNS EXPECTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
