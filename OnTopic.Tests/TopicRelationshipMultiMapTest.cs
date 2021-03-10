@@ -50,12 +50,31 @@ namespace OnTopic.Tests {
     ///   return <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void Remove_InvalidRelationshipKey_DoesNothing() {
+    public void Remove_InvalidRelationshipKey_ReturnsFalse() {
 
       var parent                = TopicFactory.Create("Parent", "Page");
       var unrelated             = TopicFactory.Create("Unrelated", "Page");
 
       Assert.IsFalse(parent.Relationships.Remove("Unrelated", unrelated));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: REMOVE: INVALID TOPIC KEY: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to remove a <see cref="Topic"/> from a <see cref="TopicMultiMap"/> where the <see cref="Topic"/> is does not
+    ///   exist. In this case, <see cref="TopicMultiMap.Remove(String, Topic)"/> should return <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void Remove_InvalidTopicKey_ReturnsFalse() {
+
+      var multiMap              = new TopicMultiMap();
+      var unrelated             = TopicFactory.Create("Unrelated", "Page");
+
+      multiMap.Add("Related", new("Test", "Page"));
+
+      Assert.IsFalse(multiMap.Remove("Related", unrelated));
 
     }
 
