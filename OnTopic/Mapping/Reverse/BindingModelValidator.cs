@@ -252,8 +252,7 @@ namespace OnTopic.Mapping.Reverse {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (
         attributeDescriptor.ModelType is ModelType.NestedTopic &&
-        !typeof(ITopicBindingModel).IsAssignableFrom(listType) &&
-        listType is not null
+        !typeof(ITopicBindingModel).IsAssignableFrom(listType)
       ) {
         throw new MappingModelValidationException(
           $"The '{property.Name}' property on the '{sourceType.Name}' class has been determined to be a " +
