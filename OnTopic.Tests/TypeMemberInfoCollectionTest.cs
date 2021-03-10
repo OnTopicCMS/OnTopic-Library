@@ -216,6 +216,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: NULL VALUE: IGNORES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> method ignores <c>null</c> values, assuming the target property isn't a <see cref="String"
+    ///   />.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_NullValue_Ignores() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NullablePropertyTopicViewModel() {
+        NullableInteger         = 5
+      };
+
+      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", null);
+
+      Assert.IsFalse(isValueSet);
+      Assert.AreEqual<int?>(5, model.NullableInteger);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: EMPTY VALUE: IGNORES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
