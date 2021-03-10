@@ -572,6 +572,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: IS NEW: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the <see cref="AttributeCollection"/> with a <see cref="AttributeRecord"/> that is <i>not</i> marked as <see
+    ///   cref="TrackedRecord{T}.IsDirty"/>. Confirms that <see cref="AttributeCollection.IsDirty(Boolean)"/> still returns
+    ///   <c>true</c> if the associated <see cref="Topic"/> is <see cref="Topic.IsNew"/>. New topics cannot be clean.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_IsNew_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      topic.Attributes.SetValue("Foo", "Bar", false);
+
+      Assert.IsTrue(topic.Attributes.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: EXCLUDE LAST MODIFIED: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
