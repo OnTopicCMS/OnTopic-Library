@@ -549,6 +549,7 @@ namespace OnTopic.Tests {
 
       Assert.IsFalse(topic.Attributes.IsDirty());
       Assert.IsFalse(topic.Attributes.IsDirty(true));
+      Assert.IsFalse(topic.Attributes.DeletedItems.Contains("Foo"));
 
     }
 
