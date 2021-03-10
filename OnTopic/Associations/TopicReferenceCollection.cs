@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using OnTopic.Collections.Specialized;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Repositories;
 
 namespace OnTopic.Associations {
@@ -69,6 +70,11 @@ namespace OnTopic.Associations {
     protected override void InsertItem(int index, TopicReferenceRecord item) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(item, nameof(item));
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Provide base logic
       \-----------------------------------------------------------------------------------------------------------------------*/
       base.InsertItem(index, item);
@@ -76,7 +82,7 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
+      item.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
 
     }
 
@@ -85,6 +91,11 @@ namespace OnTopic.Associations {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
     protected override void SetItem(int index, TopicReferenceRecord item) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(item, nameof(item));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get existing reference
@@ -99,7 +110,7 @@ namespace OnTopic.Associations {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle recipricol references
       \-----------------------------------------------------------------------------------------------------------------------*/
-      existingItem?.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic, true);
+      existingItem.Value?.IncomingRelationships.Remove(existingItem.Key, AssociatedTopic, true);
       item?.Value?.IncomingRelationships.SetValue(item.Key, AssociatedTopic, null, true);
 
     }
