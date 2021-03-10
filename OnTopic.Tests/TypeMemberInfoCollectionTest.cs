@@ -141,6 +141,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: HAS SETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasSettableProperty(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasSettableProperty_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: HAS GETTABLE METHOD: RETURNS EXPECTED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
