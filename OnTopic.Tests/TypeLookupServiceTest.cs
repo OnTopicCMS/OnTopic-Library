@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Internal.Diagnostics;
 using OnTopic.Lookup;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
@@ -47,6 +46,26 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int>(2, typeCollection.Count);
       Assert.IsTrue(typeCollection.Contains(typeof(CustomTopic)));
       Assert.IsFalse(typeCollection.Contains(typeof(Topic)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: STATIC TYPE LOOKUP SERVICE: TRY ADD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="StaticTypeLookupService"/> and calls <see cref="StaticTypeLookupService.TryAdd(Type)"/> to
+    ///   ensure it correctly adds new items, but not duplicate items.
+    /// </summary>
+    [TestMethod]
+    public void StaticLookupService_TryAdd_ReturnsExpected() {
+
+      var topics = new List<Type> {
+        typeof(CustomTopic)
+      };
+      var lookupService         = new DummyStaticTypeLookupService(topics);
+
+      Assert.IsFalse(lookupService.TryAdd(typeof(CustomTopic)));
+      Assert.IsTrue(lookupService.TryAdd(typeof(Topic)));
 
     }
 
