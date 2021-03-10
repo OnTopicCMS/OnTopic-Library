@@ -9,6 +9,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Collections.Specialized;
 using OnTopic.Associations;
 using System.Diagnostics.CodeAnalysis;
+using OnTopic.Collections;
+using System.Collections.Generic;
 
 namespace OnTopic.Tests {
 
@@ -163,6 +165,30 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<int>(5, readOnlyRelationships.Count);
       Assert.AreEqual<int>(5, counter);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: INDEXER: RETURNS KEY/VALUES PAIRS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReadOnlyTopicMultiMap"/> and ensures that a <see cref="ReadOnlyTopicCollection"/> can be
+    ///   retrieved by <see cref="KeyValuesPair{TKey, TValue}.Key"/> via the <see cref="ReadOnlyTopicMultiMap"/> indexer.
+    /// </summary>
+    [TestMethod]
+    public void Indexer_ReturnsKeyValuesPair() {
+
+      var multiMap              = new TopicMultiMap();
+      var readOnlyTopicMultiMap = new ReadOnlyTopicMultiMap(multiMap);
+      var topics                = new TopicCollection();
+      var keyValuesPair         = new KeyValuesPair<string, TopicCollection>("Relationship", topics);
+      var topic                 = new Topic("Test", "Test");
+
+      topics.Add(topic);
+      multiMap.Add(keyValuesPair);
+
+      Assert.AreEqual<int>(1, readOnlyTopicMultiMap.Count);
+      Assert.AreEqual<Topic?>(topic, readOnlyTopicMultiMap["Relationship"].FirstOrDefault());
 
     }
 
