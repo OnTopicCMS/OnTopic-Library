@@ -599,6 +599,22 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: MISSING KEY: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Confirms that calling <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty(String)"/> with an invalid
+    ///   <c>key</c> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_MissingKey_ReturnsFalse() {
+
+      var topic = TopicFactory.Create("Test", "Container");
+
+      Assert.IsFalse(topic.Attributes.IsDirty("MissingKey"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IS DIRTY: EXCLUDE LAST MODIFIED: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
