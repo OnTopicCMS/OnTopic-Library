@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
+using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
 
 namespace OnTopic.Tests {
@@ -172,7 +173,6 @@ namespace OnTopic.Tests {
 
     }
 
-
     /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -219,7 +219,6 @@ namespace OnTopic.Tests {
       Assert.AreEqual<DateTime>(new(2008, 6, 3), lastModified);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
@@ -283,7 +282,6 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int>(0, (int)value);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
