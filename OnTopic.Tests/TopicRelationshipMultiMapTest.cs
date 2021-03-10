@@ -139,6 +139,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REMOVE: INCOMING RELATIONSHIPS: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to remove a relationship from a <see cref="TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c>
+    ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.Remove(String, Topic, Boolean)
+    ///   "/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Remove_IncomingRelationships_ThrowsException() {
+
+      var parent                = TopicFactory.Create("Parent", "Page");
+      var related               = TopicFactory.Create("Related", "Page");
+      var relationships         = new TopicRelationshipMultiMap(parent, true);
+
+      relationships.Remove("Friends", related);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET VALUE: UPDATES KEY COUNT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
