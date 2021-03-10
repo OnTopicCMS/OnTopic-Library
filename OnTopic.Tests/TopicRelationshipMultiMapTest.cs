@@ -139,6 +139,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET ENUMERATOR: RETURNS KEY/VALUES PAIRS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Enumerates over the <see cref="ReadOnlyTopicMultiMap"/>, ensuring that the enumerator defined by the <see cref="
+    ///   ReadOnlyTopicMultiMap.GetEnumerator()"/> interface implementation successfully relays the call to the underlying
+    ///   <see cref="TopicMultiMap"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetEnumerator_ReturnsKeyValuesPairs() {
+
+      var counter               = 0;
+      var multiMap              = new TopicMultiMap();
+      var readOnlyRelationships = new ReadOnlyTopicMultiMap(multiMap);
+
+      for (var i = 0; i < 5; i++) {
+        multiMap.Add(new("Relationship" + i, new()));
+      }
+
+      foreach (var pair in readOnlyRelationships) {
+        counter++;
+      }
+
+      Assert.AreEqual<int>(5, readOnlyRelationships.Count);
+      Assert.AreEqual<int>(5, counter);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET ALL VALUES: RETURNS ALL TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
