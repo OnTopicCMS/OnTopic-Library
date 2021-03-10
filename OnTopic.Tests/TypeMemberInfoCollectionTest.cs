@@ -420,11 +420,9 @@ namespace OnTopic.Tests {
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
-      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsTrue(isValueSet);
-      Assert.IsTrue(value is int);
-      Assert.AreEqual<int>(123, (int)value);
+      Assert.AreEqual<int>(123, source.GetMethod());
 
     }
 
@@ -442,11 +440,9 @@ namespace OnTopic.Tests {
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
-      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsFalse(isValueSet);
-      Assert.IsTrue(value is int);
-      Assert.AreEqual<int>(0, (int)value);
+      Assert.AreEqual<int>(0, source.GetMethod());
 
     }
 
