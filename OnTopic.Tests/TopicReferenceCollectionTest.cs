@@ -97,7 +97,8 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, calls <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.ClearItems()"/> and confirms that <see cref="
-    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set.
+    ///   TrackedRecordCollection{TItem, TValue, TAttribute}.IsDirty()"/> is set. Also confirms that items are correctly removed
+    ///   from recipricol <see cref="Topic.IncomingRelationships"/>.
     /// </summary>
     [TestMethod]
     public void Clear_ExistingReferences_IsDirty() {
@@ -109,6 +110,7 @@ namespace OnTopic.Tests {
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
+      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
       Assert.IsTrue(topic.References.IsDirty());
 
     }
