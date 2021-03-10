@@ -120,6 +120,25 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasGettableMethod(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableMethod_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET MEMBERS: PROPERTY INFO: RETURNS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
