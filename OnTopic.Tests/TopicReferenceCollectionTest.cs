@@ -183,7 +183,8 @@ namespace OnTopic.Tests {
     ///   Assembles a new <see cref="TopicReferenceCollection"/>, adds a new <see cref="Topic"/> reference using <see cref="
     ///   TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?, DateTime?)"/>, updates the
     ///   reference using <see cref="TrackedRecordCollection{TItem, TValue, TAttribute}.SetValue(String, TValue, Boolean?,
-    ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference is correctly updated.
+    ///   DateTime?)"/>, and confirms that the <see cref="Topic"/> reference and <see cref="Topic.IncomingRelationships"/> are
+    ///   correctly updated.
     /// </summary>
     [TestMethod]
     public void SetValue_ExistingReference_TopicUpdated() {
@@ -196,6 +197,10 @@ namespace OnTopic.Tests {
       topic.References.SetValue("Reference", newReference);
 
       Assert.AreEqual(newReference, topic.References.GetValue("Reference"));
+      Assert.AreEqual<int?>(0, reference.IncomingRelationships.GetValues("Reference")?.Count);
+      Assert.AreEqual<int?>(1, newReference.IncomingRelationships.GetValues("Reference")?.Count);
+
+    }
 
     }
 
