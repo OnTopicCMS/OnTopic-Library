@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -75,6 +76,26 @@ namespace OnTopic.Tests {
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
       Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: DUPLICATE KEY: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.InsertItem(
+    ///   Int32, MemberInfoCollection)"/> throws an exception if a <see cref="MemberInfoCollection"/> with a duplicate <see cref
+    ///   ="MemberInfoCollection{T}.Type"/> already exists.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void Add_DuplicateKey_ThrowsException() {
+
+      var typeCollection        = new TypeMemberInfoCollection();
+
+      typeCollection.Add(new(typeof(EmptyViewModel)));
+      typeCollection.Add(new(typeof(EmptyViewModel)));
 
     }
 
