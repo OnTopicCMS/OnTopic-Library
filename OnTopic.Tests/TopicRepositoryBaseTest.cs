@@ -403,7 +403,7 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = TopicFactory.Create("Test", "ContentTypes", 1);
 
       topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
 
@@ -412,7 +412,7 @@ namespace OnTopic.Tests {
 
       //Expect Title, even though it isn't IsDirty
       Assert.AreEqual<int>(1, dirtyAttributes.Count());
-      Assert.AreEqual<int>(0, cleanAttributes.Count());
+      Assert.AreEqual<int>(1, cleanAttributes.Count());
 
     }
 
