@@ -450,11 +450,11 @@ namespace OnTopic.Tests {
     | TEST: SET METHOD VALUE: INVALID MEMBER: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the <see cref="
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_Integer_SetsValue() {
+    public void SetMethodValue_InvalidMember_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
@@ -504,6 +504,25 @@ namespace OnTopic.Tests {
 
       Assert.IsFalse(isValueSet);
       Assert.IsNull(source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_InvalidReferenceMember_ReturnsFalse() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedViewModel();
+
+      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", new object());
+
+      Assert.IsFalse(isInvalidSet);
 
     }
 
