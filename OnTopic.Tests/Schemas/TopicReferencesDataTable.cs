@@ -81,7 +81,6 @@ namespace OnTopic.Tests.Schemas {
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(sourceTopicId, nameof(sourceTopicId));
       Contract.Requires(referenceKey, nameof(referenceKey));
-      Contract.Requires(targetTopicId, nameof(targetTopicId));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create new row
