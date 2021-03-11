@@ -1013,5 +1013,30 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: BOOL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_Bool() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("IsHidden", true);
+
+      var sqlParameter          = command.Parameters["@IsHidden"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@IsHidden"));
+      Assert.AreEqual<bool?>(true, (bool?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Bit, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
   } //Class
 } //Namespace
