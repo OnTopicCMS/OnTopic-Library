@@ -431,7 +431,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -483,6 +483,27 @@ namespace OnTopic.Tests {
 
       Assert.IsTrue(isValueSet);
       Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: DOESN'T SET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_InvalidReferenceValue_DoesNotSetValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+      var reference             = new EmptyViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+
+      Assert.IsFalse(isValueSet);
+      Assert.IsNull(source.GetMethod());
 
     }
 
