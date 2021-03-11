@@ -121,20 +121,21 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: LOAD: TOPIC: UPDATES LAST MODIFIED
+    | TEST: ROLLBACK: TOPIC: UPDATES LAST MODIFIED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Calls <see cref="TopicRepository.Load(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
+    ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
     ///   LastModified"/> value is updated.
     /// </summary>
     [TestMethod]
-    public void Load_Topic_UpdatesLastModified() {
+    public void Rollback_Topic_UpdatesLastModified() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
       var topic                 = _topicRepository.Load(11111);
 
       if (topic is not null) {
-        _topicRepository.Load(topic, version);
+        topic.VersionHistory.Add(version);
+        _topicRepository.Rollback(topic, version);
       }
 
       Assert.IsTrue(topic?.VersionHistory.Contains(version));
