@@ -106,7 +106,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.HasMember{T
-    ///   }(Type, string)"/> returns <c>true</c> when appropriate.
+    ///   }(Type, String)"/> returns <c>true</c> when appropriate.
     ///   functions.
     /// </summary>
     [TestMethod]

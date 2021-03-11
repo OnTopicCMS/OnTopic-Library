@@ -114,7 +114,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="DynamicTypeLookupService"/> with a custom predicate and calls the underlying <see cref="
-    ///   StaticTypeLookupService.Lookup(string[])"/> to ensure it correctly adds the expected items.
+    ///   StaticTypeLookupService.Lookup(String[])"/> to ensure it correctly adds the expected items.
     /// </summary>
     [TestMethod]
     public void DynamicTypeLookupService_Predicate_ReturnsExpected() {
