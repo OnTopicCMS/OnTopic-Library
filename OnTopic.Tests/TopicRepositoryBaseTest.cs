@@ -4,12 +4,17 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
+using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
+using OnTopic.Data.Sql;
+using OnTopic.Data.Sql.Models;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 using OnTopic.Repositories;
@@ -955,6 +960,31 @@ namespace OnTopic.Tests {
       Assert.IsTrue(hasFired);
 
       void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_String() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("TopicKey", "Root");
+
+      var sqlParameter          = command.Parameters["@TopicKey"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
+      Assert.AreEqual<string?>("Root", (string?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+
+      command.Dispose();
 
     }
 
