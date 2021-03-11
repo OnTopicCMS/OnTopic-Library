@@ -1091,5 +1091,31 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: STRING BUILDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, string, StringBuilder)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_StringBuilder() {
+
+      var command               = new SqlCommand();
+      var xml                   = new StringBuilder();
+
+      command.AddParameter("AttributesXml", xml);
+
+      var sqlParameter          = command.Parameters["@AttributesXml"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@AttributesXml"));
+      Assert.AreEqual<string?>(xml.ToString(), (string?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
   } //Class
 } //Namespace
