@@ -782,8 +782,8 @@ namespace OnTopic.Tests {
     | TEST: SAVE: UNRESOLVED REFERENCE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws an
-    ///   exception if that reference cannot be resolved.
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws the
+    ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
     /// </summary>
     [TestMethod]
     [ExpectedException(
@@ -801,6 +801,21 @@ namespace OnTopic.Tests {
       _topicRepository.Save(topic, true);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: INVALID CONTENT TYPE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an invalid <see cref="Topic.ContentType"/> and confirms that it throws the
+    ///   expected <see cref="ReferentialIntegrityException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ReferentialIntegrityException),
+      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
+    )]
+    public void Save_InvalidContentType_ThrowsException() =>
+      _topicRepository.Save(new("Test", "InvalidContentType"));
 
     /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
