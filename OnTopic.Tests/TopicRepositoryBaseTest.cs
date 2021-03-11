@@ -610,6 +610,29 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: MISSING ROOT CONTENT ROOT: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> when the <see cref="ITopicRepository"/> doesn't contain a
+    ///   root content type at <c>Root:Configuration:ContentTypes</c>. In this case, it should return <c>null</c>. This will
+    ///   typically only occur when initializing a new database, and is an unexpected condition.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
+
+      var topicRepository       = new StubTopicRepository();
+      var configuration         = topicRepository.Load("Root:Configuration");
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      topicRepository.Delete(configuration!, true);
+
+      var contentType           = topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNull(contentType);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTOR: GET INVALID CONTENT TYPE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
