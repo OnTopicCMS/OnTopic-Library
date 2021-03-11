@@ -765,8 +765,8 @@ namespace OnTopic.Repositories {
           continue;
         }
 
-        //Add the attribute based on the isExtendedAttribute paramter. Add all parameters if isExtendedAttribute is null. Assume
-        //an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
+        //Add the attribute based on the isExtendedAttribute parameter. Add all parameters if isExtendedAttribute is null.
+        //Assume an attribute is extended if the corresponding attribute descriptor cannot be located and the value is over 255
         //characters.
         if (isExtendedAttribute?.Equals(attribute?.IsExtendedAttribute?? attributeValue.Value.Length > 255)?? true) {
           attributes.Add(attributeValue);
