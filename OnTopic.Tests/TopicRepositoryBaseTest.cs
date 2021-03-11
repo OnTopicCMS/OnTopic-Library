@@ -863,8 +863,8 @@ namespace OnTopic.Tests {
     | TEST: SAVE: TOPIC SAVED EVENT: IS FIRED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved
-    ///   "/> is raised.
+    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved"
+    ///   /> is raised.
     /// </summary>
     [TestMethod]
     public void Save_TopicSavedEvent_IsRaised() {
@@ -902,6 +902,54 @@ namespace OnTopic.Tests {
       Assert.IsTrue(hasFired);
 
       void eventHandler(object? sender, TopicRenameEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC MOVED EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
+    ///   TopicMoved"/> is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicMovedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var hasFired              = false;
+
+      topic.Parent              = parent;
+
+      _topicRepository.TopicMoved += eventHandler;
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MOVE: TOPIC MOVED EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
+    ///   /> is raised.
+    /// </summary>
+    [TestMethod]
+    public void Move_TopicMovedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var hasFired              = false;
+
+      _topicRepository.TopicMoved += eventHandler;
+      _topicRepository.Move(topic, parent);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 
     }
 
