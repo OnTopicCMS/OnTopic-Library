@@ -289,21 +289,22 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: INCOMING RELATIONSHIPS: DELETE RELATIONSHIPS
+    | TEST: DELETE: INCOMING RELATIONSHIPS: DELETE ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Deletes a topic with incoming relationships. Deletes those relationships from that topic's <see cref=
-    ///   "Topic.Relationships"/> collection.
+    ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
     /// </summary>
     [TestMethod]
-    public void Delete_IncomingRelationships_DeleteRelationships() {
+    public void Delete_IncomingRelationships_DeleteAssociations() {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
       var related               = TopicFactory.Create("Related", "Page", root);
+      var referenced            = TopicFactory.Create("Referenced", "Page", root);
 
       related.Relationships.SetValue("Related", child);
+      referenced.References.SetValue("Related", child);
 
       _topicRepository.Delete(topic, true);
 
