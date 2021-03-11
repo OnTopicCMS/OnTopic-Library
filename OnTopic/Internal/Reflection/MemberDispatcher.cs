@@ -85,7 +85,7 @@ namespace OnTopic.Internal.Reflection {
     ///   Initializes a new instance of the <see cref="MemberDispatcher"/> class.
     /// </summary>
     /// <param name="attributeFlag">
-    ///   An optional <see cref="System.Attribute"/> which properties must have defined to be considered writable.
+    ///   An optional <see cref="Attribute"/> which properties must have defined to be considered writable.
     /// </param>
     internal MemberDispatcher(Type? attributeFlag = null) : base() {
       _attributeFlag = attributeFlag;
@@ -129,7 +129,7 @@ namespace OnTopic.Internal.Reflection {
       return (
         property is not null and { CanWrite: true } &&
         IsSettableType(property.PropertyType, targetType) &&
-        (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
+        (_attributeFlag is null || Attribute.IsDefined(property, _attributeFlag))
       );
     }
 
@@ -186,7 +186,7 @@ namespace OnTopic.Internal.Reflection {
       return (
         property is not null and { CanRead: true } &&
         IsSettableType(property.PropertyType, targetType) &&
-        (_attributeFlag is null || System.Attribute.IsDefined(property, _attributeFlag))
+        (_attributeFlag is null || Attribute.IsDefined(property, _attributeFlag))
       );
     }
 
@@ -246,7 +246,7 @@ namespace OnTopic.Internal.Reflection {
         method is not null &&
         method.GetParameters().Length is 1 &&
         IsSettableType(method.GetParameters().First().ParameterType, targetType) &&
-        (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
+        (_attributeFlag is null || Attribute.IsDefined(method, _attributeFlag))
       );
     }
 
@@ -360,7 +360,7 @@ namespace OnTopic.Internal.Reflection {
         method is not null &&
         !method.GetParameters().Any() &&
         IsSettableType(method.ReturnType, targetType) &&
-        (_attributeFlag is null || System.Attribute.IsDefined(method, _attributeFlag))
+        (_attributeFlag is null || Attribute.IsDefined(method, _attributeFlag))
       );
     }
 
