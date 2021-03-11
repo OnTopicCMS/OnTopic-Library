@@ -1117,5 +1117,31 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN CODE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddOutputParameter_ReturnCode() {
+
+      var command               = new SqlCommand();
+
+      command.AddOutputParameter("TopicId");
+
+      var sqlParameter          = command.Parameters["@TopicId"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicId"));
+      Assert.AreEqual<int>(-1, command.GetReturnCode("TopicId"));
+      Assert.AreEqual<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
   } //Class
 } //Namespace
