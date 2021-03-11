@@ -1038,5 +1038,31 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: DATE/TIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_DateTime() {
+
+      var command               = new SqlCommand();
+      var lastModified          = DateTime.UtcNow;
+
+      command.AddParameter("LastModified", lastModified);
+
+      var sqlParameter          = command.Parameters["@LastModified"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@LastModified"));
+      Assert.AreEqual<DateTime?>(lastModified, (DateTime?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
   } //Class
 } //Namespace
