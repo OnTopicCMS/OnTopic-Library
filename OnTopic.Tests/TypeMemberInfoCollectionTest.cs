@@ -92,14 +92,11 @@ namespace OnTopic.Tests {
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void Add_DuplicateKey_ThrowsException() {
-
-      var typeCollection        = new TypeMemberInfoCollection();
-
-      typeCollection.Add(new(typeof(EmptyViewModel)));
-      typeCollection.Add(new(typeof(EmptyViewModel)));
-
-    }
+    public void Add_DuplicateKey_ThrowsException() =>
+      new TypeMemberInfoCollection {
+        new(typeof(EmptyViewModel)),
+        new(typeof(EmptyViewModel))
+      };
 
     /*==========================================================================================================================
     | TEST: HAS MEMBER: PROPERTY INFO: RETURNS EXPECTED
