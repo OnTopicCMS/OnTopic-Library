@@ -236,13 +236,8 @@ namespace OnTopic.Data.Sql {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var topicId               = reader.GetTopicId();
       var attributeKey          = reader.GetString("AttributeKey");
-      var attributeValue        = reader.GetString("AttributeValue");
+      var attributeValue        = reader.GetNullableString("AttributeValue");
       var version               = reader.GetVersion();
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Handle empty attributes (treat empty as null)
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(attributeValue)) return;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Identify topic
@@ -482,6 +477,17 @@ namespace OnTopic.Data.Sql {
     /// <param name="columnName">The name of the column to retrieve the value from.</param>
     private static string GetString(this IDataReader reader, string columnName) =>
       reader.GetString(reader.GetOrdinal(columnName));
+
+    /*==========================================================================================================================
+    | METHOD: GET NULLABLE STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves a nullable string value by column name.
+    /// </summary>
+    /// <param name="reader">The <see cref="IDataReader"/> object.</param>
+    /// <param name="columnName">The name of the column to retrieve the value from.</param>
+    private static string? GetNullableString(this IDataReader reader, string columnName) =>
+      reader.IsDBNull(reader.GetOrdinal(columnName)) ? null : reader.GetString(reader.GetOrdinal(columnName));
 
     /*==========================================================================================================================
     | METHOD: GET BOOLEAN
