@@ -880,5 +880,30 @@ namespace OnTopic.Tests {
       void eventHandler(object? sender, TopicSaveEventArgs eventArgs) => hasFired = true;
 
     }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC RENAMED EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
+    ///   "/> is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicRenamedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var hasFired              = false;
+
+      topic.Key                 = "New";
+
+      _topicRepository.TopicRenamed += eventHandler;
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicRenameEventArgs eventArgs) => hasFired = true;
+
+    }
+
   } //Class
 } //Namespace
