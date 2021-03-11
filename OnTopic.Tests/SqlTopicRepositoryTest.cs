@@ -319,6 +319,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: NULL STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <c>null</c> parameter value to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_NullString() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("TopicKey", (string?)null);
+
+      var sqlParameter          = command.Parameters["@TopicKey"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
+      Assert.AreEqual<string?>(null, (string?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+
+    /*==========================================================================================================================
     | TEST: SQL COMMAND: ADD PARAMETER: INT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
