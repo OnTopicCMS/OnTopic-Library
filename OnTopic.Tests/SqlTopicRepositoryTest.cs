@@ -164,6 +164,36 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH DELETED REFERENCE: REMOVES EXISTING REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+    ///   TopicReferencesDataTable"/> record and confirms that existing references on a reference topic are deleted if they are
+    ///   <c>null</c> in the <see cref="TopicReferencesDataTable"/>.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithDeletedReference_RemovesExistingReference() {
+
+      using var topics          = new TopicsDataTable();
+      using var empty           = new AttributesDataTable();
+      using var references      = new TopicReferencesDataTable();
+
+      var referenceTopic        = TopicFactory.Create("Web", "Container", 1);
+
+      referenceTopic.References.SetValue("Reference", referenceTopic);
+
+      topics.AddRow(1, "Web", "Container", null);
+      references.AddRow(1, "Reference", null);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, references });
+
+      tableReader.LoadTopicGraph(referenceTopic, false);
+
+      Assert.IsNull(referenceTopic.References.GetValue("Reference"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: LOAD TOPIC GRAPH: WITH MISSING REFERENCE: NOT FULLY LOADED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
