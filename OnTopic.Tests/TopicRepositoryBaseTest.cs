@@ -849,10 +849,10 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Page");
       var hasFired              = false;
 
-      _topicRepository.Save(topic);
-      _topicRepository.TopicDeleted += eventHandler;
-      _topicRepository.Delete(topic);
-      _topicRepository.TopicDeleted -= eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicDeleted += eventHandler;
+      _cachedTopicRepository.Delete(topic);
+      _cachedTopicRepository.TopicDeleted -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -873,9 +873,9 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Test", "Page");
       var hasFired              = false;
 
-      _topicRepository.TopicSaved += eventHandler;
-      _topicRepository.Save(topic);
-      _topicRepository.TopicSaved -= eventHandler;
+      _cachedTopicRepository.TopicSaved += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicSaved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -898,9 +898,9 @@ namespace OnTopic.Tests {
 
       topic.Key                 = "New";
 
-      _topicRepository.TopicRenamed += eventHandler;
-      _topicRepository.Save(topic);
-      _topicRepository.TopicRenamed -= eventHandler;
+      _cachedTopicRepository.TopicRenamed += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicRenamed -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -924,9 +924,9 @@ namespace OnTopic.Tests {
 
       topic.Parent              = parent;
 
-      _topicRepository.TopicMoved += eventHandler;
-      _topicRepository.Save(topic);
-      _topicRepository.TopicMoved -= eventHandler;
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -948,9 +948,9 @@ namespace OnTopic.Tests {
       var parent                = TopicFactory.Create("Products", "Page", 2);
       var hasFired              = false;
 
-      _topicRepository.TopicMoved += eventHandler;
-      _topicRepository.Move(topic, parent);
-      _topicRepository.TopicMoved -= eventHandler;
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Move(topic, parent);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
