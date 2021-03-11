@@ -527,6 +527,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: NULL REFERENCE VALUE: DOESN'T SET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an null value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", (object?)null);
+
+      Assert.IsFalse(isValueSet);
+      Assert.IsNull(source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: REFLECTION PERFORMANCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
