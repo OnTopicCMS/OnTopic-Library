@@ -852,6 +852,7 @@ namespace OnTopic.Tests {
       _topicRepository.Save(topic);
       _topicRepository.TopicDeleted += eventHandler;
       _topicRepository.Delete(topic);
+      _topicRepository.TopicDeleted -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -874,6 +875,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.TopicSaved += eventHandler;
       _topicRepository.Save(topic);
+      _topicRepository.TopicSaved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -898,6 +900,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.TopicRenamed += eventHandler;
       _topicRepository.Save(topic);
+      _topicRepository.TopicRenamed -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -923,6 +926,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.TopicMoved += eventHandler;
       _topicRepository.Save(topic);
+      _topicRepository.TopicMoved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
@@ -946,6 +950,7 @@ namespace OnTopic.Tests {
 
       _topicRepository.TopicMoved += eventHandler;
       _topicRepository.Move(topic, parent);
+      _topicRepository.TopicMoved -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
