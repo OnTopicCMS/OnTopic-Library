@@ -5,15 +5,14 @@
 \=============================================================================================================================*/
 using System;
 using System.Data;
-using System.Linq;
-using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OnTopic.Data.Sql;
-using OnTopic.Associations;
-using OnTopic.Tests.Schemas;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Data.SqlClient;
+using System.Linq;
 using System.Text;
+using Microsoft.Data.SqlClient;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Associations;
+using OnTopic.Data.Sql;
+using OnTopic.Tests.Schemas;
 
 namespace OnTopic.Tests {
 
@@ -342,7 +341,6 @@ namespace OnTopic.Tests {
       command.Dispose();
 
     }
-
 
     /*==========================================================================================================================
     | TEST: SQL COMMAND: ADD PARAMETER: INT
