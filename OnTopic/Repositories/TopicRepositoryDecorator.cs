@@ -123,7 +123,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive) => TopicRepository.Delete(topic, isRecursive);
+    public override void Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
 
   } //Class
 } //Namespace
