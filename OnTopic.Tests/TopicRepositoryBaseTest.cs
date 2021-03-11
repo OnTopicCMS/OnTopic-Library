@@ -269,8 +269,8 @@ namespace OnTopic.Tests {
     | TEST: DELETE: RELATIONSHIPS: DELETE RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref=
-    ///   "Topic.IncomingRelationships"/> collection.
+    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref="Topic.
+    ///   IncomingRelationships"/> collection.
     /// </summary>
     [TestMethod]
     public void Delete_Relationships_DeleteRelationships() {
@@ -300,15 +300,15 @@ namespace OnTopic.Tests {
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var related               = TopicFactory.Create("Related", "Page", root);
-      var referenced            = TopicFactory.Create("Referenced", "Page", root);
+      var source1               = TopicFactory.Create("Source1", "Page", root);
+      var source2               = TopicFactory.Create("Source2", "Page", root);
 
-      related.Relationships.SetValue("Related", child);
-      referenced.References.SetValue("Related", child);
+      source1.Relationships.SetValue("Associations", child);
+      source2.References.SetValue("Associations", child);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.Relationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, source1.Relationships.GetValues("Associations").Count);
 
     }
 
