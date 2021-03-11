@@ -1064,5 +1064,32 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: DATA TABLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_DataTable() {
+
+      var command               = new SqlCommand();
+      var dataTable             = new TopicListDataTable();
+
+      command.AddParameter("Relationships", dataTable);
+
+      var sqlParameter          = command.Parameters["@Relationships"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@Relationships"));
+      Assert.AreEqual<DataTable?>(dataTable, (DataTable?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Structured, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+      dataTable.Dispose();
+
+    }
+
   } //Class
 } //Namespace
