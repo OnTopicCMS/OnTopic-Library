@@ -190,6 +190,7 @@ namespace OnTopic.Tests {
       tableReader.LoadTopicGraph(referenceTopic, false);
 
       Assert.IsNull(referenceTopic.References.GetValue("Reference"));
+      Assert.IsTrue(referenceTopic.References.IsFullyLoaded);
 
     }
 

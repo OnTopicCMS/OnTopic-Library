@@ -420,12 +420,12 @@ namespace OnTopic.Data.Sql {
       var referenced            = (Topic?)null;
 
       // Fetch the related topic
-      if (targetTopicId is not null && topics.Keys.Contains(targetTopicId.Value)) {
+      if (targetTopicId is null) {
+      }
+      else if (topics.Keys.Contains(targetTopicId.Value)) {
         referenced              = topics[targetTopicId.Value];
       }
-
-      // Bypass if the target object is missing
-      if (referenced is null) {
+      else {
         current.References.IsFullyLoaded = false;
         return;
       }
