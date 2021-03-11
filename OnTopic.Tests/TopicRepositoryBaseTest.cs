@@ -106,7 +106,7 @@ namespace OnTopic.Tests {
     | TEST: LOAD: VALID DATE: RETURNS TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid data and ensures that topic
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
     ///   with that date is returned.
     /// </summary>
     [TestMethod]
@@ -114,6 +114,28 @@ namespace OnTopic.Tests {
 
       var version               = DateTime.UtcNow.AddDays(-1);
       var topic                 = _topicRepository.Load(11111, version);
+
+      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: TOPIC: UPDATES LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="TopicRepository.Load(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
+    ///   LastModified"/> value is updated.
+    /// </summary>
+    [TestMethod]
+    public void Load_Topic_UpdatesLastModified() {
+
+      var version               = DateTime.UtcNow.AddDays(-1);
+      var topic                 = _topicRepository.Load(11111);
+
+      if (topic is not null) {
+        _topicRepository.Load(topic, version);
+      }
 
       Assert.IsTrue(topic?.VersionHistory.Contains(version));
       Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
