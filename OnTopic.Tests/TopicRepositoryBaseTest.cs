@@ -389,10 +389,12 @@ namespace OnTopic.Tests {
 
       topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
 
-      var attributes            = _topicRepository.GetAttributesProxy(topic, true, true);
+      var dirtyAttributes       = _topicRepository.GetAttributesProxy(topic, true, true);
+      var cleanAttributes       = _topicRepository.GetAttributesProxy(topic, true, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.AreEqual<int>(1, dirtyAttributes.Count());
+      Assert.AreEqual<int>(0, cleanAttributes.Count());
 
     }
 
