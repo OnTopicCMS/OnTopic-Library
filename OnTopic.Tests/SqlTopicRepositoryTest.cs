@@ -76,6 +76,35 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH NULL ATTRIBUTES: REMOVES ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
+    ///   AttributesDataTable"/> record representing a deleted attribute and confirms that an existing reference topic with that
+    ///   attribute has the value removed.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithNullAttributes_RemovesAttribute() {
+
+      using var topics          = new TopicsDataTable();
+      using var attributes      = new AttributesDataTable();
+
+      var topic                 = TopicFactory.Create("Root", "Container", 1);
+
+      topic.Attributes.SetValue("Test", "Initial Value");
+
+      topics.AddRow(1, "Root", "Container");
+      attributes.AddRow(1, "Test", null);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, attributes });
+
+      tableReader.LoadTopicGraph(topic);
+
+      Assert.IsNull(topic.Attributes.GetValue("Test"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: LOAD TOPIC GRAPH: WITH RELATIONSHIP: RETURNS RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
