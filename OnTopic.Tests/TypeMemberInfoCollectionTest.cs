@@ -466,6 +466,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: VALID REFENCE VALUE: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a reference value can be properly set using the <see
+    ///   cref="MemberDispatcher.SetMethodValue(Object, String, Object)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_ValidReferenceValue_SetsValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+      var reference             = new TopicViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+
+      Assert.IsTrue(isValueSet);
+      Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: REFLECTION PERFORMANCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
