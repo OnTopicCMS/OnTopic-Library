@@ -621,7 +621,7 @@ namespace OnTopic.Repositories {
       | Remove references
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var descendantTopic in descendantTopics) {
-        foreach (var reference in descendantTopic.References) {
+        foreach (var reference in descendantTopic.References.ToList()) {
           if (reference.Value is not null && !descendantTopics.Contains(reference.Value)) {
             descendantTopic.References.Remove(reference.Key);
           }
