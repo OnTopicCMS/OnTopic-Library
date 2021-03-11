@@ -988,5 +988,30 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: INT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_Int() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("TopicId", 5);
+
+      var sqlParameter          = command.Parameters["@TopicId"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicId"));
+      Assert.AreEqual<int?>(5, (int?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
   } //Class
 } //Namespace
