@@ -12,6 +12,8 @@ using OnTopic.Data.Sql;
 using OnTopic.Associations;
 using OnTopic.Tests.Schemas;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Data.SqlClient;
+using System.Text;
 
 namespace OnTopic.Tests {
 
@@ -288,6 +290,186 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int>(2, dataTable.Columns.Count);
 
       dataTable.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: STRING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, String)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_String() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("TopicKey", "Root");
+
+      var sqlParameter          = command.Parameters["@TopicKey"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicKey"));
+      Assert.AreEqual<string?>("Root", (string?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.VarChar, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: INT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Int32"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Int32)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_Int() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("TopicId", 5);
+
+      var sqlParameter          = command.Parameters["@TopicId"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicId"));
+      Assert.AreEqual<int?>(5, (int?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: BOOL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="Boolean"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, Boolean)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_Bool() {
+
+      var command               = new SqlCommand();
+
+      command.AddParameter("IsHidden", true);
+
+      var sqlParameter          = command.Parameters["@IsHidden"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@IsHidden"));
+      Assert.AreEqual<bool?>(true, (bool?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Bit, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: DATE/TIME
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DateTime"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DateTime)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_DateTime() {
+
+      var command               = new SqlCommand();
+      var lastModified          = DateTime.UtcNow;
+
+      command.AddParameter("LastModified", lastModified);
+
+      var sqlParameter          = command.Parameters["@LastModified"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@LastModified"));
+      Assert.AreEqual<DateTime?>(lastModified, (DateTime?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.DateTime2, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: DATA TABLE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="DataTable"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, DataTable)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_DataTable() {
+
+      var command               = new SqlCommand();
+      var dataTable             = new Data.Sql.Models.TopicListDataTable();
+
+      command.AddParameter("Relationships", dataTable);
+
+      var sqlParameter          = command.Parameters["@Relationships"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@Relationships"));
+      Assert.AreEqual<DataTable?>(dataTable, (DataTable?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Structured, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+      dataTable.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD PARAMETER: STRING BUILDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, string, StringBuilder)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddParameter_StringBuilder() {
+
+      var command               = new SqlCommand();
+      var xml                   = new StringBuilder();
+
+      command.AddParameter("AttributesXml", xml);
+
+      var sqlParameter          = command.Parameters["@AttributesXml"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@AttributesXml"));
+      Assert.AreEqual<string?>(xml.ToString(), (string?)sqlParameter?.Value);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Xml, sqlParameter?.SqlDbType);
+
+      command.Dispose();
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SQL COMMAND: ADD OUTPUT PARAMETER: RETURN CODE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="String"/> parameter to it using the <see cref="
+    ///   SqlCommandExtensions.AddOutputParameter(SqlCommand, String)"/> extension method.
+    /// </summary>
+    [TestMethod]
+    public void SqlCommand_AddOutputParameter_ReturnCode() {
+
+      var command               = new SqlCommand();
+
+      command.AddOutputParameter("TopicId");
+
+      var sqlParameter          = command.Parameters["@TopicId"];
+
+      Assert.AreEqual<int>(1, command.Parameters.Count);
+      Assert.IsTrue(command.Parameters.Contains("@TopicId"));
+      Assert.AreEqual<int>(-1, command.GetReturnCode("TopicId"));
+      Assert.AreEqual<ParameterDirection?>(ParameterDirection.ReturnValue, sqlParameter?.Direction);
+      Assert.AreEqual<SqlDbType?>(SqlDbType.Int, sqlParameter?.SqlDbType);
+
+      command.Dispose();
 
     }
 
