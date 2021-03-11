@@ -243,5 +243,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: ATTRIBUTE VALUES DATA TABLE: ADD ROW: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
+    ///   AttributeValuesDataTable.AddRow(String, String?)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
+    ///   returned.
+    /// </summary>
+    [TestMethod]
+    public void AttributeValuesDataTable_AddRow_Succeeds() {
+
+      var dataTable             = new Data.Sql.Models.AttributeValuesDataTable();
+
+      dataTable.AddRow("Key", "Test");
+      dataTable.AddRow("ContentType", "Page");
+      dataTable.AddRow("ParentId", "4");
+
+      Assert.AreEqual<int>(3, dataTable.Rows.Count);
+      Assert.AreEqual<int>(2, dataTable.Columns.Count);
+
+      dataTable.Dispose();
+
+    }
+
   } //Class
 } //Namespace
