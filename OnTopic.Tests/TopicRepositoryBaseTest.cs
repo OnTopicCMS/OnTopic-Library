@@ -837,14 +837,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: DELETE EVENT: IS FIRED
+    | TEST: DELETE: TOPIC DELETED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-    ///   TopicDeleted"/> is fired.
+    ///   TopicDeleted"/> is raised.
     /// </summary>
     [TestMethod]
-    public void Delete_DeleteEvent_IsFired() {
+    public void Delete_TopicDeletedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var hasFired              = false;
