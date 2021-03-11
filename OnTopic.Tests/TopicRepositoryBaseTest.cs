@@ -266,11 +266,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: RELATIONSHIPS: DELETE RELATIONSHIPS
+    | TEST: DELETE: ASSOCIATIONS: DELETE ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref="Topic.
-    ///   IncomingRelationships"/> collection.
+    ///   Deletes a topic with outgoing relationships and topic references. Additionally, deletes those associations from the
+    ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
     /// </summary>
     [TestMethod]
     public void Delete_Relationships_DeleteRelationships() {
@@ -278,13 +278,15 @@ namespace OnTopic.Tests {
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var related               = TopicFactory.Create("Related", "Page", root);
+      var associated            = TopicFactory.Create("Associated", "Page", root);
 
-      child.Relationships.SetValue("Related", related);
+      child.Relationships.SetValue("Related", associated);
+      child.References.SetValue("Referenced", associated);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.IncomingRelationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
 
     }
 
