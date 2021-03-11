@@ -267,5 +267,29 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: TOPIC REFERENCES DATA TABLE: ADD ROW: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="Data.Sql.Models.AttributeValuesDataTable"/> and calls <see cref="Data.Sql.Models.
+    ///   TopicReferencesDataTable.AddRow(String, Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is
+    ///   returned.
+    /// </summary>
+    [TestMethod]
+    public void TopicReferencesDataTable_AddRow_Succeeds() {
+
+      var dataTable             = new Data.Sql.Models.TopicReferencesDataTable();
+
+      dataTable.AddRow("BaseTopic", 1);
+      dataTable.AddRow("Parent", 2);
+      dataTable.AddRow("RootTopic", 3);
+
+      Assert.AreEqual<int>(3, dataTable.Rows.Count);
+      Assert.AreEqual<int>(2, dataTable.Columns.Count);
+
+      dataTable.Dispose();
+
+    }
+
   } //Class
 } //Namespace
