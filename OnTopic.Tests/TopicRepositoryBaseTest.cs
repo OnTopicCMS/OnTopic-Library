@@ -588,6 +588,28 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: GET NEW CONTENT TYPE: RETURNS FROM TOPIC GRAPH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> that hasn't yet been persisted to the data store. Instead,
+    ///   attempts to retrieve it from the <see cref="Topic"/>'s graph.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
+
+      var rootTopic             = _topicRepository.Load("Root");
+      var contentTypes          = _topicRepository.Load("Root:Configuration:ContentTypes");
+      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", contentTypes);
+      var topic                 = TopicFactory.Create("Test", "NewContentType", rootTopic);
+
+      var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNotNull(contentType);
+      Assert.ReferenceEquals(contentType, newContentType);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTOR: GET INVALID CONTENT TYPE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
