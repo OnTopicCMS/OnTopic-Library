@@ -220,5 +220,28 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="Data.Sql.Models.TopicListDataTable"/> and calls <see cref="Data.Sql.Models.TopicListDataTable.
+    ///   AddRow(Int32)"/>. Confirms that a <see cref="DataRow"/> with the expected data is returned.
+    /// </summary>
+    [TestMethod]
+    public void TopicListDataTable_AddRow_Succeeds() {
+
+      var dataTable             = new Data.Sql.Models.TopicListDataTable();
+
+      dataTable.AddRow(1);
+      dataTable.AddRow(2);
+      dataTable.AddRow(2);
+
+      Assert.AreEqual<int>(3, dataTable.Rows.Count);
+      Assert.AreEqual<int>(1, dataTable.Columns.Count);
+
+      dataTable.Dispose();
+
+    }
+
   } //Class
 } //Namespace
