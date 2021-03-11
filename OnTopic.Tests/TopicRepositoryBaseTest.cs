@@ -859,5 +859,26 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC SAVED EVENT: IS FIRED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved
+    ///   "/> is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicSavedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var hasFired              = false;
+
+      _topicRepository.TopicSaved += eventHandler;
+      _topicRepository.Save(topic);
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicSaveEventArgs eventArgs) => hasFired = true;
+
+    }
   } //Class
 } //Namespace
