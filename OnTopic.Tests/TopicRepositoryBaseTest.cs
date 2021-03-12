@@ -929,7 +929,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-    ///   TopicDeleted"/> is raised.
+    ///   TopicDeleted"/> event is raised.
     /// </summary>
     [TestMethod]
     public void Delete_TopicDeletedEvent_IsRaised() {
@@ -949,11 +949,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SAVE: TOPIC SAVED EVENT: IS FIRED
+    | TEST: SAVE: TOPIC SAVED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved"
-    ///   /> is raised.
+    ///   /> event is raised.
     /// </summary>
     [TestMethod]
     public void Save_TopicSavedEvent_IsRaised() {
@@ -972,11 +972,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SAVE: TOPIC RENAMED EVENT: IS FIRED
+    | TEST: SAVE: TOPIC RENAMED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
-    ///   "/> is raised.
+    ///   "/> event is raised.
     /// </summary>
     [TestMethod]
     public void Save_TopicRenamedEvent_IsRaised() {
@@ -997,11 +997,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SAVE: TOPIC MOVED EVENT: IS FIRED
+    | TEST: SAVE: TOPIC MOVED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
-    ///   TopicMoved"/> is raised.
+    ///   TopicMoved"/> event is raised.
     /// </summary>
     [TestMethod]
     public void Save_TopicMovedEvent_IsRaised() {
@@ -1023,11 +1023,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MOVE: TOPIC MOVED EVENT: IS FIRED
+    | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
-    ///   /> is raised.
+    ///   /> event is raised.
     /// </summary>
     [TestMethod]
     public void Move_TopicMovedEvent_IsRaised() {
