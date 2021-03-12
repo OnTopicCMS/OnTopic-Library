@@ -925,6 +925,30 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
+    ///   ITopicRepository.TopicLoaded"/> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Load_TopicLoadedEvent_IsRaised() {
+
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicLoaded += eventHandler;
+
+      var topic = _topicRepository.Load("Root:Web");
+
+      _cachedTopicRepository.TopicLoaded -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DELETE: TOPIC DELETED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
