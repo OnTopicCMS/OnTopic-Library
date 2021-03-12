@@ -113,7 +113,7 @@ namespace OnTopic.Tests {
     public void Load_ValidDate_ReturnsTopic() {
 
       var version               = DateTime.UtcNow.AddDays(-1);
-      var topic                 = _topicRepository.Load(11111, version);
+      var topic                 = _cachedTopicRepository.Load(11111, version);
 
       Assert.IsTrue(topic?.VersionHistory.Contains(version));
       Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
