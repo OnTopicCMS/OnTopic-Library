@@ -574,6 +574,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Related", related, false);
 
+      relationships.MarkClean();
       relationships.MarkClean("Related");
 
       Assert.IsTrue(relationships.IsDirty());
