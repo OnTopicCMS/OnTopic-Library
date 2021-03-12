@@ -320,7 +320,7 @@ namespace OnTopic.Internal.Reflection {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate member type
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!HasSettableMethod(target.GetType(), name, value?.GetType())) {
+      if (value is null || !HasSettableMethod(target.GetType(), name, value.GetType())) {
         return false;
       }
 
@@ -330,10 +330,6 @@ namespace OnTopic.Internal.Reflection {
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
       Contract.Assume(method, $"The {name}() method could not be retrieved.");
-
-      if (value is null) {
-        return false;
-      }
 
       method.Invoke(target, new object[] { value });
 
