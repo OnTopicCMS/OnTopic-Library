@@ -406,16 +406,23 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes", 1);
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
 
-      topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
+      topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
+      topic.Attributes.SetValue("IsHidden", "0", markDirty: false, isExtendedAttribute: true);
+      topic.Attributes.SetValue("MetaTitle", "Metatitle", markDirty: false, isExtendedAttribute: null);
+      topic.Attributes.SetValue("Arbitrary", "Value", markDirty: false, isExtendedAttribute: true);
 
-      var dirtyAttributes       = _topicRepository.GetAttributesProxy(topic, true, true);
-      var cleanAttributes       = _topicRepository.GetAttributesProxy(topic, true, false);
+      var dirtyExtended         = _topicRepository.GetAttributesProxy(topic, true, true);
+      var dirtyIndexed          = _topicRepository.GetAttributesProxy(topic, false, true);
+      var cleanExtended         = _topicRepository.GetAttributesProxy(topic, true, false);
+      var cleanIndexed          = _topicRepository.GetAttributesProxy(topic, false, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, dirtyAttributes.Count());
-      Assert.AreEqual<int>(1, cleanAttributes.Count());
+      Assert.AreEqual<int>(1, dirtyExtended.Count());
+      Assert.AreEqual<int>(1, dirtyIndexed.Count());
+      Assert.AreEqual<int>(2, cleanExtended.Count());
+      Assert.AreEqual<int>(2, cleanIndexed.Count());
 
     }
 
