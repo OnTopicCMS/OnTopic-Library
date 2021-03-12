@@ -189,6 +189,8 @@ namespace OnTopic.Tests {
       Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
       Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
       Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod"));
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod", typeof(TopicViewModel)));
 
     }
 
