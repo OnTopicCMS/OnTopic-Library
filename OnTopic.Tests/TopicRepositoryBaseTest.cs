@@ -621,8 +621,9 @@ namespace OnTopic.Tests {
     public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
 
       var rootTopic             = _topicRepository.Load("Root");
-      var contentTypes          = _topicRepository.Load("Root:Configuration:ContentTypes");
-      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", contentTypes);
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var rootContentType       = contentTypes.GetValue("ContentTypes");
+      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
       var topic                 = TopicFactory.Create("Test", "NewContentType", rootTopic);
 
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
