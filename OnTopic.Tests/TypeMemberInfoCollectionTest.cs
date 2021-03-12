@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -191,6 +192,27 @@ namespace OnTopic.Tests {
       Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
       Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod"));
       Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="MemberDispatcher.HasGettableMethod(Type, String, Type)"/> returns the expected value.
+    /// </summary>
+    /// <remarks>
+    ///   In practice, we haven't encountered a need for this yet and, thus, don't have any semantically relevant attributes to
+    ///   use in this situation. As a result, this example is a bit contrived.
+    /// </remarks>
+    [TestMethod]
+    public void HasGettableMethod_WithAttribute_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher(typeof(DisplayNameAttribute));
+
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetAnnotatedMethod)));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
 
     }
 
