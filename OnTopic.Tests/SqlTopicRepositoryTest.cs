@@ -282,6 +282,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with an <see cref="
+    ///   VersionHistoryDataTable"/> record and confirms that a topic with those values is returned.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithVersionHistory_ReturnsVersions() {
+
+      using var topics          = new TopicsDataTable();
+      using var empty           = new AttributesDataTable();
+      using var versions        = new VersionHistoryDataTable();
+
+      topics.AddRow(1, "Root", "Container", null);
+      versions.AddRow(1, DateTime.MinValue);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, empty, empty, versions });
+
+      var topic                 = tableReader.LoadTopicGraph();
+
+      Assert.IsNotNull(topic);
+      Assert.AreEqual<int>(1, topic.Id);
+      Assert.AreEqual<int>(1, topic.VersionHistory.Count);
+      Assert.IsTrue(topic.VersionHistory.Contains(DateTime.MinValue));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: TOPIC LIST DATA TABLE: ADD ROW: SUCCEEDS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
