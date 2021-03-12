@@ -538,7 +538,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="SqlCommand"/> object and adds a <see cref="StringBuilder"/> parameter to it using the <see cref="
-    ///   SqlCommandExtensions.AddParameter(SqlCommand, string, StringBuilder)"/> extension method.
+    ///   SqlCommandExtensions.AddParameter(SqlCommand, String, StringBuilder)"/> extension method.
     /// </summary>
     [TestMethod]
     public void SqlCommand_AddParameter_StringBuilder() {
