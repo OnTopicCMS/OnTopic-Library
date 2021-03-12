@@ -4,6 +4,8 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 
+using OnTopic.ViewModels;
+
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
@@ -21,6 +23,8 @@ namespace OnTopic.Tests.ViewModels {
 
     public void SetMethod(int methodValue) => _methodValue = methodValue;
     public int GetMethod() => _methodValue;
+    public void SetParametersMethod(int methodValue, int additionalValue) => _methodValue = methodValue + additionalValue;
+    public void SetComplexMethod(NavigationTopicViewModel model) => _methodValue = model?.Children.Count?? 0;
 
   } //Class
 } //Namespace

@@ -189,8 +189,10 @@ namespace OnTopic.Tests {
 
       var dispatcher            = new MemberDispatcher();
 
-      Assert.IsTrue(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
-      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
+      Assert.IsTrue(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetComplexMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetParametersMethod)));
       Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
 
     }
