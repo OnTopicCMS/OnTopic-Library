@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
@@ -134,6 +135,24 @@ namespace OnTopic.Tests {
       Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
       Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
       Assert.IsTrue(dispatcher.HasGettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="MemberDispatcher.HasGettableProperty(Type, String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableProperty_WithAttribute_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher(typeof(AttributeSetterAttribute));
+
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.Key)));
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.View)));
 
     }
 
