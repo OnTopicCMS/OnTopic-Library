@@ -106,8 +106,8 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetValue("Reference1", reference, false);
-      topic.References.SetValue("Reference2", null, false);
+      topic.References.Add(new("Reference1", reference, false));
+      topic.References.Add(new("Reference2", null, false));
       topic.References.Clear();
 
       Assert.AreEqual<int>(0, topic.References.Count);
@@ -177,8 +177,8 @@ namespace OnTopic.Tests {
       var topic                 = TopicFactory.Create("Topic", "Page");
       var reference             = TopicFactory.Create("Reference", "Page");
 
-      topic.References.SetValue("Reference1", reference);
-      topic.References.SetValue("Reference2", null);
+      topic.References.Add(new("Reference1", reference, false));
+      topic.References.Add(new("Reference2", null, false));
 
       topic.References.Remove("Reference1");
       topic.References.Remove("Reference2");
