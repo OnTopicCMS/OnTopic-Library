@@ -6,6 +6,9 @@
 using System.ComponentModel;
 using OnTopic.ViewModels;
 
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CA1024 // Use properties where appropriate
+
 namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
@@ -31,3 +34,6 @@ namespace OnTopic.Tests.ViewModels {
 
   } //Class
 } //Namespace
+
+#pragma warning restore CA1024 // Use properties where appropriate
+#pragma warning restore CA1822 // Mark members as static
