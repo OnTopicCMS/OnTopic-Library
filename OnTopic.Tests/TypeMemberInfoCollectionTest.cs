@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -13,10 +12,8 @@ using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
 using OnTopic.Tests.BindingModels;
-using OnTopic.Tests.Entities;
 using OnTopic.Tests.ViewModels;
 using OnTopic.ViewModels;
-using OnTopic.ViewModels.BindingModels;
 
 namespace OnTopic.Tests {
 
