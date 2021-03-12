@@ -51,8 +51,30 @@ namespace OnTopic.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) =>
-      (topicId < 0)? _cache :_cache.FindFirst(t => t.Id.Equals(topicId));
+    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Lookup by TopicId
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var topic = _cache;
+
+      if (topicId > 0) {
+        topic = _cache.FindFirst(t => t.Id.Equals(topicId));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Raise event
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic != null) {
+        OnTopicLoaded(new(topic, isRecursive));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return topic;
+
+    }
 
     /// <inheritdoc />
     public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
@@ -60,15 +82,23 @@ namespace OnTopic.TestDoubles {
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
+      var topic = _cache;
       if (uniqueKey is not null && uniqueKey.Length > 0) {
         uniqueKey = uniqueKey.Contains(":", StringComparison.Ordinal) ? uniqueKey : "Root:" + uniqueKey;
-        return _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
+        topic = _cache.FindFirst(t => t.GetUniqueKey().Equals(uniqueKey, StringComparison.OrdinalIgnoreCase));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
+      | Raise event
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      if (topic != null) {
+        OnTopicLoaded(new(topic, isRecursive));
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return topic;
 
     }
 
