@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.ViewModels;
 
 #pragma warning disable CA1822 // Mark members as static
@@ -20,6 +21,7 @@ namespace OnTopic.Tests.ViewModels {
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public class MethodBasedViewModel {
 
     private int _methodValue;
