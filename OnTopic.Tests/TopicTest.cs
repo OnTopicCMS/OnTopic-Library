@@ -445,6 +445,7 @@ namespace OnTopic.Tests {
       topic.Relationships.SetValue("Related", related);
 
       Assert.IsTrue(topic.IsDirty(true));
+      Assert.IsTrue(topic.IsDirty("Related", true));
 
     }
 
