@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,7 @@ using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using OnTopic.Tests.Entities;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
@@ -133,6 +135,29 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<string?>("ValueA", target?.MetaTitle);
       Assert.AreEqual<string?>("Value1", target?.Title);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: GENERIC: RETURNS CONVERTED PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and confirms that a basic source property of type string—e.g., <see
+    ///   cref="CustomTopic.BooleanAsStringAttribute"/>—can successfully be converted to a target type of an integer—e.g., <see
+    ///   cref="ConvertPropertyViewModel.BooleanAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Generic_ReturnsConvertedProperty() {
+
+      var topic                 = new CustomTopic("Test", "CustomTopic");
+
+      topic.NumericAttribute = 1;
+      topic.BooleanAsStringAttribute = "1";
+
+      var target                = await _mappingService.MapAsync<ConvertPropertyViewModel>(topic).ConfigureAwait(false);
+
+      Assert.IsTrue(target?.BooleanAttribute);
+      Assert.AreEqual<string?>(topic.NumericAttribute.ToString(CultureInfo.InvariantCulture), target?.NumericAsStringAttribute);
 
     }
 

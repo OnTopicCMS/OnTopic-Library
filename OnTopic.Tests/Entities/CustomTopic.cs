@@ -54,6 +54,18 @@ namespace OnTopic.Tests.Entities {
     }
 
     /*==========================================================================================================================
+    | BOOLEAN AS STRING ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a string property which is intended to be mapped to a Boolean attribute.
+    /// </summary>
+    [AttributeSetter]
+    public string BooleanAsStringAttribute {
+      get => Attributes.GetValue("BooleanAttribute", "0");
+      set => SetAttributeValue("BooleanAttribute", value);
+    }
+
+    /*==========================================================================================================================
     | NUMERIC ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
