@@ -5,11 +5,11 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Metadata;
+using OnTopic.Repositories;
 
 namespace OnTopic.Tests {
 
@@ -52,6 +52,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: CREATE: ATTRIBUTE DESCRIPTOR: RETURNS FALLBACK
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a topic with a <see cref="Topic.ContentType"/> ending with <c>AttributeDescriptor</c> and ensures that, by
+    ///   convention, a <see cref="AttributeDescriptor"/> is returned.
+    /// </summary>
+    /// <remarks>
+    ///   This is a special use case to address the fact that we expect concrete types of <see cref="AttributeDescriptor"/> to
+    ///   be in external plugin libraries, but the <see cref="ITopicRepository"/> only needs to know that they're an <see cref="
+    ///   AttributeDescriptor"/>. This is similar to how other types will fallback to <see cref="Topic"/> if no matching type
+    ///   can be found in the <see cref="TopicFactory.TypeLookupService"/>.
+    /// </remarks>
+    [TestMethod]
+    public void Create_AttributeDescriptor_ReturnsFallback() {
+      var topic = TopicFactory.Create("Test", "ArbitraryAttributeDescriptor");
+      Assert.IsNotNull(topic);
+      Assert.IsInstanceOfType(topic, typeof(AttributeDescriptor));
+    }
+
+    /*==========================================================================================================================
     | TEST: ID: CHANGE VALUE: THROWS ARGUMENT EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -67,53 +87,39 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IS TYPE OF: DERIVED CONTENT TYPE: RETURNS TRUE
+    | TEST: KEY: CHANGE VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Associates a new topic with several content types, and confirms that the topic is reported as a type of those content
-    ///   types.
+    ///   Changes a <see cref="Topic.Key"/>, and confirms that the <see cref="Topic.Parent"/>'s <see cref="Topic.Children"/>
+    ///   collection is updated to reflect the new <see cref="Topic.Key"/>.
     /// </summary>
+    /// <remarks>
+    ///   By default, <see cref="KeyedTopicCollection{T}"/> won't automatically update its key if the underlying <see cref="
+    ///   Topic.Key"/> changed. We have code that will handle that, however.
+    /// </remarks>
     [TestMethod]
-    public void IsTypeOf_DerivedContentType_ReturnsTrue() {
+    public void Key_ChangeValue_UpdatesParent() {
 
-      var contentType = (ContentTypeDescriptor)TopicFactory.Create("Root", "ContentTypeDescriptor");
-      for (var i = 0; i < 5; i++) {
-        var childContentType = (ContentTypeDescriptor)TopicFactory.Create("ContentType" + i, "ContentTypeDescriptor", contentType);
-        contentType             = childContentType;
-      }
+      var parent                = TopicFactory.Create("Test", "ContentTypeDescriptor", 1);
+      var topic                 = TopicFactory.Create("Original", "ContentTypeDescriptor", parent, 2);
 
-      Assert.IsTrue(contentType.IsTypeOf("Root"));
+      topic.Key                 = "New";
+
+      Assert.AreEqual<string>("New", topic.Key);
+      Assert.IsTrue(topic.IsDirty("Key"));
+      Assert.IsTrue(parent.Children.Contains("New"));
+      Assert.IsFalse(parent.Children.Contains("Original"));
 
     }
 
     /*==========================================================================================================================
-    | TEST: IS TYPE OF: INVALID CONTENT TYPE: RETURNS FALSE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Associates a new topic with several content types, and confirms that the topic is not reported as a type of a content
-    ///   type that is not in that chain.
-    /// </summary>
-    [TestMethod]
-    public void IsTypeOf_InvalidContentType_ReturnsFalse() {
-
-      var contentType = (ContentTypeDescriptor)TopicFactory.Create("Root", "ContentTypeDescriptor");
-      for (var i = 0; i < 5; i++) {
-        var childContentType = (ContentTypeDescriptor)TopicFactory.Create("ContentType" + i, "ContentTypeDescriptor", contentType);
-        contentType             = childContentType;
-      }
-
-      Assert.IsTrue(contentType.IsTypeOf("DifferentRoot"));
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: PARENT: SET VALUE: UPDATES PARENT TOPIC
+    | TEST: PARENT: SET VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Sets the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Parent_SetValue_UpdatesParentTopic() {
+    public void Parent_SetValue_UpdatesParent() {
 
       var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
       var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor");
@@ -121,30 +127,63 @@ namespace OnTopic.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
+      Assert.AreEqual<Topic?>(parentTopic.Children["Child"], childTopic);
       Assert.AreEqual<int>(5, childTopic.Parent.Id);
 
     }
 
     /*==========================================================================================================================
-    | TEST: PARENT: CHANGE VALUE: UPDATES PARENT TOPIC
+    | TEST: PARENT: SET TO DESCENDANT: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> that is a descendant, and ensure it throws an <see cref="
+    ///   ArgumentOutOfRangeException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentOutOfRangeException))]
+    public void Parent_SetToDescendant_ThrowsException() {
+
+      var parentTopic           = TopicFactory.Create("Parent", "ContentTypeDescriptor");
+      var childTopic            = TopicFactory.Create("Child", "ContentTypeDescriptor", parentTopic);
+
+      parentTopic.Parent        = childTopic;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PARENT: DUPLICATE KEY: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="Topic.Parent"/> to a <see cref="Topic"/> whose <see cref="Topic.Key"/> already exists in the new
+    ///   <see cref="Topic.Parent"/> and ensures that an <see cref="InvalidKeyException"/> is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidKeyException))]
+    public void Parent_DuplicateKey_ThrowsException() {
+
+      var parentTopic           = new Topic("Parent", "ContentTypeDescriptor");
+      _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+      _                         = new Topic("Child", "ContentTypeDescriptor", parentTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PARENT: CHANGE VALUE: UPDATES PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Changes the parent of a topic and ensures it is correctly reflected in the object model.
     /// </summary>
     [TestMethod]
-    public void Parent_ChangeValue_UpdatesParentTopic() {
+    public void Parent_ChangeValue_UpdatesParent() {
 
-      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor");
-      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor");
-      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor");
+      var sourceParent          = TopicFactory.Create("SourceParent", "ContentTypeDescriptor", 5);
+      var targetParent          = TopicFactory.Create("TargetParent", "ContentTypeDescriptor", 10);
+      var childTopic            = TopicFactory.Create("ChildTopic", "ContentTypeDescriptor", sourceParent);
 
-      sourceParent.Id           = 5;
-      targetParent.Id           = 10;
-      childTopic.Parent         = sourceParent;
       childTopic.Parent         = targetParent;
 
-      Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
+      Assert.AreEqual<Topic?>(targetParent.Children["ChildTopic"], childTopic);
+      Assert.IsTrue(targetParent.Children.Contains("ChildTopic"));
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
       Assert.AreEqual<int>(10, childTopic.Parent.Id);
 
@@ -291,7 +330,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = secondBaseTopic;
       topic.BaseTopic           = finalBaseTopic;
 
-      Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
+      Assert.AreEqual<Topic?>(topic.BaseTopic, finalBaseTopic);
       Assert.AreEqual<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
 
     }
@@ -313,7 +352,7 @@ namespace OnTopic.Tests {
       baseTopic.Id              = 5;
       topic.BaseTopic           = baseTopic;
 
-      Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
+      Assert.AreEqual<Topic?>(topic.BaseTopic, baseTopic);
       Assert.AreEqual<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
 
     }
@@ -367,6 +406,27 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IS DIRTY: EXISTING VALUES: REMAINS CLEAN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, and updates the <see cref="Topic.Key"/>, <see cref="Topic.ContentType"/>, and <see cref="
+    ///   Topic.Parent"/> to their existing values. Ensures that <see cref="Topic.IsDirty(String)"/> remains <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void IsDirty_ExistingValue_RemainsClean() {
+
+      var parent                = TopicFactory.Create("Parent", "Page", 1);
+      var topic                 = TopicFactory.Create("Topic", "Page", parent, 2);
+
+      topic.Key                 = topic.Key;
+      topic.ContentType         = topic.ContentType;
+      topic.Parent              = parent;
+
+      Assert.IsFalse(topic.IsDirty());
+
+    }
+
+    /*==========================================================================================================================
     | IS DIRTY: CHANGE COLLECTIONS: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -385,11 +445,12 @@ namespace OnTopic.Tests {
       topic.Relationships.SetValue("Related", related);
 
       Assert.IsTrue(topic.IsDirty(true));
+      Assert.IsTrue(topic.IsDirty("Related", true));
 
     }
 
     /*==========================================================================================================================
-    | MARK CLEAN: CHANGE COLLECTION: RESETS IS DIRTY
+    | MARK CLEAN: CHANGE COLLECTIONS: RESETS IS DIRTY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
@@ -397,7 +458,7 @@ namespace OnTopic.Tests {
     ///   value of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
     /// </summary>
     [TestMethod]
-    public void MarkClean_ChangeCollection_ResetIsDirty() {
+    public void MarkClean_ChangeCollections_ResetIsDirty() {
 
       var topic                 = TopicFactory.Create("Topic", "Page", 1);
       var related               = TopicFactory.Create("Related", "Page", 2);
@@ -409,6 +470,54 @@ namespace OnTopic.Tests {
       topic.MarkClean(true);
 
       Assert.IsFalse(topic.IsDirty(true));
+
+    }
+
+    /*==========================================================================================================================
+    | MARK CLEAN: INCLUDE COLLECTIONS: RESETS IS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates an existing topic, changes the <see cref="Topic.Attributes"/>, <see cref="Topic.References"/>, and <see cref=
+    ///   "Topic.Relationships"/> collections, and confirms that <see cref="Topic.MarkClean(String, Boolean)"/> resets the value
+    ///   of <see cref="Topic.IsDirty(Boolean, Boolean)"/>.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_IncludeCollections_ResetsIsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page", 1);
+      var related               = TopicFactory.Create("Related", "Page", 2);
+
+      topic.Attributes.SetValue("Related", related.Key);
+      topic.References.SetValue("Related", related);
+      topic.Relationships.SetValue("Related", related);
+
+      topic.MarkClean("Related", true);
+
+      Assert.IsFalse(topic.IsDirty("Related", true));
+      Assert.IsFalse(topic.IsDirty(true));
+
+    }
+
+
+    /*==========================================================================================================================
+    | MARK CLEAN: NEW TOPIC: REMAINS DIRTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a new <see cref="Topic"/> and confirms that <see cref="Topic.MarkClean()"/> does <i>not</i> reset the value of
+    ///   <see cref="Topic.IsDirty(Boolean, Boolean)"/>. Topics that are marked as <see cref="Topic.IsNew"/> cannot be clean.
+    /// </summary>
+    [TestMethod]
+    public void MarkClean_NewTopic_RemainsDirty() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+
+      topic.Attributes.SetValue("Attribute", "Test");
+
+      topic.MarkClean("Attribute", true);
+      topic.MarkClean(true);
+
+      Assert.IsTrue(topic.IsDirty());
+      Assert.IsTrue(topic.IsDirty("Attribute", true));
 
     }
 

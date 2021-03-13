@@ -70,7 +70,7 @@ namespace OnTopic.Attributes {
     /// </requires>
     public AttributeRecord(
       string key,
-      string value,
+      string? value,
       bool isDirty              = true,
       DateTime? lastModified    = null,
       bool? isExtendedAttribute = null

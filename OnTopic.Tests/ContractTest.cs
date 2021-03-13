@@ -86,6 +86,24 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: REQUIRES: INVALID CONSTRUCTOR: THROW ARGUMENT EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a null argument using the <see cref="Contract"/> class, and attempts to throw a custom <see cref="
+    ///   NoMessageException"/> with the expected <see cref="ArgumentException.Message"/>, but fails due to no overload with
+    ///   a single <c>message</c> parameter. In this case, it should throw a <see cref="ArgumentException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void Requires_InvalidConstructor_ThrowArgumentException() {
+
+      var errorMessage = "The argument cannot be null";
+
+      Contract.Requires<NoMessageException>(false, errorMessage);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: ASSUME: CONDITION IS TRUE: THROW NO EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -106,6 +124,30 @@ namespace OnTopic.Tests {
     [ExpectedException(typeof(InvalidOperationException))]
     public void Assume_ConditionIsFalse_ThrowArgumentNullException()
       => Contract.Assume(false, "The argument cannot be null");
+
+    /*==========================================================================================================================
+    | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
+    ///   <see cref="IndexOutOfRangeException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(IndexOutOfRangeException))]
+    public void Assume_ConditionIsFalse_ThrowCustomExpection()
+      => Contract.Assume<IndexOutOfRangeException>(false, "The argument is out of range");
+
+    /*==========================================================================================================================
+    | TEST: ASSUME: CONDITION IS FALSE: THROW CUSTOM EXCEPTION WITHOUT MESSAGE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Tests a false condition using the <see cref="Contract"/> class, and validates that it correctly throws the specified
+    ///   <see cref="IndexOutOfRangeException"/> using the empty constructor, since no <c>errorMessage</c> is included.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(IndexOutOfRangeException))]
+    public void Assume_ConditionIsFalse_ThrowCustomExpectionWithoutMessage()
+      => Contract.Assume<IndexOutOfRangeException>(false);
 
     /*==========================================================================================================================
     | TEST: ASSUME: OBJECT IS NULL: THROW INVALID OPERATION EXCEPTION

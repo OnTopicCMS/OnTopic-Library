@@ -175,13 +175,13 @@ namespace OnTopic.Tests {
       Contract.Assume(destination);
       Contract.Assume(topic);
 
-      Assert.ReferenceEquals(topic.Parent, source);
+      Assert.AreEqual<Topic?>(topic.Parent, source);
       Assert.AreEqual<int>(2, destination.Children.Count);
       Assert.AreEqual<int>(2, source.Children.Count);
 
       _topicRepository.Move(topic, destination);
 
-      Assert.ReferenceEquals(topic.Parent, destination);
+      Assert.AreEqual<Topic?>(topic.Parent, destination);
       Assert.AreEqual<int>(1, source.Children.Count);
       Assert.AreEqual<int>(3, destination.Children.Count);
 
@@ -204,13 +204,13 @@ namespace OnTopic.Tests {
       Contract.Assume(topic);
       Contract.Assume(sibling);
 
-      Assert.ReferenceEquals(topic.Parent, parent);
+      Assert.AreEqual<Topic?>(topic.Parent, parent);
       Assert.AreEqual<string>("Web_0_0", parent.Children.First().Key);
       Assert.AreEqual<int>(2, parent.Children.Count);
 
       _topicRepository.Move(topic, parent, sibling);
 
-      Assert.ReferenceEquals(topic.Parent, parent);
+      Assert.AreEqual<Topic?>(topic.Parent, parent);
       Assert.AreEqual<int>(2, parent.Children.Count);
       Assert.AreEqual<string>("Web_0_1", parent.Children.First().Key);
       Assert.AreEqual<string>("Web_0_0", parent.Children[1].Key);

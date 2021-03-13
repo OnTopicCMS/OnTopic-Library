@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Collections;
 using OnTopic.Data.Caching;
 using OnTopic.Metadata;
 using OnTopic.Querying;
@@ -62,12 +63,12 @@ namespace OnTopic.Tests {
       var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       grandChildTopic.Attributes.SetValue("Foo", "Baz");
-      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
+      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
+      Assert.AreEqual<Topic?>(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
       Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
+      Assert.AreEqual<Topic?>(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
 
     }
 
@@ -87,7 +88,25 @@ namespace OnTopic.Tests {
 
       var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
-      Assert.ReferenceEquals(childTopic, foundTopic);
+      Assert.AreEqual<Topic?>(childTopic, foundTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: FIND FIRST PARENT: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Correctly returns null if the delegate cannot be satisfied.
+    /// </summary>
+    [TestMethod]
+    public void FindFirstParent_ReturnsNull() {
+
+      var parentTopic           = TopicFactory.Create("ParentTopic", "Page", 1);
+      var childTopic            = TopicFactory.Create("ChildTopic", "Page", parentTopic, 5);
+
+      var foundTopic            = childTopic.FindFirstParent(t => t.Id is 10);
+
+      Assert.IsNull(foundTopic);
 
     }
 
@@ -107,7 +126,24 @@ namespace OnTopic.Tests {
 
       var rootTopic             = greatGrandChildTopic.GetRootTopic();
 
-      Assert.ReferenceEquals(parentTopic, rootTopic);
+      Assert.AreEqual<Topic?>(parentTopic, rootTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET ROOT TOPIC: RETURNS CURRENT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a root <see cref="Topic"/>, returns the current <see cref="Topic"/>.
+    /// </summary>
+    [TestMethod]
+    public void GetRootTopic_ReturnsCurrentTopic() {
+
+      var topic                 = TopicFactory.Create("ParentTopic", "Page", 1);
+
+      var rootTopic             = topic.GetRootTopic();
+
+      Assert.AreEqual<Topic?>(topic, rootTopic);
 
     }
 
@@ -126,7 +162,7 @@ namespace OnTopic.Tests {
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
       Assert.IsNotNull(foundTopic);
-      Assert.ReferenceEquals(parentTopic, foundTopic);
+      Assert.AreEqual<Topic?>(parentTopic, foundTopic);
 
     }
 
@@ -147,7 +183,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
-      Assert.ReferenceEquals(greatGrandChildTopic2, foundTopic);
+      Assert.AreEqual<Topic?>(greatGrandChildTopic2, foundTopic);
 
     }
 
@@ -204,6 +240,100 @@ namespace OnTopic.Tests {
       var contentTypeDescriptor = topic.GetContentTypeDescriptor();
 
       Assert.IsNull(contentTypeDescriptor);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE: INVALID TYPE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given an invalid <see cref="ContentTypeDescriptor"/>, the <see cref="TopicExtensions.GetContentTypeDescriptor(Topic)"
+    ///   /> returns <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    ///   This varies from <see cref="GetContentType_InvalidContentType_ReturnsNull()"/> in that it returns a valid <see cref="
+    ///   Topic"/> which doesn't derive from <see cref="ContentTypeDescriptor"/>.
+    /// </remarks>
+    [TestMethod]
+    public void GetContentType_InvalidType_ReturnsNull() {
+
+      var parentTopic           = _topicRepository.Load(11111);
+      var topic                 = TopicFactory.Create("Test", "Title", parentTopic);
+      var contentTypeDescriptor = topic.GetContentTypeDescriptor();
+
+      Assert.IsNull(contentTypeDescriptor);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY DIRTY: DIRTY COLLECTION: RETURN TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsDirty(String)"/>,
+    ///   returns <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyDirty_DirtyCollection_ReturnTrue() {
+
+      var topics = new TopicCollection {
+        new Topic("Test", "Page")
+      };
+
+      Assert.IsTrue(topics.AnyDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY DIRTY: CLEAN COLLECTION: RETURN FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsDirty(String)"/>,
+    ///   returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyDirty_CleanCollection_ReturnFalse() {
+
+      var topics = new TopicCollection {
+        new Topic("Test", "Page", null, 1)
+      };
+
+      Assert.IsFalse(topics.AnyDirty());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY NEW: CONTAINS NEW: RETURN TRUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with at least one <see cref="Topic"/> that <see cref="Topic.IsNew"/>, returns
+    ///   <c>true</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyNew_ContainsNew_ReturnTrue() {
+
+      var topics = new TopicCollection {
+        new Topic("Test", "Page")
+      };
+
+      Assert.IsTrue(topics.AnyNew());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ANY NEW: CONTAINS EXISTING: RETURN FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <see cref="TopicCollection"/> with no <see cref="Topic"/>s that are <see cref="Topic.IsNew"/>, returns <c>
+    ///   false</c>.
+    /// </summary>
+    [TestMethod]
+    public void AnyNew_ContainsExisting_ReturnFalse() {
+
+      var topics = new TopicCollection {
+        new Topic("Test", "Page", null, 1)
+      };
+
+      Assert.IsFalse(topics.AnyNew());
 
     }
 

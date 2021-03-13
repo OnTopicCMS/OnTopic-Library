@@ -3,25 +3,28 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.ViewModels.BindingModels;
+using OnTopic.Mapping;
+using OnTopic.Mapping.Annotations;
 
-namespace OnTopic.Tests.BindingModels {
+namespace OnTopic.Tests.ViewModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: REFERENCE TOPIC
+  | VIEW MODEL: CONVERT PROPERTY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a property associated with a topic pointer—i.e. a reference
-  ///   to another topic.
+  ///   Provides a data transfer object with two properties which are intended to map to source properties of data types which
+  ///   are different, but where the <see cref="TopicMappingService"/> is capable of converting between them.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class ReferenceTopicBindingModel : BasicTopicBindingModel {
+  public class ConvertPropertyViewModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
+    [AttributeKey("BooleanAsStringAttribute")]
+    public bool BooleanAttribute { get; set; }
 
-    public AssociatedTopicBindingModel? BaseTopic { get; set; }
+    [AttributeKey("NumericAttribute")]
+    public string? NumericAsStringAttribute { get; set; }
 
   } //Class
 } //Namespace

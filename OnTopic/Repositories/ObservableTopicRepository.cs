@@ -256,7 +256,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public abstract void Delete(Topic topic, bool isRecursive);
+    public abstract void Delete(Topic topic, bool isRecursive = false);
 
   } //Class
 } //Namespace

@@ -123,9 +123,9 @@ namespace OnTopic.Mapping.Hierarchical {
     ///   A helper function that will determine how far a given topic is from the root of a tree.
     /// </summary>
     /// <param name="sourceTopic">The <see cref="Topic"/> to pull the values from.</param>
-    private static int DistanceFromRoot(Topic? sourceTopic) {
+    private static int DistanceFromRoot(Topic sourceTopic) {
       var distance = 1;
-      while (sourceTopic?.Parent is not null) {
+      while (sourceTopic.Parent is not null) {
         sourceTopic = sourceTopic.Parent;
         distance++;
       }

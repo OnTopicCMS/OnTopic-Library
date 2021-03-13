@@ -269,6 +269,33 @@ namespace OnTopic.Tests {
 
     }
 
+
+    /*==========================================================================================================================
+    | TEST: MAP: RELATIONSHIPS: THROW EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the
+    ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be located in the repository.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_Relationships_ThrowException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var bindingModel          = new ContentTypeDescriptorTopicBindingModel("Test");
+      var topic                 = (ContentTypeDescriptor)TopicFactory.Create("Test", "ContentTypeDescriptor");
+
+      bindingModel.ContentTypes.Add(
+        new() {
+          UniqueKey = "Root:Configuration:InvalidKey"
+        }
+      );
+
+      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+
+    }
+
+
     /*==========================================================================================================================
     | TEST: MAP: NESTED TOPICS: RETURNS MAPPED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -324,11 +351,64 @@ namespace OnTopic.Tests {
         }
       };
 
-      var target                = (TopicReferenceAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
       Assert.IsNotNull(target?.BaseTopic);
       Assert.AreEqual<string?>("Title", target?.BaseTopic.Key);
-      Assert.AreEqual<string?>("TopicReference", target?.EditorType);
+      Assert.AreEqual<string?>("Text", target?.EditorType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: BYPASS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly bypasses any <see cref="
+    ///   IAssociatedTopicBindingModel"/> instances with a null <see cref="IAssociatedTopicBindingModel.UniqueKey"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_TopicReferences_BypassNull() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
+      var baseTopic             = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Key");
+
+      Contract.Assume(topic);
+
+      topic.BaseTopic           = baseTopic;
+
+      var bindingModel          = new ReferenceTopicBindingModel(topic.Key) {
+        ContentType             = topic.ContentType,
+        BaseTopic               = new()
+      };
+
+      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+
+      Assert.IsNotNull(target?.BaseTopic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: TOPIC REFERENCES: THOWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly throws an exception if the
+    ///   <see cref="IAssociatedTopicBindingModel.UniqueKey"/> cannot be resolved in the supplied <see cref="ITopicRepository"
+    ///   />.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_TopicReferences_ThrowException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+
+      var bindingModel          = new ReferenceTopicBindingModel("Test") {
+        BaseTopic               = new() {
+          UniqueKey             = "Root:InvalidKey"
+        }
+      };
+
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 
     }
 
@@ -498,6 +578,25 @@ namespace OnTopic.Tests {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var bindingModel          = new InvalidRelationshipListTypeTopicBindingModel("Test");
+
+      await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: INVALID NESTED TOPIC LIST TYPE: THROWS INVALID OPERATION EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Maps a content type that has a nested topic that implements an invalid collection type—i.e., it implements a <see
+    ///   cref="Dictionary{TKey, TValue}"/>, even though nestd topics are expected to return a type implementing <see cref="
+    ///   IList"/>. This is invalid, and expected to throw an <see cref="InvalidOperationException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(MappingModelValidationException))]
+    public async Task Map_InvalidNestedTopicListType_ThrowsInvalidOperationException() {
+
+      var mappingService        = new ReverseTopicMappingService(_topicRepository);
+      var bindingModel          = new InvalidNestedTopicListTypeTopicBindingModel("Test");
 
       await mappingService.MapAsync(bindingModel).ConfigureAwait(false);
 

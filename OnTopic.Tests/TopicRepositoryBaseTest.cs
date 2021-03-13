@@ -4,18 +4,17 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
 using OnTopic.Collections.Specialized;
 using OnTopic.Data.Caching;
+using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
-using OnTopic.Associations;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
-using System.Diagnostics.CodeAnalysis;
-using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Tests {
 
@@ -36,6 +35,7 @@ namespace OnTopic.Tests {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     readonly                    StubTopicRepository             _topicRepository;
+    readonly                    CachedTopicRepository           _cachedTopicRepository;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -50,8 +50,122 @@ namespace OnTopic.Tests {
     ///   crawling the object graph.
     /// </remarks>
     public TopicRepositoryBaseTest() {
-      _topicRepository = new StubTopicRepository();
+      _topicRepository          = new StubTopicRepository();
+      _cachedTopicRepository    = new CachedTopicRepository(_topicRepository);
     }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: VALID TOPIC ID: RETURNS EXPECTED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a valid <see cref="Topic.Id"/> and
+    ///   confirms that the expected topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_ValidTopicId_ReturnsExpectedTopic() {
+
+      var topic                 = _topicRepository.Load(11111);
+
+      Assert.AreEqual<int?>(11111, topic?.Id);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: INVALID TOPIC ID: RETURNS EXPECTED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with an invalid <see cref="Topic.Id"/> and
+    ///   confirms that no topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_InvalidTopicId_ReturnsExpectedTopic() {
+
+      var topic                 = _topicRepository.Load(11113);
+
+      Assert.IsNull(topic);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: NEGATIVE TOPIC ID: RETURNS ROOT TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, Topic?, Boolean)"/> with a negative <see cref="Topic.Id"/> and
+    ///   confirms that the root topic is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_NegativeTopicId_ReturnsRootTopic() {
+
+      var topic                 = _cachedTopicRepository.Load(-2);
+
+      Assert.AreEqual<string?>("Root", topic?.GetUniqueKey());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: VALID DATE: RETURNS TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a valid date and ensures that topic
+    ///   with that date is returned.
+    /// </summary>
+    [TestMethod]
+    public void Load_ValidDate_ReturnsTopic() {
+
+      var version               = DateTime.UtcNow.AddDays(-1);
+      var topic                 = _cachedTopicRepository.Load(11111, version);
+
+      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ROLLBACK: TOPIC: UPDATES LAST MODIFIED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="TopicRepository.Rollback(Topic, DateTime)"/> with a valid date and ensures that the <see cref="Topic.
+    ///   LastModified"/> value is updated.
+    /// </summary>
+    [TestMethod]
+    public void Rollback_Topic_UpdatesLastModified() {
+
+      var version               = DateTime.UtcNow.AddDays(-1);
+      var topic                 = _topicRepository.Load(11111);
+
+      if (topic is not null) {
+        topic.VersionHistory.Add(version);
+        _topicRepository.Rollback(topic, version);
+      }
+
+      Assert.IsTrue(topic?.VersionHistory.Contains(version));
+      Assert.AreEqual<DateTime?>(version.AddTicks(-(version.Ticks % TimeSpan.TicksPerSecond)), topic?.LastModified);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: FUTURE DATE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a future <see cref="DateTime"/> and
+    ///   confirms that an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Load_FutureDate_ThrowsException() =>
+      _cachedTopicRepository.Load(1111, DateTime.UtcNow.AddDays(1));
+
+    /*==========================================================================================================================
+    | TEST: LOAD: OLD DATE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="CachedTopicRepository.Load(Int32, DateTime, Topic?)"/> with a date prior to versioning being
+    ///   introduced and ensures that an exception is thrown.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Load_OldDate_ThrowsException() =>
+      _cachedTopicRepository.Load(1111, new DateTime(2010, 10, 15));
 
     /*==========================================================================================================================
     | TEST: DELETE: BASE TOPIC: THROWS EXCEPTION
@@ -152,11 +266,11 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: RELATIONSHIPS: DELETE RELATIONSHIPS
+    | TEST: DELETE: ASSOCIATIONS: DELETE ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Deletes a topic with outgoing relationships. Deletes those relationships from that topic's <see cref=
-    ///   "Topic.IncomingRelationships"/> collection.
+    ///   Deletes a topic with outgoing relationships and topic references. Additionally, deletes those associations from the
+    ///   target topics' <see cref="Topic.IncomingRelationships"/> collection.
     /// </summary>
     [TestMethod]
     public void Delete_Relationships_DeleteRelationships() {
@@ -164,36 +278,39 @@ namespace OnTopic.Tests {
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var related               = TopicFactory.Create("Related", "Page", root);
+      var associated            = TopicFactory.Create("Associated", "Page", root);
 
-      child.Relationships.SetValue("Related", related);
+      child.Relationships.SetValue("Related", associated);
+      child.References.SetValue("Referenced", associated);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.IncomingRelationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, associated.IncomingRelationships.GetValues("Referenced").Count);
 
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: INCOMING RELATIONSHIPS: DELETE RELATIONSHIPS
+    | TEST: DELETE: INCOMING RELATIONSHIPS: DELETE ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Deletes a topic with incoming relationships. Deletes those relationships from that topic's <see cref=
-    ///   "Topic.Relationships"/> collection.
+    ///   Deletes a topic with incoming relationships. Deletes the relationships or references from the associated topic.
     /// </summary>
     [TestMethod]
-    public void Delete_IncomingRelationships_DeleteRelationships() {
+    public void Delete_IncomingRelationships_DeleteAssociations() {
 
       var root                  = TopicFactory.Create("Root", "Page");
       var topic                 = TopicFactory.Create("Topic", "Page", root);
       var child                 = TopicFactory.Create("Child", "Page", topic);
-      var related               = TopicFactory.Create("Related", "Page", root);
+      var source1               = TopicFactory.Create("Source1", "Page", root);
+      var source2               = TopicFactory.Create("Source2", "Page", root);
 
-      related.Relationships.SetValue("Related", child);
+      source1.Relationships.SetValue("Associations", child);
+      source2.References.SetValue("Associations", child);
 
       _topicRepository.Delete(topic, true);
 
-      Assert.AreEqual<int>(0, related.Relationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, source1.Relationships.GetValues("Associations").Count);
 
     }
 
@@ -289,14 +406,23 @@ namespace OnTopic.Tests {
     [TestMethod]
     public void GetAttributes_ExtendedAttributeMismatch_ReturnsExtendedAttributes() {
 
-      var topic                 = TopicFactory.Create("Test", "ContentTypes");
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
 
-      topic.Attributes.SetValue("Title", "Title", markDirty:false, isExtendedAttribute:false);
+      topic.Attributes.SetValue("Title", "Title", markDirty: false, isExtendedAttribute: false);
+      topic.Attributes.SetValue("IsHidden", "0", markDirty: false, isExtendedAttribute: true);
+      topic.Attributes.SetValue("MetaTitle", "Metatitle", markDirty: false, isExtendedAttribute: null);
+      topic.Attributes.SetValue("Arbitrary", "Value", markDirty: false, isExtendedAttribute: true);
 
-      var attributes            = _topicRepository.GetAttributesProxy(topic, true, true);
+      var dirtyExtended         = _topicRepository.GetAttributesProxy(topic, true, true);
+      var dirtyIndexed          = _topicRepository.GetAttributesProxy(topic, false, true);
+      var cleanExtended         = _topicRepository.GetAttributesProxy(topic, true, false);
+      var cleanIndexed          = _topicRepository.GetAttributesProxy(topic, false, false);
 
       //Expect Title, even though it isn't IsDirty
-      Assert.AreEqual<int>(1, attributes.Count());
+      Assert.AreEqual<int>(1, dirtyExtended.Count());
+      Assert.AreEqual<int>(1, dirtyIndexed.Count());
+      Assert.AreEqual<int>(2, cleanExtended.Count());
+      Assert.AreEqual<int>(2, cleanIndexed.Count());
 
     }
 
@@ -492,6 +618,52 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: GET NEW CONTENT TYPE: RETURNS FROM TOPIC GRAPH
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> that hasn't yet been persisted to the data store. Instead,
+    ///   attempts to retrieve it from the <see cref="Topic"/>'s graph.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_GetNewContentType_ReturnsFromTopicGraph() {
+
+      var rootTopic             = _topicRepository.Load("Root");
+      var contentTypes          = _topicRepository.GetContentTypeDescriptors();
+      var rootContentType       = contentTypes.GetValue("ContentTypes");
+      var newContentType        = TopicFactory.Create("NewContentType", "ContentTypeDescriptor", rootContentType);
+      var topic                 = TopicFactory.Create("Test", "NewContentType", rootTopic);
+
+      var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNotNull(contentType);
+      Assert.AreEqual<Topic?>(contentType, newContentType);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET CONTENT TYPE DESCRIPTOR: MISSING ROOT CONTENT ROOT: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Attempts to retrieve a <see cref="ContentTypeDescriptor"/> when the <see cref="ITopicRepository"/> doesn't contain a
+    ///   root content type at <c>Root:Configuration:ContentTypes</c>. In this case, it should return <c>null</c>. This will
+    ///   typically only occur when initializing a new database, and is an unexpected condition.
+    /// </summary>
+    [TestMethod]
+    public void GetContentTypeDescriptor_MissingRootContentType_ReturnsNull() {
+
+      var topicRepository       = new StubTopicRepository();
+      var configuration         = topicRepository.Load("Root:Configuration");
+      var topic                 = TopicFactory.Create("Test", "Page");
+
+      topicRepository.Delete(configuration!, true);
+
+      var contentType           = topicRepository.GetContentTypeDescriptorProxy(topic);
+
+      Assert.IsNull(contentType);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: GET CONTENT TYPE DESCRIPTOR: GET INVALID CONTENT TYPE: RETURNS NULL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -621,8 +793,8 @@ namespace OnTopic.Tests {
     | TEST: SAVE: UNRESOLVED REFERENCE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws an
-    ///   exception if that reference cannot be resolved.
+    ///   Saves a new <see cref="Topic"/> with an unresolved <see cref="Topic.References"/> and confirms that it throws the
+    ///   expected <see cref="ReferentialIntegrityException"/> if that reference cannot be resolved.
     /// </summary>
     [TestMethod]
     [ExpectedException(
@@ -640,6 +812,21 @@ namespace OnTopic.Tests {
       _topicRepository.Save(topic, true);
 
     }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: INVALID CONTENT TYPE: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Saves a new <see cref="Topic"/> with an invalid <see cref="Topic.ContentType"/> and confirms that it throws the
+    ///   expected <see cref="ReferentialIntegrityException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(
+      typeof(ReferentialIntegrityException),
+      "TopicRepository.Save() failed to throw an exception despite an unresolved topic reference."
+    )]
+    public void Save_InvalidContentType_ThrowsException() =>
+      _topicRepository.Save(new("Test", "InvalidContentType"));
 
     /*==========================================================================================================================
     | TEST: DELETE: CONTENT TYPE DESCRIPTOR: UPDATES CONTENT TYPE CACHE
@@ -746,25 +933,148 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DELETE: DELETE EVENT: IS FIRED
+    | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
+    ///   ITopicRepository.TopicLoaded"/> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Load_TopicLoadedEvent_IsRaised() {
+
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicLoaded += eventHandler;
+
+      var topic = _topicRepository.Load("Root:Web");
+
+      _cachedTopicRepository.TopicLoaded -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DELETE: TOPIC DELETED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> and then immediately deletes it. Ensures that the <see cref="ITopicRepository.
-    ///   TopicDeleted"/> is fired.
+    ///   TopicDeleted"/> event is raised.
     /// </summary>
     [TestMethod]
-    public void Delete_DeleteEvent_IsFired() {
+    public void Delete_TopicDeletedEvent_IsRaised() {
 
       var topic                 = TopicFactory.Create("Test", "Page");
       var hasFired              = false;
 
-      _topicRepository.Save(topic);
-      _topicRepository.TopicDeleted += eventHandler;
-      _topicRepository.Delete(topic);
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicDeleted += eventHandler;
+      _cachedTopicRepository.Delete(topic);
+      _cachedTopicRepository.TopicDeleted -= eventHandler;
 
       Assert.IsTrue(hasFired);
 
       void eventHandler(object? sender, TopicEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC SAVED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicSaved"
+    ///   /> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicSavedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page");
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicSaved += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicSaved -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicSaveEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC RENAMED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately saves it. Ensures that the <see cref="ITopicRepository.TopicRenamed
+    ///   "/> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicRenamedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var hasFired              = false;
+
+      topic.Key                 = "New";
+
+      _cachedTopicRepository.TopicRenamed += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicRenamed -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicRenameEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SAVE: TOPIC MOVED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/>, changes its parent, and then saves it. Ensures that the <see cref="ITopicRepository.
+    ///   TopicMoved"/> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Save_TopicMovedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var hasFired              = false;
+
+      topic.Parent              = parent;
+
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Save(topic);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MOVE: TOPIC MOVED EVENT: IS RAISED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> and then immediately moves it. Ensures that the <see cref="ITopicRepository.TopicMoved"
+    ///   /> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Move_TopicMovedEvent_IsRaised() {
+
+      var topic                 = TopicFactory.Create("Test", "Page", 1);
+      var parent                = TopicFactory.Create("Products", "Page", 2);
+      var hasFired              = false;
+
+      _cachedTopicRepository.TopicMoved += eventHandler;
+      _cachedTopicRepository.Move(topic, parent);
+      _cachedTopicRepository.TopicMoved -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicMoveEventArgs eventArgs) => hasFired = true;
 
     }
 

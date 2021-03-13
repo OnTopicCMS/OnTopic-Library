@@ -75,6 +75,47 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH NULL TOPIC: RETURNS DEFAULT ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> and ensures it falls back to the <c>defaultRoot</c>.
+    /// </summary>
+    [TestMethod]
+    public void GetHierarchicalRoot_WithNullTopic_ReturnsDefaultRoot() {
+
+      var rootTopic             = _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "Configuration");
+
+      Assert.IsNotNull(rootTopic);
+      Assert.AreEqual<string>("Configuration", rootTopic.Key);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH NULL TOPIC: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> or <c>defaultRoot</c> and ensures it throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetHierarchicalRoot_WithNullTopic_ThrowsException() =>
+      _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "");
+
+    /*==========================================================================================================================
+    | TEST: GET HIERARCHICAL ROOT: WITH INVALID DEFAULT ROOT: TRHOWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="HierarchicalTopicMappingService{T}.GetHierarchicalRoot(Topic?, Int32, String)"/> method with no
+    ///   <c>currentTopic</c> and throws an <see cref="ArgumentException"/> when it cannot identify the <c>defaultRoot</c>.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentOutOfRangeException))]
+    public void GetHierarchicalRoot_WithInvalidDefaultRoot_ThrowsException() =>
+      _hierarchicalMappingService.GetHierarchicalRoot(null, 2, "InvalidDefaultRoot");
+
+    /*==========================================================================================================================
     | TEST: GET HIERARCHICAL ROOT: WITH DEEP TOPIC: RETURNS ROOT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

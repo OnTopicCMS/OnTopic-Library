@@ -76,6 +76,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The <see cref="MemberInfo" /> instance to insert.</param>
     /// <exception cref="ArgumentException">The Type '{Type.Name}' already contains the MemberInfo '{item.Name}'</exception>
+    [ExcludeFromCodeCoverage]
     protected override sealed void InsertItem(int index, T item) {
 
       /*------------------------------------------------------------------------------------------------------------------------

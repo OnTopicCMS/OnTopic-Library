@@ -4,13 +4,17 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Internal.Reflection;
 using OnTopic.Metadata;
+using OnTopic.Tests.BindingModels;
 using OnTopic.Tests.ViewModels;
+using OnTopic.ViewModels;
 
 namespace OnTopic.Tests {
 
@@ -73,6 +77,163 @@ namespace OnTopic.Tests {
       var properties = new MemberInfoCollection<PropertyInfo>(typeof(ContentTypeDescriptor));
 
       Assert.IsFalse(properties.Contains("IsTypeOf")); //This is a method, not a property
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: ADD: DUPLICATE KEY: THROWS EXCEPTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.InsertItem(
+    ///   Int32, MemberInfoCollection)"/> throws an exception if a <see cref="MemberInfoCollection"/> with a duplicate <see cref
+    ///   ="MemberInfoCollection{T}.Type"/> already exists.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void Add_DuplicateKey_ThrowsException() =>
+      new TypeMemberInfoCollection {
+        new(typeof(EmptyViewModel)),
+        new(typeof(EmptyViewModel))
+      };
+
+    /*==========================================================================================================================
+    | TEST: HAS MEMBER: PROPERTY INFO: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TypeMemberInfoCollection"/> and confirms that <see cref="TypeMemberInfoCollection.HasMember{T
+    ///   }(Type, String)"/> returns <c>true</c> when appropriate.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasMember_PropertyInfo_ReturnsExpected() {
+
+      var typeCollection        = new TypeMemberInfoCollection();
+
+      Assert.IsTrue(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(typeCollection.HasMember(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsFalse(typeCollection.HasMember<MethodInfo>(typeof(ContentTypeDescriptorTopicBindingModel), "Attributes"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasGettableProperty(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableProperty_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE PROPERTY: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="MemberDispatcher.HasGettableProperty(Type, String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableProperty_WithAttribute_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher(typeof(AttributeSetterAttribute));
+
+      Assert.IsFalse(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.Key)));
+      Assert.IsTrue(dispatcher.HasGettableProperty(typeof(Topic), nameof(Topic.View)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS SETTABLE PROPERTY: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasSettableProperty(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasSettableProperty_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "Key"));
+      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "ContentTypes"));
+      Assert.IsFalse(dispatcher.HasSettableProperty(typeof(ContentTypeDescriptorTopicBindingModel), "MissingProperty"));
+      Assert.IsTrue(dispatcher.HasSettableProperty(typeof(TopicReferenceTopicViewModel), "TopicReference", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasGettableMethod(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasGettableMethod_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "SetMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod"));
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), "GetComplexMethod", typeof(TopicViewModel)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS GETTABLE METHOD: WITH ATTRIBUTE: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> with a required <see cref="Attribute"/> constraint and confirms that <see
+    ///   cref="MemberDispatcher.HasGettableMethod(Type, String, Type)"/> returns the expected value.
+    /// </summary>
+    /// <remarks>
+    ///   In practice, we haven't encountered a need for this yet and, thus, don't have any semantically relevant attributes to
+    ///   use in this situation. As a result, this example is a bit contrived.
+    /// </remarks>
+    [TestMethod]
+    public void HasGettableMethod_WithAttribute_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher(typeof(DisplayNameAttribute));
+
+      Assert.IsTrue(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetAnnotatedMethod)));
+      Assert.IsFalse(dispatcher.HasGettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: HAS SETTABLE METHOD: RETURNS EXPECTED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that <see cref="MemberDispatcher.HasSettableMethod(Type,
+    ///   String, Type)"/> returns the expected value.
+    ///   functions.
+    /// </summary>
+    [TestMethod]
+    public void HasSettableMethod_ReturnsExpected() {
+
+      var dispatcher            = new MemberDispatcher();
+
+      Assert.IsTrue(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.GetMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetComplexMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), nameof(MethodBasedViewModel.SetParametersMethod)));
+      Assert.IsFalse(dispatcher.HasSettableMethod(typeof(MethodBasedViewModel), "MissingMethod"));
 
     }
 
@@ -172,6 +333,51 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: NULL VALUE: IGNORES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> method ignores <c>null</c> values, assuming the target property isn't a <see cref="String"
+    ///   />.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_NullValue_Ignores() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NullablePropertyTopicViewModel() {
+        NullableInteger         = 5
+      };
+
+      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", null);
+
+      Assert.IsFalse(isValueSet);
+      Assert.AreEqual<int?>(5, model.NullableInteger);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET PROPERTY VALUE: EMPTY VALUE: IGNORES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that the <see cref="MemberDispatcher.SetPropertyValue(
+    ///   Object, String, Object?)"/> method ignores <see cref="String.Empty"/> values, assuming the target property isn't a
+    ///   <see cref="String"/>.
+    /// </summary>
+    [TestMethod]
+    public void SetPropertyValue_EmptyValue_Ignores() {
+
+      var types                 = new MemberDispatcher();
+      var model                 = new NullablePropertyTopicViewModel() {
+        NullableInteger         = 5
+      };
+
+      var isValueSet            = types.SetPropertyValue(model, "NullableInteger", "");
+
+      Assert.IsFalse(isValueSet);
+      Assert.AreEqual<int?>(5, model.NullableInteger);
+
+    }
 
     /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: BOOLEAN: SETS VALUE
@@ -220,7 +426,6 @@ namespace OnTopic.Tests {
 
     }
 
-
     /*==========================================================================================================================
     | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -241,59 +446,54 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD: VALID VALUE: SETS VALUE
+    | TEST: SET METHOD VALUE: VALID VALUE: SETS VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
     /// </summary>
     [TestMethod]
-    public void SetMethod_ValidValue_SetsValue() {
+    public void SetMethodValue_ValidValue_SetsValue() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "123");
-      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsTrue(isValueSet);
-      Assert.IsTrue(value is int);
-      Assert.AreEqual<int>(123, (int)value);
+      Assert.AreEqual<int>(123, source.GetMethod());
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD: INVALID VALUE: DOESN'T SET VALUE
+    | TEST: SET METHOD VALUE: INVALID VALUE: DOESN'T SET VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns an exception.
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethod_InvalidValue_DoesNotSetValue() {
+    public void SetMethodValue_InvalidValue_DoesNotSetValue() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
       var isValueSet            = types.SetMethodValue(source, "SetMethod", "ABC");
-      var value                 = types.GetMethodValue(source, "GetMethod")?? 0;
 
       Assert.IsFalse(isValueSet);
-      Assert.IsTrue(value is int);
-      Assert.AreEqual<int>(0, (int)value);
+      Assert.AreEqual<int>(0, source.GetMethod());
 
     }
 
-
     /*==========================================================================================================================
-    | TEST: SET METHOD: INVALID MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID MEMBER: RETURNS FALSE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid property name using the <see cref="
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethod_Integer_SetsValue() {
+    public void SetMethodValue_InvalidMember_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
@@ -301,6 +501,87 @@ namespace OnTopic.Tests {
       var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
 
       Assert.IsFalse(isInvalidSet);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: VALID REFENCE VALUE: SETS VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a reference value can be properly set using the <see
+    ///   cref="MemberDispatcher.SetMethodValue(Object, String, Object)"/> method.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_ValidReferenceValue_SetsValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+      var reference             = new TopicViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+
+      Assert.IsTrue(isValueSet);
+      Assert.AreEqual<TopicViewModel?>(reference, source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: DOESN'T SET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_InvalidReferenceValue_DoesNotSetValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+      var reference             = new EmptyViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
+
+      Assert.IsFalse(isValueSet);
+      Assert.IsNull(source.GetMethod());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: RETURNS FALSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_InvalidReferenceMember_ReturnsFalse() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedViewModel();
+
+      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", new object());
+
+      Assert.IsFalse(isInvalidSet);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: SET METHOD VALUE: NULL REFERENCE VALUE: DOESN'T SET VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an null value using the <see cref="
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void SetMethodValue_NullReferenceValue_DoesNotSetValue() {
+
+      var types                 = new MemberDispatcher();
+      var source                = new MethodBasedReferenceViewModel();
+
+      var isValueSet            = types.SetMethodValue(source, "SetMethod", (object?)null);
+
+      Assert.IsFalse(isValueSet);
+      Assert.IsNull(source.GetMethod());
 
     }
 

@@ -99,7 +99,6 @@ namespace OnTopic.Internal.Reflection {
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
     private readonly            Topic                           _associatedTopic;
-    private                     int                             _setCounter;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -208,6 +207,7 @@ namespace OnTopic.Internal.Reflection {
     ///   The key of the <typeparamref name="TItem"/>, which potentially corresponds to a <see cref="Topic"/> property.
     /// </param>
     /// <returns>Returns <c>true</c> if the <paramref name="itemKey"/> has been registered, otherwise <c>false</c>.</returns>
+    [ExcludeFromCodeCoverage]
     internal bool IsRegistered(string itemKey) => IsRegistered(itemKey, out var _);
 
     /// <summary>
@@ -257,15 +257,8 @@ namespace OnTopic.Internal.Reflection {
         return true;
       }
       else if (Register(itemKey, initialObject)) {
-        _setCounter++;
-        if (_setCounter > 3) {
-          throw new InvalidOperationException(
-            $"An infinite loop has occurred when setting '{itemKey}'; be sure that you are referencing " +
-            $"`Topic.SetAttributeValue()` when setting attributes from `Topic` properties."
-          );
-        }
         try {
-          _typeCache.SetPropertyValue(_associatedTopic, itemKey, (TValue?)initialObject?.Value);
+          _typeCache.SetPropertyValue(_associatedTopic, itemKey, initialObject?.Value);
         }
         catch (TargetInvocationException ex) {
           if (PropertyCache.ContainsKey(itemKey)) {
@@ -276,7 +269,6 @@ namespace OnTopic.Internal.Reflection {
           }
           throw;
         }
-        _setCounter = 0;
         return false;
       }
       return true;

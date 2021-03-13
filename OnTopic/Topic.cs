@@ -87,6 +87,13 @@ namespace OnTopic {
         Parent                  = parent;
       }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | If existing, mark clean
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (!IsNew) {
+        MarkClean();
+      }
+
     }
 
     #region Core Properties
@@ -143,7 +150,7 @@ namespace OnTopic {
       set {
         if (_parent != value) {
           Contract.Requires(value, "Parent cannot be explicitly set to null.");
-          SetParent(value, value?.Children?.LastOrDefault());
+          SetParent(value, value.Children.LastOrDefault());
         }
       }
     }
@@ -334,6 +341,7 @@ namespace OnTopic {
     ///   <c>true</c> if this instance is disabled; otherwise, <c>false</c>.
     /// </value>
     [AttributeSetter]
+    [ExcludeFromCodeCoverage]
     public bool IsDisabled {
       get => Attributes.GetBoolean("IsDisabled");
       set => SetAttributeValue("IsDisabled", value ? "1" : "0");
@@ -487,7 +495,6 @@ namespace OnTopic {
       if (_parent != parent) {
         _parent = parent;
       }
-
 
     }
 

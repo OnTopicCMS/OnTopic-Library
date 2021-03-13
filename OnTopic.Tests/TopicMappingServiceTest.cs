@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,7 @@ using OnTopic.Metadata;
 using OnTopic.Repositories;
 using OnTopic.TestDoubles;
 using OnTopic.TestDoubles.Metadata;
+using OnTopic.Tests.Entities;
 using OnTopic.Tests.TestDoubles;
 using OnTopic.Tests.ViewModels;
 using OnTopic.Tests.ViewModels.Metadata;
@@ -133,6 +135,29 @@ namespace OnTopic.Tests {
 
       Assert.AreEqual<string?>("ValueA", target?.MetaTitle);
       Assert.AreEqual<string?>("Value1", target?.Title);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: GENERIC: RETURNS CONVERTED PROPERTY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and confirms that a basic source property of type string—e.g., <see
+    ///   cref="CustomTopic.BooleanAsStringAttribute"/>—can successfully be converted to a target type of an integer—e.g., <see
+    ///   cref="ConvertPropertyViewModel.BooleanAttribute"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_Generic_ReturnsConvertedProperty() {
+
+      var topic                 = new CustomTopic("Test", "CustomTopic");
+
+      topic.NumericAttribute = 1;
+      topic.BooleanAsStringAttribute = "1";
+
+      var target                = await _mappingService.MapAsync<ConvertPropertyViewModel>(topic).ConfigureAwait(false);
+
+      Assert.IsTrue(target?.BooleanAttribute);
+      Assert.AreEqual<string?>(topic.NumericAttribute.ToString(CultureInfo.InvariantCulture), target?.NumericAsStringAttribute);
 
     }
 
@@ -317,9 +342,33 @@ namespace OnTopic.Tests {
 
       var difference            = cacheEntry.GetMissingAssociations(associations);
 
+      cacheEntry.AddMissingAssociations(difference);
+
       Assert.IsTrue(difference.HasFlag(AssociationTypes.References));
       Assert.IsFalse(difference.HasFlag(AssociationTypes.Children));
       Assert.IsFalse(difference.HasFlag(AssociationTypes.Parents));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAPPED TOPIC CACHE ENTRY: ADD MISSING ASSOCIATIONS: SETS UNION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="MappedTopicCacheEntry"/> with a set of <see cref="AssociationTypes"/>, and then confirms that
+    ///   its <see cref="MappedTopicCacheEntry.AddMissingAssociations(AssociationTypes)"/> correctly extends the missing
+    ///   associations.
+    /// </summary>
+    [TestMethod]
+    public void MappedTopicCacheEntry_AddMissingAssociations_SetsUnion() {
+
+      var cacheEntry            = new MappedTopicCacheEntry() {
+        Associations            = AssociationTypes.Children
+      };
+      var associations          = AssociationTypes.Children | AssociationTypes.Parents;
+
+      cacheEntry.AddMissingAssociations(associations);
+
+      Assert.AreEqual<AssociationTypes>(AssociationTypes.Children | AssociationTypes.Parents, cacheEntry.Associations);
 
     }
 
@@ -759,6 +808,53 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS SAME REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and binds two properties to the same association, each with the same
+    ///   <c>[Include()]</c> attribute. Ensures that the result of each property are the same, and only map the specified
+    ///   association.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsSameReference() {
+
+      var topic                 = TopicFactory.Create("Test", "Redundant", 1);
+      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+
+      child.References.SetValue("Reference", topic);
+
+      var mappedTopic           = await _mappingService.MapAsync<RedundantTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<TopicAssociationsViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Parent);
+      Assert.IsNull(mappedTopic?.FirstItem?.Reference);
+      Assert.IsNull(mappedTopic?.SecondItem?.Reference);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS PROGRESSIVE REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and binds two properties to the same association, each with a
+    ///   different <c>[Include()]</c> attribute. Ensures that the result of each property contains both assocations.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsProgressiveReference() {
+
+      var topic                 = TopicFactory.Create("Test", "Progressive", 1);
+      var child                 = TopicFactory.Create("ChildTopic", "RedundantItem", topic, 2);
+
+      child.References.SetValue("Reference", topic);
+
+      var mappedTopic           = await _mappingService.MapAsync<ProgressiveTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<TopicAssociationsViewModel?>(mappedTopic?.FirstItem, mappedTopic?.SecondItem);
+      Assert.AreEqual<TopicViewModel?>(mappedTopic?.FirstItem?.Parent, mappedTopic?.SecondItem?.Reference);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP: CIRCULAR REFERENCE: RETURNS MAPPED PARENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -1013,8 +1109,8 @@ namespace OnTopic.Tests {
     | TEST: MAP: FLATTEN ATTRIBUTE: RETURNS FLAT COLLECTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see
-    ///   cref="FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
+    ///   FlattenChildrenTopicViewModel.Children"/> property is properly flattened.
     /// </summary>
     [TestMethod]
     public async Task Map_FlattenAttribute_ReturnsFlatCollection() {
@@ -1035,11 +1131,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP: FLATTEN ATTRIBUTE: EXCLUDE TOPICS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> and tests whether the resulting object's <see cref="
+    ///   FlattenChildrenTopicViewModel.Children"/> property excludes any <see cref="Topic.IsDisabled"/> or nested topics.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_FlattenAttribute_ExcludeTopics() {
+
+      var topic                 = TopicFactory.Create("Test", "FlattenChildren");
+      var childTopic            = TopicFactory.Create("Child", "FlattenChildren", topic);
+      var grandChildTopic       = TopicFactory.Create("Grandchild", "FlattenChildren", childTopic);
+      var listTopic             = TopicFactory.Create("List", "List", childTopic);
+      _                         = TopicFactory.Create("Nested", "FlattenChildren", listTopic);
+
+      grandChildTopic.IsDisabled = true;
+
+      var target = await _mappingService.MapAsync<FlattenChildrenTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<int?>(1, target?.Children.Count);
+
+    }
+    /*==========================================================================================================================
     | TEST: MAP: CACHED TOPIC: RETURNS CACHED MODEL
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
-    ///   the same instance of a mapped object is turned after two calls.
+    ///   the same instance of a mapped object is returned after two calls.
     /// </summary>
     [TestMethod]
     public async Task Map_CachedTopic_ReturnsCachedModel() {
@@ -1052,6 +1171,29 @@ namespace OnTopic.Tests {
       var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync(topic).ConfigureAwait(false);
 
       Assert.AreEqual<FilteredTopicViewModel?>(target1, target2);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MAP: CACHED TOPIC: RETURNS UNIQUE REFERENCE PER TYPE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a <see cref="TopicMappingService"/> as well as a <see cref="CachedTopicMappingService"/> and ensures that
+    ///   a different instance of a mapped object is returned after two calls, assuming the types are different.
+    /// </summary>
+    [TestMethod]
+    public async Task Map_CachedTopic_ReturnsUniqueReferencePerType() {
+
+      var cachedMappingService = new CachedTopicMappingService(_mappingService);
+
+      var topic = TopicFactory.Create("Test", "Filtered", 5);
+
+      var target1 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target2 = (FilteredTopicViewModel?)await cachedMappingService.MapAsync<FilteredTopicViewModel>(topic).ConfigureAwait(false);
+      var target3 = (TopicViewModel?)await cachedMappingService.MapAsync<PageTopicViewModel>(topic).ConfigureAwait(false);
+
+      Assert.AreEqual<FilteredTopicViewModel?>(target1, target2);
+      Assert.AreNotEqual(target1, target3);
 
     }
 

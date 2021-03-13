@@ -47,13 +47,12 @@ namespace OnTopic.Collections.Specialized {
     /// <param name="lastModified">
     ///   The optional <see cref="LastModified"/> for the <see cref="TrackedRecord{T}"/> instance.
     /// </param>
-    protected TrackedRecord(string key, T value, bool isDirty = true, DateTime? lastModified = null) {
+    protected TrackedRecord(string key, T? value, bool isDirty = true, DateTime? lastModified = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
       TopicFactory.ValidateKey(key, false);
-      Contract.Requires(value, nameof(value));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set properties

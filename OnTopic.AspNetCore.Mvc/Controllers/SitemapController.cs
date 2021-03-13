@@ -173,7 +173,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
     private XDocument GenerateSitemap(Topic rootTopic, bool includeMetadata = false) =>
       new(
         new XElement(_sitemapNamespace + "urlset",
-          from topic in rootTopic?.Children
+          from topic in rootTopic.Children
           select AddTopic(topic, includeMetadata)
         )
       );
@@ -196,7 +196,6 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topic is null) return topics;
       if (topic.Attributes.GetBoolean("NoIndex")) return topics;
       if (topic.Attributes.GetBoolean("IsDisabled")) return topics;
       if (ExcludedContentTypes.Any(c => topic.ContentType.Equals(c, StringComparison.OrdinalIgnoreCase))) return topics;

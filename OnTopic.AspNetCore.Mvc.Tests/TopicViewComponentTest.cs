@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -81,10 +82,22 @@ namespace OnTopic.Tests {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish view model context
       \-----------------------------------------------------------------------------------------------------------------------*/
+      _context                  = GetViewComponentContext(_topic.GetWebPath());
+
+    }
+
+    /*==========================================================================================================================
+    | METHOD: GET VIEW COMPONENT CONTEXT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Establishes a new <see cref="ViewComponentContext"/> based on a given <paramref name="webPath"/>.
+    /// </summary>
+    private static ViewComponentContext GetViewComponentContext(string webPath) {
+
       var routes                = new RouteData();
 
       routes.Values.Add("rootTopic", "Web");
-      routes.Values.Add("path", "Web_3/Web_3_0");
+      routes.Values.Add("path", webPath);
 
       var viewContext           = new ViewContext() {
         HttpContext             = new DefaultHttpContext(),
@@ -94,7 +107,7 @@ namespace OnTopic.Tests {
         ViewContext             = viewContext
       };
 
-      _context                  = viewComponentContext;
+      return viewComponentContext;
 
     }
 
@@ -119,7 +132,55 @@ namespace OnTopic.Tests {
       Assert.AreEqual<string?>(_topic.GetWebPath(), model?.CurrentWebPath);
       Assert.AreEqual<string?>("/Web/", model?.NavigationRoot?.WebPath);
       Assert.AreEqual<int?>(3, model?.NavigationRoot?.Children.Count);
-      Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MENU: INVOKE: RETURNS CONFIGURED NAVIGATION ROOT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="MenuViewComponent"/> with a context defining an alternate <c>NavigationRoot</c>, and confirms
+    ///   that is returned as the <see cref="NavigationTopicViewModel"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task Menu_Invoke_ReturnsConfiguredNavigationRoot() {
+
+      var webPath               = "/Web/Web_3/Web_3_1/Web_3_1_0/";
+      var viewComponent         = new MenuViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
+      Assert.AreEqual<string?>("/Configuration/", model?.NavigationRoot?.WebPath);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NAVIGATION TOPIC VIEW MODEL: IS SELECTED: RETURNS EXPECTED OUTPUT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a <see cref="NavigationTopicViewModel"/> with a child instance, and ensures that the <see cref="
+    ///   NavigationTopicViewModel.IsSelected(String)"/> method returns the expected results.
+    /// </summary>
+    [TestMethod]
+    public void NavigationTopicViewModel_IsSelected_ReturnsExpectedOutput() {
+
+      var parent                = new NavigationTopicViewModel() {
+        WebPath                 = "/Web/"
+      };
+      var child                 = new NavigationTopicViewModel() {
+        WebPath                 = parent.WebPath + "Path/"
+      };
+      parent.Children.Add(child);
+
+      Assert.IsTrue(child.IsSelected(child.WebPath));
+      Assert.IsTrue(parent.IsSelected(child.WebPath));
+      Assert.IsFalse(child.IsSelected(parent.WebPath));
 
     }
 
@@ -145,6 +206,32 @@ namespace OnTopic.Tests {
       Assert.AreEqual<string?>("/Web/Web_3/", model?.NavigationRoot?.WebPath);
       Assert.AreEqual<int?>(2, model?.NavigationRoot?.Children.Count);
       Assert.IsTrue(model?.NavigationRoot?.IsSelected(_topic.GetWebPath())?? false);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a root that does not derive from a <c>PageGroup</c>
+    ///   and confirms the resulting <see cref="NavigationTopicViewModel"/> is <c>null</c>.
+    /// </summary>
+    [TestMethod]
+    public async Task PageLevelNavigation_Invoke_ReturnsNull() {
+
+      var webPath               = "/Web/Web_1/Web_1_0/";
+
+      var viewComponent         = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService) {
+        ViewComponentContext    = GetViewComponentContext(webPath)
+      };
+
+      var result                = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult        = result as ViewViewComponentResult;
+      var model                 = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string?>(webPath, model?.CurrentWebPath);
+      Assert.IsNull(model?.NavigationRoot);
 
     }
 

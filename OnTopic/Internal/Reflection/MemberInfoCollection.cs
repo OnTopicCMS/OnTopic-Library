@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace OnTopic.Internal.Reflection {
@@ -36,6 +37,7 @@ namespace OnTopic.Internal.Reflection {
     /// <param name="members">
     ///   An <see cref="IEnumerable{MemberInfo}"/> of <see cref="MemberInfo"/> instances to populate the collection.
     /// </param>
+    [ExcludeFromCodeCoverage]
     internal MemberInfoCollection(Type type, IEnumerable<MemberInfo> members) : base(type, members) {
     }
 

@@ -130,7 +130,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(NotFoundObjectResult), context.Result?.GetType());
+      Assert.IsInstanceOfType(context.Result, typeof(NotFoundObjectResult));
 
     }
 
@@ -154,7 +154,7 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(UnauthorizedResult), context.Result?.GetType());
+      Assert.IsInstanceOfType(context.Result, typeof(UnauthorizedResult));
 
     }
 
@@ -179,22 +179,75 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
+      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
 
     }
 
     /*==========================================================================================================================
-    | TEST: NESTED TOPIC: RETURNS 403
+    | TEST: NESTED TOPIC: LIST: RETURNS 403
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
     ///   <see cref="ContentTypeDescriptor"/> of <c>List</c>.
     /// </summary>
     [TestMethod]
-    public void NestedTopic_Returns403() {
+    public void NestedTopic_List_Returns403() {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "List");
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      var result                = context.Result as StatusCodeResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual(403, result?.StatusCode);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NESTED TOPIC: ITEM: RETURNS 403
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
+    /// </summary>
+    [TestMethod]
+    public void NestedTopic_Item_Returns403() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var list                  = TopicFactory.Create("Key", "List");
+      var topic                 = TopicFactory.Create("Item", "Page", list);
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      var result                = context.Result as StatusCodeResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual(403, result?.StatusCode);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: NESTED TOPIC: ITEM: RETURNS 403
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="StatusCodeResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   parent <see cref="Topic"/> with a <see cref="ContentTypeDescriptor"/> of <c>List</c>.
+    /// </summary>
+    [TestMethod]
+    public void Container_Returns403() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var topic                 = TopicFactory.Create("Item", "Container");
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -221,6 +274,7 @@ namespace OnTopic.Tests {
 
       var validateFilter        = new ValidateTopicAttribute();
       var topic                 = TopicFactory.Create("Key", "PageGroup");
+      var child                 = TopicFactory.Create("Child", "Page", topic);
       var controller            = GetTopicController(topic);
       var context               = GetActionExecutingContext(controller);
 
@@ -230,7 +284,38 @@ namespace OnTopic.Tests {
 
       controller.Dispose();
 
-      Assert.AreEqual(typeof(RedirectResult), context.Result?.GetType());
+      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
+      Assert.AreEqual<string?>(child.GetWebPath(), ((RedirectResult?)context.Result)?.Url);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: CANONICAL URL: RETURNS REDIRECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   <see cref="Topic.GetWebPath()"/> which doesn't match the current URL, even just by case.
+    /// </summary>
+    /// <remarks>
+    ///   The <see cref="GetActionExecutingContext(Controller)"/> defines a <see cref="DefaultHttpContext"/>, which doesn't
+    ///   define a <see cref="HttpRequest.Path"/>. As a result, if no other condition is met, the canonical condition should
+    ///   always be tripped as part of these unit tests.
+    /// </remarks>
+    [TestMethod]
+    public void CanonicalUrl_ReturnsRedirect() {
+
+      var validateFilter        = new ValidateTopicAttribute();
+      var topic                 = TopicFactory.Create("Key", "Page");
+      var controller            = GetTopicController(topic);
+      var context               = GetActionExecutingContext(controller);
+
+      TopicFactory.Create("Home", "Page", topic);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      Assert.IsInstanceOfType(context.Result, typeof(RedirectResult));
 
     }
 

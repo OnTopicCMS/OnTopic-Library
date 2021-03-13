@@ -10,6 +10,7 @@ using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Associations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Metadata {
 
@@ -98,6 +99,7 @@ namespace OnTopic.Metadata {
     ///     cref="ContentTypeDescriptor"/> is set to <see cref="DisableChildTopics"/>.
     ///   </para>
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public bool DisableChildTopics {
       get => Attributes.GetBoolean("DisableChildTopics");
       set => SetAttributeValue("DisableChildTopics", value ? "1" : "0");
@@ -276,7 +278,7 @@ namespace OnTopic.Metadata {
         contentType = contentType.Parent as ContentTypeDescriptor;
       }
 
-      return true;
+      return false;
 
     }
 

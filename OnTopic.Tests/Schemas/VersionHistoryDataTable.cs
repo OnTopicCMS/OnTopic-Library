@@ -12,54 +12,38 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Tests.Schemas {
 
   /*============================================================================================================================
-  | CLASS: TOPIC REFERENCES DATA TABLE
+  | CLASS: VERSION HISTORY DATA TABLE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a <see cref="DataTable"/> which maps to the expected schema of the <c>TopicReferences</c> table.
+  ///   Provides a <see cref="DataTable"/> which maps to the expected schema of the <c>VersionHistory</c> records returns from
+  ///   the <c>GetTopics</c> stored procedure.
   /// </summary>
   /// <remarks>
   ///   This allows testing of the <see cref="SqlTopicRepository"/> via its <see cref="SqlDataReaderExtensions"/> methods.
   /// </remarks>
   [ExcludeFromCodeCoverage]
-  public class TopicReferencesDataTable: DataTable {
+  public class VersionHistoryDataTable: DataTable {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the <see cref="TopicReferencesDataTable"/>.
+    ///   Instantiates a new instance of the <see cref="VersionHistoryDataTable"/>.
     /// </summary>
-    /// <returns>A new instance of the <see cref="TopicReferencesDataTable"/>.</returns>
-    public TopicReferencesDataTable() : base("TopicReferences") {
+    /// <returns>A new instance of the <see cref="VersionHistoryDataTable"/>.</returns>
+    public VersionHistoryDataTable() : base("VersionHistory") {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add Source_TopicId column
+      | Add TopicId column
       \-----------------------------------------------------------------------------------------------------------------------*/
       Columns.Add(new DataColumn() {
         DataType                = typeof(int),
-        ColumnName              = "Source_TopicId",
+        ColumnName              = "TopicId",
         Unique                  = true
       });
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Add RelationshipKey column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(string),
-        ColumnName              = "ReferenceKey"
-      });
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add Target_TopicId column
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Columns.Add(new DataColumn() {
-        DataType                = typeof(int),
-        ColumnName              = "Target_TopicId",
-        AllowDBNull             = true
-      });
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Add ParentId column
+      | Add Version column
       \-----------------------------------------------------------------------------------------------------------------------*/
       Columns.Add(new DataColumn() {
         DataType                = typeof(DateTime),
@@ -72,25 +56,23 @@ namespace OnTopic.Tests.Schemas {
     | ADD ROW
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Adds a new <see cref="DataRow"/> to the <see cref="TopicReferencesDataTable"/>.
+    ///   Adds a new <see cref="DataRow"/> to the <see cref="VersionHistoryDataTable"/>.
     /// </summary>
-    public void AddRow(int sourceTopicId, string referenceKey, int? targetTopicId, DateTime? version = null) {
+    public void AddRow(int topicId, DateTime version) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Verify parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(sourceTopicId, nameof(sourceTopicId));
-      Contract.Requires(referenceKey, nameof(referenceKey));
+      Contract.Requires(topicId, nameof(topicId));
+      Contract.Requires(version, nameof(version));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Create new row
       \-----------------------------------------------------------------------------------------------------------------------*/
       var row = NewRow();
 
-      row["Source_TopicId"]     = sourceTopicId;
-      row["ReferenceKey"]       = referenceKey;
-      row["Target_TopicId"]     = targetTopicId.HasValue ? (object)targetTopicId : DBNull.Value;
-      row["Version"]            = version?? DateTime.UtcNow;
+      row["TopicId"]            = topicId;
+      row["Version"]            = version;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Add row to table

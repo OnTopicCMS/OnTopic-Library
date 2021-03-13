@@ -170,6 +170,7 @@ namespace OnTopic.Collections.Specialized {
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     IEnumerator IEnumerable.GetEnumerator() => Source.GetEnumerator();
 
   } //Class

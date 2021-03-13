@@ -4,7 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Collections.Generic;
 using OnTopic.Attributes;
 using OnTopic.Collections;
 using OnTopic.Collections.Specialized;
@@ -211,7 +210,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
-    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)?? topic;
+    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)!;
 
     /*==========================================================================================================================
     | METHOD: GET BY UNIQUE KEY
@@ -233,20 +232,20 @@ namespace OnTopic.Querying {
       /*------------------------------------------------------------------------------------------------------------------------
       | Find lowest common root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var currentTopic          = (Topic?)topic.GetRootTopic();
+      var currentTopic          = topic.GetRootTopic();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle request for root
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (currentTopic!.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
+      if (currentTopic.Key.Equals(uniqueKey, StringComparison.OrdinalIgnoreCase)) {
         return currentTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Process keys
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey.StartsWith(currentTopic!.Key + ":", StringComparison.OrdinalIgnoreCase)) {
-        uniqueKey = uniqueKey[(currentTopic!.Key.Length + 1)..];
+      if (uniqueKey.StartsWith(currentTopic.Key + ":", StringComparison.OrdinalIgnoreCase)) {
+        uniqueKey = uniqueKey[(currentTopic.Key.Length + 1)..];
       }
       var keys                  = uniqueKey.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -254,7 +253,7 @@ namespace OnTopic.Querying {
       | Navigate to the specific path
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var key in keys) {
-        currentTopic = currentTopic?.Children?.GetValue(key);
+        currentTopic = currentTopic?.Children.GetValue(key);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

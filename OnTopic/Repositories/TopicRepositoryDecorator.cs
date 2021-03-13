@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Metadata;
 
@@ -24,6 +25,7 @@ namespace OnTopic.Repositories {
   ///   through the decorator. This way, derived decorators must only implement the specific methods they wish to override, and
   ///   can leave everything else as is.
   /// </remarks>
+  [ExcludeFromCodeCoverage]
   public abstract class TopicRepositoryDecorator : ObservableTopicRepository {
 
     /*==========================================================================================================================
@@ -121,7 +123,7 @@ namespace OnTopic.Repositories {
     | METHOD: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive) => TopicRepository.Delete(topic, isRecursive);
+    public override void Delete(Topic topic, bool isRecursive = false) => TopicRepository.Delete(topic, isRecursive);
 
   } //Class
 } //Namespace

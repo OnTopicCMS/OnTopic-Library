@@ -3,25 +3,28 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using OnTopic.ViewModels.BindingModels;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace OnTopic.Tests.BindingModels {
 
   /*============================================================================================================================
-  | VIEW MODEL: REFERENCE TOPIC
+  | BINDING MODEL: NESTED TOPIC LIST TYPE TOPIC (INVALID)
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a strongly-typed data transfer object for testing a property associated with a topic pointer—i.e. a reference
-  ///   to another topic.
+  ///   Provides a custom binding model with an invalid collection type—i.e., it implements a <see cref="Dictionary{TKey,
+  ///   TValue}"/>, even though nested topics are expected to return a type implementing <see cref="IList"/>. An <see cref="
+  ///   InvalidOperationException"/> should be thrown when it is mapped.
   /// </summary>
   /// <remarks>
   ///   This is a sample class intended for test purposes only; it is not designed for use in a production environment.
   /// </remarks>
-  public class ReferenceTopicBindingModel : BasicTopicBindingModel {
+  public class InvalidNestedTopicListTypeTopicBindingModel : BasicTopicBindingModel {
 
-    public ReferenceTopicBindingModel(string key) : base(key, "TextAttributeDescriptor") { }
+    public InvalidNestedTopicListTypeTopicBindingModel(string key) : base(key, "ContentTypeDescriptor") { }
 
-    public AssociatedTopicBindingModel? BaseTopic { get; set; }
+    public Dictionary<string, BasicTopicBindingModel> Attributes { get; } = new();
 
   } //Class
 } //Namespace

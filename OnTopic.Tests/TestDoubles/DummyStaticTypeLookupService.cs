@@ -4,81 +4,73 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using OnTopic.Metadata;
-using OnTopic.Repositories;
 
-namespace OnTopic.TestDoubles {
+namespace OnTopic.Lookup {
 
   /*============================================================================================================================
-  | DUMMY: TOPIC DATA REPOSITORY
+  | CLASS: DUMMY STATIC TYPE LOOKUP SERVICE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a basic, non-functional version of a <see cref="ITopicRepository"/> which satisfies the interface requirements,
-  ///   but is not intended to be called.
+  ///   The <see cref="DummyStaticTypeLookupService"/> provides a wrapper around the <see cref="StaticTypeLookupService"/> in
+  ///   order to relay access to protected members for the purpose of testing. The <see cref="DummyStaticTypeLookupService"/>
+  ///   doesn't implement any functionality of its own; it's just a pass-through wrapper.
   /// </summary>
   [ExcludeFromCodeCoverage]
-  public class DummyTopicRepository : ObservableTopicRepository {
+  public class DummyStaticTypeLookupService: StaticTypeLookupService {
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Instantiates a new instance of the <see cref="DummyTopicRepository"/>.
+    ///   Establishes a new instance of a <see cref="DummyStaticTypeLookupService"/>. Optionally accepts a list of <see cref="
+    ///   Type"/> instances and a default <see cref="Type"/> value.
     /// </summary>
-    /// <returns>A new instance of the <see cref="DummyTopicRepository"/>.</returns>
-    public DummyTopicRepository() : base() { }
+    /// <param name="types">The list of <see cref="Type"/> instances to expose as part of this service.</param>
+    public DummyStaticTypeLookupService(
+      IEnumerable<Type>? types = null
+    ): base(types) {
+    }
 
     /*==========================================================================================================================
-    | METHOD: GET CONTENT TYPE DESCRIPTORS
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override ContentTypeDescriptorCollection GetContentTypeDescriptors() => new();
-
-    /*==========================================================================================================================
-    | METHOD: LOAD
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) => null;
-
-    /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => null;
-
-    /// <inheritdoc />
-    public override Topic? Load(Topic? topic, DateTime version) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public override Topic? Load(int topicId, DateTime version, Topic? referenceTopic = null) => throw new NotImplementedException();
-
-    /*==========================================================================================================================
-    | METHOD: ROLLBACK
+    | METHOD: LOOKUP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override void Rollback(Topic topic, DateTime version) => throw new NotImplementedException();
+    public override Type? Lookup(params string[] typeNames) => base.Lookup(typeNames);
 
     /*==========================================================================================================================
-    | METHOD: REFRESH
+    | METHOD: ADD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc/>
-    public override void Refresh(Topic referenceTopic, DateTime since) => throw new NotImplementedException();
+    public new void Add(Type type) => base.Add(type);
 
     /*==========================================================================================================================
-    | METHOD: SAVE
+    | METHOD: TRY ADD
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Save(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+    /// <inheritdoc/>
+    public new bool TryAdd(Type type) => base.TryAdd(type);
 
     /*==========================================================================================================================
-    | METHOD: MOVE
+    | METHOD: ADD OR REPLACE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Move(Topic topic, Topic target, Topic? sibling = null) => throw new NotImplementedException();
+    /// <inheritdoc/>
+    public new void AddOrReplace(Type type) => base.AddOrReplace(type);
 
     /*==========================================================================================================================
-    | METHOD: DELETE
+    | METHOD: CONTAINS
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <inheritdoc />
-    public override void Delete(Topic topic, bool isRecursive = false) => throw new NotImplementedException();
+    /// <inheritdoc/>
+    public new bool Contains(Type type) => base.Contains(type);
+
+    /// <inheritdoc/>
+    public new bool Contains(string key) => base.Contains(key);
+
+    /*==========================================================================================================================
+    | METHOD: REMOVE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public new void Remove(string key) => base.Remove(key);
 
   } //Class
 } //Namespace

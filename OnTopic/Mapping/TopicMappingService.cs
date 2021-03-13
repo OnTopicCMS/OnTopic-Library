@@ -569,18 +569,16 @@ namespace OnTopic.Mapping {
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
         var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
-        if (sourceProperty is not null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
-          if (
-            sourceProperty.GetValue(source) is IList sourcePropertyValue &&
-            sourcePropertyValue.Count > 0 &&
-            typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
-          ) {
-            listSource = getCollection(
-              CollectionType.MappedCollection,
-              s => true,
-              () => sourcePropertyValue.Cast<Topic>().ToList()
-            );
-          }
+        if (
+          sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
+          sourcePropertyValue.Count > 0 &&
+          typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
+        ) {
+          listSource = getCollection(
+            CollectionType.MappedCollection,
+            s => true,
+            () => sourcePropertyValue.Cast<Topic>().ToList()
+          );
         }
       }
 
@@ -789,8 +787,7 @@ namespace OnTopic.Mapping {
     /// </summary>
     /// <param name="source">The <see cref="Topic"/> entity pull the data from.</param>
     /// <param name="targetList">The list of <see cref="Topic"/> instances to add each child to.</param>
-    /// <param name="includeNestedTopics">Optionally enable including nested topics in the list.</param>
-    private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList, bool includeNestedTopics = false) {
+    private IList<Topic> FlattenTopicGraph(Topic source, IList<Topic> targetList) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -802,7 +799,7 @@ namespace OnTopic.Mapping {
       | Validate source properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (source.IsDisabled) return targetList;
-      if (source.ContentType is "List" && !includeNestedTopics) return targetList;
+      if (source.ContentType is "List") return targetList;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Merge source list into target list

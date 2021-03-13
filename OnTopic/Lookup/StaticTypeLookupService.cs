@@ -104,6 +104,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   Adds a <see cref="Type"/> to the underlying collection.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     protected void Add(Type type) => _typeCollection.Add(type);
 
     /*==========================================================================================================================
@@ -145,6 +146,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     /// <param name="type">The <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if the <see cref="Type"/> exists in the collection.</returns>
+    [ExcludeFromCodeCoverage]
     protected bool Contains(Type type) => _typeCollection.Contains(type);
 
     /// <summary>
@@ -152,6 +154,7 @@ namespace OnTopic.Lookup {
     /// </summary>
     /// <param name="key">The key of the <see cref="Type"/> to located in the collection.</param>
     /// <returns><c>True</c> if a <see cref="Type"/> with <paramref name="key"/> exists in the collection.</returns>
+    [ExcludeFromCodeCoverage]
     protected bool Contains(string key) => _typeCollection.Contains(key);
 
     /*==========================================================================================================================
@@ -160,6 +163,7 @@ namespace OnTopic.Lookup {
     /// <summary>
     ///   Removes a <see cref="Type"/> with the provided <paramref name="key"/>.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     protected void Remove(string key) => _typeCollection.Remove(key);
 
   } //Class
