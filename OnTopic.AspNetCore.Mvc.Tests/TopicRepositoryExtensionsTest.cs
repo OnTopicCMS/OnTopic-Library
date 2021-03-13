@@ -64,7 +64,7 @@ namespace OnTopic.Tests {
       var currentTopic          = _topicRepository.Load(routes);
 
       Assert.IsNotNull(currentTopic);
-      Assert.ReferenceEquals(topic, currentTopic);
+      Assert.AreEqual<Topic?>(topic, currentTopic);
       Assert.AreEqual<string?>("Web_0_1_1", currentTopic?.Key);
 
     }
@@ -86,7 +86,7 @@ namespace OnTopic.Tests {
       var currentTopic          = _topicRepository.Load(routes);
 
       Assert.IsNotNull(currentTopic);
-      Assert.ReferenceEquals(topic, currentTopic);
+      Assert.AreEqual<Topic?>(topic, currentTopic);
       Assert.AreEqual<string?>("Root", currentTopic?.Key);
 
     }

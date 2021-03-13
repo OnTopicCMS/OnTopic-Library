@@ -636,7 +636,7 @@ namespace OnTopic.Tests {
       var contentType           = _topicRepository.GetContentTypeDescriptorProxy(topic);
 
       Assert.IsNotNull(contentType);
-      Assert.ReferenceEquals(contentType, newContentType);
+      Assert.AreEqual<Topic?>(contentType, newContentType);
 
     }
 

@@ -127,7 +127,7 @@ namespace OnTopic.Tests {
       parentTopic.Id            = 5;
       childTopic.Parent         = parentTopic;
 
-      Assert.ReferenceEquals(parentTopic.Children["Child"], childTopic);
+      Assert.AreEqual<Topic?>(parentTopic.Children["Child"], childTopic);
       Assert.AreEqual<int>(5, childTopic.Parent.Id);
 
     }
@@ -182,7 +182,7 @@ namespace OnTopic.Tests {
 
       childTopic.Parent         = targetParent;
 
-      Assert.ReferenceEquals(targetParent.Children["ChildTopic"], childTopic);
+      Assert.AreEqual<Topic?>(targetParent.Children["ChildTopic"], childTopic);
       Assert.IsTrue(targetParent.Children.Contains("ChildTopic"));
       Assert.IsFalse(sourceParent.Children.Contains("ChildTopic"));
       Assert.AreEqual<int>(10, childTopic.Parent.Id);
@@ -330,7 +330,7 @@ namespace OnTopic.Tests {
       topic.BaseTopic           = secondBaseTopic;
       topic.BaseTopic           = finalBaseTopic;
 
-      Assert.ReferenceEquals(topic.BaseTopic, finalBaseTopic);
+      Assert.AreEqual<Topic?>(topic.BaseTopic, finalBaseTopic);
       Assert.AreEqual<int?>(2, topic.References.GetValue("BaseTopic")?.Id);
 
     }
@@ -352,7 +352,7 @@ namespace OnTopic.Tests {
       baseTopic.Id              = 5;
       topic.BaseTopic           = baseTopic;
 
-      Assert.ReferenceEquals(topic.BaseTopic, baseTopic);
+      Assert.AreEqual<Topic?>(topic.BaseTopic, baseTopic);
       Assert.AreEqual<int?>(5, topic.References.GetValue("BaseTopic")?.Id);
 
     }

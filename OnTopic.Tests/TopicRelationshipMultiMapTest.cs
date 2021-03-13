@@ -37,7 +37,7 @@ namespace OnTopic.Tests {
 
       parent.Relationships.SetValue("Friends", related);
 
-      Assert.ReferenceEquals(parent.Relationships.GetValues("Friends").First(), related);
+      Assert.AreEqual<Topic?>(parent.Relationships.GetValues("Friends").First(), related);
 
     }
 
@@ -133,7 +133,7 @@ namespace OnTopic.Tests {
 
       relationships.SetValue("Friends", related);
 
-      Assert.ReferenceEquals(related.IncomingRelationships.GetValues("Friends").First(), parent);
+      Assert.AreEqual<Topic?>(related.IncomingRelationships.GetValues("Friends").First(), parent);
 
     }
 

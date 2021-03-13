@@ -66,9 +66,9 @@ namespace OnTopic.Tests {
       greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
+      Assert.AreEqual<Topic?>(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
       Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.ReferenceEquals(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
+      Assert.AreEqual<Topic?>(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
 
     }
 
@@ -88,7 +88,7 @@ namespace OnTopic.Tests {
 
       var foundTopic            = greatGrandChildTopic.FindFirstParent(t => t.Id is 5);
 
-      Assert.ReferenceEquals(childTopic, foundTopic);
+      Assert.AreEqual<Topic?>(childTopic, foundTopic);
 
     }
 
@@ -126,7 +126,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = greatGrandChildTopic.GetRootTopic();
 
-      Assert.ReferenceEquals(parentTopic, rootTopic);
+      Assert.AreEqual<Topic?>(parentTopic, rootTopic);
 
     }
 
@@ -143,7 +143,7 @@ namespace OnTopic.Tests {
 
       var rootTopic             = topic.GetRootTopic();
 
-      Assert.ReferenceEquals(topic, rootTopic);
+      Assert.AreEqual<Topic?>(topic, rootTopic);
 
     }
 
@@ -162,7 +162,7 @@ namespace OnTopic.Tests {
       var foundTopic = parentTopic.GetByUniqueKey("ParentTopic");
 
       Assert.IsNotNull(foundTopic);
-      Assert.ReferenceEquals(parentTopic, foundTopic);
+      Assert.AreEqual<Topic?>(parentTopic, foundTopic);
 
     }
 
@@ -183,7 +183,7 @@ namespace OnTopic.Tests {
 
       var foundTopic = greatGrandChildTopic1.GetByUniqueKey("ParentTopic:ChildTopic:GrandChildTopic:GreatGrandChildTopic2");
 
-      Assert.ReferenceEquals(greatGrandChildTopic2, foundTopic);
+      Assert.AreEqual<Topic?>(greatGrandChildTopic2, foundTopic);
 
     }
 
