@@ -569,18 +569,16 @@ namespace OnTopic.Mapping {
       //AttributeDescriptors from the current ContentTypeDescriptor, as well as all of its ascendents.
       if (listSource.Count == 0) {
         var sourceProperty = _typeCache.GetMember<PropertyInfo>(source.GetType(), configuration.AttributeKey);
-        if (sourceProperty is not null && typeof(IList).IsAssignableFrom(sourceProperty.PropertyType)) {
-          if (
-            sourceProperty.GetValue(source) is IList sourcePropertyValue &&
-            sourcePropertyValue.Count > 0 &&
-            typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
-          ) {
-            listSource = getCollection(
-              CollectionType.MappedCollection,
-              s => true,
-              () => sourcePropertyValue.Cast<Topic>().ToList()
-            );
-          }
+        if (
+          sourceProperty?.GetValue(source) is IList sourcePropertyValue &&
+          sourcePropertyValue.Count > 0 &&
+          typeof(Topic).IsAssignableFrom(sourcePropertyValue[0]?.GetType())
+        ) {
+          listSource = getCollection(
+            CollectionType.MappedCollection,
+            s => true,
+            () => sourcePropertyValue.Cast<Topic>().ToList()
+          );
         }
       }
 
