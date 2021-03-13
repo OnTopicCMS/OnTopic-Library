@@ -297,12 +297,11 @@ namespace OnTopic.Tests {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var dateTime1             = new DateTime(1976, 10, 15);
-      var dateTime2             = new DateTime(1981, 06, 03);
 
-      topic.Attributes.SetDateTime("DateTime2", dateTime2);
+      topic.Attributes.SetValue("DateTime2", "IncorrectValue");
 
-      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime3"));
-      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime3", dateTime1));
+      Assert.AreEqual<DateTime>(new DateTime(), topic.Attributes.GetDateTime("DateTime2"));
+      Assert.AreEqual<DateTime>(dateTime1, topic.Attributes.GetDateTime("DateTime2", dateTime1));
 
     }
 
