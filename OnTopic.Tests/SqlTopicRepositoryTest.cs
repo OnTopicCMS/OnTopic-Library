@@ -157,6 +157,36 @@ namespace OnTopic.Tests {
       Assert.IsNotNull(topic);
       Assert.AreEqual<int>(1, topic.Id);
       Assert.AreEqual<int?>(2, topic.Relationships.GetValues("Test").FirstOrDefault()?.Id);
+      Assert.IsTrue(topic.Relationships.IsFullyLoaded);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH MISSING RELATIONSHIP: NOT FULLY LOADED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+    ///   RelationshipsDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.IsFullyLoaded"
+    ///   /> returns <c>false</c>.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithMissingRelationship_NotFullyLoaded() {
+
+      using var topics          = new TopicsDataTable();
+      using var empty           = new AttributesDataTable();
+      using var relationships   = new RelationshipsDataTable();
+
+      topics.AddRow(1, "Root", "Container", null);
+      relationships.AddRow(1, "Test", 2, false);
+
+      using var tableReader     = new DataTableReader(new DataTable[] { topics, empty, empty, relationships });
+
+      var topic                 = tableReader.LoadTopicGraph();
+
+      Assert.IsNotNull(topic);
+      Assert.AreEqual<int>(1, topic.Id);
+      Assert.AreEqual<int>(0, topic.Relationships.Count);
+      Assert.IsFalse(topic.Relationships.IsFullyLoaded);
 
     }
 
@@ -256,8 +286,8 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
-    ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicRelationshipMultiMap.
-    ///   IsFullyLoaded"/> returns <c>false</c>.
+    ///   TopicReferencesDataTable"/> record that is missing and confirms that <see cref="TopicReferenceCollection.IsFullyLoaded
+    ///   "/> returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void LoadTopicGraph_WithMissingReference_NotFullyLoaded() {
@@ -308,6 +338,8 @@ namespace OnTopic.Tests {
       Assert.AreEqual<int>(0, topic.Relationships.GetValues("Test").Count);
 
     }
+
+
 
     /*==========================================================================================================================
     | TEST: LOAD TOPIC GRAPH: WITH VERSION HISTORY: RETURNS VERSIONS
