@@ -142,7 +142,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Attempts to set a relationship on a <see cref="TopicRelationshipMultiMap"/> that is marked as <c>isIncoming</c>
-    ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.SetValue(string, Topic,
+    ///   without setting the <c>isIncoming</c> parameter on <see cref="TopicRelationshipMultiMap.SetValue(String, Topic,
     ///   Boolean?, Boolean)"/> and verifies that a <see cref="InvalidOperationException"/> is thrown.
     /// </summary>
     [TestMethod]
