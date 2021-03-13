@@ -210,7 +210,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>The <see cref="Topic"/> at the root o the current topic graph.</returns>
-    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)?? topic;
+    public static Topic GetRootTopic(this Topic topic) => topic.FindFirstParent(t => t.Parent is null)!;
 
     /*==========================================================================================================================
     | METHOD: GET BY UNIQUE KEY
