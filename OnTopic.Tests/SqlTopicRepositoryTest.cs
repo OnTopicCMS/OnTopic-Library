@@ -50,6 +50,34 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: LOAD TOPIC GRAPH: WITH NEW PARENT: UPDATES PARENT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Calls <see cref="SqlDataReaderExtensions.LoadTopicGraph(IDataReader, Topic?, Boolean?, Boolean)"/> with a <see cref="
+    ///   TopicsDataTable"/> record that represents a different parent than the existing <c>referenceTopic</c> and confirms that
+    ///   the topic's parent is updated.
+    /// </summary>
+    [TestMethod]
+    public void LoadTopicGraph_WithNewParent_UpdatesParent() {
+
+      using var topics          = new TopicsDataTable();
+
+      var topic                 = new Topic("Root", "Container", null, 1);
+      var parent1               = new Topic("Parent1", "Container", topic, 2);
+      var parent2               = new Topic("Parent2", "Container", topic, 3);
+      var child                 = new Topic("Child", "Page", parent1, 4);
+
+      topics.AddRow(4, "Child", "Page", parent2.Id);
+
+      using var tableReader     = new DataTableReader(topics);
+
+      tableReader.LoadTopicGraph(topic);
+
+      Assert.AreEqual<Topic?>(parent2, child.Parent);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: LOAD TOPIC GRAPH: WITH ATTRIBUTES: RETURNS ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
