@@ -63,12 +63,12 @@ namespace OnTopic.Tests {
       var greatGrandChildTopic  = TopicFactory.Create("GreatGrandChildTopic", "Page", grandChildTopic, 7);
 
       grandChildTopic.Attributes.SetValue("Foo", "Baz");
-      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
       grandNieceTopic.Attributes.SetValue("Foo", "Bar");
+      greatGrandChildTopic.Attributes.SetValue("Foo", "Bar");
 
-      Assert.AreEqual<Topic?>(parentTopic.FindAllByAttribute("Foo", "Bar").First(), grandNieceTopic);
+      Assert.AreEqual<Topic?>(greatGrandChildTopic, parentTopic.FindAllByAttribute("Foo", "Bar").First());
       Assert.AreEqual<int>(2, parentTopic.FindAllByAttribute("Foo", "Bar").Count);
-      Assert.AreEqual<Topic?>(parentTopic.FindAllByAttribute("Foo", "Baz").First(), grandChildTopic);
+      Assert.AreEqual<Topic?>(grandChildTopic, parentTopic.FindAllByAttribute("Foo", "Baz").First());
 
     }
 
