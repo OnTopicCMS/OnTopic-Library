@@ -38,5 +38,46 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       _factory = new WebApplicationFactory<Startup>();
     }
 
+    /*==========================================================================================================================
+    | TEST: EXPAND VIEW LOCATIONS: VIEWS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates multiple views to ensure they fallback to the appropriate locations as defined in <see cref="
+    ///   TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander.AreaViewLocations"/>.
+    /// </summary>
+    [TestMethod]
+    [DataRow(                   "AreaContentTypeView",          "ContentType/AreaContentTypeView.cshtml")]
+    [DataRow(                   "AreaContentTypeSharedView",    "ContentType/Shared/AreaContentTypeSharedView.cshtml")]
+    [DataRow(                   "AreaContentTypesView",         "ContentTypes/ContentType.AreaContentTypesView.cshtml")]
+    [DataRow(                   "AreaContentTypesSharedView",   "ContentTypes/Shared/AreaContentTypesSharedView.cshtml")]
+    [DataRow(                   "AreaContentTypesFallbackView", "ContentTypes/AreaContentTypesFallbackView.cshtml")]
+    [DataRow(                   "AreaSharedView",               "Shared/AreaSharedView.cshtml")]
+    [DataRow(                   "ContentTypeView",              "ContentType/ContentTypeView.cshtml")]
+    [DataRow(                   "ContentTypeSharedView",        "ContentType/Shared/ContentTypeSharedView.cshtml")]
+    [DataRow(                   "ContentTypesView",             "ContentTypes/ContentType.ContentTypesView.cshtml")]
+    [DataRow(                   "ContentTypesSharedView",       "ContentTypes/Shared/ContentTypesSharedView.cshtml")]
+    [DataRow(                   "ContentTypesFallbackView",     "ContentTypes/ContentTypesFallbackView.cshtml")]
+    [DataRow(                   "SharedView",                   "Shared/SharedView.cshtml")]
+    public async Task ExpandViewLocations_Views(string viewName, string viewLocation) {
+
+      if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
+        viewLocation = $"~/Areas/Area/Views/{viewLocation}";
+      }
+      else {
+        viewLocation = $"~/Views/{viewLocation}";
+      }
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri($"/Area/?View={viewName}", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>(viewLocation, content);
+
+    }
+
   }
 }
