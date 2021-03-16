@@ -145,7 +145,7 @@ namespace OnTopic.AspNetCore.Mvc {
       | if they exist. This maps closely to how the default ViewResultExecutor works, but places it in the appropriate order for
       | evaluation against other view sources.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!view?.Success ?? false) {
+      if (!view?.Success ?? true) {
         if (routeData.Values.TryGetValue("action", out var action)) {
           var actionName = action?.ToString()?.Replace("Async", "", StringComparison.OrdinalIgnoreCase);
           view = ViewEngine.FindView(actionContext, actionName, isMainPage: true);
