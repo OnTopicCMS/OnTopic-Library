@@ -104,6 +104,28 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: TOPIC: RETURNS EXPECTED VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a test with a specified <see cref="Topic.View"/> to ensure that the expected view is returned.
+    /// </summary>
+    [TestMethod]
+    public async Task Topic_ReturnsExpectedView() {
+
+      var client                = _factory.CreateClient();
+
+      var uri                   = new Uri("/Area/TopicWithView/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+
+    }
+
 
   }
 }
