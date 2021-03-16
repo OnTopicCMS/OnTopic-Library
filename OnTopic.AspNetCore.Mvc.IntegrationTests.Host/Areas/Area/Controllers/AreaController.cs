@@ -35,5 +35,14 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Areas.Area.Controllers {
       ITopicMappingService topicMappingService
     ): base(topicRepository, topicMappingService) {}
 
+    /*==========================================================================================================================
+    | GET: ACCORDION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Exposes a method which will, by default, be associated with views named <c>Accordion</c>.
+    /// </summary>
+    /// <returns>A view associated with the <c>Accordion</c> action.</returns>
+    public IActionResult Accordion() => TopicView(new(), CurrentTopic?.View);
+
   } //Class
 } //Namespace
