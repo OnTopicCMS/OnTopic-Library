@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{B7F136A1-C86D-4A74-AC4F-3693CD1358A4}</ProjectGuid>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>OnTopic.AspNetCore.Mvc</RootNamespace>
   </PropertyGroup>
 

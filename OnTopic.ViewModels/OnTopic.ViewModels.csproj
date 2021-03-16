@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{E52FC633-B4C5-4A2B-8CAF-30E756D7A6A7}</ProjectGuid>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>OnTopic.ViewModels</RootNamespace>
   </PropertyGroup>
 
