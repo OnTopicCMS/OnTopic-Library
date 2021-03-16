@@ -93,6 +93,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       | Configure: MVC
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
+        endpoints.MapDefaultAreaControllerRoute();
         endpoints.MapControllers();
       });
 

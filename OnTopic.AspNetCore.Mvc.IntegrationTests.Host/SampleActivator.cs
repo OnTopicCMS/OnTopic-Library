@@ -108,6 +108,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       return type.Name switch {
         nameof(TopicController) =>
           new TopicController(_topicRepository, _topicMappingService),
+        nameof(ControllerController) =>
+          new ControllerController(),
         _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
       };
 
