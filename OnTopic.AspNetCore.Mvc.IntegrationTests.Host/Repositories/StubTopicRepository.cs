@@ -155,6 +155,13 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       new Topic("ContentList", "ContentList", web, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish area topics
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var area                  = new Topic("Area", "ContentType", rootTopic, currentAttributeId++);
+
+      new Topic("AreaContentTypes", "AreaContentTypes", area, currentAttributeId++);
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
       \-----------------------------------------------------------------------------------------------------------------------*/
       return rootTopic;
