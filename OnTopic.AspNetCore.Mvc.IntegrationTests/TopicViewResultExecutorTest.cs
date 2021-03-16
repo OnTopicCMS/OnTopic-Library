@@ -126,6 +126,27 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: CONTENT TYPE: RETURNS EXPECTED VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a test with without a view specified to ensure that the expected default view is returned based on the <see
+    ///   cref="Topic.ContentType"/>.
+    /// </summary>
+    [TestMethod]
+    public async Task ContentType_ReturnsExpectedView() {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri("/Web/ContentList/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+
+    }
 
   }
 }
