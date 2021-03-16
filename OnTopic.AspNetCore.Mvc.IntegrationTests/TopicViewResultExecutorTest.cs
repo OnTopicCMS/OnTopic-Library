@@ -37,6 +37,27 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       _factory = new WebApplicationFactory<Startup>();
     }
 
+    /*==========================================================================================================================
+    | TEST: QUERY STRING: RETURNS EXPECTED VIEW
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a test with a query string parameter to ensure that the expected view is returned.
+    /// </summary>
+    [TestMethod]
+    public async Task QueryString_ReturnsExpectedView() {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri("/Web/ContentList/?View=Accordion", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+
+    }
+
 
   }
 }
