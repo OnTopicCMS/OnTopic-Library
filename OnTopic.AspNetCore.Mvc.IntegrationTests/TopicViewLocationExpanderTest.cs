@@ -79,5 +79,43 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: EXPAND VIEW LOCATIONS: VIEWS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates multiple actions off of the <see cref="ControllerController"/> to ensure they fallback to the appropriate
+    ///   locations as defined in <see cref="TopicViewLocationExpander.ViewLocations"/> and <see cref="TopicViewLocationExpander
+    ///   .AreaViewLocations"/>.
+    /// </summary>
+    [TestMethod]
+    [DataRow(                   "AreaAction",                   "Controller/AreaAction.cshtml")]
+    [DataRow(                   "AreaFallbackAction",           "AreaFallbackAction.cshtml")]
+    [DataRow(                   "AreaSharedAction",             "Controller/Shared/AreaSharedAction.cshtml")]
+    [DataRow(                   "AreaSharedFallbackAction",     "Shared/AreaSharedFallbackAction.cshtml")]
+    [DataRow(                   "Action",                       "Controller/Action.cshtml")]
+    [DataRow(                   "FallbackAction",               "FallbackAction.cshtml")]
+    [DataRow(                   "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
+    [DataRow(                   "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
+    public async Task TestSomeNumbers2(string viewName, string viewLocation) {
+
+      if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
+        viewLocation = $"~/Areas/Area/Views/{viewLocation}";
+      }
+      else {
+        viewLocation = $"~/Views/{viewLocation}";
+      }
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri($"/Area/Controller/{viewName}/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>(viewLocation, content);
+
+    }
+
   }
 }
