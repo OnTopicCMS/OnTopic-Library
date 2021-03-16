@@ -59,6 +59,16 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
         //Add OnTopic support
         .AddTopicSupport();
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Register: Activators
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var activator = new SampleActivator();
+
+      services.AddSingleton<IControllerActivator>(activator);
+      services.AddSingleton<IViewComponentActivator>(activator);
+
+    }
+
     /*==========================================================================================================================
     | METHOD: CONFIGURE (APPLICATION)
     \-------------------------------------------------------------------------------------------------------------------------*/
