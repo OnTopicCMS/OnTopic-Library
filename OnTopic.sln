@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.Data.Sql.Database.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.All", "OnTopic.All\OnTopic.All.csproj", "{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.AspNetCore.Mvc.IntegrationTests.Host", "OnTopic.AspNetCore.Mvc.IntegrationTests.Host\OnTopic.AspNetCore.Mvc.IntegrationTests.Host.csproj", "{BB5951FF-F557-4D02-99E2-592D3D2EC00E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AE0A248-0243-4E41-B6AB-CB8ACB5A6E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5951FF-F557-4D02-99E2-592D3D2EC00E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB5951FF-F557-4D02-99E2-592D3D2EC00E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB5951FF-F557-4D02-99E2-592D3D2EC00E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB5951FF-F557-4D02-99E2-592D3D2EC00E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
