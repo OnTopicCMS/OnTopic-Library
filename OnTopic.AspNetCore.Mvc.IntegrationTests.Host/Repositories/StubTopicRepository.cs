@@ -147,16 +147,15 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       | Establish topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var web                   = new Topic("Web", "Page", rootTopic, currentAttributeId++);
-
-      new Topic("ContentList", "ContentList", web, currentAttributeId++);
+      _                         = new Topic("ContentList", "ContentList", web, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish area topics
       \-----------------------------------------------------------------------------------------------------------------------*/
       var area                  = new Topic("Area", "ContentType", rootTopic, currentAttributeId++);
 
-      new Topic("AreaContentTypes", "AreaContentTypes", area, currentAttributeId++);
-      new Topic("Accordion", "ContentList", area, currentAttributeId++);
+      _                         = new Topic("AreaContentTypes", "AreaContentTypes", area, currentAttributeId++);
+      _                         = new Topic("Accordion", "ContentList", area, currentAttributeId++);
 
       var topicWithView         = new Topic("TopicWithView", "ContentList", area, currentAttributeId++);
       topicWithView.View        = "Accordion";
