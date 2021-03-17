@@ -4,7 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.AspNetCore.Mvc.IntegrationTests.Host;
@@ -145,6 +147,24 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: MISSING VIEW: RETURNS INTERNAL SERVER ERROR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Constructs a test without a view and without a default implementation for the <see cref="Topic.ContentType"/> and
+    ///   ensures that an <see cref="HttpStatusCode.InternalServerError"/> is returned.
+    /// </summary>
+    [TestMethod]
+    public async Task MissingView_ReturnsInternalServerError() {
+
+      var client = _factory.CreateClient();
+      var uri = new Uri("/Web/MissingView/", UriKind.Relative);
+      var response = await client.GetAsync(uri).ConfigureAwait(false);
+
+      Assert.AreEqual<HttpStatusCode?>(HttpStatusCode.InternalServerError, response.StatusCode);
 
     }
 

@@ -147,6 +147,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var web                   = new Topic("Web", "Page", rootTopic, currentAttributeId++);
       _                         = new Topic("ContentList", "ContentList", web, currentAttributeId++);
+      _                         = new Topic("MissingView", "Missing", web, currentAttributeId++);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish area topics
