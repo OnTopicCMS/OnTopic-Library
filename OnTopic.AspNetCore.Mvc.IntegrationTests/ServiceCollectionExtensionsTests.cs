@@ -39,6 +39,28 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP TOPIC ROUTE: RESPONDS TO REQUEST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRoute(IEndpointRouteBuilder, String,
+    ///   String, String)"/> and confirms that it responds appropriately.
+    /// </summary>
+    [TestMethod]
+    public async Task MapTopicRoute_RespondsToRequest() {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri($"/Web/ContentList/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP TOPIC SITEMAP: RESPONDS TO REQUEST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
