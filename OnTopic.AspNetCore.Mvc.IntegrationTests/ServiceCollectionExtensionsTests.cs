@@ -105,6 +105,28 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     }
 
     /*==========================================================================================================================
+    | TEST: MAP IMPLCIT AREA CONTROLLER ROUTE: RESPONDS TO REQUEST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapDefaultAreaControllerRoute(
+    ///   IEndpointRouteBuilder)"/> and confirms that it responds appropriately.
+    /// </summary>
+    [TestMethod]
+    public async Task MapImplicitAreaControllerRoute_RespondsToRequest() {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri($"/Area/Accordion/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/Accordion.cshtml", content);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: MAP TOPIC SITEMAP: RESPONDS TO REQUEST
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
