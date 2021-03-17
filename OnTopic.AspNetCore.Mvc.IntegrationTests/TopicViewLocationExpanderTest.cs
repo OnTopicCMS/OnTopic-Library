@@ -80,7 +80,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPAND VIEW LOCATIONS: VIEWS
+    | TEST: EXPAND VIEW LOCATIONS: ACTIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Evaluates multiple actions off of the <see cref="ControllerController"/> to ensure they fallback to the appropriate
@@ -96,7 +96,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
     [DataRow(                   "FallbackAction",               "FallbackAction.cshtml")]
     [DataRow(                   "SharedAction",                 "Controller/Shared/SharedAction.cshtml")]
     [DataRow(                   "SharedFallbackAction",         "Shared/SharedFallbackAction.cshtml")]
-    public async Task TestSomeNumbers2(string viewName, string viewLocation) {
+    public async Task ExpandViewLocations_Actions(string viewName, string viewLocation) {
 
       if (viewName is not null && viewName.StartsWith("Area", StringComparison.OrdinalIgnoreCase)) {
         viewLocation = $"~/Areas/Area/Views/{viewLocation}";
