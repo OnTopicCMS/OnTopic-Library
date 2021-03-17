@@ -85,7 +85,7 @@ namespace OnTopic.Mapping.Hierarchical {
       | Handle default, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is null) {
-        Contract.Requires(defaultRoot, nameof(defaultRoot));
+        Contract.Assume<ArgumentNullException>(!String.IsNullOrEmpty(defaultRoot), nameof(defaultRoot));
         navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic);
       }
 
