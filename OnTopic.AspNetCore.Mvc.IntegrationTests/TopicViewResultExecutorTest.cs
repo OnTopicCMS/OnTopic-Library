@@ -69,7 +69,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
       var client                = _factory.CreateClient();
 
-      client.DefaultRequestHeaders.Add("Accept", "application/json, string/Accordion, text/html");
+      client.DefaultRequestHeaders.Add("Accept", "application/json, string/Accordion;level=2;q=0.4, text/html");
 
       var uri                   = new Uri("/Web/ContentList/", UriKind.Relative);
       var response              = await client.GetAsync(uri).ConfigureAwait(false);
