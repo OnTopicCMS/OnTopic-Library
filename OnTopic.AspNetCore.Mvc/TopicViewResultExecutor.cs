@@ -92,10 +92,9 @@ namespace OnTopic.AspNetCore.Mvc {
       | the TopicViewResultExecutor. This is necessary because by the time the TopicViewLocationExpander is executed, it only
       | has access to the view name and the view data, but not the original TopicViewResult, or even the ViewEngineResult.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (routeData.Values.ContainsKey("contenttype")) {
-        routeData.Values.Remove("contenttype");
+      if (!routeData.Values.ContainsKey("contenttype")) {
+        routeData.Values.Add("contenttype", contentType);
       }
-      routeData.Values.Add("contenttype", contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Check Querystring
