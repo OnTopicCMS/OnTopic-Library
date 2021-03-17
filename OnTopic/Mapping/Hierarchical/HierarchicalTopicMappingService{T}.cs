@@ -85,11 +85,7 @@ namespace OnTopic.Mapping.Hierarchical {
       | Handle default, if necessary
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (navigationRootTopic is null) {
-        if (String.IsNullOrEmpty(defaultRoot)) {
-          throw new ArgumentNullException(
-            $"The current route could not be resolved to a topic and the {nameof(defaultRoot)} was not set."
-          );
-        }
+        Contract.Requires(defaultRoot, nameof(defaultRoot));
         navigationRootTopic = TopicRepository.Load(defaultRoot, currentTopic);
       }
 
