@@ -112,6 +112,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
           new AreaController(_topicRepository, _topicMappingService),
         nameof(ControllerController) =>
           new ControllerController(),
+        nameof(SitemapController) =>
+          new SitemapController(_topicRepository),
         _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
       };
 
