@@ -113,25 +113,20 @@ namespace OnTopic.AspNetCore.Mvc {
       | Pull Headers
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (!(view?.Success ?? false) && requestContext.Headers.ContainsKey("Accept")) {
-        var acceptHeaders = requestContext.Headers["Accept"].First<string>();
-        // Validate the content-type after the slash, then validate it against available views
-        var splitHeaders = acceptHeaders.Split(new char[] { ',', ';' });
-        // Validate the content-type after the slash, then validate it against available views
-        for (var i = 0; i < splitHeaders.Length; i++) {
-          if (splitHeaders[i].Contains("/", StringComparison.Ordinal)) {
-            // Get content-type after the slash and replace '+' characters in the content-type to '-' for view file encoding
-            // purposes
-            var acceptHeader = splitHeaders[i]
-              [(splitHeaders[i].IndexOf("/", StringComparison.Ordinal) + 1)..]
-              .Replace("+", "-", StringComparison.Ordinal);
-            // Validate against available views; if content-type represents a valid view, stop validation
-            if (acceptHeader is not null) {
-              view = viewEngine.FindView(actionContext, acceptHeader, isMainPage: true);
-              searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
-            }
-            if (view is not null) {
-              break;
-            }
+        foreach (var header in requestContext.Headers["Accept"]) {
+          var value = header.Replace("+", "-", StringComparison.Ordinal);
+          if (value.Contains("/", StringComparison.Ordinal)) {
+            value = value[(value.IndexOf("/", StringComparison.Ordinal)+1)..];
+          }
+          if (value.Contains(";", StringComparison.Ordinal)) {
+            value = value[..(value.IndexOf(";", StringComparison.Ordinal))];
+          }
+          if (value is not null) {
+            view = viewEngine.FindView(actionContext, value, isMainPage: true);
+            searchedPaths = searchedPaths.Union(view.SearchedLocations ?? Array.Empty<string>()).ToList();
+          }
+          if (view?.Success ?? false) {
+            break;
           }
         }
       }
