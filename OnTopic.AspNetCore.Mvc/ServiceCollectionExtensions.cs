@@ -119,6 +119,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///   If there are multiple routes that fit this description, you can instead opt to use the <see cref=
     ///   "MapTopicAreaRoute(IEndpointRouteBuilder)"/> extension, which will register all areas.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static ControllerActionEndpointConventionBuilder MapTopicAreaRoute(
       this IEndpointRouteBuilder routes,
       string areaName,
@@ -181,6 +182,7 @@ namespace OnTopic.AspNetCore.Mvc {
     ///     "MapImplicitAreaControllerRoute(IEndpointRouteBuilder)"/> overload, which will register all areas.
     ///   </para>
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static void MapImplicitAreaControllerRoute(this IEndpointRouteBuilder routes, string areaName) =>
       routes.MapAreaControllerRoute(
         name: $"{areaName}TopicArea",

@@ -135,9 +135,8 @@ namespace OnTopic.AspNetCore.Mvc {
       | redirected to the first (non-hidden, non-disabled) page in the page group.
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (currentTopic.ContentType is "PageGroup") {
-        context.Result = controller.Redirect(
-          currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath()
-        );
+        var target = currentTopic.Children.Where(t => t.IsVisible()).FirstOrDefault()?.GetWebPath();
+        context.Result = target is null? new StatusCodeResult(403) : controller.Redirect(target);
         return;
       }
 

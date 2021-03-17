@@ -290,6 +290,32 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: PAGE GROUP TOPIC: EMPTY: RETURNS REDIRECT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Ensures that a <see cref="RedirectResult"/> is thrown if the <see cref="TopicController.CurrentTopic"/> has a
+    ///   <see cref="ContentTypeDescriptor"/> of <c>PageGroup</c> with no <see cref="Topic.Children"/>.
+    /// </summary>
+    [TestMethod]
+    public void PageGroupTopic_Empty_ReturnsRedirect() {
+
+      var validateFilter = new ValidateTopicAttribute();
+      var topic = TopicFactory.Create("Key", "PageGroup");
+      var controller = GetTopicController(topic);
+      var context = GetActionExecutingContext(controller);
+
+      validateFilter.OnActionExecuting(context);
+
+      controller.Dispose();
+
+      var result = context.Result as StatusCodeResult;
+
+      Assert.IsNotNull(result);
+      Assert.AreEqual(403, result?.StatusCode);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: CANONICAL URL: RETURNS REDIRECT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

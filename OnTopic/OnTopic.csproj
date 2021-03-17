@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{B8D5B290-4451-4C3B-AE9E-0FF075958A74}</ProjectGuid>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>OnTopic</RootNamespace>
   </PropertyGroup>
 

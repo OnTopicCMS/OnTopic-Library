@@ -240,7 +240,7 @@ namespace OnTopic.AspNetCore.Mvc.Controllers {
       | Get attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
       XElement getAttributes() =>
-        new XElement(_pagemapNamespace + "DataObject",
+        new(_pagemapNamespace + "DataObject",
           new XAttribute("type", "Attributes"),
             new XElement(_pagemapNamespace + "Attribute",
               new XAttribute("name", "ContentType"),

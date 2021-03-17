@@ -32,7 +32,7 @@ namespace OnTopic.Associations {
     readonly                    Topic                           _parent;
     readonly                    bool                            _isIncoming;
     readonly                    DirtyKeyCollection              _dirtyKeys                      = new();
-    readonly                    TopicMultiMap                   _storage                        = new();
+    readonly                    TopicMultiMap                   _storage;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -47,10 +47,10 @@ namespace OnTopic.Associations {
     ///   not set, then it will not allow incoming relationships to be set via the internal <see cref=
     ///   "SetValue(String, Topic, Boolean?, Boolean)"/> overload.
     /// </remarks>
-    public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base() {
+    public TopicRelationshipMultiMap(Topic parent, bool isIncoming = false): base(new()) {
       _parent                   = parent;
       _isIncoming               = isIncoming;
-      base.Source               = _storage;
+      _storage                  = base.Source;
     }
 
     /*==========================================================================================================================

@@ -101,16 +101,16 @@ namespace OnTopic.AspNetCore.Mvc {
       context.ActionContext.RouteData.Values.TryGetValue("contenttype", out var contentType);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Yield view locations
+      | Yield area view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var location in ViewLocations) {
+      foreach (var location in AreaViewLocations) {
         yield return location.Replace(@"{3}", (string?)contentType, StringComparison.Ordinal);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Yield area view locations
+      | Yield view locations
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var location in AreaViewLocations) {
+      foreach (var location in ViewLocations) {
         yield return location.Replace(@"{3}", (string?)contentType, StringComparison.Ordinal);
       }
 

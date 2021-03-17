@@ -33,19 +33,6 @@ namespace OnTopic.Collections.Specialized {
       Source = source;
     }
 
-    /// <summary>
-    ///   Constructs a new instance of a <see cref="ReadOnlyTopicMultiMap"/> class.
-    /// </summary>
-    /// <remarks>
-    ///   The <see cref="ReadOnlyTopicMultiMap"/> requires an underlying <see cref="Source"/> <see cref="TopicMultiMap"/> to
-    ///   derive values from. It's normally expected that callers will pass that via the public <see cref="
-    ///   ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor. Derived classes, however, cannot pass instance parameters to a
-    ///   base class. As such, the protected <see cref="ReadOnlyTopicMultiMap()"/> constructor allows the derived class to
-    ///   intialize the <see cref="ReadOnlyTopicMultiMap"/> without a <see cref="Source"/>—but expects that it will immediately
-    ///   set one via its constructor.
-    /// </remarks>
-    protected ReadOnlyTopicMultiMap() {}
-
     /*==========================================================================================================================
     | PROPERTY: SOURCE
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -56,7 +43,7 @@ namespace OnTopic.Collections.Specialized {
     /// <returns>
     ///   The <see cref="Source"/> must be passed in via either the public <see cref="ReadOnlyTopicMultiMap(TopicMultiMap)"/>
     ///   constructor, or must be set manually from the constructor of a derived class when using the protected <see cref="
-    ///   ReadOnlyTopicMultiMap()"/> constructor.
+    ///   ReadOnlyTopicMultiMap(TopicMultiMap)"/> constructor.
     /// </returns>
     [NotNull, DisallowNull]
     protected TopicMultiMap? Source { get; init; }
