@@ -5,7 +5,6 @@
 \=============================================================================================================================*/
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.Extensions.Configuration;
@@ -76,7 +75,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
     ///   Provides configuration the application. This method is called by the runtime to bootstrap the application
     ///   configuration, including the HTTP pipeline.
     /// </summary>
-    public static void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+    public static void Configure(IApplicationBuilder app) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Configure: Error Pages
