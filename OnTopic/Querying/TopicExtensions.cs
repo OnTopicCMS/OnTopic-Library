@@ -200,7 +200,7 @@ namespace OnTopic.Querying {
     /// </summary>
     /// <param name="topic">The instance of the <see cref="Topic"/> to operate against; populated automatically by .NET.</param>
     /// <returns>A dictionary of topics indexed by <see cref="Topic.Id"/>.</returns>
-    public static TopicIndex GetTopicIndex(this Topic topic) => new TopicIndex(topic.FindAll());
+    public static TopicIndex GetTopicIndex(this Topic topic) => new(topic.FindAll());
 
     /*==========================================================================================================================
     | METHOD: GET ROOT TOPIC
