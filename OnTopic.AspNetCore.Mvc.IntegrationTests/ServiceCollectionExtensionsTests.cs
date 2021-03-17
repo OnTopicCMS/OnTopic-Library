@@ -21,7 +21,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   ="IEndpointRouteBuilder"/> interface. These integration tests validate that those routes are operating as expected.
   /// </summary>
   [TestClass]
-  public class ServiceCollectionExtensionsTests {
+  public class ServiceCollectionExtensionsTests: IDisposable {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -168,6 +168,24 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
 
+    }
+
+    /*==========================================================================================================================
+    | DISPOSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    protected virtual void Dispose(bool disposing) {
+      if (disposing) {
+        if (_factory != null) {
+          _factory.Dispose();
+        }
+      }
     }
 
   }

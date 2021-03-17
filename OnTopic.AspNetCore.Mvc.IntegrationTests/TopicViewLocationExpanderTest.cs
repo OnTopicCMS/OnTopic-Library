@@ -21,7 +21,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   conventions.
   /// </summary>
   [TestClass]
-  public class TopicViewLocationExpanderTest {
+  public class TopicViewLocationExpanderTest: IDisposable {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -115,6 +115,24 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.AreEqual<string?>(viewLocation, content);
 
+    }
+
+    /*==========================================================================================================================
+    | DISPOSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    protected virtual void Dispose(bool disposing) {
+      if (disposing) {
+        if (_factory != null) {
+          _factory.Dispose();
+        }
+      }
     }
 
   }

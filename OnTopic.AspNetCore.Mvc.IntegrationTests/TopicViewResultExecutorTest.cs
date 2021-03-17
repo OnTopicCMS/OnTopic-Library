@@ -20,7 +20,7 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
   ///   that views are being correctly identified based on these criteria.
   /// </summary>
   [TestClass]
-  public class TopicViewResultExecutorTest {
+  public class TopicViewResultExecutorTest: IDisposable {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES
@@ -146,6 +146,24 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
       Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
       Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
 
+    }
+
+    /*==========================================================================================================================
+    | DISPOSE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <inheritdoc/>
+    public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    protected virtual void Dispose(bool disposing) {
+      if (disposing) {
+        if (_factory != null) {
+          _factory.Dispose();
+        }
+      }
     }
 
   }
