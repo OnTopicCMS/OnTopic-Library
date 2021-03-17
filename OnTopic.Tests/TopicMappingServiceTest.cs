@@ -149,10 +149,10 @@ namespace OnTopic.Tests {
     [TestMethod]
     public async Task Map_Generic_ReturnsConvertedProperty() {
 
-      var topic                 = new CustomTopic("Test", "CustomTopic");
-
-      topic.NumericAttribute = 1;
-      topic.BooleanAsStringAttribute = "1";
+      var topic                 = new CustomTopic("Test", "CustomTopic") {
+        NumericAttribute        = 1,
+        BooleanAsStringAttribute = "1"
+      };
 
       var target                = await _mappingService.MapAsync<ConvertPropertyViewModel>(topic).ConfigureAwait(false);
 

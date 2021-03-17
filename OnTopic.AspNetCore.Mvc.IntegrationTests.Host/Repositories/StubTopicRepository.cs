@@ -156,8 +156,9 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host.Repositories {
       _                         = new Topic("AreaContentTypes", "AreaContentTypes", area, currentAttributeId++);
       _                         = new Topic("Accordion", "ContentList", area, currentAttributeId++);
 
-      var topicWithView         = new Topic("TopicWithView", "ContentList", area, currentAttributeId++);
-      topicWithView.View        = "Accordion";
+      _                         = new Topic("TopicWithView", "ContentList", area, currentAttributeId++) {
+        View                    = "Accordion"
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set to cache
