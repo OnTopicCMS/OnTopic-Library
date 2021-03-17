@@ -114,6 +114,8 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
           new ControllerController(),
         nameof(SitemapController) =>
           new SitemapController(_topicRepository),
+        nameof(RedirectController) =>
+          new RedirectController(_topicRepository),
         _ => throw new InvalidOperationException($"Unknown controller {type.Name}")
       };
 

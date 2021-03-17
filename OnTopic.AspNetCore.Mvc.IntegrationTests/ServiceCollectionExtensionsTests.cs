@@ -60,5 +60,27 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: MAP TOPIC REDIRECT: REDIRECTS REQUEST
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Evaluates a route associated with <see cref="ServiceCollectionExtensions.MapTopicRedirect(IEndpointRouteBuilder)"/>
+    ///   and confirms that it responds appropriately.
+    /// </summary>
+    [TestMethod]
+    public async Task MapTopicRedirect_RedirectsRequest() {
+
+      var client                = _factory.CreateClient();
+      var uri                   = new Uri($"/Topic/3/", UriKind.Relative);
+      var response              = await client.GetAsync(uri).ConfigureAwait(false);
+      var content               = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+      response.EnsureSuccessStatusCode();
+
+      Assert.AreEqual<string?>("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+      Assert.AreEqual<string?>("~/Views/ContentList/ContentList.cshtml", content);
+
+    }
+
   }
 }

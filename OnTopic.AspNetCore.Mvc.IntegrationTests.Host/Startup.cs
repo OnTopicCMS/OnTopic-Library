@@ -94,10 +94,12 @@ namespace OnTopic.AspNetCore.Mvc.IntegrationTests.Host {
       \-----------------------------------------------------------------------------------------------------------------------*/
       app.UseEndpoints(endpoints => {
         endpoints.MapDefaultAreaControllerRoute();
+        endpoints.MapDefaultControllerRoute();
         endpoints.MapImplicitAreaControllerRoute();
         endpoints.MapTopicAreaRoute();
         endpoints.MapTopicRoute("Web");
         endpoints.MapTopicSitemap();
+        endpoints.MapTopicRedirect();
         endpoints.MapControllers();
       });
 
