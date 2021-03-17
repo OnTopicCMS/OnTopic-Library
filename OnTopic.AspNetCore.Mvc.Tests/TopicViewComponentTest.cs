@@ -235,5 +235,33 @@ namespace OnTopic.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: PAGE-LEVEL NAVIGATION: INVOKE WITH NULL TOPIC: RETURNS NULL
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a new <see cref="PageLevelNavigationViewComponent"/> with a null topic reference and confirms the resulting <see
+    ///   cref="NavigationTopicViewModel"/> is <c>null</c>. This occurs when handling 404 errors.
+    /// </summary>
+    [TestMethod]
+    public async Task PageLevelNavigation_InvokeWithNullTopic_ReturnsNull()
+    {
+
+      var webPath = "/Invalid/Path/";
+
+      var viewComponent = new PageLevelNavigationViewComponent(_topicRepository, _hierarchicalMappingService)
+      {
+        ViewComponentContext = GetViewComponentContext(webPath)
+      };
+
+      var result = await viewComponent.InvokeAsync().ConfigureAwait(false);
+      var concreteResult = result as ViewViewComponentResult;
+      var model = concreteResult?.ViewData.Model as NavigationViewModel<NavigationTopicViewModel>;
+
+      Assert.IsNotNull(model);
+      Assert.AreEqual<string?>(String.Empty, model?.CurrentWebPath);
+      Assert.IsNull(model?.NavigationRoot);
+
+    }
+
   } //Class
 } //Namespace
