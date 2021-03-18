@@ -420,9 +420,19 @@ namespace OnTopic.Tests {
 
       //Expect Title, even though it isn't IsDirty
       Assert.AreEqual<int>(1, dirtyExtended.Count());
+      Assert.AreEqual<string?>("Title", dirtyExtended.FirstOrDefault()?.Key);
+
+      //Expect IsHidden, even though it isn't IsDirty
       Assert.AreEqual<int>(1, dirtyIndexed.Count());
-      Assert.AreEqual<int>(2, cleanExtended.Count());
-      Assert.AreEqual<int>(2, cleanIndexed.Count());
+      Assert.AreEqual<string?>("IsHidden", dirtyIndexed.FirstOrDefault()?.Key);
+
+      //Expect Metatitle, since it's clean, and not mismatched
+      Assert.AreEqual<int>(1, cleanExtended.Count());
+      Assert.AreEqual<string?>("MetaTitle", cleanExtended.FirstOrDefault()?.Key);
+
+      //Expect Arbitrary, since it's arbitrary and it's length is less than 255
+      Assert.AreEqual<int>(1, cleanIndexed.Count());
+      Assert.AreEqual<string?>("Arbitrary", cleanIndexed.FirstOrDefault()?.Key);
 
     }
 

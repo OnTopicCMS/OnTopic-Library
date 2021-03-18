@@ -754,12 +754,9 @@ namespace OnTopic.Repositories {
 
         //Skip if attribute's isDirty flag doesn't match the callers preference. Alternatively, if the IsExtendedAttribute value
         //doesn't match the source, as this implies the storage location has changed, and the attribute should be treated as
-        //isDirty.
-        if (
-          isDirty is null ||
-          attributeValue.IsDirty == isDirty ||
-          isDirty == IsExtendedAttributeMismatch(attribute, attributeValue)
-        ) {
+        //isDirty implicitly.
+        var isAttributeDirty    = IsExtendedAttributeMismatch(attribute, attributeValue) || attributeValue.IsDirty;
+        if (isDirty is null || isDirty.Value == isAttributeDirty) {
         }
         else {
           continue;
