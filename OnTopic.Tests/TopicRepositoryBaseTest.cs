@@ -421,8 +421,8 @@ namespace OnTopic.Tests {
       //Expect Title, even though it isn't IsDirty
       Assert.AreEqual<int>(1, dirtyExtended.Count());
       Assert.AreEqual<int>(1, dirtyIndexed.Count());
-      Assert.AreEqual<int>(2, cleanExtended.Count());
-      Assert.AreEqual<int>(2, cleanIndexed.Count());
+      Assert.AreEqual<int>(1, cleanExtended.Count());
+      Assert.AreEqual<int>(1, cleanIndexed.Count());
 
     }
 
