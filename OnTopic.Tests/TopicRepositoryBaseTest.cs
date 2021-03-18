@@ -936,7 +936,7 @@ namespace OnTopic.Tests {
     | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
+    ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, Topic?, Boolean)"/> and ensures that the <see cref="
     ///   ITopicRepository.TopicLoaded"/> event is raised.
     /// </summary>
     [TestMethod]
@@ -946,11 +946,39 @@ namespace OnTopic.Tests {
 
       _cachedTopicRepository.TopicLoaded += eventHandler;
 
-      var topic = _topicRepository.Load("Root:Web");
+      var topic                 = _topicRepository.Load("Root:Web");
 
       _cachedTopicRepository.TopicLoaded -= eventHandler;
 
       Assert.IsTrue(hasFired);
+
+      void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: LOAD: TOPIC LOADED EVENT: IS RAISED WITH VERSION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Loads a topic using <see cref="StubTopicRepository.Load(Int32, DateTime, Topic?)"/> and ensures that the <see cref="
+    ///   ITopicRepository.TopicLoaded"/> event is raised.
+    /// </summary>
+    [TestMethod]
+    public void Load_TopicLoadedEvent_IsRaisedWithVersion() {
+
+      var hasFired              = false;
+      var topicId               = _topicRepository.Load("Root:Web")?.Id;
+      var version               = DateTime.UtcNow;
+
+      _cachedTopicRepository.TopicLoaded += eventHandler;
+
+      var topic                 = _topicRepository.Load(topicId?? -1, version);
+
+      _cachedTopicRepository.TopicLoaded -= eventHandler;
+
+      Assert.IsTrue(hasFired);
+      Assert.AreEqual<int?>(topicId, topic?.Id);
+      Assert.AreEqual<DateTime?>(version, topic?.VersionHistory.LastOrDefault());
 
       void eventHandler(object? sender, TopicLoadEventArgs eventArgs) => hasFired = true;
 
