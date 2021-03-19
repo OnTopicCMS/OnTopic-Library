@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -536,10 +537,13 @@ namespace OnTopic.Mapping.Reverse {
       var modelReference = (IAssociatedTopicBindingModel?)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Bypass if reference (or value) is null (or empty)
+      | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (modelReference is null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
-        return;
+      if (modelReference is null || modelReference.UniqueKey is null) {
+        throw new MappingModelValidationException(
+          $"The {configuration.Property.Name} property must reference an object with its `UniqueKey` property set The " +
+          $"value may be empty, but it should not be null."
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -550,7 +554,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicReference is null) {
+      if (modelReference.UniqueKey.Length > 0 && topicReference is null) {
         throw new MappingModelValidationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
           $"'{configuration.Property.Name}' property could not be found."
@@ -561,7 +565,7 @@ namespace OnTopic.Mapping.Reverse {
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
-        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+        target.Attributes.SetValue(configuration.AttributeKey, topicReference?.Id.ToString(CultureInfo.InvariantCulture));
       }
       else {
         target.References.SetValue(configuration.AttributeKey, topicReference);
