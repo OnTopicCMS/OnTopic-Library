@@ -31,7 +31,7 @@ namespace OnTopic.Internal.Reflection {
   ///   <para>
   ///     For setting values, the typical workflow is for a caller to check either <see cref="HasSettableMethod(Type, String,
   ///     Type?)"/> or <see cref="HasSettableProperty(Type, String, Type?)"/>, followed by <see cref="SetMethodValue(Object,
-  ///     String, String?)"/> or <see cref="SetMethodValue(Object, String, String?)"/> to retrieve the value. In these
+  ///     String, Object?)"/> or <see cref="SetMethodValue(Object, String, Object?)"/> to retrieve the value. In these
   ///     scenarios, the <see cref="MemberDispatcher"/> will attempt to deserialize the <c>value</c> parameter from <see cref=
   ///     "String"/> to the type expected by the corresponding property or method. Typically, this will be a <see cref="Int32"
   ///     />, <see cref="Double"/>, <see cref="Boolean"/>, or <see cref="DateTime"/>.
@@ -244,38 +244,6 @@ namespace OnTopic.Internal.Reflection {
     /*==========================================================================================================================
     | METHOD: SET METHOD VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Uses reflection to call a method, assuming that it is a) writable, and b) of type <see cref="String"/>,
-    ///   <see cref="Int32"/>, or <see cref="Boolean"/>.
-    /// </summary>
-    /// <remarks>
-    ///   Be aware that this will only succeed if the method has a single parameter of a settable type. If additional parameters
-    ///   are present it will return <c>false</c>, even if those additional parameters are optional.
-    /// </remarks>
-    /// <param name="target">The object instance on which the method is defined.</param>
-    /// <param name="name">The name of the method to assess.</param>
-    /// <param name="value">The value to set the method to.</param>
-    internal void SetMethodValue(object target, string name, string? value) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Validate parameters
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      Contract.Requires(target, nameof(target));
-      Contract.Requires(name, nameof(name));
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var method = GetMember<MethodInfo>(target.GetType(), name);
-
-      Contract.Assume(method, $"The {name}() method could not be retrieved.");
-
-      var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
-
-      method.Invoke(target, new object?[] { valueObject });
-
-    }
-
     /// <summary>
     ///   Uses reflection to call a method, assuming that the parameter value is compatible with the <paramref name="value"/>
     ///   type.

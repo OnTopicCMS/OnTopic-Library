@@ -462,7 +462,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value can be properly set using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method.
     /// </summary>
     [TestMethod]
     public void SetMethodValue_ValidValue_SetsValue() {
@@ -481,7 +481,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     public void SetMethodValue_InvalidValue_DoesNotSetValue() {
@@ -500,7 +500,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method throws an exception.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method throws an exception.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
@@ -557,7 +557,7 @@ namespace OnTopic.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object?)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
