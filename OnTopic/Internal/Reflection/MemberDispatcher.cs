@@ -156,10 +156,6 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = isString? GetValueObject(property.PropertyType, value as string) : value;
 
-      if (valueObject is null) {
-        return false;
-      }
-
       property.SetValue(target, valueObject);
       return true;
 
