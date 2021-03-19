@@ -553,7 +553,7 @@ namespace OnTopic.Mapping.Reverse {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (topicReference is null) {
+      if (modelReference.UniqueKey.Length > 0 && topicReference is null) {
         throw new MappingModelValidationException(
           $"The topic '{modelReference.UniqueKey}' referenced by the '{source.GetType()}' model's " +
           $"'{configuration.Property.Name}' property could not be found."
