@@ -83,16 +83,16 @@ namespace OnTopic.Data.Caching {
     public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Lookup by TopicKey
+      | Validate parameters
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (uniqueKey is not null && uniqueKey.Length is not 0) {
-        return _cache.GetByUniqueKey(uniqueKey);
+      if (String.IsNullOrEmpty(uniqueKey)) {
+        return null;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Return entire cache
+      | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return _cache;
+      return _cache.GetByUniqueKey(uniqueKey);
 
     }
 
