@@ -77,6 +77,7 @@ namespace OnTopic.Mapping.Internal {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attributes: Retrieve basic attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
+      GetAttributeValue<MapAsAttribute>(property,               a => MapAs = a.Type);
       GetAttributeValue<DefaultValueAttribute>(property,        a => DefaultValue = a.Value);
       GetAttributeValue<InheritAttribute>(property,             a => InheritValue = true);
       GetAttributeValue<AttributeKeyAttribute>(property,        a => AttributeKey = attributePrefix + a.Key);
@@ -143,6 +144,24 @@ namespace OnTopic.Mapping.Internal {
     ///   </para>
     /// </remarks>
     internal string AttributeKey { get; set; }
+
+    /*==========================================================================================================================
+    | PROPERTY: MAP AS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The type of the DTO that an association should be mapped to.
+    /// </summary>
+    /// <remarks>
+    ///   By default, the <see cref="ITopicMappingService"/> will map associations to a view model corresponding to the target
+    ///   <see cref="Topic"/>'s <see cref="Topic.ContentType"/>. E.g., if the target <see cref="Topic.ContentType"/> is <c>Page
+    ///   </c>, then it will map the association to a <c>PageTopicViewModel</c> or <c>PageViewModel</c>. The <see cref="MapAs"/>
+    ///   configuration allows this type to be overridden for a specific association. This can be useful if the current model
+    ///   only needs a few attributes from the associated topic, or for scenarios where multiple different content types might
+    ///   be included in a collection, but should be unified via a common interface. Both are common, for instance, when a view
+    ///   needs to display a list of links to related pages, and thus just needs e.g. the <c>Title</c> and <c>WebPath</c> for
+    ///   each association.
+    /// </remarks>
+    internal Type? MapAs { get; set; }
 
     /*==========================================================================================================================
     | PROPERTY: MAP TO PARENT?
