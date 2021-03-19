@@ -148,13 +148,15 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(target, nameof(target));
       Contract.Requires(name, nameof(name));
 
-      var isString = value?.GetType() == typeof(string);
-
       var property = GetMember<PropertyInfo>(target.GetType(), name);
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
 
-      var valueObject = isString? GetValueObject(property.PropertyType, value as string) : value;
+      var valueObject = value;
+
+      if (valueObject is string) {
+        valueObject = GetValueObject(property.PropertyType, value as string);
+      }
 
       property.SetValue(target, valueObject);
 
