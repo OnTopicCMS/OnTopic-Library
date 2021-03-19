@@ -536,10 +536,13 @@ namespace OnTopic.Mapping.Reverse {
       var modelReference = (IAssociatedTopicBindingModel?)configuration.Property.GetValue(source);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Bypass if reference (or value) is null (or empty)
+      | Provide error handling
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (modelReference is null || String.IsNullOrEmpty(modelReference.UniqueKey)) {
-        return;
+      if (modelReference is null || modelReference.UniqueKey is null) {
+        throw new MappingModelValidationException(
+          $"The {configuration.Property.Name} property must reference an object with its `UniqueKey` property set The " +
+          $"value may be empty, but it should not be null."
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
