@@ -77,15 +77,19 @@ namespace OnTopic.TestDoubles {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate parameters
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(uniqueKey)) {
+        return null;
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var topic = _cache;
-      if (uniqueKey is not null && uniqueKey.Length > 0) {
-        topic = _cache.GetByUniqueKey(uniqueKey);
-      }
+      var topic = _cache.GetByUniqueKey(uniqueKey);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Raise event

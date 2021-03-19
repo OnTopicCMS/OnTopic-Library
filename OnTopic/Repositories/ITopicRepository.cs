@@ -85,6 +85,12 @@ namespace OnTopic.Repositories {
     \-------------------------------------------------------------------------------------------------------------------------*/
 
     /// <summary>
+    ///   Loads the entire root topic graph, including all descendants.
+    /// </summary>
+    /// <returns>A topic object.</returns>
+    public Topic? Load() => Load(-1);
+
+    /// <summary>
     ///   Loads a <see cref="Topic"/> (and, optionally, all of its descendants) based on the specified <paramref name="topicId"
     ///   />.
     /// </summary>
@@ -108,7 +114,7 @@ namespace OnTopic.Repositories {
     /// </param>
     /// <param name="isRecursive">Determines whether or not to recurse through and load a topic's children.</param>
     /// <returns>A topic object.</returns>
-    Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
+    Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
     [ExcludeFromCodeCoverage]
