@@ -426,21 +426,21 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET PROPERTY VALUE: INVALID PROPERTY: RETURNS FALSE
+    | TEST: SET PROPERTY VALUE: INVALID PROPERTY: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that an invalid property being set via the <see cref="
-    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetPropertyValue(Object, String, Object?)"/> method throws an <see cref="InvalidOperationException"
+    ///   />.
     /// </summary>
     [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void SetPropertyValue_InvalidProperty_ReturnsFalse() {
 
       var types                 = new MemberDispatcher();
       var topic                 = TopicFactory.Create("Test", "ContentType");
 
-      var isInvalidPropertySet  = types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
-
-      Assert.IsFalse(isInvalidPropertySet);
+      types.SetPropertyValue(topic, "InvalidProperty", "Invalid");
 
     }
 
@@ -485,21 +485,20 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID MEMBER: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method throws an exception.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidMember_ReturnsFalse() {
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void SetMethodValue_InvalidMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", "123");
-
-      Assert.IsFalse(isInvalidSet);
+      types.SetMethodValue(source, "BogusMethod", "123");
 
     }
 
@@ -525,42 +524,39 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: DOESN'T SET VALUE
+    | TEST: SET METHOD VALUE: INVALID REFERENCE VALUE: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that a value set with an invalid value using the <see cref="
-    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method returns <c>false</c>.
+    ///   MemberDispatcher.SetMethodValue(Object, String, Object)"/> method throws an <see cref="ArgumentException"/>.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidReferenceValue_DoesNotSetValue() {
+    [ExpectedException(typeof(ArgumentException))]
+    public void SetMethodValue_InvalidReferenceValue_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedReferenceViewModel();
       var reference             = new EmptyViewModel();
 
-      var isValueSet            = types.SetMethodValue(source, "SetMethod", reference);
-
-      Assert.IsFalse(isValueSet);
-      Assert.IsNull(source.GetMethod());
+      types.SetMethodValue(source, "SetMethod", reference);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: RETURNS FALSE
+    | TEST: SET METHOD VALUE: INVALID REFERENCE MEMBER: THROWS EXCEPTION
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Establishes a <see cref="MemberDispatcher"/> and confirms that setting an invalid method name using the <see cref="
     ///   MemberDispatcher.SetMethodValue(Object, String, String)"/> method returns <c>false</c>.
     /// </summary>
     [TestMethod]
-    public void SetMethodValue_InvalidReferenceMember_ReturnsFalse() {
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void SetMethodValue_InvalidReferenceMember_ThrowsException() {
 
       var types                 = new MemberDispatcher();
       var source                = new MethodBasedViewModel();
 
-      var isInvalidSet          = types.SetMethodValue(source, "BogusMethod", new object());
-
-      Assert.IsFalse(isInvalidSet);
+      types.SetMethodValue(source, "BogusMethod", new object());
 
     }
 
