@@ -150,10 +150,6 @@ namespace OnTopic.Internal.Reflection {
 
       var isString = value?.GetType() == typeof(string);
 
-      if (!HasSettableProperty(target.GetType(), name, isString? null : value?.GetType())) {
-        return false;
-      }
-
       var property = GetMember<PropertyInfo>(target.GetType(), name);
 
       Contract.Assume(property, $"The {name} property could not be retrieved.");
