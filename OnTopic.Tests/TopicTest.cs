@@ -358,6 +358,26 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: BASE TOPIC: SET TO NULL: REMOVES VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets a base topic to a topic entity, then updates it to a null value. Ensures that the base topic is correctly
+    ///   removed.
+    /// </summary>
+    [TestMethod]
+    public void BaseTopic_SetToNull_RemovesValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Page");
+      var baseTopic             = TopicFactory.Create("BaseTopic", "Page");
+
+      topic.BaseTopic           = baseTopic;
+      topic.BaseTopic           = null;
+
+      Assert.IsNull(topic.BaseTopic);
+
+    }
+
+    /*==========================================================================================================================
     | IS DIRTY: NEW TOPIC: RETURNS TRUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
