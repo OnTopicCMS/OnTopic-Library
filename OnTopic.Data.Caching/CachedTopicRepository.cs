@@ -80,7 +80,7 @@ namespace OnTopic.Data.Caching {
     }
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) {
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Lookup by TopicKey

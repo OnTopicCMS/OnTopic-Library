@@ -87,7 +87,7 @@ namespace OnTopic.Repositories {
       TopicRepository.Load(topicId, referenceTopic, isRecursive);
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) =>
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) =>
       TopicRepository.Load(uniqueKey, referenceTopic, isRecursive);
 
     /// <inheritdoc />

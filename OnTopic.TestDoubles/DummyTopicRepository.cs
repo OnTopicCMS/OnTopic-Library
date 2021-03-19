@@ -42,7 +42,7 @@ namespace OnTopic.TestDoubles {
     public override Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => null;
+    public override Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true) => null;
 
     /// <inheritdoc />
     public override Topic? Load(Topic? topic, DateTime version) => throw new NotImplementedException();

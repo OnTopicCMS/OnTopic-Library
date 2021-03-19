@@ -44,7 +44,7 @@ namespace OnTopic.AspNetCore.Mvc.Tests.TestDoubles {
     | METHOD: LOAD
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <inheritdoc />
-    public override Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true) => _cache;
+    public override Topic? Load() => _cache;
 
     /*==========================================================================================================================
     | METHOD: CREATE FAKE DATA

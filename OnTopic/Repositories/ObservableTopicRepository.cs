@@ -213,7 +213,7 @@ namespace OnTopic.Repositories {
     public abstract Topic? Load(int topicId, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc />
-    public abstract Topic? Load(string? uniqueKey = null, Topic? referenceTopic = null, bool isRecursive = true);
+    public abstract Topic? Load(string uniqueKey, Topic? referenceTopic = null, bool isRecursive = true);
 
     /// <inheritdoc cref="Load(Int32, Topic?, Boolean)"/>
     [ExcludeFromCodeCoverage]
