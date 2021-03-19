@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -564,7 +565,7 @@ namespace OnTopic.Mapping.Reverse {
       | Set target attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (configuration.AttributeKey.EndsWith("Id", StringComparison.Ordinal)) {
-        target.Attributes.SetInteger(configuration.AttributeKey, topicReference.Id);
+        target.Attributes.SetValue(configuration.AttributeKey, topicReference?.Id.ToString(CultureInfo.InvariantCulture));
       }
       else {
         target.References.SetValue(configuration.AttributeKey, topicReference);
