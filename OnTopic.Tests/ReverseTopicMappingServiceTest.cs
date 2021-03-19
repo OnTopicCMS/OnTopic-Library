@@ -360,14 +360,14 @@ namespace OnTopic.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: MAP: TOPIC REFERENCES: BYPASS NULL
+    | TEST: MAP: NULL TOPIC REFERENCE: DELETE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly bypasses any <see cref="
-    ///   IAssociatedTopicBindingModel"/> instances with a null <see cref="IAssociatedTopicBindingModel.UniqueKey"/>.
+    ///   Establishes a <see cref="ReverseTopicMappingService"/> and tests whether it correctly ovewrite any topic references if
+    ///   the <see cref="IAssociatedTopicBindingModel"/> has a <see cref="IAssociatedTopicBindingModel.UniqueKey"/> set to null.
     /// </summary>
     [TestMethod]
-    public async Task Map_TopicReferences_BypassNull() {
+    public async Task Map_NullTopicReference_Delete() {
 
       var mappingService        = new ReverseTopicMappingService(_topicRepository);
       var topic                 = _topicRepository.Load("Root:Configuration:ContentTypes:Attributes:Title");
@@ -379,12 +379,14 @@ namespace OnTopic.Tests {
 
       var bindingModel          = new ReferenceTopicBindingModel(topic.Key) {
         ContentType             = topic.ContentType,
-        BaseTopic               = new()
+        BaseTopic               = new() {
+          UniqueKey             = ""
+        }
       };
 
-      var target                = (TextAttributeDescriptor?)await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
+      await mappingService.MapAsync(bindingModel, topic).ConfigureAwait(false);
 
-      Assert.IsNotNull(target?.BaseTopic);
+      Assert.IsNull(topic.BaseTopic);
 
     }
 
