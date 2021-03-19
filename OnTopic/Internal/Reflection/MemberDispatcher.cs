@@ -265,13 +265,6 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate member type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (!HasSettableMethod(target.GetType(), name)) {
-        return false;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var method = GetMember<MethodInfo>(target.GetType(), name);
@@ -280,13 +273,9 @@ namespace OnTopic.Internal.Reflection {
 
       var valueObject = GetValueObject(method.GetParameters().First().ParameterType, value);
 
-      if (valueObject is null) {
-        return false;
-      }
-
-      method.Invoke(target, new object[] { valueObject });
 
       return true;
+      method.Invoke(target, new object?[] { valueObject });
 
     }
 
@@ -310,22 +299,20 @@ namespace OnTopic.Internal.Reflection {
       Contract.Requires(name, nameof(name));
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Validate member type
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (value is null || !HasSettableMethod(target.GetType(), name, value.GetType())) {
-        return false;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Set value
       \-----------------------------------------------------------------------------------------------------------------------*/
       var method = GetMember<MethodInfo>(target.GetType(), name);
 
       Contract.Assume(method, $"The {name}() method could not be retrieved.");
 
-      method.Invoke(target, new object[] { value });
+      var valueObject = value;
+
+      if (valueObject is string) {
+        valueObject = GetValueObject(method.GetParameters().First().ParameterType, valueObject as string);
+      }
 
       return true;
+      method.Invoke(target, new object?[] { valueObject });
 
     }
 
